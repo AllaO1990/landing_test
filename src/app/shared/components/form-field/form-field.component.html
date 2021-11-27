@@ -1,0 +1,11 @@
+<div class="vt-form-field-wrapper" (click)="_control.onContainerClick && _control.onContainerClick($event)">
+  <div class="vt-form-field-prefix-wrapper" *ngIf="_prefixChildren.length">
+    <ng-content select="[vtPrefix]"></ng-content>
+  </div>
+  <div class="vt-form-field-infix-wrapper">
+    <ng-content></ng-content>
+  </div>
+  <div class="vt-form-field-suffix-wrapper" *ngIf="_suffixChildren.length">
+    <ng-content select="[vtSuffix]"></ng-content>
+  </div>
+</div>

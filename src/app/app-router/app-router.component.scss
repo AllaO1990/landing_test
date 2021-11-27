@@ -1,0 +1,49 @@
+:host {
+  display: block;
+  height: 100%;
+  background-color: var(--main-bg-color);
+}
+
+.sidenav-container {
+  height: 100%;
+  background-color: #d7d4e5;
+}
+
+.sidenav {
+  width: 200px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+  background-color: var(--main-bg-color);
+}
+
+mat-toolbar.vanya-toolbar {
+  padding: 0;
+  height: var(--main-toolbar-height);
+  background-color: var(--main-bg-color);
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.vt-logo {
+  display: flex;
+  border-right: 1px solid var(--main-bg-color);
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 60px;
+}
+
+.vt-toolbar-left-side {
+  display: flex;
+  justify-content: center;
+  width: 350px;
+  height: 100%;
+  background-color: var(--block-bg-color);
+  border-right: 4px solid var(--main-bg-color);
+}

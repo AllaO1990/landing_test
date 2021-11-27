@@ -1,0 +1,35 @@
+<div class="vt-candle-chart-widget-wrapper">
+  <div class="vt-candle-chart-widget-toolbar">
+    <div
+      class="vt-candle-chart-widget-issuer-lock-wrapper"
+      [class.vt-candle-chart-widget-issuer-lock]="lockControl.value"
+      [class.vt-candle-chart-widget-issuer-unlock]="!lockControl.value"
+    >
+      <label style="display: flex; width: 100%; height: 100%">
+        <input
+          #input
+          type="checkbox"
+          style="height: 0; width: 0"
+          [formControl]="lockControl"
+        />
+      </label>
+    </div>
+    <div class="vt-candle-chart-widget-toolbar-issuer-wrapper">
+      <input
+        type="text"
+        [formControl]="issuerControl"
+        [matAutocomplete]="auto"
+        class="vt-candle-chart-widget-toolbar-issuer"
+      />
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option
+          *ngFor="let option of filteredOptions | async"
+          [value]="option"
+        >
+          {{ option | uppercase }}
+        </mat-option>
+      </mat-autocomplete>
+    </div>
+  </div>
+  <div #content class="vt-candle-chart-widget-content"></div>
+</div>

@@ -1,0 +1,50 @@
+.vt-table-widget {
+  display: block;
+  height: 100%;
+  width: 100%;
+  color: #333333;
+}
+
+.vt-table-widget-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.vt-table-widget-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
+  line-height: 12px;
+
+  thead tr {
+    height: 24px;
+  }
+
+  tbody tr {
+    height: 32px;
+
+    &.vt-widget-table-red {
+      background: rgba(255, 16, 59, 0.1);
+    }
+
+    &.vt-widget-table-orange {
+      background: rgba(255, 144, 102, 0.1);
+    }
+
+    &.vt-widget-table-green {
+      background: rgba(3, 147, 34, 0.1);
+    }
+  }
+
+  td,
+  th {
+    border: 1px solid #dadae8; /* Граница вокруг ячеек */
+  }
+}
+
+.vt-table-widget-toolbar-title {
+  letter-spacing: 0.3px;
+}
