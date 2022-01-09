@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 
 @NgModule({
   declarations: [AppComponent],
@@ -15,7 +15,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     BrowserAnimationsModule,
     MatNativeDateModule,
   ],
-  providers: [],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'ru-RU' }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

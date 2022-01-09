@@ -5,6 +5,14 @@
   color: #333333;
 }
 
+.vt-investment-periods-filter-check {
+  display: none;
+
+  &:checked + span {
+    color: #0066ff;
+  }
+}
+
 .vt-table-widget-wrapper {
   position: relative;
   width: 100%;
@@ -25,18 +33,6 @@
 
   tbody tr {
     height: 32px;
-
-    &.vt-widget-table-red {
-      background: rgba(255, 16, 59, 0.1);
-    }
-
-    &.vt-widget-table-orange {
-      background: rgba(255, 144, 102, 0.1);
-    }
-
-    &.vt-widget-table-green {
-      background: rgba(3, 147, 34, 0.1);
-    }
   }
 
   td,

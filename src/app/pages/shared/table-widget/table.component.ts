@@ -1,3 +1,4 @@
+import { DataSource } from '@angular/cdk/collections';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,15 +6,10 @@ import {
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
-import { DataSource } from '@angular/cdk/collections';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable } from 'rxjs';
-
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
+import { VtIdeaComponent } from '../idea/idea.component';
 
 @Component({
   selector: 'vt-table-widget',
@@ -26,6 +22,14 @@ export interface PeriodicElement {
   },
 })
 export class VtTableWidgetComponent implements OnInit {
+  formGroup = new FormGroup({
+    investmentPeriods: new FormGroup({
+      short: new FormControl(false),
+      long: new FormControl(true),
+      mid: new FormControl(true),
+    }),
+  });
+
   MY_DATA = {
     columns: [
       { value: 'direction', name: 'Направление' },
@@ -62,6 +66,8 @@ export class VtTableWidgetComponent implements OnInit {
         success: [100, '10/10'],
         vanya: true,
         status: 'orange',
+        rowColor: 'rgba(255, 144, 102, 0.1)',
+        investmentPeriod: 'short',
       },
       {
         direction: 'лонг',
@@ -74,6 +80,8 @@ export class VtTableWidgetComponent implements OnInit {
         success: [100, '10/10'],
         vanya: true,
         status: 'red',
+        rowColor: 'rgba(255, 16, 59, 0.1)',
+        investmentPeriod: 'long',
       },
       {
         direction: 'лонг',
@@ -86,6 +94,8 @@ export class VtTableWidgetComponent implements OnInit {
         success: [100, '10/10'],
         vanya: true,
         status: 'green',
+        rowColor: 'rgba(3, 147, 34, 0.1)',
+        investmentPeriod: 'mid',
       },
       {
         direction: 'лонг',
@@ -140,18 +150,46 @@ export class VtTableWidgetComponent implements OnInit {
   namesOfColumns = Object.create(null);
   dataSource = new VtTableDataSource(this.MY_DATA.data);
 
+  @Input()
+  set data(value: any) {
+    this._data = value;
+  }
+  get data() {
+    return this._data;
+  }
+  private _data: any;
+
   @Input() dataType: 'entry' | 'out' = 'entry';
 
-  constructor() {}
+  constructor(private _dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.MY_DATA.columns.forEach((column) => {
       this.namesOfColumns[column.value] = column.name;
     });
   }
+
+  get _investmentPeriods() {
+    return [
+      { type: 'short', name: 'Краткосрок', quantity: 3 },
+      { type: 'mid', name: 'Среднесрок', quantity: 3 },
+      { type: 'long', name: 'Долгосрок', quantity: 3 },
+    ];
+  }
+
+  openIdeaDialod() {
+    this._dialog.open(VtIdeaComponent, {
+      maxWidth: '100vw',
+      width: '100vw',
+      height: '100vh',
+      panelClass: 'vt-mat-dialog-container',
+      autoFocus: false,
+      data: { name: 'this.name', animal: ' this.animal' },
+    });
+  }
 }
 
-export class VtTableDataSource extends DataSource<PeriodicElement> {
+export class VtTableDataSource extends DataSource<any> {
   /** Stream of data that is provided to the table. */
   data = new BehaviorSubject<any[]>(this.datas);
 
@@ -160,7 +198,7 @@ export class VtTableDataSource extends DataSource<PeriodicElement> {
   }
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<PeriodicElement[]> {
+  connect(): Observable<any[]> {
     return this.data;
   }
 

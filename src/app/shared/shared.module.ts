@@ -9,6 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
 import { VtFormFieldModule } from './components/form-field/form-field.module';
 import { VtInputModule } from './components/input/input.module';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -17,7 +19,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { VtRadarChartModule } from './components/radar-chart/radar-chart.module';
 import { VtChipModule } from './components/chip/chip.module';
 import { VtStarRatingModule } from './components/star-rating/star-rating.module';
-import { VtCandleChartModule } from './components/candle-chart/candle-chart.module';
 
 @NgModule({
   declarations: [],
@@ -31,16 +32,17 @@ import { VtCandleChartModule } from './components/candle-chart/candle-chart.modu
     MatListModule,
     MatIconModule,
     MatCardModule,
+    MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
     MatGridListModule,
     VtFormFieldModule,
     VtInputModule,
     VtWidgetModule,
-    VtCandleChartModule,
     VtRadarChartModule,
     VtChipModule,
     VtStarRatingModule,
+    MatDialogModule,
   ],
   exports: [
     CommonModule,
@@ -52,16 +54,17 @@ import { VtCandleChartModule } from './components/candle-chart/candle-chart.modu
     MatListModule,
     MatIconModule,
     MatCardModule,
+    MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
     MatGridListModule,
     VtFormFieldModule,
     VtInputModule,
     VtWidgetModule,
-    VtCandleChartModule,
     VtRadarChartModule,
     VtChipModule,
     VtStarRatingModule,
+    MatDialogModule,
   ],
   providers: [],
 })

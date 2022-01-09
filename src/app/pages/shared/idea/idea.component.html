@@ -1,0 +1,104 @@
+<form
+  [formGroup]="ideaFormGroup"
+  (ngSubmit)="onSubmit()"
+  #ideaForm="ngForm"
+  class="vt-idea-form"
+>
+  <section class="vt-idea-form-left-side">
+    <mat-toolbar class="vt-idea-form-toolbar"></mat-toolbar>
+    <div class="vt-idea-form-expires-at" formGroupName="expiresAt">
+      <mat-form-field appearance="outline">
+        <mat-label>Идея действует до:</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-checkbox
+        formControlName="infinite"
+        color="primary"
+        style="margin-left: 8px"
+        >бессрочно</mat-checkbox
+      >
+    </div>
+    <div class="vt-idea-form-investment-period">
+      <label
+        class="vt-radio-chip"
+        style="margin-right: 8px"
+        [style.backgroundColor]="investPeriodRadio.checked ? '#06f' : null"
+        *ngFor="let item of investmentPeriods"
+      >
+        <input
+          #investPeriodRadio
+          formControlName="investmentPeriod"
+          type="radio"
+          [value]="item.value"
+          name="investmentPeriod"
+        />
+        <span>{{ item.name }}</span>
+      </label>
+    </div>
+    <div class="vt-idea-form-trading-position">
+      <label
+        class="vt-radio-chip"
+        style="margin-right: 8px"
+        [style.backgroundColor]="investPeriodRadio.checked ? '#06f' : null"
+        *ngFor="let item of tradingPositions"
+      >
+        <input
+          #investPeriodRadio
+          formControlName="tradingPosition"
+          type="radio"
+          [value]="item.value"
+          name="tradingPosition"
+        />
+        <span>{{ item.name }}</span>
+      </label>
+    </div>
+    <div class="vt-idea-form-common-info">
+      <div *ngFor="let item of ideaCommonInfo" style="margin-bottom: 11px">
+        <span>{{ item.name }}</span>
+        <span>{{ item.value }}</span>
+      </div>
+    </div>
+    <div class="vt-idea-comment">
+      <textarea name="" id="" cols="30" rows="10"></textarea>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: center">
+      <button mat-flat-button color="primary" style="width: 90%; height: 32px">
+        Save
+      </button>
+    </div>
+  </section>
+  <div class="vt-idea-form-chart">
+    <mat-toolbar class="vt-idea-form-toolbar">
+      <div class="vt-idea-form-chart-toolbar">
+        <div></div>
+        <div>
+          <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-toolbar>
+    <section class="vt-idea-form-chart-section">
+      <!-- TradingView Widget BEGIN -->
+      <div
+        class="tradingview-widget-container"
+        style="height: 100%; width: 100%"
+      >
+        <div
+          id="tradingview_idea_chart"
+          style="height: 100%; width: 100%"
+        ></div>
+      </div>
+      <!-- TradingView Widget END -->
+    </section>
+  </div>
+  <div class="vt-idea-form-idea"></div>
+  <div class="vt-idea-form-action"></div>
+</form>
+
+<!-- <div class="container">
+  <div class="left-area"></div>
+  <div class="right-area"></div>
+</div> -->

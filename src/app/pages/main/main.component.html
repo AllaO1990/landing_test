@@ -9,12 +9,17 @@
     <vt-chart viewSize="small"></vt-chart>
   </div>
   <div class="vt-main-page-chart-widget-right-side-block">
-    <vt-chart></vt-chart>
+    <!-- <vt-chart></vt-chart> -->
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container" style="height: 100%; width: 100%">
+      <div id="tradingview_main_chart" style="height: 100%; width: 100%"></div>
+    </div>
+    <!-- TradingView Widget END -->
   </div>
 </div>
 <div class="vt-main-page-selected-issuers-widget develop"></div>
 <div class="vt-main-page-entry-widget">
-  <vt-table-widget></vt-table-widget>
+  <vt-table-widget [data]=""></vt-table-widget>
 </div>
 <div class="vt-main-page-out-widget">
   <vt-table-widget dataType="out"></vt-table-widget>

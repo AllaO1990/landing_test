@@ -1,0 +1,55 @@
+@use "@angular/material" as mat;
+
+@include mat.core();
+
+/* For use in src/lib/core/theming/_palette.scss */
+$vt-palette: (
+  50: #e0edff,
+  100: #b3d1ff,
+  200: #80b3ff,
+  300: #4d94ff,
+  400: #267dff,
+  500: #0066ff,
+  600: #005eff,
+  700: #0053ff,
+  800: #0049ff,
+  900: #0038ff,
+  A100: #ffffff,
+  A200: #f2f4ff,
+  A400: #bfc9ff,
+  A700: #a6b4ff,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
+$my-primary: mat.define-palette($vt-palette, 500);
+$my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The "warn" palette is optional and defaults to red if not specified.
+$my-warn: mat.define-palette(mat.$red-palette);
+
+$my-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $my-primary,
+      accent: $my-accent,
+      warn: $my-warn,
+    ),
+  )
+);
+
+@include mat.all-component-themes($my-theme);
