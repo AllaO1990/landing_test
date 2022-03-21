@@ -11,24 +11,26 @@ const routes: Routes = [
       {
         path: 'main',
         loadChildren: () =>
-          import('../pages/main/main.module').then(m => m.MainModule)
+          import('../pages/main/main.module').then((m) => m.MainModule),
       },
-      {
-        path: 'second',
-        loadChildren: () =>
-          import('../pages/second/second.module').then(m => m.SecondModule)
-      },
+      // {
+      //   path: 'second',
+      //   loadChildren: () =>
+      //     import('../pages/charts-dashboard/charts-dashboard.module').then(
+      //       (m) => m.ChartsDashboardModule
+      //     ),
+      // },
       {
         path: '',
         redirectTo: 'main',
-        pathMatch: 'full'
-      }
-    ]
-  }
+        pathMatch: 'full',
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRouterRoutingModule {}

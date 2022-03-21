@@ -3,16 +3,16 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { VtCandleChartComponent } from './candle-chart.component';
+import { VtScreenerComponent } from './screener.component';
 
 @NgModule({
-  declarations: [VtCandleChartComponent],
+  declarations: [VtScreenerComponent],
   imports: [
     CommonModule,
     SharedModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
   ],
-  exports: [VtCandleChartComponent],
+  exports: [VtScreenerComponent],
 })
-export class VtCandleChartModule {}
+export class VtScreenerWidgetModule {}

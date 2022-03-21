@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { IssuerInfoComponent } from './issuer-info.component';
 
 describe('IssuerInfoComponent', () => {
@@ -8,9 +7,8 @@ describe('IssuerInfoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IssuerInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [IssuerInfoComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

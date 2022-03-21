@@ -6,14 +6,14 @@ import { LoginComponent } from './login.component';
 const route: Route[] = [
   {
     path: '',
-    component: LoginComponent
-  }
+    component: LoginComponent,
+  },
 ];
 
 @NgModule({
   declarations: [LoginComponent],
   imports: [SharedModule, RouterModule.forChild(route)],
   exports: [RouterModule, LoginComponent],
-  providers: []
+  providers: [],
 })
 export class LoginModule {}

@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SecondComponent } from './second.component';
+import { ChartsDashboardComponent } from './charts-dashboard.component';
 
-const routes: Routes = [{ path: '', component: SecondComponent }];
+const routes: Routes = [{ path: '', component: ChartsDashboardComponent }];
 
 @NgModule({
   imports: [CommonModule, RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class SecondRoutingModule {}

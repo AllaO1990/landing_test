@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { VtStarRatingComponent } from './star-rating.component';
 
 describe('StarRatingComponent', () => {

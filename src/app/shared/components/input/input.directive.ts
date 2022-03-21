@@ -1,3 +1,4 @@
+import { BooleanInput, coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
   Directive,
   DoCheck,
@@ -11,11 +12,10 @@ import {
   Optional,
   Self,
 } from '@angular/core';
-import { BooleanInput, coerceBooleanProperty } from '@angular/cdk/coercion';
 import { FormGroupDirective, NgControl, NgForm } from '@angular/forms';
-import { VT_INPUT_VALUE_ACCESSOR } from './input-value-accessor';
-import { VtFormFieldControl } from '../form-field/form-field-control';
 import { Subject } from 'rxjs';
+import { VtFormFieldControl } from '../form-field/form-field-control';
+import { VT_INPUT_VALUE_ACCESSOR } from './input-value-accessor';
 
 let nextUniqueId = 0;
 

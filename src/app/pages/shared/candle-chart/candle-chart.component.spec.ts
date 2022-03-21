@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { VtCandleChartComponent } from './candle-chart.component';
 
 describe('ChartComponent', () => {

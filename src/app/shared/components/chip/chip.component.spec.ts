@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { VtChipComponent } from './chip.component';
 
 describe('ChipComponent', () => {

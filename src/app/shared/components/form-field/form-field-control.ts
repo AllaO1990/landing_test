@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
-import { Observable } from 'rxjs';
 import { NgControl } from '@angular/forms';
+import { Observable } from 'rxjs';
 
 @Directive()
 export abstract class VtFormFieldControl<T = any> {

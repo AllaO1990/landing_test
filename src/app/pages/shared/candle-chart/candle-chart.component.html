@@ -1,4 +1,21 @@
-<div class="vt-candle-chart-widget-wrapper">
+<div style="width: 100%; height: 100%" [id]="uniqueId"></div>
+<div
+  *ngIf="showCustomMenu"
+  style="position: absolute; height: 40px; top: 0; right: 48px"
+>
+  <!-- <mat-form-field>
+    <input
+      matInput
+      type="number"
+      placeholder="MA длина"
+      [formControl]="studiesMAFormControl"
+    />
+  </mat-form-field> -->
+  <a mat-icon-button target="_blank" href="/dashboard">
+    <mat-icon>dashboard</mat-icon>
+  </a>
+</div>
+<!-- <div class="vt-candle-chart-widget-wrapper">
   <div class="vt-candle-chart-widget-toolbar">
     <div
       class="vt-candle-chart-widget-issuer-lock-wrapper"
@@ -32,4 +49,4 @@
     </div>
   </div>
   <div #content class="vt-candle-chart-widget-content"></div>
-</div>
+</div> -->

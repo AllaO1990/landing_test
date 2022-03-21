@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
-import { IssuerInfoComponent } from './issuer-info.component';
-import { SharedModule } from '../../../../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../../../../shared/shared.module';
+import { IssuerInfoComponent } from './issuer-info.component';
 
 @NgModule({
   declarations: [IssuerInfoComponent],

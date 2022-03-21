@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VtInputDirective } from './input.directive';
+import { NgModule } from '@angular/core';
 import { VtFormFieldModule } from '../form-field/form-field.module';
+import { VtInputDirective } from './input.directive';
 
 @NgModule({
   declarations: [VtInputDirective],

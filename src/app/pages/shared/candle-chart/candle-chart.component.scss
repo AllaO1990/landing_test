@@ -31,8 +31,6 @@
   }
 }
 
-
-
 .vt-candle-chart-widget-toolbar-issuer-wrapper {
   display: flex;
   align-items: center;
@@ -51,7 +49,7 @@
     font-size: 13px;
     line-height: 15px;
     text-decoration-line: underline;
-    color: #B4B4D0;
+    color: #b4b4d0;
   }
 }
 
@@ -69,13 +67,13 @@
     cursor: pointer;
   }
 
-
   &.vt-candle-chart-widget-issuer-lock {
-    background: rgba(126, 135, 154, 0.1) url('/assets/icons/lock.svg') no-repeat center;
-
+    background: rgba(126, 135, 154, 0.1) url("/assets/icons/lock.svg") no-repeat
+      center;
   }
 
   &.vt-candle-chart-widget-issuer-unlock {
-    background: url('/assets/icons/unlock.svg') rgba(126, 135, 154, 0.1)  no-repeat center;
+    background: url("/assets/icons/unlock.svg") rgba(126, 135, 154, 0.1)
+      no-repeat center;
   }
 }

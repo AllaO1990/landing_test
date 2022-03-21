@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { VtRadarChartComponent } from './radar-chart.component';
+import { VtScreenerComponent } from './screener.component';
 
-describe('RadarChartComponent', () => {
-  let component: VtRadarChartComponent;
-  let fixture: ComponentFixture<VtRadarChartComponent>;
+describe('ChartComponent', () => {
+  let component: VtScreenerComponent;
+  let fixture: ComponentFixture<VtScreenerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VtRadarChartComponent],
+      declarations: [VtScreenerComponent],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VtRadarChartComponent);
+    fixture = TestBed.createComponent(VtScreenerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

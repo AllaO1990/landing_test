@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -11,17 +12,17 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import {
-  createChart,
-  CrosshairMode,
-  IChartApi,
-  ISeriesApi,
-} from 'lightweight-charts';
+import { IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { DataService } from '../../../core/data/data.service';
+import { TvWidgetOptions } from './candle-chart.model';
+
+declare const TradingView: any;
 
 export type ChartViewSize = 'big' | 'small';
+
+let uniqueId = 0;
 
 @Component({
   selector: 'vt-chart',
@@ -36,10 +37,42 @@ export type ChartViewSize = 'big' | 'small';
 export class VtCandleChartComponent
   implements OnInit, AfterViewInit, OnChanges
 {
+  uniqueId = `vt-chart-${uniqueId++}`;
   issuerControl = new FormControl('DSKY');
   lockControl = new FormControl(false);
   options: string[] = ['DSKY', 'AAPL'];
   filteredOptions!: Observable<string[]>;
+
+  studiesMAFormControl = new FormControl(200);
+
+  @Input()
+  public set showCustomMenu(value) {
+    this._showCustomMenu = value;
+  }
+  public get showCustomMenu() {
+    return this._showCustomMenu;
+  }
+  private _showCustomMenu = false;
+
+  @Input()
+  public set symbol(value) {
+    this._symbol = value;
+  }
+  public get symbol() {
+    return this._symbol;
+  }
+
+  private _symbol = 'NASDAQ:AAPL';
+
+  @Input()
+  public set interval(value) {
+    this._interval = value;
+  }
+  public get interval() {
+    return this._interval;
+  }
+
+  private _interval = '1';
 
   @Input()
   get viewSize(): ChartViewSize {
@@ -60,9 +93,20 @@ export class VtCandleChartComponent
 
   private volumeSeries!: ISeriesApi<'Histogram'>;
 
+  tvWidgetOptions: TvWidgetOptions | null = null;
+
+  tvWidget!: {
+    options: TvWidgetOptions;
+    reload: () => void;
+    render: () => void;
+    subscribeToQuote: (e: any) => void;
+    [key: string]: any;
+  };
+
   constructor(
     private _elementRef: ElementRef,
-    private _dataService: DataService
+    private _dataService: DataService,
+    private _cdr: ChangeDetectorRef
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -70,6 +114,8 @@ export class VtCandleChartComponent
   }
 
   ngOnInit(): void {
+    this._initDefaultTvWidgetOptions();
+
     this.filteredOptions = this.issuerControl.valueChanges.pipe(
       startWith(''),
       map((value) => this._filter(value))
@@ -79,24 +125,36 @@ export class VtCandleChartComponent
   }
 
   ngAfterViewInit() {
-    this._chart = createChart(this._content.nativeElement, {
-      // leftPriceScale: { autoScale: true, visible: true },
-      width: this._content.nativeElement.offsetWidth,
-      height: this._content.nativeElement.offsetHeight,
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
+    this.tvWidget = new TradingView.widget(this.tvWidgetOptions);
+
+    console.log(this.tvWidget);
+
+    this.tvWidget.subscribeToQuote((e: any) => {
+      console.log(e);
     });
 
-    this._applyNewChartOptions();
+    // a.subscribe('study_properties_changed', (event: any) => {
+    //   console.log('SUBSCRIBE', event);
+    // });
 
-    const candleSeries = this._chart.addCandlestickSeries();
+    // this._chart = createChart(this._content.nativeElement, {
+    //   // leftPriceScale: { autoScale: true, visible: true },
+    //   width: this._content.nativeElement.offsetWidth,
+    //   height: this._content.nativeElement.offsetHeight,
+    //   crosshair: {
+    //     mode: CrosshairMode.Normal,
+    //   },
+    // });
 
-    this._dataService.getCandles().subscribe((data: any) => {
-      candleSeries.setData(data);
-    });
+    // this._applyNewChartOptions();
 
-    this._addHistogramSeries();
+    // const candleSeries = this._chart.addCandlestickSeries();
+
+    // this._dataService.getCandles().subscribe((data: any) => {
+    //   candleSeries.setData(data);
+    // });
+
+    // this._addHistogramSeries();
   }
 
   private _toggleHistogramSeriesChart(viewSize: ChartViewSize) {
@@ -146,749 +204,101 @@ export class VtCandleChartComponent
     this._chart.subscribeClick((event) => {
       console.log(event);
     });
-    this.volumeSeries.setData([
-      {
-        time: '2018-10-19',
-        value: 19103293.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-10-22',
-        value: 21737523.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-10-23',
-        value: 29328713.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-10-24',
-        value: 37435638.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-10-25',
-        value: 25269995.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-10-26',
-        value: 24973311.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-10-29',
-        value: 22103692.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-10-30',
-        value: 25231199.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-10-31',
-        value: 24214427.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-11-01',
-        value: 22533201.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-11-02',
-        value: 14734412.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-05',
-        value: 12733842.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-06',
-        value: 12371207.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-07',
-        value: 14891287.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-08',
-        value: 12482392.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-09',
-        value: 17365762.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-12',
-        value: 13236769.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-13',
-        value: 13047907.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-11-14',
-        value: 18288710.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-15',
-        value: 17147123.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-16',
-        value: 19470986.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-19',
-        value: 18405731.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-20',
-        value: 22028957.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-11-21',
-        value: 18482233.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      { time: '2018-11-23', value: 7009050.0, color: 'rgba(255,82,82, 0.8)' },
-      {
-        time: '2018-11-26',
-        value: 12308876.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-27',
-        value: 14118867.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-11-28',
-        value: 18662989.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-11-29',
-        value: 14763658.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-11-30',
-        value: 31142818.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-12-03',
-        value: 27795428.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-04',
-        value: 21727411.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-06',
-        value: 26880429.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-07',
-        value: 16948126.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-10',
-        value: 16603356.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-12-11',
-        value: 14991438.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-12-12',
-        value: 18892182.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-13',
-        value: 15454706.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-14',
-        value: 13960870.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-17',
-        value: 18902523.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-18',
-        value: 18895777.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-19',
-        value: 20968473.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-12-20',
-        value: 26897008.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-21',
-        value: 55413082.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-24',
-        value: 15077207.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2018-12-26',
-        value: 17970539.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-12-27',
-        value: 17530977.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-12-28',
-        value: 14771641.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2018-12-31',
-        value: 15331758.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-02',
-        value: 13969691.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-03',
-        value: 19245411.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-04',
-        value: 17035848.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-07',
-        value: 16348982.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-08',
-        value: 21425008.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-09',
-        value: 18136000.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-10',
-        value: 14259910.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-11',
-        value: 15801548.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-14',
-        value: 11342293.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-15',
-        value: 10074386.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-16',
-        value: 13411691.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-17',
-        value: 15223854.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-18',
-        value: 16802516.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-22',
-        value: 18284771.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-23',
-        value: 15109007.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-24',
-        value: 12494109.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-25',
-        value: 17806822.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-28',
-        value: 25955718.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-29',
-        value: 33789235.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-01-30',
-        value: 27260036.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-01-31',
-        value: 28585447.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-01',
-        value: 13778392.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-02-04',
-        value: 15818901.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-02-05',
-        value: 14124794.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-06',
-        value: 11391442.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-02-07',
-        value: 12436168.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-02-08',
-        value: 12011657.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-11',
-        value: 9802798.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-12',
-        value: 11227550.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-13',
-        value: 11884803.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-14',
-        value: 11190094.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-02-15',
-        value: 15719416.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-19',
-        value: 12272877.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-20',
-        value: 11379006.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-21',
-        value: 14680547.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-22',
-        value: 12534431.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-25',
-        value: 15051182.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-02-26',
-        value: 12005571.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-02-27',
-        value: 8962776.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-02-28',
-        value: 15742971.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-01',
-        value: 10942737.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-04',
-        value: 13674737.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-03-05',
-        value: 15749545.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-03-06',
-        value: 13935530.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-03-07',
-        value: 12644171.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-08',
-        value: 10646710.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-11',
-        value: 13627431.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-12',
-        value: 12812980.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-03-13',
-        value: 14168350.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-14',
-        value: 12148349.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-15',
-        value: 23715337.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-18',
-        value: 12168133.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-03-19',
-        value: 13462686.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-03-20',
-        value: 11903104.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-21',
-        value: 10920129.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-22',
-        value: 25125385.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-25',
-        value: 15463411.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-26',
-        value: 12316901.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-27',
-        value: 13290298.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-03-28',
-        value: 20547060.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-03-29',
-        value: 17283871.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-01',
-        value: 16331140.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-04-02',
-        value: 11408146.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-04-03',
-        value: 15491724.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-04',
-        value: 8776028.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-05',
-        value: 11497780.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-08',
-        value: 11680538.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-09',
-        value: 10414416.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-04-10',
-        value: 8782061.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      { time: '2019-04-11', value: 9219930.0, color: 'rgba(255,82,82, 0.8)' },
-      {
-        time: '2019-04-12',
-        value: 10847504.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      { time: '2019-04-15', value: 7741472.0, color: 'rgba(255,82,82, 0.8)' },
-      {
-        time: '2019-04-16',
-        value: 10239261.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-17',
-        value: 15498037.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-04-18',
-        value: 13189013.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-22',
-        value: 11950365.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-23',
-        value: 23488682.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-04-24',
-        value: 13227084.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-04-25',
-        value: 17425466.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-04-26',
-        value: 16329727.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-29',
-        value: 13984965.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-04-30',
-        value: 15469002.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-01',
-        value: 11627436.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-02',
-        value: 14435436.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-03',
-        value: 9388228.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-06',
-        value: 10066145.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-07',
-        value: 12963827.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-08',
-        value: 12086743.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-09',
-        value: 14835326.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-10',
-        value: 10707335.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-13',
-        value: 13759350.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-14',
-        value: 12776175.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-15',
-        value: 10806379.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-16',
-        value: 11695064.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-17',
-        value: 14436662.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-20',
-        value: 20910590.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-21',
-        value: 14016315.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-22',
-        value: 11487448.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-23',
-        value: 11707083.0,
-        color: 'rgba(255,82,82, 0.8)',
-      },
-      {
-        time: '2019-05-24',
-        value: 8755506.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-      {
-        time: '2019-05-28',
-        value: 3097125.0,
-        color: 'rgba(0, 150, 136, 0.8)',
-      },
-    ]);
   }
 
   lockEvent($event: Event) {
     console.log($event);
+  }
+
+  reloadTvWidget() {
+    this.tvWidget.reload();
+  }
+
+  changeTvWidgetOptions() {
+    this.tvWidget.options.studies = [
+      {
+        id: 'MASimple@tv-basicstudies',
+        inputs: {
+          length: this.studiesMAFormControl.value,
+        },
+      },
+    ];
+    this.reloadTvWidget();
+  }
+
+  private _initDefaultTvWidgetOptions() {
+    this.tvWidgetOptions = {
+      autosize: true,
+      symbol: this.symbol,
+      interval: this.interval,
+      timezone: 'Etc/UTC',
+      theme: 'light',
+      style: '1',
+      locale: 'ru',
+      enable_publishing: false,
+      // library_path: '/charting_library/',
+      debug: false,
+      disabled_features: [
+        'use_localstorage_for_settings',
+        // 'header_symbol_search',
+        'symbol_search_hot_key',
+        'show_labels_on_price_scale',
+      ],
+      hide_legend: this.viewSize === 'small',
+      hide_side_toolbar: this.viewSize === 'small',
+      allow_symbol_change: true,
+      // overrides: {
+      //   'paneProperties.background': '#ff0000',
+      //   'paneProperties.vertGridProperties.color': '#ff0000',
+      //   'paneProperties.horzGridProperties.color': '#ff0000',
+      //   'symbolWatermarkProperties.transparency': 90,
+      //   'scalesProperties.textColor': '#AAA',
+      //   'mainSeriesProperties.candleStyle.wickUpColor': '#ff0000',
+      //   'mainSeriesProperties.candleStyle.wickDownColor': '#ff0000',
+      // },
+      whitelabel: '1',
+      studies_overrides: {
+        'moving average.ma.color.0': '#000000',
+        'moving average exponential.ma.color': '#FF103B',
+        // 'volume.volume.color.0': '#00FFFF',
+        // 'volume.volume.color.1': '#0000FF',
+        // 'volume.volume.transparency': 70,
+        'volume.volume ma.color': 'rgb(245, 127, 23)',
+        // 'volume.volume ma.transparency': 30,
+        // 'volume.volume ma.linewidth': 5,
+        'volume.volume ma.visible': true,
+        // 'ema.labelsonpricescale.visible': false,
+        // 'ma.show label': false,
+        // 'ma.ma': false,
+        // 'volume.legend.visible': false,
+        // 'ema.ma.color': '#FF0000',
+        // 'ema.plot.color': '#FF0000',
+        // 'ema.plot_1.color': '#00FF00',
+
+        // 'ema.outputs.show legendValues': false,
+        // 'ema.ma.color.0': '#FF0000',
+      },
+      studies: [
+        {
+          id: 'MAExp@tv-basicstudies',
+          inputs: {
+            length: 200,
+          },
+        },
+        {
+          id: 'MASimple@tv-basicstudies',
+          inputs: {
+            length: 10,
+          },
+        },
+        {
+          id: 'MAExp@tv-basicstudies',
+          inputs: {
+            length: 30,
+          },
+        },
+      ],
+      container_id: this.uniqueId,
+    };
   }
 }

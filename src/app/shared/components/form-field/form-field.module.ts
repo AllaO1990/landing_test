@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-
 import { VtFormFieldComponent } from './form-field.component';
 import { VtPrefixDirective } from './prefix';
 import { VtSuffixDirective } from './suffix';
