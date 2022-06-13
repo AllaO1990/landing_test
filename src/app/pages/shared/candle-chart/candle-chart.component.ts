@@ -11,7 +11,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -38,12 +38,12 @@ export class VtCandleChartComponent
   implements OnInit, AfterViewInit, OnChanges
 {
   uniqueId = `vt-chart-${uniqueId++}`;
-  issuerControl = new FormControl('DSKY');
-  lockControl = new FormControl(false);
+  issuerControl = new UntypedFormControl('DSKY');
+  lockControl = new UntypedFormControl(false);
   options: string[] = ['DSKY', 'AAPL'];
   filteredOptions!: Observable<string[]>;
 
-  studiesMAFormControl = new FormControl(200);
+  studiesMAFormControl = new UntypedFormControl(200);
 
   @Input()
   public set showCustomMenu(value) {

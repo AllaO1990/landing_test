@@ -6,7 +6,7 @@ import {
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { VtIdeaComponent } from '../idea/idea.component';
@@ -22,11 +22,11 @@ import { VtIdeaComponent } from '../idea/idea.component';
   },
 })
 export class VtTableWidgetComponent implements OnInit {
-  formGroup = new FormGroup({
-    investmentPeriods: new FormGroup({
-      short: new FormControl(false),
-      long: new FormControl(true),
-      mid: new FormControl(true),
+  formGroup = new UntypedFormGroup({
+    investmentPeriods: new UntypedFormGroup({
+      short: new UntypedFormControl(false),
+      long: new UntypedFormControl(true),
+      mid: new UntypedFormControl(true),
     }),
   });
 

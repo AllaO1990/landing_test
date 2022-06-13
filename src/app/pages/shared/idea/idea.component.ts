@@ -4,7 +4,7 @@ import {
   Inject,
   OnInit,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IdeaService } from './idea.service';
 
@@ -36,13 +36,13 @@ export class VtIdeaComponent implements OnInit {
     { value: '20%', name: '% Сектора в вашем портфеле' },
   ];
 
-  ideaFormGroup = new FormGroup({
-    expiresAt: new FormGroup({
-      date: new FormControl(new Date()),
-      infinite: new FormControl(false),
+  ideaFormGroup = new UntypedFormGroup({
+    expiresAt: new UntypedFormGroup({
+      date: new UntypedFormControl(new Date()),
+      infinite: new UntypedFormControl(false),
     }),
-    investmentPeriod: new FormControl('mid'),
-    tradingPosition: new FormControl('short'),
+    investmentPeriod: new UntypedFormControl('mid'),
+    tradingPosition: new UntypedFormControl('short'),
   });
 
   constructor(

@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, shareReplay, startWith } from 'rxjs/operators';
 
@@ -18,7 +18,7 @@ export class AppRouterComponent implements OnInit {
       shareReplay()
     );
 
-  myControl = new FormControl();
+  myControl = new UntypedFormControl();
   options: string[] = [];
   filteredOptions!: Observable<string[]>;
 
