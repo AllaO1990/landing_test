@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { VtCandleChartComponent } from './candle-chart.component';
+import { VtDashboardSettingsFormModule } from './dashboard-settings-form/dashboard-settings-form.module';
 
 @NgModule({
   declarations: [VtCandleChartComponent],
@@ -12,6 +13,7 @@ import { VtCandleChartComponent } from './candle-chart.component';
     SharedModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
+    VtDashboardSettingsFormModule,
   ],
   exports: [VtCandleChartComponent],
 })

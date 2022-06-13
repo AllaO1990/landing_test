@@ -32,11 +32,12 @@ interface Inputs {
 }
 
 interface Overrides {
-  'paneProperties.background': string;
-  'paneProperties.vertGridProperties.color': string;
-  'paneProperties.horzGridProperties.color': string;
-  'symbolWatermarkProperties.transparency': number;
-  'scalesProperties.textColor': string;
-  'mainSeriesProperties.candleStyle.wickUpColor': string;
-  'mainSeriesProperties.candleStyle.wickDownColor': string;
+  'paneProperties.background'?: string;
+  'paneProperties.vertGridProperties.color'?: string;
+  'paneProperties.horzGridProperties.color'?: string;
+  'symbolWatermarkProperties.transparency'?: number;
+  'scalesProperties.textColor'?: string;
+  'mainSeriesProperties.candleStyle.wickUpColor'?: string;
+  'mainSeriesProperties.candleStyle.wickDownColor'?: string;
+  [key: string]: any;
 }
