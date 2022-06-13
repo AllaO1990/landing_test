@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { VtLocalStorageService } from 'src/app/core/storage/local-storage.service';
 
 @Component({
   selector: 'gpn-charts-dashboard',
@@ -7,7 +8,13 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartsDashboardComponent implements OnInit {
-  constructor() {}
 
-  ngOnInit(): void {}
+  dashboardSettings: {timeframe: string}
+
+  constructor(private _storageService: VtLocalStorageService) {
+    this.dashboardSettings = _storageService.getObject('dashboard');
+  }
+
+  ngOnInit(): void {
+  }
 }

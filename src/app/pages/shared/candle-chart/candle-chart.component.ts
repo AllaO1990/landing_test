@@ -12,11 +12,16 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { IChartApi, ISeriesApi } from 'lightweight-charts';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
+import { VtLocalStorageService } from 'src/app/core/storage/local-storage.service';
+import { VtCommonSettings } from 'src/app/shared/interfaces/storage-interface';
 import { DataService } from '../../../core/data/data.service';
 import { TvWidgetOptions } from './candle-chart.model';
+import { VtDashboardSettingsFormComponent } from './dashboard-settings-form/dashboard-settings-form.component';
 
 declare const TradingView: any;
 
@@ -45,6 +50,11 @@ export class VtCandleChartComponent
 
   studiesMAFormControl = new UntypedFormControl(200);
 
+  eventsFromWidget = new Subject();
+
+  storageCommonSettings: { symbol: string } | null =
+    this._storageService.getObject<VtCommonSettings>('vtCommonSettings');
+
   @Input()
   public set showCustomMenu(value) {
     this._showCustomMenu = value;
@@ -62,7 +72,7 @@ export class VtCandleChartComponent
     return this._symbol;
   }
 
-  private _symbol = 'NASDAQ:AAPL';
+  private _symbol = this.storageCommonSettings?.symbol ?? 'NASDAQ:AAPL';
 
   @Input()
   public set interval(value) {
@@ -106,7 +116,10 @@ export class VtCandleChartComponent
   constructor(
     private _elementRef: ElementRef,
     private _dataService: DataService,
-    private _cdr: ChangeDetectorRef
+    private _cdr: ChangeDetectorRef,
+    private _dialog: MatDialog,
+    private _router: Router,
+    private _storageService: VtLocalStorageService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -122,15 +135,31 @@ export class VtCandleChartComponent
     );
 
     this.lockControl.valueChanges.subscribe(console.log);
+
+    this.eventsFromWidget
+      .pipe(
+        distinctUntilChanged(
+          (prev: any, cur: any) => prev.original_name === cur.original_name
+        )
+      )
+      .subscribe((event) => {
+        console.log(event);
+        this._storageService.addOrUpdateObjectProperty('vtCommonSettings', {
+          symbol: event.original_name,
+        });
+      });
   }
 
   ngAfterViewInit() {
     this.tvWidget = new TradingView.widget(this.tvWidgetOptions);
 
-    console.log(this.tvWidget);
-
     this.tvWidget.subscribeToQuote((e: any) => {
-      console.log(e);
+      // console.log(e);
+      this.eventsFromWidget.next(e);
+    });
+
+    addEventListener('message', (data: any) => {
+      // console.log(data);
     });
 
     // a.subscribe('study_properties_changed', (event: any) => {
@@ -247,15 +276,20 @@ export class VtCandleChartComponent
       hide_legend: this.viewSize === 'small',
       hide_side_toolbar: this.viewSize === 'small',
       allow_symbol_change: true,
-      // overrides: {
-      //   'paneProperties.background': '#ff0000',
-      //   'paneProperties.vertGridProperties.color': '#ff0000',
-      //   'paneProperties.horzGridProperties.color': '#ff0000',
-      //   'symbolWatermarkProperties.transparency': 90,
-      //   'scalesProperties.textColor': '#AAA',
-      //   'mainSeriesProperties.candleStyle.wickUpColor': '#ff0000',
-      //   'mainSeriesProperties.candleStyle.wickDownColor': '#ff0000',
-      // },
+      overrides: {
+        // 'paneProperties.legendProperties.showStudyArguments': true,
+        'paneProperties.legendProperties.showStudyTitles': false,
+        'paneProperties.legendProperties.showStudyValues': true,
+        'paneProperties.legendProperties.showSeriesTitle': true,
+        'paneProperties.legendProperties.showSeriesOHLC': true,
+        // 'paneProperties.background': '#ff0000',
+        // 'paneProperties.vertGridProperties.color': '#ff0000',
+        // 'paneProperties.horzGridProperties.color': '#ff0000',
+        // 'symbolWatermarkProperties.transparency': 90,
+        // 'scalesProperties.textColor': '#AAA',
+        // 'mainSeriesProperties.candleStyle.wickUpColor': '#ff0000',
+        // 'mainSeriesProperties.candleStyle.wickDownColor': '#ff0000',
+      },
       whitelabel: '1',
       studies_overrides: {
         'moving average.ma.color.0': '#000000',
@@ -300,5 +334,20 @@ export class VtCandleChartComponent
       ],
       container_id: this.uniqueId,
     };
+  }
+
+  openDashboardSettingsForm() {
+    const dialogRef = this._dialog.open(VtDashboardSettingsFormComponent, {
+      data: { name: 'trlolol' },
+      width: '500px',
+    });
+    dialogRef
+      .afterClosed()
+      .pipe(filter((data: boolean) => data))
+      .subscribe((data: any) => {
+        this._storageService.addOrUpdateObjectProperty('dashboard', data);
+        const url = this._router.createUrlTree(['/dashboard']);
+        window.open(url.toString(), '_blank');
+      });
   }
 }
