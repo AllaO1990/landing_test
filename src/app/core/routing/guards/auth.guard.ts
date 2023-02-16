@@ -15,10 +15,9 @@ import { AuthService } from '../../auth/auth.service';
 export class AuthGuard implements CanLoad, CanActivate {
   constructor(private _authService: AuthService, private _router: Router) {}
 
-  canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean {
+  canLoad(route: Route): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (!this._authService.isLoggedIn && route.path !== 'login') {
-      this._router.navigate(['/login']);
-      return false;
+      return this._router.parseUrl('/login');
     }
 
     return true;
@@ -33,7 +32,7 @@ export class AuthGuard implements CanLoad, CanActivate {
     | boolean
     | UrlTree {
     if (state.url === '/login' && this._authService.isLoggedIn) {
-      return false;
+      return this._router.parseUrl('/');
     }
 
     return true;

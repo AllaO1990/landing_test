@@ -1,0 +1,17 @@
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+
+@Component({
+  selector: 'vt-page-403',
+  templateUrl: './page.component.html',
+  styleUrls: ['./page.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class PageComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
