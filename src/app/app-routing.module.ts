@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AuthGuard} from './core/routing/guards/auth.guard';
+import {RegistrationGuard} from "./pages/registration";
 
 const routes: Routes = [
   {
@@ -9,6 +10,11 @@ const routes: Routes = [
       import('./login/login.module').then((m) => m.LoginModule),
     canLoad: [AuthGuard],
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'registration',
+    loadChildren: () => import('./pages/registration').then(m => m.RegistrationModule),
+    canActivate: [RegistrationGuard]
   },
   {
     path: 'dashboard',
