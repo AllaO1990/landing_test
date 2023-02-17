@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { VtLocalStorageService } from 'src/app/core/storage/local-storage.service';
 
 @Component({
-  selector: 'gpn-charts-dashboard',
+  selector: 'gpn-dashboard',
   templateUrl: './charts-dashboard.component.html',
   styleUrls: ['./charts-dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

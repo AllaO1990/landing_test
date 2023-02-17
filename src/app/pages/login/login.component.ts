@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { AuthService } from '../core/auth/auth.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,6 +15,6 @@ export class LoginComponent implements OnInit {
 
   login() {
     this._authService.login();
-    this._router.navigate(['main']);
+    this._router.navigate(['/']);
   }
 }

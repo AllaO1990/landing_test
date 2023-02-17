@@ -16,7 +16,7 @@ const routes: Routes = [
       // {
       //   path: 'second',
       //   loadChildren: () =>
-      //     import('../pages/charts-dashboard/charts-dashboard.module').then(
+      //     import('../pages/dashboard/dashboard.module').then(
       //       (m) => m.ChartsDashboardModule
       //     ),
       // },
