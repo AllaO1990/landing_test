@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'vt-sale-toolbar-start',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss'],
+  selector: 'vt-toolbar-search',
+  templateUrl: './toolbar-search.component.html',
+  styleUrls: ['./toolbar-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ToolbarComponent implements OnInit {
+export class ToolbarSearchComponent implements OnInit {
 
   constructor() {
   }

@@ -1,0 +1,28 @@
+:host {
+}
+
+.toolbar {
+  grid-row: 1;
+  grid-column: 1;
+
+  display: flex;
+  flex-flow: row nowrap;
+
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  background-color: #fff;
+
+  &__logo {
+    width: 60px;
+    height: 100%;
+
+    border-right: 1px solid #DADAE8;
+  }
+
+  &_g_search {
+
+  }
+}

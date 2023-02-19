@@ -1,4 +1,7 @@
 :host {
+  grid-row: 2;
+  grid-column: 1 / 4;
+
   display: grid;
   height: calc(100% - var(--main-toolbar-height));
   grid-template-columns: var(--main-left-side-width) auto auto;

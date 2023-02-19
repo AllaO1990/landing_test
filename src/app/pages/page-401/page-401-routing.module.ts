@@ -13,4 +13,5 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class Page401RoutingModule { }
+export class Page401RoutingModule {
+}

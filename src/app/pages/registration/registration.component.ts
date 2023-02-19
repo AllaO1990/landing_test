@@ -4,7 +4,6 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
   selector: 'vt-registration',
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.scss'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegistrationComponent implements OnInit {

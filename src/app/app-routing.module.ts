@@ -1,36 +1,50 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard, RegistrationGuard, SaleGuard} from "./core/routing/guards";
+import {LayoutStartComponent} from "./shared/components/layout-start/layout-start.component";
+import {LayoutLkComponent} from "./shared/components/layout-lk/layout-lk.component";
 
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./pages/sale').then(m => m.SaleModule),
-    canLoad: [SaleGuard],
-    canActivate: [SaleGuard]
-  },
-  {
-    path: 'login',
-    loadChildren: () =>
-      import('./pages/login/login.module').then(m => m.LoginModule),
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'registration',
-    loadChildren: () => import('./pages/registration').then(m => m.RegistrationModule),
-    canLoad: [RegistrationGuard],
-    canActivate: [RegistrationGuard]
+    component: LayoutStartComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./pages/sale').then(m => m.SaleModule),
+        canLoad: [SaleGuard],
+        canActivate: [SaleGuard]
+      },
+      {
+        path: 'login',
+        loadChildren: () =>
+          import('./pages/login/login.module').then(m => m.LoginModule),
+        canLoad: [AuthGuard],
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'registration',
+        loadChildren: () => import('./pages/registration').then(m => m.RegistrationModule),
+        canLoad: [RegistrationGuard],
+        canActivate: [RegistrationGuard]
+      },
+    ]
   },
   {
     path: 'lk',
+    component: LayoutLkComponent,
     canActivate: [LkGuard],
     canActivateChild: [LkGuard],
     children: [
       {
         path: '',
+        redirectTo: 'main',
+        pathMatch: 'full'
+      },
+      {
+        path: 'main',
         loadChildren: () =>
-          import('./app-router/app-router.module').then((m) => m.AppRouterModule),
+          import('./pages/main/main.module').then((m) => m.MainModule),
         canActivate: [PermissionGuard],
       },
       {
@@ -49,7 +63,7 @@ const routes: Routes = [
       {
         path: '**',
         loadChildren: () => import('./pages/page-404').then((m) => m.Page404Module)
-      }
+      },
     ]
   },
   {

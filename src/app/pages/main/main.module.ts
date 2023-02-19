@@ -6,9 +6,13 @@ import { VtTableWidgetModule } from '../shared/table-widget/table.module';
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
 import { IssuerInfoModule } from './shared/issuer-info/issuer-info.module';
+import {ToolbarComponent} from "./shared/toolbar/toolbar.component";
 
 @NgModule({
-  declarations: [MainComponent],
+  declarations: [
+    MainComponent,
+    ToolbarComponent
+  ],
   imports: [
     SharedModule,
     MainRoutingModule,

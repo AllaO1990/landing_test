@@ -10,7 +10,7 @@ export interface Tile {
 declare const TradingView: any;
 
 @Component({
-  selector: 'gpn-main',
+  selector: 'vt-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

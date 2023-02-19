@@ -5,6 +5,8 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
+import {LayoutStartModule} from "./shared/components/layout-start";
+import {LayoutLkModule} from "./shared/components/layout-lk";
 
 
 @NgModule({
@@ -15,6 +17,8 @@ import {AppComponent} from './app.component';
     HttpClientModule,
     BrowserAnimationsModule,
     MatNativeDateModule,
+    LayoutStartModule,
+    LayoutLkModule
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'ru-RU'},
