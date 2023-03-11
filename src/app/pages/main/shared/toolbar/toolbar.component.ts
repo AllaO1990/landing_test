@@ -7,8 +7,15 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToolbarComponent {
+  public readonly links: { path: string; name: string }[] = [
+    {name: 'Main', path: '../main'},
+    {name: 'Dashboard', path: '../dashboard'},
+  ];
 
   constructor() {
   }
 
+  public trackByIndex(index: number): number {
+    return index;
+  }
 }

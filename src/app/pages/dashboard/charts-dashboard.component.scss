@@ -1,4 +1,7 @@
 :host {
+  grid-row: 2;
+  grid-column: 1 / 4;
+
   display: grid;
   height: 100%;
   grid-template-columns: auto auto auto;

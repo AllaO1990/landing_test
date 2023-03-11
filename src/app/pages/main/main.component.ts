@@ -16,6 +16,7 @@ declare const TradingView: any;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainComponent implements OnInit {
+
   constructor() {}
 
   ngOnInit(): void {}

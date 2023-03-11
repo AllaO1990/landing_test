@@ -8,6 +8,9 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 })
 export class LayoutLkComponent {
 
-  constructor() {
+  constructor(
+  ) {
   }
 }
+
+

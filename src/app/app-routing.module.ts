@@ -45,6 +45,7 @@ const routes: Routes = [
         path: 'main',
         loadChildren: () =>
           import('./pages/main/main.module').then((m) => m.MainModule),
+          // import('./pages/main-v2/main-v2.module').then((m) => m.MainV2Module),
         canActivate: [PermissionGuard],
       },
       {
