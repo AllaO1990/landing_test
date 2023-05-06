@@ -18,7 +18,7 @@ import { VtIdeaComponent } from '../idea/idea.component';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'vt-table-widget',
+    class: 'vt-table-vt-widget',
   },
 })
 export class VtTableWidgetComponent implements OnInit {

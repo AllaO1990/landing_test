@@ -12,10 +12,10 @@ import {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'vt-widget',
+    class: 'vt-vt-widget',
   },
 })
-export class VtWidgetComponent implements OnInit {
+export class WidgetComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}

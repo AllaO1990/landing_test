@@ -1,0 +1,16 @@
+<div class="list">
+  <div class="list__header list__row header">
+    <div class="header__col" *ngFor="let item of titleList; trackBy: trackByIndex">
+      {{item}}
+    </div>
+  </div>
+  <cdk-virtual-scroll-viewport itemSize="24" class="list__container">
+    <div class="list__row" *cdkVirtualFor="let item of data; trackBy: trackByIndex">
+      <div class="list__col">{{item.symbol}}</div>
+      <div class="list__col">{{item.price}}</div>
+      <div class="list__col">{{item.change}}</div>
+      <div class="list__col">{{item.percent}}</div>
+      <div class="list__col">{{item.sector}}</div>
+    </div>
+  </cdk-virtual-scroll-viewport>
+</div>

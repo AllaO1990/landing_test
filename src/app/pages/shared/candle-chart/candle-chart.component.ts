@@ -36,7 +36,7 @@ let uniqueId = 0;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'vt-candle-chart-widget',
+    class: 'vt-candle-chart-vt-widget',
   },
 })
 export class VtCandleChartComponent

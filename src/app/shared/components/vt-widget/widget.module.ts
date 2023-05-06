@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VtWidgetComponent } from './widget.component';
+import { WidgetComponent } from './widget.component';
 import { WidgetToolbarDirective } from './widget-toolbar.directive';
 
 @NgModule({
-  declarations: [VtWidgetComponent, WidgetToolbarDirective],
+  declarations: [WidgetComponent, WidgetToolbarDirective],
   imports: [CommonModule],
-  exports: [VtWidgetComponent, WidgetToolbarDirective],
+  exports: [WidgetComponent, WidgetToolbarDirective],
 })
 export class VtWidgetModule {}

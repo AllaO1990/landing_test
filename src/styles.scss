@@ -29,6 +29,10 @@
   --color-g-3: #ebf1f9;
   --color-g-2: #f5f8fd;
   --color-g-1: #fff;
+
+  --color-r: #FF103B;
+  --color-g: #039322;
+  --color-b: #0066FF;
 }
 
 * {
@@ -48,6 +52,8 @@ body {
   font-size: 13px;
   line-height: 15px;
   box-sizing: border-box;
+
+  background-color: var(--main-bg-color);
 }
 
 *::-webkit-scrollbar {

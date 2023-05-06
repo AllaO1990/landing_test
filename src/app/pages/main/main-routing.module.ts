@@ -4,11 +4,11 @@ import {MainComponent} from './main.component';
 import {ToolbarComponent} from "./shared/toolbar/toolbar.component";
 
 const routes: Routes = [
-  {
-    path: '',
-    outlet: 'toolbar-main',
-    component: ToolbarComponent
-  },
+  // {
+  //   path: '',
+  //   outlet: 'toolbar-main',
+  //   component: ToolbarComponent
+  // },
   {
     path: '',
     component: MainComponent

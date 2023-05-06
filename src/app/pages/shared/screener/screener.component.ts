@@ -31,7 +31,7 @@ let uniqueId = 0;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'vt-candle-chart-widget',
+    class: 'vt-candle-chart-vt-widget',
   },
 })
 export class VtScreenerComponent implements OnInit, AfterViewInit, OnChanges {
@@ -73,7 +73,7 @@ export class VtScreenerComponent implements OnInit, AfterViewInit, OnChanges {
   ngOnInit(): void {}
 
   ngAfterViewInit() {
-    // this.tvWidget = new TradingView.widget(this.tvWidgetOptions);
+    // this.tvWidget = new TradingView.vt-widget(this.tvWidgetOptions);
 
     const scriptEl = this._document.createElement('script');
 

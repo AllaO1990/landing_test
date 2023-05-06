@@ -3,6 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard, RegistrationGuard, SaleGuard} from "./core/routing/guards";
 import {LayoutStartComponent} from "./shared/components/layout-start/layout-start.component";
 import {LayoutLkComponent} from "./shared/components/layout-lk/layout-lk.component";
+import {ToolbarComponent} from "./pages/main/shared/toolbar/toolbar.component";
 
 const routes: Routes = [
   {
@@ -38,14 +39,24 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'main',
+        outlet: 'toolbar-main',
+        component: ToolbarComponent
+      },
+      {
+        path: '',
+        redirectTo: 'main-v2',
         pathMatch: 'full'
       },
       {
         path: 'main',
         loadChildren: () =>
           import('./pages/main/main.module').then((m) => m.MainModule),
-          // import('./pages/main-v2/main-v2.module').then((m) => m.MainV2Module),
+        canActivate: [PermissionGuard],
+      },
+      {
+        path: 'main-v2',
+        loadChildren: () =>
+        import('./pages/main-v2/main-v2.module').then((m) => m.MainV2Module),
         canActivate: [PermissionGuard],
       },
       {

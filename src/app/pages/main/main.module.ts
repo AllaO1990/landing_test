@@ -1,11 +1,11 @@
-import { NgModule } from '@angular/core';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { VtCandleChartModule } from '../shared/candle-chart/candle-chart.module';
-import { VtScreenerWidgetModule } from '../shared/screener/screener.module';
-import { VtTableWidgetModule } from '../shared/table-widget/table.module';
-import { MainRoutingModule } from './main-routing.module';
-import { MainComponent } from './main.component';
-import { IssuerInfoModule } from './shared/issuer-info/issuer-info.module';
+import {NgModule} from '@angular/core';
+import {SharedModule} from 'src/app/shared/shared.module';
+import {VtCandleChartModule} from '../shared/candle-chart/candle-chart.module';
+import {VtScreenerWidgetModule} from '../shared/screener/screener.module';
+import {VtTableWidgetModule} from '../shared/table-widget/table.module';
+import {MainRoutingModule} from './main-routing.module';
+import {MainComponent} from './main.component';
+import {IssuerInfoModule} from './shared/issuer-info/issuer-info.module';
 import {ToolbarComponent} from "./shared/toolbar/toolbar.component";
 
 @NgModule({
@@ -24,4 +24,5 @@ import {ToolbarComponent} from "./shared/toolbar/toolbar.component";
   exports: [],
   providers: [],
 })
-export class MainModule {}
+export class MainModule {
+}
