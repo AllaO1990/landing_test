@@ -35,7 +35,10 @@
               "src/styles.scss",
               "src/app/shared/styles/custom-style.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "text-mask-core"
+            ]
           },
           "configurations": {
             "production": {
@@ -74,10 +77,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "vanya-trade:build:production"
+              "buildTarget": "vanya-trade:build:production"
             },
             "development": {
-              "browserTarget": "vanya-trade:build:development"
+              "buildTarget": "vanya-trade:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -85,7 +88,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "vanya-trade:build"
+            "buildTarget": "vanya-trade:build"
           }
         },
         "test": {

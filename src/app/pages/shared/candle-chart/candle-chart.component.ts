@@ -11,17 +11,17 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { IChartApi, ISeriesApi } from 'lightweight-charts';
-import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
-import { VtLocalStorageService } from 'src/app/core/storage/local-storage.service';
-import { VtCommonSettings } from 'src/app/shared/interfaces/storage-interface';
-import { DataService } from '../../../core/data/data.service';
-import { TvWidgetOptions } from './candle-chart.model';
-import { VtDashboardSettingsFormComponent } from './dashboard-settings-form/dashboard-settings-form.component';
+import {UntypedFormControl} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {Router} from '@angular/router';
+import {IChartApi, ISeriesApi} from 'lightweight-charts';
+import {Observable, Subject} from 'rxjs';
+import {distinctUntilChanged, filter, map, startWith} from 'rxjs/operators';
+import {VtLocalStorageService} from 'src/app/core/storage/local-storage.service';
+import {VtCommonSettings} from 'src/app/shared/interfaces/storage-interface';
+import {DataService} from '../../../core/data/data.service';
+import {TvWidgetOptions} from './candle-chart.model';
+import {VtDashboardSettingsFormComponent} from './dashboard-settings-form/dashboard-settings-form.component';
 
 declare const TradingView: any;
 
@@ -40,8 +40,7 @@ let uniqueId = 0;
   },
 })
 export class VtCandleChartComponent
-  implements OnInit, AfterViewInit, OnChanges
-{
+  implements OnInit, AfterViewInit, OnChanges {
   uniqueId = `vt-chart-${uniqueId++}`;
   issuerControl = new UntypedFormControl('DSKY');
   lockControl = new UntypedFormControl(false);
@@ -52,22 +51,24 @@ export class VtCandleChartComponent
 
   eventsFromWidget = new Subject();
 
-  storageCommonSettings: { symbol: string } | null =
-    this._storageService.getObject<VtCommonSettings>('vtCommonSettings');
+  storageCommonSettings: { symbol: string } | null = null;
 
   @Input()
   public set showCustomMenu(value) {
     this._showCustomMenu = value;
   }
+
   public get showCustomMenu() {
     return this._showCustomMenu;
   }
+
   private _showCustomMenu = false;
 
   @Input()
   public set symbol(value) {
     this._symbol = value;
   }
+
   public get symbol() {
     return this._symbol;
   }
@@ -78,6 +79,7 @@ export class VtCandleChartComponent
   public set interval(value) {
     this._interval = value;
   }
+
   public get interval() {
     return this._interval;
   }
@@ -98,7 +100,7 @@ export class VtCandleChartComponent
 
   private _chart!: IChartApi;
 
-  @ViewChild('content', { read: ElementRef, static: true })
+  @ViewChild('content', {read: ElementRef, static: true})
   private _content!: ElementRef<HTMLDivElement>;
 
   private volumeSeries!: ISeriesApi<'Histogram'>;
@@ -120,7 +122,9 @@ export class VtCandleChartComponent
     private _dialog: MatDialog,
     private _router: Router,
     private _storageService: VtLocalStorageService
-  ) {}
+  ) {
+    this.storageCommonSettings = this._storageService.getObject<VtCommonSettings>('vtCommonSettings');
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     this._applyNewChartOptions();
@@ -200,8 +204,8 @@ export class VtCandleChartComponent
 
     if (this.viewSize === 'small') {
       this._chart.applyOptions({
-        rightPriceScale: { visible: false },
-        timeScale: { visible: false },
+        rightPriceScale: {visible: false},
+        timeScale: {visible: false},
       });
     }
   }
@@ -338,7 +342,7 @@ export class VtCandleChartComponent
 
   openDashboardSettingsForm() {
     const dialogRef = this._dialog.open(VtDashboardSettingsFormComponent, {
-      data: { name: 'trlolol' },
+      data: {name: 'trlolol'},
       width: '500px',
     });
     dialogRef

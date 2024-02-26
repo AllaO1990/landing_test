@@ -1,4 +1,4 @@
-import { DataSource } from '@angular/cdk/collections';
+import {DataSource} from '@angular/cdk/collections';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,10 +6,10 @@ import {
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { VtIdeaComponent } from '../idea/idea.component';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {VtIdeaComponent} from '../idea/idea.component';
 
 @Component({
   selector: 'vt-table-widget',
@@ -32,16 +32,16 @@ export class VtTableWidgetComponent implements OnInit {
 
   MY_DATA = {
     columns: [
-      { value: 'direction', name: 'Направление' },
-      { value: 'ticker', name: 'Тикер' },
-      { value: 'price', name: 'Цена' },
+      {value: 'direction', name: 'Направление'},
+      {value: 'ticker', name: 'Тикер'},
+      {value: 'price', name: 'Цена'},
       {
         value: 'priceEntry',
         name: `Цена вх
     Стоимость вх`,
       },
-      { value: 'purpose', name: `Цель` },
-      { value: 'stop', name: `Стоп` },
+      {value: 'purpose', name: `Цель`},
+      {value: 'stop', name: `Стоп`},
       {
         value: 'depo',
         name: `Кол-во
@@ -52,7 +52,7 @@ export class VtTableWidgetComponent implements OnInit {
         name: `Успех %
     Условия`,
       },
-      { value: 'vanya', name: `Идея VANYA` },
+      {value: 'vanya', name: `Идея VANYA`},
     ],
     data: [
       {
@@ -154,14 +154,17 @@ export class VtTableWidgetComponent implements OnInit {
   set data(value: any) {
     this._data = value;
   }
+
   get data() {
     return this._data;
   }
+
   private _data: any;
 
   @Input() dataType: 'entry' | 'out' = 'entry';
 
-  constructor(private _dialog: MatDialog) {}
+  constructor(private _dialog: MatDialog) {
+  }
 
   ngOnInit(): void {
     this.MY_DATA.columns.forEach((column) => {
@@ -171,9 +174,9 @@ export class VtTableWidgetComponent implements OnInit {
 
   get _investmentPeriods() {
     return [
-      { type: 'short', name: 'Краткосрок', quantity: 3 },
-      { type: 'mid', name: 'Среднесрок', quantity: 3 },
-      { type: 'long', name: 'Долгосрок', quantity: 3 },
+      {type: 'short', name: 'Краткосрок', quantity: 3},
+      {type: 'mid', name: 'Среднесрок', quantity: 3},
+      {type: 'long', name: 'Долгосрок', quantity: 3},
     ];
   }
 
@@ -184,23 +187,26 @@ export class VtTableWidgetComponent implements OnInit {
       height: '100vh',
       panelClass: 'vt-mat-dialog-container',
       autoFocus: false,
-      data: { name: 'this.name', animal: ' this.animal' },
+      data: {name: 'this.name', animal: ' this.animal'},
     });
   }
 }
 
 export class VtTableDataSource extends DataSource<any> {
   /** Stream of data that is provided to the table. */
-  data = new BehaviorSubject<any[]>(this.datas);
+  // @ts-ignore
+  data = new BehaviorSubject<any>(this.datas);
 
   constructor(public datas: any) {
     super();
   }
+
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<any[]> {
     return this.data;
   }
 
-  disconnect() {}
+  disconnect() {
+  }
 }

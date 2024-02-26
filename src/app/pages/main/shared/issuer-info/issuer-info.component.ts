@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component, inject,
   Input,
   OnInit,
 } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormControl} from '@angular/forms';
 
 @Component({
   selector: 'vt-issuer-info',
@@ -13,6 +13,7 @@ import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IssuerInfoComponent implements OnInit {
+  private readonly _fb: UntypedFormBuilder = inject(UntypedFormBuilder);
   @Input() issuerName = 'Детский мир';
 
   @Input() issuerId = 'DSKY';
@@ -22,7 +23,7 @@ export class IssuerInfoComponent implements OnInit {
     end: new UntypedFormControl(new Date(2022, 11, 16)),
   });
 
-  constructor(private _fb: UntypedFormBuilder) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 }
