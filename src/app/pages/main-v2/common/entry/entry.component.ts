@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {FormControl} from "@angular/forms";
+import {ENTRY_CONSTANTS} from "./entry.constants";
 
 @Component({
   selector: 'vt-entry',
@@ -7,6 +9,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EntryComponent implements OnInit {
+  public testValue = new FormControl(null);
+  public constants = ENTRY_CONSTANTS;
 
   public data = Array.from({length: 100}, (_, i: number) => ({
     id: i,
@@ -18,6 +22,48 @@ export class EntryComponent implements OnInit {
     luck: 10,
     idea: !!(i % 8)
   }));
+
+  public market = [
+    {
+      id: 1,
+      text: 'РФ'
+    },
+    {
+      id: 2,
+      text: 'США'
+    },
+    {
+      id: 3,
+      text: 'Фьючерсы'
+    },
+    {
+      id: 4,
+      text: 'Опционы'
+    },
+    {
+      id: 5,
+      text: 'Валюты'
+    },
+  ];
+
+  public time = [
+    {
+      id: 1,
+      text: 'Краткосрок'
+    },
+    {
+      id: 2,
+      text: 'Среднесрок'
+    },
+    {
+      id: 3,
+      text: 'Долгосрок'
+    },
+    {
+      id: 4,
+      text: 'Скальпинг'
+    },
+  ];
 
   constructor() { }
 

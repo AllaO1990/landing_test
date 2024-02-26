@@ -33,6 +33,29 @@
   --color-r: #FF103B;
   --color-g: #039322;
   --color-b: #0066FF;
+
+  --tui-height-xs: 1.5rem;
+  --tui-height-s: 16px;
+  --tui-height-m: 2.75rem;
+  --tui-height-l: 3.5rem;
+
+  --tui-radius: 2px;
+  --tui-radius-xs: var(--tui-radius);
+  --tui-radius-s: var(--tui-radius);
+  --tui-radius-m: var(--tui-radius);
+  --tui-radius-l: var(--tui-radius);
+  --tui-radius-xl: var(--tui-radius);
+
+  --tui-text-font: Roboto, "Helvetica Neue", sans-serif;
+  --tui-font-text: var(--tui-text-font);
+  --tui-font-text-xl: normal 1.1875rem/1.75rem var(--tui-font-text);
+  --tui-font-text-l: normal 1.0625rem/1.5rem var(--tui-font-text);
+  --tui-font-text-l-2: normal 1.0625rem/1.25rem var(--tui-font-text);
+  --tui-font-text-m: normal 1rem/1.5rem var(--tui-font-text);
+  --tui-font-text-m-2: normal 1rem/1.25rem var(--tui-font-text);
+  --tui-font-text-s: normal 11px/16px var(--tui-font-text);
+  --tui-font-text-s-2: normal 0.8125rem/1rem var(--tui-font-text);
+  --tui-font-text-xs: normal 0.6875rem/1rem var(--tui-font-text);
 }
 
 * {
@@ -46,7 +69,7 @@ body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--tui-text-font);
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
@@ -76,6 +99,10 @@ body {
   background-size: 200px;
   background-position: center;
   //animation: rotate 10s linear infinite;
+}
+
+tui-root {
+  height: 100%;
 }
 
 @keyframes rotate {
