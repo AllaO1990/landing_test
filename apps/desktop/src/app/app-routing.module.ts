@@ -26,7 +26,7 @@ const routes: Routes = [
       {
         path: 'login',
         loadChildren: () =>
-          import('./pages/login/login.module').then((m) => m.LoginModule),
+          import('../../../../desktop-page/login/src/lib/login/login.module').then((m) => m.LoginModule),
         canLoad: [AuthGuard],
         canActivate: [AuthGuard],
       },
@@ -78,23 +78,23 @@ const routes: Routes = [
       {
         path: '403',
         loadChildren: () =>
-          import('./pages/page-403').then((m) => m.Page403Module),
+          import('page-403').then((m) => m.Page403Module),
         canActivate: [ForbiddenGuard],
       },
       {
         path: '**',
         loadChildren: () =>
-          import('./pages/page-404').then((m) => m.Page404Module),
+          import('page-404').then((m) => m.Page404Module),
       },
     ],
   },
   {
     path: '401',
-    loadChildren: () => import('./pages/page-401').then((m) => m.Page401Module),
+    loadChildren: () => import('page-401').then((m) => m.Page401Module),
   },
   {
     path: '**',
-    loadChildren: () => import('./pages/page-401').then((m) => m.Page401Module),
+    loadChildren: () => import('page-401').then((m) => m.Page401Module),
   },
 ];
 

@@ -19,12 +19,14 @@
     "module": "es2020",
     "lib": ["es2020", "dom"],
     "paths": {
+      "@ui/*": ["ui/src/lib/ui/*"],
       "dashboard": ["desktop-page/dashboard/src/index.ts"],
       "login": ["desktop-page/login/src/index.ts"],
       "main": ["desktop-page/main/src/index.ts"],
       "page-401": ["page-401/src/index.ts"],
       "page-403": ["page-403/src/index.ts"],
       "page-404": ["page-404/src/index.ts"],
+      "registration": ["desktop-page/registration/src/index.ts"],
       "shall": ["desktop-page/shall/src/index.ts"]
     },
     "rootDir": "."

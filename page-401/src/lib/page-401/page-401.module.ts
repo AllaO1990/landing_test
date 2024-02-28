@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageComponent } from './page/page.component';
 import { Page401RoutingModule } from './page-401-routing.module';
-import { PageClientErrorModule } from '../../shared/components/page-client-error';
+import { PageClientErrorModule } from '@ui/page-client-error';
 
 @NgModule({
   declarations: [PageComponent],
