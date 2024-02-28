@@ -1,0 +1,9 @@
+{
+  "name": "dashboard",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "desktop-page/dashboard/src",
+  "prefix": "lib",
+  "tags": ["trade"],
+  "projectType": "library",
+  "targets": {}
+}

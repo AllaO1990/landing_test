@@ -1,0 +1,43 @@
+<div class="entry__header">
+  <div class="entry__title">
+    {{ constants.title }}
+  </div>
+  <div class="entry__radio">
+    <tui-radio-block
+      *ngFor="let item of market"
+      [formControl]="testValue"
+      contentAlign="right"
+      size="s"
+      [item]="item.id"
+      [hideRadio]="true"
+    >
+      {{ item.text }}
+    </tui-radio-block>
+  </div>
+  <div class="entry__add-idea">
+    <button tuiButton appearance="secondary" type="button">
+      {{ constants.add_idea }}
+    </button>
+  </div>
+</div>
+<div class="entry__nav">
+  <tui-radio-block
+    *ngFor="let item of time"
+    [formControl]="testValue"
+    contentAlign="right"
+    size="s"
+    [item]="item.id"
+    [hideRadio]="true"
+  >
+    {{ item.text }}
+  </tui-radio-block>
+</div>
+<vt-recommendation [data]="data" [itemSize]="32">
+  <div *recommendationHeader class="header">
+    <div class="header__col">Направ.</div>
+    <div class="header__col">Тикер</div>
+    <div class="header__col"></div>
+  </div>
+  <span>header entry works!</span>
+  <vt-idea *recommendationItem="let item" [data]="item"></vt-idea>
+</vt-recommendation>

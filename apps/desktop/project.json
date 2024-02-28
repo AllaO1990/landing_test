@@ -1,0 +1,108 @@
+{
+  "name": "desktop",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss",
+      "changeDetection": "OnPush"
+    },
+    "@schematics/angular:application": {
+      "strict": true
+    }
+  },
+  "sourceRoot": "apps/desktop/src",
+  "prefix": "vt",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "options": {
+        "outputPath": "dist/apps/desktop",
+        "aot": true,
+        "index": "apps/desktop/src/index.html",
+        "main": "apps/desktop/src/main.ts",
+        "polyfills": "apps/desktop/src/polyfills.ts",
+        "tsConfig": "apps/desktop/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/desktop/src/favicon.ico",
+          "apps/desktop/src/assets"
+        ],
+        "styles": [
+          "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+          "./node_modules/@taiga-ui/core/styles/taiga-ui-theme.less",
+          "apps/desktop/src/styles.scss",
+          "apps/desktop/src/app/shared/styles/custom-style.scss"
+        ],
+        "scripts": [],
+        "allowedCommonJsDependencies": ["text-mask-core"]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/desktop/src/environments/environment.ts",
+              "with": "apps/desktop/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "desktop:build:production"
+        },
+        "development": {
+          "buildTarget": "desktop:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "desktop:build"
+      }
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "apps/desktop/src/test.ts",
+        "polyfills": "apps/desktop/src/polyfills.ts",
+        "tsConfig": "apps/desktop/tsconfig.spec.json",
+        "karmaConfig": "apps/desktop/karma.conf.js",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/desktop/src/favicon.ico",
+          "apps/desktop/src/assets"
+        ],
+        "styles": ["apps/desktop/src/styles.scss"],
+        "scripts": []
+      }
+    }
+  }
+}

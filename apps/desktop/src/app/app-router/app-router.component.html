@@ -1,0 +1,69 @@
+<!-- <mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+  >
+    <mat-toolbar-start class="vanya-toolbar-start">Menu</mat-toolbar-start>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="['/']">Link 1</a>
+      <a mat-list-item [routerLink]="['/second']">Link 2</a>
+      <a mat-list-item href="#">Link 3</a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar-start color="primary" class="vanya-toolbar-start">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        *ngIf="isHandset$ | async"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>desktop</span>
+    </mat-toolbar-start>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container> -->
+
+<mat-toolbar class="vanya-toolbar">
+  <div class="vt-toolbar-left-side">
+    <div class="vt-logo">
+      <img src="assets/images/logo.svg" alt="" />
+    </div>
+    <div style="flex: 1">
+      <vt-form-field>
+        <input
+          vtInput
+          type="text"
+          placeholder="Поиск..."
+          [formControl]="myControl"
+          [matAutocomplete]="auto"
+        />
+        <mat-icon vtSuffix>search</mat-icon>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option
+            *ngFor="let option of filteredOptions | async"
+            [value]="option"
+          >
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </vt-form-field>
+    </div>
+  </div>
+  <div
+    style="
+      flex: 1 0 auto;
+      height: 100%;
+      background-color: var(--block-bg-color);
+    "
+  ></div>
+</mat-toolbar>
+
+<!-- Add Content Here -->
+<router-outlet></router-outlet>

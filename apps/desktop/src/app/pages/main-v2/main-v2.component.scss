@@ -1,0 +1,39 @@
+:host {
+  display: grid;
+
+  height: 100%;
+  width: 100%;
+
+  gap: var(--padding-1);
+
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr minmax(346px, 0.75fr);
+}
+
+.chart {
+  grid-row: 1;
+  grid-column: 1 / 3;
+
+  overflow: hidden;
+}
+
+.list {
+  grid-row: 1 / 3;
+  grid-column: 3;
+
+  overflow: hidden;
+}
+
+.entry {
+  grid-row: 2;
+  grid-column: 1;
+
+  overflow: hidden;
+}
+
+.out {
+  grid-row: 2;
+  grid-column: 2;
+
+  overflow: hidden;
+}

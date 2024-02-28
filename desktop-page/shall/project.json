@@ -1,0 +1,9 @@
+{
+  "name": "shall",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "desktop-page/shall/src",
+  "prefix": "lib",
+  "tags": ["trade"],
+  "projectType": "library",
+  "targets": {}
+}

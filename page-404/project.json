@@ -1,0 +1,9 @@
+{
+  "name": "page-404",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "page-404/src",
+  "prefix": "lib",
+  "tags": ["trade"],
+  "projectType": "library",
+  "targets": {}
+}

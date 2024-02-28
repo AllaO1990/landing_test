@@ -1,0 +1,9 @@
+{
+  "name": "main",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "desktop-page/main/src",
+  "prefix": "lib",
+  "tags": ["trade"],
+  "projectType": "library",
+  "targets": {}
+}

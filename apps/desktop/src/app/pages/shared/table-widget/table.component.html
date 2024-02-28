@@ -1,0 +1,55 @@
+<vt-widget [formGroup]="formGroup">
+  <div vtWidgetToolbar>
+    <span class="vt-table-widget-toolbar-title">{{
+      dataType === 'entry' ? 'Идеи' : 'Сделки'
+    }}</span>
+    <button mat-button *ngIf="dataType === 'entry'" (click)="openIdeaDialod()">
+      + Новая идея
+    </button>
+  </div>
+  <div
+    formGroupName="investmentPeriods"
+    style="
+      width: 100%;
+      height: 24px;
+      padding: 0 8px;
+      background-color: #eef1f9;
+      display: flex;
+      align-items: center;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 11px;
+      line-height: 13px;
+    "
+  >
+    <label style="margin-right: 8px" *ngFor="let item of _investmentPeriods">
+      <input
+        class="vt-investment-periods-filter-check"
+        [formControlName]="item.type"
+        type="checkbox"
+        name="investmentPeriod"
+      />
+      <span>{{ item.name }} [{{ item.quantity }}]</span>
+    </label>
+  </div>
+  <div class="vt-table-widget-wrapper">
+    <table cdk-table [dataSource]="dataSource" class="vt-table-widget-table">
+      <!-- Position Column -->
+      <ng-container *ngFor="let column of displayedColumns">
+        <ng-container [cdkColumnDef]="column">
+          <th cdk-header-cell *cdkHeaderCellDef>
+            {{ namesOfColumns[column] }}
+          </th>
+          <td cdk-cell *cdkCellDef="let element">{{ element[column] }}</td>
+        </ng-container>
+      </ng-container>
+
+      <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+      <tr
+        [style.background]="row.rowColor"
+        cdk-row
+        *cdkRowDef="let row; columns: displayedColumns"
+      ></tr>
+    </table>
+  </div>
+</vt-widget>

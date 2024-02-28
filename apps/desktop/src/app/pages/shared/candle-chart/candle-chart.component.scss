@@ -1,0 +1,79 @@
+.vt-candle-chart-widget {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.vt-candle-chart-widget-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  border-right: 2px solid #dadae8;
+
+  .vt-candle-chart-widget-toolbar {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    width: 100%;
+    background: var(--inner-toolbar-color);
+    border-top: 2px solid #dadae8;
+    padding: 4px;
+  }
+
+  .vt-candle-chart-widget-content {
+    position: absolute;
+    top: 24px;
+    width: 100%;
+    height: calc(100% - 24px);
+  }
+}
+
+.vt-candle-chart-widget-toolbar-issuer-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 50px;
+
+  .vt-candle-chart-widget-toolbar-issuer {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    padding: 0;
+    background: transparent;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    text-decoration-line: underline;
+    color: #b4b4d0;
+  }
+}
+
+.vt-candle-chart-widget-issuer-lock-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 1px;
+  margin-right: 8px;
+  cursor: pointer;
+
+  label {
+    cursor: pointer;
+  }
+
+  &.vt-candle-chart-widget-issuer-lock {
+    background: rgba(126, 135, 154, 0.1) url('/assets/icons/lock.svg') no-repeat
+      center;
+  }
+
+  &.vt-candle-chart-widget-issuer-unlock {
+    background: url('/assets/icons/unlock.svg') rgba(126, 135, 154, 0.1)
+      no-repeat center;
+  }
+}

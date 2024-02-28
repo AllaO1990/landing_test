@@ -1,0 +1,12 @@
+<div class="list__header" *ngIf="header">
+  <ng-container [ngTemplateOutlet]="header.temRef"></ng-container>
+</div>
+<cdk-virtual-scroll-viewport
+  *ngIf="item"
+  [itemSize]="itemSize"
+  class="list__container"
+>
+  <ng-container
+    *cdkVirtualFor="let _ of data; template: item.temRef; trackBy: trackById"
+  ></ng-container>
+</cdk-virtual-scroll-viewport>

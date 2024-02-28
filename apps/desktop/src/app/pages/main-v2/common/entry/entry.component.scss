@@ -1,0 +1,38 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+  width: 100%;
+
+  background-color: var(--block-bg-color);
+}
+
+.entry {
+  &__header {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 8px;
+  }
+
+  &__nav {
+    background-color: #eef1f9;
+
+    display: flex;
+    align-items: center;
+
+    flex: 0 0 24px;
+  }
+}
+
+tui-radio-block:not(:last-child) {
+  margin-right: 4px;
+}
+
+.header {
+  display: flex;
+  flex-flow: row;
+}
