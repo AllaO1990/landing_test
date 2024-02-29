@@ -7,7 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LayoutStartModule } from './shared/components/layout-start';
 import { LayoutLkModule } from './shared/components/layout-lk';
-import { TUI_BUTTON_OPTIONS, TuiRootModule } from '@taiga-ui/core';
+import { TUI_BUTTON_OPTIONS, TuiModeModule, TuiRootModule } from '@taiga-ui/core';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +20,7 @@ import { TUI_BUTTON_OPTIONS, TuiRootModule } from '@taiga-ui/core';
     MatNativeDateModule,
     LayoutStartModule,
     LayoutLkModule,
+    TuiModeModule
   ],
   providers: [
     {

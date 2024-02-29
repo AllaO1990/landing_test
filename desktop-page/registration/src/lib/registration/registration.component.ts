@@ -1,11 +1,18 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 
 @Component({
-  selector: 'lib-registration',
-  standalone: true,
-  imports: [CommonModule],
+  selector: 'vt-registration',
   templateUrl: './registration.component.html',
-  styleUrl: './registration.component.css',
+  styleUrls: ['./registration.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegistrationComponent {}
+export class RegistrationComponent implements OnInit {
+  constructor() {}
+
+  ngOnInit(): void {}
+}

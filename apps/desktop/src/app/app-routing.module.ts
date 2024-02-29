@@ -19,21 +19,21 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./pages/sale').then((m) => m.SaleModule),
+        loadChildren: () => import('sale').then((m) => m.SaleModule),
         canLoad: [SaleGuard],
         canActivate: [SaleGuard],
       },
       {
         path: 'login',
         loadChildren: () =>
-          import('../../../../desktop-page/login/src/lib/login/login.module').then((m) => m.LoginModule),
+          import('login').then((m) => m.LoginModule),
         canLoad: [AuthGuard],
         canActivate: [AuthGuard],
       },
       {
         path: 'registration',
         loadChildren: () =>
-          import('./pages/registration').then((m) => m.RegistrationModule),
+          import('registration').then((m) => m.RegistrationModule),
         canLoad: [RegistrationGuard],
         canActivate: [RegistrationGuard],
       },
@@ -70,7 +70,7 @@ const routes: Routes = [
       {
         path: 'dashboard',
         loadChildren: () =>
-          import('./pages/dashboard/charts-dashboard.module').then(
+          import('dashboard').then(
             (m) => m.ChartsDashboardModule
           ),
         canActivate: [PermissionGuard],

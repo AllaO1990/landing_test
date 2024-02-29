@@ -1,1 +1,1 @@
-export * from './lib/registration/registration.component';
+export * from './lib/registration';
