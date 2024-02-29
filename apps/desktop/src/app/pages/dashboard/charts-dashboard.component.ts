@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { VtLocalStorageService } from 'src/app/core/storage/local-storage.service';
+import { VtLocalStorageService } from '../../core/storage/local-storage.service';
 
 @Component({
   selector: 'gpn-dashboard',

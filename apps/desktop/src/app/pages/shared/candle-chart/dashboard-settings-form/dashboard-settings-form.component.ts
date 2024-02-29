@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VtLocalStorageService } from 'src/app/core/storage/local-storage.service';
+import { VtLocalStorageService } from '../../../../core/storage/local-storage.service';
 
 @Component({
   selector: 'vt-dashboard-settings-form',

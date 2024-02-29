@@ -17,11 +17,11 @@ import { Router } from '@angular/router';
 import { IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
-import { VtLocalStorageService } from 'src/app/core/storage/local-storage.service';
-import { VtCommonSettings } from 'src/app/shared/interfaces/storage-interface';
 import { DataService } from '../../../core/data/data.service';
 import { TvWidgetOptions } from './candle-chart.model';
 import { VtDashboardSettingsFormComponent } from './dashboard-settings-form/dashboard-settings-form.component';
+import { VtLocalStorageService } from '../../../core/storage/local-storage.service';
+import { VtCommonSettings } from '../../../shared/interfaces/storage-interface';
 
 declare const TradingView: any;
 
