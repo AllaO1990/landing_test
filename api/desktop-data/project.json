@@ -1,0 +1,9 @@
+{
+  "name": "desktop-data",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "api/desktop-data/src",
+  "prefix": "lib",
+  "tags": ["trade"],
+  "projectType": "library",
+  "targets": {}
+}

@@ -21,6 +21,7 @@
     "paths": {
       "@ui/*": ["ui/src/lib/ui/*"],
       "dashboard": ["desktop-page/dashboard/src/index.ts"],
+      "@desktop-data/*": ["api/desktop-data/src/desktop-data/*"],
       "login": ["desktop-page/login/src/index.ts"],
       "main": ["desktop-page/main/src/index.ts"],
       "page-401": ["page-401/src/index.ts"],
