@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^17.2.2",
     "@angular/platform-browser-dynamic": "^17.2.2",
     "@angular/router": "^17.2.2",
+    "@ngrx/component-store": "^17.1.1",
     "@taiga-ui/cdk": "^3.68.0",
     "@taiga-ui/core": "^3.68.0",
     "@taiga-ui/kit": "^3.68.0",

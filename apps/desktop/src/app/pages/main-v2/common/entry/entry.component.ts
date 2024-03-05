@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { ENTRY_CONSTANTS } from './entry.constants';
+import {ChangeDetectionStrategy, Component, inject, Inject, OnInit} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {ENTRY_CONSTANTS} from './entry.constants';
+import {DesktopStubService} from "../../../../../../../../api/desktop-data/src/lib/desktop-data/desktop.stub.service";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'vt-entry',
@@ -12,16 +14,8 @@ export class EntryComponent implements OnInit {
   public testValue = new FormControl(null);
   public constants = ENTRY_CONSTANTS;
 
-  public data = Array.from({ length: 100 }, (_, i: number) => ({
-    id: i,
-    direction: 'buy',
-    ticker: 'MOEX',
-    cost: 4600,
-    enter: 4500,
-    stop: 4382,
-    luck: 10,
-    idea: !!(i % 8),
-  }));
+  public readonly _api: DesktopStubService = inject(DesktopStubService);
+  public data$: Observable<any[]> = this._api.getListIdea() as Observable<any[]>;
 
   public market = [
     {
@@ -65,7 +59,9 @@ export class EntryComponent implements OnInit {
     },
   ];
 
-  constructor() {}
+  constructor() {
+  }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 }
