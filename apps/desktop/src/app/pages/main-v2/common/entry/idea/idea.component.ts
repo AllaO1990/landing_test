@@ -7,12 +7,12 @@ import {
 import { IdeaType } from './idea.types';
 
 @Component({
-  selector: 'vt-idea',
+  selector: 'vt-entry-idea',
   templateUrl: './idea.component.html',
   styleUrls: ['./idea.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IdeaComponent implements OnInit {
+export class EntryIdeaComponent implements OnInit {
   @Input() data!: IdeaType;
 
   constructor() {

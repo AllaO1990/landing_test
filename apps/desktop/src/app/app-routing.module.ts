@@ -63,8 +63,8 @@ const routes: Routes = [
       },
       {
         path: 'main-v2',
-        loadChildren: () =>
-          import('./pages/main-v2/main-v2.module').then((m) => m.MainV2Module),
+        loadComponent: () =>
+          import('./pages/main-v2').then((m) => m.MainV2Component),
         canActivate: [PermissionGuard],
       },
       {

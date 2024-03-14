@@ -3,13 +3,13 @@
 </div>
 
 <div class="list">
-  <vt-list></vt-list>
+  <vt-stock-list [data]="stockList$ | async"></vt-stock-list>
 </div>
 
 <div class="entry">
-  <vt-entry></vt-entry>
+  <vt-entry [data]="ideaList$ | async"></vt-entry>
 </div>
 
 <div class="out">
-  <vt-out></vt-out>
+  <vt-out [data]="tradeList$ | async"></vt-out>
 </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'vt-out',
@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutComponent {
-  public data = Array.from({ length: 100 }, (_, i: number) => ({
+  @Input() data = Array.from({ length: 100 }, (_, i: number) => ({
     id: i,
     direction: 'buy',
     ticker: 'MOEX',

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ENTRY_CONSTANTS } from './entry.constants';
 
@@ -12,7 +12,7 @@ export class EntryComponent implements OnInit {
   public testValue = new FormControl(null);
   public constants = ENTRY_CONSTANTS;
 
-  public data = Array.from({ length: 100 }, (_, i: number) => ({
+  @Input() data = Array.from({ length: 100 }, (_, i: number) => ({
     id: i,
     direction: 'buy',
     ticker: 'MOEX',
