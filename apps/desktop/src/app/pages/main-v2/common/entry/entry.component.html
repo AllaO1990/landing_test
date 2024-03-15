@@ -32,7 +32,7 @@
     {{ item.text }}
   </tui-radio-block>
 </div>
-<vt-recommendation [data]="data" [itemSize]="32">
+<vt-recommendation [data]="(data$ | async) || []" [itemSize]="32">
   <div *recommendationHeader class="header">
     <div class="header__col">Направ.</div>
     <div class="header__col">Тикер</div>
