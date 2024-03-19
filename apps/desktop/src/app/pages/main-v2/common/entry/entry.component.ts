@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, inject, Inject, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Inject, Input, OnInit } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ENTRY_CONSTANTS} from './entry.constants';
-import {DesktopStubService} from "../../../../../../../../api/desktop-data/src/lib/desktop-data/desktop.stub.service";
 import {Observable} from "rxjs";
+import { DesktopStubService } from '@desktop-data/desktop-data';
 
 @Component({
   selector: 'vt-entry',
@@ -25,7 +25,7 @@ export class EntryComponent implements OnInit {
     idea: !!(i % 8),
   }));
   public readonly _api: DesktopStubService = inject(DesktopStubService);
-  public data$: Observable<any[]> = this._api.getListIdea() as Observable<any[]>;
+  public data$: Observable<any[]> = this._api.getIdeaList() as Observable<any[]>;
 
   public market = [
     {

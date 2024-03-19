@@ -1,0 +1,120 @@
+{
+  "Валюты": [
+    {
+      "ticker": "ticker",
+      "figi": "figi",
+      "class_code": "class_code",
+      "name": "name",
+      "exchange": "exchange",
+      "real_exchange": "real_exchange",
+      "currency": "currency"
+    },
+    {
+      "ticker": "USD000UTSTOM",
+      "figi": "BBG0013HGFT4",
+      "class_code": "CETS",
+      "name": "Доллар США",
+      "exchange": "FX",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub"
+    },
+    {
+      "ticker": "CNYRUB_TOM",
+      "figi": "BBG0013HRTL0",
+      "class_code": "CETS",
+      "name": "Китайский юань",
+      "exchange": "FX",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub"
+    },
+    {
+      "ticker": "HKDRUB_TOM",
+      "figi": "BBG0013HSW87",
+      "class_code": "CETS",
+      "name": "Гонконгский доллар",
+      "exchange": "FX",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub"
+    },
+    {
+      "ticker": "GLDRUB_TOM",
+      "figi": "BBG000VJ5YR4",
+      "class_code": "CETS",
+      "name": "Золото",
+      "exchange": "FX_MTL",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub"
+    },
+    {
+      "ticker": "SLVRUB_TOM",
+      "figi": "BBG000VHQTD1",
+      "class_code": "CETS",
+      "name": "Серебро",
+      "exchange": "FX_MTL",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub"
+    }
+  ],
+  "Фьючерсы": [
+    {
+      "ticker": "ticker",
+      "figi": "figi",
+      "class_code": "class_code",
+      "name": "name",
+      "exchange": "exchange",
+      "real_exchange": "real_exchange",
+      "currency": "currency",
+      "futures_type": "futures_type",
+      "asset_type": "asset_type",
+      "basic_asset": "basic_asset"
+    },
+    {
+      "ticker": "USDRUBF",
+      "figi": "FUTUSDRUBF00",
+      "class_code": "SPBFUT",
+      "name": "USDRUBF Доллар - Рубль",
+      "exchange": "FORTS_EVENING",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub",
+      "futures_type": "DELIVERY_TYPE_CASH_SETTLEMENT",
+      "asset_type": "TYPE_CURRENCY",
+      "basic_asset": "USD/RUB"
+    },
+    {
+      "ticker": "EURRUBF",
+      "figi": "FUTEURRUBF00",
+      "class_code": "SPBFUT",
+      "name": "EURRUBF Евро - Рубль",
+      "exchange": "FORTS_EVENING",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub",
+      "futures_type": "DELIVERY_TYPE_CASH_SETTLEMENT",
+      "asset_type": "TYPE_CURRENCY",
+      "basic_asset": "EUR/RUB"
+    },
+    {
+      "ticker": "IMOEXF",
+      "figi": "FUTIMOEXF000",
+      "class_code": "SPBFUT",
+      "name": "IMOEXF Индекс МосБиржи",
+      "exchange": "FORTS_EVENING",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub",
+      "futures_type": "DELIVERY_TYPE_CASH_SETTLEMENT",
+      "asset_type": "TYPE_INDEX",
+      "basic_asset": "IMOEX"
+    },
+    {
+      "ticker": "GLDRUBF",
+      "figi": "FUTGLDRUBF00",
+      "class_code": "SPBFUT",
+      "name": "GLDRUBF Золото (rub)",
+      "exchange": "FORTS_EVENING",
+      "real_exchange": "REAL_EXCHANGE_MOEX",
+      "currency": "rub",
+      "futures_type": "DELIVERY_TYPE_CASH_SETTLEMENT",
+      "asset_type": "TYPE_COMMODITY",
+      "basic_asset": "GLDRUB_TOM"
+    }
+  ]
+}

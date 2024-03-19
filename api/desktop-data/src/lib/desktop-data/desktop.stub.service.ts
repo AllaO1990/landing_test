@@ -7,7 +7,7 @@ import {HttpClient} from "@angular/common/http";
 export class DesktopStubService extends DesktopAbstractService {
   private readonly _http: HttpClient = inject(HttpClient);
 
-  getListIdea(): Observable<unknown> {
+  getIdeaList(): Observable<unknown> {
     return this._http.get<unknown>(`assets/mocks/list-idea.json`);
   }
 }

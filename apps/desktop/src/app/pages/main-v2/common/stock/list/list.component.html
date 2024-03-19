@@ -1,0 +1,33 @@
+<div class="list">
+  <div class="list__header header">
+    <div
+      class="header__col header__col--{{item.name}}"
+      *ngFor="let item of header; trackBy: trackByHeader">
+      {{ item.label }}
+    </div>
+  </div>
+
+  <cdk-virtual-scroll-viewport itemSize="32" class="list__container">
+    <vt-stock-list-item
+      class="list__item stock-item"
+      *cdkVirtualFor="let item of list; trackBy: trackByStockListItem"
+      [item]="item"
+      [formControl]="controlItem"
+      [title]="item.name">
+      <div class="stock-item__row">
+        <div class="stock-item__img">
+          <img src="/assets/tickers/{{item.isin}}.png" [attr.alt]="item.name">
+        </div>
+        <div class="stock-item__name">
+          {{ item.ticker }}
+        </div>
+        <div class="stock-item__sector">
+          {{item.sector}}
+        </div>
+        <div class="stock-item__cost tui-skeleton">
+          {{ 10000 | tuiFormatNumber:  {decimalLimit: 2} }}
+        </div>
+      </div>
+    </vt-stock-list-item>
+  </cdk-virtual-scroll-viewport>
+</div>

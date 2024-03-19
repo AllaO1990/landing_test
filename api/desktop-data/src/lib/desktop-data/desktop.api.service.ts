@@ -2,6 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { DesktopAbstractService } from './desktop.abstract.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {
+  StockId,
+  StockListItem,
+  StockNameItem,
+} from '../../../../../apps/desktop/src/app/pages/main-v2/common/stock/stock.types';
 
 @Injectable()
 export class DesktopApiService extends DesktopAbstractService {
@@ -14,7 +19,13 @@ export class DesktopApiService extends DesktopAbstractService {
     return this._http.get<any[]>('/assets/mocks/stock-list.json');
   }
 
-  getTradeList(): Observable<any[]> {
-    return this._http.get<any[]>('/assets/mocks/trade-list.json');
+  public getStock(id: StockId): Observable<StockListItem[]> {
+    return this._http.get<StockListItem[]>(
+      `/assets/mocks/stock-list-${id}.json`
+    );
+  }
+
+  getTradeList(): Observable<StockNameItem[]> {
+    return this._http.get<StockNameItem[]>('/assets/mocks/trade-list.json');
   }
 }

@@ -19,9 +19,9 @@
     "module": "es2020",
     "lib": ["es2020", "dom"],
     "paths": {
+      "@desktop-data/*": ["api/desktop-data/src/lib/*"],
       "@ui/*": ["ui/src/lib/ui/*"],
       "dashboard": ["desktop-page/dashboard/src/index.ts"],
-      "@desktop-data/*": ["api/desktop-data/src/lib/*"],
       "login": ["desktop-page/login/src/index.ts"],
       "main": ["desktop-page/main/src/index.ts"],
       "page-401": ["page-401/src/index.ts"],

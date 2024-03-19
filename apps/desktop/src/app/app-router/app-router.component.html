@@ -8,11 +8,11 @@
     [opened]="(isHandset$ | async) === false"
   >
     <mat-toolbar-start class="vanya-toolbar-start">Menu</mat-toolbar-start>
-    <mat-nav-stock-list>
-      <a mat-stock-list-item [routerLink]="['/']">Link 1</a>
-      <a mat-stock-list-item [routerLink]="['/second']">Link 2</a>
-      <a mat-stock-list-item href="#">Link 3</a>
-    </mat-nav-stock-list>
+    <mat-nav-stock>
+      <a mat-stock-item [routerLink]="['/']">Link 1</a>
+      <a mat-stock-item [routerLink]="['/second']">Link 2</a>
+      <a mat-stock-item href="#">Link 3</a>
+    </mat-nav-stock>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar-start color="primary" class="vanya-toolbar-start">
