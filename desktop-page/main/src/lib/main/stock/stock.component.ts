@@ -14,17 +14,13 @@ import {
 } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
-import {
-  BehaviorSubject,
-  Observable,
-  ReplaySubject,
-  Subject,
-  switchMap,
-} from 'rxjs';
-import { StockListItem, StockNameItem } from './stock.types';
+import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { StockListComponent } from './list/list.component';
-import { DesktopApiService } from '@desktop-data/desktop-data';
 import { filter } from 'rxjs/operators';
+import { DesktopService } from '@desktop-data/desktop-data';
+import { StockListItem, StockNameItem } from 'types/stock';
+import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
+import { DesktopLkStore } from '../../../../../../stores/desktop';
 
 @Component({
   selector: 'vt-stock',
@@ -49,7 +45,9 @@ import { filter } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockComponent {
-  private readonly _api: DesktopApiService = inject(DesktopApiService);
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+
+  private readonly _api: DesktopService = inject(DESKTOP_API);
 
   private readonly _nameList$: Subject<StockNameItem[]> = new BehaviorSubject<
     StockNameItem[]
@@ -90,5 +88,9 @@ export class StockComponent {
 
   public trackByStockNameItem(_: number, item: StockNameItem): number | string {
     return item.id;
+  }
+
+  public onSelect(event: { type: string; value: unknown }): void {
+    this._store.updateSelect(event);
   }
 }

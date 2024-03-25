@@ -1,1 +1,16 @@
-<p>main works!</p>
+<div class="chart">
+  {{selected$ | async | json}}
+  <vt-chart></vt-chart>
+</div>
+
+<div class="stock">
+  <vt-stock [data]="stockList$ | async"></vt-stock>
+</div>
+
+<div class="entry">
+  <vt-entry [data]="ideaList$ | async"></vt-entry>
+</div>
+
+<div class="out">
+  <vt-out [data]="tradeList$ | async"></vt-out>
+</div>

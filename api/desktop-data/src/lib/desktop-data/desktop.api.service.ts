@@ -1,15 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { DesktopAbstractService } from './desktop.abstract.service';
+import { DesktopService } from './desktopService';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  StockId,
-  StockListItem,
-  StockNameItem,
-} from '../../../../../apps/desktop/src/app/pages/main-v2/common/stock/stock.types';
+import { StockId, StockListItem, StockNameItem } from 'types/stock';
 
 @Injectable()
-export class DesktopApiService extends DesktopAbstractService {
+export class DesktopApiService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
   public getIdeaList(): Observable<any[]> {
     return this._http.get<any[]>('/assets/mocks/idea-list.json');

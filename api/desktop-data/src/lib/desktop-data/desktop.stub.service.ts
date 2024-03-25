@@ -1,13 +1,26 @@
-import {DesktopAbstractService} from './desktop.abstract.service';
-import {inject, Injectable} from '@angular/core';
-import {Observable} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import { DesktopService } from './desktopService';
+import { inject, Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { StockId, StockListItem, StockNameItem } from 'types/stock';
 
 @Injectable()
-export class DesktopStubService extends DesktopAbstractService {
+export class DesktopStubService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
 
   getIdeaList(): Observable<unknown> {
     return this._http.get<unknown>(`assets/mocks/list-idea.json`);
+  }
+
+  getStock(id: StockId): Observable<StockListItem[]> {
+    return of([]);
+  }
+
+  getStockList(): Observable<unknown> {
+    return of();
+  }
+
+  getTradeList(): Observable<StockNameItem[]> {
+    return of([]);
   }
 }

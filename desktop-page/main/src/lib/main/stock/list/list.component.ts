@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { STOCK_LIST_HEADER } from '../stock.constant';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { StockListItem } from '../stock.types';
 import {
   CdkFixedSizeVirtualScroll,
   CdkVirtualForOf,
@@ -17,6 +16,7 @@ import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
 import { NgForOf } from '@angular/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { StockListItem } from 'types/stock';
 
 @Component({
   selector: 'vt-stock-list',

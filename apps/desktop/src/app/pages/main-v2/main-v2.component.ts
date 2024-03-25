@@ -18,7 +18,7 @@ import { DesktopApiService } from '@desktop-data/desktop-data';
   imports: [AsyncPipe, StockComponent, ChartModule, EntryModule, OutModule],
   templateUrl: './main-v2.component.html',
   styleUrls: ['./main-v2.component.scss'],
-  providers: [DesktopApiService],
+  providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainV2Component implements OnInit {

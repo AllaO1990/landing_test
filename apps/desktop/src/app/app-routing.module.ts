@@ -9,8 +9,8 @@ import {
   SaleGuard,
 } from './core/routing/guards';
 import { LayoutStartComponent } from './shared/components/layout-start/layout-start.component';
-import { LayoutLkComponent } from './shared/components/layout-lk/layout-lk.component';
 import { ToolbarComponent } from './pages/main/shared/toolbar/toolbar.component';
+import { LkComponent } from 'lk';
 
 const routes: Routes = [
   {
@@ -25,8 +25,7 @@ const routes: Routes = [
       },
       {
         path: 'login',
-        loadChildren: () =>
-          import('login').then((m) => m.LoginModule),
+        loadChildren: () => import('login').then((m) => m.LoginModule),
         canLoad: [AuthGuard],
         canActivate: [AuthGuard],
       },
@@ -41,7 +40,8 @@ const routes: Routes = [
   },
   {
     path: 'lk',
-    component: LayoutLkComponent,
+    loadComponent: () => import('lk').then((m) => m.LkComponent),
+    // component: LkComponent,
     canActivate: [LkGuard],
     canActivateChild: [LkGuard],
     children: [
@@ -61,30 +61,31 @@ const routes: Routes = [
           import('./pages/main/main.module').then((m) => m.MainModule),
         canActivate: [PermissionGuard],
       },
+      // {
+      //   path: 'main-v2',
+      //   loadComponent: () =>
+      //     import('./pages/main-v2').then((m) => m.MainV2Component),
+      //   canActivate: [PermissionGuard],
+      // },
       {
         path: 'main-v2',
-        loadComponent: () =>
-          import('./pages/main-v2').then((m) => m.MainV2Component),
+        loadComponent: () => import('main').then((m) => m.MainComponent),
         canActivate: [PermissionGuard],
       },
       {
         path: 'dashboard',
         loadChildren: () =>
-          import('dashboard').then(
-            (m) => m.ChartsDashboardModule
-          ),
+          import('dashboard').then((m) => m.ChartsDashboardModule),
         canActivate: [PermissionGuard],
       },
       {
         path: '403',
-        loadChildren: () =>
-          import('page-403').then((m) => m.Page403Module),
+        loadChildren: () => import('page-403').then((m) => m.Page403Module),
         canActivate: [ForbiddenGuard],
       },
       {
         path: '**',
-        loadChildren: () =>
-          import('page-404').then((m) => m.Page404Module),
+        loadChildren: () => import('page-404').then((m) => m.Page404Module),
       },
     ],
   },

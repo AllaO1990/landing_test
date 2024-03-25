@@ -6,23 +6,37 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LayoutStartModule } from './shared/components/layout-start';
-import { LayoutLkModule } from './shared/components/layout-lk';
-import { TUI_BUTTON_OPTIONS, TuiModeModule, TuiRootModule } from '@taiga-ui/core';
+import {
+  TUI_BUTTON_OPTIONS,
+  TuiModeModule,
+  TuiRootModule,
+} from '@taiga-ui/core';
+import { environment } from '../environments/environment';
+import { DesktopApiService } from '@desktop-data/desktop-data';
+import { DESKTOP_API, DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    BrowserAnimationsModule,
     TuiRootModule,
     MatNativeDateModule,
     LayoutStartModule,
-    LayoutLkModule,
-    TuiModeModule
+    TuiModeModule,
   ],
   providers: [
+    {
+      provide: DESKTOP_ENVIRONMENT,
+      useValue: environment,
+    },
+    {
+      provide: DESKTOP_API,
+      useFactory: (env: object) => new DesktopApiService(),
+      deps: [DESKTOP_ENVIRONMENT],
+    },
     {
       provide: MAT_DATE_LOCALE,
       useValue: 'ru-RU',

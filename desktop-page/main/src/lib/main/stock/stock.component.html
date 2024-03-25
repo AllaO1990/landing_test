@@ -10,17 +10,17 @@
         Выберите список
         <tui-data-list size="s" *tuiDataList>
           <tui-opt-group>
-          <button
-            *ngIf="!signatureVisible"
-            tuiOption
-            class="action__add-list"
-            (click)="toggle()">
-            <tui-svg
-              src="tuiIconPlus"
-              class="action__icon"
-            ></tui-svg>
-            Добавить список
-          </button>
+            <button
+              *ngIf="!signatureVisible"
+              tuiOption
+              class="action__add-list"
+              (click)="toggle()">
+              <tui-svg
+                src="tuiIconPlus"
+                class="action__icon"
+              ></tui-svg>
+              Добавить список
+            </button>
           </tui-opt-group>
           <tui-opt-group>
             <button
@@ -42,7 +42,7 @@
           tuiTextfieldSize="s"
           [tuiTextfieldCleaner]="true">
           Название списка
-          <input tuiTextfield/>
+          <input tuiTextfield />
         </tui-input>
         <button
           tuiIconButton
@@ -65,5 +65,9 @@
     </form>
   </div>
 
-  <vt-stock-list class="list__container" [list]="(list$ | async) || []"></vt-stock-list>
+  <vt-stock-list
+    class="list__container"
+    [list]="(list$ | async) || []"
+    (selected)="onSelect($event)">
+  </vt-stock-list>
 </div>
