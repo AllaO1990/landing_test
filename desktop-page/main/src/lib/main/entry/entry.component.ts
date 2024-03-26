@@ -6,10 +6,11 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ENTRY_CONSTANTS } from './entry.constants';
+import { ENTRY_CONSTANTS, ENTRY_HEADER } from './entry.constants';
 import { Observable } from 'rxjs';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { DESKTOP_API } from 'tokens/desktop';
+import { Idea } from 'types/idea';
 
 @Component({
   selector: 'vt-entry',
@@ -17,24 +18,16 @@ import { DESKTOP_API } from 'tokens/desktop';
   styleUrls: ['./entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EntryComponent implements OnInit {
+export class EntryComponent {
   public testValue = new FormControl(null);
   public constants = ENTRY_CONSTANTS;
 
-  @Input() data = Array.from({ length: 100 }, (_, i: number) => ({
-    id: i,
-    direction: 'buy',
-    ticker: 'MOEX',
-    cost: 4600,
-    enter: 4500,
-    stop: 4382,
-    luck: 10,
-    idea: !!(i % 8),
-  }));
-  public readonly _api: DesktopService = inject(DESKTOP_API);
-  public data$: Observable<any[]> = this._api.getIdeaList() as Observable<
-    any[]
-  >;
+  @Input() data: Idea[] | null = null;
+
+  public readonly header: { name: string; label: string }[] = ENTRY_HEADER;
+  public readonly columnList: string[] = this.header.map(
+    (item: { name: string }) => item.name
+  );
 
   public market = [
     {
@@ -78,7 +71,10 @@ export class EntryComponent implements OnInit {
     },
   ];
 
-  constructor() {}
-
-  ngOnInit(): void {}
+  public trackByIndex(index: number): number {
+    return index;
+  }
+  public trackById(index: number, item: Idea): number | string {
+    return item.id;
+  }
 }

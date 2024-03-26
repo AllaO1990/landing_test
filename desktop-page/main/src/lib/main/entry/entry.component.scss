@@ -26,13 +26,33 @@
 
     flex: 0 0 24px;
   }
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+    width: 100%;
+  }
+
+  &__loader {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &__viewport {
+    height: 100%;
+  }
+
+  &__table {
+    tr {
+      height: 45px;
+    }
+  }
 }
 
 tui-radio-block:not(:last-child) {
   margin-right: 4px;
-}
-
-.header {
-  display: flex;
-  flex-flow: row;
 }

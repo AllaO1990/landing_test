@@ -1,8 +1,8 @@
-import { VtDirection } from '../../../../../shared/interfaces/direction.enums';
+import { StockDirection } from 'types/stock';
 
 export interface IdeaType {
   id: number;
-  direction: VtDirection;
+  direction: StockDirection;
   ticker: string;
   cost: number;
   enter: number;

@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+  background-color: var(--block-bg-color);
+}
+
+.entry__header {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+}
+.entry__nav {
+  background-color: #eef1f9;
+  display: flex;
+  align-items: center;
+  flex: 0 0 24px;
+}
+.entry__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.entry__loader {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.entry__viewport {
+  height: 100%;
+}
+.entry__table tr {
+  height: 45px;
+}
+
+tui-radio-block:not(:last-child) {
+  margin-right: 4px;
+}
+
+/*# sourceMappingURL=entry.component.css.map */

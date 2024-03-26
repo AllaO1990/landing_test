@@ -3,6 +3,11 @@ export enum StockNameType {
   'CUSTOM' = 'custom',
 }
 
+export enum StockDirection {
+  BUY = 'buy',
+  SELL = 'sell',
+}
+
 export type StockId = string | number;
 
 /**

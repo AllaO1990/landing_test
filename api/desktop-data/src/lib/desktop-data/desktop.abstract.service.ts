@@ -1,8 +1,9 @@
 import { Observable } from 'rxjs';
 import { StockId, StockListItem, StockNameItem } from 'types/stock';
+import { Idea } from 'types/idea';
 
 export abstract class DesktopService {
-  public abstract getIdeaList(): Observable<unknown>;
+  public abstract getIdeaList(): Observable<Idea[]>;
 
   public abstract getStockList(): Observable<unknown>;
 
