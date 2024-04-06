@@ -9,6 +9,10 @@
 }
 
 .entry {
+  &__scrollbar {
+    height: 100%;
+  }
+
   &__header {
     box-sizing: border-box;
     display: flex;
@@ -47,8 +51,22 @@
   }
 
   &__table {
+    --tui-height-m: 32px;
+
+    width: 100%;
+
+    th {
+      font-size: 8px;
+      line-height: 10px;
+      font-weight: 400;
+    }
+
     tr {
-      height: 45px;
+      height: 32px;
+    }
+
+    td {
+      background-color: inherit;
     }
   }
 }

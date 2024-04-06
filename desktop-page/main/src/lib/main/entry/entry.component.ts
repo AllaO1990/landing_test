@@ -1,16 +1,26 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Input,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ENTRY_CONSTANTS, ENTRY_HEADER } from './entry.constants';
-import { Observable } from 'rxjs';
-import { DesktopService } from '@desktop-data/desktop-data';
-import { DESKTOP_API } from 'tokens/desktop';
 import { Idea } from 'types/idea';
+import { EntryHeaderItem } from './entry.types';
+import { scaleLinear } from 'd3-scale';
+import { color, rgb } from 'd3-color';
+
+export const getColor = scaleLinear(
+  [1, 5, 10],
+  ['#FF103B', '#EEF1F9', '#039322']
+);
+
+export const getRGBA = (v: any) => {
+  const c = color(v);
+  if (c) {
+    c.opacity = 0.1;
+  }
+
+  return c;
+};
+
+export const getColorBackGround = (v: number) => getRGBA(getColor(v));
 
 @Component({
   selector: 'vt-entry',
@@ -24,10 +34,12 @@ export class EntryComponent {
 
   @Input() data: Idea[] | null = null;
 
-  public readonly header: { name: string; label: string }[] = ENTRY_HEADER;
+  public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
   public readonly columnList: string[] = this.header.map(
     (item: { name: string }) => item.name
   );
+
+  protected getColorBackGround = getColorBackGround;
 
   public market = [
     {

@@ -1,37 +1,37 @@
-<div class="entry__header">
-  <div class="entry__title">
-    {{ constants.title }}
-  </div>
-  <div class="entry__radio">
-    <tui-radio-block
-      *ngFor="let item of market"
-      [formControl]="testValue"
-      contentAlign="right"
-      size="s"
-      [item]="item.id"
-      [hideRadio]="true"
-    >
-      {{ item.text }}
-    </tui-radio-block>
-  </div>
-  <div class="entry__add-idea">
-    <button tuiButton appearance="secondary" type="button">
-      {{ constants.add_idea }}
-    </button>
-  </div>
-</div>
-<div class="entry__nav">
-  <tui-radio-block
-    *ngFor="let item of time"
-    [formControl]="testValue"
-    contentAlign="right"
-    size="s"
-    [item]="item.id"
-    [hideRadio]="true"
-  >
-    {{ item.text }}
-  </tui-radio-block>
-</div>
+<!--<div class="entry__header">-->
+<!--  <div class="entry__title">-->
+<!--    {{ constants.title }}-->
+<!--  </div>-->
+<!--  <div class="entry__radio">-->
+<!--    <tui-radio-block-->
+<!--      *ngFor="let item of market"-->
+<!--      [formControl]="testValue"-->
+<!--      contentAlign="right"-->
+<!--      size="s"-->
+<!--      [item]="item.id"-->
+<!--      [hideRadio]="true"-->
+<!--    >-->
+<!--      {{ item.text }}-->
+<!--    </tui-radio-block>-->
+<!--  </div>-->
+<!--  <div class="entry__add-idea">-->
+<!--    <button tuiButton appearance="secondary" type="button">-->
+<!--      {{ constants.add_idea }}-->
+<!--    </button>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<div class="entry__nav">-->
+<!--  <tui-radio-block-->
+<!--    *ngFor="let item of time"-->
+<!--    [formControl]="testValue"-->
+<!--    contentAlign="right"-->
+<!--    size="s"-->
+<!--    [item]="item.id"-->
+<!--    [hideRadio]="true"-->
+<!--  >-->
+<!--    {{ item.text }}-->
+<!--  </tui-radio-block>-->
+<!--</div>-->
 <!--<vt-recommendation [data]="(data$ | async) || []" [itemSize]="32">-->
 <!--  <div *recommendationHeader class="header">-->
 <!--    <div class="header__col">Направ.</div>-->
@@ -41,113 +41,113 @@
 <!--  <span>header entry works!</span>-->
 <!--  <vt-entry-idea *recommendationItem="let item" [data]="item"></vt-entry-idea>-->
 <!--</vt-recommendation>-->
+
 <tui-loader
   class="entry__loader"
   [overlay]="true"
   [showLoader]="data === null">
-  <tui-scrollbar
-    class="entry__scrollbar"
-    *ngIf="data; else empty">
-    <cdk-virtual-scroll-viewport
-      #viewport
-      tuiScrollable
-      class="entry__viewport tui-zero-scrollbar"
-      [itemSize]="45">
-      <table
-        tuiTable
-        class="entry__table"
-        [columns]="columnList">
-        <thead>
-        <tr tuiThGroup>
-          <ng-container *ngFor="let item of header; trackBy: trackByIndex">
-            <th
-              tuiTh
-              *tuiHead="item.name"
-              [style.top]="-viewport['_renderedContentOffset']"
-              [sorter]="null"
-              [sticky]="true"
-              [resizable]="true">
-              {{ item.label }}
-            </th>
-          </ng-container>
-        </tr>
-        </thead>
-        <tbody
-          tuiTbody>
-        <tr
-          *cdkVirtualFor="let item of data | tuiTableSort; trackBy: trackById"
-          tuiTr>
-          <td
-            *tuiCell="'date'"
-            [title]="item.date | date: 'dd.MM.yyyy'"
-            tuiTd>
-            {{ item.date | date: 'dd.MM' }}
-          </td>
+<tui-scrollbar
+  class="entry__scrollbar">
+  <cdk-virtual-scroll-viewport
+    #viewport
+    tuiScrollable
+    class="entry__viewport tui-zero-scrollbar"
+    [itemSize]="32"
+  >
+    <table
+      class="entry__table"
+      tuiTable
+      [columns]="columnList">
+      <thead>
+      <tr tuiThGroup>
+        <ng-container *ngFor="let item of header; trackBy: trackByIndex">
+          <th
+            *tuiHead="item.name"
+            tuiTh
+            [sticky]="true"
+            [sorter]="item.sorter"
+            [style.top.px]="-viewport['_renderedContentOffset']">
+            {{item.label}}
+          </th>
+        </ng-container>
+      </tr>
+      </thead>
+      <tbody tuiTbody>
+      <tr
+        *cdkVirtualFor="let item of (data || []) | tuiTableSort; trackBy: trackById"
+        [style.background-color]="getColorBackGround(item.luck)"
+        tuiTr>
+        <td
+          *tuiCell="'date'"
+          [title]="item.date | date: 'dd.MM.yyyy'"
+          tuiTd>
+          {{ item.date | date: 'dd.MM' }}
+        </td>
 
-          <td
-            *tuiCell="'cost'"
-            tuiTd>
-            {{ item.cost | tuiFormatNumber }}
-          </td>
+        <td
+          *tuiCell="'cost'"
+          tuiTd>
+          {{ item.cost | tuiFormatNumber }}
+        </td>
 
-          <td
-            *tuiCell="'direction'"
-            tuiTd>
-            {{ item.direction }}
-          </td>
+        <td
+          *tuiCell="'direction'"
+          tuiTd>
+          {{ item.direction }}
+        </td>
 
-          <td
-            *tuiCell="'ticker'"
-            tuiTd>
-            {{ item.ticker }}
-          </td>
+        <td
+          *tuiCell="'ticker'"
+          tuiTd>
+          {{ item.ticker }}
+        </td>
 
-          <td
-            *tuiCell="'ticker'"
-            tuiTd>
-            {{ item.ticker }}
-          </td>
+        <td
+          *tuiCell="'ticker'"
+          tuiTd>
+          {{ item.ticker }}
+        </td>
 
-          <td
-            *tuiCell="'luck'"
-            tuiTd>
-            {{ item.luck }}
-          </td>
+        <td
+          *tuiCell="'luck'"
+          tuiTd>
+          {{ item.luck }}
+        </td>
 
-          <td
-            *tuiCell="'deposit'"
-            tuiTd>
-            {{ item.deposit }}
-          </td>
+        <td
+          *tuiCell="'deposit'"
+          tuiTd>
+          {{ item.deposit }}
+        </td>
 
-          <td
-            *tuiCell="'idea'"
-            tuiTd>
-            <img class="idea__icon" *ngIf="item.idea else non" src="/assets/icons/vanya.svg" alt="Идея" />
-          </td>
+        <td
+          *tuiCell="'idea'"
+          tuiTd>
+          <img class="idea__icon" *ngIf="item.idea else none" src="/assets/icons/vanya.svg" alt="Идея" />
+        </td>
 
-          <td
-            *tuiCell="'enter'"
-            tuiTd>
-            {{ item.enter | tuiFormatNumber }}
-          </td>
+        <td
+          *tuiCell="'enter'"
+          tuiTd>
+          {{ item.enter | tuiFormatNumber }}
+        </td>
 
-          <td
-            *tuiCell="'stop'"
-            tuiTd>
-            {{ item.stop | tuiFormatNumber }}
-          </td>
+        <td
+          *tuiCell="'stop'"
+          tuiTd>
+          {{ item.stop | tuiFormatNumber }}
+        </td>
 
-          <td
-            *tuiCell="'cost'"
-            tuiTd>
-            {{ item.cost | tuiFormatNumber }}
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </cdk-virtual-scroll-viewport>
-  </tui-scrollbar>
+        <td
+          *tuiCell="'cost'"
+          tuiTd>
+          {{ item.cost | tuiFormatNumber }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </cdk-virtual-scroll-viewport>
+</tui-scrollbar>
 </tui-loader>
 
 <ng-template #empty>
@@ -156,6 +156,6 @@
   </div>
 </ng-template>
 
-<ng-template #non>
+<ng-template #none>
   &mdash;
 </ng-template>

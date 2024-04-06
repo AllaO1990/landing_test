@@ -12,11 +12,7 @@ import {
 } from '@taiga-ui/core';
 import { RecommendationModule } from '../../../../../../apps/desktop/src/app/pages/main-v2/common/recommendation/recommendation.module';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import {
-  CdkFixedSizeVirtualScroll,
-  CdkVirtualForOf,
-  CdkVirtualScrollViewport,
-} from '@angular/cdk/scrolling';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   declarations: [EntryComponent, EntryIdeaComponent],
@@ -27,12 +23,10 @@ import {
     TuiRadioBlockModule,
     TuiButtonModule,
     TuiTableModule,
-    CdkVirtualScrollViewport,
     TuiScrollbarModule,
-    CdkFixedSizeVirtualScroll,
-    CdkVirtualForOf,
     TuiFormatNumberPipeModule,
     TuiLoaderModule,
+    ScrollingModule,
   ],
   exports: [EntryComponent],
 })
