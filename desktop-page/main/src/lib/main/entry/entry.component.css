@@ -38,19 +38,17 @@
   height: 100%;
 }
 .entry__table {
-  --tui-height-m: 32px;
   width: 100%;
 }
 .entry__table th {
   font-size: 8px;
   line-height: 10px;
   font-weight: 400;
-}
-.entry__table tr {
-  height: 32px;
+  --tui-height-m: 48px;
 }
 .entry__table td {
   background-color: inherit;
+  --tui-height-m: 32px;
 }
 
 tui-radio-block:not(:last-child) {
