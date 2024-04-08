@@ -68,7 +68,48 @@ export class DesktopApiService extends DesktopService {
     );
   }
 
-  getTradeList(): Observable<StockNameItem[]> {
-    return this._http.get<StockNameItem[]>('/assets/mocks/trade-list.json');
+  getTradeList(): Observable<any[]> {
+    const today: Date = new Date();
+    const maxDay: number = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    ).getDate();
+    const genNumber = (max: number, min: number): number => {
+      return Math.floor(Math.random() * (max - min) + min);
+    };
+
+    return timer(2000).pipe(
+      switchMap((_) =>
+        of(
+          Array.from({ length: 100 }, (_, i: number) => {
+            const cost = genNumber(10000, 100);
+            const enterDiff = genNumber(100, 10);
+            const deposit = genNumber(100, 2);
+            const luck = genNumber(10, 1);
+
+            return {
+              id: i,
+              figi: `${i}`,
+              date: `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(
+                maxDay,
+                1
+              )}`,
+              direction: StockDirection.BUY,
+              ticker: 'MOEX',
+              cost,
+              enter: cost - enterDiff,
+              target1: cost + enterDiff,
+              target2: cost + enterDiff * 3,
+              stop: cost - enterDiff * 2,
+              deposit,
+              luck,
+            };
+          })
+        )
+      )
+    );
+
+    // return this._http.get<StockNameItem[]>('/assets/mocks/trade-list.json');
   }
 }

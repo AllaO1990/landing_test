@@ -4,7 +4,7 @@ import { ENTRY_CONSTANTS, ENTRY_HEADER } from './entry.constants';
 import { Idea } from 'types/idea';
 import { EntryHeaderItem } from './entry.types';
 import { scaleLinear } from 'd3-scale';
-import { color, rgb } from 'd3-color';
+import { color } from 'd3-color';
 
 export const getColor = scaleLinear(
   [1, 5, 10],

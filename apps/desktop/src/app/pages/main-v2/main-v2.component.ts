@@ -6,11 +6,11 @@ import {
 } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { ChartModule } from './common/chart/chart.module';
-import { EntryModule } from './common/entry/entry.module';
-import { OutModule } from './common/out/out.module';
 import { Observable } from 'rxjs';
-import { StockComponent } from './common/stock/stock.component';
-import { DesktopApiService } from '@desktop-data/desktop-data';
+import { EntryModule } from '../../../../../../desktop-page/main/src/lib/main/entry/entry.module';
+import { OutModule } from '../../../../../../desktop-page/main/src/lib/main/out/out.module';
+import { StockComponent } from '../../../../../../desktop-page/main/src/lib/main/stock/stock.component';
+import { DesktopApiService } from '../../../../../../api/desktop-data/src/lib/desktop-data';
 
 @Component({
   selector: 'vt-main-v2',
