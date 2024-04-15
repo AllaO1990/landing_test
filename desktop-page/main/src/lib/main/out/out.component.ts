@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Input,
+} from '@angular/core';
 import { scaleLinear } from 'd3-scale';
 import { color } from 'd3-color';
 import { Idea } from 'types/idea';
@@ -6,6 +11,8 @@ import { EntryHeaderItem } from '../entry/entry.types';
 import { ENTRY_HEADER } from '../entry/entry.constants';
 import { OUT_COLUMNS, OUT_HEADER } from './out.constants';
 import { OutHeaderItem } from './out.types';
+import { DesktopLkStore } from '../../../../../../stores/desktop';
+import { DESKTOP_STORE } from 'tokens/desktop';
 
 export const getColor = scaleLinear(
   [1, 5, 10],
@@ -30,6 +37,8 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutComponent {
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+
   public readonly header: OutHeaderItem[][] = OUT_HEADER;
 
   public readonly columnList: string[] = OUT_COLUMNS;

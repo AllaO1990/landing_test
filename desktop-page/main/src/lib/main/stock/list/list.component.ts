@@ -17,6 +17,7 @@ import { NgForOf } from '@angular/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockListItem } from 'types/stock';
+import { EventSelected } from 'types/events';
 
 @Component({
   selector: 'vt-stock-list',
@@ -55,9 +56,9 @@ export class StockListComponent {
     return this._list;
   }
 
-  @Output() selected: Observable<{ type: string; value: unknown }> =
+  @Output() selected: Observable<{ type: EventSelected; value: unknown }> =
     this.controlItem.valueChanges.pipe(
-      map((value: StockListItem) => ({ type: 'select-stock-list', value }))
+      map((value: StockListItem) => ({ type: EventSelected.STOCK_LIST, value }))
     );
 
   public trackByHeader(

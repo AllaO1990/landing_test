@@ -38,18 +38,19 @@
   height: 100%;
 }
 .out__table {
-  --tui-height-m: 32px;
   width: 100%;
 }
 .out__table th {
   font-size: 8px;
   line-height: 10px;
   font-weight: 400;
+  --tui-height-m: 23px;
 }
 .out__table tr {
-  height: 32px;
+  height: 16px;
 }
 .out__table td {
+  --tui-height-m: 32px;
   background-color: inherit;
 }
 
