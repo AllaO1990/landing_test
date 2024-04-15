@@ -46,9 +46,11 @@
   font-weight: 400;
   --tui-height-m: 48px;
 }
+.entry__table tr {
+  --tui-height-m: 32px;
+}
 .entry__table td {
   background-color: inherit;
-  --tui-height-m: 32px;
 }
 
 tui-radio-block:not(:last-child) {
