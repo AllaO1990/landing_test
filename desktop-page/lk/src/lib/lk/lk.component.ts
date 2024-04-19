@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToolbarSearchModule } from '../../../../../apps/desktop/src/app/shared/components/toolbar-search';
 import { DesktopLkStore } from 'stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
+import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
 
 @Component({
   selector: 'lib-lk',
@@ -14,6 +14,7 @@ import { DESKTOP_STORE } from 'tokens/desktop';
     {
       provide: DESKTOP_STORE,
       useClass: DesktopLkStore,
+      deps: [DESKTOP_API],
     },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

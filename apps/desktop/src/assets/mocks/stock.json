@@ -1,1 +1,981 @@
-{"success":true,"message":"Success","data":{"total":108,"items":[{"id":"4195e77e-06ff-430a-8aae-f8298607d743","source":"tinkoff","ticker":"ABRD","name":"АбрауДюрсо","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"fd9b7106-ae06-4710-8660-2035ce362bb4","source":"tinkoff","ticker":"AFKS","name":"АФК Система","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"0e887743-312c-4246-b7c6-7cb55af9dc63","source":"tinkoff","ticker":"AFLT","name":"Аэрофлот","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"88d48646-5e97-4c56-a023-4c856c58a801","source":"tinkoff","ticker":"AGRO","name":"РусАгро","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"8ec7dc6f-4acc-41d4-91a5-578ce04c0c6e","source":"tinkoff","ticker":"ALRS","name":"АЛРОСА","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"6c772be6-45e9-4cf3-9304-23fcf675525c","source":"tinkoff","ticker":"AMEZ","name":"Ашинский метзавод","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"24fa00b1-8315-45e5-b6dc-b54e128142b7","source":"tinkoff","ticker":"APTK","name":"Аптечная сеть 36,6","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"e9f48669-72ea-4976-bd46-5da521ff60a1","source":"tinkoff","ticker":"AQUA","name":"ИНАРКТИКА","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"d04d7609-00e8-43d0-91a7-ebeceaa520e3","source":"tinkoff","ticker":"BANE","name":"Башнефть","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"7eb44c48-6bfb-4608-b9be-6699f39694ed","source":"tinkoff","ticker":"BANEP","name":"Башнефть - привилегированные акции","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"404992ae-dce2-4590-9947-3dc57ff16992","source":"tinkoff","ticker":"BELU","name":"Novabev Group","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"4696ab6d-809a-47c9-9227-e192b45f1aa8","source":"tinkoff","ticker":"BLNG","name":"Белон","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"d4bbdeae-34f1-4ec2-a7e1-15ffcad91ff7","source":"tinkoff","ticker":"BSPB","name":"Банк Санкт-Петербург","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"e487b473-f398-474f-9b42-d89068847ced","source":"tinkoff","ticker":"CBOM","name":"МКБ","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"2ee5a596-095e-4242-91d2-2ebab1a8ecdf","source":"tinkoff","ticker":"CHMF","name":"Северсталь","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"da5345fc-e22e-4dea-8d65-3983089d7e98","source":"tinkoff","ticker":"CNYRUB_TOM","name":"Китайский юань","type":"currencies","exchange":"FX","realExchange":"moex"},{"id":"eac21138-dd5f-41a0-ac55-ad6f3d17719b","source":"tinkoff","ticker":"DSKY","name":"Детский Мир","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"8bba83a4-0772-489b-b084-5e00dec0750e","source":"tinkoff","ticker":"DVEC","name":"ДЭК","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"7d4ff704-d3e1-4765-942d-743bb3994f55","source":"tinkoff","ticker":"ENPG","name":"Эн+","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"812e09d1-771c-4fcb-bff7-0adecde3fa73","source":"tinkoff","ticker":"EURRUBF","name":"EURRUBF Евро - Рубль","type":"futures","exchange":"FORTS_EVENING","realExchange":"moex"},{"id":"aa4945d3-6a0b-4934-a774-aeb53e57762e","source":"tinkoff","ticker":"FEES","name":"ФСК Россети","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"e53e6097-59fd-4c42-895c-9b9d5a603929","source":"tinkoff","ticker":"FESH","name":"ДВМП","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"a8530d2e-1622-42ee-84da-17431b987a22","source":"tinkoff","ticker":"FIVE","name":"X5 RetailGroup ГДР","type":"shares","exchange":"moex_close","realExchange":"moex"},{"id":"350d7651-cd51-4de2-a03f-a5078f9167c4","source":"tinkoff","ticker":"FIXP","name":"Fix Price Group","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"680a6303-646f-49ba-a97e-dfaea591fa47","source":"tinkoff","ticker":"FLOT","name":"Совкомфлот","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"72187db2-44d8-4b2e-8b43-c41fd30c4a39","source":"tinkoff","ticker":"GAZP","name":"Газпром","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"f82416ed-8e7d-435c-bbd2-2737215fd4e8","source":"tinkoff","ticker":"GEMC","name":"United medical group","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"eeb2ae7f-86d1-4a44-af1d-e2045603cf8a","source":"tinkoff","ticker":"GLDRUBF","name":"GLDRUBF Золото (rub)","type":"futures","exchange":"FORTS_EVENING","realExchange":"moex"},{"id":"23dee423-512d-40e7-900b-c79860a70346","source":"tinkoff","ticker":"GLDRUB_TOM","name":"Золото","type":"currencies","exchange":"FX_MTL","realExchange":"moex"},{"id":"178747f3-fb3a-42ff-9253-f608e12b920b","source":"tinkoff","ticker":"GLTR","name":"Globaltrans Investment PLC","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"9d71baa3-95e0-4af8-ae17-220257ae4236","source":"tinkoff","ticker":"GMKN","name":"Норильский никель","type":"shares","exchange":"MOEX_PLUS","realExchange":"moex"},{"id":"7c447d42-4d04-4e89-ae6f-01a692fa0943","source":"tinkoff","ticker":"GTRK","name":"ГТМ","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"097a4b48-e823-478c-bb28-5fbb7f311196","source":"tinkoff","ticker":"HHRU","name":"HeadHunter Group PLC","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"0ed812eb-d8fc-4e4d-9e59-98343fcbcb6e","source":"tinkoff","ticker":"HKDRUB_TOM","name":"Гонконгский доллар","type":"currencies","exchange":"FX","realExchange":"moex"},{"id":"b31251e7-5df5-4220-b85d-16b428089faf","source":"tinkoff","ticker":"HYDR","name":"РусГидро","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"e89a4a91-467b-4ab1-8509-677a27329a2f","source":"tinkoff","ticker":"IMOEXF","name":"IMOEXF Индекс МосБиржи","type":"futures","exchange":"FORTS_EVENING","realExchange":"moex"},{"id":"3735200e-67ff-4cd4-af66-197679d43405","source":"tinkoff","ticker":"IRAO","name":"Интер РАО ЕЭС","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"9229038c-6bf9-449a-a9f4-bf90a2e3d861","source":"tinkoff","ticker":"IRKT","name":"Яковлев","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"f11c0e75-91fb-4495-8dc5-6ff3b724b6cf","source":"tinkoff","ticker":"KMAZ","name":"КАМАЗ","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"b3a51300-60b3-453e-981b-fc854ff71f5a","source":"tinkoff","ticker":"KZOS","name":"Казаньоргсинтез - акции обыкновенные","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"48ebf6ac-14db-4660-9b00-ae1e4e090f16","source":"tinkoff","ticker":"KZOSP","name":"Казаньоргсинтез - акции привилегированные","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"f38d2b81-aa7d-4ec6-825f-12b52d04a3a4","source":"tinkoff","ticker":"LENT","name":"Лента","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"182647b3-6f95-42a2-9ce6-6b78262f2d49","source":"tinkoff","ticker":"LKOH","name":"ЛУКОЙЛ","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"6afd602a-f3ba-455f-9b4e-0497a419123b","source":"tinkoff","ticker":"LSNG","name":"Ленэнерго","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"83701f0c-5d58-4723-a7f6-63a256334876","source":"tinkoff","ticker":"LSNGP","name":"Ленэнерго - акции привилегированные","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"587c64bb-48fa-4902-af5b-aa04e7a56820","source":"tinkoff","ticker":"LSRG","name":"Группа ЛСР","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"48300c89-0fd6-4ca9-9d56-fc64e571635d","source":"tinkoff","ticker":"MAGN","name":"Магнитогорский металлургический комбинат","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"95957df3-0ee9-4625-aba4-418dab4efcae","source":"tinkoff","ticker":"MGNT","name":"Магнит","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"d8cfed30-05cd-45ee-a6c4-27ce171384a2","source":"tinkoff","ticker":"MOEX","name":"Московская Биржа","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"afcb901b-341c-4353-8706-de1c5246e192","source":"tinkoff","ticker":"MRKP","name":"Россети Центр и Приволжье","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"08793d24-71bf-4d44-88ea-6783dab1c474","source":"tinkoff","ticker":"MRKS","name":"МРСК Сибири","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"b10ed937-d819-47f5-ac13-fb6f4bb3667b","source":"tinkoff","ticker":"MRKU","name":"Россети Урал","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"797862bb-30a7-4b64-8253-4a596e381932","source":"tinkoff","ticker":"MSNG","name":"Мосэнерго","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"ba15183f-d187-49a7-b54d-422fa8c7f4da","source":"tinkoff","ticker":"MSRS","name":"Россети Московский регион","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"2d335ce7-b248-4e39-8042-9935418f5fdc","source":"tinkoff","ticker":"MSTT","name":"Мостотрест","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"b1578495-34f0-4b1f-9683-b4c06509283e","source":"tinkoff","ticker":"MTLR","name":"Мечел","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"d5c78358-4b99-4dff-84e8-d6809073ada6","source":"tinkoff","ticker":"MTLRP","name":"Мечел - Привилегированные акции","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"172ed106-ea8b-4273-b155-9167e400b034","source":"tinkoff","ticker":"MTSS","name":"МТС","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"9aa2b4cc-6144-44a7-a42c-7e44f8365688","source":"tinkoff","ticker":"MVID","name":"М.видео","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"239292df-9626-4126-8af5-98da761d1c55","source":"tinkoff","ticker":"NKHP","name":"НКХП","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"de2c43b8-2000-49b3-b1a6-6b0caa3e930c","source":"tinkoff","ticker":"NKNC","name":"Нижнекамскнефтехим","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"99da23f5-3c0e-422a-b499-60b047e03f8b","source":"tinkoff","ticker":"NKNCP","name":"Нижнекамскнефтехим (привилегированные)","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"d6962d7b-debe-430e-b9d6-a0f0878a56b7","source":"tinkoff","ticker":"NLMK","name":"НЛМК","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"70c3e3a3-5bc4-41c5-9e6a-16e54d3f80f6","source":"tinkoff","ticker":"NMTP","name":"НМТП","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"8caf020c-4719-417f-8a3d-3739ed03865f","source":"tinkoff","ticker":"NVTK","name":"НОВАТЭК","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"d779cd04-0a83-4019-9491-e65b8e8b88e7","source":"tinkoff","ticker":"OGKB","name":"Вторая генерирующая компания оптового рынка электроэнергии","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"22121908-b791-4d4e-b5d9-5b54d0d24a33","source":"tinkoff","ticker":"OZON","name":"Ozon Holdings PLC","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"258066d8-cc43-4b15-bb79-764518faa5f3","source":"tinkoff","ticker":"PHOR","name":"ФосАгро","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"77c854f2-7f1d-4cc0-9ff5-67054e6577dc","source":"tinkoff","ticker":"PIKK","name":"ПИК","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"1758a869-5e4d-4bb6-9f25-7dad580cf62c","source":"tinkoff","ticker":"PLZL","name":"Полюс","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"02a10912-b9fd-4407-9e80-e1c65f541f94","source":"tinkoff","ticker":"POLY","name":"Polymetal","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"ea07ca06-4b41-4ea6-b6b2-625fe95126fc","source":"tinkoff","ticker":"POSI","name":"Positive Technologies","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"70b82e64-60c6-4ede-b7b1-b680f5efaca7","source":"tinkoff","ticker":"QIWI","name":"QIWI","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"e6edfdb9-611b-4194-9652-33ad11b57027","source":"tinkoff","ticker":"RASP","name":"Распадская","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"67ccd9ad-4cb7-4570-b259-891569446455","source":"tinkoff","ticker":"RENI","name":"Ренессанс Страхование","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"ebec29e7-4c33-4c23-ad57-da8ed8268127","source":"tinkoff","ticker":"RNFT","name":"РуссНефть","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"f0764a44-06a9-4477-8f55-763f211520d5","source":"tinkoff","ticker":"ROLO","name":"Русолово","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"72fd99a8-0332-4b65-95b6-c99168d3f65e","source":"tinkoff","ticker":"ROSN","name":"Роснефть","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"7d462131-d280-4e1f-83c2-f08c7db2a4a8","source":"tinkoff","ticker":"RTKM","name":"Ростелеком","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"b17bc294-d0aa-4d17-abf7-96441bfd9e41","source":"tinkoff","ticker":"RTKMP","name":"Ростелеком - Привилегированные акции","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"d9cfad08-eba0-4a74-ae23-c3add945c6f1","source":"tinkoff","ticker":"RUAL","name":"РУСАЛ","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"8db67999-2cc2-4f7e-a2be-7174b4b12d4d","source":"tinkoff","ticker":"SBER","name":"Сбер Банк","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"f19bc71b-946b-48fc-9383-074f349a1e75","source":"tinkoff","ticker":"SBERP","name":"Сбер Банк - привилегированные акции","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"ff5d0316-3536-4233-b105-85a727983734","source":"tinkoff","ticker":"SELG","name":"Селигдар","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"2f637f18-9854-4a01-b623-956c8aab4a9c","source":"tinkoff","ticker":"SFIN","name":"ЭсЭфАй","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"e506a5aa-66a1-4dbb-9f5d-1bf3da12aa02","source":"tinkoff","ticker":"SGZH","name":"Сегежа","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"1ba4cecd-69dd-40af-9403-56fc42c62164","source":"tinkoff","ticker":"SIBN","name":"Газпром нефть","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"797673e0-2e7a-4b36-8d2b-7629ceb0d744","source":"tinkoff","ticker":"SLVRUB_TOM","name":"Серебро","type":"currencies","exchange":"FX_MTL","realExchange":"moex"},{"id":"d0cd2d95-72e7-402a-a9c5-2cb52e9a8d3c","source":"tinkoff","ticker":"SMLT","name":"ГК Самолет","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"4daecca7-b223-4028-9e13-d3f7882711db","source":"tinkoff","ticker":"SNGS","name":"Сургутнефтегаз","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"9b30da55-e248-458f-93e0-8689c699c2ec","source":"tinkoff","ticker":"SNGSP","name":"Сургутнефтегаз - привилегированные акции","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"c6f2f58a-63c1-4f86-af65-9590dd4c7bba","source":"tinkoff","ticker":"SVAV","name":"СОЛЛЕРС","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"31071d79-d2b1-4675-a015-c58f8d587d43","source":"tinkoff","ticker":"TATN","name":"Татнефть","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"54b13131-42a1-4c7b-9e5e-e56c8ff4763d","source":"tinkoff","ticker":"TATNP","name":"Татнефть - привилегированные акции","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"b4c590bf-4377-415e-83a8-455ab29db067","source":"tinkoff","ticker":"TCSG","name":"ТКС Холдинг","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"ec6d446b-9f06-4859-bd48-01971130d23f","source":"tinkoff","ticker":"TGKA","name":"ТГК-1","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"0373d485-cc4d-4f42-9e48-7d133621428a","source":"tinkoff","ticker":"TRMK","name":"Трубная Металлургическая Компания","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"681dedcf-6e33-4fe9-a640-9962627ae5b2","source":"tinkoff","ticker":"TRNFP","name":"Транснефть - привилегированные акции","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"0fc02006-3df5-4bf4-bad3-c279771ce8d0","source":"tinkoff","ticker":"UNAC","name":"Объединенная авиастроительная корпорация","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"c72930ea-8838-4854-bfb2-e737fd958cbd","source":"tinkoff","ticker":"UPRO","name":"Юнипро","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"b357724f-4691-4212-b54c-24ee8918b555","source":"tinkoff","ticker":"USD000UTSTOM","name":"Доллар США","type":"currencies","exchange":"FX","realExchange":"moex"},{"id":"0c3aa828-e915-4466-a1b3-48dba999e17b","source":"tinkoff","ticker":"USDRUBF","name":"USDRUBF Доллар - Рубль","type":"futures","exchange":"FORTS_EVENING","realExchange":"moex"},{"id":"1a5a7668-ec2c-418a-b86e-d0920ad784dd","source":"tinkoff","ticker":"VEON-RX","name":"VEON","type":"shares","exchange":"MOEX","realExchange":"moex"},{"id":"4a902b16-d3c6-4266-b216-872b7d6afe2a","source":"tinkoff","ticker":"VKCO","name":"ВК","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"f8257855-5b96-43be-ab71-4b6423e09352","source":"tinkoff","ticker":"VRSB","name":"ТНС энерго Воронеж","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"84bc14a3-19db-45b5-882d-17de9ae15dc5","source":"tinkoff","ticker":"VTBR","name":"Банк ВТБ","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"},{"id":"a165db55-7f57-4db9-9104-a43f7b414c33","source":"tinkoff","ticker":"YAKG","name":"ЯТЭК","type":"shares","exchange":"MOEX_WEEKEND","realExchange":"moex"},{"id":"01152218-915c-4276-aace-e09ab16414ad","source":"tinkoff","ticker":"YNDX","name":"Яндекс","type":"shares","exchange":"MOEX_EVENING_WEEKEND","realExchange":"moex"}]}}
+{
+  "success": true,
+  "message": "Success",
+  "data": {
+    "total": 108,
+    "items": [
+      {
+        "id": "4195e77e-06ff-430a-8aae-f8298607d743",
+        "source": "tinkoff",
+        "ticker": "ABRD",
+        "name": "АбрауДюрсо",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "fd9b7106-ae06-4710-8660-2035ce362bb4",
+        "source": "tinkoff",
+        "ticker": "AFKS",
+        "name": "АФК Система",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "0e887743-312c-4246-b7c6-7cb55af9dc63",
+        "source": "tinkoff",
+        "ticker": "AFLT",
+        "name": "Аэрофлот",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "88d48646-5e97-4c56-a023-4c856c58a801",
+        "source": "tinkoff",
+        "ticker": "AGRO",
+        "name": "РусАгро",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "8ec7dc6f-4acc-41d4-91a5-578ce04c0c6e",
+        "source": "tinkoff",
+        "ticker": "ALRS",
+        "name": "АЛРОСА",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "6c772be6-45e9-4cf3-9304-23fcf675525c",
+        "source": "tinkoff",
+        "ticker": "AMEZ",
+        "name": "Ашинский метзавод",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "24fa00b1-8315-45e5-b6dc-b54e128142b7",
+        "source": "tinkoff",
+        "ticker": "APTK",
+        "name": "Аптечная сеть 36,6",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "e9f48669-72ea-4976-bd46-5da521ff60a1",
+        "source": "tinkoff",
+        "ticker": "AQUA",
+        "name": "ИНАРКТИКА",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d04d7609-00e8-43d0-91a7-ebeceaa520e3",
+        "source": "tinkoff",
+        "ticker": "BANE",
+        "name": "Башнефть",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "7eb44c48-6bfb-4608-b9be-6699f39694ed",
+        "source": "tinkoff",
+        "ticker": "BANEP",
+        "name": "Башнефть - привилегированные акции",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "404992ae-dce2-4590-9947-3dc57ff16992",
+        "source": "tinkoff",
+        "ticker": "BELU",
+        "name": "Novabev Group",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "4696ab6d-809a-47c9-9227-e192b45f1aa8",
+        "source": "tinkoff",
+        "ticker": "BLNG",
+        "name": "Белон",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d4bbdeae-34f1-4ec2-a7e1-15ffcad91ff7",
+        "source": "tinkoff",
+        "ticker": "BSPB",
+        "name": "Банк Санкт-Петербург",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "e487b473-f398-474f-9b42-d89068847ced",
+        "source": "tinkoff",
+        "ticker": "CBOM",
+        "name": "МКБ",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "2ee5a596-095e-4242-91d2-2ebab1a8ecdf",
+        "source": "tinkoff",
+        "ticker": "CHMF",
+        "name": "Северсталь",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "da5345fc-e22e-4dea-8d65-3983089d7e98",
+        "source": "tinkoff",
+        "ticker": "CNYRUB_TOM",
+        "name": "Китайский юань",
+        "type": "currencies",
+        "exchange": "FX",
+        "realExchange": "moex"
+      },
+      {
+        "id": "eac21138-dd5f-41a0-ac55-ad6f3d17719b",
+        "source": "tinkoff",
+        "ticker": "DSKY",
+        "name": "Детский Мир",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "8bba83a4-0772-489b-b084-5e00dec0750e",
+        "source": "tinkoff",
+        "ticker": "DVEC",
+        "name": "ДЭК",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "7d4ff704-d3e1-4765-942d-743bb3994f55",
+        "source": "tinkoff",
+        "ticker": "ENPG",
+        "name": "Эн+",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "812e09d1-771c-4fcb-bff7-0adecde3fa73",
+        "source": "tinkoff",
+        "ticker": "EURRUBF",
+        "name": "EURRUBF Евро - Рубль",
+        "type": "futures",
+        "exchange": "FORTS_EVENING",
+        "realExchange": "moex"
+      },
+      {
+        "id": "aa4945d3-6a0b-4934-a774-aeb53e57762e",
+        "source": "tinkoff",
+        "ticker": "FEES",
+        "name": "ФСК Россети",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "e53e6097-59fd-4c42-895c-9b9d5a603929",
+        "source": "tinkoff",
+        "ticker": "FESH",
+        "name": "ДВМП",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "a8530d2e-1622-42ee-84da-17431b987a22",
+        "source": "tinkoff",
+        "ticker": "FIVE",
+        "name": "X5 RetailGroup ГДР",
+        "type": "shares",
+        "exchange": "moex_close",
+        "realExchange": "moex"
+      },
+      {
+        "id": "350d7651-cd51-4de2-a03f-a5078f9167c4",
+        "source": "tinkoff",
+        "ticker": "FIXP",
+        "name": "Fix Price Group",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "680a6303-646f-49ba-a97e-dfaea591fa47",
+        "source": "tinkoff",
+        "ticker": "FLOT",
+        "name": "Совкомфлот",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "72187db2-44d8-4b2e-8b43-c41fd30c4a39",
+        "source": "tinkoff",
+        "ticker": "GAZP",
+        "name": "Газпром",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "f82416ed-8e7d-435c-bbd2-2737215fd4e8",
+        "source": "tinkoff",
+        "ticker": "GEMC",
+        "name": "United medical group",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "eeb2ae7f-86d1-4a44-af1d-e2045603cf8a",
+        "source": "tinkoff",
+        "ticker": "GLDRUBF",
+        "name": "GLDRUBF Золото (rub)",
+        "type": "futures",
+        "exchange": "FORTS_EVENING",
+        "realExchange": "moex"
+      },
+      {
+        "id": "23dee423-512d-40e7-900b-c79860a70346",
+        "source": "tinkoff",
+        "ticker": "GLDRUB_TOM",
+        "name": "Золото",
+        "type": "currencies",
+        "exchange": "FX_MTL",
+        "realExchange": "moex"
+      },
+      {
+        "id": "178747f3-fb3a-42ff-9253-f608e12b920b",
+        "source": "tinkoff",
+        "ticker": "GLTR",
+        "name": "Globaltrans Investment PLC",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "9d71baa3-95e0-4af8-ae17-220257ae4236",
+        "source": "tinkoff",
+        "ticker": "GMKN",
+        "name": "Норильский никель",
+        "type": "shares",
+        "exchange": "MOEX_PLUS",
+        "realExchange": "moex"
+      },
+      {
+        "id": "7c447d42-4d04-4e89-ae6f-01a692fa0943",
+        "source": "tinkoff",
+        "ticker": "GTRK",
+        "name": "ГТМ",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "097a4b48-e823-478c-bb28-5fbb7f311196",
+        "source": "tinkoff",
+        "ticker": "HHRU",
+        "name": "HeadHunter Group PLC",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "0ed812eb-d8fc-4e4d-9e59-98343fcbcb6e",
+        "source": "tinkoff",
+        "ticker": "HKDRUB_TOM",
+        "name": "Гонконгский доллар",
+        "type": "currencies",
+        "exchange": "FX",
+        "realExchange": "moex"
+      },
+      {
+        "id": "b31251e7-5df5-4220-b85d-16b428089faf",
+        "source": "tinkoff",
+        "ticker": "HYDR",
+        "name": "РусГидро",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "e89a4a91-467b-4ab1-8509-677a27329a2f",
+        "source": "tinkoff",
+        "ticker": "IMOEXF",
+        "name": "IMOEXF Индекс МосБиржи",
+        "type": "futures",
+        "exchange": "FORTS_EVENING",
+        "realExchange": "moex"
+      },
+      {
+        "id": "3735200e-67ff-4cd4-af66-197679d43405",
+        "source": "tinkoff",
+        "ticker": "IRAO",
+        "name": "Интер РАО ЕЭС",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "9229038c-6bf9-449a-a9f4-bf90a2e3d861",
+        "source": "tinkoff",
+        "ticker": "IRKT",
+        "name": "Яковлев",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "f11c0e75-91fb-4495-8dc5-6ff3b724b6cf",
+        "source": "tinkoff",
+        "ticker": "KMAZ",
+        "name": "КАМАЗ",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "b3a51300-60b3-453e-981b-fc854ff71f5a",
+        "source": "tinkoff",
+        "ticker": "KZOS",
+        "name": "Казаньоргсинтез - акции обыкновенные",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "48ebf6ac-14db-4660-9b00-ae1e4e090f16",
+        "source": "tinkoff",
+        "ticker": "KZOSP",
+        "name": "Казаньоргсинтез - акции привилегированные",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "f38d2b81-aa7d-4ec6-825f-12b52d04a3a4",
+        "source": "tinkoff",
+        "ticker": "LENT",
+        "name": "Лента",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "182647b3-6f95-42a2-9ce6-6b78262f2d49",
+        "source": "tinkoff",
+        "ticker": "LKOH",
+        "name": "ЛУКОЙЛ",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "6afd602a-f3ba-455f-9b4e-0497a419123b",
+        "source": "tinkoff",
+        "ticker": "LSNG",
+        "name": "Ленэнерго",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "83701f0c-5d58-4723-a7f6-63a256334876",
+        "source": "tinkoff",
+        "ticker": "LSNGP",
+        "name": "Ленэнерго - акции привилегированные",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "587c64bb-48fa-4902-af5b-aa04e7a56820",
+        "source": "tinkoff",
+        "ticker": "LSRG",
+        "name": "Группа ЛСР",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "48300c89-0fd6-4ca9-9d56-fc64e571635d",
+        "source": "tinkoff",
+        "ticker": "MAGN",
+        "name": "Магнитогорский металлургический комбинат",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "95957df3-0ee9-4625-aba4-418dab4efcae",
+        "source": "tinkoff",
+        "ticker": "MGNT",
+        "name": "Магнит",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d8cfed30-05cd-45ee-a6c4-27ce171384a2",
+        "source": "tinkoff",
+        "ticker": "MOEX",
+        "name": "Московская Биржа",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "afcb901b-341c-4353-8706-de1c5246e192",
+        "source": "tinkoff",
+        "ticker": "MRKP",
+        "name": "Россети Центр и Приволжье",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "08793d24-71bf-4d44-88ea-6783dab1c474",
+        "source": "tinkoff",
+        "ticker": "MRKS",
+        "name": "МРСК Сибири",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "b10ed937-d819-47f5-ac13-fb6f4bb3667b",
+        "source": "tinkoff",
+        "ticker": "MRKU",
+        "name": "Россети Урал",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "797862bb-30a7-4b64-8253-4a596e381932",
+        "source": "tinkoff",
+        "ticker": "MSNG",
+        "name": "Мосэнерго",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "ba15183f-d187-49a7-b54d-422fa8c7f4da",
+        "source": "tinkoff",
+        "ticker": "MSRS",
+        "name": "Россети Московский регион",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "2d335ce7-b248-4e39-8042-9935418f5fdc",
+        "source": "tinkoff",
+        "ticker": "MSTT",
+        "name": "Мостотрест",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "b1578495-34f0-4b1f-9683-b4c06509283e",
+        "source": "tinkoff",
+        "ticker": "MTLR",
+        "name": "Мечел",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d5c78358-4b99-4dff-84e8-d6809073ada6",
+        "source": "tinkoff",
+        "ticker": "MTLRP",
+        "name": "Мечел - Привилегированные акции",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "172ed106-ea8b-4273-b155-9167e400b034",
+        "source": "tinkoff",
+        "ticker": "MTSS",
+        "name": "МТС",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "9aa2b4cc-6144-44a7-a42c-7e44f8365688",
+        "source": "tinkoff",
+        "ticker": "MVID",
+        "name": "М.видео",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "239292df-9626-4126-8af5-98da761d1c55",
+        "source": "tinkoff",
+        "ticker": "NKHP",
+        "name": "НКХП",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "de2c43b8-2000-49b3-b1a6-6b0caa3e930c",
+        "source": "tinkoff",
+        "ticker": "NKNC",
+        "name": "Нижнекамскнефтехим",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "99da23f5-3c0e-422a-b499-60b047e03f8b",
+        "source": "tinkoff",
+        "ticker": "NKNCP",
+        "name": "Нижнекамскнефтехим (привилегированные)",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d6962d7b-debe-430e-b9d6-a0f0878a56b7",
+        "source": "tinkoff",
+        "ticker": "NLMK",
+        "name": "НЛМК",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "70c3e3a3-5bc4-41c5-9e6a-16e54d3f80f6",
+        "source": "tinkoff",
+        "ticker": "NMTP",
+        "name": "НМТП",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "8caf020c-4719-417f-8a3d-3739ed03865f",
+        "source": "tinkoff",
+        "ticker": "NVTK",
+        "name": "НОВАТЭК",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d779cd04-0a83-4019-9491-e65b8e8b88e7",
+        "source": "tinkoff",
+        "ticker": "OGKB",
+        "name": "Вторая генерирующая компания оптового рынка электроэнергии",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "22121908-b791-4d4e-b5d9-5b54d0d24a33",
+        "source": "tinkoff",
+        "ticker": "OZON",
+        "name": "Ozon Holdings PLC",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "258066d8-cc43-4b15-bb79-764518faa5f3",
+        "source": "tinkoff",
+        "ticker": "PHOR",
+        "name": "ФосАгро",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "77c854f2-7f1d-4cc0-9ff5-67054e6577dc",
+        "source": "tinkoff",
+        "ticker": "PIKK",
+        "name": "ПИК",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "1758a869-5e4d-4bb6-9f25-7dad580cf62c",
+        "source": "tinkoff",
+        "ticker": "PLZL",
+        "name": "Полюс",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "02a10912-b9fd-4407-9e80-e1c65f541f94",
+        "source": "tinkoff",
+        "ticker": "POLY",
+        "name": "Polymetal",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "ea07ca06-4b41-4ea6-b6b2-625fe95126fc",
+        "source": "tinkoff",
+        "ticker": "POSI",
+        "name": "Positive Technologies",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "70b82e64-60c6-4ede-b7b1-b680f5efaca7",
+        "source": "tinkoff",
+        "ticker": "QIWI",
+        "name": "QIWI",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "e6edfdb9-611b-4194-9652-33ad11b57027",
+        "source": "tinkoff",
+        "ticker": "RASP",
+        "name": "Распадская",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "67ccd9ad-4cb7-4570-b259-891569446455",
+        "source": "tinkoff",
+        "ticker": "RENI",
+        "name": "Ренессанс Страхование",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "ebec29e7-4c33-4c23-ad57-da8ed8268127",
+        "source": "tinkoff",
+        "ticker": "RNFT",
+        "name": "РуссНефть",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "f0764a44-06a9-4477-8f55-763f211520d5",
+        "source": "tinkoff",
+        "ticker": "ROLO",
+        "name": "Русолово",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "72fd99a8-0332-4b65-95b6-c99168d3f65e",
+        "source": "tinkoff",
+        "ticker": "ROSN",
+        "name": "Роснефть",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "7d462131-d280-4e1f-83c2-f08c7db2a4a8",
+        "source": "tinkoff",
+        "ticker": "RTKM",
+        "name": "Ростелеком",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "b17bc294-d0aa-4d17-abf7-96441bfd9e41",
+        "source": "tinkoff",
+        "ticker": "RTKMP",
+        "name": "Ростелеком - Привилегированные акции",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d9cfad08-eba0-4a74-ae23-c3add945c6f1",
+        "source": "tinkoff",
+        "ticker": "RUAL",
+        "name": "РУСАЛ",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "8db67999-2cc2-4f7e-a2be-7174b4b12d4d",
+        "source": "tinkoff",
+        "ticker": "SBER",
+        "name": "Сбер Банк",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "f19bc71b-946b-48fc-9383-074f349a1e75",
+        "source": "tinkoff",
+        "ticker": "SBERP",
+        "name": "Сбер Банк - привилегированные акции",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "ff5d0316-3536-4233-b105-85a727983734",
+        "source": "tinkoff",
+        "ticker": "SELG",
+        "name": "Селигдар",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "2f637f18-9854-4a01-b623-956c8aab4a9c",
+        "source": "tinkoff",
+        "ticker": "SFIN",
+        "name": "ЭсЭфАй",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "e506a5aa-66a1-4dbb-9f5d-1bf3da12aa02",
+        "source": "tinkoff",
+        "ticker": "SGZH",
+        "name": "Сегежа",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "1ba4cecd-69dd-40af-9403-56fc42c62164",
+        "source": "tinkoff",
+        "ticker": "SIBN",
+        "name": "Газпром нефть",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "797673e0-2e7a-4b36-8d2b-7629ceb0d744",
+        "source": "tinkoff",
+        "ticker": "SLVRUB_TOM",
+        "name": "Серебро",
+        "type": "currencies",
+        "exchange": "FX_MTL",
+        "realExchange": "moex"
+      },
+      {
+        "id": "d0cd2d95-72e7-402a-a9c5-2cb52e9a8d3c",
+        "source": "tinkoff",
+        "ticker": "SMLT",
+        "name": "ГК Самолет",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "4daecca7-b223-4028-9e13-d3f7882711db",
+        "source": "tinkoff",
+        "ticker": "SNGS",
+        "name": "Сургутнефтегаз",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "9b30da55-e248-458f-93e0-8689c699c2ec",
+        "source": "tinkoff",
+        "ticker": "SNGSP",
+        "name": "Сургутнефтегаз - привилегированные акции",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "c6f2f58a-63c1-4f86-af65-9590dd4c7bba",
+        "source": "tinkoff",
+        "ticker": "SVAV",
+        "name": "СОЛЛЕРС",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "31071d79-d2b1-4675-a015-c58f8d587d43",
+        "source": "tinkoff",
+        "ticker": "TATN",
+        "name": "Татнефть",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "54b13131-42a1-4c7b-9e5e-e56c8ff4763d",
+        "source": "tinkoff",
+        "ticker": "TATNP",
+        "name": "Татнефть - привилегированные акции",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "b4c590bf-4377-415e-83a8-455ab29db067",
+        "source": "tinkoff",
+        "ticker": "TCSG",
+        "name": "ТКС Холдинг",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "ec6d446b-9f06-4859-bd48-01971130d23f",
+        "source": "tinkoff",
+        "ticker": "TGKA",
+        "name": "ТГК-1",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "0373d485-cc4d-4f42-9e48-7d133621428a",
+        "source": "tinkoff",
+        "ticker": "TRMK",
+        "name": "Трубная Металлургическая Компания",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "681dedcf-6e33-4fe9-a640-9962627ae5b2",
+        "source": "tinkoff",
+        "ticker": "TRNFP",
+        "name": "Транснефть - привилегированные акции",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "0fc02006-3df5-4bf4-bad3-c279771ce8d0",
+        "source": "tinkoff",
+        "ticker": "UNAC",
+        "name": "Объединенная авиастроительная корпорация",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "c72930ea-8838-4854-bfb2-e737fd958cbd",
+        "source": "tinkoff",
+        "ticker": "UPRO",
+        "name": "Юнипро",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "b357724f-4691-4212-b54c-24ee8918b555",
+        "source": "tinkoff",
+        "ticker": "USD000UTSTOM",
+        "name": "Доллар США",
+        "type": "currencies",
+        "exchange": "FX",
+        "realExchange": "moex"
+      },
+      {
+        "id": "0c3aa828-e915-4466-a1b3-48dba999e17b",
+        "source": "tinkoff",
+        "ticker": "USDRUBF",
+        "name": "USDRUBF Доллар - Рубль",
+        "type": "futures",
+        "exchange": "FORTS_EVENING",
+        "realExchange": "moex"
+      },
+      {
+        "id": "1a5a7668-ec2c-418a-b86e-d0920ad784dd",
+        "source": "tinkoff",
+        "ticker": "VEON-RX",
+        "name": "VEON",
+        "type": "shares",
+        "exchange": "MOEX",
+        "realExchange": "moex"
+      },
+      {
+        "id": "4a902b16-d3c6-4266-b216-872b7d6afe2a",
+        "source": "tinkoff",
+        "ticker": "VKCO",
+        "name": "ВК",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "f8257855-5b96-43be-ab71-4b6423e09352",
+        "source": "tinkoff",
+        "ticker": "VRSB",
+        "name": "ТНС энерго Воронеж",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "84bc14a3-19db-45b5-882d-17de9ae15dc5",
+        "source": "tinkoff",
+        "ticker": "VTBR",
+        "name": "Банк ВТБ",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "a165db55-7f57-4db9-9104-a43f7b414c33",
+        "source": "tinkoff",
+        "ticker": "YAKG",
+        "name": "ЯТЭК",
+        "type": "shares",
+        "exchange": "MOEX_WEEKEND",
+        "realExchange": "moex"
+      },
+      {
+        "id": "01152218-915c-4276-aace-e09ab16414ad",
+        "source": "tinkoff",
+        "ticker": "YNDX",
+        "name": "Яндекс",
+        "type": "shares",
+        "exchange": "MOEX_EVENING_WEEKEND",
+        "realExchange": "moex"
+      }
+    ]
+  }
+}

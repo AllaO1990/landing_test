@@ -3,12 +3,14 @@ import { DesktopService } from './desktop.abstract.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, switchMap, timer } from 'rxjs';
 import {
+  Stock,
   StockDirection,
   StockId,
   StockListItem,
-  StockNameItem,
+  StockName,
 } from 'types/stock';
 import { Idea } from 'types/idea';
+import { Response } from 'types/response';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -58,8 +60,21 @@ export class DesktopApiService extends DesktopService {
     // return this._http.get<any[]>('/assets/mocks/idea-list.json');
   }
 
-  public getStockList(): Observable<any[]> {
-    return this._http.get<any[]>('/assets/mocks/stock-list.json');
+  public getList(): Observable<any> {
+    return this._http.get<any>('/assets/mocks/stock.json');
+  }
+
+  public getStockList(): Observable<Response<Stock>> {
+    return this._http.get<Response<Stock>>('/assets/mocks/stock.json');
+  }
+
+  public getActiveStock(list: StockList): Observable<any> {
+    return this._http.post<any>(
+      `http://localhost:3002/api/v1/instruments/last-close-price/by-ids`,
+      {
+        ids: list.map((item: StockListItem) => item.id),
+      }
+    );
   }
 
   public getStock(id: StockId): Observable<StockListItem[]> {
