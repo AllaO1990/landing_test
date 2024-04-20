@@ -1,5 +1,7 @@
 <div class="idea">
-  <div class="idea__col" [title]="data.date | date: 'dd.MM.yyyy'">{{ data.date | date: 'dd.MM' }}</div>
+  <div class="idea__col" [title]="data.date | date : 'dd.MM.yyyy'">
+    {{ data.date | date : 'dd.MM' }}
+  </div>
   <div class="idea__col">{{ data.direction }}</div>
   <div class="idea__col">{{ data.ticker }}</div>
   <div class="idea__col">{{ data.cost }}</div>

@@ -3,181 +3,164 @@
 <!--  <vt-idea *recommendationItem="let item" [data]="item"></vt-idea>-->
 <!--</vt-recommendation>-->
 
-<tui-loader
-  class="out__loader"
-  [overlay]="true"
-  [showLoader]="data === null">
-  <tui-scrollbar
-    *ngIf="data; else empty"
-    class="out__scrollbar">
+<tui-loader class="out__loader" [overlay]="true" [showLoader]="data === null">
+  <tui-scrollbar *ngIf="data; else empty" class="out__scrollbar">
     <cdk-virtual-scroll-viewport
       #viewport
       tuiScrollable
       class="out__viewport tui-zero-scrollbar"
       [itemSize]="32"
     >
-      <table
-        class="out__table"
-        tuiTable
-        [columns]="columnList">
+      <table class="out__table" tuiTable [columns]="columnList">
         <thead>
-        <tr tuiThGroup>
-          <th
-            *tuiHead="'direction'"
-            tuiTh
-            rowspan="2"
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            Направ.
-          </th>
+          <tr tuiThGroup>
+            <th
+              *tuiHead="'direction'"
+              tuiTh
+              rowspan="2"
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset']"
+            >
+              Направ.
+            </th>
 
-          <th
-            *tuiHead="'ticker'"
-            tuiTh
-            rowspan="2"
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            Тикер
-          </th>
+            <th
+              *tuiHead="'ticker'"
+              tuiTh
+              rowspan="2"
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset']"
+            >
+              Тикер
+            </th>
 
-          <th
-            *tuiHead="'cost'"
-            tuiTh
-            rowspan="2"
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            Цена
-          </th>
+            <th
+              *tuiHead="'cost'"
+              tuiTh
+              rowspan="2"
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset']"
+            >
+              Цена
+            </th>
 
-          <th
-            *tuiHead="'enter'"
-            tuiTh
-            rowspan="2"
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            Цена вх.
-          </th>
+            <th
+              *tuiHead="'enter'"
+              tuiTh
+              rowspan="2"
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset']"
+            >
+              Цена вх.
+            </th>
 
-          <th
-            *tuiHead="'target1'"
-            tuiTh
-            colspan="2"
-            [sticky]="true"
-            [sorter]="null"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            Цель
-          </th>
+            <th
+              *tuiHead="'target1'"
+              tuiTh
+              colspan="2"
+              [sticky]="true"
+              [sorter]="null"
+              [style.top.px]="-viewport['_renderedContentOffset']"
+            >
+              Цель
+            </th>
 
-          <ng-container *tuiHead="'target2'"></ng-container>
+            <ng-container *tuiHead="'target2'"></ng-container>
 
-          <th
-            *tuiHead="'stop'"
-            tuiTh
-            rowspan="2"
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            Стоп
-          </th>
+            <th
+              *tuiHead="'stop'"
+              tuiTh
+              rowspan="2"
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset']"
+            >
+              Стоп
+            </th>
 
-          <th
-            *tuiHead="'deposit'"
-            tuiTh
-            rowspan="2"
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            Кол-во\n% депо
-          </th>
-        </tr>
+            <th
+              *tuiHead="'deposit'"
+              tuiTh
+              rowspan="2"
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset']"
+            >
+              Кол-во\n% депо
+            </th>
+          </tr>
 
-        <tr tuiThGroup>
-          <th
-            *tuiHead="'target1'"
-            tuiTh
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset'] + 24">
-            Цель 1
-          </th>
+          <tr tuiThGroup>
+            <th
+              *tuiHead="'target1'"
+              tuiTh
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset'] + 24"
+            >
+              Цель 1
+            </th>
 
-          <th
-            *tuiHead="'target2'"
-            tuiTh
-            [sticky]="true"
-            [style.top.px]="-viewport['_renderedContentOffset'] + 24">
-            Цель 2
-          </th>
-        </tr>
+            <th
+              *tuiHead="'target2'"
+              tuiTh
+              [sticky]="true"
+              [style.top.px]="-viewport['_renderedContentOffset'] + 24"
+            >
+              Цель 2
+            </th>
+          </tr>
         </thead>
         <tbody tuiTbody>
-        <tr
-          *cdkVirtualFor="let item of (data || []) | tuiTableSort; trackBy: trackById"
-          [style.background-color]="getColorBackGround(item.luck)"
-          tuiTr>
-          <td
-            *tuiCell="'cost'"
-            tuiTd>
-            {{ item.cost | tuiFormatNumber }}
-          </td>
+          <tr
+            *cdkVirtualFor="
+              let item of data || [] | tuiTableSort;
+              trackBy: trackById
+            "
+            [style.background-color]="getColorBackGround(item.luck)"
+            tuiTr
+          >
+            <td *tuiCell="'cost'" tuiTd>
+              {{ item.cost | tuiFormatNumber }}
+            </td>
 
-          <td
-            *tuiCell="'direction'"
-            tuiTd>
-            {{ item.direction }}
-          </td>
+            <td *tuiCell="'direction'" tuiTd>
+              {{ item.direction }}
+            </td>
 
-          <td
-            *tuiCell="'ticker'"
-            tuiTd>
-            {{ item.ticker }}
-          </td>
+            <td *tuiCell="'ticker'" tuiTd>
+              {{ item.ticker }}
+            </td>
 
-          <td
-            *tuiCell="'ticker'"
-            tuiTd>
-            {{ item.ticker }}
-          </td>
+            <td *tuiCell="'ticker'" tuiTd>
+              {{ item.ticker }}
+            </td>
 
-          <td
-            *tuiCell="'luck'"
-            tuiTd>
-            {{ item.luck }}
-          </td>
+            <td *tuiCell="'luck'" tuiTd>
+              {{ item.luck }}
+            </td>
 
-          <td
-            *tuiCell="'deposit'"
-            tuiTd>
-            {{ item.deposit }}
-          </td>
+            <td *tuiCell="'deposit'" tuiTd>
+              {{ item.deposit }}
+            </td>
 
-          <td
-            *tuiCell="'target1'"
-            tuiTd>
-            {{ item.target1 | tuiFormatNumber }}
-          </td>
+            <td *tuiCell="'target1'" tuiTd>
+              {{ item.target1 | tuiFormatNumber }}
+            </td>
 
-          <td
-            *tuiCell="'target2'"
-            tuiTd>
-            {{ item.target2 | tuiFormatNumber }}
-          </td>
+            <td *tuiCell="'target2'" tuiTd>
+              {{ item.target2 | tuiFormatNumber }}
+            </td>
 
-          <td
-            *tuiCell="'enter'"
-            tuiTd>
-            {{ item.enter | tuiFormatNumber }}
-          </td>
+            <td *tuiCell="'enter'" tuiTd>
+              {{ item.enter | tuiFormatNumber }}
+            </td>
 
-          <td
-            *tuiCell="'stop'"
-            tuiTd>
-            {{ item.stop | tuiFormatNumber }}
-          </td>
+            <td *tuiCell="'stop'" tuiTd>
+              {{ item.stop | tuiFormatNumber }}
+            </td>
 
-          <td
-            *tuiCell="'cost'"
-            tuiTd>
-            {{ item.cost | tuiFormatNumber }}
-          </td>
-        </tr>
+            <td *tuiCell="'cost'" tuiTd>
+              {{ item.cost | tuiFormatNumber }}
+            </td>
+          </tr>
         </tbody>
       </table>
     </cdk-virtual-scroll-viewport>
@@ -185,11 +168,7 @@
 </tui-loader>
 
 <ng-template #empty>
-  <div class="out__empty">
-    Загрузка...
-  </div>
+  <div class="out__empty">Загрузка...</div>
 </ng-template>
 
-<ng-template #none>
-  &mdash;
-</ng-template>
+<ng-template #none> &mdash; </ng-template>

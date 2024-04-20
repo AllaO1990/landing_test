@@ -4,23 +4,23 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import {STOCK_LIST_HEADER} from '../stock.constant';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import { STOCK_LIST_HEADER } from '../stock.constant';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   CdkFixedSizeVirtualScroll,
   CdkVirtualForOf,
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
-import {StockListItemComponent} from '../item/item.component';
-import {TuiFormatNumberPipeModule} from '@taiga-ui/core';
-import {NgForOf, NgIf} from '@angular/common';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {StockListItem, StockListItemPrice, StockPrice} from 'types/stock';
-import {EventSelected} from 'types/events';
-import {TuiTableModule} from '@taiga-ui/addon-table';
-import {ListPricePipe} from "./list.pipe";
-import {PriceComponent} from "../price/price.component";
+import { StockListItemComponent } from '../item/item.component';
+import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
+import { NgForOf, NgIf } from '@angular/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { StockListItem, StockListItemPrice, StockPrice } from 'types/stock';
+import { EventSelected } from 'types/events';
+import { TuiTableModule } from '@taiga-ui/addon-table';
+import { ListPricePipe } from './list.pipe';
+import { PriceComponent } from '../price/price.component';
 
 @Component({
   selector: 'vt-stock-list',
@@ -38,7 +38,7 @@ import {PriceComponent} from "../price/price.component";
     StockListItemComponent,
     TuiTableModule,
     ListPricePipe,
-    PriceComponent
+    PriceComponent,
   ],
 })
 export class StockListComponent {
@@ -66,7 +66,7 @@ export class StockListComponent {
 
   @Output() selected: Observable<{ type: EventSelected; value: unknown }> =
     this.controlItem.valueChanges.pipe(
-      map((value: StockListItem) => ({type: EventSelected.STOCK_LIST, value}))
+      map((value: StockListItem) => ({ type: EventSelected.STOCK_LIST, value }))
     );
 
   public trackByHeader(

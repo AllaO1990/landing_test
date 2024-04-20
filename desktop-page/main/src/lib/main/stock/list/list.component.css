@@ -33,7 +33,7 @@
   background-color: rgba(0, 102, 255, 0.1);
   transition: none;
 }
-.stock-item[checked=true] {
+.stock-item[checked='true'] {
   background-color: rgba(0, 102, 255, 0.15);
 }
 .stock-item__row {

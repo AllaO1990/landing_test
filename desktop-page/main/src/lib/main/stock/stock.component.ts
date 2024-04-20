@@ -14,10 +14,16 @@ import {
 } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
-import {BehaviorSubject, Observable, Subject, tap} from 'rxjs';
+import { BehaviorSubject, Observable, Subject, tap } from 'rxjs';
 import { StockListComponent } from './list/list.component';
 import { filter, map } from 'rxjs/operators';
-import {StockList, StockListItemPrice, StockName, StockNameType, StockPrice} from 'types/stock';
+import {
+  StockList,
+  StockListItemPrice,
+  StockName,
+  StockNameType,
+  StockPrice,
+} from 'types/stock';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { DesktopLkStore } from '../../../../../../stores/desktop';
 import { StockService } from './stock.service';

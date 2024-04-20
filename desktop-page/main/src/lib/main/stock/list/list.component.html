@@ -1,8 +1,9 @@
 <div class="list">
   <div class="list__header header">
     <div
-      class="header__col header__col--{{item.name}}"
-      *ngFor="let item of header; trackBy: trackByHeader">
+      class="header__col header__col--{{ item.name }}"
+      *ngFor="let item of header; trackBy: trackByHeader"
+    >
       {{ item.label }}
     </div>
   </div>
@@ -13,20 +14,25 @@
       *cdkVirtualFor="let item of list; trackBy: trackByStockListItem"
       [item]="item"
       [formControl]="controlItem"
-      [title]="item.name">
+      [title]="item.name"
+    >
       <div class="stock-item__row">
         <div class="stock-item__img">
-          <img src="/assets/tickers-v2/{{item.ticker}}.png" [attr.alt]="item.name">
+          <img
+            src="/assets/tickers-v2/{{ item.ticker }}.png"
+            [attr.alt]="item.name"
+          />
         </div>
         <div class="stock-item__name">
           {{ item.ticker }}
         </div>
         <div class="stock-item__sector">
-          {{item.sector}}
+          {{ item.sector }}
         </div>
         <vt-stock-price
           class="stock-item__price"
-          [data]="item | stockPrice: price"></vt-stock-price>
+          [data]="item | stockPrice : price"
+        ></vt-stock-price>
       </div>
     </vt-stock-list-item>
   </cdk-virtual-scroll-viewport>
