@@ -1,26 +1,17 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  Output,
-} from '@angular/core';
-import { STOCK_LIST_HEADER } from '../stock.constant';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import {
-  CdkFixedSizeVirtualScroll,
-  CdkVirtualForOf,
-  CdkVirtualScrollViewport,
-} from '@angular/cdk/scrolling';
-import { StockListItemComponent } from '../item/item.component';
-import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
-import { NgForOf, NgIf } from '@angular/common';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { StockListItem, StockListItemPrice, StockPrice } from 'types/stock';
-import { EventSelected } from 'types/events';
-import { TuiTableModule } from '@taiga-ui/addon-table';
-import { ListPricePipe } from './list.pipe';
-import { PriceComponent } from '../price/price.component';
+import {ChangeDetectionStrategy, Component, Input, Output,} from '@angular/core';
+import {STOCK_LIST_HEADER} from '../stock.constant';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport,} from '@angular/cdk/scrolling';
+import {StockListItemComponent} from '../item/item.component';
+import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {StockListItem, StockListItemPrice, StockPrice} from 'types/stock';
+import {EventSelected} from 'types/events';
+import {TuiTableModule} from '@taiga-ui/addon-table';
+import {TuiFormatNumberPipeModule} from "@taiga-ui/core";
+
+type StockListItemFull = StockListItem & { price: null | number; change: null | number; changePercent: null | number };
 
 @Component({
   selector: 'vt-stock-list',
@@ -37,12 +28,20 @@ import { PriceComponent } from '../price/price.component';
     CdkVirtualForOf,
     StockListItemComponent,
     TuiTableModule,
-    ListPricePipe,
-    PriceComponent,
+    AsyncPipe,
+    TuiFormatNumberPipeModule
   ],
 })
 export class StockListComponent {
-  private _list: StockListItem[] = [];
+  private readonly _list$: Subject<StockListItem[] | null> = new BehaviorSubject<StockListItem[] | null>(null);
+  private readonly _price$: Subject<StockPrice<StockListItemPrice> | null> = new BehaviorSubject<StockPrice<StockListItemPrice> | null>(null);
+
+  public list$: Observable<StockListItemFull[]> = combineLatest([
+    this._list$.asObservable(),
+    this._price$.asObservable()
+  ]).pipe(
+    map(([list, price]: [StockListItem[] | null, StockPrice<StockListItemPrice> | null]) => this._getList(list, price))
+  );
 
   public readonly controlItem: FormControl =
     new FormControl<StockListItem | null>(null);
@@ -51,22 +50,18 @@ export class StockListComponent {
 
   @Input()
   set list(value: StockListItem[]) {
-    if (value.length > 0) {
-      this.controlItem.patchValue(value[0]);
-    }
-
-    this._list = value;
+    this.controlItem.patchValue(value && value.length > 0 ? value[0] : null);
+    this._list$.next(value);
   }
 
-  get list(): StockListItem[] {
-    return this._list;
+  @Input()
+  set price(value: StockPrice<StockListItemPrice> | null) {
+    this._price$.next(value);
   }
-
-  @Input() price: StockPrice<StockListItemPrice> | null = null;
 
   @Output() selected: Observable<{ type: EventSelected; value: unknown }> =
     this.controlItem.valueChanges.pipe(
-      map((value: StockListItem) => ({ type: EventSelected.STOCK_LIST, value }))
+      map((value: StockListItem) => ({type: EventSelected.STOCK_LIST, value}))
     );
 
   public trackByHeader(
@@ -78,5 +73,25 @@ export class StockListComponent {
 
   public trackByStockListItem(_: number, item: StockListItem): string {
     return item.id;
+  }
+
+  private _getList(list: StockListItem[] | null, price: StockPrice<StockListItemPrice> | null): StockListItemFull[] {
+    if (!list) {
+      return [];
+    }
+
+    if (!price) {
+      return list.map((item: StockListItem) => ({...item, price: null, change: null, changePercent: null}));
+    }
+
+    return list.map((item: StockListItem) => {
+      if (price[item.id] === null) {
+        return ({...item, price: null, change: null, changePercent: null})
+      }
+
+      const {prev, last} = price[item.id] as StockListItemPrice;
+
+      return {...item, price: last, change: last - prev, changePercent: (last - prev) / last * 100}
+    });
   }
 }

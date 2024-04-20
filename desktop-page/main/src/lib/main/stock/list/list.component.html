@@ -11,7 +11,7 @@
   <cdk-virtual-scroll-viewport itemSize="32" class="list__container">
     <vt-stock-list-item
       class="list__item stock-item"
-      *cdkVirtualFor="let item of list; trackBy: trackByStockListItem"
+      *cdkVirtualFor="let item of (list$ | async) || []; trackBy: trackByStockListItem"
       [item]="item"
       [formControl]="controlItem"
       [title]="item.name"
@@ -29,11 +29,20 @@
         <div class="stock-item__sector">
           {{ item.sector }}
         </div>
-        <vt-stock-price
-          class="stock-item__price"
-          [data]="item | stockPrice : price"
-        ></vt-stock-price>
+        <div class="stock-item__price stock-item__last" *ngIf="item.price !== null; else skeleton">
+          {{ item.price | tuiFormatNumber : {decimalLimit: 2} }}
+        </div>
+        <div class="stock-item__price stock-item__change" *ngIf="item.change !== null; else skeleton">
+          {{ item.change | tuiFormatNumber : {decimalLimit: 2} }}
+        </div>
+        <div class="stock-item__price stock-item__change-percent" *ngIf="item.changePercent !== null; else skeleton">
+          {{ item.changePercent | tuiFormatNumber : {decimalLimit: 2} }}%
+        </div>
       </div>
     </vt-stock-list-item>
   </cdk-virtual-scroll-viewport>
 </div>
+
+<ng-template #skeleton>
+  <div class="stock-item__load tui-skeleton">0</div>
+</ng-template>

@@ -99,7 +99,29 @@
   }
 
   &__price {
-    flex: 1 1 auto;
+    width: 50px;
+    text-align: right;
+
+    &:not(:last-child) {
+      margin-right: 8px;
+    }
+  }
+
+  &__last {
+  }
+
+  &__change {
+  }
+
+  &__change-percent {;
+  }
+
+  &__load {
+    width: 50px;
+
+    &:not(:last-child) {
+      margin-right: 8px;
+    }
   }
 }
 
