@@ -24,7 +24,7 @@
           </tui-opt-group>
           <tui-opt-group>
             <button
-              *ngFor="let item of (nameList$ | async); trackBy: trackByStockNameItem"
+              *ngFor="let item of (nameList$ | async) || []; trackBy: trackByStockNameItem"
               tuiOption
               [disabled]="false"
               [value]="item">
@@ -46,7 +46,8 @@
         </tui-input>
         <button
           tuiIconButton
-          [disabled]="true"
+          [disabled]="false"
+          (click)="addList($event)"
           type="button"
           class="addition__button addition__add"
           size="s"

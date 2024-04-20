@@ -14,25 +14,29 @@ export type StockId = string | number;
  * Элемент списокв тикеров с полной информацией по эмитенту без цены
  */
 export interface StockListItem {
-  uid: string;
-  figi: string;
+  id: string;
+  source: string;
   ticker: string;
-  class_code: string;
-  isin: string;
-  currency: string;
   name: string;
+  type: string;
   exchange: string;
-  country_of_risk: string;
-  sector: string;
-  logo_base_color: string;
-  logo_text_color: string;
+  realExchange: string;
+  last?: number;
+  prev?: number;
 }
 
 /**
- * Элемент списка названий для выпадающего списка
+ * Элемент из выпадающего списка для Stock
  */
-export interface StockNameItem {
+export interface StockName {
   id: StockId;
   name: string;
   type: StockNameType;
 }
+
+export interface Stock {
+  total: number;
+  items: StockList;
+}
+
+export type StockList = StockListItem[];

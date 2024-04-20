@@ -2,8 +2,9 @@ import { DesktopService } from './desktop.abstract.service';
 import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { StockId, StockListItem, StockNameItem } from 'types/stock';
+import {Stock, StockId, StockList, StockListItem, StockName} from 'types/stock';
 import { Idea } from 'types/idea';
+import { Response } from 'types/response';
 
 @Injectable()
 export class DesktopStubService extends DesktopService {
@@ -17,11 +18,19 @@ export class DesktopStubService extends DesktopService {
     return of([]);
   }
 
-  getStockList(): Observable<unknown> {
+  getStockList(): Observable<Response<Stock>> {
     return of();
   }
 
-  getTradeList(): Observable<StockNameItem[]> {
+  public getActiveStock(list: StockList): Observable<any> {
+    return of();
+  }
+
+  getTradeList(): Observable<StockName[]> {
+    return of([]);
+  }
+
+  getList(): Observable<unknown> {
     return of([]);
   }
 }

@@ -8,11 +8,11 @@ import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
 import { DesktopLkStore } from 'stores/desktop';
 import { EntryModule } from './entry/entry.module';
 import { Idea } from 'types/idea';
-import { TuiBreakpointService } from '@taiga-ui/core';
+import { TuiBreakpointMediaKey, TuiBreakpointService } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
-import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { OutModule } from './out/out.module';
 import { MainService } from './main.service';
+import { StockList } from 'types/stock';
 
 @Component({
   selector: 'lib-main',
@@ -54,5 +54,5 @@ export class MainComponent {
 
   public readonly tradeList$: Observable<any> = this._api.getTradeList();
 
-  public readonly stockList$: Observable<any> = this._api.getStockList();
+  public readonly stockList$: Observable<StockList | null> = this._store.stock$;
 }

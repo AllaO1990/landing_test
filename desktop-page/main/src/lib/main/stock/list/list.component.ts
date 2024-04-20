@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockListItem } from 'types/stock';
 import { EventSelected } from 'types/events';
+import { TuiTableModule } from '@taiga-ui/addon-table';
 
 @Component({
   selector: 'vt-stock-list',
@@ -33,6 +34,7 @@ import { EventSelected } from 'types/events';
     CdkVirtualForOf,
     StockListItemComponent,
     TuiFormatNumberPipeModule,
+    TuiTableModule,
   ],
 })
 export class StockListComponent {
@@ -47,9 +49,9 @@ export class StockListComponent {
   set list(value: StockListItem[]) {
     if (value.length > 0) {
       this.controlItem.patchValue(value[0]);
-
-      this._list = value;
     }
+
+    this._list = value;
   }
 
   get list(): StockListItem[] {
@@ -68,7 +70,7 @@ export class StockListComponent {
     return index;
   }
 
-  public trackByStockListItem(_: number, item: StockListItem): number | string {
-    return item.figi;
+  public trackByStockListItem(_: number, item: StockListItem): string {
+    return item.id;
   }
 }
