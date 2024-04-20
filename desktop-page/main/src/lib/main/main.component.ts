@@ -1,18 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AsyncPipe, JsonPipe } from '@angular/common';
-import { ChartModule } from '../../../../../apps/desktop/src/app/pages/main-v2/common/chart/chart.module';
-import { DesktopService } from '@desktop-data/desktop-data';
-import { Observable } from 'rxjs';
-import { StockComponent } from './stock/stock.component';
-import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
-import { DesktopLkStore } from 'stores/desktop';
-import { EntryModule } from './entry/entry.module';
-import { Idea } from 'types/idea';
-import { TuiBreakpointMediaKey, TuiBreakpointService } from '@taiga-ui/core';
-import { map } from 'rxjs/operators';
-import { OutModule } from './out/out.module';
-import { MainService } from './main.service';
-import { StockList } from 'types/stock';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {AsyncPipe, JsonPipe} from '@angular/common';
+import {ChartModule} from '../../../../../apps/desktop/src/app/pages/main-v2/common/chart/chart.module';
+import {DesktopService} from '@desktop-data/desktop-data';
+import {Observable} from 'rxjs';
+import {StockComponent} from './stock/stock.component';
+import {DESKTOP_API, DESKTOP_STORE} from 'tokens/desktop';
+import {DesktopLkStore} from 'stores/desktop';
+import {EntryModule} from './entry/entry.module';
+import {Idea} from 'types/idea';
+import {TuiBreakpointMediaKey, TuiBreakpointService} from '@taiga-ui/core';
+import {map} from 'rxjs/operators';
+import {OutModule} from './out/out.module';
+import {MainService} from './main.service';
+import {StockList, StockListItemPrice, StockPrice} from 'types/stock';
 
 @Component({
   selector: 'lib-main',
@@ -55,4 +55,6 @@ export class MainComponent {
   public readonly tradeList$: Observable<any> = this._api.getTradeList();
 
   public readonly stockList$: Observable<StockList | null> = this._store.stock$;
+
+  public readonly stockPrice$: Observable<StockPrice<StockListItemPrice> | null> = this._store.price$;
 }

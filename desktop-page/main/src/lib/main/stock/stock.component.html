@@ -69,6 +69,7 @@
   <vt-stock-list
     class="list__container"
     [list]="(list$ | async) || []"
+    [price]="price"
     (selected)="onSelect($event)">
   </vt-stock-list>
 </div>

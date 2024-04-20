@@ -14,10 +14,10 @@ import {
 } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import {BehaviorSubject, Observable, Subject, tap} from 'rxjs';
 import { StockListComponent } from './list/list.component';
 import { filter, map } from 'rxjs/operators';
-import { StockList, StockName, StockNameType } from 'types/stock';
+import {StockList, StockListItemPrice, StockName, StockNameType, StockPrice} from 'types/stock';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { DesktopLkStore } from '../../../../../../stores/desktop';
 import { StockService } from './stock.service';
@@ -101,6 +101,8 @@ export class StockComponent {
     }
   }
 
+  @Input() price: StockPrice<StockListItemPrice> | null = null;
+
   public readonly stringify: TuiStringHandler<StockName> = (item: StockName) =>
     item.name;
 
@@ -110,7 +112,8 @@ export class StockComponent {
   public readonly list$: Observable<StockList> =
     this.controlName.valueChanges.pipe(
       filter((value: StockName | null): value is StockName => !!value),
-      map((value: StockName) => this._map!.get(value)!)
+      map((value: StockName) => this._map!.get(value)!),
+      tap((list: StockList) => this._store.updateActive(list))
     );
 
   signatureVisible: boolean = false;

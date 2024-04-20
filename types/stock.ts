@@ -21,8 +21,6 @@ export interface StockListItem {
   type: string;
   exchange: string;
   realExchange: string;
-  last?: number;
-  prev?: number;
 }
 
 /**
@@ -40,3 +38,12 @@ export interface Stock {
 }
 
 export type StockList = StockListItem[];
+
+export interface StockPrice<T> {
+  [key: string]: null | T;
+}
+
+export interface StockListItemPrice {
+  prev: number;
+  last: number;
+}

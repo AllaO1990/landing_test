@@ -23,8 +23,19 @@
       width: 90px;
     }
 
-    &--cost {
-      flex: 1 1 0;
+    &--price {
+      text-align: right;
+      width: 50px;
+    }
+
+    &--change {
+      text-align: right;
+      width: 50px;
+    }
+
+    &--change-percent {
+      text-align: right;
+      width: 50px;
     }
   }
 }
@@ -86,6 +97,10 @@
   &__sector {
     width: 90px;
     margin-right: var(--padding-2);
+  }
+
+  &__price {
+    flex: 1 1 auto;
   }
 }
 

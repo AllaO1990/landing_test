@@ -1,11 +1,11 @@
-import { ComponentStore } from '@ngrx/component-store';
-import { Injectable } from '@angular/core';
-import { DesktopLkState } from '../../types/lk-state';
-import { catchError, Observable, of, switchMap, tap } from 'rxjs';
-import { Stock, StockList, StockListItem } from '../../types/stock';
-import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
+import {ComponentStore} from '@ngrx/component-store';
+import {Injectable} from '@angular/core';
+import {DesktopLkState} from '../../types/lk-state';
+import {catchError, Observable, of, switchMap, tap} from 'rxjs';
+import {Stock, StockList, StockListItem, StockListItemPrice, StockPrice} from '../../types/stock';
+import {DesktopService} from '../../api/desktop-data/src/lib/desktop-data';
 import {filter, map} from 'rxjs/operators';
-import { Response } from '../../types/response';
+import {Response} from '../../types/response';
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
@@ -21,39 +21,37 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     (state: DesktopLkState) => state.active
   );
 
+  public readonly price$: Observable<StockPrice<StockListItemPrice> | null> = this.select((state: DesktopLkState) => state.price);
+
   constructor(private readonly _api: DesktopService) {
-    super({ selected: null, stock: null, active: null });
+    super({selected: null, stock: null, active: null, price: null, defaultPrice: null});
 
     this.loadStock();
+    this.loadActivePrice(this.stockActive$);
   }
 
   public updateSelect = this.updater(
-    (state: DesktopLkState, selected: any) => ({ ...state, selected })
+    (state: DesktopLkState, selected: any) => ({...state, selected})
   );
 
   public updateStock = this.updater(
-    (state: DesktopLkState, stock: StockList) => ({ ...state, stock })
-  );
+    (state: DesktopLkState, stock: StockList) => {
+      const defaultPrice = stock.reduce((acc: StockPrice<StockListItemPrice>, item: StockListItem) => ({
+        ...acc,
+        [item.id]: null
+      }), {})
 
-  public updateStockPrice = this.updater(
-    (
-      state: DesktopLkState,
-      price: { [key: string]: { last: number; prev: number } }
-    ) => {
-      const stock = (state.stock || []).map((item: StockListItem) => {
-        if (price[item.id]) {
-          return { ...item, ...price[item.id] };
-        }
-
-        return item;
-      });
-
-      return { ...state, stock };
+      return ({...state, defaultPrice, stock})
     }
   );
 
+  public updatePrice = this.updater((state: DesktopLkState, price: StockPrice<StockListItemPrice>) => ({
+    ...state,
+    price: {...state.defaultPrice, ...price}
+  }));
+
   public updateActive = this.updater(
-    (state: DesktopLkState, active: StockList) => ({ ...state, active })
+    (state: DesktopLkState, active: StockList) => ({...state, active})
   );
 
   public readonly loadStock = this.effect((stream$: Observable<void>) =>
@@ -76,10 +74,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       stream$.pipe(
         filter((list: StockList | null): list is StockList => !!list),
         switchMap((list: StockList) => this._api.getActiveStock(list)),
-        map((response: Response<any>) => response.data),
-        tap((result: { [key: string]: { last: number; prev: number } }) =>
-          this.updateStockPrice(result)
-        )
+        map((response: Response<StockPrice<StockListItemPrice>>) => response.data),
+        tap((result: StockPrice<StockListItemPrice>) => this.updatePrice(result))
       )
   );
 }

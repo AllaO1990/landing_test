@@ -1,0 +1,21 @@
+.price {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  text-align: right;
+
+  &__last {
+    width: 50px;
+  }
+
+  &__change {
+    width: 50px;
+  }
+
+  &__change-percent {
+    width: 50px;
+  }
+}

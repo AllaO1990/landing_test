@@ -24,9 +24,9 @@
         <div class="stock-item__sector">
           {{item.sector}}
         </div>
-        <div class="stock-item__cost tui-skeleton">
-          {{ 10000 | tuiFormatNumber:  {decimalLimit: 2} }}
-        </div>
+        <vt-stock-price
+          class="stock-item__price"
+          [data]="item | stockPrice: price"></vt-stock-price>
       </div>
     </vt-stock-list-item>
   </cdk-virtual-scroll-viewport>

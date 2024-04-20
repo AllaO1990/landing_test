@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import {Stock, StockId, StockList, StockListItem, StockName} from 'types/stock';
+import {Stock, StockId, StockList, StockListItem, StockListItemPrice, StockName, StockPrice} from 'types/stock';
 import { Idea } from 'types/idea';
 import { Response } from 'types/response';
 
@@ -12,7 +12,7 @@ export abstract class DesktopService {
 
   public abstract getStock(id: StockId): Observable<StockListItem[]>;
 
-  public abstract getActiveStock(list: StockList): Observable<any>;
+  public abstract getActiveStock(list: StockList): Observable<Response<StockPrice<StockListItemPrice>>>;
 
   public abstract getTradeList(): Observable<StockName[]>;
 }
