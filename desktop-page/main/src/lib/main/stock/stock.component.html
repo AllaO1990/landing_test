@@ -5,7 +5,7 @@
         class="action__select"
         [stringify]="stringify"
         [tuiTextfieldSize]="'s'"
-        [formControl]="controlName"
+        [formControl]="controlGroup"
         [tuiTextfieldLabelOutside]="true"
       >
         Выберите список
@@ -23,10 +23,7 @@
           </tui-opt-group>
           <tui-opt-group>
             <button
-              *ngFor="
-                let item of (nameList$ | async) || [];
-                trackBy: trackByStockNameItem
-              "
+              *ngFor="let item of (groups$ | async) || []; trackBy: trackByGroupId"
               tuiOption
               [disabled]="false"
               [value]="item"
@@ -40,19 +37,18 @@
       <div class="action__addition addition" *ngIf="signatureVisible">
         <tui-input
           class="addition__input"
-          [formControl]="controlListName"
+          [formControl]="controlGroupName"
           tuiAutoFocus
           tuiTextfieldSize="s"
-          [tuiTextfieldCleaner]="true"
-        >
+          [tuiTextfieldCleaner]="true">
           Название списка
-          <input tuiTextfield />
+          <input tuiTextfield/>
         </tui-input>
         <button
           tuiIconButton
           [disabled]="false"
-          (click)="addList($event)"
-          type="button"
+          (click)="addGroup($event)"
+          type="submit"
           class="addition__button addition__add"
           size="s"
           icon="tuiIconCheck"
@@ -73,8 +69,6 @@
   <vt-stock-list
     class="list__container"
     [list]="(list$ | async) || []"
-    [price]="price"
-    (selected)="onSelect($event)"
-  >
+    (selected)="onSelect($event)">
   </vt-stock-list>
 </div>

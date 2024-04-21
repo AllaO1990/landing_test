@@ -13,7 +13,7 @@
   gap: var(--padding-1);
 
   grid-template-rows: 1fr 1fr;
-  grid-template-columns: 1fr 1fr minmax(346px, 0.75fr);
+  grid-template-columns: 1fr 1fr minmax(400px, 420px);
 }
 
 .chart {

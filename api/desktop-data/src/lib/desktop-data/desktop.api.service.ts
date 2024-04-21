@@ -1,20 +1,21 @@
-import { inject, Injectable } from '@angular/core';
-import { DesktopService } from './desktop.abstract.service';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, switchMap, timer } from 'rxjs';
+import {inject, Injectable} from '@angular/core';
+import {DesktopService} from './desktop.abstract.service';
+import {HttpClient} from '@angular/common/http';
+import {Observable, of, switchMap, timer} from 'rxjs';
 import {
   Stock,
   StockDirection,
   StockId, StockList,
   StockListItem,
-  StockName,
+  StockGroup,
 } from 'types/stock';
-import { Idea } from 'types/idea';
-import { Response } from 'types/response';
+import {Idea} from 'types/idea';
+import {Response} from 'types/response';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
+
   public getIdeaList(): Observable<Idea[]> {
     const today: Date = new Date();
     const maxDay: number = new Date(
@@ -29,7 +30,7 @@ export class DesktopApiService extends DesktopService {
     return timer(2000).pipe(
       switchMap((_) =>
         of(
-          Array.from({ length: 100 }, (_, i: number) => {
+          Array.from({length: 100}, (_, i: number) => {
             const cost = genNumber(10000, 100);
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);
@@ -97,7 +98,7 @@ export class DesktopApiService extends DesktopService {
     return timer(2000).pipe(
       switchMap((_) =>
         of(
-          Array.from({ length: 100 }, (_, i: number) => {
+          Array.from({length: 100}, (_, i: number) => {
             const cost = genNumber(10000, 100);
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);

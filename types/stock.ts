@@ -1,4 +1,4 @@
-export enum StockNameType {
+export enum StockGroupType {
   'DEFAULT' = 'default',
   'CUSTOM' = 'custom',
 }
@@ -23,13 +23,27 @@ export interface StockListItem {
   realExchange: string;
 }
 
+export interface StockListItemPrice {
+  price: null | number;
+  change: null | number;
+  changePercent: null | number;
+}
+
+export type StockListItemWithPrice = StockListItem & StockListItemPrice;
+
 /**
  * Элемент из выпадающего списка для Stock
  */
-export interface StockName {
+export interface StockGroup {
   id: StockId;
   name: string;
-  type: StockNameType;
+  type: StockGroupType;
+}
+
+export interface StockUserGroup {
+  id: string;
+  name: string;
+  list: string[];
 }
 
 export interface Stock {
@@ -43,7 +57,7 @@ export interface StockPrice<T> {
   [key: string]: null | T;
 }
 
-export interface StockListItemPrice {
+export interface StockListPrice {
   prev: number;
   last: number;
 }

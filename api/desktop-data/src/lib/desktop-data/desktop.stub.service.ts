@@ -1,10 +1,10 @@
-import { DesktopService } from './desktop.abstract.service';
-import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import {Stock, StockId, StockList, StockListItem, StockName} from 'types/stock';
-import { Idea } from 'types/idea';
-import { Response } from 'types/response';
+import {DesktopService} from './desktop.abstract.service';
+import {inject, Injectable} from '@angular/core';
+import {Observable, of} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {Stock, StockId, StockList, StockListItem, StockGroup} from 'types/stock';
+import {Idea} from 'types/idea';
+import {Response} from 'types/response';
 
 @Injectable()
 export class DesktopStubService extends DesktopService {
@@ -26,7 +26,7 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  getTradeList(): Observable<StockName[]> {
+  getTradeList(): Observable<StockGroup[]> {
     return of([]);
   }
 

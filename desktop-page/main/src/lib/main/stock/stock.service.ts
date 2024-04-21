@@ -1,42 +1,31 @@
-import { Injectable } from '@angular/core';
-import { StockList, StockListItem, StockName } from 'types/stock';
+import {Injectable} from '@angular/core';
+import {StockList, StockListItem, StockGroup, StockPrice, StockListPrice, StockListItemWithPrice} from 'types/stock';
+import {STOCK_MAPPER} from "./stock.constant";
 
 type StockType = 'moex' | 'futures' | 'currency' | 'metal';
 
 @Injectable()
 export class StockService {
-  private _defaultMapper: { [key: string]: StockType } = {
-    // 'moex_close': 'moex',
-    MOEX_WEEKEND: 'moex',
-    MOEX_EVENING_WEEKEND: 'moex',
-    FORTS_EVENING: 'futures',
-    FX: 'currency',
-    FX_MTL: 'metal',
-    MOEX_PLUS: 'moex',
-    MOEX: 'moex',
-  };
+  private _defaultMapper = STOCK_MAPPER;
 
-  public getListName(
+  public getMapGroupList(
     data: StockList,
-    list: StockName[]
-  ): { list: StockName[]; stock: Map<StockName, StockList> } {
-    const mapped: { [key: string]: StockList } = this._getMapList(data, {
-      moex: [],
-      futures: [],
-      currency: [],
-      metal: [],
-    });
+    groups: StockGroup[],
+    map: Map<StockGroup, StockList>
+  ): Map<StockGroup, StockList> {
+    const mapped: { [key: string]: StockList } = this._getMapList(data, this._getStartList(groups));
 
-    return this._concatListStock(list, mapped);
+    return this._concatListStock(mapped, groups, map);
   }
 
-  private _getMapList(
-    data: StockList,
-    start: { [key: string]: StockList }
-  ): { [key: string]: StockList } {
+  private _getStartList(group: StockGroup[]): { [key: string]: StockList } {
+    return group.reduce((acc: { [key: string]: StockList }, item: StockGroup) => ({...acc, [item.id]: []}), {});
+  }
+
+  private _getMapList(data: StockList, start: { [key: string]: StockList }): { [key: string]: StockList } {
     return data.reduce(
       (acc: { [key: string]: StockList }, item: StockListItem) => {
-        const key: StockType = this._defaultMapper[item.exchange];
+        const key = this._defaultMapper[item.exchange];
 
         if (!key) {
           return acc;
@@ -51,31 +40,17 @@ export class StockService {
   }
 
   private _concatListStock(
-    list: StockName[],
-    mapped: { [key: string]: StockList }
-  ): { list: StockName[]; stock: Map<StockName, StockList> } {
-    const map: Map<StockName, StockList> = new Map();
+    mapped: { [key: string]: StockList },
+    groups: StockGroup[],
+    map: Map<StockGroup, StockList>
+  ): Map<StockGroup, StockList> {
+    return groups.reduce((acc: Map<StockGroup, StockList>, item: StockGroup) => {
+      if (mapped[item.id] && mapped[item.id].length) {
+        acc.set(item, mapped[item.id as StockType].sort(this._sortName()));
+      }
 
-    return list.reduce(
-      (
-        acc: { list: StockName[]; stock: Map<StockName, StockList> },
-        item: StockName
-      ) => {
-        if (
-          mapped[item.id as StockType] &&
-          mapped[item.id as StockType].length
-        ) {
-          acc.list.push(item);
-          acc.stock.set(
-            item,
-            mapped[item.id as StockType].sort(this._sortName())
-          );
-        }
-
-        return acc;
-      },
-      { list: [], stock: map }
-    );
+      return acc;
+    }, map);
   }
 
   private _sortName(
@@ -94,5 +69,25 @@ export class StockService {
 
       return 0;
     };
+  }
+
+  public getListWithPrice(list: StockList | null, price: StockPrice<StockListPrice> | null): StockListItemWithPrice[] {
+    if (!list) {
+      return [];
+    }
+
+    if (!price) {
+      return list.map((item: StockListItem) => ({...item, price: null, change: null, changePercent: null}));
+    }
+
+    return list.map((item: StockListItem) => {
+      if (price[item.id] === null) {
+        return ({...item, price: null, change: null, changePercent: null})
+      }
+
+      const {prev, last} = price[item.id] as StockListPrice;
+
+      return {...item, price: last, change: last - prev, changePercent: (last - prev) / last * 100}
+    });
   }
 }

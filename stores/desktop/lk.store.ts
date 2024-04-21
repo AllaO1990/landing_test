@@ -2,7 +2,7 @@ import {ComponentStore} from '@ngrx/component-store';
 import {Injectable} from '@angular/core';
 import {DesktopLkState} from '../../types/lk-state';
 import {catchError, Observable, of, switchMap, tap} from 'rxjs';
-import {Stock, StockList, StockListItem, StockListItemPrice, StockPrice} from '../../types/stock';
+import {Stock, StockList, StockListItem, StockListPrice, StockPrice} from '../../types/stock';
 import {DesktopService} from '../../api/desktop-data/src/lib/desktop-data';
 import {filter, map} from 'rxjs/operators';
 import {Response} from '../../types/response';
@@ -21,7 +21,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     (state: DesktopLkState) => state.active
   );
 
-  public readonly price$: Observable<StockPrice<StockListItemPrice> | null> = this.select((state: DesktopLkState) => state.price);
+  public readonly price$: Observable<StockPrice<StockListPrice> | null> = this.select((state: DesktopLkState) => state.price);
 
   constructor(private readonly _api: DesktopService) {
     super({selected: null, stock: null, active: null, price: null, defaultPrice: null});
@@ -36,7 +36,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public updateStock = this.updater(
     (state: DesktopLkState, stock: StockList) => {
-      const defaultPrice = stock.reduce((acc: StockPrice<StockListItemPrice>, item: StockListItem) => ({
+      const defaultPrice = stock.reduce((acc: StockPrice<StockListPrice>, item: StockListItem) => ({
         ...acc,
         [item.id]: null
       }), {})
@@ -45,7 +45,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     }
   );
 
-  public updatePrice = this.updater((state: DesktopLkState, price: StockPrice<StockListItemPrice>) => ({
+  public updatePrice = this.updater((state: DesktopLkState, price: StockPrice<StockListPrice>) => ({
     ...state,
     price: {...state.defaultPrice, ...price}
   }));
@@ -74,8 +74,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       stream$.pipe(
         filter((list: StockList | null): list is StockList => !!list),
         switchMap((list: StockList) => this._api.getActiveStock(list)),
-        map((response: Response<StockPrice<StockListItemPrice>>) => response.data),
-        tap((result: StockPrice<StockListItemPrice>) => this.updatePrice(result))
+        map((response: Response<StockPrice<StockListPrice>>) => response.data),
+        tap((result: StockPrice<StockListPrice>) => this.updatePrice(result))
       )
   );
 }

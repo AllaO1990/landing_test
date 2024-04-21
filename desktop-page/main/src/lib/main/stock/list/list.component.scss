@@ -110,10 +110,12 @@
   &__last {
   }
 
-  &__change {
+  &__row--down &__change, &__row--down &__change-percent {
+    color: var(--color-r);
   }
 
-  &__change-percent {;
+  &__row--up &__change, &__row--up &__change-percent {
+    color: var(--color-g);
   }
 
   &__load {
