@@ -70,6 +70,35 @@
   }
 }
 
+.th {
+  &__date {
+    white-space: nowrap;
+    width: 90px;
+  }
+
+  &__enter {
+    white-space: nowrap;
+    width: 90px;
+  }
+
+  &__deposit {
+    white-space: nowrap;
+  }
+}
+
 tui-radio-block:not(:last-child) {
   margin-right: 4px;
+}
+
+.buy {
+  color: var(--color-g);
+}
+
+.sell {
+  color: var(--color-r);
+}
+
+.substring {
+  font-size: 0.8em;
+  line-height: 1;
 }
