@@ -1,74 +1,84 @@
-<div class="list">
-  <div class="list__action action">
-    <form class="action__form">
-      <tui-select
-        class="action__select"
-        [stringify]="stringify"
-        [tuiTextfieldSize]="'s'"
-        [formControl]="controlGroup"
-        [tuiTextfieldLabelOutside]="true"
-      >
-        Выберите список
-        <tui-data-list size="s" *tuiDataList>
-          <tui-opt-group>
-            <button
-              *ngIf="!signatureVisible"
-              tuiOption
-              class="action__add-list"
-              (click)="toggle()"
-            >
-              <tui-svg src="tuiIconPlus" class="action__icon"></tui-svg>
-              Добавить список
-            </button>
-          </tui-opt-group>
-          <tui-opt-group>
-            <button
-              *ngFor="let item of (groups$ | async) || []; trackBy: trackByGroupId"
-              tuiOption
-              [disabled]="false"
-              [value]="item"
-            >
-              {{ item.name }}
-            </button>
-          </tui-opt-group>
-        </tui-data-list>
-      </tui-select>
+<tui-loader class="loader" [overlay]="true" [showLoader]="!loaded">
+  <div class="list">
+    <div class="list__action action">
+      <form class="action__form">
+        <tui-select
+          class="action__select"
+          [stringify]="stringify"
+          [tuiTextfieldSize]="'s'"
+          [formControl]="controlGroup"
+          [tuiTextfieldLabelOutside]="true"
+        >
+          Выберите список
+          <tui-data-list size="s" *tuiDataList>
+            <tui-opt-group>
+              <button
+                *ngIf="!signatureVisible"
+                tuiOption
+                class="action__add-list"
+                (click)="toggle()">
+                <tui-svg src="tuiIconPlus" class="action__icon"></tui-svg>
+                Добавить список
+              </button>
+            </tui-opt-group>
+            <tui-opt-group>
+              <button
+                *ngFor="let item of (groups$ | async) || []; trackBy: trackByGroupId"
+                tuiOption
+                [disabled]="false"
+                [value]="item"
+              >
+                {{ item.name }}
+              </button>
+            </tui-opt-group>
+          </tui-data-list>
+        </tui-select>
 
-      <div class="action__addition addition" *ngIf="signatureVisible">
-        <tui-input
-          class="addition__input"
-          [formControl]="controlGroupName"
-          tuiAutoFocus
-          tuiTextfieldSize="s"
-          [tuiTextfieldCleaner]="true">
-          Название списка
-          <input tuiTextfield/>
-        </tui-input>
-        <button
-          tuiIconButton
-          [disabled]="false"
-          (click)="addGroup($event)"
-          type="submit"
-          class="addition__button addition__add"
-          size="s"
-          icon="tuiIconCheck"
-        ></button>
-        <button
-          class="addition__button addition__toggle"
-          size="s"
-          icon="tuiIconClose"
-          tuiIconButton
-          appearance="secondary"
-          type="button"
-          (click)="toggle()"
-        ></button>
-      </div>
-    </form>
+        <div class="action__addition addition" *ngIf="signatureVisible">
+          <tui-input
+            class="addition__input"
+            [formControl]="controlGroupName"
+            tuiAutoFocus
+            tuiTextfieldSize="s"
+            [tuiTextfieldCleaner]="true">
+            Название списка
+            <input tuiTextfield/>
+          </tui-input>
+          <button
+            tuiIconButton
+            [disabled]="false"
+            (click)="addGroup($event)"
+            type="submit"
+            class="addition__button addition__add"
+            size="s"
+            icon="tuiIconCheck"
+          ></button>
+          <button
+            class="addition__button addition__toggle"
+            size="s"
+            icon="tuiIconClose"
+            tuiIconButton
+            appearance="secondary"
+            type="button"
+            (click)="toggle()"
+          ></button>
+        </div>
+      </form>
+    </div>
+
+    <vt-stock-list
+      *ngIf="(list$ | async) as list; else load"
+      class="list__container"
+      [list]="list"
+      (selected)="onSelect($event)">
+    </vt-stock-list>
   </div>
+</tui-loader>
 
-  <vt-stock-list
-    class="list__container"
-    [list]="(list$ | async) || []"
-    (selected)="onSelect($event)">
-  </vt-stock-list>
-</div>
+<ng-template #load>
+  <div class="loader">
+    <div class="loader__text">
+      Загрузка...
+    </div>
+  </div>
+</ng-template>
