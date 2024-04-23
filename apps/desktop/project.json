@@ -15,13 +15,12 @@
   "prefix": "vt",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@angular-devkit/build-angular:application",
       "options": {
         "outputPath": "dist/apps/desktop",
-        "aot": true,
         "index": "apps/desktop/src/index.html",
-        "main": "apps/desktop/src/main.ts",
-        "polyfills": "apps/desktop/src/polyfills.ts",
+        "browser": "apps/desktop/src/main.ts",
+        "polyfills": ["zone.js"],
         "tsConfig": "apps/desktop/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -67,12 +66,9 @@
           "outputHashing": "all"
         },
         "development": {
-          "buildOptimizer": false,
           "optimization": false,
-          "vendorChunk": true,
           "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true
+          "sourceMap": true
         }
       },
       "defaultConfiguration": "production"

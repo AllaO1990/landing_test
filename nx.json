@@ -1,7 +1,4 @@
 {
-  "affected": {
-    "defaultBase": "master"
-  },
   "namedInputs": {
     "sharedGlobals": [],
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
@@ -51,5 +48,6 @@
     "@nx/angular:component": {
       "style": "css"
     }
-  }
+  },
+  "defaultBase": "master"
 }
