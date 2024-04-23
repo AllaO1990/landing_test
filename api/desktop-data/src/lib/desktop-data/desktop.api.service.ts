@@ -19,9 +19,9 @@ export class DesktopApiService extends DesktopService {
   public getIdeaList(): Observable<Idea[]> {
     const today: Date = new Date();
     const maxDay: number = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      0
+      // today.getFullYear(),
+      // today.getMonth() + 1,
+      // 0
     ).getDate();
     const genNumber = (max: number, min: number): number => {
       return Math.floor(Math.random() * (max - min) + min);
@@ -36,21 +36,41 @@ export class DesktopApiService extends DesktopService {
             const deposit = genNumber(100, 2);
             const luck = genNumber(10, 1);
             const idea = genNumber(10, 0);
+            const start = `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(
+              maxDay,
+              1
+            )}`;
 
             return {
               id: i,
               figi: `${i}`,
-              date: `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(
-                maxDay,
-                1
-              )}`,
-              direction: StockDirection.BUY,
+              date: {
+                start,
+                passed: Math.round((new Date().valueOf() - new Date(start).valueOf()) / (24 * 60 * 60 * 1000))
+              },
+              direction: i % 5 ? StockDirection.SELL : StockDirection.BUY,
               ticker: 'MOEX',
               cost,
-              enter: cost - enterDiff,
-              stop: cost - enterDiff * 2,
-              deposit,
-              luck,
+              enter: {
+                price: cost - enterDiff,
+                cost: cost * 3
+              },
+              target: {
+                price: cost * 1.2,
+                percentage: 20
+              },
+              stop: {
+                price: cost - enterDiff * 2,
+                percentage: .4
+              },
+              deposit: {
+                price: deposit,
+                percentage: 2.4
+              },
+              luck: {
+                percentage: luck * 10,
+                value: luck
+              },
               idea: idea > 5,
             };
           })

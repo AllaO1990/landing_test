@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy,
+  ChangeDetectionStrategy, ChangeDetectorRef,
   Component,
   inject,
   Input,
@@ -8,13 +8,13 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {TuiInputModule, TuiSelectModule} from '@taiga-ui/kit';
 import {
   TuiButtonModule,
-  TuiDataListModule,
+  TuiDataListModule, TuiLoaderModule,
   TuiSvgModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
 import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
 import {TuiAutoFocusModule, TuiStringHandler} from '@taiga-ui/cdk';
-import {BehaviorSubject, combineLatest, Observable, Subject, switchMap, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap, tap} from 'rxjs';
 import {StockListComponent} from './list/list.component';
 import {filter, map} from 'rxjs/operators';
 import {
@@ -45,6 +45,7 @@ import {STOCK_GROUPS} from "./stock.constant";
     TuiAutoFocusModule,
     TuiButtonModule,
     StockListComponent,
+    TuiLoaderModule,
   ],
   templateUrl: './stock.component.html',
   styleUrls: ['./stock.component.scss'],
@@ -52,11 +53,12 @@ import {STOCK_GROUPS} from "./stock.constant";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockComponent {
+  private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+
   private _map: Map<StockGroup, StockList> = new Map<StockGroup, StockList>();
 
   private readonly _service: StockService = inject(StockService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-  private readonly _list$: Subject<StockList | null> = new BehaviorSubject<StockList | null>(null);
   private readonly _price$: Subject<StockPrice<StockListPrice> | null> = new BehaviorSubject<StockPrice<StockListPrice> | null>(null);
   private readonly _groups$: Subject<StockGroup[]> = new BehaviorSubject<
     StockGroup[]
@@ -64,6 +66,8 @@ export class StockComponent {
 
   public readonly defaultGroups = STOCK_GROUPS;
   public groups = STOCK_GROUPS;
+
+  public loaded = false;
 
   public signatureVisible: boolean = false;
 
@@ -81,19 +85,15 @@ export class StockComponent {
   }
 
   @Input() set list(value: StockList | null) {
-    // this._list$.next(value);
-
     if (value) {
+      this.loaded = true;
       const groups: StockGroup[] = [];
       this._map = this._service.getMapGroupList(value, this.defaultGroups, this._map);
-      //
-      //   console.log(this._map);
-      //
+
       this._map.forEach((_: StockList, key: StockGroup) => {
         groups.push(key);
       });
-      //
-      //
+
       this.groups = groups;
       this._groups$.next(groups);
       this.controlGroup.patchValue(groups[0]);
@@ -113,15 +113,17 @@ export class StockComponent {
 
   public readonly list$: Observable<StockListItemWithPrice[]> = combineLatest([
     this.controlGroup.valueChanges.pipe(
+      startWith(this.controlGroup.value),
+      tap((res) => console.log('asdasdasdasd', res)),
       filter((value: StockGroup | null): value is StockGroup => value !== null),
       map((value: StockGroup) => this._map.get(value) || []),
       tap((list: StockList) => this._store.updateActive(list)),
     ),
     this._price$.asObservable().pipe(
-      filter((value: StockPrice<StockListPrice> | null): value is StockPrice<StockListPrice> => value !== null)
+      // filter((value: StockPrice<StockListPrice> | null): value is StockPrice<StockListPrice> => value !== null)
     )
   ]).pipe(
-    map(([list, price]: [StockList | null, StockPrice<StockListPrice>]) => this._service.getListWithPrice(list, price))
+    map(([list, price]: [StockList | null, StockPrice<StockListPrice> | null]) => this._service.getListWithPrice(list, price))
   );
 
   public toggle(): void {
