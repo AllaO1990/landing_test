@@ -13,38 +13,40 @@
             <th
               *tuiHead="item.name"
               tuiTh
-              class="th__{{item.name}}"
+              class="th th__{{item.name}}"
               [sticky]="true"
               [sorter]="item.sorter"
               [style.top.px]="-viewport['_renderedContentOffset']">
-              <span style="text-align: left" [innerHTML]="item.label">{{ item.label }}</span>
+              <span [innerHTML]="item.label">{{ item.label }}</span>
             </th>
           </ng-container>
         </tr>
         </thead>
         <tbody tuiTbody>
         <tr
+          class="entry__table-tr"
+          [style.background-color]="getColorBackGround(item.luck.value)"
           *cdkVirtualFor="
               let item of data || [] | tuiTableSort;
               trackBy: trackById
             "
-          [style.background-color]="getColorBackGround(item.luck.value)"
           tuiTr
         >
           <td
+            class="td"
             *tuiCell="'date'"
             [title]="item.date.start | date : 'dd.MM.yyyy'"
             tuiTd
           >
             {{ item.date.start | date : 'dd.MM' }}
-            <div class="substring">{{item.date.passed}} дней</div>
+            <div class="substring">{{ item.date.passed }} дней</div>
           </td>
 
           <td *tuiCell="'cost'" tuiTd>
             {{ item.cost | tuiFormatNumber }}
           </td>
 
-          <td *tuiCell="'direction'" tuiTd>
+          <td *tuiCell="'direction'" tuiTd class="td td--direction">
             <ng-container *ngTemplateOutlet="item.direction === 'buy' ? buy : sell"></ng-container>
           </td>
 
@@ -52,22 +54,22 @@
             {{ item.ticker }}
           </td>
 
-          <td *tuiCell="'target'" tuiTd>
-            {{ item.target.price | tuiFormatNumber : {decimalLimit: 2} }}
-            <div class="substring">{{item.target.percentage }}%</div>
+          <td *tuiCell="'target'" tuiTd class="td td--number">
+            {{ item.target.price | tuiFormatNumber : { decimalLimit: 2 } }}
+            <div class="substring">{{ item.target.percentage }}%</div>
           </td>
 
-          <td *tuiCell="'luck'" tuiTd>
-            {{item.luck.percentage | tuiFormatNumber }}%
+          <td *tuiCell="'luck'" tuiTd class="td td--number">
+            {{ item.luck.percentage | tuiFormatNumber }}%
             <div class="substring">{{ item.luck.value | tuiFormatNumber }} / 10</div>
           </td>
 
-          <td *tuiCell="'deposit'" tuiTd>
+          <td *tuiCell="'deposit'" tuiTd class="td td--number">
             {{ item.deposit.price | tuiFormatNumber }}
-            <div class="substring">{{item.deposit.percentage | tuiFormatNumber}}%</div>
+            <div class="substring">{{ item.deposit.percentage | tuiFormatNumber }}%</div>
           </td>
 
-          <td *tuiCell="'idea'" tuiTd>
+          <td *tuiCell="'idea'" tuiTd class="td td--center">
             <img
               class="idea__icon"
               *ngIf="item.idea; else none"
@@ -76,17 +78,17 @@
             />
           </td>
 
-          <td *tuiCell="'enter'" tuiTd>
+          <td *tuiCell="'enter'" tuiTd class="td td--number">
             {{ item.enter.price | tuiFormatNumber }}
-            <div class="substring">{{item.enter.cost  | tuiFormatNumber}}</div>
+            <div class="substring">{{ item.enter.cost  | tuiFormatNumber }}</div>
           </td>
 
-          <td *tuiCell="'stop'" tuiTd>
+          <td *tuiCell="'stop'" tuiTd class="td td--number">
             {{ item.stop.price | tuiFormatNumber }}
-            <div class="substring">{{item.stop.percentage }}%</div>
+            <div class="substring">{{ item.stop.percentage }}%</div>
           </td>
 
-          <td *tuiCell="'cost'" tuiTd>
+          <td *tuiCell="'cost'" tuiTd class="td td--number">
             {{ item.cost | tuiFormatNumber }}
           </td>
         </tr>

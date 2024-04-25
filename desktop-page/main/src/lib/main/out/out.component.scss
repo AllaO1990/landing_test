@@ -58,6 +58,7 @@
       line-height: 10px;
       font-weight: 400;
       --tui-height-m: 23px;
+      padding: 0 4px 0 8px;
     }
 
     tr {
@@ -68,5 +69,45 @@
       --tui-height-m: 32px;
       background-color: inherit;
     }
+  }
+}
+
+.buy {
+  color: var(--color-g);
+}
+
+.sell {
+  color: var(--color-r);
+}
+
+.substring {
+  font-size: 0.8em;
+  line-height: 1;
+}
+
+.td {
+  &--direction {
+    white-space: nowrap;
+  }
+
+  &--number {
+    text-align: right;
+  }
+
+  &--center {
+    text-align: center;
+  }
+}
+
+.th {
+  ::ng-deep {
+    button {
+      width: 100%;
+    }
+  }
+
+  span {
+    width: 100%;
+    text-align: left;
   }
 }

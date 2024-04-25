@@ -58,19 +58,45 @@
       line-height: 10px;
       font-weight: 400;
       --tui-height-m: 48px;
+      padding: 0 4px 0 8px;
     }
 
     tr {
+      cursor: pointer;
+      transition: background-color 0.25s ease-in-out;
+
       --tui-height-m: 32px;
     }
 
     td {
       background-color: inherit;
+      padding: 0 8px;
+    }
+
+    &-tr {
+      background-color: var(--color-g-1);
+
+      &:hover {
+        background-color: rgba(0, 102, 255, 0.1) !important;
+
+        transition: none;
+      }
     }
   }
 }
 
 .th {
+  ::ng-deep {
+    button {
+      width: 100%;
+    }
+  }
+
+  span {
+    width: 100%;
+    text-align: left;
+  }
+
   &__date {
     white-space: nowrap;
     width: 90px;
@@ -83,6 +109,20 @@
 
   &__deposit {
     white-space: nowrap;
+  }
+}
+
+.td {
+  &--direction {
+    white-space: nowrap;
+  }
+
+  &--number {
+    text-align: right;
+  }
+
+  &--center {
+    text-align: center;
   }
 }
 

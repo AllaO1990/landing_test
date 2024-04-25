@@ -1,16 +1,16 @@
-import {inject, Injectable} from '@angular/core';
-import {DesktopService} from './desktop.abstract.service';
-import {HttpClient} from '@angular/common/http';
-import {Observable, of, switchMap, timer} from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { DesktopService } from './desktop.abstract.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, switchMap, timer } from 'rxjs';
 import {
   Stock,
   StockDirection,
   StockId, StockList,
   StockListItem,
-  StockGroup,
+  StockGroup
 } from 'types/stock';
-import {Idea} from 'types/idea';
-import {Response} from 'types/response';
+import { Idea } from 'types/idea';
+import { Response } from 'types/response';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -30,7 +30,7 @@ export class DesktopApiService extends DesktopService {
     return timer(2000).pipe(
       switchMap((_) =>
         of(
-          Array.from({length: 100}, (_, i: number) => {
+          Array.from({ length: 100 }, (_, i: number) => {
             const cost = genNumber(10000, 100);
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);
@@ -71,7 +71,7 @@ export class DesktopApiService extends DesktopService {
                 percentage: luck * 10,
                 value: luck
               },
-              idea: idea > 5,
+              idea: idea > 5
             };
           })
         )
@@ -86,14 +86,15 @@ export class DesktopApiService extends DesktopService {
   }
 
   public getStockList(): Observable<Response<Stock>> {
-    return this._http.get<Response<Stock>>('/assets/mocks/stock.json');
+    return this._http.get<Response<Stock>>(`http://localhost:3002/api/v1/instruments?sub=true`);
+    // return this._http.get<Response<Stock>>('/assets/mocks/stock.json');
   }
 
   public getActiveStock(list: StockList): Observable<any> {
     return this._http.post<any>(
       `http://localhost:3002/api/v1/instruments/last-close-price/by-ids`,
       {
-        ids: list.map((item: StockListItem) => item.id),
+        ids: list.map((item: StockListItem) => item.id)
       }
     );
   }
@@ -118,7 +119,7 @@ export class DesktopApiService extends DesktopService {
     return timer(2000).pipe(
       switchMap((_) =>
         of(
-          Array.from({length: 100}, (_, i: number) => {
+          Array.from({ length: 100 }, (_, i: number) => {
             const cost = genNumber(10000, 100);
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);
@@ -131,15 +132,25 @@ export class DesktopApiService extends DesktopService {
                 maxDay,
                 1
               )}`,
-              direction: StockDirection.BUY,
+              direction: i % 4 ? StockDirection.SELL : StockDirection.BUY,
               ticker: 'MOEX',
               cost,
               enter: cost - enterDiff,
               target1: cost + enterDiff,
               target2: cost + enterDiff * 3,
-              stop: cost - enterDiff * 2,
-              deposit,
-              luck,
+              out: {
+                price: cost + enterDiff * 2,
+                value: 1
+              },
+              stop: {
+                price: cost - enterDiff * 2,
+                percentage: 2
+              },
+              deposit: {
+                value: deposit,
+                percentage: 2
+              },
+              luck
             };
           })
         )

@@ -7,7 +7,7 @@ import { TuiTableModule } from '@taiga-ui/addon-table';
 import {
   TuiFormatNumberPipeModule,
   TuiLoaderModule,
-  TuiScrollbarModule,
+  TuiScrollbarModule
 } from '@taiga-ui/core';
 
 @NgModule({
@@ -18,8 +18,9 @@ import {
     TuiTableModule,
     TuiLoaderModule,
     TuiScrollbarModule,
-    TuiFormatNumberPipeModule,
+    TuiFormatNumberPipeModule
   ],
-  exports: [OutComponent],
+  exports: [OutComponent]
 })
-export class OutModule {}
+export class OutModule {
+}

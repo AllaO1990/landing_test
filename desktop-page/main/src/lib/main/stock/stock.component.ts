@@ -1,33 +1,32 @@
-import {
-  ChangeDetectionStrategy, ChangeDetectorRef,
-  Component,
-  inject,
-  Input,
-} from '@angular/core';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {TuiInputModule, TuiSelectModule} from '@taiga-ui/kit';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
 import {
   TuiButtonModule,
-  TuiDataListModule, TuiLoaderModule,
+  TuiDataListModule,
+  TuiLoaderModule,
   TuiSvgModule,
-  TuiTextfieldControllerModule,
+  TuiTextfieldControllerModule
 } from '@taiga-ui/core';
-import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
-import {TuiAutoFocusModule, TuiStringHandler} from '@taiga-ui/cdk';
-import {BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap, tap} from 'rxjs';
-import {StockListComponent} from './list/list.component';
-import {filter, map} from 'rxjs/operators';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
+import { BehaviorSubject, combineLatest, Observable, startWith, Subject, tap } from 'rxjs';
+import { StockListComponent } from './list/list.component';
+import { filter, map } from 'rxjs/operators';
 import {
-  StockList,
-  StockListPrice,
   StockGroup,
   StockGroupType,
-  StockPrice, StockId, StockUserGroup, StockListItemWithPrice,
+  StockId,
+  StockList,
+  StockListItemWithPrice,
+  StockListPrice,
+  StockPrice,
+  StockUserGroup
 } from 'types/stock';
-import {DESKTOP_STORE} from 'tokens/desktop';
-import {DesktopLkStore} from '../../../../../../stores/desktop';
-import {StockService} from './stock.service';
-import {STOCK_GROUPS} from "./stock.constant";
+import { DESKTOP_STORE } from 'tokens/desktop';
+import { DesktopLkStore } from '../../../../../../stores/desktop';
+import { StockService } from './stock.service';
+import { STOCK_GROUPS } from './stock.constant';
 
 @Component({
   selector: 'vt-stock',
@@ -45,16 +44,14 @@ import {STOCK_GROUPS} from "./stock.constant";
     TuiAutoFocusModule,
     TuiButtonModule,
     StockListComponent,
-    TuiLoaderModule,
+    TuiLoaderModule
   ],
   templateUrl: './stock.component.html',
   styleUrls: ['./stock.component.scss'],
   providers: [StockService],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StockComponent {
-  private _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-
   private _map: Map<StockGroup, StockList> = new Map<StockGroup, StockList>();
 
   private readonly _service: StockService = inject(StockService);
@@ -114,10 +111,9 @@ export class StockComponent {
   public readonly list$: Observable<StockListItemWithPrice[]> = combineLatest([
     this.controlGroup.valueChanges.pipe(
       startWith(this.controlGroup.value),
-      tap((res) => console.log('asdasdasdasd', res)),
       filter((value: StockGroup | null): value is StockGroup => value !== null),
       map((value: StockGroup) => this._map.get(value) || []),
-      tap((list: StockList) => this._store.updateActive(list)),
+      tap((list: StockList) => this._store.updateActive(list))
     ),
     this._price$.asObservable().pipe(
       // filter((value: StockPrice<StockListPrice> | null): value is StockPrice<StockListPrice> => value !== null)
@@ -149,7 +145,7 @@ export class StockComponent {
     const stockName: StockGroup = {
       id: new Date().toISOString(),
       name: this.controlGroupName.value as string,
-      type: StockGroupType.CUSTOM,
+      type: StockGroupType.CUSTOM
     };
 
     this.groups.push(stockName);
