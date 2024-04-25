@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "nx serve desktop",
-    "build": "nx build --configuration production",
+    "build": "nx build --configuration production --project=desktop",
     "test": "nx test",
     "lint": "nx lint",
     "e2e": "nx e2e"

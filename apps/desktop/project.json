@@ -15,12 +15,12 @@
   "prefix": "vt",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:application",
+      "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/desktop",
         "index": "apps/desktop/src/index.html",
-        "browser": "apps/desktop/src/main.ts",
+        "main": "apps/desktop/src/main.ts",
         "polyfills": ["zone.js"],
         "tsConfig": "apps/desktop/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
@@ -35,6 +35,8 @@
         ],
         "styles": [
           "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+          "node_modules/highcharts/css/stocktools/gui.css",
+          "node_modules/highcharts/css/annotations/popup.css",
           "./node_modules/@taiga-ui/core/styles/taiga-ui-theme.less",
           "./node_modules/@taiga-ui/core/styles/taiga-ui-fonts.less",
           "./node_modules/@taiga-ui/styles/taiga-ui-global.less",

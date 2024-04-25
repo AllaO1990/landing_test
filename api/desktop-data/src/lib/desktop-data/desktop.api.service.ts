@@ -1,17 +1,16 @@
-import { inject, Injectable } from '@angular/core';
-import { DesktopService } from './desktop.abstract.service';
 import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of, switchMap, timer } from 'rxjs';
+import { Idea } from 'types/idea';
+import { Response } from 'types/response';
 import {
   Stock,
   StockDirection,
   StockId,
   StockList,
   StockListItem,
-  StockGroup
 } from 'types/stock';
-import { Idea } from 'types/idea';
-import { Response } from 'types/response';
+import { DesktopService } from './desktop.abstract.service';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -47,33 +46,33 @@ export class DesktopApiService extends DesktopService {
                 start,
                 passed: Math.round(
                   (new Date().valueOf() - new Date(start).valueOf()) /
-                  (24 * 60 * 60 * 1000)
-                )
+                    (24 * 60 * 60 * 1000)
+                ),
               },
               direction: i % 5 ? StockDirection.SELL : StockDirection.BUY,
               ticker: 'MOEX',
               cost,
               enter: {
                 price: cost - enterDiff,
-                cost: cost * 3
+                cost: cost * 3,
               },
               target: {
                 price: cost * 1.2,
-                percentage: 20
+                percentage: 20,
               },
               stop: {
                 price: cost - enterDiff * 2,
-                percentage: 0.4
+                percentage: 0.4,
               },
               deposit: {
                 price: deposit,
-                percentage: 2.4
+                percentage: 2.4,
               },
               luck: {
                 percentage: luck * 10,
-                value: luck
+                value: luck,
               },
-              idea: idea > 5
+              idea: idea > 5,
             };
           })
         )
@@ -88,7 +87,9 @@ export class DesktopApiService extends DesktopService {
   }
 
   public getStockList(): Observable<Response<Stock>> {
-    return this._http.get<Response<Stock>>(`http://localhost:3002/api/v1/instruments?sub=true`);
+    return this._http.get<Response<Stock>>(
+      `https://trade.gpn.dev/api/v1/instruments?sub=true`
+    );
     // return this._http.get<Response<Stock>>('/assets/mocks/stock.json');
   }
 
@@ -96,7 +97,7 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<any>(
       `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
       {
-        ids: list.map((item: StockListItem) => item.id)
+        ids: list.map((item: StockListItem) => item.id),
       }
     );
   }
@@ -138,37 +139,37 @@ export class DesktopApiService extends DesktopService {
               ticker: 'MOEX',
               cost: {
                 price: cost,
-                cost: cost * 3
+                cost: cost * 3,
               },
               enter: {
                 price: cost - enterDiff,
-                cost: (cost - enterDiff) * 3
+                cost: (cost - enterDiff) * 3,
               },
               result: {
                 price: enterDiff,
-                percentage: 3
+                percentage: 3,
               },
               target1: {
                 price: cost + enterDiff,
-                percentage: 1
+                percentage: 1,
               },
               target2: {
                 price: cost + enterDiff * 3,
-                percentage: 3
+                percentage: 3,
               },
               out: {
                 price: cost + enterDiff * 2,
-                value: 1
+                value: 1,
               },
               stop: {
                 price: cost - enterDiff * 2,
-                percentage: 2
+                percentage: 2,
               },
               deposit: {
                 value: deposit,
-                percentage: 2
+                percentage: 2,
               },
-              luck
+              luck,
             };
           })
         )
@@ -185,8 +186,8 @@ export class DesktopApiService extends DesktopService {
         id: selected?.value.id,
         interval: 5,
         from: '2015-03-20T00:00:00Z',
-        to: '2024-04-23T00:00:00Z'
-      }
+        to: '2024-04-23T00:00:00Z',
+      },
     });
   }
 }
