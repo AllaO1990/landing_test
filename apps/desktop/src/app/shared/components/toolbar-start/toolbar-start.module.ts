@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarStartComponent } from './toolbar-start.component';
+import { NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { ToolbarLogoModule } from '../toolbar-logo/toolbar-logo.module';
+import { ToolbarStartComponent } from './toolbar-start.component';
 
 @NgModule({
   declarations: [ToolbarStartComponent],

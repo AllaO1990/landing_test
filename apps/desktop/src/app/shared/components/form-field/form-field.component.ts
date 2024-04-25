@@ -14,8 +14,8 @@ import {
 import { Subject } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
 import { VtFormFieldControl } from './form-field-control';
-import { VtPrefixDirective, VT_PREFIX } from './prefix';
-import { VtSuffixDirective, VT_SUFFIX } from './suffix';
+import { VT_PREFIX, VtPrefixDirective } from './prefix';
+import { VT_SUFFIX, VtSuffixDirective } from './suffix';
 
 @Component({
   selector: 'vt-form-field',

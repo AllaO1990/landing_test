@@ -1,16 +1,16 @@
-import {inject, Injectable} from '@angular/core';
-import {DesktopService} from './desktop.abstract.service';
-import {HttpClient} from '@angular/common/http';
-import {Observable, of, switchMap, timer} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable, of, switchMap, timer } from 'rxjs';
+import { Idea } from 'types/idea';
+import { Response } from 'types/response';
 import {
   Stock,
   StockDirection,
-  StockId, StockList,
+  StockId,
+  StockList,
   StockListItem,
-  StockGroup,
 } from 'types/stock';
-import {Idea} from 'types/idea';
-import {Response} from 'types/response';
+import { DesktopService } from './desktop.abstract.service';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -18,11 +18,10 @@ export class DesktopApiService extends DesktopService {
 
   public getIdeaList(): Observable<Idea[]> {
     const today: Date = new Date();
-    const maxDay: number = new Date(
-      // today.getFullYear(),
-      // today.getMonth() + 1,
-      // 0
-    ).getDate();
+    const maxDay: number = new Date().getDate();
+    // today.getFullYear(),
+    // today.getMonth() + 1,
+    // 0
     const genNumber = (max: number, min: number): number => {
       return Math.floor(Math.random() * (max - min) + min);
     };
@@ -30,46 +29,48 @@ export class DesktopApiService extends DesktopService {
     return timer(2000).pipe(
       switchMap((_) =>
         of(
-          Array.from({length: 100}, (_, i: number) => {
+          Array.from({ length: 100 }, (_, i: number) => {
             const cost = genNumber(10000, 100);
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);
             const luck = genNumber(10, 1);
             const idea = genNumber(10, 0);
-            const start = `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(
-              maxDay,
-              1
-            )}`;
+            const start = `${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${genNumber(maxDay, 1)}`;
 
             return {
               id: i,
               figi: `${i}`,
               date: {
                 start,
-                passed: Math.round((new Date().valueOf() - new Date(start).valueOf()) / (24 * 60 * 60 * 1000))
+                passed: Math.round(
+                  (new Date().valueOf() - new Date(start).valueOf()) /
+                    (24 * 60 * 60 * 1000)
+                ),
               },
               direction: i % 5 ? StockDirection.SELL : StockDirection.BUY,
               ticker: 'MOEX',
               cost,
               enter: {
                 price: cost - enterDiff,
-                cost: cost * 3
+                cost: cost * 3,
               },
               target: {
                 price: cost * 1.2,
-                percentage: 20
+                percentage: 20,
               },
               stop: {
                 price: cost - enterDiff * 2,
-                percentage: .4
+                percentage: 0.4,
               },
               deposit: {
                 price: deposit,
-                percentage: 2.4
+                percentage: 2.4,
               },
               luck: {
                 percentage: luck * 10,
-                value: luck
+                value: luck,
               },
               idea: idea > 5,
             };
@@ -91,7 +92,7 @@ export class DesktopApiService extends DesktopService {
 
   public getActiveStock(list: StockList): Observable<any> {
     return this._http.post<any>(
-      `http://localhost:3002/api/v1/instruments/last-close-price/by-ids`,
+      `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
       {
         ids: list.map((item: StockListItem) => item.id),
       }
@@ -118,7 +119,7 @@ export class DesktopApiService extends DesktopService {
     return timer(2000).pipe(
       switchMap((_) =>
         of(
-          Array.from({length: 100}, (_, i: number) => {
+          Array.from({ length: 100 }, (_, i: number) => {
             const cost = genNumber(10000, 100);
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);
@@ -147,5 +148,17 @@ export class DesktopApiService extends DesktopService {
     );
 
     // return this._http.get<StockNameItem[]>('/assets/mocks/trade-list.json');
+  }
+
+  getCandles(selected: any): Observable<any> {
+    console.log(selected);
+    return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
+      params: {
+        id: selected?.value.id,
+        interval: 5,
+        from: '2015-03-20T00:00:00Z',
+        to: '2024-04-23T00:00:00Z',
+      },
+    });
   }
 }

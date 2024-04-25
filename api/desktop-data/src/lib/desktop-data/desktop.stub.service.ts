@@ -33,4 +33,8 @@ export class DesktopStubService extends DesktopService {
   getList(): Observable<unknown> {
     return of([]);
   }
+
+  getCandles(): Observable<any> {
+    return of([]);
+  }
 }

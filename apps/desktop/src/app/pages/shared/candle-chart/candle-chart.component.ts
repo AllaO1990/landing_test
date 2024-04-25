@@ -18,10 +18,10 @@ import { IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { DataService } from '../../../core/data/data.service';
-import { TvWidgetOptions } from './candle-chart.model';
-import { VtDashboardSettingsFormComponent } from './dashboard-settings-form/dashboard-settings-form.component';
 import { VtLocalStorageService } from '../../../core/storage/local-storage.service';
 import { VtCommonSettings } from '../../../shared/interfaces/storage-interface';
+import { TvWidgetOptions } from './candle-chart.model';
+import { VtDashboardSettingsFormComponent } from './dashboard-settings-form/dashboard-settings-form.component';
 
 declare const TradingView: any;
 
@@ -220,26 +220,26 @@ export class VtCandleChartComponent
     );
   }
 
-  private _addHistogramSeries() {
-    if (this.viewSize !== 'big') {
-      return;
-    }
+  // private _addHistogramSeries() {
+  //   if (this.viewSize !== 'big') {
+  //     return;
+  //   }
 
-    this.volumeSeries = this._chart.addHistogramSeries({
-      color: '#26a69a',
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: '',
-      scaleMargins: {
-        top: 0.8,
-        bottom: 0,
-      },
-    });
-    this._chart.subscribeClick((event) => {
-      console.log(event);
-    });
-  }
+  //   this.volumeSeries = this._chart.addHistogramSeries({
+  //     color: '#26a69a',
+  //     priceFormat: {
+  //       type: 'volume',
+  //     },
+  //     priceScaleId: '',
+  //     scaleMargins: {
+  //       top: 0.8,
+  //       bottom: 0,
+  //     },
+  //   });
+  //   this._chart.subscribeClick((event) => {
+  //     console.log(event);
+  //   });
+  // }
 
   lockEvent($event: Event) {
     console.log($event);

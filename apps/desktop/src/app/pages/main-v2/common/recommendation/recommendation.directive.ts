@@ -1,10 +1,10 @@
+import { CdkVirtualForOfContext } from '@angular/cdk/scrolling';
 import {
   Directive,
   Inject,
   TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
-import { CdkVirtualForOfContext } from '@angular/cdk/scrolling';
 
 @Directive({
   selector: '[recommendationItem]',

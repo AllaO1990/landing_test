@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { SharedModule } from '../../../shared/shared.module';
 import { VtCandleChartComponent } from './candle-chart.component';
 import { VtDashboardSettingsFormModule } from './dashboard-settings-form/dashboard-settings-form.module';
-import { SharedModule } from '../../../shared/shared.module';
 
 @NgModule({
   declarations: [VtCandleChartComponent],

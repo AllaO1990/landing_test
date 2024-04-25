@@ -1,7 +1,10 @@
 <div class="container" [class.small]="isSmall$ | async">
   <div class="chart">
-    {{ selected$ | async | json }}
-    <vt-chart></vt-chart>
+    <!-- {{ selected$ | async | json }} -->
+    <vt-chart
+      [data]="candles$ | async"
+      [selected]="selected$ | async"
+    ></vt-chart>
   </div>
 
   <div class="stock">
