@@ -1,7 +1,15 @@
-import {Observable} from 'rxjs';
-import {Stock, StockId, StockList, StockListItem, StockListPrice, StockGroup, StockPrice} from 'types/stock';
-import {Idea} from 'types/idea';
-import {Response} from 'types/response';
+import { Observable } from 'rxjs';
+import { Idea } from 'types/idea';
+import { Response } from 'types/response';
+import {
+  Stock,
+  StockGroup,
+  StockId,
+  StockList,
+  StockListItem,
+  StockListPrice,
+  StockPrice,
+} from 'types/stock';
 
 export abstract class DesktopService {
   public abstract getIdeaList(): Observable<Idea[]>;
@@ -12,7 +20,11 @@ export abstract class DesktopService {
 
   public abstract getStock(id: StockId): Observable<StockListItem[]>;
 
-  public abstract getActiveStock(list: StockList): Observable<Response<StockPrice<StockListPrice>>>;
+  public abstract getActiveStock(
+    list: StockList
+  ): Observable<Response<StockPrice<StockListPrice>>>;
 
   public abstract getTradeList(): Observable<StockGroup[]>;
+
+  public abstract getCandles(id: string): Observable<unknown>;
 }

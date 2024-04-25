@@ -8,9 +8,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class ToolbarComponent {
   public readonly links: { path: string; name: string }[] = [
-    { name: 'Main', path: './main' },
-    { name: 'Main 2', path: './main-v2' },
-    { name: 'Dashboard', path: './dashboard' },
+    { name: 'Main', path: './main-v2' },
+    // { name: 'Main 2', path: './main-v2' },
+    // { name: 'Dashboard', path: './dashboard' },
   ];
 
   constructor() {}

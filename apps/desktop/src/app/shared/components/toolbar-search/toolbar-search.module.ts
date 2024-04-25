@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarSearchComponent } from './toolbar-search.component';
-import { ToolbarLogoModule } from '../toolbar-logo/toolbar-logo.module';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ToolbarLogoModule } from '../toolbar-logo/toolbar-logo.module';
+import { ToolbarSearchComponent } from './toolbar-search.component';
 
 @NgModule({
   declarations: [ToolbarSearchComponent],

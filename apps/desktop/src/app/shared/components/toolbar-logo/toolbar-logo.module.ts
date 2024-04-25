@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarLogoComponent } from './toolbar-logo.component';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ToolbarLogoComponent } from './toolbar-logo.component';
 
 @NgModule({
   declarations: [ToolbarLogoComponent],

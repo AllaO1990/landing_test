@@ -8,9 +8,8 @@ import {
   RegistrationGuard,
   SaleGuard,
 } from './core/routing/guards';
-import { LayoutStartComponent } from './shared/components/layout-start/layout-start.component';
 import { ToolbarComponent } from './pages/main/shared/toolbar/toolbar.component';
-import { LkComponent } from 'lk';
+import { LayoutStartComponent } from './shared/components/layout-start/layout-start.component';
 
 const routes: Routes = [
   {

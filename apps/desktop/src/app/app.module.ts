@@ -3,17 +3,17 @@ import { NgModule } from '@angular/core';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { LayoutStartModule } from './shared/components/layout-start';
+import { DesktopApiService } from '@desktop-data/desktop-data';
 import {
   TUI_BUTTON_OPTIONS,
   TuiModeModule,
   TuiRootModule,
 } from '@taiga-ui/core';
-import { environment } from '../environments/environment';
-import { DesktopApiService } from '@desktop-data/desktop-data';
 import { DESKTOP_API, DESKTOP_ENVIRONMENT } from 'tokens/desktop';
+import { environment } from '../environments/environment';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { LayoutStartModule } from './shared/components/layout-start';
 
 @NgModule({
   declarations: [AppComponent],

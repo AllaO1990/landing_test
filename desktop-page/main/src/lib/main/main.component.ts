@@ -1,29 +1,29 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {AsyncPipe, JsonPipe} from '@angular/common';
-import {ChartModule} from '../../../../../apps/desktop/src/app/pages/main-v2/common/chart/chart.module';
-import {DesktopService} from '@desktop-data/desktop-data';
-import {Observable} from 'rxjs';
-import {StockComponent} from './stock/stock.component';
-import {DESKTOP_API, DESKTOP_STORE} from 'tokens/desktop';
-import {DesktopLkStore} from 'stores/desktop';
-import {EntryModule} from './entry/entry.module';
-import {Idea} from 'types/idea';
-import {TuiBreakpointMediaKey, TuiBreakpointService} from '@taiga-ui/core';
-import {map} from 'rxjs/operators';
-import {OutModule} from './out/out.module';
-import {MainService} from './main.service';
-import {StockList, StockListPrice, StockPrice} from 'types/stock';
+import { AsyncPipe, JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { DesktopService } from '@desktop-data/desktop-data';
+import { TuiBreakpointMediaKey, TuiBreakpointService } from '@taiga-ui/core';
+import { ChartComponent } from '@ui/chart';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { DesktopLkStore } from 'stores/desktop';
+import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
+import { Idea } from 'types/idea';
+import { StockList, StockListPrice, StockPrice } from 'types/stock';
+import { EntryModule } from './entry/entry.module';
+import { MainService } from './main.service';
+import { OutModule } from './out/out.module';
+import { StockComponent } from './stock/stock.component';
 
 @Component({
   selector: 'lib-main',
   standalone: true,
   imports: [
     AsyncPipe,
-    ChartModule,
     EntryModule,
     OutModule,
     StockComponent,
     JsonPipe,
+    ChartComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
@@ -58,4 +58,6 @@ export class MainComponent {
 
   public readonly stockPrice$: Observable<StockPrice<StockListPrice> | null> =
     this._store.price$;
+
+  public readonly candles$: Observable<any | null> = this._store.candles$;
 }

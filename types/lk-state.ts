@@ -1,4 +1,4 @@
-import {StockList, StockListPrice, StockPrice} from './stock';
+import { StockList, StockListPrice, StockPrice } from './stock';
 
 export interface DesktopLkState {
   selected: any | null;
@@ -6,4 +6,5 @@ export interface DesktopLkState {
   active: null | StockList;
   price: null | StockPrice<StockListPrice>;
   defaultPrice: null | StockPrice<StockListPrice>;
+  candles: null | any[];
 }

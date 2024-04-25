@@ -16,6 +16,7 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/desktop",
         "index": "apps/desktop/src/index.html",
@@ -99,10 +100,7 @@
         "tsConfig": "apps/desktop/tsconfig.spec.json",
         "karmaConfig": "apps/desktop/karma.conf.js",
         "inlineStyleLanguage": "scss",
-        "assets": [
-          "apps/desktop/src/favicon.ico",
-          "apps/desktop/src/assets"
-        ],
+        "assets": ["apps/desktop/src/favicon.ico", "apps/desktop/src/assets"],
         "styles": ["apps/desktop/src/styles.scss"],
         "scripts": []
       }

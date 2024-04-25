@@ -20,14 +20,27 @@ export const OUT_HEADER: OutHeaderItem[][] = [
     {
       name: 'cost',
       label: 'Цена',
-      sorter: (a: { cost: number }, b: { cost: number }) => sortNumber(a.cost, b.cost),
+      sorter: (a: { cost: { price: number } }, b: {
+        cost: { price: number }
+      }) => sortNumber(a.cost.price, b.cost.price),
       rowspan: 2,
       colspan: 1
     },
     {
       name: 'enter',
-      label: 'Цена вх.',
-      sorter: (a: { enter: number }, b: { enter: number }) => sortNumber(a.enter, b.enter),
+      label: 'Цена уч <br> Стоим уч.',
+      sorter: (a: { enter: { price: number } }, b: {
+        enter: { price: number }
+      }) => sortNumber(a.enter.price, b.enter.price),
+      rowspan: 2,
+      colspan: 1
+    },
+    {
+      name: 'result',
+      label: 'Результат <br> Рез-т %',
+      sorter: (a: { result: { price: number } }, b: {
+        result: { price: number }
+      }) => sortNumber(a.result.price, b.result.price),
       rowspan: 2,
       colspan: 1
     },
@@ -68,14 +81,18 @@ export const OUT_HEADER: OutHeaderItem[][] = [
       label: 'Цель 1',
       rowspan: 1,
       colspan: 1,
-      sorter: (a: { target1: number }, b: { target1: number }) => sortNumber(a.target1, b.target1)
+      sorter: (a: { target1: { price: number } }, b: {
+        target1: { price: number }
+      }) => sortNumber(a.target1.price, b.target1.price)
     },
     {
       name: 'target2',
       label: 'Цель 2',
       rowspan: 1,
       colspan: 1,
-      sorter: (a: { target2: number }, b: { target2: number }) => sortNumber(a.target2, b.target2)
+      sorter: (a: { target2: { price: number } }, b: {
+        target2: { price: number }
+      }) => sortNumber(a.target2.price, b.target2.price)
     }
   ]
 ];
@@ -85,6 +102,7 @@ export const OUT_COLUMNS: string[] = [
   'ticker',
   'cost',
   'enter',
+  'result',
   'target1',
   'target2',
   'stop',
