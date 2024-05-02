@@ -89,6 +89,7 @@
   ::ng-deep {
     button {
       width: 100%;
+      font-weight: 400;
     }
   }
 
@@ -97,17 +98,21 @@
     text-align: left;
   }
 
-  &__date {
+  &--date {
     white-space: nowrap;
     width: 90px;
   }
 
-  &__enter {
+  &--direction {
+    width: 40px;
+  }
+
+  &--enter {
     white-space: nowrap;
     width: 90px;
   }
 
-  &__deposit {
+  &--deposit {
     white-space: nowrap;
   }
 }

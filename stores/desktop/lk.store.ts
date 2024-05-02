@@ -132,4 +132,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       })
     )
   );
+
+  private _timer<T>(source: Observable<T>): Observable<T> {
+    return source;
+  }
 }

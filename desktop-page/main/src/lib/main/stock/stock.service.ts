@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {StockList, StockListItem, StockGroup, StockPrice, StockListPrice, StockListItemWithPrice} from 'types/stock';
-import {STOCK_MAPPER} from "./stock.constant";
+import { Injectable } from '@angular/core';
+import { StockGroup, StockList, StockListItem, StockListItemWithPrice, StockListPrice, StockPrice } from 'types/stock';
+import { STOCK_MAPPER } from './stock.constant';
 
 type StockType = 'moex' | 'futures' | 'currency' | 'metal';
 
@@ -77,17 +77,25 @@ export class StockService {
     }
 
     if (!price) {
-      return list.map((item: StockListItem) => ({...item, price: null, change: null, changePercent: null}));
+      return list.map((item: StockListItem) => ({...item, price: null, change: null, changePercent: null, increment: null}));
     }
 
     return list.map((item: StockListItem) => {
       if (price[item.id] === null) {
-        return ({...item, price: null, change: null, changePercent: null})
+        return ({...item, price: null, change: null, changePercent: null, increment: null})
       }
 
-      const {prev, last} = price[item.id] as StockListPrice;
+      const {prev, last, minPriceIncrement} = price[item.id] as StockListPrice;
+      const split =  minPriceIncrement.toString(10).split('.')
+      const increment = split[1] ? split[1].length : 0;
 
-      return {...item, price: last, change: last - prev, changePercent: (last - prev) / last * 100}
+      return {
+        ...item,
+        price: last,
+        change: last - prev,
+        changePercent: (last - prev) / last * 100,
+        increment
+      }
     });
   }
 }

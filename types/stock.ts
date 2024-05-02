@@ -27,6 +27,7 @@ export interface StockListItemPrice {
   price: null | number;
   change: null | number;
   changePercent: null | number;
+  increment: null | number;
 }
 
 export type StockListItemWithPrice = StockListItem & StockListItemPrice;
@@ -59,5 +60,6 @@ export interface StockPrice<T> {
 
 export interface StockListPrice {
   prev: number;
+  minPriceIncrement: number;
   last: number;
 }
