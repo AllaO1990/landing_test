@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { catchError, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
 import { DesktopLkState } from '../../types/lk-state';
@@ -10,8 +10,10 @@ import {
   StockList,
   StockListItem,
   StockListPrice,
-  StockPrice,
+  StockPrice
 } from '../../types/stock';
+
+const TIMER_INTERVAL = .1 * 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
@@ -41,11 +43,11 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       active: null,
       price: null,
       defaultPrice: null,
-      candles: null,
+      candles: null
     });
 
     this.loadStock();
-    this.loadActivePrice(this.stockActive$);
+    this.loadActivePrice(this._timer(this.stockActive$, TIMER_INTERVAL));
     this.loadCandles(this.selected$);
   }
 
@@ -62,7 +64,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       const defaultPrice = stock.reduce(
         (acc: StockPrice<StockListPrice>, item: StockListItem) => ({
           ...acc,
-          [item.id]: null,
+          [item.id]: null
         }),
         {}
       );
@@ -74,7 +76,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public updatePrice = this.updater(
     (state: DesktopLkState, price: StockPrice<StockListPrice>) => ({
       ...state,
-      price: { ...state.defaultPrice, ...price },
+      price: { ...state.defaultPrice, ...price }
     })
   );
 
@@ -119,7 +121,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
             item.open,
             item.high,
             item.low,
-            item.close,
+            item.close
           ];
         });
       }),
@@ -133,7 +135,9 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     )
   );
 
-  private _timer<T>(source: Observable<T>): Observable<T> {
-    return source;
+  private _timer<T>(source$: Observable<T>, interval: number = 10000, start: number = 0): Observable<T> {
+    return timer(start, interval).pipe(
+      tap(value => console.log(value)),
+      switchMap(_ => source$));
   }
 }
