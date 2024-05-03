@@ -14,9 +14,7 @@ export class ToolbarStartComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {
-    console.log('ToolbarStartComponent');
-  }
+  ngOnInit(): void {}
 
   public trackByIndex(index: number): number {
     return index;

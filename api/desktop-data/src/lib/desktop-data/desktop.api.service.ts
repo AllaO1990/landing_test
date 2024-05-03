@@ -180,13 +180,12 @@ export class DesktopApiService extends DesktopService {
   }
 
   getCandles(selected: any): Observable<any> {
-    console.log(selected);
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {
         id: selected?.value.id,
         interval: 5,
-        from: '2015-03-20T00:00:00Z',
-        to: '2024-04-23T00:00:00Z',
+        from: new Date(0).toISOString(),
+        to: new Date(Date.now()).toISOString(),
       },
     });
   }

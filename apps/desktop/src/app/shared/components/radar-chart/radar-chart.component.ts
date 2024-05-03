@@ -24,8 +24,6 @@ Chart.register(
   Filler
 );
 
-// console.log(registerables);
-
 @Component({
   selector: 'vt-radar-chart',
   templateUrl: './radar-chart.component.html',
