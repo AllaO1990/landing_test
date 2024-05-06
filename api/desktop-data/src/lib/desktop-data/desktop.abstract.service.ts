@@ -26,5 +26,5 @@ export abstract class DesktopService {
 
   public abstract getTradeList(): Observable<StockGroup[]>;
 
-  public abstract getCandles(id: string): Observable<unknown>;
+  public abstract getCandles(id: any): Observable<unknown>;
 }

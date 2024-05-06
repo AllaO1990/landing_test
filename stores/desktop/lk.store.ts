@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { catchError, Observable, of, switchMap, tap, timer } from 'rxjs';
+import { catchError, finalize, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
 import { DesktopLkState } from '../../types/lk-state';
@@ -47,8 +47,12 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     });
 
     this.loadStock();
-    this.loadActivePrice(this._timer(this.stockActive$, TIMER_INTERVAL));
-    this.loadCandles(this.selected$);
+
+    this.loadActivePrice(this._timer(this.stockActive$, TIMER_INTERVAL).pipe(
+      map((value: { source: StockList | null}) => value.source)
+    ));
+
+    this.loadCandles(this._timer(this.selected$, TIMER_INTERVAL));
   }
 
   public updateSelect = this.updater(
@@ -109,10 +113,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       )
   );
 
-  public readonly loadCandles = this.effect((stream$: Observable<any>) =>
+  public readonly loadCandles = this.effect((stream$: Observable<{ source: any | null; index: number }>) =>
     stream$.pipe(
-      skipWhile((value) => value === null),
-      switchMap((data: any) => this._api.getCandles(data)),
+      skipWhile((value) => value.source === null),
+      switchMap((data: { source: any; index: number }) => this._api.getCandles(data)),
       map((data: any) => {
         return data.data.map((item: any) => {
           // x,open,high,low,close
@@ -135,9 +139,12 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     )
   );
 
-  private _timer<T>(source$: Observable<T>, interval: number = 10000, start: number = 0): Observable<T> {
-    return timer(start, interval).pipe(
-      tap(value => console.log(value)),
-      switchMap(_ => source$));
+  private _timer<T>(source$: Observable<T>, interval: number = 10000, start: number = 0): Observable<{ source: T, index: number}> {
+    return source$.pipe(
+      switchMap((source: T) => timer(start, interval).pipe(
+        map((index: number) => ({ source, index })),
+        finalize(() => console.log('finalize _timer'))
+      ))
+    );
   }
 }

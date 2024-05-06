@@ -11,6 +11,8 @@ import {
   StockListItem, StockListPrice, StockPrice
 } from 'types/stock';
 import { DesktopService } from './desktop.abstract.service';
+import _default from 'chart.js/dist/core/core.interaction';
+import index = _default.modes.index;
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -179,13 +181,15 @@ export class DesktopApiService extends DesktopService {
     // return this._http.get<StockNameItem[]>('/assets/mocks/trade-list.json');
   }
 
-  getCandles(selected: any): Observable<any> {
+  getCandles(selected: { source: any; index: number }): Observable<any> {
     // console.log(selected);
+    const from: string = selected.index === 0 ? '2015-03-20T00:00:00Z' : '2024-04-23T00:00:00Z';
+
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {
-        id: selected?.value.id,
+        id: selected?.source.value.id,
         interval: 5,
-        from: '2015-03-20T00:00:00Z',
+        from,
         to: '2024-04-23T00:00:00Z',
       },
     });
