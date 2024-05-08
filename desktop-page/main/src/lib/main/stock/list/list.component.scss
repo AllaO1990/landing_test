@@ -87,14 +87,24 @@
   }
 
   &__name {
-    width: 50px;
+    width: 60px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
     margin-right: var(--padding-2);
 
     font-weight: 500;
   }
 
   &__sector {
-    width: 90px;
+    width: 100px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
     margin-right: var(--padding-2);
   }
 
@@ -156,5 +166,21 @@
   &__container {
     flex: 1 1;
     overflow-y: auto;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .header {
+    &__col {
+      &--sector {
+        display: none;
+      }
+    }
+  }
+
+  .stock-item {
+    &__sector {
+      display: none;
+    }
   }
 }
