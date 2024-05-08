@@ -11,8 +11,6 @@ import {
   StockListItem, StockListPrice, StockPrice
 } from 'types/stock';
 import { DesktopService } from './desktop.abstract.service';
-import _default from 'chart.js/dist/core/core.interaction';
-import index = _default.modes.index;
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -56,7 +54,7 @@ export class DesktopApiService extends DesktopService {
               cost,
               enter: {
                 price: cost - enterDiff,
-                cost: cost * 3,
+                cost: deposit,
               },
               target: {
                 price: cost * 1.2,
@@ -67,7 +65,7 @@ export class DesktopApiService extends DesktopService {
                 percentage: 0.4,
               },
               deposit: {
-                price: deposit,
+                price: cost * 3,
                 percentage: 2.4,
               },
               luck: {

@@ -72,7 +72,7 @@
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
             {{ item.enter.price | tuiFormatNumber }}
-            <div class="substring">{{ item.enter.cost }}%</div>
+            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}%</div>
           </td>
 
           <td *tuiCell="'out'" tuiTd class="td td--number">

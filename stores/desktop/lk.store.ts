@@ -13,7 +13,7 @@ import {
   StockPrice
 } from '../../types/stock';
 
-const TIMER_INTERVAL = .1 * 60 * 1000;
+const TIMER_INTERVAL =0.1 * 60 * 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
