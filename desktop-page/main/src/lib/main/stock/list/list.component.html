@@ -22,7 +22,7 @@
           class="stock-item__img"
           [title]="item.name">
           <img
-            src="/assets/tickers-v2/{{ item.ticker }}.png"
+            src="/assets/tickers-v2/{{ item.ticker }}.{{ item.type === 'crypto' ? 'svg' : 'png' }}"
             [attr.alt]="item.name"
           />
         </div>

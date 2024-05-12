@@ -137,7 +137,6 @@ export class StockComponent {
   }
 
   public onSelect(value: unknown ): void {
-    // console.log(value);
     this._store.updateSelect({type: EventSelected.STOCK_LIST, value});
   }
 
