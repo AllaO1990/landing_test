@@ -135,9 +135,41 @@ export class ChartComponent implements OnInit {
         },
       },
     },
-    // rangeSelector: {
-    //   selected: 1,
-    // },
+    rangeSelector: {
+      allButtonsEnabled: true,
+      buttons: [
+        {
+          type: 'month',
+          count: 12,
+          text: 'День',
+          dataGrouping: {
+            forced: true,
+            units: [['day', [1]]],
+          },
+        },
+        {
+          type: 'year',
+          count: 1,
+          text: 'Неделя',
+          dataGrouping: {
+            forced: true,
+            units: [['week', [1]]],
+          },
+        },
+        {
+          type: 'all',
+          text: 'Месяц',
+          dataGrouping: {
+            forced: true,
+            units: [['month', [1]]],
+          },
+        },
+      ],
+      buttonTheme: {
+        width: 60,
+      },
+      selected: 2,
+    },
     tooltip: {
       shape: 'rect',
       headerShape: 'callout',
@@ -267,6 +299,7 @@ export class ChartComponent implements OnInit {
   constructor() {
     Highcharts.setOptions({
       lang: {
+        rangeSelectorZoom: 'Таймфрейм',
         weekdays: [
           'Воскресенье',
           'Понедельник',
