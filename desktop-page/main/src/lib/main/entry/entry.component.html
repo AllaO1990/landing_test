@@ -1,3 +1,14 @@
+<tui-filter
+  [size]="'s'"
+  class="item"
+  [content]="content"
+  [items]="items"
+></tui-filter>
+
+<ng-template #content let-item>
+  {{item.name}}
+</ng-template>
+
 <tui-loader class="entry__loader" [overlay]="true" [showLoader]="data === null">
   <tui-scrollbar *ngIf="data; else empty" class="entry__scrollbar">
     <cdk-virtual-scroll-viewport
@@ -13,7 +24,7 @@
             <th
               *tuiHead="item.name"
               tuiTh
-              class="th th__{{item.name}}"
+              class="th th--{{item.name}}"
               [sticky]="true"
               [sorter]="item.sorter"
               [style.top.px]="-viewport['_renderedContentOffset']">

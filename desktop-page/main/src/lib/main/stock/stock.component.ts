@@ -27,6 +27,7 @@ import { DESKTOP_STORE } from 'tokens/desktop';
 import { DesktopLkStore } from '../../../../../../stores/desktop';
 import { StockService } from './stock.service';
 import { STOCK_GROUPS } from './stock.constant';
+import { EventSelected } from 'types/events';
 
 @Component({
   selector: 'vt-stock',
@@ -113,11 +114,9 @@ export class StockComponent {
       startWith(this.controlGroup.value),
       filter((value: StockGroup | null): value is StockGroup => value !== null),
       map((value: StockGroup) => this._map.get(value) || []),
-      tap((list: StockList) => this._store.updateActive(list))
+      tap((list: StockList) => this._store.updateActive(list)),
     ),
-    this._price$.asObservable().pipe(
-      // filter((value: StockPrice<StockListPrice> | null): value is StockPrice<StockListPrice> => value !== null)
-    )
+    this._price$.asObservable()
   ]).pipe(
     map(([list, price]: [StockList | null, StockPrice<StockListPrice> | null]) => this._service.getListWithPrice(list, price))
   );
@@ -137,8 +136,8 @@ export class StockComponent {
     return item.id;
   }
 
-  public onSelect(event: { type: string; value: unknown }): void {
-    this._store.updateSelect(event);
+  public onSelect(value: unknown ): void {
+    this._store.updateSelect({type: EventSelected.STOCK_LIST, value});
   }
 
   private _createGroup(): void {

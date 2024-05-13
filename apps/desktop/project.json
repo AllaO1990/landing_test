@@ -44,7 +44,17 @@
           "apps/desktop/src/app/shared/styles/custom-style.scss"
         ],
         "scripts": [],
-        "allowedCommonJsDependencies": ["text-mask-core"]
+        "allowedCommonJsDependencies": [
+          "text-mask-core",
+          "highcharts/highstock",
+          "highcharts/indicators/indicators-all",
+          "highcharts/modules/annotations-advanced",
+          "highcharts/modules/drag-panes",
+          "highcharts/modules/exporting",
+          "highcharts/modules/full-screen",
+          "highcharts/modules/price-indicator",
+          "highcharts/modules/stock-tools"
+        ]
       },
       "configurations": {
         "production": {

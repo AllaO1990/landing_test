@@ -1,15 +1,16 @@
-import {ChangeDetectionStrategy, Component, Input, Output,} from '@angular/core';
-import {STOCK_LIST_HEADER} from '../stock.constant';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport,} from '@angular/cdk/scrolling';
-import {StockListItemComponent} from '../item/item.component';
-import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {StockListItem, StockListItemWithPrice} from 'types/stock';
-import {EventSelected} from 'types/events';
-import {TuiTableModule} from '@taiga-ui/addon-table';
-import {TuiFormatNumberPipeModule} from "@taiga-ui/core";
+import { AfterContentInit, ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
+import { STOCK_LIST_HEADER } from '../stock.constant';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { StockListItemComponent } from '../item/item.component';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { BehaviorSubject, Observable, startWith, Subject, switchMap } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { StockListItem, StockListItemWithPrice } from 'types/stock';
+import { TuiTableModule } from '@taiga-ui/addon-table';
+import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
+import _default from 'chart.js/dist/core/core.interaction';
+import index = _default.modes.index;
 
 @Component({
   selector: 'vt-stock-list',
@@ -28,28 +29,29 @@ import {TuiFormatNumberPipeModule} from "@taiga-ui/core";
     TuiTableModule,
     AsyncPipe,
     TuiFormatNumberPipeModule
-  ],
+  ]
 })
-export class StockListComponent {
+export class StockListComponent implements AfterContentInit {
   private readonly _list$: Subject<StockListItemWithPrice[] | null> = new BehaviorSubject<StockListItemWithPrice[] | null>(null);
 
   public list$: Observable<StockListItemWithPrice[] | null> = this._list$.asObservable();
 
+  @Output() selected: Observable<unknown> = this.list$.pipe(
+    filter((list: StockListItemWithPrice[] | null): list is StockListItemWithPrice[] => !!list),
+    switchMap((list: StockListItemWithPrice[]) => this.controlItem.valueChanges.pipe(
+      map((value: string) => list.find((item:StockListItemWithPrice) => item.id === value))
+    ))
+  );
+
   public readonly controlItem: FormControl =
-    new FormControl<StockListItem | null>(null);
+    new FormControl<string | null>(null);
 
   public readonly header: { name: string; label: string }[] = STOCK_LIST_HEADER;
 
   @Input()
   set list(value: StockListItemWithPrice[]) {
-    this.controlItem.patchValue(value && value.length > 0 ? value[0] : null);
     this._list$.next(value);
   }
-
-  @Output() selected: Observable<{ type: EventSelected; value: unknown }> =
-    this.controlItem.valueChanges.pipe(
-      map((value: StockListItem) => ({type: EventSelected.STOCK_LIST, value}))
-    );
 
   public trackByHeader(
     index: number,
@@ -60,5 +62,9 @@ export class StockListComponent {
 
   public trackByStockListItem(_: number, item: StockListItem): string {
     return item.id;
+  }
+
+  ngAfterContentInit(): void {
+    this.controlItem.patchValue('72187db2-44d8-4b2e-8b43-c41fd30c4a39');
   }
 }

@@ -89,6 +89,13 @@
   ::ng-deep {
     button {
       width: 100%;
+      font-weight: 400;
+    }
+
+    tui-svg {
+      font-size: 12px;
+      height: 12px;
+      width: 12px;
     }
   }
 
@@ -97,17 +104,21 @@
     text-align: left;
   }
 
-  &__date {
+  &--date {
     white-space: nowrap;
     width: 90px;
   }
 
-  &__enter {
+  &--direction {
+    width: 40px;
+  }
+
+  &--enter {
     white-space: nowrap;
     width: 90px;
   }
 
-  &__deposit {
+  &--deposit {
     white-space: nowrap;
   }
 }

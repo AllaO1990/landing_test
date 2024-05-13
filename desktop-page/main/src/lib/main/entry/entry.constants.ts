@@ -31,7 +31,7 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   },
   {
     name: 'enter',
-    label: `Цена вх. <br>Стоим вх`,
+    label: `Цена вх. <br>Кол-во лотов`,
     sorter: (a: { enter: { price: number } }, b: {
       enter: { price: number }
     }) => sortNumber(a.enter.price, b.enter.price)
@@ -50,7 +50,7 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   },
   {
     name: 'deposit',
-    label: `Кол-во<br>% депо`,
+    label: `Стоим вх<br>% депо`,
     sorter: (a: { deposit: { price: number } }, b: {
       deposit: { price: number }
     }) => sortNumber(a.deposit.price, b.deposit.price)

@@ -5,6 +5,7 @@ import { Idea } from 'types/idea';
 import { EntryHeaderItem } from './entry.types';
 import { scaleLinear } from 'd3-scale';
 import { color } from 'd3-color';
+import { STOCK_GROUPS } from '../stock/stock.constant';
 
 export const getColor = scaleLinear(
   [1, 5, 10],
@@ -41,28 +42,7 @@ export class EntryComponent {
 
   protected getColorBackGround = getColorBackGround;
 
-  public market = [
-    {
-      id: 1,
-      text: 'РФ',
-    },
-    {
-      id: 2,
-      text: 'США',
-    },
-    {
-      id: 3,
-      text: 'Фьючерсы',
-    },
-    {
-      id: 4,
-      text: 'Опционы',
-    },
-    {
-      id: 5,
-      text: 'Валюты',
-    },
-  ];
+  public items = STOCK_GROUPS
 
   public time = [
     {
