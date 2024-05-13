@@ -149,7 +149,6 @@ export class VtCandleChartComponent
         )
       )
       .subscribe((event) => {
-        console.log(event);
         this._storageService.addOrUpdateObjectProperty('vtCommonSettings', {
           symbol: event.original_name,
         });
@@ -160,16 +159,12 @@ export class VtCandleChartComponent
     this.tvWidget = new TradingView.widget(this.tvWidgetOptions);
 
     this.tvWidget.subscribeToQuote((e: any) => {
-      // console.log(e);
       this.eventsFromWidget.next(e);
     });
 
-    addEventListener('message', (data: any) => {
-      // console.log(data);
-    });
+    addEventListener('message', (data: any) => {});
 
     // a.subscribe('study_properties_changed', (event: any) => {
-    //   console.log('SUBSCRIBE', event);
     // });
 
     // this._chart = createChart(this._content.nativeElement, {
@@ -241,9 +236,7 @@ export class VtCandleChartComponent
   //   });
   // }
 
-  lockEvent($event: Event) {
-    console.log($event);
-  }
+  lockEvent($event: Event) {}
 
   reloadTvWidget() {
     this.tvWidget.reload();

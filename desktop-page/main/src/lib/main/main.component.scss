@@ -16,7 +16,7 @@
   grid-template-columns: 1fr 1fr minmax(400px, 420px);
 }
 
-.chart {
+.vt-chart-container {
   grid-row: 1;
   grid-column: 1 / 3;
 
@@ -50,7 +50,7 @@
     grid-template-columns: 1fr minmax(346px, 0.65fr);
   }
 
-  .chart {
+  .vt-chart-container {
     grid-column: 1;
   }
 

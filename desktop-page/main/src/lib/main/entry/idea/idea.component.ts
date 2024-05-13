@@ -15,9 +15,7 @@ import { IdeaType } from './idea.types';
 export class EntryIdeaComponent implements OnInit {
   @Input() data!: IdeaType;
 
-  constructor() {
-    console.log('IdeaComponent');
-  }
+  constructor() {}
 
   ngOnInit(): void {}
 }
