@@ -66,7 +66,7 @@ export class ChartComponent implements OnInit {
       // overscroll: '1%',
 
       // max: 25,
-      maxPadding: 0.1,
+      // maxPadding: 0.1,
       resize: {
         enabled: true,
         controlledAxis: {},
@@ -323,6 +323,20 @@ export class ChartComponent implements OnInit {
           'Октябрь',
           'Ноябрь',
           'Декабрь',
+        ],
+        shortMonths: [
+          'Янв',
+          'Фев',
+          'Мар',
+          'Апр',
+          'Май',
+          'Июн',
+          'Июл',
+          'Авг',
+          'Сен',
+          'Окт',
+          'Ноя',
+          'Дек',
         ],
       },
     });
