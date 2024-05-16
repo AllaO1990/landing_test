@@ -8,16 +8,37 @@
         [size]="'s'"
         class="item"
         [content]="content"
-        [items]="items"
+        [items]="filterStock"
       ></tui-filter>
     </div>
     <div class="entry__action">
       <button
         tuiButton
         type="button"
-        [appearance]="'secondary'"
+        size="m"
+        appearance="secondary"
         class="entry__add-idea">
         {{ constants.add_idea }}
+      </button>
+
+      <button
+        [tuiDropdown]="dropdownContentMore"
+        [tuiDropdownManual]="openMore"
+        [tuiDropdownAlign]="'right'"
+        [tuiDropdownOffset]="8"
+        (click)="onOpenMore()"
+        (tuiActiveZoneChange)="onActiveZoneMore($event)"
+        (tuiObscured)="onObscuredMore($event)"
+        icon="tuiIconMoreVertical"
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        size="s"
+        class="entry__search"
+      >
+        <ng-template #dropdownContentMore>
+          <div class="dropdown">But there is nothing to choose...</div>
+        </ng-template>
       </button>
     </div>
   </div>
@@ -26,7 +47,7 @@
       [size]="'s'"
       class="item"
       [content]="content"
-      [items]="items"
+      [items]="filterStrategy"
     ></tui-filter>
   </div>
   <div class="entry__table">

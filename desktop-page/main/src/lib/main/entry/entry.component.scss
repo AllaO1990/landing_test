@@ -6,6 +6,7 @@
   width: 100%;
 
   background-color: var(--block-bg-color);
+
 }
 
 .entry {
@@ -15,8 +16,47 @@
   height: 100%;
   width: 100%;
 
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: var(--padding-1) var(--padding-2);
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 15px;
+
+    padding-right: var(--padding-4);
+  }
+
+  &__stock {
+    margin: 0 var(--padding-2);
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__add-idea {
+    margin-right: var(--padding-1);
+
+    &[data-size=m] {
+      font-weight: 400;
+    }
+  }
+
   &__strategy {
-    background: var(--tui-secondary);
+    display: flex;
+    align-items: center;
+
+    padding: var(--padding-1) var(--padding-2);
+
+    background: var(--inner-toolbar-color);
   }
 
   &__table {
@@ -24,4 +64,12 @@
   }
 }
 
+::ng-deep {
+  tui-filter label {
+    padding: 0 var(--padding-2) !important;
+  }
 
+  [appearance="icon"][size="s"] tui-svg {
+    font-size: 12px;
+  }
+}

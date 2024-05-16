@@ -2,6 +2,10 @@
   display: inline-block;
   height: 100%;
   width: 100%;
+
+  --tui-padding: 8px;
+  --tui-height-m: 1.5rem;
+  --tui-font-text-m: normal 10px/12px var(--tui-text-font);
 }
 
 .container {
@@ -14,6 +18,8 @@
 
   grid-template-rows: 1fr 1fr;
   grid-template-columns: 1fr 1fr 410px;
+
+  background-color: var(--main-bg-color);
 }
 
 .chart {
