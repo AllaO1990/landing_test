@@ -13,7 +13,7 @@
     }
 
     &--ticker {
-      width: 90px;
+      width: 100px;
 
       padding-left: var(--padding-2);
     }
@@ -24,12 +24,12 @@
 
     &--price {
       text-align: right;
-      width: 50px;
+      width: 60px;
     }
 
     &--change {
       text-align: right;
-      width: 50px;
+      width: 70px;
     }
 
     &--change-percent {
@@ -99,7 +99,7 @@
   }
 
   &__sector {
-    width: 100px;
+    width: 80px;
 
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -109,7 +109,7 @@
   }
 
   &__price {
-    width: 50px;
+    width: 70px;
     text-align: right;
 
     &:not(:last-child) {
@@ -117,7 +117,9 @@
     }
   }
 
-  &__last {
+  &__percent {
+    width: 40px;
+    text-align: right;
   }
 
   &__row--down &__change, &__row--down &__change-percent {
@@ -129,7 +131,7 @@
   }
 
   &__load {
-    width: 50px;
+    width: 60px;
 
     &:not(:last-child) {
       margin-right: 8px;

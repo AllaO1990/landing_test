@@ -9,147 +9,19 @@
 }
 
 .entry {
-  &__scrollbar {
-    height: 100%;
-  }
+  display: flex;
+  flex-flow: column nowrap;
 
-  &__header {
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  height: 100%;
+  width: 100%;
 
-    padding: 8px;
-  }
-
-  &__nav {
-    background-color: #eef1f9;
-
-    display: flex;
-    align-items: center;
-
-    flex: 0 0 24px;
-  }
-
-  &__empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 100%;
-    width: 100%;
-  }
-
-  &__loader {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  &__viewport {
-    height: 100%;
+  &__strategy {
+    background: var(--tui-secondary);
   }
 
   &__table {
-    width: 100%;
-
-    th {
-      font-size: 8px;
-      line-height: 10px;
-      font-weight: 400;
-      --tui-height-m: 48px;
-      padding: 0 4px 0 8px;
-    }
-
-    tr {
-      cursor: pointer;
-      transition: background-color 0.25s ease-in-out;
-
-      --tui-height-m: 32px;
-    }
-
-    td {
-      background-color: inherit;
-      padding: 0 8px;
-    }
-
-    &-tr {
-      background-color: var(--color-g-1);
-
-      &:hover {
-        background-color: rgba(0, 102, 255, 0.1) !important;
-
-        transition: none;
-      }
-    }
+    flex: 1 1 auto;
   }
 }
 
-.th {
-  ::ng-deep {
-    button {
-      width: 100%;
-      font-weight: 400;
-    }
 
-    tui-svg {
-      font-size: 12px;
-      height: 12px;
-      width: 12px;
-    }
-  }
-
-  span {
-    width: 100%;
-    text-align: left;
-  }
-
-  &--date {
-    white-space: nowrap;
-    width: 90px;
-  }
-
-  &--direction {
-    width: 40px;
-  }
-
-  &--enter {
-    white-space: nowrap;
-    width: 90px;
-  }
-
-  &--deposit {
-    white-space: nowrap;
-  }
-}
-
-.td {
-  &--direction {
-    white-space: nowrap;
-  }
-
-  &--number {
-    text-align: right;
-  }
-
-  &--center {
-    text-align: center;
-  }
-}
-
-tui-radio-block:not(:last-child) {
-  margin-right: 4px;
-}
-
-.buy {
-  color: var(--color-g);
-}
-
-.sell {
-  color: var(--color-r);
-}
-
-.substring {
-  font-size: 0.8em;
-  line-height: 1;
-}
