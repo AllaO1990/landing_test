@@ -1,6 +1,5 @@
-<div class="container" [class.small]="isSmall$ | async">
+<div class="container">
   <div class="vt-chart-container">
-    <!-- {{ selected$ | async | json }} -->
     <vt-chart
       [data]="candles$ | async"
       [selected]="selected$ | async"
@@ -15,7 +14,6 @@
   </div>
 
   <div class="entry">
-
     <vt-entry [data]="ideaList$ | async"></vt-entry>
   </div>
 

@@ -52,7 +52,9 @@ export class DesktopApiService extends DesktopService {
                 ),
               },
               direction: i % 5 ? StockDirection.SELL : StockDirection.BUY,
-              ticker: 'MOEX',
+              ticker: 'GAZP',
+              name: 'Газпром',
+              exchange: 'MOEX',
               cost,
               enter: {
                 price: cost - enterDiff,
@@ -61,19 +63,19 @@ export class DesktopApiService extends DesktopService {
               target: {
                 price: cost * 1.2,
                 percentage: 20,
+                deposit: luck,
               },
               stop: {
                 price: cost - enterDiff * 2,
-                percentage: 0.4,
+                percentage: 0.4 * luck,
+                deposit: luck / 2,
               },
               deposit: {
                 price: cost * 3,
                 percentage: 2.4,
               },
-              luck: {
-                percentage: luck * 10,
-                value: luck,
-              },
+              luck: luck * 10,
+              strategy: 'Активная зона',
               idea: idea > 5,
             };
           })

@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { StockGroup, StockList, StockListItem, StockListItemWithPrice, StockListPrice, StockPrice } from 'types/stock';
+import {
+  StockGroup,
+  StockList,
+  StockListItem,
+  StockListItemWithPrice,
+  StockListPrice,
+  StockPrice,
+} from 'types/stock';
 import { STOCK_MAPPER } from './stock.constant';
 
 type StockType = 'moex' | 'futures' | 'currency' | 'metal';
@@ -13,16 +20,28 @@ export class StockService {
     groups: StockGroup[],
     map: Map<StockGroup, StockList>
   ): Map<StockGroup, StockList> {
-    const mapped: { [key: string]: StockList } = this._getMapList(data, this._getStartList(groups));
+    const mapped: { [key: string]: StockList } = this._getMapList(
+      data,
+      this._getStartList(groups)
+    );
 
     return this._concatListStock(mapped, groups, map);
   }
 
   private _getStartList(group: StockGroup[]): { [key: string]: StockList } {
-    return group.reduce((acc: { [key: string]: StockList }, item: StockGroup) => ({...acc, [item.id]: []}), {});
+    return group.reduce(
+      (acc: { [key: string]: StockList }, item: StockGroup) => ({
+        ...acc,
+        [item.id]: [],
+      }),
+      {}
+    );
   }
 
-  private _getMapList(data: StockList, start: { [key: string]: StockList }): { [key: string]: StockList } {
+  private _getMapList(
+    data: StockList,
+    start: { [key: string]: StockList }
+  ): { [key: string]: StockList } {
     return data.reduce(
       (acc: { [key: string]: StockList }, item: StockListItem) => {
         const key = this._defaultMapper[item.exchange];
@@ -44,13 +63,16 @@ export class StockService {
     groups: StockGroup[],
     map: Map<StockGroup, StockList>
   ): Map<StockGroup, StockList> {
-    return groups.reduce((acc: Map<StockGroup, StockList>, item: StockGroup) => {
-      if (mapped[item.id] && mapped[item.id].length) {
-        acc.set(item, mapped[item.id as StockType].sort(this._sortName()));
-      }
+    return groups.reduce(
+      (acc: Map<StockGroup, StockList>, item: StockGroup) => {
+        if (mapped[item.id] && mapped[item.id].length) {
+          acc.set(item, mapped[item.id as StockType].sort(this._sortName()));
+        }
 
-      return acc;
-    }, map);
+        return acc;
+      },
+      map
+    );
   }
 
   private _sortName(
@@ -71,31 +93,60 @@ export class StockService {
     };
   }
 
-  public getListWithPrice(list: StockList | null, price: StockPrice<StockListPrice> | null): StockListItemWithPrice[] {
+  public getListWithPrice(
+    list: StockList | null,
+    price: StockPrice<StockListPrice> | null
+  ): StockListItemWithPrice[] {
     if (!list) {
       return [];
     }
 
     if (!price) {
-      return list.map((item: StockListItem) => ({...item, price: null, change: null, changePercent: null, increment: null}));
+      return list.map((item: StockListItem) => ({
+        ...item,
+        price: null,
+        change: null,
+        changePercent: null,
+        increment: null,
+      }));
     }
 
     return list.map((item: StockListItem) => {
       if (price[item.id] === null) {
-        return ({...item, price: null, change: null, changePercent: null, increment: null})
+        return {
+          ...item,
+          price: null,
+          change: null,
+          changePercent: null,
+          increment: null,
+        };
       }
 
-      const {prev, last, minPriceIncrement} = price[item.id] as StockListPrice;
-      const split =  minPriceIncrement.toString(10).split('.')
+      const { prev, last, minPriceIncrement } = price[
+        item.id
+      ] as StockListPrice;
+
+      const split = this._getNumberFromE(minPriceIncrement).split('.');
       const increment = split[1] ? split[1].length : 0;
 
       return {
         ...item,
         price: last,
         change: last - prev,
-        changePercent: (last - prev) / last * 100,
-        increment
-      }
+        changePercent: ((last - prev) / last) * 100,
+        increment,
+      };
     });
+  }
+
+  private _getNumberFromE(numb: number): string {
+    const numbString: string = numb.toString(10);
+
+    if (numbString.indexOf('e') !== -1) {
+      const exponent = parseInt(numbString.split('-')[1], 10);
+      return numb.toFixed(exponent);
+    }
+
+    return numbString;
   }
 }
