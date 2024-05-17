@@ -188,14 +188,16 @@ export class DesktopApiService extends DesktopService {
   getCandles(selected: { source: any; index: number }): Observable<any> {
     // console.log(selected);
     const from: string =
-      selected.index === 0 ? '2015-03-20T00:00:00Z' : '2024-04-23T00:00:00Z';
+      selected.index === 0
+        ? new Date(0).toISOString()
+        : new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
 
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {
         id: selected?.source.value.id,
         interval: 5,
         from,
-        to: '2024-04-23T00:00:00Z',
+        to: new Date(Date.now()).toISOString(),
       },
     });
   }
