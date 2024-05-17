@@ -61,16 +61,9 @@ export class ChartComponent implements OnInit {
       maxPadding: 0.5,
     },
     yAxis: {
-      // opposite: true,
-      // endOnTick: true,
-      // overscroll: '1%',
-
-      // max: 25,
-      maxPadding: 0.1,
-      resize: {
-        enabled: true,
-        controlledAxis: {},
-      },
+      scrollbar: { enabled: true },
+      endOnTick: false,
+      startOnTick: false,
       crosshair: {
         snap: false,
         label: {
@@ -83,7 +76,12 @@ export class ChartComponent implements OnInit {
       },
     },
     chart: {
-      // zooming: { type: 'y' },
+      zooming: {
+        mouseWheel: { type: 'xy' },
+      },
+      panning: { enabled: true, type: 'xy' },
+      panKey: 'shift',
+
       events: {
         click: (event) => {},
       },
@@ -139,9 +137,10 @@ export class ChartComponent implements OnInit {
       allButtonsEnabled: true,
       buttons: [
         {
-          type: 'month',
-          count: 12,
+          type: 'year',
+          count: 2,
           text: 'День',
+          preserveDataGrouping: true,
           dataGrouping: {
             forced: true,
             units: [['day', [1]]],
@@ -149,8 +148,9 @@ export class ChartComponent implements OnInit {
         },
         {
           type: 'year',
-          count: 1,
+          count: 2,
           text: 'Неделя',
+          preserveDataGrouping: true,
           dataGrouping: {
             forced: true,
             units: [['week', [1]]],
@@ -159,6 +159,7 @@ export class ChartComponent implements OnInit {
         {
           type: 'all',
           text: 'Месяц',
+          preserveDataGrouping: true,
           dataGrouping: {
             forced: true,
             units: [['month', [1]]],
@@ -323,6 +324,20 @@ export class ChartComponent implements OnInit {
           'Октябрь',
           'Ноябрь',
           'Декабрь',
+        ],
+        shortMonths: [
+          'Янв',
+          'Фев',
+          'Мар',
+          'Апр',
+          'Май',
+          'Июн',
+          'Июл',
+          'Авг',
+          'Сен',
+          'Окт',
+          'Ноя',
+          'Дек',
         ],
       },
     });
