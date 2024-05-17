@@ -1,7 +1,6 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DesktopService } from '@desktop-data/desktop-data';
-import { TuiBreakpointMediaKey, TuiBreakpointService } from '@taiga-ui/core';
 import { ChartComponent } from '@ui/chart';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -33,18 +32,7 @@ import { StockComponent } from './stock/stock.component';
 export class MainComponent {
   private readonly _service: MainService = inject(MainService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-
-  private readonly _breakpoint$: TuiBreakpointService =
-    inject(TuiBreakpointService);
-
   private readonly _api: DesktopService = inject(DESKTOP_API);
-
-  public readonly isSmall$: Observable<boolean> = this._breakpoint$.pipe(
-    map(
-      (value: TuiBreakpointMediaKey | null) =>
-        value === 'desktopSmall' || value === 'mobile'
-    )
-  );
 
   public readonly selected$: Observable<any> = this._store.selected$;
 

@@ -1,124 +1,74 @@
-<tui-filter
-  [size]="'s'"
-  class="item"
-  [content]="content"
-  [items]="items"
-></tui-filter>
+<div class="entry">
+  <div class="entry__header">
+    <div class="entry__title">
+      {{ constants.title }}
+    </div>
+    <div class="entry__stock">
+      <tui-filter
+        [formControl]="controlFilterStock"
+        [size]="'s'"
+        class="item"
+        [content]="content"
+        [items]="filterStock"
+      ></tui-filter>
+    </div>
+    <div class="entry__action">
+      <button
+        [disabled]="true"
+        tuiButton
+        type="button"
+        size="m"
+        appearance="secondary"
+        class="entry__add-idea">
+        {{ constants.add_idea }}
+      </button>
+
+      <button
+        [tuiDropdown]="dropdownContentMore"
+        [tuiDropdownManual]="openMore"
+        [tuiDropdownAlign]="'right'"
+        [tuiDropdownOffset]="8"
+        (click)="onOpenMore()"
+        (tuiActiveZoneChange)="onActiveZoneMore($event)"
+        (tuiObscured)="onObscuredMore($event)"
+        icon="tuiIconMoreVertical"
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        size="s"
+        class="entry__search">
+      </button>
+    </div>
+  </div>
+  <div class="entry__strategy">
+    <tui-filter
+      [formControl]="controlFilterStrategy"
+      [size]="'s'"
+      class="item"
+      [content]="content"
+      [items]="filterStrategy"
+    ></tui-filter>
+  </div>
+  <div class="entry__table">
+    <vt-entry-table [data]="data"></vt-entry-table>
+  </div>
+</div>
+
+<ng-template #dropdownContentMore>
+  <tui-input
+    class="entry__search"
+    [formControl]="controlSearch"
+    tuiTextfieldSize="s"
+    tuiTextfieldIconLeft="tuiIconSearch"
+    [tuiTextfieldCleaner]="true">
+    Type an email
+    <input
+      tuiTextfield
+      type="email"
+    />
+  </tui-input>
+</ng-template>
 
 <ng-template #content let-item>
-  {{item.name}}
-</ng-template>
-
-<tui-loader class="entry__loader" [overlay]="true" [showLoader]="data === null">
-  <tui-scrollbar *ngIf="data; else empty" class="entry__scrollbar">
-    <cdk-virtual-scroll-viewport
-      #viewport
-      tuiScrollable
-      class="entry__viewport tui-zero-scrollbar"
-      [itemSize]="32"
-    >
-      <table class="entry__table" tuiTable [columns]="columnList">
-        <thead>
-        <tr tuiThGroup>
-          <ng-container *ngFor="let item of header; trackBy: trackByIndex">
-            <th
-              *tuiHead="item.name"
-              tuiTh
-              class="th th--{{item.name}}"
-              [sticky]="true"
-              [sorter]="item.sorter"
-              [style.top.px]="-viewport['_renderedContentOffset']">
-              <span [innerHTML]="item.label">{{ item.label }}</span>
-            </th>
-          </ng-container>
-        </tr>
-        </thead>
-        <tbody tuiTbody>
-        <tr
-          class="entry__table-tr"
-          [style.background-color]="getColorBackGround(item.luck.value)"
-          *cdkVirtualFor="
-              let item of data || [] | tuiTableSort;
-              trackBy: trackById
-            "
-          tuiTr
-        >
-          <td
-            class="td"
-            *tuiCell="'date'"
-            [title]="item.date.start | date : 'dd.MM.yyyy'"
-            tuiTd
-          >
-            {{ item.date.start | date : 'dd.MM' }}
-            <div class="substring">{{ item.date.passed }} дней</div>
-          </td>
-
-          <td *tuiCell="'cost'" tuiTd>
-            {{ item.cost | tuiFormatNumber }}
-          </td>
-
-          <td *tuiCell="'direction'" tuiTd class="td td--direction">
-            <ng-container *ngTemplateOutlet="item.direction === 'buy' ? buy : sell"></ng-container>
-          </td>
-
-          <td *tuiCell="'ticker'" tuiTd>
-            {{ item.ticker }}
-          </td>
-
-          <td *tuiCell="'target'" tuiTd class="td td--number">
-            {{ item.target.price | tuiFormatNumber : { decimalLimit: 2 } }}
-            <div class="substring">{{ item.target.percentage }}%</div>
-          </td>
-
-          <td *tuiCell="'luck'" tuiTd class="td td--number">
-            {{ item.luck.percentage | tuiFormatNumber }}%
-            <div class="substring">{{ item.luck.value | tuiFormatNumber }} / 10</div>
-          </td>
-
-          <td *tuiCell="'deposit'" tuiTd class="td td--number">
-            {{ item.deposit.price | tuiFormatNumber }}
-            <div class="substring">{{ item.deposit.percentage | tuiFormatNumber }}%</div>
-          </td>
-
-          <td *tuiCell="'idea'" tuiTd class="td td--center">
-            <img
-              class="idea__icon"
-              *ngIf="item.idea; else none"
-              src="/assets/icons/vanya.svg"
-              alt="Идея"
-            />
-          </td>
-
-          <td *tuiCell="'enter'" tuiTd class="td td--number">
-            {{ item.enter.price | tuiFormatNumber }}
-            <div class="substring">{{ item.enter.cost  | tuiFormatNumber }}</div>
-          </td>
-
-          <td *tuiCell="'stop'" tuiTd class="td td--number">
-            {{ item.stop.price | tuiFormatNumber }}
-            <div class="substring">{{ item.stop.percentage }}%</div>
-          </td>
-
-          <td *tuiCell="'cost'" tuiTd class="td td--number">
-            {{ item.cost | tuiFormatNumber }}
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </cdk-virtual-scroll-viewport>
-  </tui-scrollbar>
-</tui-loader>
-
-<ng-template #empty>
-  <div class="entry__empty">Загрузка...</div>
-</ng-template>
-
-<ng-template #none> &mdash;</ng-template>
-
-<ng-template #buy>
-  <span class="buy">▲</span> лонг
-</ng-template>
-
-<ng-template #sell>
-  <span class="sell">▼</span> шорт
+  {{ item.name }}
 </ng-template>

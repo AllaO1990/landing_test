@@ -6,150 +6,75 @@
   width: 100%;
 
   background-color: var(--block-bg-color);
+
 }
 
 .entry {
-  &__scrollbar {
-    height: 100%;
-  }
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+  width: 100%;
 
   &__header {
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    padding: 8px;
+    padding: var(--padding-1) var(--padding-2);
   }
 
-  &__nav {
-    background-color: #eef1f9;
+  &__title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 15px;
 
+    padding-right: var(--padding-4);
+  }
+
+  &__stock {
+    margin: 0 var(--padding-2);
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__add-idea {
+    margin-right: var(--padding-1);
+
+    &[data-size=m] {
+      font-weight: 400;
+    }
+  }
+
+  &__strategy {
     display: flex;
     align-items: center;
 
-    flex: 0 0 24px;
-  }
+    padding: var(--padding-1) var(--padding-2);
 
-  &__empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 100%;
-    width: 100%;
-  }
-
-  &__loader {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  &__viewport {
-    height: 100%;
+    background: var(--inner-toolbar-color);
   }
 
   &__table {
-    width: 100%;
+    flex: 1 1 auto;
+  }
 
-    th {
-      font-size: 8px;
-      line-height: 10px;
-      font-weight: 400;
-      --tui-height-m: 48px;
-      padding: 0 4px 0 8px;
-    }
-
-    tr {
-      cursor: pointer;
-      transition: background-color 0.25s ease-in-out;
-
-      --tui-height-m: 32px;
-    }
-
-    td {
-      background-color: inherit;
-      padding: 0 8px;
-    }
-
-    &-tr {
-      background-color: var(--color-g-1);
-
-      &:hover {
-        background-color: rgba(0, 102, 255, 0.1) !important;
-
-        transition: none;
-      }
-    }
+  &__search {
+    width: 150px;
+    margin: var(--padding-2);
   }
 }
 
-.th {
-  ::ng-deep {
-    button {
-      width: 100%;
-      font-weight: 400;
-    }
-
-    tui-svg {
-      font-size: 12px;
-      height: 12px;
-      width: 12px;
-    }
+::ng-deep {
+  tui-filter label {
+    padding: 0 var(--padding-2) !important;
   }
-
-  span {
-    width: 100%;
-    text-align: left;
+  
+  [data-size=s] tui-svg {
+    font-size: 10px;
   }
-
-  &--date {
-    white-space: nowrap;
-    width: 90px;
-  }
-
-  &--direction {
-    width: 40px;
-  }
-
-  &--enter {
-    white-space: nowrap;
-    width: 90px;
-  }
-
-  &--deposit {
-    white-space: nowrap;
-  }
-}
-
-.td {
-  &--direction {
-    white-space: nowrap;
-  }
-
-  &--number {
-    text-align: right;
-  }
-
-  &--center {
-    text-align: center;
-  }
-}
-
-tui-radio-block:not(:last-child) {
-  margin-right: 4px;
-}
-
-.buy {
-  color: var(--color-g);
-}
-
-.sell {
-  color: var(--color-r);
-}
-
-.substring {
-  font-size: 0.8em;
-  line-height: 1;
 }

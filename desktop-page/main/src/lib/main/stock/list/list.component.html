@@ -39,15 +39,15 @@
         <div
           class="stock-item__price stock-item__last"
           *ngIf="item.price !== null; else skeleton">
-          {{ item.price | tuiFormatNumber : {decimalLimit: item.increment } }}
+          {{ item.price | tuiFormatNumber : { decimalLimit: item.increment } }}
         </div>
         <div
           class="stock-item__price stock-item__change"
           *ngIf="item.change !== null; else skeleton">
-          {{ item.change | tuiFormatNumber : {decimalLimit: item.increment} }}
+          {{ item.change | tuiFormatNumber : { decimalLimit: item.increment } }}
         </div>
-        <div class="stock-item__price stock-item__change-percent" *ngIf="item.changePercent !== null; else skeleton">
-          {{ item.changePercent | tuiFormatNumber : {decimalLimit: 2} }}%
+        <div class="stock-item__percent stock-item__change-percent" *ngIf="item.changePercent !== null; else skeleton">
+          {{ item.changePercent | tuiFormatNumber : { decimalLimit: 2 } }}%
         </div>
       </div>
     </vt-stock-list-item>

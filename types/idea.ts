@@ -1,11 +1,11 @@
-import {StockDirection, StockId} from './stock';
+import { StockDirection, StockId } from './stock';
 
 export interface Idea {
   id: StockId;
   date: {
     start: string;
     passed: number;
-  }
+  };
   direction: StockDirection;
   figi: string;
   ticker: string;
@@ -13,7 +13,7 @@ export interface Idea {
   enter: {
     price: number;
     cost: number;
-  },
+  };
   target: {
     price: number;
     percentage: number;
@@ -26,9 +26,7 @@ export interface Idea {
     price: number;
     percentage: number;
   };
-  luck: {
-    value: number;
-    percentage: number;
-  };
+  luck: number;
+  strategy: string;
   idea: boolean;
 }
