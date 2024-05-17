@@ -2,51 +2,10 @@ import { EntryEnums } from './entry.enums';
 import { EntryHeaderItem } from './entry.types';
 import { sortNumber, sortText } from '../main.utils';
 
-export const ENTRY_FILTER_STOCK = [
-  {
-    id: 'moex',
-    name: 'Акции MOEX',
-  },
-  {
-    id: 'futures',
-    name: 'Фьючерсы MOEX',
-  },
-  {
-    id: 'currency',
-    name: 'Валюта MOEX',
-  },
-  {
-    id: 'metal',
-    name: 'Металлы MOEX',
-  },
-  {
-    id: 'crypto',
-    name: 'Крипто',
-  },
-];
-
-export const ENTRY_FILTER_STRATEGY = [
-  {
-    id: 'consolidation',
-    name: 'Консолидация',
-  },
-  {
-    id: 'core',
-    name: 'Активная зона',
-  },
-  {
-    id: 'sliding',
-    name: 'Скользящие',
-  },
-  {
-    id: 'user',
-    name: 'Пользователь',
-  },
-];
-
 export const ENTRY_CONSTANTS: { [key in EntryEnums]: string } = {
   [EntryEnums.TITLE]: 'Вход',
   [EntryEnums.ADD_IDEA]: '+ Новая идея',
+  [EntryEnums.SEARCH]: 'Поиск',
 };
 
 export const ENTRY_HEADER: EntryHeaderItem[] = [

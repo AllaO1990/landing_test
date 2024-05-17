@@ -50,7 +50,7 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
   styleUrl: './table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TableComponent {
+export class EntryTableComponent {
   protected getColorBackGround = getColorBackGround;
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;

@@ -1,26 +1,29 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { OutComponent } from './out.component';
 import { IdeaComponent } from './idea/idea.component';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TuiTableModule } from '@taiga-ui/addon-table';
+import { OutTableComponent } from './table/table.component';
+import { TuiFilterModule, TuiInputModule } from '@taiga-ui/kit';
+import { ReactiveFormsModule } from '@angular/forms';
 import {
-  TuiFormatNumberPipeModule,
-  TuiLoaderModule,
-  TuiScrollbarModule
+  TuiButtonModule,
+  TuiDropdownModule,
+  TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
+import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
 
 @NgModule({
   declarations: [OutComponent, IdeaComponent],
   imports: [
-    CommonModule,
-    ScrollingModule,
-    TuiTableModule,
-    TuiLoaderModule,
-    TuiScrollbarModule,
-    TuiFormatNumberPipeModule
+    ReactiveFormsModule,
+    OutTableComponent,
+    TuiFilterModule,
+    TuiInputModule,
+    TuiTextfieldControllerModule,
+    TuiButtonModule,
+    TuiDropdownModule,
+    TuiActiveZoneModule,
+    TuiObscuredModule,
   ],
-  exports: [OutComponent]
+  exports: [OutComponent],
 })
-export class OutModule {
-}
+export class OutModule {}
