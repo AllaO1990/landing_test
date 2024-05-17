@@ -15,7 +15,13 @@ import { EntryEnums } from './entry.enums';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryComponent {
-  public testValue = new FormControl(null);
+  public controlSearch: FormControl<string | null> = new FormControl(null);
+  public controlFilterStock: FormControl<{ id: string; name: string } | null> =
+    new FormControl(null);
+  public controlFilterStrategy: FormControl<{
+    id: string;
+    name: string;
+  } | null> = new FormControl(null);
   public openMore = false;
   public constants: { [key in EntryEnums]: string } = ENTRY_CONSTANTS;
 

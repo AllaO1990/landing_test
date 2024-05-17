@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+  CdkVirtualScrollViewport,
+} from '@angular/cdk/scrolling';
+import {
+  TuiFormatNumberPipeModule,
+  TuiLoaderModule,
+  TuiScrollbarModule,
+} from '@taiga-ui/core';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { scaleLinear } from 'd3-scale';
 import { color } from 'd3-color';
@@ -10,7 +18,7 @@ import { EntryHeaderItem } from '../entry.types';
 import { ENTRY_HEADER } from '../entry.constants';
 
 export const getColor = scaleLinear(
-  [1, 5, 10],
+  [1, 50, 100],
   ['#FF103B', '#EEF1F9', '#039322']
 );
 
@@ -28,7 +36,16 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
 @Component({
   selector: 'vt-entry-table',
   standalone: true,
-  imports: [CommonModule, CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport, TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule, TuiTableModule],
+  imports: [
+    CommonModule,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
+    CdkVirtualScrollViewport,
+    TuiFormatNumberPipeModule,
+    TuiLoaderModule,
+    TuiScrollbarModule,
+    TuiTableModule,
+  ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

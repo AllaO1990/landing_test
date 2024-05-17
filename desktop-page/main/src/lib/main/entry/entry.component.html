@@ -5,6 +5,7 @@
     </div>
     <div class="entry__stock">
       <tui-filter
+        [formControl]="controlFilterStock"
         [size]="'s'"
         class="item"
         [content]="content"
@@ -13,6 +14,7 @@
     </div>
     <div class="entry__action">
       <button
+        [disabled]="true"
         tuiButton
         type="button"
         size="m"
@@ -34,16 +36,13 @@
         type="button"
         appearance="icon"
         size="s"
-        class="entry__search"
-      >
-        <ng-template #dropdownContentMore>
-          <div class="dropdown">But there is nothing to choose...</div>
-        </ng-template>
+        class="entry__search">
       </button>
     </div>
   </div>
   <div class="entry__strategy">
     <tui-filter
+      [formControl]="controlFilterStrategy"
       [size]="'s'"
       class="item"
       [content]="content"
@@ -55,6 +54,20 @@
   </div>
 </div>
 
+<ng-template #dropdownContentMore>
+  <tui-input
+    class="entry__search"
+    [formControl]="controlSearch"
+    tuiTextfieldSize="s"
+    tuiTextfieldIconLeft="tuiIconSearch"
+    [tuiTextfieldCleaner]="true">
+    Type an email
+    <input
+      tuiTextfield
+      type="email"
+    />
+  </tui-input>
+</ng-template>
 
 <ng-template #content let-item>
   {{ item.name }}

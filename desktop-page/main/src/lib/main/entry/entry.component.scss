@@ -62,14 +62,19 @@
   &__table {
     flex: 1 1 auto;
   }
+
+  &__search {
+    width: 150px;
+    margin: var(--padding-2);
+  }
 }
 
 ::ng-deep {
   tui-filter label {
     padding: 0 var(--padding-2) !important;
   }
-
-  [appearance="icon"][size="s"] tui-svg {
-    font-size: 12px;
+  
+  [data-size=s] tui-svg {
+    font-size: 10px;
   }
 }

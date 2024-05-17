@@ -8,7 +8,9 @@ import {
   StockDirection,
   StockId,
   StockList,
-  StockListItem, StockListPrice, StockPrice
+  StockListItem,
+  StockListPrice,
+  StockPrice,
 } from 'types/stock';
 import { DesktopService } from './desktop.abstract.service';
 
@@ -50,7 +52,9 @@ export class DesktopApiService extends DesktopService {
                 ),
               },
               direction: i % 5 ? StockDirection.SELL : StockDirection.BUY,
-              ticker: 'MOEX',
+              ticker: 'GAZP',
+              name: 'Газпром',
+              exchange: 'MOEX',
               cost,
               enter: {
                 price: cost - enterDiff,
@@ -59,19 +63,19 @@ export class DesktopApiService extends DesktopService {
               target: {
                 price: cost * 1.2,
                 percentage: 20,
+                deposit: luck,
               },
               stop: {
                 price: cost - enterDiff * 2,
-                percentage: 0.4,
+                percentage: 0.4 * luck,
+                deposit: luck / 2,
               },
               deposit: {
                 price: cost * 3,
                 percentage: 2.4,
               },
-              luck: {
-                percentage: luck * 10,
-                value: luck,
-              },
+              luck: luck * 10,
+              strategy: 'Активная зона',
               idea: idea > 5,
             };
           })
@@ -93,7 +97,9 @@ export class DesktopApiService extends DesktopService {
     // return this._http.get<Response<Stock>>('/assets/mocks/stock.json');
   }
 
-  public getActiveStock(list: StockList): Observable<Response<StockPrice<StockListPrice>>> {
+  public getActiveStock(
+    list: StockList
+  ): Observable<Response<StockPrice<StockListPrice>>> {
     return this._http.post<Response<StockPrice<StockListPrice>>>(
       `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
       {
@@ -181,7 +187,8 @@ export class DesktopApiService extends DesktopService {
 
   getCandles(selected: { source: any; index: number }): Observable<any> {
     // console.log(selected);
-    const from: string = selected.index === 0 ? '2015-03-20T00:00:00Z' : '2024-04-23T00:00:00Z';
+    const from: string =
+      selected.index === 0 ? '2015-03-20T00:00:00Z' : '2024-04-23T00:00:00Z';
 
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {

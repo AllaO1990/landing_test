@@ -25,7 +25,7 @@
         <tbody tuiTbody>
         <tr
           class="entry-table__table-tr"
-          [style.background-color]="getColorBackGround(item.luck.value)"
+          [style.background-color]="getColorBackGround(item.luck)"
           *cdkVirtualFor="
               let item of data || [] | tuiTableSort;
               trackBy: trackById
@@ -50,18 +50,25 @@
             <ng-container *ngTemplateOutlet="item.direction === 'buy' ? buy : sell"></ng-container>
           </td>
 
-          <td *tuiCell="'ticker'" tuiTd>
-            {{ item.ticker }}
+          <td *tuiCell="'ticker'" tuiTd class="td">
+            <div class="td__row">
+              {{ item.ticker }}
+              <span class="substring" style="margin-left: 8px">{{ item.exchange }}</span>
+            </div>
+            <div class="substring" [title]="item.name">{{ item.name }}</div>
           </td>
 
           <td *tuiCell="'target'" tuiTd class="td td--number">
             {{ item.target.price | tuiFormatNumber : { decimalLimit: 2 } }}
-            <div class="substring">{{ item.target.percentage }}%</div>
+            <div class="substring">
+              {{ item.target.percentage | tuiFormatNumber: { decimalLimit: 1 } }}% /
+              {{ item.target.deposit | tuiFormatNumber: { decimalLimit: 1 } }}%
+            </div>
           </td>
 
           <td *tuiCell="'luck'" tuiTd class="td td--number">
-            {{ item.luck.percentage | tuiFormatNumber }}%
-            <div class="substring">{{ item.luck.value | tuiFormatNumber }} / 10</div>
+            {{ item.luck | tuiFormatNumber }}%
+            <div class="substring" [title]="item.strategy">{{ item.strategy }}</div>
           </td>
 
           <td *tuiCell="'deposit'" tuiTd class="td td--number">
@@ -85,7 +92,10 @@
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">
             {{ item.stop.price | tuiFormatNumber }}
-            <div class="substring">{{ item.stop.percentage }}%</div>
+            <div class="substring">
+              {{ item.stop.percentage | tuiFormatNumber: { decimalLimit: 1 } }}% /
+              {{ item.stop.deposit | tuiFormatNumber: { decimalLimit: 1 } }}%
+            </div>
           </td>
 
           <td *tuiCell="'cost'" tuiTd class="td td--number">

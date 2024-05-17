@@ -30,6 +30,7 @@
   }
 
   &__table {
+    table-layout: fixed;
     width: 100%;
 
     th {
@@ -85,20 +86,41 @@
 
   &--date {
     white-space: nowrap;
-    width: 90px;
+    width: 55px;
   }
 
   &--direction {
-    width: 40px;
+    width: 55px;
+  }
+
+  &--ticker {
+    width: 80px;
+  }
+
+  &--cost {
+    width: 60px;
   }
 
   &--enter {
+    width: 60px;
     white-space: nowrap;
-    width: 90px;
+  }
+
+  &--target, &--stop, &--deposit {
+    width: 65px;
   }
 
   &--deposit {
+    width: 60px;
     white-space: nowrap;
+  }
+
+  &--idea {
+    width: 45px;
+  }
+
+  &--luck {
+    width: 60px;
   }
 }
 
@@ -114,17 +136,29 @@
   &--center {
     text-align: center;
   }
+
+  &__row {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .buy {
+  font-size: 8px;
   color: var(--color-g);
 }
 
 .sell {
+  font-size: 8px;
   color: var(--color-r);
 }
 
 .substring {
   font-size: 0.8em;
   line-height: 1;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  overflow: hidden;
 }

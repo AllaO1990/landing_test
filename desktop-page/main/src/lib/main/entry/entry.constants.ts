@@ -52,13 +52,13 @@ export const ENTRY_CONSTANTS: { [key in EntryEnums]: string } = {
 export const ENTRY_HEADER: EntryHeaderItem[] = [
   {
     name: 'date',
-    label: `Дата <br> Кол-во дней`,
+    label: `Дата <br> Кол.дн.`,
     sorter: (a: { date: { start: string } }, b: { date: { start: string } }) =>
       new Date(b.date.start).valueOf() - new Date(a.date.start).valueOf(),
   },
   {
     name: 'direction',
-    label: 'Направ.',
+    label: 'Напр.',
     sorter: (a: { direction: string }, b: { direction: string }) =>
       sortText(a.direction, b.direction),
   },
@@ -76,7 +76,7 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   },
   {
     name: 'enter',
-    label: `Цена вх. <br>Кол-во лотов`,
+    label: `Цена вх. <br>Кол-во`,
     sorter: (
       a: { enter: { price: number } },
       b: {
@@ -86,7 +86,7 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   },
   {
     name: 'target',
-    label: 'Цель',
+    label: `Цель <br> %/% депо`,
     sorter: (
       a: { target: { price: number } },
       b: {
@@ -96,13 +96,13 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   },
   {
     name: 'stop',
-    label: 'Стоп',
+    label: `Стоп <br> %/% депо`,
     sorter: (a: { stop: { price: number } }, b: { stop: { price: number } }) =>
       sortNumber(a.stop.price, b.stop.price),
   },
   {
     name: 'deposit',
-    label: `Стоим вх<br>% депо`,
+    label: `Стоим. вх.<br>% депо`,
     sorter: (
       a: { deposit: { price: number } },
       b: {
@@ -112,13 +112,13 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   },
   {
     name: 'luck',
-    label: 'Успех %<br> Условия',
-    sorter: (a: { luck: { value: number } }, b: { luck: { value: number } }) =>
-      sortNumber(a.luck.value, b.luck.value),
+    label: 'Успех %<br> Стратег.',
+    sorter: (a: { luck: number }, b: { luck: number }) =>
+      sortNumber(a.luck, b.luck),
   },
   {
     name: 'idea',
-    label: 'Идея <br> VANYA',
+    label: 'Идея',
     sorter: (a: { idea: boolean }, b: { idea: boolean }) => +b.idea - +a.idea,
   },
 ];

@@ -9,10 +9,11 @@ import {
   TuiFormatNumberPipeModule,
   TuiLoaderModule,
   TuiScrollbarModule,
+  TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TuiFilterModule } from '@taiga-ui/kit';
+import { TuiFilterModule, TuiInputModule } from '@taiga-ui/kit';
 import { TableComponent } from './table/table.component';
 import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
 
@@ -32,6 +33,8 @@ import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
     TuiDropdownModule,
     TuiActiveZoneModule,
     TuiObscuredModule,
+    TuiInputModule,
+    TuiTextfieldControllerModule,
   ],
   exports: [EntryComponent],
 })
