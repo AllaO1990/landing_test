@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { OUT_COLUMNS, OUT_HEADER } from '../out.constants';
+import { OUT_HEADER } from '../out.constants';
 import {
   CdkFixedSizeVirtualScroll,
   ScrollingModule,
@@ -13,7 +13,7 @@ import {
 import { OutHeaderItem } from '../out.types';
 import { scaleLinear } from 'd3-scale';
 import { color } from 'd3-color';
-import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 
 export const getColor = scaleLinear(
   [1, 5, 10],
@@ -44,13 +44,16 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
     TuiLoaderModule,
     TuiScrollbarModule,
     TuiFormatNumberPipeModule,
+    DatePipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
 export class OutTableComponent {
-  public readonly header: OutHeaderItem[][] = OUT_HEADER;
-  public readonly columnList: string[] = OUT_COLUMNS;
+  public readonly header: OutHeaderItem[] = OUT_HEADER;
+  public readonly columnList: string[] = this.header.map(
+    (item: { name: string }) => item.name
+  );
 
   @Input() data: any[] | null = null;
 

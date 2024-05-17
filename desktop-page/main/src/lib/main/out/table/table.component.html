@@ -4,20 +4,17 @@
       #viewport
       tuiScrollable
       class="out__viewport"
-      [itemSize]="32"
-    >
+      [itemSize]="32">
       <table class="out__table" tuiTable [columns]="columnList">
         <thead>
-        <tr tuiThGroup *ngFor="let row of header; index as i; trackBy: trackByIndex">
+        <tr tuiThGroup>
           <th
             class="th th--{{item.name}}"
-            *ngFor="let item of row; trackBy: trackByIndex"
+            *ngFor="let item of header; trackBy: trackByIndex"
             tuiTh
-            [attr.rowspan]="item.rowspan"
-            [attr.colspan]="item.colspan"
             [sticky]="true"
             [sorter]="item.sorter"
-            [style.top.px]="-viewport['_renderedContentOffset'] + i * 24">
+            [style.top.px]="-viewport['_renderedContentOffset']">
             <span [innerHTML]="item.label"></span>
           </th>
         </tr>
@@ -28,12 +25,22 @@
           [style.background-color]="getColorBackGround(item.luck)"
           tuiTr
         >
+          <td
+            class="td"
+            *tuiCell="'date'"
+            [title]="item.date.start | date : 'dd.MM.yyyy'"
+            tuiTd
+          >
+            {{ item.date.start | date : 'dd.MM' }}
+            <div class="substring">{{ item.date.passed }} дней</div>
+          </td>
+
           <td *tuiCell="'cost'" tuiTd class="td td--number">
             {{ item.cost.price | tuiFormatNumber }}
             <div class="substring">{{ item.cost.cost | tuiFormatNumber }}</div>
           </td>
 
-          <td *tuiCell="'direction'" tuiTd>
+          <td *tuiCell="'direction'" tuiTd class="td td--direction">
             <ng-container *ngTemplateOutlet="item.direction === 'buy' ? buy : sell"></ng-container>
           </td>
 
@@ -43,7 +50,11 @@
           </td>
 
           <td *tuiCell="'ticker'" tuiTd>
-            {{ item.ticker }}
+            <div class="td__row">
+              {{ item.ticker }}
+              <span class="substring" style="margin-left: 8px">{{ item.exchange }}</span>
+            </div>
+            <div class="substring" [title]="item.name">{{ item.name }}</div>
           </td>
 
           <td *tuiCell="'luck'" tuiTd>
