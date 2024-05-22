@@ -95,7 +95,7 @@
   }
 
   &--direction {
-    white-space: nowrap;
+    text-align: center;
   }
 
   &--number {
@@ -131,10 +131,34 @@
   }
 
   &--direction {
-    width: 60px;
+    width: 40px;
+  }
+
+  &--cost {
+    width: 55px;
+  }
+
+  &--enter {
+    width: 65px;
   }
 
   &--ticker {
     width: 80px;
+  }
+
+  &--profit {
+    width: 45px;
+  }
+
+  &--stop {
+    width: 55px;
+  }
+
+  &--deposit {
+    width: 55px;
+  }
+
+  &--result {
+    width: 55px;
   }
 }

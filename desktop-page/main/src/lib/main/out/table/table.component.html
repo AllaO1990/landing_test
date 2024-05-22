@@ -86,6 +86,10 @@
             <div class="substring">{{ item.out.value }}</div>
           </td>
 
+          <td *tuiCell="'profit'" tuiTd class="td td--number">
+            {{ item.profit.percentage | tuiFormatNumber }}%
+          </td>
+
           <td *tuiCell="'stop'" tuiTd class="td td--number">
             {{ item.stop.price | tuiFormatNumber }}
             <div class="substring">{{ item.stop.percentage }}%</div>
@@ -102,9 +106,9 @@
 </ng-template>
 
 <ng-template #buy>
-  <span class="buy">▲</span> лонг
+  <span class="buy">▲</span>
 </ng-template>
 
 <ng-template #sell>
-  <span class="sell">▼</span> шорт
+  <span class="sell">▼</span>
 </ng-template>

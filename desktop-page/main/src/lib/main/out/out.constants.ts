@@ -11,7 +11,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'direction',
-    label: 'Направ.',
+    label: 'Нап.',
     sorter: (a: { direction: string }, b: { direction: string }) =>
       sortText(a.direction, b.direction),
   },
@@ -77,15 +77,15 @@ export const OUT_HEADER: OutHeaderItem[] = [
     sorter: (a: { stop: { price: number } }, b: { stop: { price: number } }) =>
       sortNumber(a.stop.price, b.stop.price),
   },
-  {
-    name: 'out',
-    label: 'Выход часть <br> Цена/Кол-во',
-    sorter: (a: { out: { price: number } }, b: { out: { price: number } }) =>
-      sortNumber(a.out.price, b.out.price),
-  },
+  // {
+  //   name: 'out',
+  //   label: 'Выход часть <br> Цена/Кол-во',
+  //   sorter: (a: { out: { price: number } }, b: { out: { price: number } }) =>
+  //     sortNumber(a.out.price, b.out.price),
+  // },
   {
     name: 'deposit',
-    label: 'Кол-во %<br> депо',
+    label: 'Кол-во <br>% депо',
     sorter: (
       a: { deposit: { value: number } },
       b: {
@@ -95,7 +95,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'result',
-    label: 'Результат <br> Рез-т %',
+    label: 'Рез-т <br> сделки',
     sorter: (
       a: { result: { price: number } },
       b: {

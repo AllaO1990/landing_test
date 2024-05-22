@@ -31,6 +31,16 @@
         (click)="onOpenMore()"
         (tuiActiveZoneChange)="onActiveZoneMore($event)"
         (tuiObscured)="onObscuredMore($event)"
+        icon="tuiIconSearch"
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        size="s"
+        class="entry__search">
+      </button>
+
+      <button
+        [disabled]="true"
         icon="tuiIconMoreVertical"
         tuiIconButton
         type="button"
