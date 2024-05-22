@@ -133,16 +133,24 @@ export class DesktopApiService extends DesktopService {
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);
             const luck = genNumber(10, 1);
+            const start = `${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${genNumber(maxDay, 1)}`;
 
             return {
               id: i,
               figi: `${i}`,
-              date: `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(
-                maxDay,
-                1
-              )}`,
+              date: {
+                start,
+                passed: Math.round(
+                  (new Date().valueOf() - new Date(start).valueOf()) /
+                    (24 * 60 * 60 * 1000)
+                ),
+              },
               direction: i % 4 ? StockDirection.SELL : StockDirection.BUY,
-              ticker: 'MOEX',
+              ticker: 'SBER',
+              name: 'Сбер Банк',
+              exchange: 'MOEX',
               cost: {
                 price: cost,
                 cost: cost * 3,
@@ -162,6 +170,9 @@ export class DesktopApiService extends DesktopService {
               target2: {
                 price: cost + enterDiff * 3,
                 percentage: 3,
+              },
+              profit: {
+                percentage: luck,
               },
               out: {
                 price: cost + enterDiff * 2,

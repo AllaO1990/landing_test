@@ -19,7 +19,6 @@
   &__header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
 
     padding: var(--padding-1) var(--padding-2);
   }
@@ -34,6 +33,16 @@
 
   &__stock {
     margin: 0 var(--padding-2);
+
+    height: 16px;
+    flex: 1 1;
+    overflow: hidden;
+
+    tui-filter {
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
   }
 
   &__action {
@@ -73,7 +82,7 @@
   tui-filter label {
     padding: 0 var(--padding-2) !important;
   }
-  
+
   [data-size=s] tui-svg {
     font-size: 10px;
   }

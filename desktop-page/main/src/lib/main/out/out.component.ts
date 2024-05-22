@@ -1,34 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Input,
-} from '@angular/core';
-import { scaleLinear } from 'd3-scale';
-import { color } from 'd3-color';
-import { Idea } from 'types/idea';
-import { EntryHeaderItem } from '../entry/entry.types';
-import { ENTRY_HEADER } from '../entry/entry.constants';
-import { OUT_COLUMNS, OUT_HEADER } from './out.constants';
-import { OutHeaderItem } from './out.types';
-import { DesktopLkStore } from '../../../../../../stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
-
-export const getColor = scaleLinear(
-  [1, 5, 10],
-  ['#FF103B', '#EEF1F9', '#039322']
-);
-
-export const getRGBA = (v: any) => {
-  const c = color(v);
-  if (c) {
-    c.opacity = 0.1;
-  }
-
-  return c;
-};
-
-export const getColorBackGround = (v: number) => getRGBA(getColor(v));
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { OUT_CONSTANTS } from './out.constants';
+import { OutEnums } from './out.enums';
+import { MAIN_FILTER_STOCK, MAIN_FILTER_STRATEGY } from '../main.constants';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'vt-out',
@@ -37,23 +11,39 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutComponent {
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  public readonly constants: { [key in OutEnums]: string } = OUT_CONSTANTS;
+  public readonly filterStock: { id: string; name: string }[] =
+    MAIN_FILTER_STOCK;
+  public readonly filterStrategy: { id: string; name: string }[] =
+    MAIN_FILTER_STRATEGY;
 
-  public readonly header: OutHeaderItem[][] = OUT_HEADER;
+  public readonly controlSearch: FormControl<string | null> = new FormControl(
+    null
+  );
+  public readonly controlFilterStock: FormControl<{
+    id: string;
+    name: string;
+  } | null> = new FormControl(null);
+  public readonly controlFilterStrategy: FormControl<{
+    id: string;
+    name: string;
+  } | null> = new FormControl(null);
 
-  public readonly columnList: string[] = OUT_COLUMNS;
+  public openMore = false;
 
   @Input() data = [];
 
-  constructor() {}
-
-  public trackByIndex(index: number): number {
-    return index;
+  public onOpenMore(): void {
+    this.openMore = !this.openMore;
   }
 
-  public trackById(_: number, item: { id: string | number }): number | string {
-    return item.id;
+  public onObscuredMore(obscured: boolean): void {
+    if (obscured) {
+      this.openMore = false;
+    }
   }
 
-  getColorBackGround = getColorBackGround;
+  public onActiveZoneMore(active: boolean): void {
+    this.openMore = active && this.openMore;
+  }
 }

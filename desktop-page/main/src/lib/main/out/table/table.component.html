@@ -1,0 +1,114 @@
+<tui-loader class="out__loader" [overlay]="true" [showLoader]="data === null">
+  <tui-scrollbar *ngIf="data; else empty" class="out__scrollbar">
+    <cdk-virtual-scroll-viewport
+      #viewport
+      tuiScrollable
+      class="out__viewport"
+      [itemSize]="32">
+      <table class="out__table" tuiTable [columns]="columnList">
+        <thead>
+        <tr tuiThGroup>
+          <th
+            class="th th--{{item.name}}"
+            *ngFor="let item of header; trackBy: trackByIndex"
+            tuiTh
+            [sticky]="true"
+            [sorter]="item.sorter"
+            [style.top.px]="-viewport['_renderedContentOffset']">
+            <span [innerHTML]="item.label"></span>
+          </th>
+        </tr>
+        </thead>
+        <tbody tuiTbody>
+        <tr
+          *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
+          [style.background-color]="getColorBackGround(item.luck)"
+          tuiTr
+        >
+          <td
+            class="td"
+            *tuiCell="'date'"
+            [title]="item.date.start | date : 'dd.MM.yyyy'"
+            tuiTd
+          >
+            {{ item.date.start | date : 'dd.MM' }}
+            <div class="substring">{{ item.date.passed }} дней</div>
+          </td>
+
+          <td *tuiCell="'cost'" tuiTd class="td td--number">
+            {{ item.cost.price | tuiFormatNumber }}
+            <div class="substring">{{ item.cost.cost | tuiFormatNumber }}</div>
+          </td>
+
+          <td *tuiCell="'direction'" tuiTd class="td td--direction">
+            <ng-container *ngTemplateOutlet="item.direction === 'buy' ? buy : sell"></ng-container>
+          </td>
+
+          <td *tuiCell="'result'" tuiTd class="td td--number">
+            {{ item.result.price | tuiFormatNumber }}
+            <div class="substring">{{ item.result.percentage | tuiFormatNumber }}%</div>
+          </td>
+
+          <td *tuiCell="'ticker'" tuiTd>
+            <div class="td__row">
+              {{ item.ticker }}
+              <span class="substring" style="margin-left: 8px">{{ item.exchange }}</span>
+            </div>
+            <div class="substring" [title]="item.name">{{ item.name }}</div>
+          </td>
+
+          <td *tuiCell="'luck'" tuiTd>
+            {{ item.luck }}
+          </td>
+
+          <td *tuiCell="'deposit'" tuiTd class="td td--number">
+            {{ item.deposit.value | tuiFormatNumber }}
+            <div class="substring">{{ item.deposit.percentage | tuiFormatNumber }}%</div>
+          </td>
+
+          <td *tuiCell="'target1'" tuiTd class="td td--number">
+            {{ item.target1.price | tuiFormatNumber }}
+            <div class="substring">{{ item.target1.percentage }}%</div>
+          </td>
+
+          <td *tuiCell="'target2'" tuiTd class="td td--number">
+            {{ item.target2.price | tuiFormatNumber }}
+            <div class="substring">{{ item.target2.percentage }}%</div>
+          </td>
+
+          <td *tuiCell="'enter'" tuiTd class="td td--number">
+            {{ item.enter.price | tuiFormatNumber }}
+            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}%</div>
+          </td>
+
+          <td *tuiCell="'out'" tuiTd class="td td--number">
+            {{ item.out.price | tuiFormatNumber }}
+            <div class="substring">{{ item.out.value }}</div>
+          </td>
+
+          <td *tuiCell="'profit'" tuiTd class="td td--number">
+            {{ item.profit.percentage | tuiFormatNumber }}%
+          </td>
+
+          <td *tuiCell="'stop'" tuiTd class="td td--number">
+            {{ item.stop.price | tuiFormatNumber }}
+            <div class="substring">{{ item.stop.percentage }}%</div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </cdk-virtual-scroll-viewport>
+  </tui-scrollbar>
+</tui-loader>
+
+<ng-template #empty>
+  <div class="out__empty">Загрузка...</div>
+</ng-template>
+
+<ng-template #buy>
+  <span class="buy">▲</span>
+</ng-template>
+
+<ng-template #sell>
+  <span class="sell">▼</span>
+</ng-template>

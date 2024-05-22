@@ -8,113 +8,69 @@
   background-color: var(--block-bg-color);
 }
 
+
 .out {
-  &__scrollbar {
-    height: 100%;
-  }
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+  width: 100%;
 
   &__header {
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 8px;
-  }
-
-  &__nav {
-    background-color: #eef1f9;
-
     display: flex;
     align-items: center;
 
-    flex: 0 0 24px;
+    height: 40px;
+
+    padding: var(--padding-1) var(--padding-2);
   }
 
-  &__empty {
+  &__title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 15px;
+
+    padding-right: var(--padding-4);
+  }
+
+  &__stock {
+    flex: 1 1 auto;
+
+    text-align: right;
+    margin: 0 var(--padding-2);
+  }
+
+  &__action {
     display: flex;
     align-items: center;
-    justify-content: center;
-
-    height: 100%;
-    width: 100%;
+    justify-content: flex-end;
   }
 
-  &__loader {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-  }
+  &__strategy {
+    display: flex;
+    align-items: center;
 
-  &__viewport {
-    height: 100%;
+    padding: var(--padding-1) var(--padding-2);
+
+    background: var(--inner-toolbar-color);
   }
 
   &__table {
-    width: 100%;
+    flex: 1 1 auto;
+  }
 
-    th {
-      font-size: 8px;
-      line-height: 10px;
-      font-weight: 400;
-      --tui-height-m: 24px;
-      padding: 0 4px 0 8px;
-    }
-
-    tr {
-      height: 16px;
-    }
-
-    td {
-      --tui-height-m: 32px;
-      background-color: inherit;
-    }
+  &__search {
+    width: 150px;
+    margin: var(--padding-2);
   }
 }
 
-.buy {
-  color: var(--color-g);
-}
-
-.sell {
-  color: var(--color-r);
-}
-
-.substring {
-  font-size: 0.8em;
-  line-height: 1;
-}
-
-.td {
-  &--direction {
-    white-space: nowrap;
+::ng-deep {
+  tui-filter label {
+    padding: 0 var(--padding-2) !important;
   }
 
-  &--number {
-    text-align: right;
-  }
-
-  &--center {
-    text-align: center;
-  }
-}
-
-.th {
-  ::ng-deep {
-    button {
-      width: 100%;
-      font-weight: 400;
-    }
-
-    tui-svg {
-      font-size: 12px;
-      height: 12px;
-      width: 12px;
-    }
-  }
-
-  span {
-    width: 100%;
-    text-align: left;
+  [data-size=s] tui-svg {
+    font-size: 10px;
   }
 }

@@ -1,24 +1,22 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input } from '@angular/core';
+import { OUT_HEADER } from '../out.constants';
 import {
   CdkFixedSizeVirtualScroll,
-  CdkVirtualForOf,
-  CdkVirtualScrollViewport,
+  ScrollingModule,
 } from '@angular/cdk/scrolling';
+import { TuiTableModule } from '@taiga-ui/addon-table';
 import {
   TuiFormatNumberPipeModule,
   TuiLoaderModule,
   TuiScrollbarModule,
 } from '@taiga-ui/core';
-import { TuiTableModule } from '@taiga-ui/addon-table';
+import { OutHeaderItem } from '../out.types';
 import { scaleLinear } from 'd3-scale';
 import { color } from 'd3-color';
-import { Idea } from 'types/idea';
-import { EntryHeaderItem } from '../entry.types';
-import { ENTRY_HEADER } from '../entry.constants';
+import { DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 
 export const getColor = scaleLinear(
-  [1, 50, 100],
+  [1, 5, 10],
   ['#FF103B', '#EEF1F9', '#039322']
 );
 
@@ -34,38 +32,38 @@ export const getRGBA = (v: any) => {
 export const getColorBackGround = (v: number) => getRGBA(getColor(v));
 
 @Component({
-  selector: 'vt-entry-table',
+  selector: 'vt-out-table',
   standalone: true,
   imports: [
-    CommonModule,
+    NgIf,
+    NgFor,
+    NgTemplateOutlet,
     CdkFixedSizeVirtualScroll,
-    CdkVirtualForOf,
-    CdkVirtualScrollViewport,
-    TuiFormatNumberPipeModule,
+    ScrollingModule,
+    TuiTableModule,
     TuiLoaderModule,
     TuiScrollbarModule,
-    TuiTableModule,
+    TuiFormatNumberPipeModule,
+    DatePipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EntryTableComponent {
-  protected getColorBackGround = getColorBackGround;
-
-  public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
-
+export class OutTableComponent {
+  public readonly header: OutHeaderItem[] = OUT_HEADER;
   public readonly columnList: string[] = this.header.map(
     (item: { name: string }) => item.name
   );
 
-  @Input() data: Idea[] | null = null;
+  @Input() data: any[] | null = null;
 
-  public trackById(index: number, item: Idea): number | string {
-    return item.id;
-  }
+  getColorBackGround = getColorBackGround;
 
   public trackByIndex(index: number): number {
     return index;
+  }
+
+  public trackById(_: number, item: { id: string | number }): number | string {
+    return item.id;
   }
 }

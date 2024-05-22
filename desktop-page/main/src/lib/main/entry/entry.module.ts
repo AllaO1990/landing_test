@@ -11,10 +11,9 @@ import {
   TuiScrollbarModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
-import { TuiTableModule } from '@taiga-ui/addon-table';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TuiFilterModule, TuiInputModule } from '@taiga-ui/kit';
-import { TableComponent } from './table/table.component';
+import { EntryTableComponent } from './table/table.component';
 import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
 
 @NgModule({
@@ -23,13 +22,12 @@ import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
     CommonModule,
     ReactiveFormsModule,
     TuiFilterModule,
-    TuiTableModule,
     TuiScrollbarModule,
     TuiFormatNumberPipeModule,
     TuiLoaderModule,
     TuiButtonModule,
     ScrollingModule,
-    TableComponent,
+    EntryTableComponent,
     TuiDropdownModule,
     TuiActiveZoneModule,
     TuiObscuredModule,

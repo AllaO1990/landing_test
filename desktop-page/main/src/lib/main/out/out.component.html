@@ -1,104 +1,77 @@
-<!--<p>out works!</p>-->
-<!--<vt-recommendation [data]="data" [itemSize]="32">-->
-<!--  <vt-idea *recommendationItem="let item" [data]="item"></vt-idea>-->
-<!--</vt-recommendation>-->
+<div class="out">
+  <div class="out__header">
+    <div class="out__title">
+      {{ constants.title }}
+    </div>
+    <div class="out__stock">
+      <tui-filter
+        [formControl]="controlFilterStock"
+        [size]="'s'"
+        class="item"
+        [content]="content"
+        [items]="filterStock"
+      ></tui-filter>
+    </div>
+    <div class="out__action">
+      <button
+        [tuiDropdown]="dropdownContentMore"
+        [tuiDropdownManual]="openMore"
+        [tuiDropdownAlign]="'right'"
+        [tuiDropdownOffset]="8"
+        (click)="onOpenMore()"
+        (tuiActiveZoneChange)="onActiveZoneMore($event)"
+        (tuiObscured)="onObscuredMore($event)"
+        icon="tuiIconSearch"
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        size="s"
+        class="entry__search">
+      </button>
 
-<tui-loader class="out__loader" [overlay]="true" [showLoader]="data === null">
-  <tui-scrollbar *ngIf="data; else empty" class="out__scrollbar">
-    <cdk-virtual-scroll-viewport
-      #viewport
-      tuiScrollable
-      class="out__viewport tui-zero-scrollbar"
-      [itemSize]="32"
-    >
-      <table class="out__table" tuiTable [columns]="columnList">
-        <thead>
-        <tr tuiThGroup *ngFor="let row of header; index as i; trackBy: trackByIndex">
-          <th
-            class="th th--{{item.name}}"
-            *ngFor="let item of row; trackBy: trackByIndex"
-            tuiTh
-            [attr.rowspan]="item.rowspan"
-            [attr.colspan]="item.colspan"
-            [sticky]="true"
-            [sorter]="item.sorter"
-            [style.top.px]="-viewport['_renderedContentOffset'] + i * 24">
-            <span [innerHTML]="item.label"></span>
-          </th>
-        </tr>
-        </thead>
-        <tbody tuiTbody>
-        <tr
-          *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
-          [style.background-color]="getColorBackGround(item.luck)"
-          tuiTr
-        >
-          <td *tuiCell="'cost'" tuiTd class="td td--number">
-            {{ item.cost.price | tuiFormatNumber }}
-            <div class="substring">{{ item.cost.cost | tuiFormatNumber }}</div>
-          </td>
+      <button
+        [disabled]="true"
+        icon="tuiIconMoreVertical"
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        size="s"
+        class="entry__search">
+      </button>
+    </div>
+  </div>
+  <div class="out__strategy">
+    <tui-filter
+      [formControl]="controlFilterStrategy"
+      [size]="'s'"
+      class="item"
+      [content]="content"
+      [items]="filterStrategy"
+    ></tui-filter>
+  </div>
+  <div class="out__table">
+    <vt-out-table [data]="data"></vt-out-table>
+  </div>
+</div>
 
-          <td *tuiCell="'direction'" tuiTd>
-            <ng-container *ngTemplateOutlet="item.direction === 'buy' ? buy : sell"></ng-container>
-          </td>
-
-          <td *tuiCell="'result'" tuiTd class="td td--number">
-            {{ item.result.price | tuiFormatNumber }}
-            <div class="substring">{{ item.result.percentage | tuiFormatNumber }}%</div>
-          </td>
-
-          <td *tuiCell="'ticker'" tuiTd>
-            {{ item.ticker }}
-          </td>
-
-          <td *tuiCell="'luck'" tuiTd>
-            {{ item.luck }}
-          </td>
-
-          <td *tuiCell="'deposit'" tuiTd class="td td--number">
-            {{ item.deposit.value | tuiFormatNumber }}
-            <div class="substring">{{ item.deposit.percentage | tuiFormatNumber }}%</div>
-          </td>
-
-          <td *tuiCell="'target1'" tuiTd class="td td--number">
-            {{ item.target1.price | tuiFormatNumber }}
-            <div class="substring">{{ item.target1.percentage }}%</div>
-          </td>
-
-          <td *tuiCell="'target2'" tuiTd class="td td--number">
-            {{ item.target2.price | tuiFormatNumber }}
-            <div class="substring">{{ item.target2.percentage }}%</div>
-          </td>
-
-          <td *tuiCell="'enter'" tuiTd class="td td--number">
-            {{ item.enter.price | tuiFormatNumber }}
-            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}%</div>
-          </td>
-
-          <td *tuiCell="'out'" tuiTd class="td td--number">
-            {{ item.out.price | tuiFormatNumber }}
-            <div class="substring">{{ item.out.value }}</div>
-          </td>
-
-          <td *tuiCell="'stop'" tuiTd class="td td--number">
-            {{ item.stop.price | tuiFormatNumber }}
-            <div class="substring">{{ item.stop.percentage }}%</div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </cdk-virtual-scroll-viewport>
-  </tui-scrollbar>
-</tui-loader>
-
-<ng-template #empty>
-  <div class="out__empty">Загрузка...</div>
+<ng-template #dropdownContentMore>
+  <tui-input
+    class="out__search"
+    [formControl]="controlSearch"
+    tuiTextfieldSize="s"
+    tuiTextfieldIconLeft="tuiIconSearch"
+    [tuiTextfieldCleaner]="true">
+    {{ constants.search }}
+    <input
+      tuiTextfield
+      type="text"
+    />
+  </tui-input>
 </ng-template>
 
-<ng-template #buy>
-  <span class="buy">▲</span> лонг
+<ng-template #content let-item>
+  {{ item.name }}
 </ng-template>
 
-<ng-template #sell>
-  <span class="sell">▼</span> шорт
-</ng-template>
+
+
