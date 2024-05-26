@@ -92,9 +92,11 @@
   &__row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
 
   &--direction {
+    padding: 0 4px;
     text-align: center;
   }
 
@@ -131,7 +133,8 @@
   }
 
   &--direction {
-    width: 40px;
+    width: 20px;
+    padding: 0 4px !important;
   }
 
   &--cost {
@@ -147,11 +150,11 @@
   }
 
   &--profit {
-    width: 45px;
+    width: 35px;
   }
 
   &--stop {
-    width: 55px;
+    width: 50px;
   }
 
   &--deposit {
