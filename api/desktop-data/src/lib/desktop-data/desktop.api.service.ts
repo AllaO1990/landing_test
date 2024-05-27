@@ -167,7 +167,7 @@ export class DesktopApiService extends DesktopService {
                 price: cost + enterDiff,
                 percentage: luck,
                 count: enterDiff,
-                countPercent: luck * 1.1,
+                countPercent: Number((luck * 1.1).toFixed(2)),
               },
               target2: {
                 price: cost + enterDiff * 3,
