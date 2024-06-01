@@ -1,14 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import {
-  catchError,
-  finalize,
-  Observable,
-  of,
-  switchMap,
-  tap,
-  timer,
-} from 'rxjs';
+import { catchError, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
 import { DesktopLkState } from '../../types/lk-state';
@@ -174,10 +166,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   ): Observable<{ source: T; index: number }> {
     return source$.pipe(
       switchMap((source: T) =>
-        timer(start, interval).pipe(
-          map((index: number) => ({ source, index })),
-          finalize(() => console.log('finalize _timer'))
-        )
+        timer(start, interval).pipe(map((index: number) => ({ source, index })))
       )
     );
   }
