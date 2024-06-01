@@ -24,6 +24,8 @@
         </thead>
         <tbody tuiTbody>
         <tr
+          (dblclick)="onDblclick($event, item)"
+          (click)="onClick($event, item)"
           class="entry-table__table-tr"
           [style.background-color]="getColorBackGround(item.luck)"
           *cdkVirtualFor="

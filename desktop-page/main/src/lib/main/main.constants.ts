@@ -1,19 +1,19 @@
 export const MAIN_FILTER_STOCK = [
   {
     id: 'moex',
-    name: 'Акции MOEX',
+    name: 'Акции',
   },
   {
     id: 'futures',
-    name: 'Фьючерсы MOEX',
+    name: 'Фьючерсы',
   },
   {
     id: 'currency',
-    name: 'Валюта MOEX',
+    name: 'Валюта',
   },
   {
     id: 'metal',
-    name: 'Металлы MOEX',
+    name: 'Металлы',
   },
   {
     id: 'crypto',

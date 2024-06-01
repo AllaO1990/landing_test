@@ -11,7 +11,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'direction',
-    label: 'Нап.',
+    label: '',
     sorter: (a: { direction: string }, b: { direction: string }) =>
       sortText(a.direction, b.direction),
   },
@@ -43,13 +43,14 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'profit',
-    label: 'Приб.',
+    label: '%',
+    title: 'Прибль :',
     sorter: (
-      a: { profit: { price: number } },
+      a: { profit: { percentage: number } },
       b: {
-        profit: { price: number };
+        profit: { percentage: number };
       }
-    ) => sortNumber(a.profit.price, b.profit.price),
+    ) => sortNumber(a.profit.percentage, b.profit.percentage),
   },
   {
     name: 'target1',

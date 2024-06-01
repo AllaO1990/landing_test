@@ -1,16 +1,24 @@
-import { AfterContentInit, ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
+import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  Output,
+} from '@angular/core';
 import { STOCK_LIST_HEADER } from '../stock.constant';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+  CdkVirtualScrollViewport,
+} from '@angular/cdk/scrolling';
 import { StockListItemComponent } from '../item/item.component';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { BehaviorSubject, Observable, startWith, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { StockListItem, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
-import _default from 'chart.js/dist/core/core.interaction';
-import index = _default.modes.index;
 
 @Component({
   selector: 'vt-stock-list',
@@ -28,23 +36,34 @@ import index = _default.modes.index;
     StockListItemComponent,
     TuiTableModule,
     AsyncPipe,
-    TuiFormatNumberPipeModule
-  ]
+    TuiFormatNumberPipeModule,
+  ],
 })
 export class StockListComponent implements AfterContentInit {
-  private readonly _list$: Subject<StockListItemWithPrice[] | null> = new BehaviorSubject<StockListItemWithPrice[] | null>(null);
+  private readonly _list$: Subject<StockListItemWithPrice[] | null> =
+    new BehaviorSubject<StockListItemWithPrice[] | null>(null);
 
-  public list$: Observable<StockListItemWithPrice[] | null> = this._list$.asObservable();
+  public list$: Observable<StockListItemWithPrice[] | null> =
+    this._list$.asObservable();
 
   @Output() selected: Observable<unknown> = this.list$.pipe(
-    filter((list: StockListItemWithPrice[] | null): list is StockListItemWithPrice[] => !!list),
-    switchMap((list: StockListItemWithPrice[]) => this.controlItem.valueChanges.pipe(
-      map((value: string) => list.find((item:StockListItemWithPrice) => item.id === value))
-    ))
+    filter(
+      (
+        list: StockListItemWithPrice[] | null
+      ): list is StockListItemWithPrice[] => !!list
+    ),
+    switchMap((list: StockListItemWithPrice[]) =>
+      this.controlItem.valueChanges.pipe(
+        map((value: string) =>
+          list.find((item: StockListItemWithPrice) => item.id === value)
+        )
+      )
+    )
   );
 
-  public readonly controlItem: FormControl =
-    new FormControl<string | null>(null);
+  public readonly controlItem: FormControl = new FormControl<string | null>(
+    null
+  );
 
   public readonly header: { name: string; label: string }[] = STOCK_LIST_HEADER;
 

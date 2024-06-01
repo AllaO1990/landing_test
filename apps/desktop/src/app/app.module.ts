@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DesktopApiService } from '@desktop-data/desktop-data';
 import {
   TUI_BUTTON_OPTIONS,
+  TuiDialogModule,
   TuiModeModule,
   TuiRootModule,
 } from '@taiga-ui/core';
@@ -26,6 +27,7 @@ import { LayoutStartModule } from './shared/components/layout-start';
     MatNativeDateModule,
     LayoutStartModule,
     TuiModeModule,
+    TuiDialogModule,
   ],
   providers: [
     {

@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   CdkFixedSizeVirtualScroll,
@@ -6,6 +11,7 @@ import {
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
 import {
+  TuiDialogService,
   TuiFormatNumberPipeModule,
   TuiLoaderModule,
   TuiScrollbarModule,
@@ -16,6 +22,11 @@ import { color } from 'd3-color';
 import { Idea } from 'types/idea';
 import { EntryHeaderItem } from '../entry.types';
 import { ENTRY_HEADER } from '../entry.constants';
+import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { VtEnterComponent } from 'desktop-page/enter';
+import { DesktopLkStore } from '../../../../../../../stores/desktop';
+import { DESKTOP_STORE } from 'tokens/desktop';
+import { EventSelected } from 'types/events';
 
 export const getColor = scaleLinear(
   [1, 50, 100],
@@ -45,6 +56,7 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
     TuiLoaderModule,
     TuiScrollbarModule,
     TuiTableModule,
+    VtEnterComponent,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -52,6 +64,10 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
 })
 export class EntryTableComponent {
   protected getColorBackGround = getColorBackGround;
+
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+
+  protected readonly dialogService: TuiDialogService = inject(TuiDialogService);
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
 
@@ -67,5 +83,24 @@ export class EntryTableComponent {
 
   public trackByIndex(index: number): number {
     return index;
+  }
+
+  public onDblclick(event: Event, item: any): void {
+    event.preventDefault();
+
+    this.dialogService
+      .open(new PolymorpheusComponent(VtEnterComponent), {
+        size: 'page',
+        closeable: true,
+        dismissible: true,
+        data: item,
+      })
+      .subscribe();
+  }
+
+  public onClick(event: Event, item: any): void {
+    event.preventDefault();
+
+    this._store.updateSelect({ type: EventSelected.IDEA, value: item });
   }
 }

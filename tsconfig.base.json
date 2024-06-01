@@ -10,26 +10,62 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@desktop-data/*": ["api/desktop-data/src/lib/*"],
-      "@ui/*": ["ui/src/lib/ui/*"],
-      "dashboard": ["desktop-page/dashboard/src/index.ts"],
-      "lk": ["desktop-page/lk/src/index.ts"],
-      "login": ["desktop-page/login/src/index.ts"],
-      "main": ["desktop-page/main/src/index.ts"],
-      "page-401": ["page-401/src/index.ts"],
-      "page-403": ["page-403/src/index.ts"],
-      "page-404": ["page-404/src/index.ts"],
-      "registration": ["desktop-page/registration/src/index.ts"],
-      "sale": ["desktop-page/sale/src/index.ts"],
-      "shall": ["desktop-page/shall/src/index.ts"],
-      "store/*": ["store/*"],
-      "tokens/*": ["tokens/*"],
-      "types/*": ["types/*"]
+      "@desktop-data/*": [
+        "api/desktop-data/src/lib/*"
+      ],
+      "@ui/*": [
+        "ui/src/lib/ui/*"
+      ],
+      "dashboard": [
+        "desktop-page/dashboard/src/index.ts"
+      ],
+      "desktop-page/enter": [
+        "desktop-page/enter/src/index.ts"
+      ],
+      "lk": [
+        "desktop-page/lk/src/index.ts"
+      ],
+      "login": [
+        "desktop-page/login/src/index.ts"
+      ],
+      "main": [
+        "desktop-page/main/src/index.ts"
+      ],
+      "page-401": [
+        "page-401/src/index.ts"
+      ],
+      "page-403": [
+        "page-403/src/index.ts"
+      ],
+      "page-404": [
+        "page-404/src/index.ts"
+      ],
+      "registration": [
+        "desktop-page/registration/src/index.ts"
+      ],
+      "sale": [
+        "desktop-page/sale/src/index.ts"
+      ],
+      "shall": [
+        "desktop-page/shall/src/index.ts"
+      ],
+      "store/*": [
+        "store/*"
+      ],
+      "tokens/*": [
+        "tokens/*"
+      ],
+      "types/*": [
+        "types/*"
+      ]
     }
   },
   "angularCompilerOptions": {
@@ -38,5 +74,8 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }
