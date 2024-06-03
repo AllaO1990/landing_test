@@ -22,6 +22,7 @@
         </thead>
         <tbody tuiTbody>
         <tr
+          class="out__table-tr"
           *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
           [style.background-color]="getColorBackGround(item.luck)"
           tuiTr
@@ -96,7 +97,7 @@
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
             {{ item.enter.price | tuiFormatNumber }}
-            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}%</div>
+            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'out'" tuiTd class="td td--number">
@@ -106,6 +107,7 @@
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
             {{ item.profit.percentage | tuiFormatNumber }}%
+            <div class="substring">{{ item.profit.count }}</div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">

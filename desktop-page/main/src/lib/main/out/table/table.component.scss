@@ -65,6 +65,16 @@
       --tui-height-m: 32px;
       background-color: inherit;
     }
+
+    &-tr {
+      background-color: var(--color-g-1);
+
+      &:hover {
+        background-color: rgba(0, 102, 255, 0.1) !important;
+
+        transition: none;
+      }
+    }
   }
 }
 
@@ -150,7 +160,7 @@
   }
 
   &--profit {
-    width: 35px;
+    width: 45px;
   }
 
   &--stop {
@@ -166,10 +176,10 @@
   }
 
   &--target1 {
-    width: 85px;
+    width: 80px;
   }
 
   &--target2 {
-    width: 85px;
+    width: 80px;
   }
 }
