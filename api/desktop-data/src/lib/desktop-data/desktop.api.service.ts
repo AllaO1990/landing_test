@@ -177,6 +177,7 @@ export class DesktopApiService extends DesktopService {
               },
               profit: {
                 percentage: luck,
+                count: cost,
               },
               out: {
                 price: cost + enterDiff * 2,

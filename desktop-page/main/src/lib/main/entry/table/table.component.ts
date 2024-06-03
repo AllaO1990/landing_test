@@ -91,8 +91,8 @@ export class EntryTableComponent {
     this.dialogService
       .open(new PolymorpheusComponent(VtEnterComponent), {
         size: 'page',
-        closeable: true,
-        dismissible: true,
+        closeable: false,
+        dismissible: false,
         data: item,
       })
       .subscribe();

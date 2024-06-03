@@ -50,7 +50,7 @@
   overflow: hidden;
 }
 
-@media screen and (max-width: 1600px) and (min-width: 1200px) {
+@media screen and (max-width: 1600px) and (min-width: 1320px) {
   .container {
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 410px 1fr 1fr 410px;
@@ -76,7 +76,7 @@
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1320px) {
   .container {
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-columns: 1fr 410px;
