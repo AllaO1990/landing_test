@@ -285,7 +285,7 @@ export class ChartComponent implements OnInit {
   set data(value: any[]) {
     (
       this.chartOptions.series as Highcharts.SeriesCandlestickOptions[]
-    )[0].data = value?.reverse();
+    )[0].data = value;
 
     this.update = true;
   }
