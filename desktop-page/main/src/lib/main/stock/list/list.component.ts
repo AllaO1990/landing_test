@@ -18,7 +18,7 @@ import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { StockListItem, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
 
 @Component({
   selector: 'vt-stock-list',
@@ -37,6 +37,7 @@ import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
     TuiTableModule,
     AsyncPipe,
     TuiFormatNumberPipeModule,
+    TuiScrollbarModule,
   ],
 })
 export class StockListComponent implements AfterContentInit {

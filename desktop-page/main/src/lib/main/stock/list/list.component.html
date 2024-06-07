@@ -8,50 +8,56 @@
     </div>
   </div>
 
-  <cdk-virtual-scroll-viewport itemSize="32" class="list__container">
-    <vt-stock-list-item
-      class="list__item stock-item"
-      *cdkVirtualFor="let item of (list$ | async) || []; trackBy: trackByStockListItem"
-      [item]="item.id"
-      [formControl]="controlItem">
-      <div
-        class="stock-item__row"
-        [class.stock-item__row--up]="item.change && item.change > 0"
-        [class.stock-item__row--down]="item.change && item.change < 0">
+  <tui-scrollbar class="list__scrollbar">
+    <cdk-virtual-scroll-viewport
+      tuiScrollable
+      itemSize="32"
+      class="list__viewport  tui-zero-scrollbar">
+      <vt-stock-list-item
+        class="list__item stock-item"
+        *cdkVirtualFor="let item of (list$ | async) || []; trackBy: trackByStockListItem"
+        [item]="item.id"
+        [formControl]="controlItem">
         <div
-          class="stock-item__img"
-          [title]="item.name">
-          <img
-            src="/assets/tickers-v2/{{ item.ticker }}.{{ item.type === 'crypto' ? 'svg' : 'png' }}"
-            [attr.alt]="item.name"
-          />
+          class="stock-item__row"
+          [class.stock-item__row--up]="item.change && item.change > 0"
+          [class.stock-item__row--down]="item.change && item.change < 0">
+          <div
+            class="stock-item__img"
+            [title]="item.name">
+            <img
+              src="/assets/tickers-v2/{{ item.ticker }}.{{ item.type === 'crypto' ? 'svg' : 'png' }}"
+              [attr.alt]="item.name"
+            />
+          </div>
+          <div
+            class="stock-item__name"
+            [title]="item.name">
+            {{ item.ticker }}
+          </div>
+          <div
+            class="stock-item__sector"
+            [title]="item.sector">
+            {{ item.sector }}
+          </div>
+          <div
+            class="stock-item__price stock-item__last"
+            *ngIf="item.price !== null; else skeleton">
+            {{ item.price | tuiFormatNumber : { decimalLimit: item.increment } }}
+          </div>
+          <div
+            class="stock-item__price stock-item__change"
+            *ngIf="item.change !== null; else skeleton">
+            {{ item.change | tuiFormatNumber : { decimalLimit: item.increment } }}
+          </div>
+          <div class="stock-item__percent stock-item__change-percent"
+               *ngIf="item.changePercent !== null; else skeleton">
+            {{ item.changePercent | tuiFormatNumber : { decimalLimit: 2 } }}%
+          </div>
         </div>
-        <div
-          class="stock-item__name"
-          [title]="item.name">
-          {{ item.ticker }}
-        </div>
-        <div
-          class="stock-item__sector"
-          [title]="item.sector">
-          {{ item.sector }}
-        </div>
-        <div
-          class="stock-item__price stock-item__last"
-          *ngIf="item.price !== null; else skeleton">
-          {{ item.price | tuiFormatNumber : { decimalLimit: item.increment } }}
-        </div>
-        <div
-          class="stock-item__price stock-item__change"
-          *ngIf="item.change !== null; else skeleton">
-          {{ item.change | tuiFormatNumber : { decimalLimit: item.increment } }}
-        </div>
-        <div class="stock-item__percent stock-item__change-percent" *ngIf="item.changePercent !== null; else skeleton">
-          {{ item.changePercent | tuiFormatNumber : { decimalLimit: 2 } }}%
-        </div>
-      </div>
-    </vt-stock-list-item>
-  </cdk-virtual-scroll-viewport>
+      </vt-stock-list-item>
+    </cdk-virtual-scroll-viewport>
+  </tui-scrollbar>
 </div>
 
 <ng-template #skeleton>
