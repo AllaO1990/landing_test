@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
   StockGroup,
+  StockInstrument,
   StockList,
-  StockListItem,
   StockListItemWithPrice,
   StockListPrice,
   StockPrice,
@@ -43,7 +43,7 @@ export class StockService {
     start: { [key: string]: StockList }
   ): { [key: string]: StockList } {
     return data.reduce(
-      (acc: { [key: string]: StockList }, item: StockListItem) => {
+      (acc: { [key: string]: StockList }, item: StockInstrument) => {
         const key = this._defaultMapper[item.exchange];
 
         if (!key) {
@@ -76,9 +76,9 @@ export class StockService {
   }
 
   private _sortName(
-    stringKey: keyof StockListItem = 'ticker'
-  ): (a: StockListItem, b: StockListItem) => 1 | 0 | -1 {
-    return (a: StockListItem, b: StockListItem): 1 | 0 | -1 => {
+    stringKey: keyof StockInstrument = 'ticker'
+  ): (a: StockInstrument, b: StockInstrument) => 1 | 0 | -1 {
+    return (a: StockInstrument, b: StockInstrument): 1 | 0 | -1 => {
       const nameA: string = (a[stringKey] as string).toUpperCase();
       const nameB: string = (b[stringKey] as string).toUpperCase();
 
@@ -102,7 +102,7 @@ export class StockService {
     }
 
     if (!price) {
-      return list.map((item: StockListItem) => ({
+      return list.map((item: StockInstrument) => ({
         ...item,
         price: null,
         change: null,
@@ -111,7 +111,7 @@ export class StockService {
       }));
     }
 
-    return list.map((item: StockListItem) => {
+    return list.map((item: StockInstrument) => {
       if (price[item.id] === null) {
         return {
           ...item,

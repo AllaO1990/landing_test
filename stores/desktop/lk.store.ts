@@ -7,8 +7,8 @@ import { DesktopLkState } from '../../types/lk-state';
 import { Response } from '../../types/response';
 import {
   Stock,
+  StockInstrument,
   StockList,
-  StockListItem,
   StockListPrice,
   StockPrice,
 } from '../../types/stock';
@@ -78,7 +78,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public updateStock = this.updater(
     (state: DesktopLkState, stock: StockList) => {
       const defaultPrice = stock.reduce(
-        (acc: StockPrice<StockListPrice>, item: StockListItem) => ({
+        (acc: StockPrice<StockListPrice>, item: StockInstrument) => ({
           ...acc,
           [item.id]: null,
         }),

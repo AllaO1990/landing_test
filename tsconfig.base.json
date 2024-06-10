@@ -65,6 +65,9 @@
       ],
       "types/*": [
         "types/*"
+      ],
+      "utils/*": [
+        "utils/*"
       ]
     }
   },

@@ -1,5 +1,9 @@
 export interface Response<T> {
   data: T;
-  message: 'Success';
+  message: ResponseMessage;
   success: boolean;
+}
+
+export enum ResponseMessage {
+  success = 'Success',
 }

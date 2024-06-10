@@ -8,12 +8,21 @@ export enum StockDirection {
   SELL = 'sell',
 }
 
+export enum StockPosition {
+  LONG = 'long',
+  SHORT = 'short',
+}
+
+export enum StockCurrency {
+  USDT = 'usdt',
+}
+
 export type StockId = string | number;
 
 /**
  * Элемент списокв тикеров с полной информацией по эмитенту без цены
  */
-export interface StockListItem {
+export interface StockInstrument {
   id: string;
   source: string;
   ticker: string;
@@ -21,6 +30,9 @@ export interface StockListItem {
   type: string;
   exchange: string;
   realExchange: string;
+  inSub: boolean;
+  sector: string;
+  currency: StockCurrency;
 }
 
 export interface StockListItemPrice {
@@ -30,7 +42,7 @@ export interface StockListItemPrice {
   increment: null | number;
 }
 
-export type StockListItemWithPrice = StockListItem & StockListItemPrice;
+export type StockListItemWithPrice = StockInstrument & StockListItemPrice;
 
 /**
  * Элемент из выпадающего списка для Stock
@@ -52,7 +64,7 @@ export interface Stock {
   items: StockList;
 }
 
-export type StockList = StockListItem[];
+export type StockList = StockInstrument[];
 
 export interface StockPrice<T> {
   [key: string]: null | T;

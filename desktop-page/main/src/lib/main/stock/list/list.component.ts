@@ -16,7 +16,7 @@ import { StockListItemComponent } from '../item/item.component';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { StockListItem, StockListItemWithPrice } from 'types/stock';
+import { StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
 
@@ -80,7 +80,7 @@ export class StockListComponent implements AfterContentInit {
     return index;
   }
 
-  public trackByStockListItem(_: number, item: StockListItem): string {
+  public trackByStockListItem(_: number, item: StockInstrument): string {
     return item.id;
   }
 

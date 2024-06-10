@@ -11,7 +11,6 @@ import {
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
 import {
-  TuiDialogService,
   TuiFormatNumberPipeModule,
   TuiLoaderModule,
   TuiScrollbarModule,
@@ -23,9 +22,15 @@ import { Idea } from 'types/idea';
 import { EntryHeaderItem } from '../entry.types';
 import { ENTRY_HEADER } from '../entry.constants';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
-import { VtEnterComponent } from 'desktop-page/enter';
+import {
+  EnterDialogModule,
+  EnterDialogService,
+  VtEnterComponent,
+} from 'desktop-page/enter';
 import { DesktopLkStore } from '../../../../../../../stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
+import { DatePassedPipe } from './date-passed.pipe';
+import { StrategyNamePipe } from './strategy-name.pipe';
 import { EventSelected } from 'types/events';
 
 export const getColor = scaleLinear(
@@ -57,6 +62,9 @@ export const getColorBackGround = (v: number) => getRGBA(getColor(v));
     TuiScrollbarModule,
     TuiTableModule,
     VtEnterComponent,
+    EnterDialogModule,
+    DatePassedPipe,
+    StrategyNamePipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -67,7 +75,8 @@ export class EntryTableComponent {
 
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
-  protected readonly dialogService: TuiDialogService = inject(TuiDialogService);
+  protected readonly dialogEnterService: EnterDialogService =
+    inject(EnterDialogService);
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
 
@@ -88,18 +97,29 @@ export class EntryTableComponent {
   public onDblclick(event: Event, item: any): void {
     event.preventDefault();
 
-    this.dialogService
+    this.dialogEnterService
       .open(new PolymorpheusComponent(VtEnterComponent), {
-        size: 'page',
-        closeable: false,
-        dismissible: false,
         data: item,
       })
       .subscribe();
+
+    // this.dialogService
+    //   .open(new PolymorpheusComponent(VtEnterComponent), {
+    //     // size: 'page',
+    //     // closeable: false,
+    //     // dismissible: false,
+    //     data: item,
+    //   })
+    //   .subscribe();
   }
 
   public onClick(event: Event, item: any): void {
     event.preventDefault();
+
+    // console.log(this.dialogEnterService);
+    // console.log(item);
+
+    // this.dialogEnterService.openDialog(item).subscribe();
 
     this._store.updateSelect({ type: EventSelected.IDEA, value: item });
   }
