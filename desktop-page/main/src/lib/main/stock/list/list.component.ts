@@ -2,6 +2,7 @@ import {
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
+  inject,
   Input,
   Output,
 } from '@angular/core';
@@ -19,6 +20,10 @@ import { filter, map } from 'rxjs/operators';
 import { StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { DesktopLkStore } from '../../../../../../../stores/desktop';
+import { DESKTOP_STORE } from 'tokens/desktop';
+import { StockEvent } from 'types/stock-event';
+import { EventSelected } from 'types/events';
 
 @Component({
   selector: 'vt-stock-list',
@@ -41,13 +46,14 @@ import { TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
   ],
 })
 export class StockListComponent implements AfterContentInit {
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _list$: Subject<StockListItemWithPrice[] | null> =
     new BehaviorSubject<StockListItemWithPrice[] | null>(null);
 
   public list$: Observable<StockListItemWithPrice[] | null> =
     this._list$.asObservable();
 
-  @Output() selected: Observable<unknown> = this.list$.pipe(
+  @Output() selected: Observable<StockInstrument> = this.list$.pipe(
     filter(
       (
         list: StockListItemWithPrice[] | null
@@ -55,8 +61,9 @@ export class StockListComponent implements AfterContentInit {
     ),
     switchMap((list: StockListItemWithPrice[]) =>
       this.controlItem.valueChanges.pipe(
-        map((value: string) =>
-          list.find((item: StockListItemWithPrice) => item.id === value)
+        map(
+          (value: string) =>
+            list.find((item: StockListItemWithPrice) => item.id === value)!
         )
       )
     )
@@ -86,5 +93,20 @@ export class StockListComponent implements AfterContentInit {
 
   ngAfterContentInit(): void {
     this.controlItem.patchValue('72187db2-44d8-4b2e-8b43-c41fd30c4a39');
+
+    this._store.selected$
+      .pipe(
+        filter((result: StockEvent | null) => this._conditionFilter(result))
+      )
+      .subscribe((_) =>
+        this.controlItem.patchValue(null, { emitEvent: false })
+      );
+  }
+
+  private _conditionFilter(selected: StockEvent | null): boolean {
+    if (selected === null) {
+      return false;
+    }
+    return selected.type !== EventSelected.STOCK_LIST;
   }
 }

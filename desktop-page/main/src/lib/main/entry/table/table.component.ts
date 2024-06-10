@@ -32,6 +32,10 @@ import { DESKTOP_STORE } from 'tokens/desktop';
 import { DatePassedPipe } from './date-passed.pipe';
 import { StrategyNamePipe } from './strategy-name.pipe';
 import { EventSelected } from 'types/events';
+import { StockId } from 'types/stock';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { StockEvent } from 'types/stock-event';
+import { Observable } from 'rxjs';
 
 export const getColor = scaleLinear(
   [1, 50, 100],
@@ -84,6 +88,14 @@ export class EntryTableComponent {
     (item: { name: string }) => item.name
   );
 
+  public activeIdeaId$: Observable<StockId | null> = this._store.selected$.pipe(
+    filter(
+      (result: StockEvent | null): result is StockEvent => result !== null
+    ),
+    map((result: StockEvent) => this._conditionActive(result)),
+    distinctUntilChanged()
+  );
+
   @Input() data: Idea[] | null = null;
 
   public trackById(index: number, item: Idea): number | string {
@@ -121,6 +133,13 @@ export class EntryTableComponent {
 
     // this.dialogEnterService.openDialog(item).subscribe();
 
-    this._store.updateSelect({ type: EventSelected.IDEA, value: item });
+    this._store.updateSelect({
+      type: EventSelected.IDEA,
+      value: item,
+    });
+  }
+
+  private _conditionActive(selected: StockEvent): StockId | null {
+    return selected.type === EventSelected.IDEA ? selected.value.id : null;
   }
 }

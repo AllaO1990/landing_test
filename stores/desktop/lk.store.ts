@@ -12,14 +12,16 @@ import {
   StockListPrice,
   StockPrice,
 } from '../../types/stock';
+import { EventSelected } from '../../types/events';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
-  public readonly selected$: Observable<any | null> = this.select(
-    (state: DesktopLkState) => state.selected
-  );
+  public readonly selected$: Observable<{
+    type: EventSelected;
+    value: any;
+  } | null> = this.select((state: DesktopLkState) => state.selected);
 
   public readonly stock$: Observable<StockList | null> = this.select(
     (state: DesktopLkState) => state.stock
