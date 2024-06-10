@@ -1,6 +1,7 @@
 import { EntryEnums } from './entry.enums';
 import { EntryHeaderItem } from './entry.types';
 import { sortNumber, sortText } from '../main.utils';
+import { IdeaAuthor, ResponseIdea } from 'types/idea';
 
 export const ENTRY_CONSTANTS: { [key in EntryEnums]: string } = {
   [EntryEnums.TITLE]: 'Вход',
@@ -12,72 +13,61 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   {
     name: 'date',
     label: `Дата <br> Кол.дн.`,
-    sorter: (a: { date: { start: string } }, b: { date: { start: string } }) =>
-      new Date(b.date.start).valueOf() - new Date(a.date.start).valueOf(),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf(),
   },
   {
     name: 'direction',
     label: 'Напр.',
-    sorter: (a: { direction: string }, b: { direction: string }) =>
-      sortText(a.direction, b.direction),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      sortText(a.positionType, b.positionType),
   },
   {
     name: 'ticker',
     label: 'Тикер',
-    sorter: (a: { ticker: string }, b: { ticker: string }) =>
-      sortText(a.ticker, b.ticker),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      sortText(a.instrument.ticker, b.instrument.ticker),
   },
   {
     name: 'cost',
     label: 'Цена',
-    sorter: (a: { cost: number }, b: { cost: number }) =>
-      sortNumber(a.cost, b.cost),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      sortNumber(a.lastPrice, b.lastPrice),
   },
   {
     name: 'enter',
     label: `Цена вх. <br>Кол-во`,
-    sorter: (
-      a: { enter: { price: number } },
-      b: {
-        enter: { price: number };
-      }
-    ) => sortNumber(a.enter.price, b.enter.price),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      sortNumber(a.entry.price, b.entry.price),
   },
   {
     name: 'target',
     label: `Цель <br> %/% депо`,
-    sorter: (
-      a: { target: { price: number } },
-      b: {
-        target: { price: number };
-      }
-    ) => sortNumber(a.target.price, b.target.price),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      sortNumber(a.target.price, b.target.price),
   },
   {
     name: 'stop',
     label: `Стоп <br> %/% депо`,
-    sorter: (a: { stop: { price: number } }, b: { stop: { price: number } }) =>
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
       sortNumber(a.stop.price, b.stop.price),
   },
   {
     name: 'deposit',
     label: `Стоим. вх.<br>% депо`,
-    sorter: (
-      a: { deposit: { price: number } },
-      b: {
-        deposit: { price: number };
-      }
-    ) => sortNumber(a.deposit.price, b.deposit.price),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      sortNumber(a.entry.totalPrice, b.entry.totalPrice),
   },
   {
     name: 'luck',
     label: 'Успех %<br> Стратег.',
-    sorter: (a: { luck: number }, b: { luck: number }) =>
-      sortNumber(a.luck, b.luck),
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      sortNumber(a.strategy.successProbability, b.strategy.successProbability),
   },
   {
     name: 'idea',
     label: 'Идея',
-    sorter: (a: { idea: boolean }, b: { idea: boolean }) => +b.idea - +a.idea,
+    sorter: (a: ResponseIdea, b: ResponseIdea) =>
+      b.author === IdeaAuthor.BOT ? 1 : -1,
   },
 ];

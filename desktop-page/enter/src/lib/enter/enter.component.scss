@@ -12,7 +12,7 @@
 
   gap: var(--padding-1);
 
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr 1.2fr;
   grid-template-columns: 410px 1fr 1fr;
 
   background-color: var(--main-bg-color);
@@ -48,4 +48,34 @@
   &__widget {
     background-color: var(--block-bg-color);
   }
+}
+
+.widget {
+  &__toolbar {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+
+    height: 48px;
+
+    border-bottom: 1px solid var(--main-bg-color);
+  }
+
+  &__header {
+    height: 32px;
+
+    border-bottom: 1px solid var(--main-bg-color);
+  }
+
+  &__space {
+    flex: 1 1;
+  }
+}
+
+.date-start {
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 300;
+
+  color: #7E879A;
 }

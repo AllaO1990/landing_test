@@ -1,0 +1,15 @@
+:host {
+  --tui-height-m: 24px;
+}
+
+.widget {
+  &__toolbar {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+
+    height: 48px;
+
+    border-bottom: 1px solid var(--main-bg-color);
+  }
+}

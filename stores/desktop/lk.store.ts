@@ -7,19 +7,21 @@ import { DesktopLkState } from '../../types/lk-state';
 import { Response } from '../../types/response';
 import {
   Stock,
+  StockInstrument,
   StockList,
-  StockListItem,
   StockListPrice,
   StockPrice,
 } from '../../types/stock';
+import { EventSelected } from '../../types/events';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
-  public readonly selected$: Observable<any | null> = this.select(
-    (state: DesktopLkState) => state.selected
-  );
+  public readonly selected$: Observable<{
+    type: EventSelected;
+    value: any;
+  } | null> = this.select((state: DesktopLkState) => state.selected);
 
   public readonly stock$: Observable<StockList | null> = this.select(
     (state: DesktopLkState) => state.stock
@@ -78,7 +80,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public updateStock = this.updater(
     (state: DesktopLkState, stock: StockList) => {
       const defaultPrice = stock.reduce(
-        (acc: StockPrice<StockListPrice>, item: StockListItem) => ({
+        (acc: StockPrice<StockListPrice>, item: StockInstrument) => ({
           ...acc,
           [item.id]: null,
         }),

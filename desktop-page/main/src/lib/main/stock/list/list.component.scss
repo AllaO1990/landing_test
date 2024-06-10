@@ -165,9 +165,12 @@
     }
   }
 
-  &__container {
+  &__scrollbar {
     flex: 1 1;
-    overflow-y: auto;
+  }
+
+  &__viewport {
+    height: 100%;
   }
 }
 

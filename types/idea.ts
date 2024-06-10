@@ -1,32 +1,78 @@
-import { StockDirection, StockId } from './stock';
+import { StockId, StockInstrument, StockPosition } from './stock';
+import { StockStrategy } from './stock-strategy';
 
-export interface Idea {
+export interface ResponseListIdea {
+  items: ResponseIdea[];
+  total: number;
+}
+
+export interface ResponseIdea {
   id: StockId;
-  date: {
-    start: string;
-    passed: number;
-  };
-  direction: StockDirection;
-  figi: string;
-  ticker: string;
-  cost: number;
-  enter: {
+  createdAt: string;
+  positionType: StockPosition;
+  instrument: StockInstrument;
+  lastPrice: number;
+  minPriceIncrement: number;
+  entry: {
     price: number;
-    cost: number;
+    quantity: number;
+    totalPrice: number;
+    depositShare: number;
   };
   target: {
     price: number;
-    percentage: number;
+    profitPercent: number;
+    depositShare: number;
   };
   stop: {
     price: number;
-    percentage: number;
+    lossPercent: number;
+    depositShare: number;
   };
-  deposit: {
-    price: number;
-    percentage: number;
+  strategy: {
+    successProbability: number;
+    type: StockStrategy;
   };
-  luck: number;
-  strategy: string;
-  idea: boolean;
+  author: IdeaAuthor;
 }
+
+export enum IdeaAuthor {
+  BOT = 'bot',
+  USER = 'user',
+}
+
+export interface Idea extends ResponseIdea {
+  priceIncrement: number;
+}
+
+
+// export interface Idea {
+//   id: StockId;
+//   date: {
+//     start: string;
+//     passed: number;
+//   };
+//   direction: StockDirection;
+//   figi: string;
+//   ticker: string;
+//   cost: number;
+//   enter: {
+//     price: number;
+//     cost: number;
+//   };
+//   target: {
+//     price: number;
+//     percentage: number;
+//   };
+//   stop: {
+//     price: number;
+//     percentage: number;
+//   };
+//   deposit: {
+//     price: number;
+//     percentage: number;
+//   };
+//   luck: number;
+//   strategy: string;
+//   idea: boolean;
+// }

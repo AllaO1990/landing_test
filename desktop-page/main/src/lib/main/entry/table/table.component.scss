@@ -62,6 +62,10 @@
         transition: none;
       }
     }
+
+    &-tr--active {
+      background-color: rgba(0, 102, 255, 0.1) !important;
+    }
   }
 }
 

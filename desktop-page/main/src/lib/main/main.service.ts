@@ -1,15 +1,13 @@
-import {Injectable} from '@angular/core';
-import {Idea} from 'types/idea';
+import { Injectable } from '@angular/core';
+import { Idea, IdeaAuthor } from 'types/idea';
 
 @Injectable()
 export class MainService {
   public sortIdeaList(list: Idea[]): Idea[] {
-    const sortDate = (
-      a: { date: { start: string } },
-      b: { date: { start: string } }
-    ) => new Date(b.date.start).valueOf() - new Date(a.date.start).valueOf();
+    const sortDate = (a: { createdAt: string }, b: { createdAt: string }) =>
+      new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf();
 
-    const {vanya, user}: { vanya: Idea[]; user: Idea[] } = list.reduce(
+    const { vanya, user }: { vanya: Idea[]; user: Idea[] } = list.reduce(
       (
         acc: {
           vanya: Idea[];
@@ -17,7 +15,7 @@ export class MainService {
         },
         item: Idea
       ) => {
-        if (item.idea) {
+        if (item.author === IdeaAuthor.BOT) {
           acc.vanya.push(item);
         } else {
           acc.user.push(item);
@@ -25,7 +23,7 @@ export class MainService {
 
         return acc;
       },
-      {vanya: [], user: []}
+      { vanya: [], user: [] }
     );
 
     return [...vanya.sort(sortDate), ...user.sort(sortDate)];

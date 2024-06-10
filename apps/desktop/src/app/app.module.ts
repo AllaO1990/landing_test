@@ -15,6 +15,8 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LayoutStartModule } from './shared/components/layout-start';
+import { TUI_DIALOGS } from '@taiga-ui/cdk';
+import { EnterDialogService } from 'desktop-page/enter';
 
 @NgModule({
   declarations: [AppComponent],
@@ -50,6 +52,11 @@ import { LayoutStartModule } from './shared/components/layout-start';
         size: 's',
         shape: null,
       },
+    },
+    {
+      provide: TUI_DIALOGS,
+      useExisting: EnterDialogService,
+      multi: true,
     },
   ],
   bootstrap: [AppComponent],
