@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="container__sidebar container__widget">
+    <lib-enter-sidebar></lib-enter-sidebar>
+  </div>
+  <div class="container__chart container__widget">
+    <div class="widget">
+      <div class="widget__toolbar">
+        <div class="widget__space"></div>
+        <div class="widget__date-start date-start">
+          Идея от
+          <span>{{ data.date.start | date: 'dd.MM.yyyy' }}</span>
+        </div>
+        <button
+          appearance="icon"
+          icon="tuiIconClose"
+          tuiIconButton
+          size="m"
+          type="button"
+          (click)="onClose($event)"
+        ></button>
+      </div>
+    </div>
+    <p>chart!</p>
+  </div>
+  <div class="container__idea container__widget">
+    <div class="widget">
+      <div class="widget__header">
+        header
+      </div>
+    </div>
+    <lib-enter-idea></lib-enter-idea>
+  </div>
+  <div class="container__action container__widget">
+    <div class="widget">
+      <div class="widget__header">
+        header
+      </div>
+    </div>
+    <lib-enter-action></lib-enter-action>
+  </div>
+</div>

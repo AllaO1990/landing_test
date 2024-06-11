@@ -1,19 +1,21 @@
+import { StockStrategy, StockStrategyDirectory } from 'types/stock-strategy';
+
 export const MAIN_FILTER_STOCK = [
   {
     id: 'moex',
-    name: 'Акции MOEX',
+    name: 'Акции',
   },
   {
     id: 'futures',
-    name: 'Фьючерсы MOEX',
+    name: 'Фьючерсы',
   },
   {
     id: 'currency',
-    name: 'Валюта MOEX',
+    name: 'Валюта',
   },
   {
     id: 'metal',
-    name: 'Металлы MOEX',
+    name: 'Металлы',
   },
   {
     id: 'crypto',
@@ -21,21 +23,21 @@ export const MAIN_FILTER_STOCK = [
   },
 ];
 
-export const MAIN_FILTER_STRATEGY = [
+export const MAIN_FILTER_STRATEGY: { id: StockStrategy; name: string }[] = [
   {
-    id: 'consolidation',
-    name: 'Консолидация',
+    id: StockStrategy.CONSOLIDATION,
+    name: StockStrategyDirectory[StockStrategy.CONSOLIDATION],
   },
   {
-    id: 'core',
-    name: 'Активная зона',
+    id: StockStrategy.ACTIVE_ZONE,
+    name: StockStrategyDirectory[StockStrategy.ACTIVE_ZONE],
   },
   {
-    id: 'sliding',
-    name: 'Скользящие',
+    id: StockStrategy.SLIDING,
+    name: StockStrategyDirectory[StockStrategy.SLIDING],
   },
   {
-    id: 'user',
-    name: 'Пользователь',
+    id: StockStrategy.USER,
+    name: StockStrategyDirectory[StockStrategy.USER],
   },
 ];

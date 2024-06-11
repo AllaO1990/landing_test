@@ -1,89 +1,40 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of, switchMap, timer } from 'rxjs';
-import { Idea } from 'types/idea';
-import { Response } from 'types/response';
+import { map, Observable, of, switchMap, timer } from 'rxjs';
+import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
+import { Response, ResponseMessage } from 'types/response';
 import {
   Stock,
   StockDirection,
   StockId,
+  StockInstrument,
   StockList,
-  StockListItem,
   StockListPrice,
   StockPrice,
 } from 'types/stock';
 import { DesktopService } from './desktop.abstract.service';
+import { filter } from 'rxjs/operators';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
 
   public getIdeaList(): Observable<Idea[]> {
-    const today: Date = new Date();
-    const maxDay: number = new Date().getDate();
-    // today.getFullYear(),
-    // today.getMonth() + 1,
-    // 0
-    const genNumber = (max: number, min: number): number => {
-      return Math.floor(Math.random() * (max - min) + min);
-    };
-
-    return timer(2000).pipe(
-      switchMap((_) =>
-        of(
-          Array.from({ length: 100 }, (_, i: number) => {
-            const cost = genNumber(10000, 100);
-            const enterDiff = genNumber(100, 10);
-            const deposit = genNumber(100, 2);
-            const luck = genNumber(10, 1);
-            const idea = genNumber(10, 0);
-            const start = `${today.getFullYear()}-${
-              today.getMonth() + 1
-            }-${genNumber(maxDay, 1)}`;
-
-            return {
-              id: i,
-              figi: `${i}`,
-              date: {
-                start,
-                passed: Math.round(
-                  (new Date().valueOf() - new Date(start).valueOf()) /
-                    (24 * 60 * 60 * 1000)
-                ),
-              },
-              direction: i % 5 ? StockDirection.SELL : StockDirection.BUY,
-              ticker: 'GAZP',
-              name: 'Газпром',
-              exchange: 'MOEX',
-              cost,
-              enter: {
-                price: cost - enterDiff,
-                cost: deposit,
-              },
-              target: {
-                price: cost * 1.2,
-                percentage: 20,
-                deposit: luck,
-              },
-              stop: {
-                price: cost - enterDiff * 2,
-                percentage: 0.4 * luck,
-                deposit: luck / 2,
-              },
-              deposit: {
-                price: cost * 3,
-                percentage: 2.4,
-              },
-              luck: luck * 10,
-              strategy: 'Активная зона',
-              idea: idea > 5,
-            };
-          })
+    return this._http
+      .get<Response<ResponseListIdea>>(`https://trade.gpn.dev/api/v1/ideas`)
+      .pipe(
+        filter(
+          (response: Response<ResponseListIdea>) =>
+            response && response.message === ResponseMessage.success
+        ),
+        map((response: Response<ResponseListIdea>) =>
+          response.data.items.map((item: ResponseIdea) => ({
+            ...item,
+            priceIncrement: getPriceIncrement(item.minPriceIncrement),
+          }))
         )
-      )
-    );
-
-    // return this._http.get<any[]>('/assets/mocks/idea-list.json');
+      );
   }
 
   public getList(): Observable<any> {
@@ -103,13 +54,13 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<StockPrice<StockListPrice>>>(
       `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
       {
-        ids: list.map((item: StockListItem) => item.id),
+        ids: list.map((item: StockInstrument) => item.id),
       }
     );
   }
 
-  public getStock(id: StockId): Observable<StockListItem[]> {
-    return this._http.get<StockListItem[]>(
+  public getStock(id: StockId): Observable<StockInstrument[]> {
+    return this._http.get<StockInstrument[]>(
       `/assets/mocks/stock-list-${id}.json`
     );
   }
@@ -165,14 +116,19 @@ export class DesktopApiService extends DesktopService {
               },
               target1: {
                 price: cost + enterDiff,
-                percentage: 1,
+                percentage: luck,
+                count: enterDiff,
+                countPercent: Number((luck * 1.1).toFixed(2)),
               },
               target2: {
                 price: cost + enterDiff * 3,
-                percentage: 3,
+                percentage: luck * 1.5,
+                count: enterDiff,
+                countPercent: luck * 2,
               },
               profit: {
                 percentage: luck,
+                count: cost,
               },
               out: {
                 price: cost + enterDiff * 2,

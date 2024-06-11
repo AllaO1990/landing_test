@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DesktopApiService } from '@desktop-data/desktop-data';
 import {
   TUI_BUTTON_OPTIONS,
+  TuiDialogModule,
   TuiModeModule,
   TuiRootModule,
 } from '@taiga-ui/core';
@@ -14,6 +15,8 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LayoutStartModule } from './shared/components/layout-start';
+import { TUI_DIALOGS } from '@taiga-ui/cdk';
+import { EnterDialogService } from 'desktop-page/enter';
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,6 +29,7 @@ import { LayoutStartModule } from './shared/components/layout-start';
     MatNativeDateModule,
     LayoutStartModule,
     TuiModeModule,
+    TuiDialogModule,
   ],
   providers: [
     {
@@ -48,6 +52,11 @@ import { LayoutStartModule } from './shared/components/layout-start';
         size: 's',
         shape: null,
       },
+    },
+    {
+      provide: TUI_DIALOGS,
+      useExisting: EnterDialogService,
+      multi: true,
     },
   ],
   bootstrap: [AppComponent],

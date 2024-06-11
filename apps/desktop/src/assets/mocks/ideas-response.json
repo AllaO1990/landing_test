@@ -1,0 +1,409 @@
+{
+  "success": true,
+  "message": "Success",
+  "data": {
+    "total": 10,
+    "items": [
+      {
+        "id": "1",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "3a0179c8-c300-4952-87d7-a261f6e7efda",
+          "source": "binance",
+          "ticker": "BTCUSDT",
+          "name": "BTCUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Криптовалюты, Сеть уровня 1",
+          "currency": "usdt"
+        },
+        "lastPrice": 71101.21,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 71812.2221,
+          "quantity": 8,
+          "totalPrice": 574497.7768,
+          "depositShare": 57.4498
+        },
+        "target": {
+          "price": 78282.43221,
+          "profitPercent": 0.09,
+          "depositShare": 7.8282
+        },
+        "stop": {
+          "price": 70375.977658,
+          "lossPercent": -0.02,
+          "depositShare": 7.0376
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "2",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "5b34e43d-80c7-41dc-9788-3c10c4827c39",
+          "source": "binance",
+          "ticker": "BTGUSDT",
+          "name": "BTGUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Криптовалюты",
+          "currency": "usdt"
+        },
+        "lastPrice": 17.65,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 17.8265,
+          "quantity": 56,
+          "totalPrice": 998.284,
+          "depositShare": 0.0998
+        },
+        "target": {
+          "price": 19.43265,
+          "profitPercent": 0.09,
+          "depositShare": 0.0019
+        },
+        "stop": {
+          "price": 17.46997,
+          "lossPercent": -0.02,
+          "depositShare": 0.0017
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "3",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "d39c2892-6a9f-441e-9149-2c695d21dec9",
+          "source": "binance",
+          "ticker": "BTTUSDT",
+          "name": "BTTUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Распред. вычисления и хранение, Web3, SEC security token",
+          "currency": "usdt"
+        },
+        "lastPrice": 0.002777,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 0.00280477,
+          "quantity": 61,
+          "totalPrice": 0.17109097,
+          "depositShare": 0
+        },
+        "target": {
+          "price": 0.00305748,
+          "profitPercent": 0.09,
+          "depositShare": 0
+        },
+        "stop": {
+          "price": 0.00274867,
+          "lossPercent": -0.02,
+          "depositShare": 0
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "4",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "d8bf5451-5551-43e5-aa8b-5ebbc517ab2b",
+          "source": "binance",
+          "ticker": "CAKEUSDT",
+          "name": "CAKEUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Децентрализованные биржи, DeFi",
+          "currency": "usdt"
+        },
+        "lastPrice": 3.036,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 3.06636,
+          "quantity": 27,
+          "totalPrice": 82.79172,
+          "depositShare": 0.0083
+        },
+        "target": {
+          "price": 3.342636,
+          "profitPercent": 0.09,
+          "depositShare": 0.0003
+        },
+        "stop": {
+          "price": 3.0050328,
+          "lossPercent": -0.02,
+          "depositShare": 0.0003
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "5",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "e487b473-f398-474f-9b42-d89068847ced",
+          "source": "tinkoff",
+          "ticker": "CBOM",
+          "name": "МКБ",
+          "type": "shares",
+          "exchange": "MOEX_EVENING_WEEKEND",
+          "realExchange": "moex",
+          "inSub": true,
+          "sector": "financial",
+          "currency": "rub"
+        },
+        "lastPrice": 6.863,
+        "minPriceIncrement": 0.001,
+        "entry": {
+          "price": 6.932,
+          "quantity": 100,
+          "totalPrice": 693.2,
+          "depositShare": 0.0007
+        },
+        "target": {
+          "price": 7.556,
+          "profitPercent": 0.09,
+          "depositShare": 0
+        },
+        "stop": {
+          "price": 6.793,
+          "lossPercent": -0.02,
+          "depositShare": 0
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "6",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "89112a2b-6147-4eaa-a6e9-f15de25edfe2",
+          "source": "binance",
+          "ticker": "CELOUSDT",
+          "name": "CELOUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Платформы смарт-контрактов, Платежи, Сеть уровня 1",
+          "currency": "usdt"
+        },
+        "lastPrice": 0.7951,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 0.803051,
+          "quantity": 22,
+          "totalPrice": 17.667122,
+          "depositShare": 0.0018
+        },
+        "target": {
+          "price": 0.8754051,
+          "profitPercent": 0.09,
+          "depositShare": 0.0001
+        },
+        "stop": {
+          "price": 0.78698998,
+          "lossPercent": -0.02,
+          "depositShare": 0.0001
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "7",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "34bcfe10-96bf-4969-b765-f9cd8120814e",
+          "source": "binance",
+          "ticker": "CFXUSDT",
+          "name": "CFXUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Платформы смарт-контрактов, Интероперабельность, DeFi, Web3",
+          "currency": "usdt"
+        },
+        "lastPrice": 0.2307,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 0.233007,
+          "quantity": 68,
+          "totalPrice": 15.844476,
+          "depositShare": 0.0016
+        },
+        "target": {
+          "price": 0.2540007,
+          "profitPercent": 0.09,
+          "depositShare": 0
+        },
+        "stop": {
+          "price": 0.22834686,
+          "lossPercent": -0.02,
+          "depositShare": 0
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "8",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "2ee5a596-095e-4242-91d2-2ebab1a8ecdf",
+          "source": "tinkoff",
+          "ticker": "CHMF",
+          "name": "Северсталь",
+          "type": "shares",
+          "exchange": "MOEX_EVENING_WEEKEND",
+          "realExchange": "moex",
+          "inSub": true,
+          "sector": "materials",
+          "currency": "rub"
+        },
+        "lastPrice": 1818,
+        "minPriceIncrement": 0.2,
+        "entry": {
+          "price": 1836.2,
+          "quantity": 20,
+          "totalPrice": 36724,
+          "depositShare": 0.0367
+        },
+        "target": {
+          "price": 2001.6,
+          "profitPercent": 0.09,
+          "depositShare": 0.002
+        },
+        "stop": {
+          "price": 1799.4,
+          "lossPercent": -0.02,
+          "depositShare": 0.0018
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "9",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "9317ae3b-4788-4f4d-91c1-f34b26e11c61",
+          "source": "binance",
+          "ticker": "CHZUSDT",
+          "name": "CHZUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Бонусы, Спорт, SEC security token, Сеть уровня 1",
+          "currency": "usdt"
+        },
+        "lastPrice": 0.139,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 0.14039,
+          "quantity": 84,
+          "totalPrice": 11.79276,
+          "depositShare": 0.0012
+        },
+        "target": {
+          "price": 0.153039,
+          "profitPercent": 0.09,
+          "depositShare": 0
+        },
+        "stop": {
+          "price": 0.1375822,
+          "lossPercent": -0.02,
+          "depositShare": 0
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      },
+      {
+        "id": "10",
+        "createdAt": "2024-06-08T15:53:22Z",
+        "positionType": "long",
+        "instrument": {
+          "id": "58178932-9e93-4fe8-bbe4-c3837b9d2ced",
+          "source": "binance",
+          "ticker": "CKBUSDT",
+          "name": "CKBUSDT",
+          "type": "crypto",
+          "exchange": "binance",
+          "realExchange": "binance",
+          "inSub": true,
+          "sector": "Платформы смарт-контрактов, Масштабирование",
+          "currency": "usdt"
+        },
+        "lastPrice": 0.018744,
+        "minPriceIncrement": 1e-8,
+        "entry": {
+          "price": 0.01893144,
+          "quantity": 44,
+          "totalPrice": 0.83298336,
+          "depositShare": 0.0001
+        },
+        "target": {
+          "price": 0.02063714,
+          "profitPercent": 0.09,
+          "depositShare": 0
+        },
+        "stop": {
+          "price": 0.01855281,
+          "lossPercent": -0.02,
+          "depositShare": 0
+        },
+        "strategy": {
+          "successProbability": 0.6,
+          "type": "activeZone"
+        },
+        "author": "bot"
+      }
+    ]
+  }
+}

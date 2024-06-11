@@ -3,7 +3,7 @@
     <cdk-virtual-scroll-viewport
       #viewport
       tuiScrollable
-      class="out__viewport"
+      class="out__viewport tui-zero-scrollbar"
       [itemSize]="32">
       <table class="out__table" tuiTable [columns]="columnList">
         <thead>
@@ -14,6 +14,7 @@
             tuiTh
             [sticky]="true"
             [sorter]="item.sorter"
+            [title]="item.title || ''"
             [style.top.px]="-viewport['_renderedContentOffset']">
             <span [innerHTML]="item.label"></span>
           </th>
@@ -21,6 +22,7 @@
         </thead>
         <tbody tuiTbody>
         <tr
+          class="out__table-tr"
           *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
           [style.background-color]="getColorBackGround(item.luck)"
           tuiTr
@@ -67,18 +69,35 @@
           </td>
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">
-            {{ item.target1.price | tuiFormatNumber }}
-            <div class="substring">{{ item.target1.percentage }}%</div>
+            <div class="td__row">
+              {{ item.target1.price | tuiFormatNumber }}
+              <span class="substring" style="margin-left: 8px">{{ item.target1.percentage }}%</span>
+            </div>
+            <div class="td__row">
+              {{ item.target1.count }}
+              <div class="substring" style="margin-left: 8px">{{ item.target1.countPercent }}%</div>
+            </div>
           </td>
 
           <td *tuiCell="'target2'" tuiTd class="td td--number">
-            {{ item.target2.price | tuiFormatNumber }}
-            <div class="substring">{{ item.target2.percentage }}%</div>
+            <div class="td__row">
+              <span [title]="item.target2.price | tuiFormatNumber">
+                {{ item.target2.price | tuiFormatNumber }}
+              </span>
+              <span [title]="item.target2.percentage + '%'" class="substring"
+                    style="margin-left: 8px">{{ item.target2.percentage }}%</span>
+            </div>
+            <div class="td__row">
+              <span [title]="item.target2.count">{{ item.target2.count }}</span>
+              <div [title]="item.target2.countPercent + '%'" class="substring"
+                   style="margin-left: 8px">{{ item.target2.countPercent }}%
+              </div>
+            </div>
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
             {{ item.enter.price | tuiFormatNumber }}
-            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}%</div>
+            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'out'" tuiTd class="td td--number">
@@ -88,6 +107,7 @@
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
             {{ item.profit.percentage | tuiFormatNumber }}%
+            <div class="substring">{{ item.profit.count }}</div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">

@@ -34,6 +34,7 @@ import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
     TuiInputModule,
     TuiTextfieldControllerModule,
   ],
+  providers: [],
   exports: [EntryComponent],
 })
 export class EntryModule {}

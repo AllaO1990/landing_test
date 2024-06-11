@@ -1,16 +1,29 @@
-import { AfterContentInit, ChangeDetectionStrategy, Component, Input, Output } from '@angular/core';
+import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Input,
+  Output,
+} from '@angular/core';
 import { STOCK_LIST_HEADER } from '../stock.constant';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+  CdkVirtualScrollViewport,
+} from '@angular/cdk/scrolling';
 import { StockListItemComponent } from '../item/item.component';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { BehaviorSubject, Observable, startWith, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { StockListItem, StockListItemWithPrice } from 'types/stock';
+import { StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule } from '@taiga-ui/core';
-import _default from 'chart.js/dist/core/core.interaction';
-import index = _default.modes.index;
+import { TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { DesktopLkStore } from '../../../../../../../stores/desktop';
+import { DESKTOP_STORE } from 'tokens/desktop';
+import { StockEvent } from 'types/stock-event';
+import { EventSelected } from 'types/events';
 
 @Component({
   selector: 'vt-stock-list',
@@ -28,23 +41,37 @@ import index = _default.modes.index;
     StockListItemComponent,
     TuiTableModule,
     AsyncPipe,
-    TuiFormatNumberPipeModule
-  ]
+    TuiFormatNumberPipeModule,
+    TuiScrollbarModule,
+  ],
 })
 export class StockListComponent implements AfterContentInit {
-  private readonly _list$: Subject<StockListItemWithPrice[] | null> = new BehaviorSubject<StockListItemWithPrice[] | null>(null);
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _list$: Subject<StockListItemWithPrice[] | null> =
+    new BehaviorSubject<StockListItemWithPrice[] | null>(null);
 
-  public list$: Observable<StockListItemWithPrice[] | null> = this._list$.asObservable();
+  public list$: Observable<StockListItemWithPrice[] | null> =
+    this._list$.asObservable();
 
-  @Output() selected: Observable<unknown> = this.list$.pipe(
-    filter((list: StockListItemWithPrice[] | null): list is StockListItemWithPrice[] => !!list),
-    switchMap((list: StockListItemWithPrice[]) => this.controlItem.valueChanges.pipe(
-      map((value: string) => list.find((item:StockListItemWithPrice) => item.id === value))
-    ))
+  @Output() selected: Observable<StockInstrument> = this.list$.pipe(
+    filter(
+      (
+        list: StockListItemWithPrice[] | null
+      ): list is StockListItemWithPrice[] => !!list
+    ),
+    switchMap((list: StockListItemWithPrice[]) =>
+      this.controlItem.valueChanges.pipe(
+        map(
+          (value: string) =>
+            list.find((item: StockListItemWithPrice) => item.id === value)!
+        )
+      )
+    )
   );
 
-  public readonly controlItem: FormControl =
-    new FormControl<string | null>(null);
+  public readonly controlItem: FormControl = new FormControl<string | null>(
+    null
+  );
 
   public readonly header: { name: string; label: string }[] = STOCK_LIST_HEADER;
 
@@ -60,11 +87,26 @@ export class StockListComponent implements AfterContentInit {
     return index;
   }
 
-  public trackByStockListItem(_: number, item: StockListItem): string {
+  public trackByStockListItem(_: number, item: StockInstrument): string {
     return item.id;
   }
 
   ngAfterContentInit(): void {
     this.controlItem.patchValue('72187db2-44d8-4b2e-8b43-c41fd30c4a39');
+
+    this._store.selected$
+      .pipe(
+        filter((result: StockEvent | null) => this._conditionFilter(result))
+      )
+      .subscribe((_) =>
+        this.controlItem.patchValue(null, { emitEvent: false })
+      );
+  }
+
+  private _conditionFilter(selected: StockEvent | null): boolean {
+    if (selected === null) {
+      return false;
+    }
+    return selected.type !== EventSelected.STOCK_LIST;
   }
 }

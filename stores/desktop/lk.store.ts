@@ -1,33 +1,27 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import {
-  catchError,
-  finalize,
-  Observable,
-  of,
-  switchMap,
-  tap,
-  timer,
-} from 'rxjs';
+import { catchError, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
 import { DesktopLkState } from '../../types/lk-state';
 import { Response } from '../../types/response';
 import {
   Stock,
+  StockInstrument,
   StockList,
-  StockListItem,
   StockListPrice,
   StockPrice,
 } from '../../types/stock';
+import { EventSelected } from '../../types/events';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
-  public readonly selected$: Observable<any | null> = this.select(
-    (state: DesktopLkState) => state.selected
-  );
+  public readonly selected$: Observable<{
+    type: EventSelected;
+    value: any;
+  } | null> = this.select((state: DesktopLkState) => state.selected);
 
   public readonly stock$: Observable<StockList | null> = this.select(
     (state: DesktopLkState) => state.stock
@@ -86,7 +80,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public updateStock = this.updater(
     (state: DesktopLkState, stock: StockList) => {
       const defaultPrice = stock.reduce(
-        (acc: StockPrice<StockListPrice>, item: StockListItem) => ({
+        (acc: StockPrice<StockListPrice>, item: StockInstrument) => ({
           ...acc,
           [item.id]: null,
         }),
@@ -174,10 +168,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   ): Observable<{ source: T; index: number }> {
     return source$.pipe(
       switchMap((source: T) =>
-        timer(start, interval).pipe(
-          map((index: number) => ({ source, index })),
-          finalize(() => console.log('finalize _timer'))
-        )
+        timer(start, interval).pipe(map((index: number) => ({ source, index })))
       )
     );
   }

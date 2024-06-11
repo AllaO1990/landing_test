@@ -8,7 +8,8 @@
     "test": "nx test",
     "lint": "nx lint",
     "e2e": "nx e2e",
-    "optimize-svg": "svgo -r --multipass -p 5 -f ./desktop-page/"
+    "optimize-svg": "svgo -r --multipass -p 5 -f ./desktop-page/",
+    "create:component": "nx g @nx/angular:component"
   },
   "private": true,
   "dependencies": {

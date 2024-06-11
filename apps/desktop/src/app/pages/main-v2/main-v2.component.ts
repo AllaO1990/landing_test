@@ -5,7 +5,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { DesktopApiService } from '../../../../../../api/desktop-data/src/lib/desktop-data';
 import { EntryModule } from '../../../../../../desktop-page/main/src/lib/main/entry/entry.module';
 import { OutModule } from '../../../../../../desktop-page/main/src/lib/main/out/out.module';
@@ -23,7 +23,9 @@ import { StockComponent } from '../../../../../../desktop-page/main/src/lib/main
 export class MainV2Component implements OnInit {
   private readonly _api: DesktopApiService = inject(DesktopApiService);
 
-  public readonly ideaList$: Observable<any> = this._api.getIdeaList();
+  public readonly ideaList$: Observable<any> = this._api
+    .getIdeaList()
+    .pipe(tap((data) => console.log('ideaList$', data)));
 
   public readonly tradeList$: Observable<any> = this._api.getTradeList();
 
