@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, of, switchMap, timer } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Response, ResponseMessage } from 'types/response';
 import {
@@ -12,9 +14,8 @@ import {
   StockPrice,
   WithLastPrice,
 } from 'types/stock';
-import { DesktopService } from './desktop.abstract.service';
-import { filter } from 'rxjs/operators';
 import { getPriceIncrement } from 'utils/get-price-increment';
+import { DesktopService } from './desktop.abstract.service';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -39,6 +40,13 @@ export class DesktopApiService extends DesktopService {
 
   public getList(): Observable<any> {
     return this._http.get<any>('/assets/mocks/stock.json');
+  }
+
+  public getConsolidationZones(ideaId: string): Observable<any> {
+    return this._http.get<ConsolidationZones>(
+      'https://trade.gpn.dev/api/v1/chart-figures',
+      { params: { ideaId } }
+    );
   }
 
   public getStockList(): Observable<Response<Stock>> {

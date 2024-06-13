@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   Input,
-  OnInit,
   ViewChild,
   inject,
 } from '@angular/core';
@@ -16,6 +15,7 @@ import { HighchartsChartModule } from 'highcharts-angular';
 import HIndicatorsAll from 'highcharts/indicators/indicators-all';
 import HAnnotationsAdvanced from 'highcharts/modules/annotations-advanced';
 import HDragPanes from 'highcharts/modules/drag-panes';
+import HDraggablePoints from 'highcharts/modules/draggable-points';
 import HFullScreen from 'highcharts/modules/full-screen';
 import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
@@ -28,6 +28,7 @@ HC_exporting(Highcharts);
 
 HIndicatorsAll(Highcharts);
 HDragPanes(Highcharts);
+HDraggablePoints(Highcharts);
 HAnnotationsAdvanced(Highcharts);
 HPriceIndicator(Highcharts);
 HFullScreen(Highcharts);
@@ -41,7 +42,7 @@ HStockTools(Highcharts);
   imports: [HighchartsChartModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartComponent implements OnInit {
+export class ChartComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
   public readonly selected$: Observable<any> = this._store.selected$;
@@ -61,7 +62,7 @@ export class ChartComponent implements OnInit {
       maxPadding: 0.5,
     },
     yAxis: {
-      scrollbar: { enabled: true },
+      // scrollbar: { enabled: true },
       endOnTick: false,
       startOnTick: false,
       crosshair: {
@@ -77,14 +78,15 @@ export class ChartComponent implements OnInit {
     },
     chart: {
       zooming: {
+        // type: 'y',
+        // key: 'ctrl',
         mouseWheel: { type: 'xy' },
+        resetButton: { position: { x: -60 } },
       },
       panning: { enabled: true, type: 'xy' },
-      panKey: 'shift',
+      // panKey: 'shift',
 
-      events: {
-        click: (event) => {},
-      },
+      events: {},
     },
     plotOptions: {
       series: {
@@ -207,9 +209,7 @@ export class ChartComponent implements OnInit {
       },
     },
     legend: { enabled: false },
-    // rangeSelector: {
-    //   selected: 1,
-    // },
+
     series: [
       {
         type: 'candlestick',
@@ -229,6 +229,7 @@ export class ChartComponent implements OnInit {
       },
       {
         type: 'ema',
+        color: 'red',
         linkedTo: 'primary',
         params: { period: 200 },
         tooltip: {
@@ -240,6 +241,7 @@ export class ChartComponent implements OnInit {
       },
       {
         type: 'ema',
+        color: 'gray',
         linkedTo: 'primary',
         params: { period: 30 },
         tooltip: {
@@ -251,6 +253,7 @@ export class ChartComponent implements OnInit {
       },
       {
         type: 'sma',
+        color: 'rgba(250, 150, 150, 1)',
         linkedTo: 'primary',
         params: { period: 200 },
         tooltip: {
@@ -262,6 +265,7 @@ export class ChartComponent implements OnInit {
       },
       {
         type: 'sma',
+        color: 'orange',
         linkedTo: 'primary',
         params: { period: 10 },
         tooltip: {
@@ -282,15 +286,55 @@ export class ChartComponent implements OnInit {
   }
 
   @Input()
+  set selectedIdea(value: any) {
+    // console.log(value);
+    return;
+  }
+
+  @Input()
   set data(value: any[]) {
     (
       this.chartOptions.series as Highcharts.SeriesCandlestickOptions[]
-    )[0].data = value?.reverse();
+    )[0].data = value;
+    this.chart?.xAxis[0].setExtremes();
+    this.chart?.yAxis[0].setExtremes();
 
     this.update = true;
   }
 
-  public chart: any;
+  @Input()
+  set consolidationZones(value: any[]) {
+    console.log(value);
+
+    if (!value) {
+      return;
+    }
+
+    const getF = function (): Highcharts.AnnotationsShapesOptions[] {
+      return value.map((item) => {
+        return {
+          // type: 'rect',
+          type: 'path',
+
+          dashStyle: 'Dash',
+          fill: 'rgba(0,0,0,0)',
+          stroke: 'rgba(0,64,255,1)',
+          strokeWidth: 3,
+          ry: Math.PI,
+          points: item,
+        };
+      });
+    };
+
+    this.chart.removeAnnotation(0);
+    this.chart.addAnnotation({
+      id: 0,
+      draggable: '',
+      shapes: getF(),
+    });
+  }
+
+  public chart!: Highcharts.StockChart;
 
   Highcharts: typeof Highcharts = Highcharts;
 
@@ -343,5 +387,8 @@ export class ChartComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  chartEvent($event: Highcharts.Chart) {
+    console.log($event);
+    this.chart = $event;
+  }
 }

@@ -40,6 +40,11 @@ export class MainComponent {
     this._store.entry$.pipe(
       map((list: Idea[] | null) => list && this._service.sortIdeaList(list))
     );
+  public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
+
+  public readonly ideaList$: Observable<Idea[]> = this._api
+    .getIdeaList()
+    .pipe(map((list: Idea[]) => this._service.sortIdeaList(list)));
 
   public readonly tradeList$: Observable<any> = this._api.getTradeList();
 
@@ -49,4 +54,7 @@ export class MainComponent {
     this._store.price$;
 
   public readonly candles$: Observable<any | null> = this._store.candles$;
+
+  public readonly consolidationZones$: Observable<any | null> =
+    this._store.cosolidationZones$;
 }

@@ -1,7 +1,20 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { catchError, Observable, of, switchMap, tap, timer } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  merge,
+  Observable,
+  of,
+  switchMap,
+  tap,
+  timer,
+} from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
+import { ConsolidationZones } from 'types/chart';
+import { EventSelected } from 'types/events';
+import { DesktopLkState } from 'types/lk-state';
+import { Response } from 'types/response';
 import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
 import { DesktopLkState } from 'types/lk-state';
 import { Response } from 'types/response';
@@ -17,6 +30,10 @@ import { EventSelected } from 'types/events';
 import { QueryParams } from 'utils/query-params';
 import { EntryStore } from './entry.store';
 import { Idea } from 'types/idea';
+} from 'types/stock';
+import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
+
+import { transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
@@ -31,6 +48,13 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._stockListStore.list$;
 
   public readonly entry$: Observable<Idea[] | null> = this._entryStore.list$;
+  public readonly selectedIdea$: Observable<any | null> = this.select(
+    (state: DesktopLkState) => state.selected
+  ).pipe(filter((value) => value?.type === EventSelected.IDEA));
+
+  public readonly stock$: Observable<StockList | null> = this.select(
+    (state: DesktopLkState) => state.stock
+  );
 
   public readonly stockActive$: Observable<StockList | null> = this.select(
     (state: DesktopLkState) => state.active
@@ -49,12 +73,18 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     private readonly _stockListStore: StockListStore,
     private readonly _entryStore: EntryStore
   ) {
+  public readonly cosolidationZones$: Observable<any[] | null> = this.select(
+    (state: DesktopLkState) => state.consolidationZones
+  );
+
+  constructor(private readonly _api: DesktopService) {
     super({
       selected: null,
       active: null,
       price: null,
       defaultPrice: null,
       candles: null,
+      consolidationZones: null,
     });
 
     this._stockListStore.load();
@@ -69,7 +99,19 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       )
     );
 
-    this.loadCandles(this._timer(this.selected$, TIMER_INTERVAL));
+    this.loadCandles(
+      this._timer(
+        merge(
+          this.selected$,
+          this.selectedIdea$.pipe(
+            map((item) => ({ ...item, value: item.value.instrument }))
+          )
+        ),
+        TIMER_INTERVAL
+      )
+    );
+
+    this.loadConsolidationZones(this.selectedIdea$);
   }
 
   public updateSelect = this.updater(
@@ -87,6 +129,12 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       } else {
         return { ...state, candles: data.candles };
       }
+    }
+  );
+
+  public updateConsolidationZones = this.updater(
+    (state: DesktopLkState, data: any[]) => {
+      return { ...state, consolidationZones: data };
     }
   );
 
@@ -169,6 +217,27 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
         catchError((err: Error) => {
           console.error(err);
           return of(null);
+        })
+      );
+    }
+  );
+
+  public readonly loadConsolidationZones = this.effect(
+    (stream$: Observable<{ type: string; value: { id: string } }>) => {
+      return stream$.pipe(
+        skipWhile((value) => value === null),
+        switchMap((data: { type: string; value: { id: string } }) => {
+          return this._api.getConsolidationZones(data.value.id);
+        }),
+        map((data: ConsolidationZones) => {
+          return transformActiveConsolidationZones(data?.data?.activeZones);
+        }),
+        tap((zones) => {
+          this.updateConsolidationZones(zones);
+        }),
+        catchError((err: Error) => {
+          console.error(err);
+          return EMPTY;
         })
       );
     }
