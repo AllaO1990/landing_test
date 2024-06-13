@@ -3,16 +3,20 @@ import { ComponentStore } from '@ngrx/component-store';
 import { catchError, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
-import { DesktopLkState } from '../../types/lk-state';
-import { Response } from '../../types/response';
+import { DesktopLkState } from 'types/lk-state';
+import { Response } from 'types/response';
 import {
   Stock,
   StockInstrument,
   StockList,
-  StockListPrice,
   StockPrice,
-} from '../../types/stock';
-import { EventSelected } from '../../types/events';
+  WithLastPrice,
+} from 'types/stock';
+import { StockListStore } from './stock-list.store';
+import { EventSelected } from 'types/events';
+import { QueryParams } from 'utils/query-params';
+import { EntryStore } from './entry.store';
+import { Idea } from 'types/idea';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
@@ -23,32 +27,41 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     value: any;
   } | null> = this.select((state: DesktopLkState) => state.selected);
 
-  public readonly stock$: Observable<StockList | null> = this.select(
-    (state: DesktopLkState) => state.stock
-  );
+  public readonly stock$: Observable<StockList | null> =
+    this._stockListStore.list$;
+
+  public readonly entry$: Observable<Idea[] | null> = this._entryStore.list$;
 
   public readonly stockActive$: Observable<StockList | null> = this.select(
     (state: DesktopLkState) => state.active
   );
 
-  public readonly price$: Observable<StockPrice<StockListPrice> | null> =
+  public readonly price$: Observable<StockPrice<WithLastPrice> | null> =
     this.select((state: DesktopLkState) => state.price);
 
   public readonly candles$: Observable<any[] | null> = this.select(
     (state: DesktopLkState) => state.candles
   );
 
-  constructor(private readonly _api: DesktopService) {
+  constructor(
+    private readonly _api: DesktopService,
+    private readonly _queryParams: QueryParams,
+    private readonly _stockListStore: StockListStore,
+    private readonly _entryStore: EntryStore
+  ) {
     super({
       selected: null,
-      stock: null,
       active: null,
       price: null,
       defaultPrice: null,
       candles: null,
     });
 
-    this.loadStock();
+    this._stockListStore.load();
+
+    this._entryStore.load();
+
+    this._queryParams.subscribe((res) => console.log(res));
 
     this.loadActivePrice(
       this._timer(this.stockActive$, TIMER_INTERVAL).pipe(
@@ -80,7 +93,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public updateStock = this.updater(
     (state: DesktopLkState, stock: StockList) => {
       const defaultPrice = stock.reduce(
-        (acc: StockPrice<StockListPrice>, item: StockInstrument) => ({
+        (acc: StockPrice<WithLastPrice>, item: StockInstrument) => ({
           ...acc,
           [item.id]: null,
         }),
@@ -92,7 +105,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   );
 
   public updatePrice = this.updater(
-    (state: DesktopLkState, price: StockPrice<StockListPrice>) => ({
+    (state: DesktopLkState, price: StockPrice<WithLastPrice>) => ({
       ...state,
       price: { ...state.defaultPrice, ...price },
     })
@@ -122,8 +135,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       stream$.pipe(
         filter((list: StockList | null): list is StockList => !!list),
         switchMap((list: StockList) => this._api.getActiveStock(list)),
-        map((response: Response<StockPrice<StockListPrice>>) => response.data),
-        tap((result: StockPrice<StockListPrice>) => this.updatePrice(result))
+        map((response: Response<StockPrice<WithLastPrice>>) => response.data),
+        tap((result: StockPrice<WithLastPrice>) => this.updatePrice(result))
       )
   );
 

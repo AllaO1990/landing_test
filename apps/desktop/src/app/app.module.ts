@@ -17,6 +17,9 @@ import { AppComponent } from './app.component';
 import { LayoutStartModule } from './shared/components/layout-start';
 import { TUI_DIALOGS } from '@taiga-ui/cdk';
 import { EnterDialogService } from 'desktop-page/enter';
+import { QUERY_PARAMS } from 'tokens/desktop/query-params';
+import { QueryParams } from 'utils/query-params';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +43,12 @@ import { EnterDialogService } from 'desktop-page/enter';
       provide: DESKTOP_API,
       useFactory: (env: object) => new DesktopApiService(),
       deps: [DESKTOP_ENVIRONMENT],
+    },
+    {
+      provide: QUERY_PARAMS,
+      useFactory: (router: Router, activatedRoute: ActivatedRoute) =>
+        new QueryParams(router, activatedRoute),
+      deps: [Router, ActivatedRoute],
     },
     {
       provide: MAT_DATE_LOCALE,

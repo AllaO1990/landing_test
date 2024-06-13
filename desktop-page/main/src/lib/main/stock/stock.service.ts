@@ -4,8 +4,8 @@ import {
   StockInstrument,
   StockList,
   StockListItemWithPrice,
-  StockListPrice,
   StockPrice,
+  WithLastPrice,
 } from 'types/stock';
 import { STOCK_MAPPER } from './stock.constant';
 
@@ -95,7 +95,7 @@ export class StockService {
 
   public getListWithPrice(
     list: StockList | null,
-    price: StockPrice<StockListPrice> | null
+    price: StockPrice<WithLastPrice> | null
   ): StockListItemWithPrice[] {
     if (!list) {
       return [];
@@ -122,9 +122,7 @@ export class StockService {
         };
       }
 
-      const { prev, last, minPriceIncrement } = price[
-        item.id
-      ] as StockListPrice;
+      const { prev, last, minPriceIncrement } = price[item.id] as WithLastPrice;
 
       const split = this._getNumberFromE(minPriceIncrement).split('.');
       const increment = split[1] ? split[1].length : 0;

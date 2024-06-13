@@ -9,8 +9,8 @@ import {
   StockId,
   StockInstrument,
   StockList,
-  StockListPrice,
   StockPrice,
+  WithLastPrice,
 } from 'types/stock';
 import { DesktopService } from './desktop.abstract.service';
 import { filter } from 'rxjs/operators';
@@ -50,8 +50,8 @@ export class DesktopApiService extends DesktopService {
 
   public getActiveStock(
     list: StockList
-  ): Observable<Response<StockPrice<StockListPrice>>> {
-    return this._http.post<Response<StockPrice<StockListPrice>>>(
+  ): Observable<Response<StockPrice<WithLastPrice>>> {
+    return this._http.post<Response<StockPrice<WithLastPrice>>>(
       `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
       {
         ids: list.map((item: StockInstrument) => item.id),

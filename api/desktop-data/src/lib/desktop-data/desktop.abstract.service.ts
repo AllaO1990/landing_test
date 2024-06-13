@@ -7,8 +7,8 @@ import {
   StockId,
   StockInstrument,
   StockList,
-  StockListPrice,
   StockPrice,
+  WithLastPrice,
 } from 'types/stock';
 
 export abstract class DesktopService {
@@ -22,7 +22,7 @@ export abstract class DesktopService {
 
   public abstract getActiveStock(
     list: StockList
-  ): Observable<Response<StockPrice<StockListPrice>>>;
+  ): Observable<Response<StockPrice<WithLastPrice>>>;
 
   public abstract getTradeList(): Observable<StockGroup[]>;
 

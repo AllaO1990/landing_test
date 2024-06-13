@@ -70,7 +70,7 @@ export interface StockPrice<T> {
   [key: string]: null | T;
 }
 
-export interface StockListPrice {
+export interface WithLastPrice {
   prev: number;
   minPriceIncrement: number;
   last: number;

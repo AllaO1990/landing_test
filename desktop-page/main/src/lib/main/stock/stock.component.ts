@@ -32,9 +32,9 @@ import {
   StockInstrument,
   StockList,
   StockListItemWithPrice,
-  StockListPrice,
   StockPrice,
   StockUserGroup,
+  WithLastPrice,
 } from 'types/stock';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockService } from './stock.service';
@@ -70,8 +70,8 @@ export class StockComponent {
 
   private readonly _service: StockService = inject(StockService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-  private readonly _price$: Subject<StockPrice<StockListPrice> | null> =
-    new BehaviorSubject<StockPrice<StockListPrice> | null>(null);
+  private readonly _price$: Subject<StockPrice<WithLastPrice> | null> =
+    new BehaviorSubject<StockPrice<WithLastPrice> | null>(null);
   private readonly _groups$: Subject<StockGroup[]> = new BehaviorSubject<
     StockGroup[]
   >([]);
@@ -115,7 +115,7 @@ export class StockComponent {
   }
 
   @Input()
-  set price(value: StockPrice<StockListPrice> | null) {
+  set price(value: StockPrice<WithLastPrice> | null) {
     this._price$.next(value);
   }
 
@@ -135,9 +135,8 @@ export class StockComponent {
     ),
     this._price$.asObservable(),
   ]).pipe(
-    map(
-      ([list, price]: [StockList | null, StockPrice<StockListPrice> | null]) =>
-        this._service.getListWithPrice(list, price)
+    map(([list, price]: [StockList | null, StockPrice<WithLastPrice> | null]) =>
+      this._service.getListWithPrice(list, price)
     )
   );
 
