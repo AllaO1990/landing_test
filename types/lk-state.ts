@@ -1,3 +1,4 @@
+import { ActiveZone } from './chart';
 import { StockList, StockListPrice, StockPrice } from './stock';
 
 export interface DesktopLkState {
@@ -7,4 +8,5 @@ export interface DesktopLkState {
   price: null | StockPrice<StockListPrice>;
   defaultPrice: null | StockPrice<StockListPrice>;
   candles: null | any[];
+  consolidationZones: null | ActiveZone[];
 }

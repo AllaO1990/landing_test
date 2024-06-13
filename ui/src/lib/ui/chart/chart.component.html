@@ -1,5 +1,6 @@
 <highcharts-chart
   [Highcharts]="Highcharts"
+  (chartInstance)="chartEvent($event)"
   [constructorType]="'stockChart'"
   [options]="chartOptions"
   [(update)]="update"

@@ -1,7 +1,10 @@
-import { DesktopService } from './desktop.abstract.service';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { filter } from 'rxjs/operators';
+import { ConsolidationZones } from 'types/chart';
+import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
+import { Response, ResponseMessage } from 'types/response';
 import {
   Stock,
   StockGroup,
@@ -9,10 +12,8 @@ import {
   StockInstrument,
   StockList,
 } from 'types/stock';
-import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
-import { Response, ResponseMessage } from 'types/response';
-import { filter } from 'rxjs/operators';
 import { getPriceIncrement } from 'utils/get-price-increment';
+import { DesktopService } from './desktop.abstract.service';
 
 @Injectable()
 export class DesktopStubService extends DesktopService {
@@ -57,5 +58,9 @@ export class DesktopStubService extends DesktopService {
 
   getCandles(): Observable<any> {
     return of([]);
+  }
+
+  getConsolidationZones(): Observable<ConsolidationZones> {
+    return of();
   }
 }
