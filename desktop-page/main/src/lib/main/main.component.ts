@@ -2,7 +2,7 @@ import { AsyncPipe, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ChartComponent } from '@ui/chart';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
@@ -36,10 +36,11 @@ export class MainComponent {
 
   public readonly selected$: Observable<any> = this._store.selected$;
 
-  public readonly ideaList$: Observable<Idea[]> = this._api.getIdeaList().pipe(
-    tap((data) => console.log(data)),
-    map((list: Idea[]) => this._service.sortIdeaList(list))
-  );
+  public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
+
+  public readonly ideaList$: Observable<Idea[]> = this._api
+    .getIdeaList()
+    .pipe(map((list: Idea[]) => this._service.sortIdeaList(list)));
 
   public readonly tradeList$: Observable<any> = this._api.getTradeList();
 
@@ -49,4 +50,7 @@ export class MainComponent {
     this._store.price$;
 
   public readonly candles$: Observable<any | null> = this._store.candles$;
+
+  public readonly consolidationZones$: Observable<any | null> =
+    this._store.cosolidationZones$;
 }
