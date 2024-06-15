@@ -26,15 +26,16 @@ import {
   VtEnterComponent,
 } from 'desktop-page/enter';
 import { DesktopLkStore } from '../../../../../../../stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
+import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { DatePassedPipe } from './date-passed.pipe';
 import { StrategyNamePipe } from './strategy-name.pipe';
 import { EventSelected } from 'types/events';
 import { StockId } from 'types/stock';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { StockEvent } from 'types/stock-event';
 import { Observable } from 'rxjs';
 import { getColor, getRGBA } from 'utils/get-color';
+import { QueryParams } from 'utils/query-params';
 
 @Component({
   selector: 'vt-entry-table',
@@ -61,6 +62,7 @@ export class EntryTableComponent {
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
   protected readonly dialogEnterService: EnterDialogService =
     inject(EnterDialogService);
@@ -71,13 +73,11 @@ export class EntryTableComponent {
     (item: { name: string }) => item.name
   );
 
-  public activeIdeaId$: Observable<StockId | null> = this._store.selected$.pipe(
-    filter(
-      (result: StockEvent | null): result is StockEvent => result !== null
-    ),
-    map((result: StockEvent) => this._conditionActive(result)),
-    distinctUntilChanged()
-  );
+  public activeIdeaId$: Observable<StockId | null> =
+    this._store.selectedIdea$.pipe(
+      map((result: Idea | null) => (result ? result.id : null)),
+      distinctUntilChanged()
+    );
 
   @Input() data: Idea[] | null = null;
 
@@ -116,13 +116,13 @@ export class EntryTableComponent {
   public onClick(event: Event, item: Idea): void {
     event.preventDefault();
 
-    this._store.updateSelect({
+    this._queryParams.update({
       type: EventSelected.IDEA,
-      value: item,
+      id: item.id,
     });
   }
 
   private _conditionActive(selected: StockEvent): StockId | null {
-    return selected.type === EventSelected.IDEA ? selected.value.id : null;
+    return selected.type === EventSelected.IDEA ? selected.id : null;
   }
 }

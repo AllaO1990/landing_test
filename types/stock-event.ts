@@ -1,3 +1,4 @@
 import { EventSelected } from './events';
+import { StockId } from './stock';
 
-export type StockEvent<T = any> = { type: EventSelected; value: T };
+export type StockEvent = { type: EventSelected; id: StockId };

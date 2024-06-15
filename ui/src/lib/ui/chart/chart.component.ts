@@ -2,9 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  inject,
   Input,
   ViewChild,
-  inject,
 } from '@angular/core';
 
 import * as Highcharts from 'highcharts/highstock';
@@ -19,10 +19,10 @@ import HDraggablePoints from 'highcharts/modules/draggable-points';
 import HFullScreen from 'highcharts/modules/full-screen';
 import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
-import { Observable } from 'rxjs';
 
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
+import { StockInstrument } from 'types/stock';
 
 HC_exporting(Highcharts);
 
@@ -44,9 +44,6 @@ HStockTools(Highcharts);
 })
 export class ChartComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-
-  public readonly selected$: Observable<any> = this._store.selected$;
-
   update = false;
 
   chartOptions: Highcharts.Options = {
@@ -279,10 +276,10 @@ export class ChartComponent {
   };
 
   @Input()
-  set selected(value: any) {
+  set selected(value: StockInstrument | null) {
     (
       this.chartOptions.series as Highcharts.SeriesCandlestickOptions[]
-    )[0].name = value?.value.ticker;
+    )[0].name = value?.ticker;
   }
 
   @Input()

@@ -10,7 +10,6 @@ import {
   StockDirection,
   StockId,
   StockInstrument,
-  StockList,
   StockPrice,
   WithLastPrice,
 } from 'types/stock';
@@ -57,14 +56,20 @@ export class DesktopApiService extends DesktopService {
   }
 
   public getActiveStock(
-    list: StockList
-  ): Observable<Response<StockPrice<WithLastPrice>>> {
-    return this._http.post<Response<StockPrice<WithLastPrice>>>(
-      `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
-      {
-        ids: list.map((item: StockInstrument) => item.id),
-      }
-    );
+    list: StockId[]
+  ): Observable<StockPrice<WithLastPrice>> {
+    return this._http
+      .post<Response<StockPrice<WithLastPrice>>>(
+        `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
+        { ids: [...new Set(list)] }
+      )
+      .pipe(
+        filter(
+          (response: Response<StockPrice<WithLastPrice>>) =>
+            response && response.message === ResponseMessage.success
+        ),
+        map((response: Response<StockPrice<WithLastPrice>>) => response.data)
+      );
   }
 
   public getStock(id: StockId): Observable<StockInstrument[]> {
@@ -169,7 +174,7 @@ export class DesktopApiService extends DesktopService {
 
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {
-        id: selected?.source.value.id,
+        id: selected?.source.id,
         interval: 5,
         from,
         to: new Date(Date.now()).toISOString(),

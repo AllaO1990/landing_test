@@ -1,12 +1,8 @@
-import { ActiveZone } from './chart';
-import { StockList, StockListPrice, StockPrice } from './stock';
-import { StockList, StockPrice, WithLastPrice } from './stock';
+import { StockPrice, WithLastPrice } from './stock';
+import { StockEvent } from './stock-event';
 
 export interface DesktopLkState {
+  event: null | StockEvent;
   selected: any | null;
-  active: null | StockList;
   price: null | StockPrice<WithLastPrice>;
-  defaultPrice: null | StockPrice<WithLastPrice>;
-  candles: null | any[];
-  consolidationZones: null | ActiveZone[];
 }

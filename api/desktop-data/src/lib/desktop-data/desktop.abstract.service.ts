@@ -6,7 +6,6 @@ import {
   StockGroup,
   StockId,
   StockInstrument,
-  StockList,
   StockPrice,
   WithLastPrice,
 } from 'types/stock';
@@ -23,14 +22,14 @@ export abstract class DesktopService {
   public abstract getStock(id: StockId): Observable<StockInstrument[]>;
 
   public abstract getActiveStock(
-    list: StockList
-  ): Observable<Response<StockPrice<WithLastPrice>>>;
+    list: StockId[]
+  ): Observable<StockPrice<WithLastPrice>>;
 
   public abstract getTradeList(): Observable<StockGroup[]>;
 
   public abstract getCandles(id: any): Observable<unknown>;
 
   public abstract getConsolidationZones(
-    ideaId: string
+    ideaId: StockId
   ): Observable<ConsolidationZones>;
 }
