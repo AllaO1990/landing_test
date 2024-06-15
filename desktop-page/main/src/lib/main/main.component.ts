@@ -7,7 +7,12 @@ import { map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
-import { StockList, StockListPrice, StockPrice } from 'types/stock';
+import {
+  StockInstrument,
+  StockList,
+  StockPrice,
+  WithLastPrice,
+} from 'types/stock';
 import { EntryModule } from './entry/entry.module';
 import { MainService } from './main.service';
 import { OutModule } from './out/out.module';
@@ -34,23 +39,24 @@ export class MainComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _api: DesktopService = inject(DESKTOP_API);
 
-  public readonly selected$: Observable<any> = this._store.selected$;
+  public readonly selected$: Observable<StockInstrument | null> =
+    this._store.selectedInstrument$;
 
+  public readonly ideaList$: Observable<Idea[] | null> =
+    this._store.entry$.pipe(
+      map((list: Idea[] | null) => list && this._service.sortIdeaList(list))
+    );
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
-
-  public readonly ideaList$: Observable<Idea[]> = this._api
-    .getIdeaList()
-    .pipe(map((list: Idea[]) => this._service.sortIdeaList(list)));
 
   public readonly tradeList$: Observable<any> = this._api.getTradeList();
 
   public readonly stockList$: Observable<StockList | null> = this._store.stock$;
 
-  public readonly stockPrice$: Observable<StockPrice<StockListPrice> | null> =
+  public readonly stockPrice$: Observable<StockPrice<WithLastPrice> | null> =
     this._store.price$;
 
   public readonly candles$: Observable<any | null> = this._store.candles$;
 
   public readonly consolidationZones$: Observable<any | null> =
-    this._store.cosolidationZones$;
+    this._store.consolidationZones$;
 }

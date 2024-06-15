@@ -4,10 +4,11 @@ import {
   StockInstrument,
   StockList,
   StockListItemWithPrice,
-  StockListPrice,
   StockPrice,
+  WithLastPrice,
 } from 'types/stock';
 import { STOCK_MAPPER } from './stock.constant';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 type StockType = 'moex' | 'futures' | 'currency' | 'metal';
 
@@ -95,7 +96,7 @@ export class StockService {
 
   public getListWithPrice(
     list: StockList | null,
-    price: StockPrice<StockListPrice> | null
+    price: StockPrice<WithLastPrice> | null
   ): StockListItemWithPrice[] {
     if (!list) {
       return [];
@@ -112,7 +113,7 @@ export class StockService {
     }
 
     return list.map((item: StockInstrument) => {
-      if (price[item.id] === null) {
+      if (!price[item.id]) {
         return {
           ...item,
           price: null,
@@ -122,31 +123,15 @@ export class StockService {
         };
       }
 
-      const { prev, last, minPriceIncrement } = price[
-        item.id
-      ] as StockListPrice;
-
-      const split = this._getNumberFromE(minPriceIncrement).split('.');
-      const increment = split[1] ? split[1].length : 0;
+      const { prev, last, minPriceIncrement } = price[item.id] as WithLastPrice;
 
       return {
         ...item,
         price: last,
         change: last - prev,
         changePercent: ((last - prev) / last) * 100,
-        increment,
+        increment: getPriceIncrement(minPriceIncrement),
       };
     });
-  }
-
-  private _getNumberFromE(numb: number): string {
-    const numbString: string = numb.toString(10);
-
-    if (numbString.indexOf('e') !== -1) {
-      const exponent = parseInt(numbString.split('-')[1], 10);
-      return numb.toFixed(exponent);
-    }
-
-    return numbString;
   }
 }
