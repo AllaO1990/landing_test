@@ -1,16 +1,20 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TuiButtonModule } from '@taiga-ui/core';
+import { TuiButtonModule, TuiLoaderModule } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 import { TuiDialog } from '@taiga-ui/cdk';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
-import { DatePipe } from '@angular/common';
+import { DatePipe, JsonPipe, NgIf } from '@angular/common';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
+import { Idea } from 'types/idea';
 
 @Component({
   selector: 'lib-enter',
   standalone: true,
   imports: [
+    NgIf,
+    JsonPipe,
+    TuiLoaderModule,
     TuiButtonModule,
     EnterActionComponent,
     EnterIdeaComponent,
@@ -22,13 +26,9 @@ import { EnterSidebarComponent } from './sidebar/sidebar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VtEnterComponent {
-  public readonly context: TuiDialog<any, any> = inject(POLYMORPHEUS_CONTEXT, {
+  public readonly context: TuiDialog<any, Idea> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
-
-  get data(): any {
-    return this.context.data;
-  }
 
   onClose(event: Event): void {
     event.preventDefault();

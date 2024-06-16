@@ -4,6 +4,7 @@ import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { EnterDialogComponent } from './dialog.component';
 import { Observable } from 'rxjs';
 import { VtEnterComponent } from '../enter.component';
+import { Idea } from 'types/idea';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class EnterDialogService extends AbstractTuiDialogService<any> {
 
   protected override defaultOptions: any = { data: null };
 
-  public openDialog(data: any): Observable<any> {
+  public openDialog(data: Idea): Observable<any> {
     return this.open(new PolymorpheusComponent(VtEnterComponent), {
       data,
     });

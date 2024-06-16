@@ -1,5 +1,5 @@
 import { StockId, StockInstrument, StockPosition } from './stock';
-import { StockStrategy } from './stock-strategy';
+import { StockStrategyEnums } from './stock-strategy';
 
 export interface ResponseListIdea {
   items: ResponseIdea[];
@@ -31,7 +31,7 @@ export interface ResponseIdea {
   };
   strategy: {
     successProbability: number;
-    type: StockStrategy;
+    type: StockStrategyEnums;
   };
   author: IdeaAuthor;
 }

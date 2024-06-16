@@ -1,24 +1,88 @@
-<div class="widget">
-  <div class="widget__toolbar">
-    toolbar
+<div *ngIf="data" class="widget">
+  <div class="widget__toolbar widget__padding">
+    <lib-enter-sidebar-instrument [data]="data.instrument">
+    </lib-enter-sidebar-instrument>
   </div>
-  <div class="widget__valid-date">
-
-    <tui-input-date
-      formControlName="testValue"
-      tuiTextfieldSize="m"
-      class="tui-space_vertical-4"
-      [tuiTextfieldLabelOutside]="true"
-    >
-      Choose a date
-    </tui-input-date>
-    valid-date
+  <div class="widget__valid-date widget__padding">
+    <lib-enter-sidebar-valid-date></lib-enter-sidebar-valid-date>
   </div>
-  <div class="widget__implementation">implementation</div>
-  <div class="widget__strategy">strategy</div>
-  <div class="widget__action">action</div>
-  <div class="widget__luck">luck</div>
-  <div class="widget__sector">sector</div>
-  <div class="widget__recommendation">recommendation</div>
-  <div class="widget__comment">comment</div>
+  <div class="widget__timing widget__padding">
+    <tui-filter
+      [formControl]="controlFilterStrategy"
+      size="s"
+      class="item"
+      [content]="content"
+      [items]="timing"
+    ></tui-filter>
+  </div>
+  <div class="widget__implementation widget__padding">
+    <tui-filter
+      [formControl]="controlFilterStrategy"
+      size="s"
+      class="item"
+      [content]="content"
+      [items]="strategy"
+    ></tui-filter>
+  </div>
+  <div class="widget__strategy widget__padding">
+    <tui-filter
+      [formControl]="controlFilterStrategy"
+      size="s"
+      class="item"
+      [content]="content"
+      [items]="positionType"
+    ></tui-filter>
+  </div>
+  <div class="widget__description description widget__padding">
+    <div class="description__row">
+      <div class="description__label">Вероятность успеха</div>
+      <div class="description__text">7.00%</div>
+    </div>
+    <div class="description__row">
+      <div class="description__label">% депозита</div>
+      <div class="description__text">2.63%</div>
+    </div>
+    <div class="description__row">
+      <div class="description__label">Сектор экономики</div>
+      <div class="description__text">Энергетика</div>
+    </div>
+    <div class="description__row">
+      <div class="description__label">% Сектора в вашем портфеле</div>
+      <div class="description__text">20%</div>
+    </div>
+  </div>
+  <div class="widget__comment comment widget__padding">
+    <div class="comment__label">
+      {{ constants.comment_label }}
+    </div>
+    <div class="comment__area">
+      <tui-textarea [formControl]="controlTextArea" tuiTextfieldSize="m">
+        {{ constants.comment_area }}
+      </tui-textarea>
+    </div>
+  </div>
+  <div class="widget__space"></div>
+  <div class="widget__action widget__padding">
+    <button
+      class="action save"
+      appearance="primary"
+      tuiButton
+      type="button"
+      size="m">
+      {{ constants.save }}
+    </button>
+    <button
+      class="action trash"
+      appearance="flat"
+      tuiButton
+      size="m"
+      type="button">
+      <tui-svg src="tuiIconTrash"></tui-svg>
+      {{ constants.delete }}
+    </button>
+  </div>
 </div>
+
+<ng-template #content let-item>
+  {{ item.name }}
+</ng-template>

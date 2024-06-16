@@ -1,0 +1,18 @@
+<div class="instrument" *ngIf="data">
+  <div class="instrument__img" [title]="data.name">
+    <img
+      src="/assets/tickers-v2/{{ data.ticker }}.{{
+        data.type === 'crypto' ? 'svg' : 'png'
+      }}"
+      [attr.alt]="data.name"
+    />
+  </div>
+  <div class="instrument__description">
+    <div class="instrument__ticker">
+      {{ data.ticker }}
+    </div>
+    <div class="instrument__name">
+      {{ data.name }}
+    </div>
+  </div>
+</div>

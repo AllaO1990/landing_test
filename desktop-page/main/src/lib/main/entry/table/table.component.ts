@@ -19,7 +19,6 @@ import { TuiTableModule } from '@taiga-ui/addon-table';
 import { Idea } from 'types/idea';
 import { EntryHeaderItem } from '../entry.types';
 import { ENTRY_HEADER } from '../entry.constants';
-import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import {
   EnterDialogModule,
   EnterDialogService,
@@ -89,23 +88,10 @@ export class EntryTableComponent {
     return index;
   }
 
-  public onDblclick(event: Event, item: any): void {
+  public onDblclick(event: Event, item: Idea): void {
     event.preventDefault();
 
-    this.dialogEnterService
-      .open(new PolymorpheusComponent(VtEnterComponent), {
-        data: item,
-      })
-      .subscribe();
-
-    // this.dialogService
-    //   .open(new PolymorpheusComponent(VtEnterComponent), {
-    //     // size: 'page',
-    //     // closeable: false,
-    //     // dismissible: false,
-    //     data: item,
-    //   })
-    //   .subscribe();
+    this.dialogEnterService.openDialog(item).subscribe();
 
     // console.log(this.dialogEnterService);
     // console.log(item);
@@ -120,6 +106,8 @@ export class EntryTableComponent {
       type: EventSelected.IDEA,
       id: item.id,
     });
+
+    this.dialogEnterService.openDialog(item).subscribe();
   }
 
   private _conditionActive(selected: StockEvent): StockId | null {

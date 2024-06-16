@@ -16,12 +16,16 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/desktop",
         "index": "apps/desktop/src/index.html",
         "main": "apps/desktop/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/desktop/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -53,7 +57,8 @@
           "highcharts/modules/exporting",
           "highcharts/modules/full-screen",
           "highcharts/modules/price-indicator",
-          "highcharts/modules/stock-tools"
+          "highcharts/modules/stock-tools",
+          "highcharts/modules/draggable-points"
         ]
       },
       "configurations": {
@@ -112,8 +117,13 @@
         "tsConfig": "apps/desktop/tsconfig.spec.json",
         "karmaConfig": "apps/desktop/karma.conf.js",
         "inlineStyleLanguage": "scss",
-        "assets": ["apps/desktop/src/favicon.ico", "apps/desktop/src/assets"],
-        "styles": ["apps/desktop/src/styles.scss"],
+        "assets": [
+          "apps/desktop/src/favicon.ico",
+          "apps/desktop/src/assets"
+        ],
+        "styles": [
+          "apps/desktop/src/styles.scss"
+        ],
         "scripts": []
       }
     }

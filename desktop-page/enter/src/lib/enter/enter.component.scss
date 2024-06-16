@@ -51,6 +51,18 @@
 }
 
 .widget {
+  width: 100%;
+  height: 100%;
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+  }
+
   &__toolbar {
     display: flex;
     flex-flow: row wrap;
@@ -77,5 +89,5 @@
   line-height: 13px;
   font-weight: 300;
 
-  color: #7E879A;
+  color: var(--tui-text-02);
 }

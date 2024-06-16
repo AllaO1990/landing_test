@@ -1,0 +1,31 @@
+:host {
+  --tui-height-s: 24px;
+}
+
+.valid-date {
+  display: flex;
+  flex-flow: column nowrap;
+
+  &__label {
+    font-size: 11px;
+    font-weight: 300;
+    line-height: 13px;
+
+    color: var(--tui-text-02);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+
+    margin: var(--padding-2) 0;
+  }
+
+  &__calendar {
+    width: 110px;
+  }
+
+  &__checkbox {
+    margin-left: var(--padding-4);
+  }
+}

@@ -68,6 +68,9 @@
       ],
       "utils/*": [
         "utils/*"
+      ],
+      "constants/*": [
+        "constants/*"
       ]
     }
   },

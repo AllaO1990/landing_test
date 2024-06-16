@@ -1,0 +1,19 @@
+<form class="valid-date" [formGroup]="form">
+  <div class="valid-date__label">{{ constants.title }}</div>
+  <div class="valid-date__row">
+    <div class="valid-date__calendar">
+      <tui-input-date
+        formControlName="calendar"
+        tuiTextfieldSize="s">
+        {{ constants.calendar }}
+      </tui-input-date>
+    </div>
+    <div class="valid-date__checkbox">
+      <tui-checkbox-labeled
+        formControlName="checkbox"
+        size="m">
+        {{ constants.checkbox }}
+      </tui-checkbox-labeled>
+    </div>
+  </div>
+</form>
