@@ -301,7 +301,7 @@ export class ChartComponent {
 
   @Input()
   set consolidationZones(value: any[]) {
-    console.log(value);
+    this.chart.removeAnnotation(0);
 
     if (!value) {
       return;
@@ -323,7 +323,6 @@ export class ChartComponent {
       });
     };
 
-    this.chart.removeAnnotation(0);
     this.chart.addAnnotation({
       id: 0,
       draggable: '',
@@ -342,6 +341,13 @@ export class ChartComponent {
     Highcharts.setOptions({
       lang: {
         rangeSelectorZoom: 'Таймфрейм',
+        viewFullscreen: 'Полноэкранный режим',
+        exitFullscreen: 'Выйти из полноэкранного режима',
+        downloadPDF: 'Загрузить PDF',
+        downloadJPEG: 'Загрузить JPEG',
+        downloadPNG: 'Загрузить PNG',
+        downloadSVG: 'Загрузить SVG',
+        printChart: 'Распечатать',
         weekdays: [
           'Воскресенье',
           'Понедельник',
