@@ -32,15 +32,16 @@ import {
   StockInstrument,
   StockList,
   StockListItemWithPrice,
-  StockListPrice,
   StockPrice,
   StockUserGroup,
+  WithLastPrice,
 } from 'types/stock';
-import { DESKTOP_STORE } from 'tokens/desktop';
+import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { StockService } from './stock.service';
 import { STOCK_GROUPS } from './stock.constant';
 import { EventSelected } from 'types/events';
-import { DesktopLkStore } from '../../../../../../stores/desktop';
+import { DesktopLkStore } from 'stores/desktop';
+import { QueryParams } from 'utils/query-params';
 
 @Component({
   selector: 'vt-stock',
@@ -70,8 +71,10 @@ export class StockComponent {
 
   private readonly _service: StockService = inject(StockService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-  private readonly _price$: Subject<StockPrice<StockListPrice> | null> =
-    new BehaviorSubject<StockPrice<StockListPrice> | null>(null);
+  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+
+  private readonly _price$: Subject<StockPrice<WithLastPrice> | null> =
+    new BehaviorSubject<StockPrice<WithLastPrice> | null>(null);
   private readonly _groups$: Subject<StockGroup[]> = new BehaviorSubject<
     StockGroup[]
   >([]);
@@ -115,7 +118,7 @@ export class StockComponent {
   }
 
   @Input()
-  set price(value: StockPrice<StockListPrice> | null) {
+  set price(value: StockPrice<WithLastPrice> | null) {
     this._price$.next(value);
   }
 
@@ -131,13 +134,16 @@ export class StockComponent {
       startWith(this.controlGroup.value),
       filter((value: StockGroup | null): value is StockGroup => value !== null),
       map((value: StockGroup) => this._map.get(value) || []),
-      tap((list: StockList) => this._store.updateActive(list))
+      tap((list: StockList) =>
+        this._store.updateStockActive(
+          list.map((item: StockInstrument) => item.id)
+        )
+      )
     ),
     this._price$.asObservable(),
   ]).pipe(
-    map(
-      ([list, price]: [StockList | null, StockPrice<StockListPrice> | null]) =>
-        this._service.getListWithPrice(list, price)
+    map(([list, price]: [StockList | null, StockPrice<WithLastPrice> | null]) =>
+      this._service.getListWithPrice(list, price)
     )
   );
 
@@ -157,9 +163,9 @@ export class StockComponent {
   }
 
   public onSelect(value: StockInstrument): void {
-    this._store.updateSelect({
+    this._queryParams.update({
       type: EventSelected.STOCK_LIST,
-      value,
+      id: value.id,
     });
   }
 

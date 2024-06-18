@@ -2,6 +2,7 @@ import {
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   Input,
   Output,
@@ -16,14 +17,16 @@ import {
 import { StockListItemComponent } from '../item/item.component';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { StockInstrument, StockListItemWithPrice } from 'types/stock';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { DesktopLkStore } from '../../../../../../../stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
+import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
+import { QueryParams } from 'utils/query-params';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'vt-stock-list',
@@ -46,6 +49,8 @@ import { EventSelected } from 'types/events';
   ],
 })
 export class StockListComponent implements AfterContentInit {
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _list$: Subject<StockListItemWithPrice[] | null> =
     new BehaviorSubject<StockListItemWithPrice[] | null>(null);
@@ -87,26 +92,37 @@ export class StockListComponent implements AfterContentInit {
     return index;
   }
 
-  public trackByStockListItem(_: number, item: StockInstrument): string {
+  public trackByStockListItem(_: number, item: StockInstrument): StockId {
     return item.id;
   }
 
   ngAfterContentInit(): void {
-    this.controlItem.patchValue('72187db2-44d8-4b2e-8b43-c41fd30c4a39');
-
-    this._store.selected$
+    this._store.event$
       .pipe(
-        filter((result: StockEvent | null) => this._conditionFilter(result))
+        takeUntilDestroyed(this._destroyRef),
+        map((event: StockEvent | null) => this._getValue(event)),
+        distinctUntilChanged()
       )
-      .subscribe((_) =>
-        this.controlItem.patchValue(null, { emitEvent: false })
-      );
+      .subscribe((value: StockId | null) => {
+        this.controlItem.patchValue(value, { emitEvent: false });
+      });
+
+    // this.controlItem.patchValue('72187db2-44d8-4b2e-8b43-c41fd30c4a39');
+
+    //
+    // this._store.selected$
+    //   .pipe(
+    //     filter((result: StockEvent | null) => this._conditionFilter(result))
+    //   )
+    //   .subscribe((_) =>
+    //     this.controlItem.patchValue(null, { emitEvent: false })
+    //   );
   }
 
-  private _conditionFilter(selected: StockEvent | null): boolean {
-    if (selected === null) {
-      return false;
+  private _getValue(event: StockEvent | null): StockId | null {
+    if (event === null || event.type !== EventSelected.STOCK_LIST) {
+      return null;
     }
-    return selected.type !== EventSelected.STOCK_LIST;
+    return event.id;
   }
 }

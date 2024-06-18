@@ -1,224 +1,184 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import {
-  catchError,
-  EMPTY,
-  merge,
-  Observable,
-  of,
-  switchMap,
-  tap,
-  timer,
-} from 'rxjs';
-import { filter, map, skipWhile } from 'rxjs/operators';
-import { ConsolidationZones } from 'types/chart';
-import { EventSelected } from 'types/events';
+import { distinctUntilChanged, Observable, switchMap, tap, timer } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { DesktopLkState } from 'types/lk-state';
-import { Response } from 'types/response';
 import {
-  Stock,
+  StockId,
   StockInstrument,
   StockList,
-  StockListPrice,
   StockPrice,
+  WithLastPrice,
 } from 'types/stock';
-import { DesktopService } from '../../api/desktop-data/src/lib/desktop-data';
-
-import { transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
+import { StockListStore } from './stock-list.store';
+import { EventSelected } from 'types/events';
+import { EntryStore } from './entry.store';
+import { Idea } from 'types/idea';
+import { DesktopService } from '@desktop-data/desktop-data';
+import { ChartStore } from './chart-store';
+import { ActiveZone } from 'types/chart';
+import { StockEvent } from 'types/stock-event';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
-  public readonly selected$: Observable<{
-    type: EventSelected;
-    value: any;
-  } | null> = this.select((state: DesktopLkState) => state.selected);
-
-  public readonly selectedIdea$: Observable<any | null> = this.select(
-    (state: DesktopLkState) => state.selected
-  ).pipe(filter((value) => value?.type === EventSelected.IDEA));
-
-  public readonly stock$: Observable<StockList | null> = this.select(
-    (state: DesktopLkState) => state.stock
+  public readonly event$: Observable<StockEvent | null> = this.select(
+    (state: DesktopLkState) => state.event
   );
 
-  public readonly stockActive$: Observable<StockList | null> = this.select(
-    (state: DesktopLkState) => state.active
+  public readonly selectedInstrument$: Observable<StockInstrument | null> =
+    this._stockListStore.selected$;
+
+  public readonly selectedIdea$: Observable<Idea | null> =
+    this._entryStore.selected$;
+
+  public readonly stock$: Observable<StockList | null> =
+    this._stockListStore.list$;
+
+  public readonly entry$: Observable<Idea[] | null> = this._entryStore.list$;
+
+  public readonly candles$: Observable<any[] | null> =
+    this._chartStore.candles$;
+
+  public readonly consolidationZones$: Observable<ActiveZone[] | null> =
+    this._chartStore.consolidationZones$;
+
+  public readonly stockActive$: Observable<StockId[] | null> = this.select(
+    this._stockListStore.active$.pipe(
+      filter((result: StockId[] | null): result is StockId[] => result !== null)
+    ),
+    this._entryStore.active$.pipe(
+      filter((result: StockId[] | null): result is StockId[] => result !== null)
+    ),
+    this._stockListStore.selected$.pipe(
+      filter(
+        (result: StockInstrument | null): result is StockInstrument =>
+          result !== null
+      ),
+      map((result: StockInstrument) => result.id),
+      distinctUntilChanged()
+    ),
+    (stock: StockId[], entry: StockId[], selectId: StockId) => [
+      ...stock,
+      ...entry,
+      selectId,
+    ],
+    { debounce: true }
   );
 
-  public readonly price$: Observable<StockPrice<StockListPrice> | null> =
+  public readonly price$: Observable<StockPrice<WithLastPrice> | null> =
     this.select((state: DesktopLkState) => state.price);
 
-  public readonly candles$: Observable<any[] | null> = this.select(
-    (state: DesktopLkState) => state.candles
-  );
-
-  public readonly cosolidationZones$: Observable<any[] | null> = this.select(
-    (state: DesktopLkState) => state.consolidationZones
-  );
-
-  constructor(private readonly _api: DesktopService) {
+  constructor(
+    private readonly _api: DesktopService,
+    private readonly _stockListStore: StockListStore,
+    private readonly _entryStore: EntryStore,
+    private readonly _chartStore: ChartStore
+  ) {
     super({
+      event: null,
       selected: null,
-      stock: null,
-      active: null,
       price: null,
-      defaultPrice: null,
-      candles: null,
-      consolidationZones: null,
     });
 
-    this.loadStock();
+    this._stockListStore.load();
+
+    this._entryStore.load();
 
     this.loadActivePrice(
       this._timer(this.stockActive$, TIMER_INTERVAL).pipe(
-        map((value: { source: StockList | null }) => value.source)
+        map((value: { source: StockId[] | null }) => value.source)
       )
     );
 
-    this.loadCandles(
-      this._timer(
-        merge(
-          this.selected$,
-          this.selectedIdea$.pipe(
-            map((item) => ({ ...item, value: item.value.instrument }))
-          )
-        ),
-        TIMER_INTERVAL
-      )
+    this._chartStore.loadCandles(
+      this._timer(this._stockListStore.selected$, TIMER_INTERVAL)
     );
 
-    this.loadConsolidationZones(this.selectedIdea$);
+    this._chartStore.loadConsolidationZonesV2(this._entryStore.selected$);
+
+    this.onChangeEventStock(this.event$);
+    this.onChangeEventEntry(this.event$);
   }
 
   public updateSelect = this.updater(
     (state: DesktopLkState, selected: any) => ({ ...state, selected })
   );
 
-  public updateCandles = this.updater(
-    (state: DesktopLkState, data: { candles: any; index: number }) => {
-      const candlesArray = state.candles;
-      if (data.index && candlesArray && data.candles) {
-        for (let i = 0; i < data.candles.length; i++) {
-          candlesArray[candlesArray.length - 1 - i] = data.candles[i];
-        }
-        return { ...state };
-      } else {
-        return { ...state, candles: data.candles };
-      }
-    }
-  );
-
-  public updateConsolidationZones = this.updater(
-    (state: DesktopLkState, data: any[]) => {
-      return { ...state, consolidationZones: data };
-    }
-  );
-
-  public updateStock = this.updater(
-    (state: DesktopLkState, stock: StockList) => {
-      const defaultPrice = stock.reduce(
-        (acc: StockPrice<StockListPrice>, item: StockInstrument) => ({
-          ...acc,
-          [item.id]: null,
-        }),
-        {}
-      );
-
-      return { ...state, defaultPrice, stock };
-    }
+  public updateEvent = this.updater(
+    (state: DesktopLkState, event: StockEvent) => ({ ...state, event })
   );
 
   public updatePrice = this.updater(
-    (state: DesktopLkState, price: StockPrice<StockListPrice>) => ({
-      ...state,
-      price: { ...state.defaultPrice, ...price },
-    })
+    (
+      state: DesktopLkState,
+      price: StockPrice<WithLastPrice>
+    ): DesktopLkState => ({ ...state, price })
   );
 
-  public updateActive = this.updater(
-    (state: DesktopLkState, active: StockList) => ({ ...state, active })
-  );
-
-  public readonly loadStock = this.effect((stream$: Observable<void>) =>
-    stream$.pipe(
-      switchMap((_) =>
-        this._api.getStockList().pipe(
-          filter((result: Response<Stock>) => !!result.data),
-          tap((result: Response<Stock>) => this.updateStock(result.data.items))
-        )
-      ),
-      catchError((err: Error) => {
-        console.error(err);
-        return of(null);
-      })
-    )
-  );
+  public updateStockActive = this._stockListStore.updateActive;
 
   public readonly loadActivePrice = this.effect(
-    (stream$: Observable<StockList | null>) =>
+    (stream$: Observable<StockId[] | null>) =>
       stream$.pipe(
-        filter((list: StockList | null): list is StockList => !!list),
-        switchMap((list: StockList) => this._api.getActiveStock(list)),
-        map((response: Response<StockPrice<StockListPrice>>) => response.data),
-        tap((result: StockPrice<StockListPrice>) => this.updatePrice(result))
+        filter((list: StockId[] | null): list is StockId[] => !!list),
+        switchMap((list: StockId[]) => this._api.getActiveStock(list)),
+        tap((result: StockPrice<WithLastPrice>) => this.updatePrice(result))
       )
   );
 
-  public readonly loadCandles = this.effect(
-    (stream$: Observable<{ source: any | null; index: number }>) => {
-      let index = 0;
-      return stream$.pipe(
-        tap((val) => {
-          index = val.index;
-        }),
-        skipWhile((value) => value.source === null),
-        switchMap((data: { source: any; index: number }) =>
-          this._api.getCandles(data)
+  public readonly onChangeEventStock = this.effect(
+    (stream$: Observable<StockEvent | null>) =>
+      stream$.pipe(
+        filter(
+          (event: StockEvent | null): event is StockEvent => event !== null
         ),
-        map((data: any) => {
-          return data.data.map((item: any) => {
-            // x,open,high,low,close
-            return [
-              new Date(item.time).valueOf(),
-              item.open,
-              item.high,
-              item.low,
-              item.close,
-            ];
-          });
-        }),
-        tap((candles) => {
-          this.updateCandles({ candles, index });
-        }),
-        catchError((err: Error) => {
-          console.error(err);
-          return of(null);
-        })
-      );
-    }
+        filter(
+          (event: StockEvent): boolean =>
+            event.type === EventSelected.STOCK_LIST
+        ),
+        switchMap((event: StockEvent) =>
+          this.stock$.pipe(
+            filter(
+              (list: StockList | null): list is StockList => list !== null
+            ),
+            map(
+              (list: StockList): StockInstrument =>
+                list.find((item: StockInstrument) => item.id === event.id)!
+            ),
+            tap((value: StockInstrument) => {
+              this._stockListStore.updateSelected(value);
+              this._entryStore.updateSelected(null);
+            })
+          )
+        )
+      )
   );
 
-  public readonly loadConsolidationZones = this.effect(
-    (stream$: Observable<{ type: string; value: { id: string } }>) => {
-      return stream$.pipe(
-        skipWhile((value) => value === null),
-        switchMap((data: { type: string; value: { id: string } }) => {
-          return this._api.getConsolidationZones(data.value.id);
-        }),
-        map((data: ConsolidationZones) => {
-          return transformActiveConsolidationZones(data?.data?.activeZones);
-        }),
-        tap((zones) => {
-          this.updateConsolidationZones(zones);
-        }),
-        catchError((err: Error) => {
-          console.error(err);
-          return EMPTY;
-        })
-      );
-    }
+  public readonly onChangeEventEntry = this.effect(
+    (stream$: Observable<StockEvent | null>) =>
+      stream$.pipe(
+        filter(
+          (event: StockEvent | null): event is StockEvent => event !== null
+        ),
+        filter(
+          (event: StockEvent): boolean => event.type === EventSelected.IDEA
+        ),
+        switchMap((event: StockEvent) =>
+          this.entry$.pipe(
+            filter((list: Idea[] | null): list is Idea[] => list !== null),
+            map(
+              (list: Idea[]): Idea =>
+                list.find((item: Idea) => item.id === event.id)!
+            ),
+            tap((value: Idea) => {
+              this._stockListStore.updateSelected(value.instrument);
+              this._entryStore.updateSelected(value);
+            })
+          )
+        )
+      )
   );
 
   private _timer<T>(

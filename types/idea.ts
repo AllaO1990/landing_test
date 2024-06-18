@@ -44,35 +44,3 @@ export enum IdeaAuthor {
 export interface Idea extends ResponseIdea {
   priceIncrement: number;
 }
-
-
-// export interface Idea {
-//   id: StockId;
-//   date: {
-//     start: string;
-//     passed: number;
-//   };
-//   direction: StockDirection;
-//   figi: string;
-//   ticker: string;
-//   cost: number;
-//   enter: {
-//     price: number;
-//     cost: number;
-//   };
-//   target: {
-//     price: number;
-//     percentage: number;
-//   };
-//   stop: {
-//     price: number;
-//     percentage: number;
-//   };
-//   deposit: {
-//     price: number;
-//     percentage: number;
-//   };
-//   luck: number;
-//   strategy: string;
-//   idea: boolean;
-// }

@@ -5,13 +5,7 @@ import { filter } from 'rxjs/operators';
 import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Response, ResponseMessage } from 'types/response';
-import {
-  Stock,
-  StockGroup,
-  StockId,
-  StockInstrument,
-  StockList,
-} from 'types/stock';
+import { Stock, StockGroup, StockId, StockInstrument } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 
@@ -44,7 +38,7 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  public getActiveStock(list: StockList): Observable<any> {
+  public getActiveStock(list: StockId[]): Observable<any> {
     return of();
   }
 

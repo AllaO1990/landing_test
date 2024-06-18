@@ -28,7 +28,7 @@
           (click)="onClick($event, item)"
           class="entry-table__table-tr"
           [class.entry-table__table-tr--active]="(activeIdeaId$ | async) === item.id"
-          [style.background-color]="getColorBackGround(item.strategy.successProbability)"
+          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100)"
           *cdkVirtualFor="
               let item of data || [] | tuiTableSort;
               trackBy: trackById
@@ -70,7 +70,7 @@
           </td>
 
           <td *tuiCell="'luck'" tuiTd class="td td--number">
-            {{ item.strategy.successProbability | tuiFormatNumber }}%
+            {{ item.strategy.successProbability * 100 | tuiFormatNumber }}%
             <div class="substring" [title]="item.strategy.type | strategyName">
               {{ item.strategy.type | strategyName }}
             </div>

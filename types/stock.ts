@@ -23,7 +23,7 @@ export type StockId = string | number;
  * Элемент списокв тикеров с полной информацией по эмитенту без цены
  */
 export interface StockInstrument {
-  id: string;
+  id: StockId;
   source: string;
   ticker: string;
   name: string;
@@ -70,7 +70,7 @@ export interface StockPrice<T> {
   [key: string]: null | T;
 }
 
-export interface StockListPrice {
+export interface WithLastPrice {
   prev: number;
   minPriceIncrement: number;
   last: number;
