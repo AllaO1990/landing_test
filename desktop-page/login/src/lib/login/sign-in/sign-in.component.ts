@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../../apps/desktop/src/app/core/auth/auth.service';
+import { AuthService } from '../../../../../../apps/desktop/src/app/core/auth/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  selector: 'lib-sign-in',
+  templateUrl: './sign-in.component.html',
+  styleUrls: ['./sign-in.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class SignInComponent implements OnInit {
   constructor(private _authService: AuthService, private _router: Router) {}
 
   ngOnInit(): void {}

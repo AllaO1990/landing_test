@@ -5,37 +5,16 @@ import {
   ForbiddenGuard,
   LkGuard,
   PermissionGuard,
-  RegistrationGuard,
-  SaleGuard,
 } from './core/routing/guards';
 import { ToolbarComponent } from './pages/main/shared/toolbar/toolbar.component';
-import { LayoutStartComponent } from './shared/components/layout-start/layout-start.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: LayoutStartComponent,
-    children: [
-      {
-        path: '',
-        loadChildren: () => import('sale').then((m) => m.SaleModule),
-        canLoad: [SaleGuard],
-        canActivate: [SaleGuard],
-      },
-      {
-        path: 'login',
-        loadChildren: () => import('login').then((m) => m.LoginModule),
-        canLoad: [AuthGuard],
-        canActivate: [AuthGuard],
-      },
-      {
-        path: 'registration',
-        loadChildren: () =>
-          import('registration').then((m) => m.RegistrationModule),
-        canLoad: [RegistrationGuard],
-        canActivate: [RegistrationGuard],
-      },
-    ],
+    loadChildren: () => import('login').then((m) => m.LoginModule),
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    // outlet: 'login',
   },
   {
     path: 'lk',
@@ -43,6 +22,7 @@ const routes: Routes = [
     // component: LkComponent,
     canActivate: [LkGuard],
     canActivateChild: [LkGuard],
+    // outlet: 'lk',
     children: [
       {
         path: '',
@@ -88,14 +68,14 @@ const routes: Routes = [
       },
     ],
   },
-  {
-    path: '401',
-    loadChildren: () => import('page-401').then((m) => m.Page401Module),
-  },
-  {
-    path: '**',
-    loadChildren: () => import('page-401').then((m) => m.Page401Module),
-  },
+  // {
+  //   path: '401',
+  //   loadChildren: () => import('page-401').then((m) => m.Page401Module),
+  // },
+  // {
+  //   path: '**',
+  //   loadChildren: () => import('page-401').then((m) => m.Page401Module),
+  // },
 ];
 
 @NgModule({
