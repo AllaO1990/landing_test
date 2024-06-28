@@ -33,15 +33,27 @@
     </div>
     <div class="container__idea container__widget">
       <div class="widget">
-        <div class="widget__header">header</div>
+        <div class="widget__header">
+          <div class="header">
+            Идея
+          </div>
+        </div>
+        <div class="widget__content">
+          <lib-enter-idea [data]="context"></lib-enter-idea>
+        </div>
       </div>
-      <lib-enter-idea></lib-enter-idea>
     </div>
     <div class="container__action container__widget">
       <div class="widget">
-        <div class="widget__header">header</div>
+        <div class="widget__header">
+          <div class="header">
+            Действия
+          </div>
+        </div>
+        <div class="widget__content">
+          <lib-enter-action></lib-enter-action>
+        </div>
       </div>
-      <lib-enter-action></lib-enter-action>
     </div>
   </div>
 </ng-template>

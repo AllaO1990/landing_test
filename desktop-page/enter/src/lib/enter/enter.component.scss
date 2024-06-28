@@ -54,6 +54,9 @@
   width: 100%;
   height: 100%;
 
+  display: flex;
+  flex-flow: column nowrap;
+
   &__empty {
     display: flex;
     align-items: center;
@@ -75,11 +78,13 @@
 
   &__header {
     height: 32px;
-
-    border-bottom: 1px solid var(--main-bg-color);
   }
 
   &__space {
+    flex: 1 1;
+  }
+
+  &__content {
     flex: 1 1;
   }
 }
@@ -90,4 +95,18 @@
   font-weight: 300;
 
   color: var(--tui-text-02);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  font-size: 13px;
+  line-height: 16px;
+
+  font-weight: 700;
 }

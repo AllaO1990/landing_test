@@ -1,0 +1,25 @@
+<tui-scrollbar
+  class="scrollbar"
+  *ngIf="list !== null; else loader">
+  <cdk-virtual-scroll-viewport
+    tuiScrollable
+    class="viewport tui-zero-scrollbar"
+    [itemSize]="itemSize">
+    <ng-container
+      *cdkVirtualFor="let item of list; template: template">
+    </ng-container>
+  </cdk-virtual-scroll-viewport>
+</tui-scrollbar>
+
+<ng-template #loader>
+  <tui-loader
+    [overlay]="true"
+    [showLoader]="true"
+    class="loader">
+    <div class="loader__text">Загрузка...</div>
+  </tui-loader>
+</ng-template>
+
+<ng-template #simple let-item>
+  {{ item.id }}
+</ng-template>

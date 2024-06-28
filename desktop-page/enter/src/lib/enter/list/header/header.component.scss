@@ -1,0 +1,25 @@
+.header {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  height: 28px;
+
+  border-top: 1px solid var(--main-bg-color);
+  border-bottom: 1px solid var(--main-bg-color);
+
+  padding: 0 var(--padding-2);
+
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 13px;
+  color: var(--tui-text-02);
+
+  ::ng-deep {
+    & > *:first-child {
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 13px;
+    }
+  }
+}

@@ -1,0 +1,38 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+}
+
+.space {
+  flex: 1 1;
+}
+
+.item {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 300;
+
+  height: 28px;
+
+  background-color: var(--tui-base-02, #F6F7FB);
+
+  &__value {
+    margin: 0 var(--padding-2);
+  }
+}
+
+.total, .action {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  height: 28px;
+
+  padding: 0 var(--padding-2);
+}
