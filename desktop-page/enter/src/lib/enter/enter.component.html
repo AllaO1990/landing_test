@@ -1,41 +1,59 @@
-<div class="container">
-  <div class="container__sidebar container__widget">
-    <lib-enter-sidebar></lib-enter-sidebar>
-  </div>
-  <div class="container__chart container__widget">
-    <div class="widget">
-      <div class="widget__toolbar">
-        <div class="widget__space"></div>
-        <div class="widget__date-start date-start">
-          Идея от
-          <span>{{ data.date.start | date: 'dd.MM.yyyy' }}</span>
+<tui-loader
+  *ngIf="context === null; else show"
+  [overlay]="true"
+  [showLoader]="true"
+  class="widget">
+  <div class="widget__empty">Загрузка...</div>
+</tui-loader>
+
+<ng-template #show>
+  <div class="container" *ngIf="context">
+    <div class="container__sidebar container__widget">
+      <lib-enter-sidebar [data]="context.data"></lib-enter-sidebar>
+    </div>
+    <div class="container__chart container__widget">
+      <div class="widget">
+        <div class="widget__toolbar">
+          <div class="widget__space"></div>
+          <div class="widget__date-start date-start">
+            Идея от
+            <span>{{ context.data.createdAt | date : 'dd.MM.yyyy' }}</span>
+          </div>
+          <button
+            appearance="icon"
+            icon="tuiIconClose"
+            tuiIconButton
+            size="m"
+            type="button"
+            (click)="onClose($event)"
+          ></button>
         </div>
-        <button
-          appearance="icon"
-          icon="tuiIconClose"
-          tuiIconButton
-          size="m"
-          type="button"
-          (click)="onClose($event)"
-        ></button>
+      </div>
+      <p>chart!</p>
+    </div>
+    <div class="container__idea container__widget">
+      <div class="widget">
+        <div class="widget__header">
+          <div class="header">
+            Идея
+          </div>
+        </div>
+        <div class="widget__content">
+          <lib-enter-idea [data]="context"></lib-enter-idea>
+        </div>
       </div>
     </div>
-    <p>chart!</p>
-  </div>
-  <div class="container__idea container__widget">
-    <div class="widget">
-      <div class="widget__header">
-        header
+    <div class="container__action container__widget">
+      <div class="widget">
+        <div class="widget__header">
+          <div class="header">
+            Действия
+          </div>
+        </div>
+        <div class="widget__content">
+          <lib-enter-action></lib-enter-action>
+        </div>
       </div>
     </div>
-    <lib-enter-idea></lib-enter-idea>
   </div>
-  <div class="container__action container__widget">
-    <div class="widget">
-      <div class="widget__header">
-        header
-      </div>
-    </div>
-    <lib-enter-action></lib-enter-action>
-  </div>
-</div>
+</ng-template>

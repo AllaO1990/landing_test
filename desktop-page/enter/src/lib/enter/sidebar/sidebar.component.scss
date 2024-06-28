@@ -1,8 +1,28 @@
 :host {
   --tui-height-m: 24px;
+  --tui-font-text-s: normal 11px/24px var(--tui-font-text);
 }
 
 .widget {
+  display: flex;
+  flex-flow: column;
+
+  height: 100%;
+
+  &__space {
+    flex: 1 1;
+  }
+
+  &__empty {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+    width: 100%;
+  }
+
   &__toolbar {
     display: flex;
     flex-flow: row wrap;
@@ -11,5 +31,99 @@
     height: 48px;
 
     border-bottom: 1px solid var(--main-bg-color);
+  }
+
+  &__valid-date {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+
+    height: 78px;
+
+    border-bottom: 1px solid var(--main-bg-color);
+  }
+
+  &__implementation, &__strategy, &__timing, &__description {
+    padding: var(--padding-4) 0;
+
+    border-bottom: 1px solid var(--main-bg-color);
+  }
+
+  &__comment {
+    padding: var(--padding-4) 0;
+
+    font-weight: 300;
+  }
+
+  &__action {
+    display: flex;
+    flex-flow: column;
+
+    padding: var(--padding-4) 0;
+
+    button {
+      flex: 1;
+
+
+      &:not(:last-child) {
+        margin-bottom: var(--padding-2);
+      }
+    }
+  }
+
+  &__padding {
+    padding-left: var(--padding-4);
+    padding-right: var(--padding-4);
+  }
+}
+
+.action {
+  font-weight: 400;
+
+  font-size: 13px;
+  line-height: 32px;
+}
+
+.trash {
+  color: var(--tui-text-02);
+
+  tui-svg {
+    margin-right: var(--padding-2);
+  }
+}
+
+.comment {
+  &__label {
+    margin-bottom: var(--padding-2);
+  }
+}
+
+.description {
+  display: flex;
+  flex-flow: column;
+
+  &__row {
+    display: flex;
+    align-items: center;
+
+    &:not(:last-child) {
+      margin-bottom: var(--padding-2);
+    }
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 300;
+    line-height: 13px;
+
+    color: var(--tui-text-02);
+  }
+
+  &__text {
+    margin-left: var(--padding-2);
+
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 15px;
   }
 }

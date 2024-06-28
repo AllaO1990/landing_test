@@ -1,1 +1,106 @@
-<p>idea works!</p>
+<div class="entry table" [formGroup]="formEntry">
+  <lib-enter-list-header class="header row">
+    <div class="header__item row__first">Вход</div>
+    <div class="header__item row__date">Время достиж.</div>
+    <div class="header__item row__price">Цена</div>
+    <div class="header__item row__quantity">Кол-во</div>
+    <div class="header__item row__total">Стоимость</div>
+    <div class="header__item row__deposit">% депо</div>
+  </lib-enter-list-header>
+  <lib-enter-list class="list" [list]="listEntry" [itemSize]="28">
+    <lib-enter-list-item
+      class="row"
+      *libEnterListItem="let item" [formControlName]="item.id">
+      <div class="item">
+        <div class="item__value row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+        <div class="item__value row__price">{{ item.price }}</div>
+        <div class="item__value row__quantity">{{ item.quantity }}</div>
+        <div class="item__value row__total">{{ item.totalPrice }}</div>
+        <div class="item__value row__deposit">{{ item.depositShare * 100 }}%</div>
+      </div>
+    </lib-enter-list-item>
+  </lib-enter-list>
+</div>
+
+<div class="target table" [formGroup]="formTarget">
+  <lib-enter-list-header class="header row">
+    <div class="header__item row__first">Цели</div>
+    <div class="header__item row__date">Время достиж.</div>
+    <div class="header__item row__price">Цена</div>
+    <div class="header__item">Прибыль %</div>
+    <div class="header__item">Прибыль</div>
+    <div class="header__item row__deposit">% депо</div>
+    <div class="header__item">Сколько фикс.</div>
+  </lib-enter-list-header>
+  <lib-enter-list
+    class="list"
+    [style.height.px]="listTarget.length > 2 ? 84 : listTarget.length * 28"
+    [list]="listTarget"
+    [itemSize]="28">
+    <lib-enter-list-item
+      class="row"
+      *libEnterListItem="let item"
+      [formControlName]="item.id">
+      <div class="item">
+        <div class="item__value row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+        <div class="item__value row__price">{{ item.price }}</div>
+        <div class="item__value">{{ item.profitPercent * 100 }}%</div>
+        <div class="item__value">{{ item.profit }}</div>
+        <div class="item__value row__deposit">{{ item.depositShare * 100 }}%</div>
+        <div class="item__value row__quantity">{{ item.quantity }}</div>
+        <div class="item__value">{{ item.quantityPercent * 100 }}%</div>
+        <div class="item__value">
+          <button
+            appearance="icon"
+            icon="tuiIconClose"
+            tuiIconButton
+            type="button"
+            (click)="onRemove($event, item)"
+          ></button>
+        </div>
+      </div>
+    </lib-enter-list-item>
+  </lib-enter-list>
+  <div class="total">
+    <div class="total__item">Всего</div>
+    <div class="total__item"></div>
+    <div class="total__item"></div>
+  </div>
+  <div class="action">
+    <button
+      class="button"
+      [disabled]="true"
+      tuiButton
+      type="button">
+      + Новая цель
+    </button>
+  </div>
+</div>
+
+<div class="stop table" [formGroup]="formStop">
+  <lib-enter-list-header class="header row">
+    <div class="header__item row__first">Стоп</div>
+    <div class="header__item row__date">Время достиж.</div>
+    <div class="header__item row__price">Цена</div>
+    <div class="header__item">Убыль %</div>
+    <div class="header__item">Убыль</div>
+    <div class="header__item row__deposit">% депо</div>
+    <div class="header__item">Сколько фикс.</div>
+  </lib-enter-list-header>
+  <lib-enter-list class="list" [list]="listStop" [itemSize]="28">
+    <lib-enter-list-item
+      class="row"
+      *libEnterListItem="let item"
+      [formControlName]="item.id">
+      <div class="item">
+        <div class="item__value row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+        <div class="item__value row__price">{{ item.price }}</div>
+        <div class="item__value">{{ item.lossPercent * 100 }}%</div>
+        <div class="item__value">{{ item.loss }}</div>
+        <div class="item__value row__deposit">{{ item.depositShare * 100 }}%</div>
+        <div class="item__value row__quantity">{{ item.quantity }}</div>
+        <div class="item__value">{{ item.quantityPercent * 100 }}%</div>
+      </div>
+    </lib-enter-list-item>
+  </lib-enter-list>
+</div>

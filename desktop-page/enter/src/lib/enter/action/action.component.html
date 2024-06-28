@@ -1,1 +1,117 @@
-<p>action works!</p>
+<div class="entry">
+  <lib-enter-list-header class="header">
+    <div class="header__item">Вход</div>
+    <div class="header__item">Цена</div>
+    <div class="header__item">Кол-во</div>
+    <div class="header__item">Стоимость</div>
+    <div class="header__item">% депо</div>
+  </lib-enter-list-header>
+  <lib-enter-list
+    class="list"
+    [style.height.px]="listEntry.length > 2 ? 84 : listEntry.length * 28"
+    [list]="listEntry"
+    [itemSize]="28">
+    <div class="item" *libEnterListItem="let item">
+      <div class="item__value item__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+      <div class="item__value">{{ item.price }}</div>
+      <div class="item__value">{{ item.quantity }}</div>
+      <div class="item__value">{{ item.totalPrice }}</div>
+      <div class="item__value">{{ item.depositShare * 100 }}%</div>
+    </div>
+  </lib-enter-list>
+  <div class="total">
+    <div class="total__item">Всего</div>
+    <div class="total__item"></div>
+    <div class="total__item"></div>
+  </div>
+  <div class="action">
+    <button
+      class="button"
+      [disabled]="true"
+      tuiButton
+      type="button">
+      Добавить вход
+    </button>
+  </div>
+</div>
+
+<div class="out">
+  <lib-enter-list-header class="header">
+    <div class="header__item">Выход</div>
+    <div class="header__item">Цена</div>
+    <div class="header__item">Кол-во</div>
+    <div class="header__item">Стоимость</div>
+    <div class="header__item">Прибыль</div>
+    <div class="header__item">Приб. %</div>
+    <div class="header__item">% депо</div>
+    <div class="header__item">Брокер</div>
+  </lib-enter-list-header>
+  <lib-enter-list
+    class="list"
+    [style.height.px]="listOut.length > 2 ? 84 : listOut.length * 28"
+    [list]="listOut"
+    [itemSize]="28">
+    <div class="item" *libEnterListItem="let item">
+      <div class="item__value item__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+      <div class="item__value">{{ item.price }}</div>
+      <div class="item__value">{{ item.quantity }}</div>
+      <div class="item__value">{{ item.totalPrice }}</div>
+      <div class="item__value">{{ item.profit }}</div>
+      <div class="item__value">{{ item.profitPercent * 100 }}%</div>
+      <div class="item__value">{{ item.depositShare * 100 }}%</div>
+      <div class="item__value">{{ item.broker }}</div>
+    </div>
+  </lib-enter-list>
+  <div class="total">
+    <div class="total__item">Всего</div>
+    <div class="total__item"></div>
+    <div class="total__item"></div>
+  </div>
+  <div class="action">
+    <button
+      class="button"
+      [disabled]="true"
+      tuiButton
+      type="button">
+      Добавить выход
+    </button>
+  </div>
+</div>
+
+<div class="space"></div>
+
+<div class="balance">
+  <lib-enter-list-header class="header">
+    <div class="header__item">Остаток</div>
+    <div class="header__item">Цена</div>
+    <div class="header__item">Кол-во</div>
+    <div class="header__item">Стоимость</div>
+    <div class="header__item">Прибыль</div>
+    <div class="header__item">Приб. %</div>
+    <div class="header__item">% депо</div>
+    <div class="header__item">Брокер</div>
+  </lib-enter-list-header>
+  <div class="total">
+    <div class="total__item">Всего</div>
+    <div class="total__item"></div>
+    <div class="total__item"></div>
+  </div>
+</div>
+
+<div class="result">
+  <lib-enter-list-header class="header">
+    <div class="header__item">Результат</div>
+    <div class="header__item">Цена</div>
+    <div class="header__item">Кол-во</div>
+    <div class="header__item">Стоимость</div>
+    <div class="header__item">Прибыль</div>
+    <div class="header__item">Приб. %</div>
+    <div class="header__item">% депо</div>
+    <div class="header__item">Брокер</div>
+  </lib-enter-list-header>
+  <div class="total">
+    <div class="total__item">Всего</div>
+    <div class="total__item"></div>
+    <div class="total__item"></div>
+  </div>
+</div>

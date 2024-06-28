@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { OUT_CONSTANTS } from './out.constants';
 import { OutEnums } from './out.enums';
-import { MAIN_FILTER_STOCK, MAIN_FILTER_STRATEGY } from '../main.constants';
+import { MAIN_FILTER_STOCK } from '../main.constants';
 import { FormControl } from '@angular/forms';
+import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 
 @Component({
   selector: 'vt-out',
@@ -15,7 +16,7 @@ export class OutComponent {
   public readonly filterStock: { id: string; name: string }[] =
     MAIN_FILTER_STOCK;
   public readonly filterStrategy: { id: string; name: string }[] =
-    MAIN_FILTER_STRATEGY;
+    STOCK_STRATEGY_LIST;
 
   public readonly controlSearch: FormControl<string | null> = new FormControl(
     null

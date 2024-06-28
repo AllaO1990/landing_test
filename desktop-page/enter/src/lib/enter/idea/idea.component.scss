@@ -1,0 +1,87 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+}
+
+.table {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.entry {
+  flex: 1 1;
+}
+
+.target {
+  flex: 2 2;
+}
+
+.stop {
+  flex: 1 1;
+
+  .list {
+    height: 84px;
+  }
+}
+
+.item {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 300;
+
+  &__value {
+    margin: 0 var(--padding-2);
+  }
+}
+
+.header {
+  &__item {
+    margin: 0 var(--padding-2);
+  }
+}
+
+.total, .action {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  height: 28px;
+
+  padding: 0 var(--padding-2);
+}
+
+.button {
+  display: inline-flex;
+}
+
+.row {
+  &__first {
+    width: 32px;
+  }
+
+  &__date {
+    width: 78px;
+  }
+
+  &__price {
+    width: 44px;
+  }
+
+  &__quantity {
+    width: 44px;
+  }
+
+  &__deposit {
+    width: 48px;
+  }
+
+  &__total {
+    width: 60px;
+  }
+}
