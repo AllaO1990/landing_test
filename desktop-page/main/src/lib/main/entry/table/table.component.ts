@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  Injector,
   Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -58,6 +59,8 @@ import { QueryParams } from 'utils/query-params';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryTableComponent {
+  private readonly _injector: Injector = inject(Injector);
+
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
@@ -91,7 +94,7 @@ export class EntryTableComponent {
   public onDblclick(event: Event, item: Idea): void {
     event.preventDefault();
 
-    this.dialogEnterService.openDialog(item).subscribe();
+    this.dialogEnterService.openDialog(item, this._injector).subscribe();
 
     // console.log(this.dialogEnterService);
     // console.log(item);
@@ -107,7 +110,7 @@ export class EntryTableComponent {
       id: item.id,
     });
 
-    this.dialogEnterService.openDialog(item).subscribe();
+    this.dialogEnterService.openDialog(item, this._injector).subscribe();
   }
 
   private _conditionActive(selected: StockEvent): StockId | null {

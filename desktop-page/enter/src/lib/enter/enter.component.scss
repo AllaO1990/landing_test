@@ -77,7 +77,7 @@
   }
 
   &__header {
-    height: 32px;
+    flex: 0 0 32px;
   }
 
   &__space {
@@ -86,6 +86,7 @@
 
   &__content {
     flex: 1 1;
+    overflow: hidden;
   }
 }
 
@@ -109,4 +110,35 @@
   line-height: 16px;
 
   font-weight: 700;
+}
+
+@media screen and (max-width: 1600px) and (min-width: 1320px) {
+}
+
+@media screen and (max-width: 1320px) {
+  .container {
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 410px 1fr;
+
+    &__sidebar {
+      grid-row: 1 / 4;
+    }
+
+    &__chart {
+      grid-row: 1;
+      grid-column: 2;
+    }
+
+    &__action {
+      grid-row: 3;
+      grid-column: 2;
+    }
+  }
+}
+
+.scrollbar {
+  height: 100%;
+
+  display: flex;
+  flex-flow: column;
 }

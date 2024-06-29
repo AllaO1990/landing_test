@@ -20,16 +20,14 @@
 
 .stop {
   flex: 1 1;
-
-  .list {
-    height: 84px;
-  }
 }
 
 .item {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+
+  width: 100%;
 
   font-size: 11px;
   line-height: 13px;
@@ -41,8 +39,8 @@
 }
 
 .header {
-  &__item {
-    margin: 0 var(--padding-2);
+  &__item:first-child {
+    font-weight: 700;
   }
 }
 
@@ -61,27 +59,51 @@
 }
 
 .row {
+  &__item {
+    margin: 0 var(--padding-2);
+  }
+
+  &__right {
+    text-align: right;
+  }
+
   &__first {
-    width: 32px;
+    width: 40px;
   }
 
   &__date {
-    width: 78px;
+    width: 90px;
   }
 
   &__price {
-    width: 44px;
+    width: 60px;
   }
 
   &__quantity {
-    width: 44px;
+    width: 60px;
   }
 
   &__deposit {
-    width: 48px;
+    width: 60px;
   }
 
   &__total {
     width: 60px;
+  }
+
+  &__profit {
+    width: 60px;
+  }
+
+  &__fix-half {
+    width: 40px;
+  }
+
+  &__fix {
+    width: 96px;
+  }
+
+  &__space {
+    flex: 1;
   }
 }
