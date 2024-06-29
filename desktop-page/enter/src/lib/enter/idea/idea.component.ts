@@ -9,6 +9,7 @@ import {
 } from '../list';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { StockId } from 'types/stock';
+import { CheckComponent } from '../list/check/check.component';
 
 @Component({
   selector: 'lib-enter-idea',
@@ -24,12 +25,15 @@ import { StockId } from 'types/stock';
     ReactiveFormsModule,
     NgIf,
     TuiSvgModule,
+    CheckComponent,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterIdeaComponent {
+  public readonly itemHeight = 28;
+
   @Input() data: any | null = null;
 
   listEntry = [

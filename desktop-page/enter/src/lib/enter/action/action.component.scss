@@ -9,6 +9,12 @@
   flex: 1 1;
 }
 
+.header {
+  &__item:first-child {
+    font-weight: 700;
+  }
+}
+
 .item {
   display: flex;
   flex-flow: row nowrap;
@@ -35,4 +41,43 @@
   height: 28px;
 
   padding: 0 var(--padding-2);
+}
+
+
+.row {
+  &__item {
+    margin: 0 var(--padding-2);
+  }
+
+  &__right {
+    text-align: right;
+  }
+
+  &__first {
+    width: 40px;
+  }
+
+  &__date {
+    width: 90px;
+  }
+
+  &__price {
+    width: 60px;
+  }
+
+  &__quantity {
+    width: 60px;
+  }
+
+  &__deposit {
+    width: 60px;
+  }
+
+  &__total {
+    width: 60px;
+  }
+
+  &__profit {
+    width: 60px;
+  }
 }

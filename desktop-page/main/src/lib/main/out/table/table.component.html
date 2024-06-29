@@ -74,24 +74,19 @@
               <span class="substring" style="margin-left: 8px">{{ item.target1.percentage }}%</span>
             </div>
             <div class="td__row">
-              {{ item.target1.count }}
+              <div class="substring">{{ item.target1.count }}</div>
               <div class="substring" style="margin-left: 8px">{{ item.target1.countPercent }}%</div>
             </div>
           </td>
 
           <td *tuiCell="'target2'" tuiTd class="td td--number">
             <div class="td__row">
-              <span [title]="item.target2.price | tuiFormatNumber">
-                {{ item.target2.price | tuiFormatNumber }}
-              </span>
-              <span [title]="item.target2.percentage + '%'" class="substring"
-                    style="margin-left: 8px">{{ item.target2.percentage }}%</span>
+              {{ item.target2.price | tuiFormatNumber }}
+              <div class="substring" style="margin-left: 8px">{{ item.target2.percentage }}%</div>
             </div>
             <div class="td__row">
-              <span [title]="item.target2.count">{{ item.target2.count }}</span>
-              <div [title]="item.target2.countPercent + '%'" class="substring"
-                   style="margin-left: 8px">{{ item.target2.countPercent }}%
-              </div>
+              <div class="substring">{{ item.target2.count }}</div>
+              <div class="substring" style="margin-left: 8px">{{ item.target2.countPercent }}%</div>
             </div>
           </td>
 

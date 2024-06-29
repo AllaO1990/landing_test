@@ -9,10 +9,14 @@ import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'lib-enter-list-item',
+  exportAs: '[libEnterListItem]',
   standalone: true,
   imports: [NgIf, TuiSvgModule],
   templateUrl: './item.component.html',
   styleUrl: './item.component.scss',
+  host: {
+    '[class.checked]': 'value',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemComponent extends TuiCheckboxComponent {

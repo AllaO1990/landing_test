@@ -28,8 +28,13 @@
             (click)="onClose($event)"
           ></button>
         </div>
+        <vt-chart
+          [consolidationZones]="consolidationZones$ | async"
+          [data]="candles$ | async"
+          [selected]="selected$ | async"
+          [selectedIdea]="selectedIdea$ | async"
+        ></vt-chart>
       </div>
-      <p>chart!</p>
     </div>
     <div class="container__idea container__widget">
       <div class="widget">
@@ -39,7 +44,9 @@
           </div>
         </div>
         <div class="widget__content">
-          <lib-enter-idea [data]="context"></lib-enter-idea>
+          <tui-scrollbar class="scrollbar" [hidden]="true">
+            <lib-enter-idea [data]="context" class="tui-zero-scrollbar"></lib-enter-idea>
+          </tui-scrollbar>
         </div>
       </div>
     </div>
@@ -51,7 +58,9 @@
           </div>
         </div>
         <div class="widget__content">
-          <lib-enter-action></lib-enter-action>
+          <tui-scrollbar class="scrollbar" [hidden]="true">
+            <lib-enter-action class="tui-zero-scrollbar"></lib-enter-action>
+          </tui-scrollbar>
         </div>
       </div>
     </div>
