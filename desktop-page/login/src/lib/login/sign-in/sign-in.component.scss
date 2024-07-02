@@ -10,13 +10,21 @@
 }
 
 .gpn-auth-card {
-  width: 400px;
-  max-width: 400px;
+  width: 30%;
+  // max-width: 600px;
 
   &-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+
+  &-email-input-field {
+    width: 100%;
+  }
+
+  &-action-field {
+    margin-top: 10px;
   }
 }

@@ -8,8 +8,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 })
 export class ToolbarStartComponent implements OnInit {
   public readonly links: { path: string[]; name: string }[] = [
-    { name: 'Sign in', path: ['/login'] },
-    { name: 'Sign up', path: ['/registration'] },
+    { name: 'Sign in', path: ['./sign-in'] },
+    // { name: 'Sign up', path: ['./sign-up'] },
   ];
 
   constructor() {}

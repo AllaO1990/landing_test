@@ -104,17 +104,14 @@
         "buildTarget": "desktop:build"
       }
     },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
     "test": {
-      "executor": "@angular-devkit/build-angular:karma",
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "main": "apps/desktop/src/test.ts",
-        "polyfills": "apps/desktop/src/polyfills.ts",
-        "tsConfig": "apps/desktop/tsconfig.spec.json",
-        "karmaConfig": "apps/desktop/karma.conf.js",
-        "inlineStyleLanguage": "scss",
-        "assets": ["apps/desktop/src/favicon.ico", "apps/desktop/src/assets"],
-        "styles": ["apps/desktop/src/styles.scss"],
-        "scripts": []
+        "jestConfig": "apps/angular-monorepo-20240619/jest.config.ts"
       }
     }
   }

@@ -3,23 +3,22 @@ import { NgModule } from '@angular/core';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DesktopApiService } from '@desktop-data/desktop-data';
+import { TUI_DIALOGS } from '@taiga-ui/cdk';
 import {
   TUI_BUTTON_OPTIONS,
   TuiDialogModule,
   TuiModeModule,
   TuiRootModule,
 } from '@taiga-ui/core';
+import { EnterDialogService } from 'desktop-page/enter';
 import { DESKTOP_API, DESKTOP_ENVIRONMENT } from 'tokens/desktop';
+import { QUERY_PARAMS } from 'tokens/desktop/query-params';
+import { QueryParams } from 'utils/query-params';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LayoutStartModule } from './shared/components/layout-start';
-import { TUI_DIALOGS } from '@taiga-ui/cdk';
-import { EnterDialogService } from 'desktop-page/enter';
-import { QUERY_PARAMS } from 'tokens/desktop/query-params';
-import { QueryParams } from 'utils/query-params';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,7 +29,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     HttpClientModule,
     TuiRootModule,
     MatNativeDateModule,
-    LayoutStartModule,
+    // LayoutStartModule,
     TuiModeModule,
     TuiDialogModule,
   ],

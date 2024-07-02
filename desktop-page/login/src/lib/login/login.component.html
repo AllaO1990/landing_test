@@ -1,7 +1,6 @@
-<vt-toolbar-start class="layout__toolbar"></vt-toolbar-start>
-
-<a [routerLink]="['./sign-in']">sign-in</a>
-<a [routerLink]="['./sign-up']">sign-up</a>
-
-<router-outlet></router-outlet>
-<!-- <router-outlet name="sign-up"></router-outlet> -->
+<div class="layout">
+  <vt-toolbar-start class="layout__toolbar"></vt-toolbar-start>
+  <div class="layout__container">
+    <router-outlet></router-outlet>
+  </div>
+</div>

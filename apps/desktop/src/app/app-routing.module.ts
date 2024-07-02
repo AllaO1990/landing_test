@@ -8,12 +8,12 @@ import {
 } from './core/routing/guards';
 import { ToolbarComponent } from './pages/main/shared/toolbar/toolbar.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
-    path: '',
+    path: 'login',
     loadChildren: () => import('login').then((m) => m.LoginModule),
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     // outlet: 'login',
   },
   {
@@ -38,7 +38,7 @@ const routes: Routes = [
         path: 'main',
         loadChildren: () =>
           import('./pages/main/main.module').then((m) => m.MainModule),
-        canActivate: [PermissionGuard],
+        // canActivate: [PermissionGuard],
       },
       // {
       //   path: 'main-v2',
@@ -49,7 +49,7 @@ const routes: Routes = [
       {
         path: 'main-v2',
         loadComponent: () => import('main').then((m) => m.MainComponent),
-        canActivate: [PermissionGuard],
+        // canActivate: [PermissionGuard],
       },
       {
         path: 'dashboard',
@@ -67,6 +67,11 @@ const routes: Routes = [
         loadChildren: () => import('page-404').then((m) => m.Page404Module),
       },
     ],
+  },
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
   },
   // {
   //   path: '401',
