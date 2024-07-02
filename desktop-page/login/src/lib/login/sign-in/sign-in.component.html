@@ -1,0 +1,35 @@
+<mat-card class="gpn-auth-card">
+  <mat-card-header>
+    <mat-card-title>Авторизация</mat-card-title>
+  </mat-card-header>
+  <form>
+    <mat-card-content class="gpn-auth-card-content">
+      <mat-form-field class="gpn-auth-card-email-input-field">
+        <input
+          matInput
+          type="email"
+          placeholder="Введите email"
+          [formControl]="emailFormControl"
+          [errorStateMatcher]="matcher"
+        />
+        @if (emailFormControl.hasError('email') &&
+        !emailFormControl.hasError('required')) {
+        <mat-error>Пожалуйста, введите валидный email адрес</mat-error>
+        } @if (emailFormControl.hasError('required')) {
+        <mat-error>Требуется ввести <strong>email</strong></mat-error>
+        }
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions class="gpn-auth-card-action-field">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="!emailFormControl.valid"
+        (click)="login()"
+        type="submit"
+      >
+        Получить код
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>

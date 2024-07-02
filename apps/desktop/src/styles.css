@@ -38,7 +38,7 @@
   --tui-radius-m: var(--tui-radius);
   --tui-radius-l: var(--tui-radius);
   --tui-radius-xl: var(--tui-radius);
-  --tui-text-font: Roboto, "Helvetica Neue", sans-serif;
+  --tui-text-font: Roboto, 'Helvetica Neue', sans-serif;
   --tui-font-text: var(--tui-text-font);
   --tui-font-text-xl: normal 1.1875rem/1.75rem var(--tui-font-text);
   --tui-font-text-l: normal 1.0625rem/1.5rem var(--tui-font-text);
@@ -85,7 +85,7 @@ body {
 
 .develop {
   opacity: 1;
-  background-image: url("/assets/images/logo.svg");
+  background-image: url('/assets/images/logo.svg');
   background-repeat: no-repeat;
   background-size: 200px;
   background-position: center;

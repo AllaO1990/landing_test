@@ -22,11 +22,17 @@ export class AuthGuard implements CanLoad, CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!this._authService.isLoggedIn && route.path !== 'login') {
+    /* if (!this._authService.isLoggedIn && route.path !== 'login') {
       return this._router.parseUrl('/');
     }
+ */
 
-    return true;
+    if (!this._authService.isLoggedIn) {
+      return true;
+    }
+
+    this._router.navigate(['lk']);
+    return false;
   }
 
   canActivate(
@@ -37,9 +43,9 @@ export class AuthGuard implements CanLoad, CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (state.url === '/login' && this._authService.isLoggedIn) {
+    /* if (state.url === '/login' && this._authService.isLoggedIn) {
       return this._router.parseUrl('/');
-    }
+    } */
 
     return true;
   }

@@ -27,11 +27,11 @@ export class LkGuard implements CanActivate, CanActivateChild {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!this._auth.isLoggedIn) {
-      return this._router.parseUrl('/401');
+    if (this._auth.isLoggedIn) {
+      return true;
     }
 
-    return true;
+    return this._router.parseUrl('/');
   }
 
   canActivateChild(
@@ -42,10 +42,10 @@ export class LkGuard implements CanActivate, CanActivateChild {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (!this._auth.isLoggedIn) {
-      return this._router.parseUrl('/401');
+    if (this._auth.isLoggedIn) {
+      return true;
     }
 
-    return true;
+    return this._router.parseUrl('/');
   }
 }
