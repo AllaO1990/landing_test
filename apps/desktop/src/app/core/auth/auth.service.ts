@@ -15,10 +15,7 @@ export class AuthService {
 
   // isLoggedIn = false;
 
-  constructor(
-    private _router: Router,
-    private _storage: VtLocalStorageService
-  ) {}
+  constructor(private _router: Router, private _storage: VtLocalStorageService) {}
 
   getKey(email: string) {
     // this.isLoggedIn = true;
@@ -29,17 +26,14 @@ export class AuthService {
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
-          return this._http.post<UserData>(
-            'https://trade.gpn.dev/api/v1/users/sign-in',
-            { email }
-          );
+          return this._http.post<UserData>('https://trade.gpn.dev/api/v1/users/sign-in', { email });
         })
       )
       .subscribe((data) => {
         // this.saveToken(data.token);
         console.log(data);
         if (data.data) {
-          window.open(data.data, '_blank', 'popup');
+          window.open(data.data, '_blank');
         }
 
         this._router.navigate(['login/tg-key'], { queryParams: { email } });

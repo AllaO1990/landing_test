@@ -1,41 +1,23 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Injector,
-  Input,
-} from '@angular/core';
+import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import {
-  CdkFixedSizeVirtualScroll,
-  CdkVirtualForOf,
-  CdkVirtualScrollViewport,
-} from '@angular/cdk/scrolling';
-import {
-  TuiFormatNumberPipeModule,
-  TuiLoaderModule,
-  TuiScrollbarModule,
-} from '@taiga-ui/core';
+import { ChangeDetectionStrategy, Component, Injector, Input, inject } from '@angular/core';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { Idea } from 'types/idea';
-import { EntryHeaderItem } from '../entry.types';
-import { ENTRY_HEADER } from '../entry.constants';
-import {
-  EnterDialogModule,
-  EnterDialogService,
-  VtEnterComponent,
-} from 'desktop-page/enter';
-import { DesktopLkStore } from '../../../../../../../stores/desktop';
-import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
-import { DatePassedPipe } from './date-passed.pipe';
-import { StrategyNamePipe } from './strategy-name.pipe';
-import { EventSelected } from 'types/events';
-import { StockId } from 'types/stock';
-import { distinctUntilChanged, map } from 'rxjs/operators';
-import { StockEvent } from 'types/stock-event';
+import { TuiDialogService, TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
+import { EventSelected } from 'types/events';
+import { Idea } from 'types/idea';
+import { StockId } from 'types/stock';
+import { StockEvent } from 'types/stock-event';
 import { getColor, getRGBA } from 'utils/get-color';
 import { QueryParams } from 'utils/query-params';
+import { DesktopLkStore } from '../../../../../../../stores/desktop';
+import { ENTRY_HEADER } from '../entry.constants';
+import { EntryHeaderItem } from '../entry.types';
+import { DatePassedPipe } from './date-passed.pipe';
+import { StrategyNamePipe } from './strategy-name.pipe';
 
 @Component({
   selector: 'vt-entry-table',
@@ -50,12 +32,16 @@ import { QueryParams } from 'utils/query-params';
     TuiScrollbarModule,
     TuiTableModule,
     VtEnterComponent,
-    EnterDialogModule,
+    // EnterDialogModule,
     DatePassedPipe,
     StrategyNamePipe,
+    // TuiDialogModule,
+    // EnterDialogComponent,
+    // PolymorpheusModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
+  providers: [EnterDialogService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryTableComponent {
@@ -66,20 +52,18 @@ export class EntryTableComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  protected readonly dialogEnterService: EnterDialogService =
-    inject(EnterDialogService);
+  protected readonly dialogEnterService: EnterDialogService = inject(EnterDialogService);
+
+  protected readonly dialogService: TuiDialogService = inject(TuiDialogService);
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
 
-  public readonly columnList: string[] = this.header.map(
-    (item: { name: string }) => item.name
-  );
+  public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
-  public activeIdeaId$: Observable<StockId | null> =
-    this._store.selectedIdea$.pipe(
-      map((result: Idea | null) => (result ? result.id : null)),
-      distinctUntilChanged()
-    );
+  public activeIdeaId$: Observable<StockId | null> = this._store.selectedIdea$.pipe(
+    map((result: Idea | null) => (result ? result.id : null)),
+    distinctUntilChanged()
+  );
 
   @Input() data: Idea[] | null = null;
 

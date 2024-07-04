@@ -1,6 +1,4 @@
 <div class="toolbar">
-  <p>toolbar works!</p>
-
   <div class="toolbar__actions">
     <a
       *ngFor="let item of links; trackBy: trackByIndex"
@@ -13,5 +11,6 @@
     >
       {{ item.name }}
     </a>
+    <button class="toolbar__actions-logout" mat-button (click)="logout()">Logout</button>
   </div>
 </div>

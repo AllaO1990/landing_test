@@ -1,31 +1,25 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-  Self,
-} from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TuiDestroyService, TuiDialog } from '@taiga-ui/cdk';
-import { TuiDialogCloseService } from '@taiga-ui/core';
-import { Observable, takeUntil } from 'rxjs';
-import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
+import { TuiButtonModule, TuiDialogCloseService } from '@taiga-ui/core';
+import { POLYMORPHEUS_CONTEXT, PolymorpheusModule } from '@tinkoff/ng-polymorpheus';
+import { takeUntil } from 'rxjs';
 
 @Component({
   selector: 'lib-enter-dialog',
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss',
+  standalone: true,
+  imports: [PolymorpheusModule, TuiButtonModule, JsonPipe],
   providers: [TuiDialogCloseService, TuiDestroyService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterDialogComponent {
-  constructor(
-    @Inject(POLYMORPHEUS_CONTEXT)
-    readonly context: TuiDialog<any, any>,
-    @Inject(TuiDialogCloseService) close$: Observable<unknown>,
-    @Self() @Inject(TuiDestroyService) destroy$: Observable<unknown>
-  ) {
-    close$
-      .pipe(takeUntil(destroy$))
-      .subscribe(() => this.context.$implicit.complete());
+  readonly context: TuiDialog<any, any> = inject(POLYMORPHEUS_CONTEXT);
+  private _close$ = inject(TuiDialogCloseService);
+  private _destroy$ = inject(TuiDestroyService, { self: true });
+  constructor() {
+    this._close$.pipe(takeUntil(this._destroy$)).subscribe(() => this.context.$implicit.complete());
   }
 
   onClick(response: boolean): void {

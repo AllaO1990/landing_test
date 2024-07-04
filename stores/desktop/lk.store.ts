@@ -1,74 +1,51 @@
 import { Injectable } from '@angular/core';
+import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
 import { distinctUntilChanged, Observable, switchMap, tap, timer } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { DesktopLkState } from 'types/lk-state';
-import {
-  StockId,
-  StockInstrument,
-  StockList,
-  StockPrice,
-  WithLastPrice,
-} from 'types/stock';
-import { StockListStore } from './stock-list.store';
-import { EventSelected } from 'types/events';
-import { EntryStore } from './entry.store';
-import { Idea } from 'types/idea';
-import { DesktopService } from '@desktop-data/desktop-data';
-import { ChartStore } from './chart-store';
 import { ActiveZone } from 'types/chart';
+import { EventSelected } from 'types/events';
+import { Idea } from 'types/idea';
+import { DesktopLkState } from 'types/lk-state';
+import { StockId, StockInstrument, StockList, StockPrice, WithLastPrice } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
+import { ChartStore } from './chart-store';
+import { EntryStore } from './entry.store';
+import { StockListStore } from './stock-list.store';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
-  public readonly event$: Observable<StockEvent | null> = this.select(
-    (state: DesktopLkState) => state.event
-  );
+  public readonly event$: Observable<StockEvent | null> = this.select((state: DesktopLkState) => state.event);
 
-  public readonly selectedInstrument$: Observable<StockInstrument | null> =
-    this._stockListStore.selected$;
+  public readonly selectedInstrument$: Observable<StockInstrument | null> = this._stockListStore.selected$;
 
-  public readonly selectedIdea$: Observable<Idea | null> =
-    this._entryStore.selected$;
+  public readonly selectedIdea$: Observable<Idea | null> = this._entryStore.selected$;
 
-  public readonly stock$: Observable<StockList | null> =
-    this._stockListStore.list$;
+  public readonly stock$: Observable<StockList | null> = this._stockListStore.list$;
 
   public readonly entry$: Observable<Idea[] | null> = this._entryStore.list$;
 
-  public readonly candles$: Observable<any[] | null> =
-    this._chartStore.candles$;
+  public readonly candles$: Observable<any[] | null> = this._chartStore.candles$;
 
-  public readonly consolidationZones$: Observable<ActiveZone[] | null> =
-    this._chartStore.consolidationZones$;
+  public readonly consolidationZones$: Observable<ActiveZone[] | null> = this._chartStore.consolidationZones$;
 
   public readonly stockActive$: Observable<StockId[] | null> = this.select(
-    this._stockListStore.active$.pipe(
-      filter((result: StockId[] | null): result is StockId[] => result !== null)
-    ),
-    this._entryStore.active$.pipe(
-      filter((result: StockId[] | null): result is StockId[] => result !== null)
-    ),
+    this._stockListStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
+    this._entryStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
     this._stockListStore.selected$.pipe(
-      filter(
-        (result: StockInstrument | null): result is StockInstrument =>
-          result !== null
-      ),
+      filter((result: StockInstrument | null): result is StockInstrument => result !== null),
       map((result: StockInstrument) => result.id),
       distinctUntilChanged()
     ),
-    (stock: StockId[], entry: StockId[], selectId: StockId) => [
-      ...stock,
-      ...entry,
-      selectId,
-    ],
+    (stock: StockId[], entry: StockId[], selectId: StockId) => [...stock, ...entry, selectId],
     { debounce: true }
   );
 
-  public readonly price$: Observable<StockPrice<WithLastPrice> | null> =
-    this.select((state: DesktopLkState) => state.price);
+  public readonly price$: Observable<StockPrice<WithLastPrice> | null> = this.select(
+    (state: DesktopLkState) => state.price
+  );
 
   constructor(
     private readonly _api: DesktopService,
@@ -87,14 +64,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._entryStore.load();
 
     this.loadActivePrice(
-      this._timer(this.stockActive$, TIMER_INTERVAL).pipe(
-        map((value: { source: StockId[] | null }) => value.source)
-      )
+      this._timer(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
     );
 
-    this._chartStore.loadCandles(
-      this._timer(this._stockListStore.selected$, TIMER_INTERVAL)
-    );
+    this._chartStore.loadCandles(this._timer(this._stockListStore.selected$, TIMER_INTERVAL));
 
     this._chartStore.loadConsolidationZonesV2(this._entryStore.selected$);
 
@@ -102,83 +75,56 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this.onChangeEventEntry(this.event$);
   }
 
-  public updateSelect = this.updater(
-    (state: DesktopLkState, selected: any) => ({ ...state, selected })
-  );
+  public updateSelect = this.updater((state: DesktopLkState, selected: any) => ({ ...state, selected }));
 
-  public updateEvent = this.updater(
-    (state: DesktopLkState, event: StockEvent) => ({ ...state, event })
-  );
+  public updateEvent = this.updater((state: DesktopLkState, event: StockEvent) => ({ ...state, event }));
 
   public updatePrice = this.updater(
-    (
-      state: DesktopLkState,
-      price: StockPrice<WithLastPrice>
-    ): DesktopLkState => ({ ...state, price })
+    (state: DesktopLkState, price: StockPrice<WithLastPrice>): DesktopLkState => ({ ...state, price })
   );
 
   public updateStockActive = this._stockListStore.updateActive;
 
-  public readonly loadActivePrice = this.effect(
-    (stream$: Observable<StockId[] | null>) =>
-      stream$.pipe(
-        filter((list: StockId[] | null): list is StockId[] => !!list),
-        switchMap((list: StockId[]) => this._api.getActiveStock(list)),
-        tap((result: StockPrice<WithLastPrice>) => this.updatePrice(result))
-      )
+  public readonly loadActivePrice = this.effect((stream$: Observable<StockId[] | null>) =>
+    stream$.pipe(
+      filter((list: StockId[] | null): list is StockId[] => !!list),
+      switchMap((list: StockId[]) => this._api.getActiveStock(list)),
+      tap((result: StockPrice<WithLastPrice>) => this.updatePrice(result))
+    )
   );
 
-  public readonly onChangeEventStock = this.effect(
-    (stream$: Observable<StockEvent | null>) =>
-      stream$.pipe(
-        filter(
-          (event: StockEvent | null): event is StockEvent => event !== null
-        ),
-        filter(
-          (event: StockEvent): boolean =>
-            event.type === EventSelected.STOCK_LIST
-        ),
-        switchMap((event: StockEvent) =>
-          this.stock$.pipe(
-            filter(
-              (list: StockList | null): list is StockList => list !== null
-            ),
-            map(
-              (list: StockList): StockInstrument =>
-                list.find((item: StockInstrument) => item.id === event.id)!
-            ),
-            tap((value: StockInstrument) => {
-              this._stockListStore.updateSelected(value);
-              this._entryStore.updateSelected(null);
-            })
-          )
+  public readonly onChangeEventStock = this.effect((stream$: Observable<StockEvent | null>) =>
+    stream$.pipe(
+      filter((event: StockEvent | null): event is StockEvent => event !== null),
+      filter((event: StockEvent): boolean => event.type === EventSelected.STOCK_LIST),
+      switchMap((event: StockEvent) =>
+        this.stock$.pipe(
+          filter((list: StockList | null): list is StockList => list !== null),
+          map((list: StockList): StockInstrument => list.find((item: StockInstrument) => item.id === event.id)!),
+          tap((value: StockInstrument) => {
+            this._stockListStore.updateSelected(value);
+            this._entryStore.updateSelected(null);
+          })
         )
       )
+    )
   );
 
-  public readonly onChangeEventEntry = this.effect(
-    (stream$: Observable<StockEvent | null>) =>
-      stream$.pipe(
-        filter(
-          (event: StockEvent | null): event is StockEvent => event !== null
-        ),
-        filter(
-          (event: StockEvent): boolean => event.type === EventSelected.IDEA
-        ),
-        switchMap((event: StockEvent) =>
-          this.entry$.pipe(
-            filter((list: Idea[] | null): list is Idea[] => list !== null),
-            map(
-              (list: Idea[]): Idea =>
-                list.find((item: Idea) => item.id === event.id)!
-            ),
-            tap((value: Idea) => {
-              this._stockListStore.updateSelected(value.instrument);
-              this._entryStore.updateSelected(value);
-            })
-          )
+  public readonly onChangeEventEntry = this.effect((stream$: Observable<StockEvent | null>) =>
+    stream$.pipe(
+      filter((event: StockEvent | null): event is StockEvent => event !== null),
+      filter((event: StockEvent): boolean => event.type === EventSelected.IDEA),
+      switchMap((event: StockEvent) =>
+        this.entry$.pipe(
+          filter((list: Idea[] | null): list is Idea[] => list !== null),
+          map((list: Idea[]): Idea => list.find((item: Idea) => item.id === +event.id)!),
+          tap((value: Idea) => {
+            this._stockListStore.updateSelected(value.instrument);
+            this._entryStore.updateSelected(value);
+          })
         )
       )
+    )
   );
 
   private _timer<T>(
@@ -187,9 +133,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     start: number = 0
   ): Observable<{ source: T; index: number }> {
     return source$.pipe(
-      switchMap((source: T) =>
-        timer(start, interval).pipe(map((index: number) => ({ source, index })))
-      )
+      switchMap((source: T) => timer(start, interval).pipe(map((index: number) => ({ source, index }))))
     );
   }
 }

@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  inject,
-  Input,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
 
 import * as Highcharts from 'highcharts/highstock';
 
@@ -232,8 +225,8 @@ export class ChartComponent {
         tooltip: {
           pointFormat:
             '<span style="color:{point.color}">●</span>' +
-            '<b> {series.name} </b>' +
-            '{point.y} ',
+            '<b style="font-size:12px"> {series.name} </b>' +
+            '<p style="font-size:12px">{point.y}</p>',
         },
       },
       {
@@ -241,11 +234,25 @@ export class ChartComponent {
         color: 'gray',
         linkedTo: 'primary',
         params: { period: 30 },
+        lineWidth: 0.5,
         tooltip: {
           pointFormat:
             '<span style="color:{point.color}">●</span>' +
-            '<b> {series.name} </b>' +
-            '{point.y} ',
+            '<b style="font-size:12px"> {series.name} </b>' +
+            '<p style="font-size:12px">{point.y}</p>',
+        },
+      },
+      {
+        type: 'ema',
+        color: 'blue',
+        linkedTo: 'primary',
+        params: { period: 20 },
+        lineWidth: 0.5,
+        tooltip: {
+          pointFormat:
+            '<span style="color:{point.color}">●</span>' +
+            '<b style="font-size:12px"> {series.name} </b>' +
+            '<p style="font-size:12px">{point.y}</p>',
         },
       },
       {
@@ -256,8 +263,8 @@ export class ChartComponent {
         tooltip: {
           pointFormat:
             '<span style="color:{point.color}">●</span>' +
-            '<b> {series.name} </b>' +
-            '{point.y} ',
+            '<b style="font-size:12px"> {series.name} </b>' +
+            '<p style="font-size:12px">{point.y}</p>',
         },
       },
       {
@@ -265,11 +272,12 @@ export class ChartComponent {
         color: 'orange',
         linkedTo: 'primary',
         params: { period: 10 },
+        lineWidth: 0.5,
         tooltip: {
           pointFormat:
             '<span style="color:{point.color}">●</span>' +
-            '<b> {series.name} </b>' +
-            '{point.y} ',
+            '<b style="font-size:12px"> {series.name} </b>' +
+            '<p style="font-size:12px">{point.y}</p>',
         },
       },
     ],
@@ -277,9 +285,7 @@ export class ChartComponent {
 
   @Input()
   set selected(value: StockInstrument | null) {
-    (
-      this.chartOptions.series as Highcharts.SeriesCandlestickOptions[]
-    )[0].name = value?.ticker;
+    (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].name = value?.ticker;
   }
 
   @Input()
@@ -290,9 +296,7 @@ export class ChartComponent {
 
   @Input()
   set data(value: any[]) {
-    (
-      this.chartOptions.series as Highcharts.SeriesCandlestickOptions[]
-    )[0].data = value;
+    (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value;
     this.chart?.xAxis[0].setExtremes();
     this.chart?.yAxis[0].setExtremes();
 
@@ -301,7 +305,7 @@ export class ChartComponent {
 
   @Input()
   set consolidationZones(value: any[]) {
-    this.chart.removeAnnotation(0);
+    this.chart?.removeAnnotation(0);
 
     if (!value) {
       return;
@@ -348,15 +352,7 @@ export class ChartComponent {
         downloadPNG: 'Загрузить PNG',
         downloadSVG: 'Загрузить SVG',
         printChart: 'Распечатать',
-        weekdays: [
-          'Воскресенье',
-          'Понедельник',
-          'Вторник',
-          'Среда',
-          'Четверг',
-          'Пятница',
-          'Суббота',
-        ],
+        weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
         loading: 'Загрузка...',
         months: [
           'Январь',
@@ -372,20 +368,7 @@ export class ChartComponent {
           'Ноябрь',
           'Декабрь',
         ],
-        shortMonths: [
-          'Янв',
-          'Фев',
-          'Мар',
-          'Апр',
-          'Май',
-          'Июн',
-          'Июл',
-          'Авг',
-          'Сен',
-          'Окт',
-          'Ноя',
-          'Дек',
-        ],
+        shortMonths: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
       },
     });
   }

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AuthService } from 'apps/desktop/src/app/core/auth/auth.service';
 
 @Component({
   selector: 'vt-toolbar-main',
@@ -13,9 +14,13 @@ export class ToolbarComponent {
     // { name: 'Dashboard', path: './dashboard' },
   ];
 
-  constructor() {}
+  constructor(private _authService: AuthService) {}
 
   public trackByIndex(index: number): number {
     return index;
+  }
+
+  logout() {
+    this._authService.logout();
   }
 }
