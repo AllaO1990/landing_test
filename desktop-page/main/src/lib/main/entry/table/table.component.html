@@ -25,7 +25,6 @@
         <tbody tuiTbody>
         <tr
           (dblclick)="onDblclick($event, item)"
-          (click)="onClick($event, item)"
           class="entry-table__table-tr"
           [class.entry-table__table-tr--active]="(activeIdeaId$ | async) === item.id"
           [style.background-color]="getColorBackGround(item.strategy.successProbability * 100)"

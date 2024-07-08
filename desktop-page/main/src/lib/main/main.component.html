@@ -1,25 +1,53 @@
-<div class="container">
-  <div class="vt-chart-container">
-    <vt-chart
-      [consolidationZones]="consolidationZones$ | async"
-      [data]="candles$ | async"
-      [selected]="selected$ | async"
-      [selectedIdea]="selectedIdea$ | async"
-    ></vt-chart>
-  </div>
+<div class="container container--{{breakpoint$ | async}}">
+  <div
+    [style.margin-left.%]="activeItemIndex * -100"
+    class="container__widget">
+    <div
+      class="widget vt-chart-container">
+      <vt-chart
+        [consolidationZones]="consolidationZones$ | async"
+        [data]="candles$ | async"
+        [selected]="selected$ | async"
+        [selectedIdea]="selectedIdea$ | async"
+      ></vt-chart>
+    </div>
 
-  <div class="stock">
-    <vt-stock
-      [list]="stockList$ | async"
-      [price]="stockPrice$ | async"
-    ></vt-stock>
-  </div>
+    <div
+      class="widget stock">
+      <vt-stock
+        [list]="stockList$ | async"
+        [price]="stockPrice$ | async"
+      ></vt-stock>
+    </div>
 
-  <div class="entry">
-    <vt-entry [data]="ideaList$ | async"></vt-entry>
-  </div>
+    <div
+      class="widget entry">
+      <vt-entry [data]="ideaList$ | async"></vt-entry>
+    </div>
 
-  <div class="out">
-    <vt-out [data]="tradeList$ | async"></vt-out>
+    <div
+      class="widget out">
+      <vt-out [data]="tradeList$ | async"></vt-out>
+    </div>
+  </div>
+  <div class="container__tabs" *ngIf="(tabs$ | async) as tabs">
+    <tui-tabs
+      class="tabs"
+      [(activeItemIndex)]="activeItemIndex">
+      <button
+        *ngFor="let item of tabs; trackBy: trackByIndex; index as i"
+        class="tab"
+        [class.tab--active]="i === activeItemIndex"
+        tuiTab>
+        <tui-svg
+          class="tab__icon"
+          [src]="item.icon"
+        ></tui-svg>
+        <span class="tab__text">
+            {{ item.text }}
+          </span>
+      </button>
+    </tui-tabs>
   </div>
 </div>
+
