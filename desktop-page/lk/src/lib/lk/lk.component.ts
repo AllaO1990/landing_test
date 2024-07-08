@@ -1,41 +1,17 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
 import { ToolbarSearchModule } from '../../../../../apps/desktop/src/app/shared/components/toolbar-search';
-import {
-  ChartStore,
-  DesktopLkStore,
-  EntryStore,
-  StockListStore,
-} from 'stores/desktop';
+import { ChartStore, DesktopLkStore, EntryStore, StockListStore } from 'stores/desktop';
 import { DESKTOP_API, DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { QueryParams } from 'utils/query-params';
-import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  Observable,
-  shareReplay,
-} from 'rxjs';
+import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, shareReplay } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 
 const createStore = (api: DesktopService) =>
-  new DesktopLkStore(
-    api,
-    new StockListStore(api),
-    new EntryStore(api),
-    new ChartStore(api)
-  );
+  new DesktopLkStore(api, new StockListStore(api), new EntryStore(api), new ChartStore(api));
 
 @Component({
   selector: 'lib-lk',
@@ -62,18 +38,11 @@ export class LkComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const stream$ = this._queryParams.pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    const stream$ = this._queryParams.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-    combineLatest([
-      this._getParamsKey<EventSelected>('type', stream$),
-      this._getParamsKey<StockId>('id', stream$),
-    ])
+    combineLatest([this._getParamsKey<EventSelected>('type', stream$), this._getParamsKey<StockId>('id', stream$)])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(300))
-      .subscribe(([type, id]: [EventSelected, StockId]) =>
-        this._store.updateEvent({ type, id })
-      );
+      .subscribe(([type, id]: [EventSelected, StockId]) => this._store.updateEvent({ type, id }));
 
     if (!this.queryId) {
       this._queryParams.update({
@@ -83,10 +52,7 @@ export class LkComponent implements OnInit {
     }
   }
 
-  private _getParamsKey<T>(
-    key: string,
-    stream$: Observable<Params>
-  ): Observable<T> {
+  private _getParamsKey<T>(key: string, stream$: Observable<Params>): Observable<T> {
     return stream$.pipe(
       filter((params: Params) => !!params[key]),
       map((params: Params) => params[key]),

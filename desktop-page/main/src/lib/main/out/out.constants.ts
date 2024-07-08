@@ -12,14 +12,12 @@ export const OUT_HEADER: OutHeaderItem[] = [
   {
     name: 'direction',
     label: '',
-    sorter: (a: { direction: string }, b: { direction: string }) =>
-      sortText(a.direction, b.direction),
+    sorter: (a: { direction: string }, b: { direction: string }) => sortText(a.direction, b.direction),
   },
   {
     name: 'ticker',
     label: 'Тикер',
-    sorter: (a: { ticker: string }, b: { ticker: string }) =>
-      sortText(a.ticker, b.ticker),
+    sorter: (a: { ticker: string }, b: { ticker: string }) => sortText(a.ticker, b.ticker),
   },
   {
     name: 'cost',
@@ -54,7 +52,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'target1',
-    label: 'Цель 1<br>К-во выход',
+    label: 'Цель текущ.<br>К-во выход',
     sorter: (
       a: { target1: { price: number } },
       b: {
@@ -64,7 +62,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'target2',
-    label: 'Цель 2<br>К-во выход',
+    label: 'Цель след.<br>К-во выход',
     sorter: (
       a: { target2: { price: number } },
       b: {
@@ -75,8 +73,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   {
     name: 'stop',
     label: 'Стоп',
-    sorter: (a: { stop: { price: number } }, b: { stop: { price: number } }) =>
-      sortNumber(a.stop.price, b.stop.price),
+    sorter: (a: { stop: { price: number } }, b: { stop: { price: number } }) => sortNumber(a.stop.price, b.stop.price),
   },
   // {
   //   name: 'out',

@@ -1,5 +1,6 @@
 :host {
-  display: inline-block;
+  display: inline-flex;
+
   height: 100%;
   width: 100%;
 
@@ -9,95 +10,217 @@
 }
 
 .container {
-  display: grid;
+  display: flex;
+  flex-flow: column nowrap;
 
   height: 100%;
   width: 100%;
+  overflow: hidden;
 
-  gap: var(--padding-1);
+  &__widget {
+    display: flex;
+    flex-flow: row nowrap;
 
-  grid-template-rows: 1fr 1fr;
-  grid-template-columns: 1fr 1fr 410px;
+    flex: 1 1 auto;
 
-  background-color: var(--main-bg-color);
+    width: 100%;
+    height: calc(100% - 60px);
+  }
+
+  &__tabs {
+    flex: 0 0 auto;
+    height: 60px;
+
+    box-shadow: var(--tui-shadow-sidebar);
+  }
 }
 
-.vt-chart-container {
-  grid-row: 1;
-  grid-column: 1 / 3;
+.tabs {
+  height: 100%;
+}
+
+.tab {
+  flex: 1 1 auto;
+  justify-content: center;
+
+  &__icon {
+    margin-right: var(--padding-1);
+  }
+
+  &--active &__icon {
+    color: var(--tui-primary);
+  }
+}
+
+.vt-chart-container, .stock, .entry, .out {
+  flex: 0 0 auto;
+  width: 100%;
 
   overflow: hidden;
 }
 
-.stock {
-  grid-row: 1 / 3;
-  grid-column: 3;
-
-  overflow: hidden;
+@media screen and (min-width: 768px) {
+  .vt-chart-container {
+    width: calc(100% - 410px);
+  }
+  .stock {
+    width: 410px;
+  }
 }
 
-.entry {
-  grid-row: 2;
-  grid-column: 1;
-
-  overflow: hidden;
-}
-
-.out {
-  grid-row: 2;
-  grid-column: 2;
-
-  overflow: hidden;
-}
-
-@media screen and (max-width: 1600px) and (min-width: 1320px) {
+@media screen and (min-width: 1024px) {
   .container {
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 410px 1fr 1fr 410px;
+    &__widget {
+      display: grid;
+
+      gap: var(--padding-1);
+
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 410px 1fr 1fr 410px;
+
+      background-color: var(--main-bg-color);
+    }
   }
 
   .vt-chart-container {
+    grid-row: 1;
     grid-column: 1 / 4;
-  }
 
-  .entry {
-    grid-row: 2;
-    grid-column: 1 / 3;
-  }
-
-  .out {
-    grid-row: 2;
-    grid-column: 3 / 5;
+    width: auto;
   }
 
   .stock {
     grid-row: 1;
     grid-column: 4;
-  }
-}
 
-@media screen and (max-width: 1320px) {
-  .container {
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-template-columns: 1fr 410px;
-  }
-
-  .vt-chart-container {
-    grid-column: 1;
+    width: auto;
   }
 
   .entry {
     grid-row: 2;
+    grid-column: 1 / 3;
+
+    width: auto;
+  }
+
+  .out {
+    grid-row: 2;
+    grid-column: 3 / 5;
+
+    width: auto;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .container {
+    &__widget {
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 410px;
+    }
+  }
+
+  .vt-chart-container {
+    grid-column: 1 / 3;
+  }
+
+  .stock {
+    grid-row: 1 / 3;
+    grid-column: 3;
+  }
+
+  .entry {
     grid-column: 1;
   }
 
   .out {
-    grid-row: 3;
-    grid-column: 1;
-  }
-
-  .stock {
-    grid-row: 1 / 4;
     grid-column: 2;
   }
 }
+
+//
+//.vt-chart-container {
+//  grid-row: 1;
+//  grid-column: 1 / 3;
+//
+//  overflow: hidden;
+//}
+//
+//.stock {
+//  grid-row: 1 / 3;
+//  grid-column: 3;
+//
+//  overflow: hidden;
+//}
+//
+//.entry {
+//  grid-row: 2;
+//  grid-column: 1;
+//
+//  overflow: hidden;
+//}
+//
+//.out {
+//  grid-row: 2;
+//  grid-column: 2;
+//
+//  overflow: hidden;
+//}
+
+//
+//@media screen and (max-width: 1600px) and (min-width: 1320px) {
+//  .container {
+//    grid-template-rows: 1fr 1fr;
+//    grid-template-columns: 410px 1fr 1fr 410px;
+//gap: var(--padding-1);
+//
+//grid-template-rows: 1fr;
+//grid-template-columns: 1fr;
+//
+//background-color: var(--main-bg-color);
+//  }
+//
+//  .vt-chart-container {
+//    grid-column: 1 / 4;
+//  }
+//
+//  .entry {
+//    grid-row: 2;
+//    grid-column: 1 / 3;
+//  }
+//
+//  .out {
+//    grid-row: 2;
+//    grid-column: 3 / 5;
+//  }
+//
+//  .stock {
+//    grid-row: 1;
+//    grid-column: 4;
+//  }
+//}
+//
+//@media screen and (max-width: 1320px) {
+//  .container {
+//    grid-template-rows: 1fr 1fr 1fr;
+//    grid-template-columns: 1fr 410px;
+//  }
+//
+//  .vt-chart-container {
+//    grid-column: 1;
+//  }
+//
+//  .entry {
+//    grid-row: 2;
+//    grid-column: 1;
+//  }
+//
+//  .out {
+//    grid-row: 3;
+//    grid-column: 1;
+//  }
+//
+//  .stock {
+//    grid-row: 1 / 4;
+//    grid-column: 2;
+//  }
+//}
