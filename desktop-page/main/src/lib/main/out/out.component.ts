@@ -4,6 +4,7 @@ import { OutEnums } from './out.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
 import { FormControl } from '@angular/forms';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
+import { Position } from 'types/position';
 
 @Component({
   selector: 'vt-out',
@@ -13,14 +14,10 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 })
 export class OutComponent {
   public readonly constants: { [key in OutEnums]: string } = OUT_CONSTANTS;
-  public readonly filterStock: { id: string; name: string }[] =
-    MAIN_FILTER_STOCK;
-  public readonly filterStrategy: { id: string; name: string }[] =
-    STOCK_STRATEGY_LIST;
+  public readonly filterStock: { id: string; name: string }[] = MAIN_FILTER_STOCK;
+  public readonly filterStrategy: { id: string; name: string }[] = STOCK_STRATEGY_LIST;
 
-  public readonly controlSearch: FormControl<string | null> = new FormControl(
-    null
-  );
+  public readonly controlSearch: FormControl<string | null> = new FormControl(null);
   public readonly controlFilterStock: FormControl<{
     id: string;
     name: string;
@@ -32,7 +29,7 @@ export class OutComponent {
 
   public openMore = false;
 
-  @Input() data = [];
+  @Input() data: Position[] | null = [];
 
   public onOpenMore(): void {
     this.openMore = !this.openMore;

@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, of, switchMap, timer } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Response, ResponseMessage } from 'types/response';
-import { Stock, StockDirection, StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
+import { Stock, StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
+import { Position, ResponsePosition, ResponsePositions } from 'types/position';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -22,7 +23,7 @@ export class DesktopApiService extends DesktopService {
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
         }))
       ),
-      catchError((error: Response<ResponseListIdea>) => {
+      catchError((error: Error) => {
         console.error(error);
         return of([]);
       })
@@ -59,80 +60,90 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<StockInstrument[]>(`/assets/mocks/stock-list-${id}.json`);
   }
 
-  getTradeList(): Observable<any[]> {
-    const today: Date = new Date();
-    const maxDay: number = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    const genNumber = (max: number, min: number): number => {
-      return Math.floor(Math.random() * (max - min) + min);
-    };
-
-    return timer(2000).pipe(
-      switchMap((_) =>
-        of(
-          Array.from({ length: 100 }, (_, i: number) => {
-            const cost = genNumber(10000, 100);
-            const enterDiff = genNumber(100, 10);
-            const deposit = genNumber(100, 2);
-            const luck = genNumber(10, 1);
-            const start = `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(maxDay, 1)}`;
-
-            return {
-              id: i,
-              figi: `${i}`,
-              date: {
-                start,
-                passed: Math.round((new Date().valueOf() - new Date(start).valueOf()) / (24 * 60 * 60 * 1000)),
-              },
-              direction: i % 4 ? StockDirection.SELL : StockDirection.BUY,
-              ticker: 'SBER',
-              name: 'Сбер Банк',
-              exchange: 'MOEX',
-              cost: {
-                price: cost,
-                cost: cost * 3,
-              },
-              enter: {
-                price: cost - enterDiff,
-                cost: (cost - enterDiff) * 3,
-              },
-              result: {
-                price: enterDiff,
-                percentage: 3,
-              },
-              target1: {
-                price: cost + enterDiff,
-                percentage: luck,
-                count: enterDiff,
-                countPercent: Number((luck * 1.1).toFixed(2)),
-              },
-              target2: {
-                price: cost + enterDiff * 3,
-                percentage: luck * 1.5,
-                count: enterDiff,
-                countPercent: luck * 2,
-              },
-              profit: {
-                percentage: luck,
-                count: cost,
-              },
-              out: {
-                price: cost + enterDiff * 2,
-                value: 1,
-              },
-              stop: {
-                price: cost - enterDiff * 2,
-                percentage: 2,
-              },
-              deposit: {
-                value: deposit,
-                percentage: 2,
-              },
-              luck,
-            };
-          })
-        )
+  getTradeList(): Observable<Position[]> {
+    return this._http.get<Response<ResponsePositions>>(`https://trade.gpn.dev/api/v1/ideas/positions`).pipe(
+      filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
+      map((response: Response<ResponsePositions>) =>
+        response.data.items.map((item: ResponsePosition) => ({
+          ...item,
+          priceIncrement: getPriceIncrement(item.minPriceIncrement),
+        }))
       )
     );
+
+    // const today: Date = new Date();
+    // const maxDay: number = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    // const genNumber = (max: number, min: number): number => {
+    //   return Math.floor(Math.random() * (max - min) + min);
+    // };
+    //
+    // return timer(2000).pipe(
+    //   switchMap((_) =>
+    //     of(
+    //       Array.from({ length: 100 }, (_, i: number) => {
+    //         const cost = genNumber(10000, 100);
+    //         const enterDiff = genNumber(100, 10);
+    //         const deposit = genNumber(100, 2);
+    //         const luck = genNumber(10, 1);
+    //         const start = `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(maxDay, 1)}`;
+    //
+    //         return {
+    //           id: i,
+    //           figi: `${i}`,
+    //           date: {
+    //             start,
+    //             passed: Math.round((new Date().valueOf() - new Date(start).valueOf()) / (24 * 60 * 60 * 1000)),
+    //           },
+    //           direction: i % 4 ? StockDirection.SELL : StockDirection.BUY,
+    //           ticker: 'SBER',
+    //           name: 'Сбер Банк',
+    //           exchange: 'MOEX',
+    //           cost: {
+    //             price: cost,
+    //             cost: cost * 3,
+    //           },
+    //           enter: {
+    //             price: cost - enterDiff,
+    //             cost: (cost - enterDiff) * 3,
+    //           },
+    //           result: {
+    //             price: enterDiff,
+    //             percentage: 3,
+    //           },
+    //           target1: {
+    //             price: cost + enterDiff,
+    //             percentage: luck,
+    //             count: enterDiff,
+    //             countPercent: Number((luck * 1.1).toFixed(2)),
+    //           },
+    //           target2: {
+    //             price: cost + enterDiff * 3,
+    //             percentage: luck * 1.5,
+    //             count: enterDiff,
+    //             countPercent: luck * 2,
+    //           },
+    //           profit: {
+    //             percentage: luck,
+    //             count: cost,
+    //           },
+    //           out: {
+    //             price: cost + enterDiff * 2,
+    //             value: 1,
+    //           },
+    //           stop: {
+    //             price: cost - enterDiff * 2,
+    //             percentage: 2,
+    //           },
+    //           deposit: {
+    //             value: deposit,
+    //             percentage: 2,
+    //           },
+    //           luck,
+    //         };
+    //       })
+    //     )
+    //   )
+    // );
 
     // return this._http.get<StockNameItem[]>('/assets/mocks/trade-list.json');
   }

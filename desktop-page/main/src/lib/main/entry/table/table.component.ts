@@ -16,7 +16,7 @@ import { QueryParams } from 'utils/query-params';
 import { DesktopLkStore } from '../../../../../../../stores/desktop';
 import { ENTRY_HEADER } from '../entry.constants';
 import { EntryHeaderItem } from '../entry.types';
-import { DatePassedPipe } from './date-passed.pipe';
+import { DatePassedPipe } from '../../common/date-passed.pipe';
 import { StrategyNamePipe } from './strategy-name.pipe';
 
 @Component({
@@ -86,16 +86,16 @@ export class EntryTableComponent {
     this.dialogEnterService.openDialog(item, this._injector).subscribe();
   }
 
-  // public onClick(event: Event, item: Idea): void {
-  //   event.preventDefault();
-  //
-  //   this._queryParams.update({
-  //     type: EventSelected.IDEA,
-  //     id: item.id,
-  //   });
-  //
-  //   this.dialogEnterService.openDialog(item, this._injector).subscribe();
-  // }
+  public onClick(event: Event, item: Idea): void {
+    event.preventDefault();
+
+    this._queryParams.update({
+      type: EventSelected.IDEA,
+      id: item.id,
+    });
+
+    // this.dialogEnterService.openDialog(item, this._injector).subscribe();
+  }
 
   private _conditionActive(selected: StockEvent): StockId | null {
     return selected.type === EventSelected.IDEA ? selected.id : null;

@@ -24,39 +24,41 @@
         <tr
           class="out__table-tr"
           *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
-          [style.background-color]="getColorBackGround(item.luck)"
+          [style.background-color]="getColorBackGround(8)"
           tuiTr
         >
           <td
             class="td"
             *tuiCell="'date'"
-            [title]="item.date.start | date : 'dd.MM.yyyy'"
+            [title]="item.createdAt | date : 'dd.MM.yyyy'"
             tuiTd
           >
-            {{ item.date.start | date : 'dd.MM' }}
-            <div class="substring">{{ item.date.passed }} дней</div>
+            {{ item.createdAt | date : 'dd.MM' }}
+            <div class="substring">{{ item.createdAt | datePassed }} дней</div>
           </td>
 
           <td *tuiCell="'cost'" tuiTd class="td td--number">
-            {{ item.cost.price | tuiFormatNumber }}
-            <div class="substring">{{ item.cost.cost | tuiFormatNumber }}</div>
+            {{ item.entry.price | tuiFormatNumber }}
+            <div class="substring">{{ item.entry.quantity | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'direction'" tuiTd class="td td--direction">
-            <ng-container *ngTemplateOutlet="item.direction === 'buy' ? buy : sell"></ng-container>
+            <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell"></ng-container>
           </td>
 
           <td *tuiCell="'result'" tuiTd class="td td--number">
-            {{ item.result.price | tuiFormatNumber }}
-            <div class="substring">{{ item.result.percentage | tuiFormatNumber }}%</div>
+            <ng-container *ngIf="item.result; else none">
+              {{ item.result.price | tuiFormatNumber }}
+              <div class="substring">{{ item.result.percentage | tuiFormatNumber:{ decimalLimit: 2 } }}%</div>
+            </ng-container>
           </td>
 
           <td *tuiCell="'ticker'" tuiTd>
             <div class="td__row">
-              {{ item.ticker }}
-              <span class="substring" style="margin-left: 8px">{{ item.exchange }}</span>
+              {{ item.instrument.ticker }}
+              <span class="substring" style="margin-left: 8px">{{ item.instrument.exchange }}</span>
             </div>
-            <div class="substring" [title]="item.name">{{ item.name }}</div>
+            <div class="substring" [title]="item.instrument.name">{{ item.instrument.name }}</div>
           </td>
 
           <td *tuiCell="'luck'" tuiTd>
@@ -64,35 +66,47 @@
           </td>
 
           <td *tuiCell="'deposit'" tuiTd class="td td--number">
-            {{ item.deposit.value | tuiFormatNumber }}
-            <div class="substring">{{ item.deposit.percentage | tuiFormatNumber }}%</div>
+            <ng-container *ngIf="item.deposit; else none">
+              {{ item.deposit.value | tuiFormatNumber }}
+              <div class="substring">{{ item.deposit.percentage | tuiFormatNumber:{ decimalLimit: 2 } }}%</div>
+            </ng-container>
           </td>
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">
-            <div class="td__row">
-              {{ item.target1.price | tuiFormatNumber }}
-              <span class="substring" style="margin-left: 8px">{{ item.target1.percentage }}%</span>
-            </div>
-            <div class="td__row">
-              <div class="substring">{{ item.target1.count }}</div>
-              <div class="substring" style="margin-left: 8px">{{ item.target1.countPercent }}%</div>
-            </div>
+            <ng-container *ngIf="item.targets[0] as target; else none">
+              <div class="td__row">
+                <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
+                <span class="substring" style="margin-left: 8px">
+                  {{ target.profitPercent| tuiFormatNumber :{ decimalLimit: 2 } }}%</span>
+              </div>
+              <div class="td__row">
+                <div class="substring">{{ target.amount }}</div>
+                <div class="substring" style="margin-left: 8px">
+                  {{ target.depositShare| tuiFormatNumber :{ decimalLimit: 2 } }}%
+                </div>
+              </div>
+            </ng-container>
           </td>
 
           <td *tuiCell="'target2'" tuiTd class="td td--number">
-            <div class="td__row">
-              {{ item.target2.price | tuiFormatNumber }}
-              <div class="substring" style="margin-left: 8px">{{ item.target2.percentage }}%</div>
-            </div>
-            <div class="td__row">
-              <div class="substring">{{ item.target2.count }}</div>
-              <div class="substring" style="margin-left: 8px">{{ item.target2.countPercent }}%</div>
-            </div>
+            <ng-container *ngIf="item.targets[1] as target; else none">
+              <div class="td__row">
+                <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
+                <span class="substring"
+                      style="margin-left: 8px">{{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 2 } }}%</span>
+              </div>
+              <div class="td__row">
+                <div class="substring">{{ target.amount }}</div>
+                <div class="substring"
+                     style="margin-left: 8px">{{ target.depositShare | tuiFormatNumber :{ decimalLimit: 2 } }}%
+                </div>
+              </div>
+            </ng-container>
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
-            {{ item.enter.price | tuiFormatNumber }}
-            <div class="substring">{{ item.enter.cost | tuiFormatNumber }}</div>
+            {{ item.entry.totalPrice | tuiFormatNumber }}
+            <div class="substring">{{ item.entry.depositShare | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'out'" tuiTd class="td td--number">
@@ -101,13 +115,15 @@
           </td>
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
-            {{ item.profit.percentage | tuiFormatNumber }}%
-            <div class="substring">{{ item.profit.count }}</div>
+            {{ (item.inPositionDepositShare * 100 | tuiFormatNumber) }}%
+            <div class="substring">{{ item.inPositionQuantity }}</div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">
-            {{ item.stop.price | tuiFormatNumber }}
-            <div class="substring">{{ item.stop.percentage }}%</div>
+            <div class="ellipsis" [title]="item.stop.price">
+              {{ item.stop.price | tuiFormatNumber }}
+            </div>
+            <div class="substring">{{ item.stop.lossPercent | tuiFormatNumber :{ decimalLimit: 2 } }}%</div>
           </td>
         </tr>
         </tbody>
@@ -127,3 +143,5 @@
 <ng-template #sell>
   <span class="sell">▼</span>
 </ng-template>
+
+<ng-template #none>&mdash;</ng-template>

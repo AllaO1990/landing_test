@@ -14,6 +14,7 @@ import { OutModule } from './out/out.module';
 import { StockComponent } from './stock/stock.component';
 import { TuiTabsModule } from '@taiga-ui/kit';
 import { TuiBreakpointService, TuiSvgModule } from '@taiga-ui/core';
+import { Position } from 'types/position';
 
 @Component({
   selector: 'lib-main',
@@ -50,7 +51,7 @@ export class MainComponent {
   );
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
 
-  public readonly tradeList$: Observable<any> = this._api.getTradeList();
+  public readonly tradeList$: Observable<Position[] | null> = this._api.getTradeList();
 
   public readonly stockList$: Observable<StockList | null> = this._store.stock$;
 
