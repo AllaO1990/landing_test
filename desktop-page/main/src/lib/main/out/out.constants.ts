@@ -41,7 +41,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'profit',
-    label: '%',
+    label: 'Приб. %',
     title: 'Прибль',
     sorter: (
       a: { profit: { percentage: number } },

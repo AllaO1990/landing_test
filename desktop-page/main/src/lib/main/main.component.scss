@@ -61,10 +61,10 @@
 
 @media screen and (min-width: 768px) {
   .vt-chart-container {
-    width: calc(100% - 410px);
+    width: calc(100% - 390px);
   }
   .stock {
-    width: 410px;
+    width: 390px;
   }
 }
 
@@ -76,7 +76,7 @@
       gap: var(--padding-1);
 
       grid-template-rows: 1fr 1fr;
-      grid-template-columns: 410px 1fr 1fr 410px;
+      grid-template-columns: 390px 1fr 1fr 390px;
 
       background-color: var(--main-bg-color);
     }
@@ -115,7 +115,7 @@
   .container {
     &__widget {
       grid-template-rows: 1fr 1fr;
-      grid-template-columns: 1fr 1fr 410px;
+      grid-template-columns: 1fr 1fr 390px;
     }
   }
 

@@ -67,6 +67,8 @@ export class DesktopApiService extends DesktopService {
         response.data.items.map((item: ResponsePosition) => ({
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
+          profit:
+            ((item.entry.price - item.lastPrice) / item.lastPrice) * 100 * (item.positionType === 'short' ? -1 : 1),
         }))
       )
     );
