@@ -1,18 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, of, switchMap, timer } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, timer } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Response, ResponseMessage } from 'types/response';
-import {
-  Stock,
-  StockDirection,
-  StockId,
-  StockInstrument,
-  StockPrice,
-  WithLastPrice,
-} from 'types/stock';
+import { Stock, StockDirection, StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 
@@ -21,20 +14,19 @@ export class DesktopApiService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
 
   public getIdeaList(): Observable<Idea[]> {
-    return this._http
-      .get<Response<ResponseListIdea>>(`https://trade.gpn.dev/api/v1/ideas`)
-      .pipe(
-        filter(
-          (response: Response<ResponseListIdea>) =>
-            response && response.message === ResponseMessage.success
-        ),
-        map((response: Response<ResponseListIdea>) =>
-          response.data.items.map((item: ResponseIdea) => ({
-            ...item,
-            priceIncrement: getPriceIncrement(item.minPriceIncrement),
-          }))
-        )
-      );
+    return this._http.get<Response<ResponseListIdea>>(`https://trade.gpn.dev/api/v1/ideas`).pipe(
+      filter((response: Response<ResponseListIdea>) => response && response.message === ResponseMessage.success),
+      map((response: Response<ResponseListIdea>) =>
+        response.data.items.map((item: ResponseIdea) => ({
+          ...item,
+          priceIncrement: getPriceIncrement(item.minPriceIncrement),
+        }))
+      ),
+      catchError((error: Response<ResponseListIdea>) => {
+        console.error(error);
+        return of([]);
+      })
+    );
   }
 
   public getList(): Observable<any> {
@@ -42,49 +34,34 @@ export class DesktopApiService extends DesktopService {
   }
 
   public getConsolidationZones(ideaId: string): Observable<any> {
-    return this._http.get<ConsolidationZones>(
-      'https://trade.gpn.dev/api/v1/chart-figures',
-      { params: { ideaId } }
-    );
+    return this._http.get<ConsolidationZones>('https://trade.gpn.dev/api/v1/chart-figures', { params: { ideaId } });
   }
 
   public getStockList(): Observable<Response<Stock>> {
-    return this._http.get<Response<Stock>>(
-      `https://trade.gpn.dev/api/v1/instruments?sub=true`
-    );
+    return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/instruments?sub=true`);
     // return this._http.get<Response<Stock>>('/assets/mocks/stock.json');
   }
 
-  public getActiveStock(
-    list: StockId[]
-  ): Observable<StockPrice<WithLastPrice>> {
+  public getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>> {
     return this._http
-      .post<Response<StockPrice<WithLastPrice>>>(
-        `https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`,
-        { ids: [...new Set(list)] }
-      )
+      .post<Response<StockPrice<WithLastPrice>>>(`https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`, {
+        ids: [...new Set(list)],
+      })
       .pipe(
         filter(
-          (response: Response<StockPrice<WithLastPrice>>) =>
-            response && response.message === ResponseMessage.success
+          (response: Response<StockPrice<WithLastPrice>>) => response && response.message === ResponseMessage.success
         ),
         map((response: Response<StockPrice<WithLastPrice>>) => response.data)
       );
   }
 
   public getStock(id: StockId): Observable<StockInstrument[]> {
-    return this._http.get<StockInstrument[]>(
-      `/assets/mocks/stock-list-${id}.json`
-    );
+    return this._http.get<StockInstrument[]>(`/assets/mocks/stock-list-${id}.json`);
   }
 
   getTradeList(): Observable<any[]> {
     const today: Date = new Date();
-    const maxDay: number = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      0
-    ).getDate();
+    const maxDay: number = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
     const genNumber = (max: number, min: number): number => {
       return Math.floor(Math.random() * (max - min) + min);
     };
@@ -97,19 +74,14 @@ export class DesktopApiService extends DesktopService {
             const enterDiff = genNumber(100, 10);
             const deposit = genNumber(100, 2);
             const luck = genNumber(10, 1);
-            const start = `${today.getFullYear()}-${
-              today.getMonth() + 1
-            }-${genNumber(maxDay, 1)}`;
+            const start = `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(maxDay, 1)}`;
 
             return {
               id: i,
               figi: `${i}`,
               date: {
                 start,
-                passed: Math.round(
-                  (new Date().valueOf() - new Date(start).valueOf()) /
-                    (24 * 60 * 60 * 1000)
-                ),
+                passed: Math.round((new Date().valueOf() - new Date(start).valueOf()) / (24 * 60 * 60 * 1000)),
               },
               direction: i % 4 ? StockDirection.SELL : StockDirection.BUY,
               ticker: 'SBER',
@@ -168,9 +140,7 @@ export class DesktopApiService extends DesktopService {
   getCandles(selected: { source: any; index: number }): Observable<any> {
     // console.log(selected);
     const from: string =
-      selected.index === 0
-        ? new Date(0).toISOString()
-        : new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+      selected.index === 0 ? new Date(0).toISOString() : new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
 
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {

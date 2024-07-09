@@ -1,6 +1,6 @@
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Injector, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiDialogService, TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
@@ -41,7 +41,7 @@ import { StrategyNamePipe } from './strategy-name.pipe';
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
-  providers: [EnterDialogService],
+  providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryTableComponent {
@@ -78,17 +78,6 @@ export class EntryTableComponent {
   public onDblclick(event: Event, item: Idea): void {
     event.preventDefault();
 
-    this.dialogEnterService.openDialog(item, this._injector).subscribe();
-
-    // console.log(this.dialogEnterService);
-    // console.log(item);
-
-    // this.dialogEnterService.openDialog(item).subscribe();
-  }
-
-  public onClick(event: Event, item: Idea): void {
-    event.preventDefault();
-
     this._queryParams.update({
       type: EventSelected.IDEA,
       id: item.id,
@@ -96,6 +85,17 @@ export class EntryTableComponent {
 
     this.dialogEnterService.openDialog(item, this._injector).subscribe();
   }
+
+  // public onClick(event: Event, item: Idea): void {
+  //   event.preventDefault();
+  //
+  //   this._queryParams.update({
+  //     type: EventSelected.IDEA,
+  //     id: item.id,
+  //   });
+  //
+  //   this.dialogEnterService.openDialog(item, this._injector).subscribe();
+  // }
 
   private _conditionActive(selected: StockEvent): StockId | null {
     return selected.type === EventSelected.IDEA ? selected.id : null;
