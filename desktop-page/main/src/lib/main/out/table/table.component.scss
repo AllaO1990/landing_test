@@ -90,6 +90,13 @@
   color: var(--color-r);
 }
 
+.ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  overflow: hidden;
+}
+
 .substring {
   font-size: 0.8em;
   line-height: 1;
@@ -185,3 +192,4 @@
     width: 80px;
   }
 }
+
