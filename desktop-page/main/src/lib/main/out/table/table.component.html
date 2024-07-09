@@ -23,7 +23,10 @@
         <tbody tuiTbody>
         <tr
           class="out__table-tr"
+          (dblclick)="onDblclick($event, item)"
+          (click)="onClick($event, item)"
           *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
+          [class.out__table-tr--active]="(activeIdeaId$ | async) === item.id"
           [style.background-color]="getColorBackGround(item.strategy.successProbability * 10 || 0.5)"
           tuiTr
         >

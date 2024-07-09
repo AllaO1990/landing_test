@@ -38,7 +38,7 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  getTradeList(): Observable<Position[]> {
+  getPositionList(): Observable<Position[]> {
     return of([]);
   }
 

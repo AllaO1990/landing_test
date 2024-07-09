@@ -51,7 +51,7 @@ export class MainComponent {
   );
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
 
-  public readonly tradeList$: Observable<Position[] | null> = this._api.getTradeList();
+  public readonly tradeList$: Observable<Position[] | null> = this._store.position$;
 
   public readonly stockList$: Observable<StockList | null> = this._store.stock$;
 

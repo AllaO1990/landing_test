@@ -12,6 +12,8 @@ import { StockEvent } from 'types/stock-event';
 import { ChartStore } from './chart-store';
 import { EntryStore } from './entry.store';
 import { StockListStore } from './stock-list.store';
+import { PositionStore } from './position.store';
+import { Position } from 'types/position';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
@@ -23,9 +25,13 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public readonly selectedIdea$: Observable<Idea | null> = this._entryStore.selected$;
 
+  public readonly selectedPosition$: Observable<Position | null> = this._positionStore.selected$;
+
   public readonly stock$: Observable<StockList | null> = this._stockListStore.list$;
 
   public readonly entry$: Observable<Idea[] | null> = this._entryStore.list$;
+
+  public readonly position$: Observable<Position[] | null> = this._positionStore.list$;
 
   public readonly candles$: Observable<any[] | null> = this._chartStore.candles$;
 
@@ -51,6 +57,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     private readonly _api: DesktopService,
     private readonly _stockListStore: StockListStore,
     private readonly _entryStore: EntryStore,
+    private readonly _positionStore: PositionStore,
     private readonly _chartStore: ChartStore
   ) {
     super({
@@ -60,8 +67,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     });
 
     this._stockListStore.load();
-
     this._entryStore.load();
+    this._positionStore.load();
 
     this.loadActivePrice(
       this._timer(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
@@ -73,6 +80,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
     this.onChangeEventStock(this.event$);
     this.onChangeEventEntry(this.event$);
+    this.onChangeEventPosition(this.event$);
   }
 
   public updateSelect = this.updater((state: DesktopLkState, selected: any) => ({ ...state, selected }));
@@ -104,6 +112,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
           tap((value: StockInstrument) => {
             this._stockListStore.updateSelected(value);
             this._entryStore.updateSelected(null);
+            this._positionStore.updateSelected(null);
           })
         )
       )
@@ -121,6 +130,25 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
           tap((value: Idea) => {
             this._stockListStore.updateSelected(value.instrument);
             this._entryStore.updateSelected(value);
+            this._positionStore.updateSelected(null);
+          })
+        )
+      )
+    )
+  );
+
+  public readonly onChangeEventPosition = this.effect((stream$: Observable<StockEvent | null>) =>
+    stream$.pipe(
+      filter((event: StockEvent | null): event is StockEvent => event !== null),
+      filter((event: StockEvent): boolean => event.type === EventSelected.POSITION),
+      switchMap((event: StockEvent) =>
+        this.position$.pipe(
+          filter((list: Position[] | null): list is Position[] => list !== null),
+          map((list: Position[]): Position => list.find((item: Position) => item.id === +event.id)!),
+          tap((value: Position) => {
+            this._stockListStore.updateSelected(value.instrument);
+            this._entryStore.updateSelected(null);
+            this._positionStore.updateSelected(value);
           })
         )
       )

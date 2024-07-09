@@ -1,3 +1,5 @@
+import { StockInstrument, StockPosition } from './stock';
+
 export interface ResponsePositions {
   items: ResponsePosition[];
   total: number;
@@ -7,22 +9,11 @@ export interface ResponsePosition {
   id: number;
   createdAt: string;
   updatedAt: string;
-  positionType: string;
+  positionType: StockPosition;
   inPosition: boolean;
   inPositionQuantity: number;
   inPositionDepositShare: number;
-  instrument: {
-    id: string;
-    source: string;
-    ticker: string;
-    name: string;
-    type: string;
-    exchange: string;
-    realExchange: string;
-    inSub: true;
-    sector: string;
-    currency: string;
-  };
+  instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
   entry: { price: number; quantity: number; totalPrice: number; depositShare: number };
