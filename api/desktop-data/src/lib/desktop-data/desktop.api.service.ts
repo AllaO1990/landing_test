@@ -60,13 +60,15 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<StockInstrument[]>(`/assets/mocks/stock-list-${id}.json`);
   }
 
-  getTradeList(): Observable<Position[]> {
+  getPositionList(): Observable<Position[]> {
     return this._http.get<Response<ResponsePositions>>(`https://trade.gpn.dev/api/v1/ideas/positions`).pipe(
       filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
       map((response: Response<ResponsePositions>) =>
         response.data.items.map((item: ResponsePosition) => ({
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
+          profit:
+            ((item.entry.price - item.lastPrice) / item.lastPrice) * 100 * (item.positionType === 'short' ? -1 : 1),
         }))
       )
     );

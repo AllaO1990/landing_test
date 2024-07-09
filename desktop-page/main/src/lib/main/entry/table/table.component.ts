@@ -2,7 +2,7 @@ import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiDialogService, TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -51,13 +51,9 @@ export class EntryTableComponent {
 
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-
-  protected readonly dialogEnterService: EnterDialogService = inject(EnterDialogService);
-
-  protected readonly dialogService: TuiDialogService = inject(TuiDialogService);
+  private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
-
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
   public activeIdeaId$: Observable<StockId | null> = this._store.selectedIdea$.pipe(
@@ -83,7 +79,7 @@ export class EntryTableComponent {
       id: item.id,
     });
 
-    this.dialogEnterService.openDialog(item, this._injector).subscribe();
+    this._dialogEnterService.openDialog(item, this._injector).subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {
