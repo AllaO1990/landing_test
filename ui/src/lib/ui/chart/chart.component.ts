@@ -38,6 +38,7 @@ HStockTools(Highcharts);
 export class ChartComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   update = false;
+  consolidationZonesIsExist = false;
 
   chartOptions: Highcharts.Options = {
     boost: { useGPUTranslations: true, usePreallocated: true },
@@ -50,6 +51,7 @@ export class ChartComponent {
 
       // max: 25,
       maxPadding: 0.5,
+      endOnTick: true,
     },
     yAxis: {
       // scrollbar: { enabled: true },
@@ -161,12 +163,13 @@ export class ChartComponent {
       buttonTheme: {
         width: 60,
       },
-      selected: 2,
+      selected: 0,
     },
     tooltip: {
       shape: 'rect',
       headerShape: 'callout',
       borderWidth: 0,
+      // split: true,
       backgroundColor: 'rgba(0,0,0,0)',
       shadow: false,
       positioner: function (width, height, point) {
@@ -285,6 +288,9 @@ export class ChartComponent {
 
   @Input()
   set selected(value: StockInstrument | null) {
+    if (this.consolidationZonesIsExist) {
+      this.chart?.removeAnnotation(0);
+    }
     (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].name = value?.ticker;
   }
 
@@ -297,8 +303,8 @@ export class ChartComponent {
   @Input()
   set data(value: any[]) {
     (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value;
-    this.chart?.xAxis[0].setExtremes();
-    this.chart?.yAxis[0].setExtremes();
+    // this.chart?.xAxis[0].setExtremes();
+    // this.chart?.yAxis[0].setExtremes();
 
     this.update = true;
   }
@@ -311,16 +317,18 @@ export class ChartComponent {
       return;
     }
 
+    console.log(value);
+
     const getF = function (): Highcharts.AnnotationsShapesOptions[] {
       return value.map((item) => {
         return {
           // type: 'rect',
           type: 'path',
 
-          dashStyle: 'Dash',
+          // dashStyle: 'Dash',
           fill: 'rgba(0,0,0,0)',
           stroke: 'rgba(0,64,255,1)',
-          strokeWidth: 3,
+          strokeWidth: 1.5,
           ry: Math.PI,
           points: item,
         };
@@ -331,7 +339,30 @@ export class ChartComponent {
       id: 0,
       draggable: '',
       shapes: getF(),
+
+      // infinityLine: {
+      //   typeOptions: {
+      //     // type: 'ray',
+      //     xAxis: 0,
+      //     yAxis: 0,
+      //     line: { fill: 'red' },
+
+      //     points: [
+      //       { x: new Date().setMonth(new Date().getMonth() - 1).valueOf(), y: 3 },
+      //       { x: new Date().setMonth(new Date().getMonth()).valueOf(), y: 3 },
+      //       { x: new Date().setMonth(new Date().getMonth() + 0.3).valueOf(), y: 2 },
+      //     ],
+      //   },
+      // },
     });
+
+    this.chart?.xAxis[0].setExtremes(
+      new Date().setMonth(new Date().getMonth() - 2).valueOf(),
+      new Date().setMonth(new Date().getMonth() + 1).valueOf()
+    );
+    this.chart?.yAxis[0].setExtremes();
+
+    this.consolidationZonesIsExist = true;
   }
 
   public chart!: Highcharts.StockChart;
@@ -374,7 +405,6 @@ export class ChartComponent {
   }
 
   chartEvent($event: Highcharts.Chart) {
-    console.log($event);
     this.chart = $event;
   }
 }
