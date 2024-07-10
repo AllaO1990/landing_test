@@ -21,9 +21,9 @@
           <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
         </div>
         <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
-        <div class="item__value row__right row__item row__price">{{ item.price }}</div>
-        <div class="item__value row__right row__item row__quantity">{{ item.quantity }}</div>
-        <div class="item__value row__right row__item row__total">{{ item.totalPrice }}</div>
+        <div class="item__value row__right row__item row__price">{{ item.price| tuiFormatNumber }}</div>
+        <div class="item__value row__right row__item row__quantity">{{ item.quantity| tuiFormatNumber }}</div>
+        <div class="item__value row__right row__item row__total">{{ item.totalPrice| tuiFormatNumber }}</div>
         <div class="item__value row__right row__item row__deposit">{{ item.depositShare * 100 }}%</div>
       </div>
     </lib-enter-list-item>
@@ -55,12 +55,19 @@
           <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
         </div>
         <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
-        <div class="item__value row__right row__item row__price">{{ item.price }}</div>
-        <div class="item__value row__right row__item row__profit">{{ item.profitPercent * 100 }}%</div>
-        <div class="item__value row__right row__item row__profit">{{ item.profit }}</div>
-        <div class="item__value row__right row__item row__deposit">{{ item.depositShare * 100 }}%</div>
+        <div
+          class="item__value row__right row__item row__price">{{ item.price | tuiFormatNumber }}
+        </div>
+        <div class="item__value row__right row__item row__profit">{{ item.profitPercent }}%</div>
+        <div
+          class="item__value row__right row__item row__profit">{{ item.price * item.profitPercent / 100 | tuiFormatNumber: { decimalLimit: data.priceIncrement || 2 } }}
+        </div>
+        <div
+          class="item__value row__right row__item row__deposit">{{ item.depositShare * 100| tuiFormatNumber: { decimalLimit: 2 } }}
+          %
+        </div>
         <div class="item__value row__right row__item row__fix-half">{{ item.quantity }}</div>
-        <div class="item__value row__right row__item row__fix-half">{{ item.quantityPercent * 100 }}%</div>
+        <div class="item__value row__right row__item row__fix-half">{{ item.quantityPercent }}%</div>
         <div class="row__space"></div>
         <div class="item__value">
           <button
@@ -116,11 +123,11 @@
         </div>
         <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
         <div class="item__value row__item row__right row__price">{{ item.price }}</div>
-        <div class="item__value row__item row__right row__profit">{{ item.lossPercent * 100 }}%</div>
+        <div class="item__value row__item row__right row__profit">{{ item.lossPercent }}%</div>
         <div class="item__value row__item row__right row__profit">{{ item.loss }}</div>
         <div class="item__value row__item row__right row__deposit">{{ item.depositShare * 100 }}%</div>
         <div class="item__value row__item row__right row__fix-half">{{ item.quantity }}</div>
-        <div class="item__value row__item row__right row__fix-half">{{ item.quantityPercent * 100 }}%</div>
+        <div class="item__value row__item row__right row__fix-half">{{ item.quantityPercent }}%</div>
       </div>
     </lib-enter-list-item>
   </lib-enter-list>

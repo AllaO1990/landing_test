@@ -8,9 +8,11 @@
   </div>
   <div class="widget__timing widget__padding">
     <tui-filter
-      [formControl]="controlFilterStrategy"
+      [formControl]="controlFilterTiming"
       size="s"
       class="item"
+      [disabledItemHandler]="disabledItemHandler"
+      [identityMatcher]="identityMatcher"
       [content]="content"
       [items]="timing"
     ></tui-filter>
@@ -20,15 +22,19 @@
       [formControl]="controlFilterStrategy"
       size="s"
       class="item"
+      [disabledItemHandler]="disabledItemHandler"
+      [identityMatcher]="identityMatcher"
       [content]="content"
       [items]="strategy"
     ></tui-filter>
   </div>
   <div class="widget__strategy widget__padding">
     <tui-filter
-      [formControl]="controlFilterStrategy"
+      [formControl]="controlFilterPositionType"
       size="s"
       class="item"
+      [disabledItemHandler]="disabledItemHandler"
+      [identityMatcher]="identityMatcher"
       [content]="content"
       [items]="positionType"
     ></tui-filter>
@@ -36,19 +42,19 @@
   <div class="widget__description description widget__padding">
     <div class="description__row">
       <div class="description__label">Вероятность успеха</div>
-      <div class="description__text">7.00%</div>
+      <div class="description__text">{{ data.strategy.successProbability * 100 }}%</div>
     </div>
     <div class="description__row">
       <div class="description__label">% депозита</div>
-      <div class="description__text">2.63%</div>
+      <div class="description__text">{{ data.entry.depositShare * 100 }}%</div>
     </div>
     <div class="description__row">
       <div class="description__label">Сектор экономики</div>
-      <div class="description__text">Энергетика</div>
+      <div class="description__text">{{ data.instrument.sector }}</div>
     </div>
     <div class="description__row">
       <div class="description__label">% Сектора в вашем портфеле</div>
-      <div class="description__text">20%</div>
+      <div class="description__text">&mdash;</div>
     </div>
   </div>
   <div class="widget__comment comment widget__padding">

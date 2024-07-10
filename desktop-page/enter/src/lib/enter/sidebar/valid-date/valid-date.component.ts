@@ -1,19 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject, OnInit } from '@angular/core';
 import { VALID_DATE_CONSTANTS } from './valid-date.constants';
-import {
-  ControlValueAccessor,
-  FormControl,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { TuiCheckboxLabeledModule, TuiInputDateModule } from '@taiga-ui/kit';
 import { TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { TuiDay } from '@taiga-ui/cdk';
@@ -24,13 +11,7 @@ import { distinctUntilChanged, startWith } from 'rxjs';
 @Component({
   selector: 'lib-enter-sidebar-valid-date',
   standalone: true,
-  imports: [
-    JsonPipe,
-    ReactiveFormsModule,
-    TuiCheckboxLabeledModule,
-    TuiInputDateModule,
-    TuiTextfieldControllerModule,
-  ],
+  imports: [JsonPipe, ReactiveFormsModule, TuiCheckboxLabeledModule, TuiInputDateModule, TuiTextfieldControllerModule],
   templateUrl: './valid-date.component.html',
   styleUrl: './valid-date.component.scss',
   providers: [
@@ -84,14 +65,8 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit(): void {
     this.controlCheckbox.valueChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        startWith(this.controlCheckbox.value),
-        distinctUntilChanged()
-      )
-      .subscribe((result: boolean) =>
-        this.controlCalendar[result ? 'disable' : 'enable']()
-      );
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlCheckbox.value), distinctUntilChanged())
+      .subscribe((result: boolean) => this.controlCalendar[result ? 'disable' : 'enable']());
 
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.form.value))
@@ -103,6 +78,8 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
 
         this.onChange(result.calendar.toString());
       });
+
+    this.form.disable();
   }
 
   private _getTuiDay(value: string | null): TuiDay {

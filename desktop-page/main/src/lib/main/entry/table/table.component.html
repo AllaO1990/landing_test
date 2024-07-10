@@ -62,11 +62,13 @@
           </td>
 
           <td *tuiCell="'target'" tuiTd class="td td--number">
-            {{ item.target.price | tuiFormatNumber : { decimalLimit: 2 } }}
-            <div class="substring">
-              {{ item.target.profitPercent | tuiFormatNumber: { decimalLimit: 2 } }}% /
-              {{ item.target.depositShare | tuiFormatNumber: { decimalLimit: 2 } }}%
-            </div>
+            <ng-container *ngIf="item.targets ; else none">
+              {{ item.targets[0].price | tuiFormatNumber : { decimalLimit: 2 } }}
+              <div class="substring">
+                {{ item.targets[0].profitPercent | tuiFormatNumber: { decimalLimit: 2 } }}% /
+                {{ item.targets[0].depositShare | tuiFormatNumber: { decimalLimit: 2 } }}%
+              </div>
+            </ng-container>
           </td>
 
           <td *tuiCell="'luck'" tuiTd class="td td--number">

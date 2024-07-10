@@ -1,12 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DatePipe, JsonPipe, NgIf } from '@angular/common';
-import { TuiButtonModule, TuiSvgModule } from '@taiga-ui/core';
-import {
-  HeaderComponent,
-  ItemComponent,
-  ItemDirective,
-  ListComponent,
-} from '../list';
+import { TuiButtonModule, TuiFormatNumberPipeModule, TuiSvgModule } from '@taiga-ui/core';
+import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '../list';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { StockId } from 'types/stock';
 import { CheckComponent } from '../list/check/check.component';
@@ -26,15 +21,55 @@ import { CheckComponent } from '../list/check/check.component';
     NgIf,
     TuiSvgModule,
     CheckComponent,
+    TuiFormatNumberPipeModule,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterIdeaComponent {
+  private _data: any = null;
   public readonly itemHeight = 28;
 
-  @Input() data: any | null = null;
+  @Input()
+  set data(value: any | null) {
+    this._data = value;
+
+    if (value) {
+      this.listEntry = value.entries.map((item: any, index: number) => ({
+        id: index.toString(),
+        ...item,
+        date: '',
+        checked: false,
+      }));
+
+      this.listTarget = value.targets.map((item: any, index: number) => ({
+        id: index.toString(),
+        ...item,
+        quantity: '-',
+        quantityPercent: '-',
+        date: '',
+        checked: false,
+      }));
+
+      this.listStop = [
+        {
+          id: '0',
+          ...value.stop,
+          checked: false,
+          date: '',
+        },
+      ];
+
+      this.formEntry = new FormGroup(this._getControlFromList(this.listEntry));
+      this.formTarget = new FormGroup(this._getControlFromList(this.listTarget));
+      this.formStop = new FormGroup(this._getControlFromList(this.listStop));
+    }
+  }
+
+  get data() {
+    return this._data;
+  }
 
   listEntry = [
     {
@@ -160,26 +195,21 @@ export class EnterIdeaComponent {
   onRemove(event: Event, data: { id: StockId }): void {
     event.preventDefault();
 
-    this.listTarget = this.listTarget.filter(
-      (item: { id: StockId }) => item.id !== data.id
-    );
+    this.listTarget = this.listTarget.filter((item: { id: StockId }) => item.id !== data.id);
   }
 
   private _getControlFromList(list: { id: StockId; checked: boolean }[]): {
     [key: string]: FormControl<boolean>;
   } {
-    return list.reduce(
-      (
-        acc: { [key: string]: FormControl<boolean> },
-        item: { id: StockId; checked: boolean }
-      ) => {
-        acc[item.id] = new FormControl<boolean>(item.checked, {
+    return list.reduce((acc: { [key: string]: FormControl<boolean> }, item: { id: StockId; checked: boolean }) => {
+      acc[item.id] = new FormControl<boolean>(
+        { value: item.checked, disabled: true },
+        {
           nonNullable: true,
-        });
+        }
+      );
 
-        return acc;
-      },
-      {}
-    );
+      return acc;
+    }, {});
   }
 }

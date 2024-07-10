@@ -1,8 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostListener,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
 import { TuiCheckboxComponent } from '@taiga-ui/kit';
 import { TuiSvgModule } from '@taiga-ui/core';
 import { NgIf } from '@angular/common';
@@ -16,6 +12,7 @@ import { NgIf } from '@angular/common';
   styleUrl: './item.component.scss',
   host: {
     '[class.checked]': 'value',
+    '[class.disabled]': 'disabled',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
