@@ -19,8 +19,10 @@ export interface ResponseIdea {
     totalPrice: number;
     depositShare: number;
   };
+  targets?: { price: number; amount: number; profitPercent: number; depositShare: number }[];
   target: {
     price: number;
+    amount: number;
     profitPercent: number;
     depositShare: number;
   };
