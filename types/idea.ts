@@ -13,6 +13,12 @@ export interface ResponseIdea {
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
+  entries?: {
+    price: number;
+    quantity: number;
+    totalPrice: number;
+    depositShare: number;
+  }[];
   entry: {
     price: number;
     quantity: number;

@@ -22,6 +22,7 @@ export class DesktopApiService extends DesktopService {
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
           targets: item.targets ? item.targets : [item.target],
+          entries: item.entries ? item.entries : [item.entry],
         }))
       ),
       catchError((error: Error) => {
@@ -70,6 +71,7 @@ export class DesktopApiService extends DesktopService {
         response.data.items.map((item: ResponsePosition) => ({
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
+          entries: item.entries ? item.entries : [item.entry],
           profit:
             ((item.entry.price - item.lastPrice) / item.lastPrice) * 100 * (item.positionType === 'short' ? -1 : 1),
         }))
