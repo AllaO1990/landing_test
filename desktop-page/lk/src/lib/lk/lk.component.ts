@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
 import { ToolbarSearchModule } from '../../../../../apps/desktop/src/app/shared/components/toolbar-search';
-import { ChartStore, DesktopLkStore, EntryStore, StockListStore } from 'stores/desktop';
+import { ChartStore, DesktopLkStore, EntryStore, PositionStore, StockListStore } from 'stores/desktop';
 import { DESKTOP_API, DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { QueryParams } from 'utils/query-params';
@@ -11,7 +11,7 @@ import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 
 const createStore = (api: DesktopService) =>
-  new DesktopLkStore(api, new StockListStore(api), new EntryStore(api), new ChartStore(api));
+  new DesktopLkStore(api, new StockListStore(api), new EntryStore(api), new PositionStore(api), new ChartStore(api));
 
 @Component({
   selector: 'lib-lk',

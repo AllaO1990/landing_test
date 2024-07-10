@@ -60,6 +60,9 @@
     }
 
     tr {
+      cursor: pointer;
+      transition: background-color 0.25s ease-in-out;
+
       height: 16px;
     }
 
@@ -76,6 +79,10 @@
 
         transition: none;
       }
+    }
+
+    &-tr--active {
+      background-color: rgba(0, 102, 255, 0.1) !important;
     }
   }
 }
@@ -169,7 +176,7 @@
   }
 
   &--profit {
-    width: 45px;
+    width: 60px;
   }
 
   &--stop {

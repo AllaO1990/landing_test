@@ -23,8 +23,11 @@
         <tbody tuiTbody>
         <tr
           class="out__table-tr"
+          (dblclick)="onDblclick($event, item)"
+          (click)="onClick($event, item)"
           *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
-          [style.background-color]="getColorBackGround(8)"
+          [class.out__table-tr--active]="(activeIdeaId$ | async) === item.id"
+          [style.background-color]="getColorBackGround(item.strategy.successProbability * 10 || 0.5)"
           tuiTr
         >
           <td
@@ -38,8 +41,10 @@
           </td>
 
           <td *tuiCell="'cost'" tuiTd class="td td--number">
-            {{ item.entry.price | tuiFormatNumber }}
-            <div class="substring">{{ item.entry.quantity | tuiFormatNumber }}</div>
+            <div class="ellipsis" [title]="item.lastPrice">
+              {{ item.lastPrice | tuiFormatNumber }}
+            </div>
+            <div class="substring">{{ (item.inPositionQuantity * item.lastPrice) | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'direction'" tuiTd class="td td--direction">
@@ -105,8 +110,8 @@
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
-            {{ item.entry.totalPrice | tuiFormatNumber }}
-            <div class="substring">{{ item.entry.depositShare | tuiFormatNumber }}</div>
+            {{ item.entry.price | tuiFormatNumber }}
+            <div class="substring">{{ item.entry.totalPrice | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'out'" tuiTd class="td td--number">
@@ -115,7 +120,9 @@
           </td>
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
-            {{ (item.inPositionDepositShare * 100 | tuiFormatNumber) }}%
+            <div class="ellipsis">
+              {{ item.profit | tuiFormatNumber :{ decimalLimit: 2 } }}%
+            </div>
             <div class="substring">{{ item.inPositionQuantity }}</div>
           </td>
 
