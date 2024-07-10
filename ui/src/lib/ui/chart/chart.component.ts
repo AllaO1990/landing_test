@@ -84,12 +84,8 @@ export class ChartComponent {
       series: {
         point: {
           events: {
-            click: (event) => {
-              // console.log(event);
-            },
-            mouseOver: () => {
-              // console.log(event);
-            },
+            click: (event) => {},
+            mouseOver: () => {},
           },
         },
       },
@@ -310,35 +306,35 @@ export class ChartComponent {
   }
 
   @Input()
-  set consolidationZones(value: any[]) {
+  set consolidationZones(value: any) {
     this.chart?.removeAnnotation(0);
 
     if (!value) {
       return;
     }
 
-    console.log(value);
-
     const getF = function (): Highcharts.AnnotationsShapesOptions[] {
-      return value.map((item) => {
-        return {
-          // type: 'rect',
-          type: 'path',
+      return value.map((item: any) => {
+        return item.points.map((data: any) => {
+          return {
+            // type: 'rect',
+            type: 'path',
 
-          // dashStyle: 'Dash',
-          fill: 'rgba(0,0,0,0)',
-          stroke: 'rgba(0,64,255,1)',
-          strokeWidth: 1.5,
-          ry: Math.PI,
-          points: item,
-        };
+            dashStyle: item.dash ? 'Dash' : null,
+            fill: 'rgba(0,0,0,0)',
+            stroke: item.color,
+            strokeWidth: 1.5,
+            ry: Math.PI,
+            points: data,
+          };
+        });
       });
     };
 
     this.chart.addAnnotation({
       id: 0,
       draggable: '',
-      shapes: getF(),
+      shapes: getF().flat(),
 
       // infinityLine: {
       //   typeOptions: {

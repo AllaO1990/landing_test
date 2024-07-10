@@ -31,7 +31,6 @@ export class AuthService {
       )
       .subscribe((data) => {
         // this.saveToken(data.token);
-        console.log(data);
         if (data.data) {
           window.open(data.data, '_blank');
         }
@@ -53,9 +52,6 @@ export class AuthService {
         })
       )
       .subscribe((data) => {
-        // this.saveToken(data.token);
-        console.log(data);
-        // this.isLoggedIn = true;
         // @ts-expect-error ignore
         this._saveToken(data['access_token']);
 

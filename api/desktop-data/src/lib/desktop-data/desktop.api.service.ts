@@ -4,11 +4,11 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
+import { Position, ResponsePosition, ResponsePositions } from 'types/position';
 import { Response, ResponseMessage } from 'types/response';
 import { Stock, StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
-import { Position, ResponsePosition, ResponsePositions } from 'types/position';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -156,7 +156,9 @@ export class DesktopApiService extends DesktopService {
   getCandles(selected: { source: any; index: number }): Observable<any> {
     // console.log(selected);
     const from: string =
-      selected.index === 0 ? new Date(0).toISOString() : new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+      selected.index === 0
+        ? new Date(new Date().setFullYear(2019)).toISOString()
+        : new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
 
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {
