@@ -56,6 +56,6 @@ export function transformActiveConsolidationZones(zones: ConsolidationZonesData)
     { points: [...activeZones], color: 'rgba(0, 64, 255, 1)' },
     { points: [priceIn], color: 'rgba(64, 224, 208, 1)' },
     { points: [stop], color: 'rgba(255,0,0,1)', dash: true },
-    { points: targets, color: 'rgba(64, 224, 208, 1)', dash: true },
+    { points: targets, color: 'rgba(0, 255, 0, 1)', dash: true },
   ];
 }
