@@ -12,24 +12,28 @@ export class PositionStore extends ComponentStore<StockPositionState> {
   public readonly list$: Observable<Position[] | null> = this.select((state: StockPositionState) => state.list);
 
   public readonly active$: Observable<StockId[] | null> = this.select((state: StockPositionState) => state.active);
+
   public updateSelected = this.updater(
     (state: StockPositionState, selected: Position | null): StockPositionState => ({
       ...state,
       selected,
     })
   );
+
   public updateList = this.updater(
     (state: StockPositionState, list: Position[]): StockPositionState => ({
       ...state,
       list,
     })
   );
+
   public updateActive = this.updater(
     (state: StockPositionState, active: StockId[]): StockPositionState => ({
       ...state,
       active,
     })
   );
+
   public readonly load = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
       switchMap((_) =>

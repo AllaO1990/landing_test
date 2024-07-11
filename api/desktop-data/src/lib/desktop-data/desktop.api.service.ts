@@ -72,8 +72,11 @@ export class DesktopApiService extends DesktopService {
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
           entries: item.entries ? item.entries : [item.entry],
+          profitPercent:
+            ((item.entry.price - item.lastPrice) / item.lastPrice) * (item.positionType === 'short' ? -1 : 1),
           profit:
-            ((item.entry.price - item.lastPrice) / item.lastPrice) * 100 * (item.positionType === 'short' ? -1 : 1),
+            (item.entry.totalPrice - item.lastPrice * item.inPositionQuantity) *
+            (item.positionType === 'short' ? -1 : 1),
         }))
       )
     );
