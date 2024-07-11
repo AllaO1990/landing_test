@@ -13,11 +13,11 @@ import { StockId } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
 import { getColor, getRGBA } from 'utils/get-color';
 import { QueryParams } from 'utils/query-params';
-import { DesktopLkStore } from '../../../../../../../stores/desktop';
 import { ENTRY_HEADER } from '../entry.constants';
 import { EntryHeaderItem } from '../entry.types';
 import { DatePassedPipe } from '../../common/date-passed.pipe';
 import { StrategyNamePipe } from './strategy-name.pipe';
+import { DesktopLkStore } from 'stores/desktop';
 
 @Component({
   selector: 'vt-entry-table',
@@ -32,12 +32,8 @@ import { StrategyNamePipe } from './strategy-name.pipe';
     TuiScrollbarModule,
     TuiTableModule,
     VtEnterComponent,
-    // EnterDialogModule,
     DatePassedPipe,
     StrategyNamePipe,
-    // TuiDialogModule,
-    // EnterDialogComponent,
-    // PolymorpheusModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -79,7 +75,7 @@ export class EntryTableComponent {
       id: item.id,
     });
 
-    this._dialogEnterService.openDialog(item, this._injector).subscribe();
+    this._dialogEnterService.openDialog({ data: item, type: EventSelected.IDEA }, this._injector).subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {

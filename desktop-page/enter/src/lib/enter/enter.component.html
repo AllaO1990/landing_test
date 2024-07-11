@@ -9,7 +9,7 @@
 <ng-template #show>
   <div class="container" *ngIf="context">
     <div class="container__sidebar container__widget">
-      <lib-enter-sidebar [data]="context.data"></lib-enter-sidebar>
+      <lib-enter-sidebar [data]="context.data.data"></lib-enter-sidebar>
     </div>
     <div class="container__chart container__widget">
       <div class="widget">
@@ -17,7 +17,7 @@
           <div class="widget__space"></div>
           <div class="widget__date-start date-start">
             Идея от
-            <span>{{ context.data.createdAt | date : 'dd.MM.yyyy' }}</span>
+            <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>
           </div>
           <button
             appearance="icon"
@@ -45,7 +45,7 @@
         </div>
         <div class="widget__content">
           <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-idea [data]="context.data" class="tui-zero-scrollbar"></lib-enter-idea>
+            <lib-enter-idea [data]="context.data.data" class="tui-zero-scrollbar"></lib-enter-idea>
           </tui-scrollbar>
         </div>
       </div>
@@ -59,7 +59,9 @@
         </div>
         <div class="widget__content">
           <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-action class="tui-zero-scrollbar"></lib-enter-action>
+            <lib-enter-action
+              [data]="context.data.type === 'position' ? context.data.data : null"
+              class="tui-zero-scrollbar"></lib-enter-action>
           </tui-scrollbar>
         </div>
       </div>

@@ -16,7 +16,7 @@ import { getColor, getRGBA } from 'utils/get-color';
 import { Observable } from 'rxjs';
 import { StockId } from 'types/stock';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { DesktopLkStore } from '../../../../../../../stores/desktop';
+import { DesktopLkStore } from 'stores/desktop';
 
 @Component({
   selector: 'vt-out-table',
@@ -64,7 +64,7 @@ export class OutTableComponent {
       id: item.id,
     });
 
-    this._dialogEnterService.openDialog(item, this._injector).subscribe();
+    this._dialogEnterService.openDialog({ data: item, type: EventSelected.POSITION }, this._injector).subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {

@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, JsonPipe, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TuiDialog } from '@taiga-ui/cdk';
 import { TuiButtonModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
 import { StockInstrument } from 'types/stock';
-import { DesktopLkStore } from '../../../../../stores/desktop';
+import { DesktopLkStore } from 'stores/desktop';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
@@ -33,7 +33,7 @@ import { EnterSidebarComponent } from './sidebar/sidebar.component';
   styleUrl: './enter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VtEnterComponent implements OnInit {
+export class VtEnterComponent {
   public readonly context: TuiDialog<any, Idea> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
@@ -47,10 +47,6 @@ export class VtEnterComponent implements OnInit {
   public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
 
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
-
-  ngOnInit(): void {
-    console.log(this.context);
-  }
 
   onClose(event: Event): void {
     event.preventDefault();

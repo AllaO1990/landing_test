@@ -1,11 +1,10 @@
 import { AsyncPipe, JsonPipe, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { DesktopService } from '@desktop-data/desktop-data';
 import { ChartComponent } from '@ui/chart';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
-import { DESKTOP_API, DESKTOP_STORE } from 'tokens/desktop';
+import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
 import { StockInstrument, StockList, StockPrice, WithLastPrice } from 'types/stock';
 import { EntryModule } from './entry/entry.module';
@@ -41,21 +40,49 @@ export class MainComponent {
 
   private readonly _service: MainService = inject(MainService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-  private readonly _api: DesktopService = inject(DESKTOP_API);
   public readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
   public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
 
-  public readonly ideaList$: Observable<Idea[] | null> = this._store.entry$.pipe(
-    map((list: Idea[] | null) => list && this._service.sortIdeaList(list))
+  public readonly stockPrice$: Observable<StockPrice<WithLastPrice> | null> = this._store.price$;
+
+  public readonly ideaList$: Observable<Idea[] | null> = combineLatest([
+    this._store.entry$.pipe(map((list: Idea[] | null) => list && this._service.sortIdeaList(list))),
+    this._store.price$,
+  ]).pipe(
+    map(([list, price]: [Idea[] | null, StockPrice<WithLastPrice> | null]): Idea[] | null => {
+      if (!list) {
+        return null;
+      }
+
+      if (list && !price) {
+        return list;
+      }
+
+      return list.map((item: Idea) => ({ ...item, lastPrice: price![item.instrument.id]!.last || item.lastPrice }));
+    })
   );
+
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
 
-  public readonly tradeList$: Observable<Position[] | null> = this._store.position$;
+  public readonly tradeList$: Observable<Position[] | null> = combineLatest([
+    this._store.position$,
+    this._store.price$,
+  ]).pipe(
+    map(([list, price]: [Position[] | null, StockPrice<WithLastPrice> | null]): Position[] | null => {
+      if (!list) {
+        return null;
+      }
+
+      if (list && !price) {
+        return list;
+      }
+
+      return list.map((item: Position) => ({ ...item, lastPrice: price![item.instrument.id]!.last || item.lastPrice }));
+    })
+  );
 
   public readonly stockList$: Observable<StockList | null> = this._store.stock$;
-
-  public readonly stockPrice$: Observable<StockPrice<WithLastPrice> | null> = this._store.price$;
 
   public readonly candles$: Observable<any | null> = this._store.candles$;
 

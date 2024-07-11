@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '../list';
 import { DatePipe } from '@angular/common';
 import { TuiButtonModule } from '@taiga-ui/core';
@@ -12,6 +12,19 @@ import { TuiButtonModule } from '@taiga-ui/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterActionComponent {
+  @Input()
+  set data(value: any) {
+    if (value) {
+      const today = new Date();
+
+      this.listEntry = value.entries.map((item: any, index: number) => ({
+        id: index.toString(),
+        ...item,
+        date: today.toISOString(),
+      }));
+    }
+  }
+
   listEntry = [
     // {
     //   id: '4',

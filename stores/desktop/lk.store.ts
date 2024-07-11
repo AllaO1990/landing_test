@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { distinctUntilChanged, forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
+import { forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ActiveZone } from 'types/chart';
 import { EventSelected } from 'types/events';
@@ -42,17 +42,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._stockListStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
     this._entryStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
     this._positionStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
-    this._stockListStore.selected$.pipe(
-      filter((result: StockInstrument | null): result is StockInstrument => result !== null),
-      map((result: StockInstrument) => result.id),
-      distinctUntilChanged()
-    ),
-    (stock: StockId[], entry: StockId[], position: StockId[], selectId: StockId) => [
-      ...stock,
-      ...entry,
-      ...position,
-      selectId,
-    ],
+    (stock: StockId[], entry: StockId[], position: StockId[]) => [...stock, ...entry, ...position],
     { debounce: true }
   );
 
@@ -78,7 +68,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._positionStore.load();
 
     this.loadActivePrice(
-      this._timer(this.stockActive$, 15 * 1000).pipe(map((value: { source: StockId[] | null }) => value.source))
+      this._timer(this.stockActive$, 60 * 1000).pipe(map((value: { source: StockId[] | null }) => value.source))
     );
 
     this._chartStore.loadCandles(this._timer(this._stockListStore.selected$, TIMER_INTERVAL));
