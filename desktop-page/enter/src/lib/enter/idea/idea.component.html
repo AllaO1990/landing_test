@@ -24,7 +24,10 @@
         <div class="item__value row__right row__item row__price">{{ item.price| tuiFormatNumber }}</div>
         <div class="item__value row__right row__item row__quantity">{{ item.quantity| tuiFormatNumber }}</div>
         <div class="item__value row__right row__item row__total">{{ item.totalPrice| tuiFormatNumber }}</div>
-        <div class="item__value row__right row__item row__deposit">{{ item.depositShare * 100 }}%</div>
+        <div
+          class="item__value row__right row__item row__deposit">{{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}
+          %
+        </div>
       </div>
     </lib-enter-list-item>
   </lib-enter-list>
@@ -125,7 +128,10 @@
         <div class="item__value row__item row__right row__price">{{ item.price }}</div>
         <div class="item__value row__item row__right row__profit">{{ item.lossPercent }}%</div>
         <div class="item__value row__item row__right row__profit">{{ item.loss }}</div>
-        <div class="item__value row__item row__right row__deposit">{{ item.depositShare * 100 }}%</div>
+        <div
+          class="item__value row__item row__right row__deposit">{{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}
+          %
+        </div>
         <div class="item__value row__item row__right row__fix-half">{{ item.quantity }}</div>
         <div class="item__value row__item row__right row__fix-half">{{ item.quantityPercent }}%</div>
       </div>
