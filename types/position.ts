@@ -32,4 +32,5 @@ export interface ResponsePosition {
 export interface Position extends ResponsePosition {
   priceIncrement: number;
   profit: number;
+  profitPercent: number;
 }

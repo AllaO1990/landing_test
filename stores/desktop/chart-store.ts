@@ -4,8 +4,8 @@ import { catchError, EMPTY, Observable, of, switchMap, tap } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { ChartState } from 'types/chart-state';
-import { Idea } from 'types/idea';
 import { transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
+import { StockId } from 'types/stock';
 
 export class ChartStore extends ComponentStore<ChartState> {
   public readonly candles$: Observable<any[] | null> = this.select((state: ChartState) => state.candles);
@@ -82,10 +82,10 @@ export class ChartStore extends ComponentStore<ChartState> {
     }
   );
 
-  public readonly loadConsolidationZonesV2 = this.effect((stream$: Observable<Idea | null>) => {
+  public readonly loadConsolidationZonesV2 = this.effect((stream$: Observable<{ id: StockId } | null>) => {
     return stream$.pipe(
-      filter((value: Idea | null): value is Idea => value !== null),
-      switchMap((data: Idea) => {
+      filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
+      switchMap((data: { id: StockId }) => {
         return this._api.getConsolidationZones(data.id);
       }),
       map((data: ConsolidationZones) => {

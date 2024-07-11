@@ -51,7 +51,7 @@
             <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell"></ng-container>
           </td>
 
-          <td *tuiCell="'result'" tuiTd class="td td--number">
+          <td *tuiCell="'result'" tuiTd class="td td--center">
             <ng-container *ngIf="item.result; else none">
               {{ item.result.price | tuiFormatNumber }}
               <div class="substring">{{ item.result.percentage | tuiFormatNumber:{ decimalLimit: 2 } }}%</div>
@@ -71,10 +71,10 @@
           </td>
 
           <td *tuiCell="'deposit'" tuiTd class="td td--number">
-            <ng-container *ngIf="item.deposit; else none">
-              {{ item.deposit.value | tuiFormatNumber }}
-              <div class="substring">{{ item.deposit.percentage | tuiFormatNumber:{ decimalLimit: 2 } }}%</div>
-            </ng-container>
+            <div class="ellipsis" [title]="item.inPositionQuantity">
+              {{ item.inPositionQuantity | tuiFormatNumber }}
+            </div>
+            <div class="substring">{{ item.inPositionDepositShare * 100 | tuiFormatNumber:{ decimalLimit: 2 } }}%</div>
           </td>
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">
@@ -121,9 +121,9 @@
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
             <div class="ellipsis">
-              {{ item.profit | tuiFormatNumber :{ decimalLimit: 2 } }}%
+              {{ item.profitPercent * 100 | tuiFormatNumber :{ decimalLimit: 2 } }}%
             </div>
-            <div class="substring">{{ item.inPositionQuantity }}</div>
+            <div class="substring">{{ item.profit | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">

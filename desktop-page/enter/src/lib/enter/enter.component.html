@@ -28,8 +28,8 @@
             (click)="onClose($event)"
           ></button>
         </div>
-        <!--          [consolidationZones]="consolidationZones$ | async"-->
         <vt-chart
+          [consolidationZones]="consolidationZones$ | async"
           [data]="candles$ | async"
           [selected]="selected$ | async"
           [selectedIdea]="selectedIdea$ | async"

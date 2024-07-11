@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { distinctUntilChanged, Observable, switchMap, tap, timer } from 'rxjs';
+import { distinctUntilChanged, forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ActiveZone } from 'types/chart';
 import { EventSelected } from 'types/events';
@@ -14,6 +14,7 @@ import { EntryStore } from './entry.store';
 import { StockListStore } from './stock-list.store';
 import { PositionStore } from './position.store';
 import { Position } from 'types/position';
+import { breakArray } from 'utils/break-array';
 
 const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
 
@@ -40,12 +41,18 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public readonly stockActive$: Observable<StockId[] | null> = this.select(
     this._stockListStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
     this._entryStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
+    this._positionStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
     this._stockListStore.selected$.pipe(
       filter((result: StockInstrument | null): result is StockInstrument => result !== null),
       map((result: StockInstrument) => result.id),
       distinctUntilChanged()
     ),
-    (stock: StockId[], entry: StockId[], selectId: StockId) => [...stock, ...entry, selectId],
+    (stock: StockId[], entry: StockId[], position: StockId[], selectId: StockId) => [
+      ...stock,
+      ...entry,
+      ...position,
+      selectId,
+    ],
     { debounce: true }
   );
 
@@ -71,12 +78,12 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._positionStore.load();
 
     this.loadActivePrice(
-      this._timer(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
+      this._timer(this.stockActive$, 15 * 1000).pipe(map((value: { source: StockId[] | null }) => value.source))
     );
 
     this._chartStore.loadCandles(this._timer(this._stockListStore.selected$, TIMER_INTERVAL));
 
-    this._chartStore.loadConsolidationZonesV2(this._entryStore.selected$);
+    this._chartStore.loadConsolidationZonesV2(merge(this._entryStore.selected$, this._positionStore.selected$));
 
     this.onChangeEventStock(this.event$);
     this.onChangeEventEntry(this.event$);
@@ -91,15 +98,18 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     (state: DesktopLkState, price: StockPrice<WithLastPrice>): DesktopLkState => ({ ...state, price })
   );
 
-  public updateStockActive = this._stockListStore.updateActive;
-
   public readonly loadActivePrice = this.effect((stream$: Observable<StockId[] | null>) =>
     stream$.pipe(
       filter((list: StockId[] | null): list is StockId[] => !!list),
-      switchMap((list: StockId[]) => this._api.getActiveStock(list)),
+      switchMap((list: StockId[]) =>
+        forkJoin(breakArray(list).map((subList: StockId[]) => this._api.getActiveStock(subList)))
+      ),
+      map((list: StockPrice<WithLastPrice>[]) => this._concatActivePrice(list)),
       tap((result: StockPrice<WithLastPrice>) => this.updatePrice(result))
     )
   );
+
+  public updateStockActive = this._stockListStore.updateActive;
 
   public readonly onChangeEventStock = this.effect((stream$: Observable<StockEvent | null>) =>
     stream$.pipe(
@@ -162,6 +172,16 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   ): Observable<{ source: T; index: number }> {
     return source$.pipe(
       switchMap((source: T) => timer(start, interval).pipe(map((index: number) => ({ source, index }))))
+    );
+  }
+
+  private _concatActivePrice(list: StockPrice<WithLastPrice>[]): StockPrice<WithLastPrice> {
+    return list.reduce(
+      (acc: StockPrice<WithLastPrice>, item: StockPrice<WithLastPrice>): StockPrice<WithLastPrice> => ({
+        ...acc,
+        ...item,
+      }),
+      {}
     );
   }
 }
