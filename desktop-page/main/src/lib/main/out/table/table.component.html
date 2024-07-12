@@ -44,7 +44,9 @@
             <div class="ellipsis" [title]="item.lastPrice">
               {{ item.lastPrice | tuiFormatNumber }}
             </div>
-            <div class="substring">{{ (item.inPositionQuantity * item.lastPrice) | tuiFormatNumber }}</div>
+            <div class="substring">
+              {{ (item.inPositionQuantity * item.lastPrice) | tuiFormatNumber : { decimalLimit: 0 } }}
+            </div>
           </td>
 
           <td *tuiCell="'direction'" tuiTd class="td td--direction">
@@ -74,7 +76,7 @@
             <div class="ellipsis" [title]="item.inPositionQuantity">
               {{ item.inPositionQuantity | tuiFormatNumber }}
             </div>
-            <div class="substring">{{ item.inPositionDepositShare * 100 | tuiFormatNumber:{ decimalLimit: 2 } }}%</div>
+            <div class="substring">{{ item.inPositionDepositShare * 100 | tuiFormatNumber:{ decimalLimit: 0 } }}%</div>
           </td>
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">
@@ -82,12 +84,12 @@
               <div class="td__row">
                 <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
                 <span class="substring" style="margin-left: 8px">
-                  {{ target.profitPercent| tuiFormatNumber :{ decimalLimit: 2 } }}%</span>
+                  {{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 1 } }}%</span>
               </div>
               <div class="td__row">
                 <div class="substring">{{ target.amount }}</div>
                 <div class="substring" style="margin-left: 8px">
-                  {{ target.depositShare| tuiFormatNumber :{ decimalLimit: 2 } }}%
+                  {{ target.depositShare * 100 | tuiFormatNumber :{ decimalLimit: 0 } }}%
                 </div>
               </div>
             </ng-container>
@@ -98,12 +100,12 @@
               <div class="td__row">
                 <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
                 <span class="substring"
-                      style="margin-left: 8px">{{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 2 } }}%</span>
+                      style="margin-left: 8px">{{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 1 } }}%</span>
               </div>
               <div class="td__row">
                 <div class="substring">{{ target.amount }}</div>
                 <div class="substring"
-                     style="margin-left: 8px">{{ target.depositShare | tuiFormatNumber :{ decimalLimit: 2 } }}%
+                     style="margin-left: 8px">{{ target.depositShare * 100 | tuiFormatNumber :{ decimalLimit: 0 } }}%
                 </div>
               </div>
             </ng-container>
@@ -111,7 +113,7 @@
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
             {{ item.entry.price | tuiFormatNumber }}
-            <div class="substring">{{ item.entry.totalPrice | tuiFormatNumber }}</div>
+            <div class="substring">{{ item.entry.totalPrice | tuiFormatNumber :{ decimalLimit: 0 } }}</div>
           </td>
 
           <td *tuiCell="'out'" tuiTd class="td td--number">
@@ -121,9 +123,9 @@
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
             <div class="ellipsis">
-              {{ item.profitPercent * 100 | tuiFormatNumber :{ decimalLimit: 2 } }}%
+              {{ item.profitPercent * 100 | tuiFormatNumber :{ decimalLimit: 1 } }}%
             </div>
-            <div class="substring">{{ item.profit | tuiFormatNumber }}</div>
+            <div class="substring">{{ item.profit | tuiFormatNumber:{ decimalLimit: 0 } }}</div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">
