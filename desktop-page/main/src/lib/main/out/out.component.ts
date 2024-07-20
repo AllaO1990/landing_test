@@ -27,24 +27,26 @@ export class OutComponent {
   public filterStock: FilterListItem[] = MAIN_FILTER_STOCK;
   public filterStrategy: FilterListItem[] = STOCK_STRATEGY_LIST;
 
-  public readonly controlSearch: FormControl<string | null> = new FormControl(null);
+  public readonly controlSearch: FormControl<string> = new FormControl('', { nonNullable: true });
   public readonly controlFilterStock: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
   public readonly controlFilterStrategy: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
 
-  public readonly data$: Observable<Position[] | null> = this._data$
-    .asObservable()
-    .pipe(
-      switchMap((data: Position[] | null) =>
-        combineLatest([
-          this.controlFilterStock.valueChanges.pipe(startWith(this.controlFilterStock.value)),
-          this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
-        ]).pipe(
-          map(([stock, strategy]: [FilterListItem[], FilterListItem[]]) =>
-            this._filterData(data || [], stock, strategy)
-          )
+  public readonly data$: Observable<Position[] | null> = this._data$.asObservable().pipe(
+    switchMap((data: Position[] | null) =>
+      combineLatest([
+        this.controlSearch.valueChanges.pipe(
+          map((value: string) => value.trim().toLowerCase()),
+          startWith(this.controlSearch.value)
+        ),
+        this.controlFilterStock.valueChanges.pipe(startWith(this.controlFilterStock.value)),
+        this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
+      ]).pipe(
+        map(([search, stock, strategy]: [string, FilterListItem[], FilterListItem[]]) =>
+          this._filterData(this._searchData(data || [], search), stock, strategy)
         )
       )
-    );
+    )
+  );
 
   public openMore = false;
 
@@ -83,6 +85,18 @@ export class OutComponent {
       ...item,
       disabled: !types.includes(item.id),
     }));
+  }
+
+  private _searchData(data: Position[], search: string | null): Position[] {
+    if (!search) {
+      return data;
+    }
+
+    return data.filter((item: Position) => {
+      const concat = [item.instrument.ticker, item.instrument.name].map((item: string) => item.toLowerCase()).join('⁂');
+
+      return concat.indexOf(search) !== -1;
+    });
   }
 
   private _filterData(data: Position[], valueStock: FilterListItem[], valueStrategy: FilterListItem[]): Position[] {
