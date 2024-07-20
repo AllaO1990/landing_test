@@ -1,11 +1,10 @@
 <tui-loader class="entry-table__loader" [overlay]="true" [showLoader]="data === null">
-  <tui-scrollbar *ngIf="data; else empty" class="entry-table__scrollbar">
+  <tui-scrollbar *ngIf="data && data.length; else empty" class="entry-table__scrollbar">
     <cdk-virtual-scroll-viewport
       #viewport
       tuiScrollable
       class="entry-table__viewport tui-zero-scrollbar"
-      [itemSize]="32"
-    >
+      [itemSize]="32">
       <table class="entry-table__table" tuiTable [columns]="columnList">
         <thead>
         <tr tuiThGroup>
@@ -63,9 +62,11 @@
 
           <td *tuiCell="'target'" tuiTd class="td td--number">
             <ng-container *ngIf="item.targets ; else none">
-              {{ item.targets[0].price | tuiFormatNumber : { decimalLimit: 2 } }}
+              <span class="bold">
+                {{ item.targets[0].price | tuiFormatNumber : { decimalLimit: 2 } }}
+              </span>
               <div class="substring">
-                {{ item.targets[0].profitPercent | tuiFormatNumber: { decimalLimit: 2 } }}% /
+                <span class="long">{{ item.targets[0].profitPercent | tuiFormatNumber: { decimalLimit: 2 } }}%</span> /
                 {{ item.targets[0].depositShare | tuiFormatNumber: { decimalLimit: 2 } }}%
               </div>
             </ng-container>
@@ -92,15 +93,19 @@
             />
           </td>
 
-          <td *tuiCell="'enter'" tuiTd class="td td--number">
+          <td *tuiCell="'enter'" tuiTd class="td td--number bold">
             {{ item.entry.price | tuiFormatNumber }}
             <div class="substring">{{ item.entry.quantity  | tuiFormatNumber }}</div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">
-            {{ item.stop.price | tuiFormatNumber }}
+            <span class="short">
+              {{ item.stop.price | tuiFormatNumber }}
+            </span>
             <div class="substring">
-              {{ item.stop.lossPercent | tuiFormatNumber: { decimalLimit: 2 } }}% /
+              <span class="short">
+                {{ item.stop.lossPercent | tuiFormatNumber: { decimalLimit: 2 } }}%
+              </span> /
               {{ item.stop.depositShare | tuiFormatNumber: { decimalLimit: 2 } }}%
             </div>
           </td>
@@ -116,7 +121,7 @@
 </tui-loader>
 
 <ng-template #empty>
-  <div class="entry-table__empty">Загрузка...</div>
+  <div class="entry-table__empty">{{ data === null ? 'Загрузка...' : 'Ищем идею...' }}</div>
 </ng-template>
 
 <ng-template #buy>

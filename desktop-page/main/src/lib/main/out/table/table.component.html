@@ -1,5 +1,5 @@
 <tui-loader class="out__loader" [overlay]="true" [showLoader]="data === null">
-  <tui-scrollbar *ngIf="data; else empty" class="out__scrollbar">
+  <tui-scrollbar *ngIf="data && data.length; else empty" class="out__scrollbar">
     <cdk-virtual-scroll-viewport
       #viewport
       tuiScrollable
@@ -27,9 +27,9 @@
           (click)="onClick($event, item)"
           *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
           [class.out__table-tr--active]="(activeIdeaId$ | async) === item.id"
-          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100 || 50)"
           tuiTr
         >
+          <!--          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100 || 50)"-->
           <td
             class="td"
             *tuiCell="'date'"
@@ -41,7 +41,7 @@
           </td>
 
           <td *tuiCell="'cost'" tuiTd class="td td--number">
-            <div class="ellipsis" [title]="item.lastPrice">
+            <div class="ellipsis bold" [title]="item.lastPrice" [uiLastPrice]="item">
               {{ item.lastPrice | tuiFormatNumber }}
             </div>
             <div class="substring">
@@ -60,12 +60,25 @@
             </ng-container>
           </td>
 
-          <td *tuiCell="'ticker'" tuiTd>
+          <td *tuiCell="'ticker'"
+              tuiTd
+              tuiHint
+              [tuiHintContext]="item.instrument"
+              [tuiHintDirection]="'bottom-right'">
             <div class="td__row">
-              {{ item.instrument.ticker }}
-              <span class="substring" style="margin-left: 8px">{{ item.instrument.exchange }}</span>
+              <span class="ellipsis">
+                {{ item.instrument.ticker }}
+              </span>
             </div>
-            <div class="substring" [title]="item.instrument.name">{{ item.instrument.name }}</div>
+
+            <tui-hint
+              class="hint"
+              *tuiHint="let data"
+              [@.disabled]="true">
+              <ng-container
+                [ngTemplateOutlet]="ticker"
+                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
+            </tui-hint>
           </td>
 
           <td *tuiCell="'luck'" tuiTd>
@@ -81,7 +94,7 @@
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">
             <ng-container *ngIf="item.targets[0] as target; else none">
-              <div class="td__row">
+              <div class="td__row long">
                 <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
                 <span class="substring" style="margin-left: 8px">
                   {{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 1 } }}%</span>
@@ -112,7 +125,9 @@
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
-            {{ item.entry.price | tuiFormatNumber }}
+            <div class="ellipsis" [title]="item.entry.price">
+              {{ item.entry.price | tuiFormatNumber }}
+            </div>
             <div class="substring">{{ item.entry.totalPrice | tuiFormatNumber :{ decimalLimit: 0 } }}</div>
           </td>
 
@@ -122,13 +137,13 @@
           </td>
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
-            <div class="ellipsis">
+            <div class="ellipsis" [uiPriceColor]="item.profitPercent">
               {{ item.profitPercent * 100 | tuiFormatNumber :{ decimalLimit: 1 } }}%
             </div>
             <div class="substring">{{ item.profit | tuiFormatNumber:{ decimalLimit: 0 } }}</div>
           </td>
 
-          <td *tuiCell="'stop'" tuiTd class="td td--number">
+          <td *tuiCell="'stop'" tuiTd class="td td--number short">
             <div class="ellipsis" [title]="item.stop.price">
               {{ item.stop.price | tuiFormatNumber }}
             </div>
@@ -142,7 +157,7 @@
 </tui-loader>
 
 <ng-template #empty>
-  <div class="out__empty">Загрузка...</div>
+  <div class="out__empty">{{ data === null ? 'Загрузка...' : 'Таблица входа пустая' }}</div>
 </ng-template>
 
 <ng-template #buy>
@@ -154,3 +169,23 @@
 </ng-template>
 
 <ng-template #none>&mdash;</ng-template>
+
+<ng-template #ticker let-data>
+  <div class="ticker">
+    <div class="ticker__img">
+      <img
+        src="/assets/tickers-v2/{{ data.ticker }}.{{ data.type === 'crypto' ? 'svg' : 'png' }}"
+        [attr.alt]="data.name"
+      />
+    </div>
+    <div class="ticker__content">
+      <div class="ticker__row">
+        {{ data.ticker }}
+        <span class="substring" style="margin-left: 8px">{{ data.realExchange }}</span>
+      </div>
+      <div class="ticker__row">
+        <div class="substring">{{ data.name }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -18,7 +18,7 @@ export interface ResponsePosition {
   minPriceIncrement: number;
   entries?: { price: number; quantity: number; totalPrice: number; depositShare: number }[];
   entry: { price: number; quantity: number; totalPrice: number; depositShare: number };
-  targets: { price: number; amount: number; profitPercent: number; depositShare: number }[];
+  targets: { price: number; amount: number; profitPercent: number; depositShare: number; reached: boolean }[];
   stop: {
     price: number;
     lossPercent: number;
