@@ -18,7 +18,7 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<ResponseListIdea>>(`https://trade.gpn.dev/api/v1/ideas`).pipe(
       filter((response: Response<ResponseListIdea>) => response && response.message === ResponseMessage.success),
       map((response: Response<ResponseListIdea>) =>
-        response.data.items.map((item: ResponseIdea) => ({
+        (response.data.items || []).map((item: ResponseIdea) => ({
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
           targets: item.targets ? item.targets : [item.target],
@@ -26,7 +26,7 @@ export class DesktopApiService extends DesktopService {
         }))
       ),
       catchError((error: Error) => {
-        console.error(error);
+        console.log(error);
         return of([]);
       })
     );
@@ -44,7 +44,6 @@ export class DesktopApiService extends DesktopService {
 
   public getStockList(): Observable<Response<Stock>> {
     return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/instruments?sub=true`);
-    // return this._http.get<Response<Stock>>('/assets/mocks/stock.json');
   }
 
   public getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>> {
@@ -78,84 +77,12 @@ export class DesktopApiService extends DesktopService {
             (item.entry.totalPrice - item.lastPrice * item.inPositionQuantity) *
             (item.positionType === 'short' ? -1 : 1),
         }))
-      )
+      ),
+      catchError((error: Error) => {
+        console.log(error);
+        return of([]);
+      })
     );
-
-    // const today: Date = new Date();
-    // const maxDay: number = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    // const genNumber = (max: number, min: number): number => {
-    //   return Math.floor(Math.random() * (max - min) + min);
-    // };
-    //
-    // return timer(2000).pipe(
-    //   switchMap((_) =>
-    //     of(
-    //       Array.from({ length: 100 }, (_, i: number) => {
-    //         const cost = genNumber(10000, 100);
-    //         const enterDiff = genNumber(100, 10);
-    //         const deposit = genNumber(100, 2);
-    //         const luck = genNumber(10, 1);
-    //         const start = `${today.getFullYear()}-${today.getMonth() + 1}-${genNumber(maxDay, 1)}`;
-    //
-    //         return {
-    //           id: i,
-    //           figi: `${i}`,
-    //           date: {
-    //             start,
-    //             passed: Math.round((new Date().valueOf() - new Date(start).valueOf()) / (24 * 60 * 60 * 1000)),
-    //           },
-    //           direction: i % 4 ? StockDirection.SELL : StockDirection.BUY,
-    //           ticker: 'SBER',
-    //           name: 'Сбер Банк',
-    //           exchange: 'MOEX',
-    //           cost: {
-    //             price: cost,
-    //             cost: cost * 3,
-    //           },
-    //           enter: {
-    //             price: cost - enterDiff,
-    //             cost: (cost - enterDiff) * 3,
-    //           },
-    //           result: {
-    //             price: enterDiff,
-    //             percentage: 3,
-    //           },
-    //           target1: {
-    //             price: cost + enterDiff,
-    //             percentage: luck,
-    //             count: enterDiff,
-    //             countPercent: Number((luck * 1.1).toFixed(2)),
-    //           },
-    //           target2: {
-    //             price: cost + enterDiff * 3,
-    //             percentage: luck * 1.5,
-    //             count: enterDiff,
-    //             countPercent: luck * 2,
-    //           },
-    //           profit: {
-    //             percentage: luck,
-    //             count: cost,
-    //           },
-    //           out: {
-    //             price: cost + enterDiff * 2,
-    //             value: 1,
-    //           },
-    //           stop: {
-    //             price: cost - enterDiff * 2,
-    //             percentage: 2,
-    //           },
-    //           deposit: {
-    //             value: deposit,
-    //             percentage: 2,
-    //           },
-    //           luck,
-    //         };
-    //       })
-    //     )
-    //   )
-    // );
-
-    // return this._http.get<StockNameItem[]>('/assets/mocks/trade-list.json');
   }
 
   getCandles(selected: { source: any; index: number }): Observable<any> {

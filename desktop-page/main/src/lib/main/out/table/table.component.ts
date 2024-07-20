@@ -1,10 +1,10 @@
-import { Component, inject, Injector, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
 import { OUT_HEADER } from '../out.constants';
 import { CdkFixedSizeVirtualScroll, ScrollingModule } from '@angular/cdk/scrolling';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { OutHeaderItem } from '../out.types';
-import { AsyncPipe, DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DatePipe, JsonPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Position } from 'types/position';
 import { DatePassedPipe } from '../../common/date-passed.pipe';
 import { Idea } from 'types/idea';
@@ -17,6 +17,7 @@ import { Observable } from 'rxjs';
 import { StockId } from 'types/stock';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
+import { ColorPriceDirective, LastPriceDirective } from '@ui/price';
 
 @Component({
   selector: 'vt-out-table',
@@ -34,9 +35,14 @@ import { DesktopLkStore } from 'stores/desktop';
     DatePipe,
     DatePassedPipe,
     AsyncPipe,
+    LastPriceDirective,
+    ColorPriceDirective,
+    TuiHintModule,
+    JsonPipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutTableComponent {
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);

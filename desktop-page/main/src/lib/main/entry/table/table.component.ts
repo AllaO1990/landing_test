@@ -2,7 +2,7 @@ import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -34,6 +34,7 @@ import { DesktopLkStore } from 'stores/desktop';
     VtEnterComponent,
     DatePassedPipe,
     StrategyNamePipe,
+    TuiHintModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -85,8 +86,6 @@ export class EntryTableComponent {
       type: EventSelected.IDEA,
       id: item.id,
     });
-
-    // this.dialogEnterService.openDialog(item, this._injector).subscribe();
   }
 
   private _conditionActive(selected: StockEvent): StockId | null {

@@ -10,6 +10,7 @@
         class="item"
         [content]="content"
         [items]="filterStock"
+        [disabledItemHandler]="disabledItemHandler"
       ></tui-filter>
     </div>
     <div class="out__action">
@@ -47,10 +48,11 @@
       class="item"
       [content]="content"
       [items]="filterStrategy"
+      [disabledItemHandler]="disabledItemHandler"
     ></tui-filter>
   </div>
   <div class="out__table">
-    <vt-out-table [data]="data"></vt-out-table>
+    <vt-out-table [data]="data$ | async"></vt-out-table>
   </div>
 </div>
 

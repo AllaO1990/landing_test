@@ -164,19 +164,19 @@
   }
 
   &--cost {
-    width: 65px;
+    width: 75px;
   }
 
   &--enter {
-    width: 65px;
+    width: 70px;
   }
 
   &--ticker {
-    width: 85px;
+    width: 60px;
   }
 
   &--profit {
-    width: 55px;
+    width: 50px;
   }
 
   &--stop {
@@ -200,3 +200,39 @@
   }
 }
 
+.hint {
+  color: var(--color-g-10);
+  background-color: var(--block-bg-color);
+
+  box-shadow: var(--tui-shadow);
+}
+
+.ticker {
+  display: flex;
+  align-items: center;
+
+  &__content {
+    display: flex;
+    flex-flow: column;
+
+    max-width: 150px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+  }
+
+  &__img {
+    width: 24px;
+    height: 24px;
+    margin-right: var(--padding-2);
+    border-radius: 50%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+  }
+}
