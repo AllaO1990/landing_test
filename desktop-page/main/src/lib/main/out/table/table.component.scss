@@ -69,6 +69,7 @@
     td {
       --tui-height-m: 32px;
       background-color: inherit;
+      padding: 0 8px;
     }
 
     &-tr {
@@ -114,7 +115,7 @@
   overflow: hidden;
 }
 
-.td {
+table .td {
   &__row {
     display: flex;
     align-items: center;
