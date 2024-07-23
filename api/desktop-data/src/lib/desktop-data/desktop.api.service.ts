@@ -37,9 +37,21 @@ export class DesktopApiService extends DesktopService {
   }
 
   public getConsolidationZones(ideaId: string): Observable<any> {
-    return this._http.get<ConsolidationZones>('https://trade.gpn.dev/api/v1/chart-figures', {
-      params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
-    });
+    return this._http
+      .get<ConsolidationZones>('https://trade.gpn.dev/api/v1/chart-figures', {
+        params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
+      })
+      .pipe(
+        catchError((error: Error) => {
+          console.log(error);
+          return of({
+            data: {
+              activeZones: [],
+              ideaParams: [],
+            },
+          });
+        })
+      );
   }
 
   public getStockList(): Observable<Response<Stock>> {
