@@ -39,7 +39,7 @@ HStockTools(Highcharts);
 export class ChartComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   #zoomMode: 'x' | 'y' | 'xy' = 'xy';
-  #prevXExtremes = [0, 0];
+  #prevXExtremes: [number | undefined, number| undefined] = [undefined, undefined];
   #zoomDirectionOut = 1;
   #zoomFromStartShare = {
     x: 0.5,
@@ -317,7 +317,9 @@ export class ChartComponent {
     
     this.chart?.update(this.chartOptions);
     const xAxis = this.chart?.xAxis[0];
-    this.#prevXExtremes = [xAxis.min ?? 0, xAxis.max ?? 0];
+    if (xAxis) {
+      this.#prevXExtremes = [xAxis.min, xAxis.max];
+    }
     // this.chart?.xAxis[0].setExtremes(undefined, undefined);
     // this.chart?.yAxis[0].setExtremes(undefined, undefined);
   }
@@ -419,8 +421,6 @@ export class ChartComponent {
 
   chartEvent($event: Highcharts.Chart) {
     this.chart = $event;
-
-    console.log('init');
   }
 
   onMouseWheel(event: Event): void {
