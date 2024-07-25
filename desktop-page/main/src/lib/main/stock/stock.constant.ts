@@ -2,7 +2,7 @@ import { StockGroup, StockGroupType } from 'types/stock';
 
 export const STOCK_LIST_HEADER: { name: string; label: string }[] = [
   { name: 'ticker', label: 'Тикер' },
-  { name: 'sector', label: 'Сектор' },
+  // { name: 'sector', label: 'Сектор' },
   { name: 'price', label: 'Цена' },
   { name: 'change', label: 'Изм.' },
   { name: 'change-percent', label: 'Изм. в %' },

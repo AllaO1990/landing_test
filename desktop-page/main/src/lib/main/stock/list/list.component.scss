@@ -189,3 +189,34 @@
     }
   }
 }
+
+.hint {
+  color: var(--color-g-10);
+  background-color: var(--block-bg-color);
+
+  box-shadow: var(--tui-shadow);
+}
+
+.ticker {
+  display: flex;
+  align-items: center;
+
+  &__content {
+    display: flex;
+    flex-flow: column;
+
+    max-width: 200px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  overflow: hidden;
+}

@@ -31,14 +31,20 @@
             />
           </div>
           <div
-            class="stock-item__name"
-            [title]="item.name">
+            tuiHint
+            [tuiHintContext]="item"
+            [tuiHintDirection]="'bottom-right'"
+            class="stock-item__name">
             {{ item.ticker }}
-          </div>
-          <div
-            class="stock-item__sector"
-            [title]="item.sector">
-            {{ item.sector }}
+
+            <tui-hint
+              class="hint"
+              *tuiHint="let data"
+              [@.disabled]="true">
+              <ng-container
+                [ngTemplateOutlet]="ticker"
+                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
+            </tui-hint>
           </div>
           <div
             class="stock-item__price stock-item__last"
@@ -62,4 +68,24 @@
 
 <ng-template #skeleton>
   <div class="stock-item__load tui-skeleton">0</div>
+</ng-template>
+
+<ng-template #ticker let-data>
+  <div class="ticker">
+    <div class="ticker__content">
+      <div class="ticker__row" [title]="data.name">
+        <div class="ellipsis">
+          <span class="bold">{{ data.name }}</span>
+        </div>
+      </div>
+      <div class="ticker__row">
+        Биржа: <span class="bold">{{ data.realExchange }}</span>
+      </div>
+      <div class="ticker__row" [title]="data.sector">
+        <div class="ellipsis">
+          Сектор: <span class="bold">{{ data.sector }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </ng-template>

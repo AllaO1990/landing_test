@@ -1,26 +1,14 @@
-import {
-  AfterContentInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  Input,
-  Output,
-} from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Input, Output } from '@angular/core';
 import { STOCK_LIST_HEADER } from '../stock.constant';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import {
-  CdkFixedSizeVirtualScroll,
-  CdkVirtualForOf,
-  CdkVirtualScrollViewport,
-} from '@angular/cdk/scrolling';
+import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { StockListItemComponent } from '../item/item.component';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipeModule, TuiHintModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { DesktopLkStore } from '../../../../../../../stores/desktop';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { StockEvent } from 'types/stock-event';
@@ -46,37 +34,30 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     AsyncPipe,
     TuiFormatNumberPipeModule,
     TuiScrollbarModule,
+    TuiHintModule,
+    NgTemplateOutlet,
   ],
 })
 export class StockListComponent implements AfterContentInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-  private readonly _list$: Subject<StockListItemWithPrice[] | null> =
-    new BehaviorSubject<StockListItemWithPrice[] | null>(null);
+  private readonly _list$: Subject<StockListItemWithPrice[] | null> = new BehaviorSubject<
+    StockListItemWithPrice[] | null
+  >(null);
 
-  public list$: Observable<StockListItemWithPrice[] | null> =
-    this._list$.asObservable();
+  public list$: Observable<StockListItemWithPrice[] | null> = this._list$.asObservable();
 
   @Output() selected: Observable<StockInstrument> = this.list$.pipe(
-    filter(
-      (
-        list: StockListItemWithPrice[] | null
-      ): list is StockListItemWithPrice[] => !!list
-    ),
+    filter((list: StockListItemWithPrice[] | null): list is StockListItemWithPrice[] => !!list),
     switchMap((list: StockListItemWithPrice[]) =>
       this.controlItem.valueChanges.pipe(
-        map(
-          (value: string) =>
-            list.find((item: StockListItemWithPrice) => item.id === value)!
-        )
+        map((value: string) => list.find((item: StockListItemWithPrice) => item.id === value)!)
       )
     )
   );
 
-  public readonly controlItem: FormControl = new FormControl<string | null>(
-    null
-  );
+  public readonly controlItem: FormControl = new FormControl<string | null>(null);
 
   public readonly header: { name: string; label: string }[] = STOCK_LIST_HEADER;
 
@@ -85,10 +66,7 @@ export class StockListComponent implements AfterContentInit {
     this._list$.next(value);
   }
 
-  public trackByHeader(
-    index: number,
-    _: { name: string; label: string }
-  ): number {
+  public trackByHeader(index: number, _: { name: string; label: string }): number {
     return index;
   }
 
