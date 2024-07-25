@@ -1,9 +1,12 @@
 <highcharts-chart
+  class="vt-highcharts"
   [Highcharts]="Highcharts"
   (chartInstance)="chartEvent($event)"
   [constructorType]="'stockChart'"
   [options]="chartOptions"
-  [(update)]="update"
-  class="vt-highcharts"
+  (mousewheel)="onMouseWheel($event)"
+  (touchmove)="onTouchMove($event)"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd()"
 >
 </highcharts-chart>
