@@ -78,7 +78,11 @@ export class MainComponent {
         return list;
       }
 
-      return list.map((item: Position) => ({ ...item, lastPrice: price![item.instrument.id]!.last || item.lastPrice }));
+      // return list.map((item: Position) => ({ ...item, lastPrice: price![item.instrument.id]!.last || item.lastPrice }));
+      return list.map((item: Position) => {
+        item.lastPrice = price![item.instrument.id]!.last || item.lastPrice;
+        return item;
+      });
     })
   );
 

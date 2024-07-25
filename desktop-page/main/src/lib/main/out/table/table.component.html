@@ -93,8 +93,8 @@
           </td>
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">
-            <ng-container *ngIf="item.targets[0] as target; else none">
-              <div class="td__row long">
+            <ng-container *ngIf="item.currentTarget as target; else none">
+              <div class="td__row bold">
                 <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
                 <span class="substring" style="margin-left: 8px">
                   {{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 1 } }}%</span>
@@ -109,7 +109,7 @@
           </td>
 
           <td *tuiCell="'target2'" tuiTd class="td td--number">
-            <ng-container *ngIf="item.targets[1] as target; else none">
+            <ng-container *ngIf="item.nextTarget as target; else none">
               <div class="td__row">
                 <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
                 <span class="substring"
@@ -170,7 +170,9 @@
   <span class="sell">▼</span>
 </ng-template>
 
-<ng-template #none>&mdash;</ng-template>
+<ng-template #none>
+  <div style="text-align: center; width: 100%">&mdash;</div>
+</ng-template>
 
 <ng-template #ticker let-data>
   <div class="ticker">

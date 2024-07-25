@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
@@ -37,9 +37,21 @@ export class DesktopApiService extends DesktopService {
   }
 
   public getConsolidationZones(ideaId: string): Observable<any> {
-    return this._http.get<ConsolidationZones>('https://trade.gpn.dev/api/v1/chart-figures', {
-      params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
-    });
+    return this._http
+      .get<ConsolidationZones>('https://trade.gpn.dev/api/v1/chart-figures', {
+        params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
+      })
+      .pipe(
+        catchError((error: Error) => {
+          console.log(error);
+          return of({
+            data: {
+              activeZones: [],
+              ideaParams: [],
+            },
+          });
+        })
+      );
   }
 
   public getStockList(): Observable<Response<Stock>> {
@@ -66,38 +78,9 @@ export class DesktopApiService extends DesktopService {
   getPositionList(): Observable<Position[]> {
     return this._http.get<Response<ResponsePositions>>(`https://trade.gpn.dev/api/v1/ideas/positions`).pipe(
       filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
-      map(
-        (response: Response<ResponsePositions>) =>
-          response.data.items.map((item: ResponsePosition) => new Position(item))
-        // response.data.items.map((item: ResponsePosition) => ({
-        //   ...item,
-        //   priceIncrement: getPriceIncrement(item.minPriceIncrement),
-        //   entry: {
-        //     price:
-        //       item.entries.reduce(
-        //         (
-        //           acc: number,
-        //           item: {
-        //             price: number;
-        //           }
-        //         ) => (acc += item.price),
-        //         0
-        //       ) / item.entries.length,
-        //   },
-        //   profitPercent:
-        //     ((item.lastPrice - item.entry.price) / item.lastPrice) * (item.positionType === 'short' ? -1 : 1),
-        //   profit:
-        //     (item.lastPrice * item.inPositionQuantity - item.inPositionQuantity * item.entry.price) *
-        //     (item.positionType === 'short' ? -1 : 1),
-        //   inPositionQuantity: item.inPositionQuantity * (item.positionType === 'short' ? -1 : 1),
-        // }))
+      map((response: Response<ResponsePositions>) =>
+        response.data.items.map((item: ResponsePosition) => new Position(item))
       ),
-      tap((data: any) => {
-        console.log(data);
-        const filter = data.filter((item: any) => item.targets.some((target: any) => target.reached));
-
-        console.log(filter);
-      }),
       catchError((error: Error) => {
         console.log(error);
         return of([]);
