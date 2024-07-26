@@ -54,18 +54,17 @@ jobs:
           source: dist/*
           target: /home/mantyz/projects/vanya-frontend-builds
       # Runs a single command using the runners shell
-       # - name: Run docker-compose build
-       #   uses: appleboy/ssh-action@v1.0.3
-       #   with:
-       #     host: ${{ secrets.HOST }}
-       #     port: ${{ secrets.PORT }}
-       #     username: ${{ secrets.USERNAME }}
-       #     key: ${{ secrets.VANYA_SECRET }}
-       #     script: |
-       #       cd projects/vanya-frontend
-       #       git pull origin master
-       #       docker build -t vanya-web-image .
-       #       docker run -d -p 8082:80 vanya-web-image:latest
-       #       docker system prune -f
+       - name: Run docker build
+         uses: appleboy/ssh-action@v1.0.3
+         with:
+           host: ${{ secrets.HOST }}
+           port: ${{ secrets.PORT }}
+           username: ${{ secrets.USERNAME }}
+           key: ${{ secrets.VANYA_SECRET }}
+           script: |
+             cd projects/vanya-docker
+             docker build -t vanya-web-image .
+             docker run -d -p 8082:80 vanya-web-image:latest
+             docker system prune -f
         
       
