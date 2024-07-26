@@ -29,18 +29,43 @@ jobs:
           npm install
           npm run build --if-present
           # npm test
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build_artifacts
+          path: dist
+      
+  deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     steps:
+       - name: Download build result
+         uses: actions/download-artifact@v4
+         with:
+           name: build_artifacts
+           path: dist
+       - name: copy file to server
+         uses: appleboy/scp-action@v0.1.7
+         with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.VANYA_SECRET }}
+          port: ${{ secrets.PORT }}
+          source: dist/*
+          target: /home/mantyz/projects/vanya-frontend-builds
       # Runs a single command using the runners shell
-      # - name: Run docker-compose build
-      #   uses: appleboy/ssh-action@v1.0.3
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     port: ${{ secrets.PORT }}
-      #     username: ${{ secrets.USERNAME }}
-      #     key: ${{ secrets.VANYA_SECRET }}
-      #     script: |
-      #       cd projects/vanya-frontend
-      #       git pull origin master
-      #       docker build -t vanya-web-image .
-      #       docker run -d -p 8082:80 vanya-web-image:latest
-      #       docker system prune -f
-      # docker-compose -f "docker-compose.prod.yml" up -d --build
+       # - name: Run docker-compose build
+       #   uses: appleboy/ssh-action@v1.0.3
+       #   with:
+       #     host: ${{ secrets.HOST }}
+       #     port: ${{ secrets.PORT }}
+       #     username: ${{ secrets.USERNAME }}
+       #     key: ${{ secrets.VANYA_SECRET }}
+       #     script: |
+       #       cd projects/vanya-frontend
+       #       git pull origin master
+       #       docker build -t vanya-web-image .
+       #       docker run -d -p 8082:80 vanya-web-image:latest
+       #       docker system prune -f
+        
+      
