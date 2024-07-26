@@ -64,5 +64,7 @@ jobs:
           script: |
             cd projects/vanya-frontend-builds
             docker build -t vanya-web-image .
-            docker run --restart always -d -p 8082:80 vanya-web-image:latest
+            docker stop vanya-web
+            docker rm vanya-web
+            docker run --restart always --name vanya-web -d -p 8082:80 vanya-web-image:latest
             docker system prune -f
