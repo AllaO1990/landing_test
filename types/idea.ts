@@ -1,5 +1,4 @@
 import { StockId, StockInstrument, StockPosition } from './stock';
-import { StockStrategyEnums } from './stock-strategy';
 
 export interface ResponseListIdea {
   items: ResponseIdea[];
@@ -7,41 +6,42 @@ export interface ResponseListIdea {
 }
 
 export interface ResponseIdea {
+  updatedAt: string;
+  inPosition: boolean;
+  inPositionQuantity: number;
+  inPositionDepositShare: number;
   id: StockId;
   createdAt: string;
-  positionType: StockPosition;
+  positionType: StockPosition | string;
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
-  entries?: {
+  entries: {
     price: number;
     quantity: number;
     totalPrice: number;
     depositShare: number;
+    date: string | null;
   }[];
-  entry: {
-    price: number;
-    quantity: number;
-    totalPrice: number;
-    depositShare: number;
-  };
-  targets?: { price: number; amount: number; profitPercent: number; depositShare: number }[];
-  target: {
+  targets: {
     price: number;
     amount: number;
     profitPercent: number;
     depositShare: number;
-  };
+    reached: boolean;
+    stopDate: null | string;
+  }[];
   stop: {
     price: number;
     lossPercent: number;
     depositShare: number;
+    stopCandleDate: string;
   };
   strategy: {
     successProbability: number;
-    type: StockStrategyEnums;
+    type: string;
   };
-  author: IdeaAuthor;
+  author: string;
 }
 
 export enum IdeaAuthor {

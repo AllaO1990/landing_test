@@ -11,6 +11,7 @@ import { SIDEBAR_CONSTANTS } from './sidebar.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { STOCK_TIMING_LIST } from 'constants/stock-timing';
 import { TuiBooleanHandler, TuiIdentityMatcher } from '@taiga-ui/cdk';
+import { Position } from 'types/position';
 
 @Component({
   selector: 'lib-enter-sidebar',
@@ -32,7 +33,7 @@ import { TuiBooleanHandler, TuiIdentityMatcher } from '@taiga-ui/cdk';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterSidebarComponent {
-  private _data: Idea | null = null;
+  private _data: Idea | Position | null = null;
 
   public readonly strategy: { id: string; name: string }[] = STOCK_STRATEGY_LIST;
 
@@ -69,8 +70,10 @@ export class EnterSidebarComponent {
   public controlTextArea = new FormControl(null);
 
   @Input()
-  set data(value: Idea | null) {
+  set data(value: Idea | Position | null) {
     this._data = value;
+
+    console.log(value);
 
     if (value) {
       this.controlFilterTiming.disable();
