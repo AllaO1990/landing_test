@@ -72,6 +72,7 @@ export class Position implements IPosition {
   inPosition: boolean;
   inPositionDepositShare: number;
   inPositionQuantity: number;
+  inPositionQuantityValue: number;
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
@@ -102,6 +103,7 @@ export class Position implements IPosition {
     this.inPosition = data.inPosition;
     this.inPositionDepositShare = data.inPositionDepositShare;
     this.inPositionQuantity = data.inPositionQuantity * this._multiplier;
+    this.inPositionQuantityValue = data.inPositionQuantity;
     this.instrument = data.instrument;
     this.lastPrice = data.lastPrice;
     this.minPriceIncrement = data.minPriceIncrement;
@@ -127,7 +129,7 @@ export class Position implements IPosition {
   }
 
   private _getProfit(lastPrice: number): number {
-    return (lastPrice * this.inPositionQuantity - this.inPositionQuantity * this.entryAveragePrice) * this._multiplier;
+    return (lastPrice - this.entryAveragePrice) * this.inPositionQuantityValue * this._multiplier;
   }
 
   private _getCurrentTarget(targets: StockPositionTarget[]): StockPositionTarget | null {

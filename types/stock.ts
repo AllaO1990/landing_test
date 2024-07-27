@@ -32,7 +32,7 @@ export interface StockInstrument {
   realExchange: string;
   inSub: boolean;
   sector: string;
-  currency: StockCurrency;
+  currency: string;
 }
 
 export interface StockListItemPrice {

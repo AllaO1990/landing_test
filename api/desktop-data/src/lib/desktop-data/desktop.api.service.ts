@@ -21,8 +21,6 @@ export class DesktopApiService extends DesktopService {
         (response.data.items || []).map((item: ResponseIdea) => ({
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
-          targets: item.targets ? item.targets : [item.target],
-          entries: item.entries ? item.entries : [item.entry],
         }))
       ),
       catchError((error: Error) => {
