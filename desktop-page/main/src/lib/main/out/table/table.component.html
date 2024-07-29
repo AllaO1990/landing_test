@@ -145,8 +145,8 @@
             <div class="substring">{{ item.profit | tuiFormatNumber:{ decimalLimit: 0 } }}</div>
           </td>
 
-          <td *tuiCell="'stop'" tuiTd class="td td--number short">
-            <div class="ellipsis" [title]="item.stop.price">
+          <td *tuiCell="'stop'" tuiTd class="td td--number">
+            <div class="ellipsis" [uiPriceColor]="item.stop.lossPercent" [title]="item.stop.price">
               {{ item.stop.price | tuiFormatNumber }}
             </div>
             <div class="substring">{{ item.stop.lossPercent | tuiFormatNumber :{ decimalLimit: 2 } }}%</div>
