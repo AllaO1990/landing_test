@@ -13,10 +13,10 @@ import HFullScreen from 'highcharts/modules/full-screen';
 import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
 
+import { CommonModule } from '@angular/common';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockInstrument } from 'types/stock';
-import { CommonModule } from '@angular/common';
 
 HC_exporting(Highcharts);
 
@@ -39,7 +39,7 @@ HStockTools(Highcharts);
 export class ChartComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   #zoomMode: 'x' | 'y' | 'xy' = 'xy';
-  #prevXExtremes: [number | undefined, number| undefined] = [undefined, undefined];
+  #prevXExtremes: [number | undefined, number | undefined] = [undefined, undefined];
   #zoomDirectionOut = 1;
   #zoomFromStartShare = {
     x: 0.5,
@@ -81,7 +81,7 @@ export class ChartComponent {
       zooming: {
         // type: 'y',
         // key: 'ctrl',
-        mouseWheel: {type: 'x'},
+        mouseWheel: { type: 'x' },
         resetButton: { position: { x: -60 } },
       },
       panning: { enabled: true, type: 'xy' },
@@ -299,22 +299,22 @@ export class ChartComponent {
       this.chart?.removeAnnotation(0);
     }
     (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].name = value?.ticker;
+    console.log(value);
   }
 
   @Input()
   set selectedIdea(value: any) {
-    // console.log(value);
     return;
   }
 
   @Input()
   set data(value: any[]) {
-    this.chart?.zoomOut();
+    // this.chart?.zoomOut();
     (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value;
     // this.updateExtremes
     // this.chart?.xAxis[0].setExtremes();
     // this.chart?.yAxis[0].setExtremes();
-    
+
     this.chart?.update(this.chartOptions);
     const xAxis = this.chart?.xAxis[0];
     if (xAxis) {
@@ -415,7 +415,7 @@ export class ChartComponent {
           'Декабрь',
         ],
         shortMonths: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-      }
+      },
     });
   }
 
@@ -432,9 +432,9 @@ export class ChartComponent {
     const isInRightZone = event.x >= leftBorder && event.x <= this.chart.chartWidth && event.y <= bottomBorder;
     this.#zoomDirectionOut = event.deltaY < 0 ? -1 : 1;
     this.#zoomFromStartShare = {
-      x: Math.min(Math.max((event.layerX - (this.chart.chartWidth-this.chart.plotWidth)), 0) / this.chart.plotWidth, 1),
+      x: Math.min(Math.max(event.layerX - (this.chart.chartWidth - this.chart.plotWidth), 0) / this.chart.plotWidth, 1),
       y: Math.min((event.layerY - this.chart.plotTop) / this.chart.plotHeight, 1),
-    }
+    };
 
     if (isInRightZone) {
       event.preventDefault();
@@ -455,7 +455,7 @@ export class ChartComponent {
     this.#zoomFromStartShare = {
       x: 0.5,
       y: 0.5,
-    }
+    };
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -467,8 +467,8 @@ export class ChartComponent {
     const leftBorder = this.chart.chartWidth - 60;
     const bottomBorder = this.chart.chartHeight - 60;
     if (
-      event.touches[0].clientX >= leftBorder && 
-      event.touches[0].clientX <= this.chart.chartWidth && 
+      event.touches[0].clientX >= leftBorder &&
+      event.touches[0].clientX <= this.chart.chartWidth &&
       event.touches[0].clientY <= bottomBorder
     ) {
       this.#startPanZoomY = event.touches[0].clientY;
@@ -479,9 +479,9 @@ export class ChartComponent {
     this.#startPanZoomY = -1;
   }
 
-  private updateZoomMode(zoomMode: 'x' | 'y' | 'xy',): void {
+  private updateZoomMode(zoomMode: 'x' | 'y' | 'xy'): void {
     this.#zoomMode = zoomMode;
-    const yAxis = this.chart?.yAxis[0]
+    const yAxis = this.chart?.yAxis[0];
     if (!yAxis || yAxis.max === undefined || yAxis.min === undefined) {
       return;
     }
@@ -489,10 +489,10 @@ export class ChartComponent {
     if (!xAxis || xAxis.max === undefined || xAxis.min === undefined) {
       return;
     }
-    
+
     const dataHeight = yAxis.max - yAxis.min;
     const plotHeight = this.chart.plotHeight;
-    const deltaZoomY = dataHeight / plotHeight * 40;
+    const deltaZoomY = (dataHeight / plotHeight) * 40;
     const maxDeltaY = deltaZoomY * this.#zoomFromStartShare.y;
     const minDeltaY = deltaZoomY - maxDeltaY;
     const newYMin = yAxis.min - this.#zoomDirectionOut * minDeltaY;
