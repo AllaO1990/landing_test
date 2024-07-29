@@ -79,7 +79,9 @@
         </div>
       </div>
       <div class="ticker__row">
-        Биржа: <span class="bold">{{ data.realExchange }}</span>
+        <div class="ellipsis">
+          Биржа: <span class="bold">{{ data.realExchange }}</span>
+        </div>
       </div>
       <div class="ticker__row" [title]="data.sector">
         <div class="ellipsis">
