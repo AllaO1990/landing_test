@@ -237,3 +237,8 @@ table .td {
     }
   }
 }
+
+thead th {
+  color: var(--tui-text-01);
+  background: var(--tui-secondary-active);
+}
