@@ -14,7 +14,7 @@ import {
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TuiFilterModule, TuiInputModule } from '@taiga-ui/kit';
 import { EntryTableComponent } from './table/table.component';
-import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
+import { TuiActiveZoneModule, TuiAutoFocusModule, TuiObscuredModule } from '@taiga-ui/cdk';
 
 @NgModule({
   declarations: [EntryComponent, EntryIdeaComponent],
@@ -33,6 +33,7 @@ import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
     TuiObscuredModule,
     TuiInputModule,
     TuiTextfieldControllerModule,
+    TuiAutoFocusModule,
   ],
   providers: [],
   exports: [EntryComponent],

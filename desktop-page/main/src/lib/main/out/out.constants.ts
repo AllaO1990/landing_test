@@ -65,16 +65,16 @@ export const OUT_HEADER: OutHeaderItem[] = [
       }
     ) => sortNumber(a.targets[0].price, b.targets[0].price),
   },
-  {
-    name: 'target2',
-    label: 'Цель след.<br>К-во выход',
-    sorter: (
-      a: { targets: { price: number }[] },
-      b: {
-        targets: { price: number }[];
-      }
-    ) => sortNumber(a.targets[1].price, b.targets[1].price),
-  },
+  // {
+  //   name: 'target2',
+  //   label: 'Цель след.<br>К-во выход',
+  //   sorter: (
+  //     a: { targets: { price: number }[] },
+  //     b: {
+  //       targets: { price: number }[];
+  //     }
+  //   ) => sortNumber(a.targets[1].price, b.targets[1].price),
+  // },
   {
     name: 'stop',
     label: 'Стоп',
