@@ -1,16 +1,42 @@
 <div class="toolbar">
-  <div class="toolbar__actions">
+  <div class="toolbar__ticker" *ngIf="(selected$ | async) as selected">
+    <div class="ticker">
+      <div class="ticker__img">
+        <img
+          src="/assets/tickers-v2/{{ selected.ticker }}.{{ selected.type === 'crypto' ? 'svg' : 'png' }}"
+          [attr.alt]="selected.name"
+        />
+      </div>
+      <div class="ticker__name">
+        {{ selected.ticker }}
+      </div>
+    </div>
+  </div>
+  <div class="toolbar__space"></div>
+  <div
+    tuiGroup
+    class="toolbar__actions">
     <a
       *ngFor="let item of links; trackBy: trackByIndex"
-      class="toolbar__link"
-      #rla="routerLinkActive"
+      [routerLink]="item.disabled ? null : item.path"
       routerLinkActive
-      [routerLink]="item.path"
-      mat-button
-      [color]="rla.isActive ? 'primary' : ''"
-    >
+      #rla="routerLinkActive"
+      [appearance]="rla.isActive ? 'secondary' : 'flat'"
+      size="m"
+      tuiButton
+      [disabled]="item.disabled"
+      [icon]="item.icon"
+      type="button">
       {{ item.name }}
     </a>
-    <button class="toolbar__actions-logout" mat-button (click)="logout()">Logout</button>
+    <button
+      appearance="flat"
+      size="m"
+      tuiButton
+      icon="tuiIconLogOut"
+      type="button"
+      (click)="logout()">
+      Выход
+    </button>
   </div>
 </div>
