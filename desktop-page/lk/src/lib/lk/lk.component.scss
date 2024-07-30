@@ -1,6 +1,7 @@
 .layout {
   display: flex;
   flex-flow: column nowrap;
+  background-color: var(--main-bg-color);
 
   height: 100%;
   width: 100%;
@@ -15,6 +16,7 @@
     height: 48px;
 
     margin-bottom: var(--padding-1);
+    background: var(--tui-base-01);
   }
 
   &__container {

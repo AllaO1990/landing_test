@@ -5,6 +5,15 @@ import { Idea } from 'types/idea';
 import { EntryEnums } from './entry.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
+import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { TuiBooleanHandler } from '@taiga-ui/cdk';
+
+interface FilterListItem {
+  id: string;
+  name: string;
+  disabled: boolean;
+}
 
 @Component({
   selector: 'vt-entry',
@@ -13,19 +22,85 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryComponent {
-  public controlSearch: FormControl<string | null> = new FormControl(null);
-  public controlFilterStock: FormControl<{ id: string; name: string } | null> =
-    new FormControl(null);
-  public controlFilterStrategy: FormControl<{
-    id: string;
-    name: string;
-  } | null> = new FormControl(null);
+  private readonly _data$: Subject<Idea[] | null> = new BehaviorSubject<Idea[] | null>(null);
+
+  public controlSearch: FormControl<string> = new FormControl('', { nonNullable: true });
+  public controlFilterStock: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
+  public controlFilterStrategy: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
   public openMore = false;
   public constants: { [key in EntryEnums]: string } = ENTRY_CONSTANTS;
-  public filterStock: { id: string; name: string }[] = MAIN_FILTER_STOCK;
-  public filterStrategy: { id: string; name: string }[] = STOCK_STRATEGY_LIST;
+  public filterStock: FilterListItem[] = MAIN_FILTER_STOCK;
+  public filterStrategy: FilterListItem[] = STOCK_STRATEGY_LIST;
 
-  @Input() data: Idea[] | null = null;
+  public readonly data$: Observable<Idea[] | null> = this._data$.asObservable().pipe(
+    switchMap((data: Idea[] | null) =>
+      combineLatest([
+        this.controlSearch.valueChanges.pipe(
+          map((value: string) => value.trim().toLowerCase()),
+          startWith(this.controlSearch.value)
+        ),
+        this.controlFilterStock.valueChanges.pipe(startWith(this.controlFilterStock.value)),
+        this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
+      ]).pipe(
+        map(([search, stock, strategy]: [string, FilterListItem[], FilterListItem[]]) =>
+          this._filterData(this._searchData(data || [], search), stock, strategy)
+        )
+      )
+    )
+  );
+
+  disabledItemHandler: TuiBooleanHandler<FilterListItem> = (item: FilterListItem) => item.disabled;
+
+  @Input()
+  set data(value: Idea[] | null) {
+    this.filterStock = this._updateFilterList(MAIN_FILTER_STOCK, value, (item: Idea) => item.instrument.type);
+    this.filterStrategy = this._updateFilterList(STOCK_STRATEGY_LIST, value, (item: Idea) => item.strategy.type);
+
+    this._data$.next(value);
+  }
+
+  private _updateFilterList(list: FilterListItem[], data: Idea[] | null, fn: (d: Idea) => string): FilterListItem[] {
+    const types: string[] = [...new Set((data || []).map((item: Idea) => fn(item)))];
+
+    return list.map((item: FilterListItem) => ({
+      ...item,
+      disabled: !types.includes(item.id),
+    }));
+  }
+
+  private _searchData(data: Idea[], search: string | null): Idea[] {
+    if (!search) {
+      return data;
+    }
+
+    return data.filter((item: Idea) => {
+      const concat = [item.instrument.ticker, item.instrument.name].map((item: string) => item.toLowerCase()).join('⁂');
+
+      return concat.indexOf(search) !== -1;
+    });
+  }
+
+  private _filterData(data: Idea[], valueStock: FilterListItem[], valueStrategy: FilterListItem[]): Idea[] {
+    const mapStock = this._getObject(valueStock);
+    const mapStrategy = this._getObject(valueStrategy);
+
+    return data.filter((item: Idea) => {
+      return (
+        (!valueStock.length || mapStock[item.instrument.type]) &&
+        (!valueStrategy.length || mapStrategy[item.strategy.type])
+      );
+    });
+  }
+
+  private _getObject(list: FilterListItem[]): { [key: string]: boolean } {
+    return list.reduce(
+      (acc: { [key: string]: boolean }, item: FilterListItem) => ({
+        ...acc,
+        [item.id]: true,
+      }),
+      {}
+    );
+  }
 
   public onOpenMore(): void {
     this.openMore = !this.openMore;

@@ -1,5 +1,9 @@
 :host {
   flex: 1 1;
+
+  padding: 0 var(--padding-2);
+
+  --tui-height-m: 28px;
 }
 
 .toolbar {
@@ -11,14 +15,38 @@
 
   background-color: #fff;
 
-  &__actions {
-    position: relative;
-    width: 100%;
-    padding-right: 16px;
+  &__space {
+    flex: 1;
+  }
 
-    &-logout {
-      position: absolute;
-      right: 16px;
+  &__actions {
+    flex: 0 0 auto;
+    min-width: 300px;
+
+    font-weight: 400;
+  }
+}
+
+.ticker {
+  display: flex;
+  align-items: center;
+
+  &__img {
+    width: 24px;
+    height: 24px;
+    margin-right: var(--padding-2);
+    border-radius: 50%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      object-fit: contain;
     }
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--tui-base-08);
   }
 }

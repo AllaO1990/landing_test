@@ -1,5 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AuthService } from 'apps/desktop/src/app/core/auth/auth.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { DESKTOP_STORE } from 'tokens/desktop';
+import { DesktopLkStore } from 'stores/desktop';
+import { Observable } from 'rxjs';
+import { StockInstrument } from 'types/stock';
 
 @Component({
   selector: 'vt-toolbar-main',
@@ -8,13 +12,15 @@ import { AuthService } from 'apps/desktop/src/app/core/auth/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolbarComponent {
-  public readonly links: { path: string[]; name: string }[] = [
-    { name: 'Main', path: ['/lk/main-v2'] },
-    // { name: 'Main 2', path: './main-v2' },
-    // { name: 'Dashboard', path: './dashboard' },
-  ];
+  private readonly _authService: AuthService = inject(AuthService);
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
-  constructor(private _authService: AuthService) {}
+  public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
+
+  public readonly links: { path: string[]; name: string; icon: string; disabled: boolean }[] = [
+    { name: 'Терминал', path: ['/lk/main-v2'], icon: 'tuiIconTrello', disabled: false },
+    { name: 'Портфель', path: ['./portfolio'], icon: 'tuiIconBriefcase', disabled: true },
+  ];
 
   public trackByIndex(index: number): number {
     return index;
