@@ -117,12 +117,12 @@ export class MainComponent {
       text: 'Список',
     },
     {
-      icon: 'tuiIconLogInLarge',
-      text: 'Вход',
+      icon: 'tuiIconTargetLarge',
+      text: 'Идея',
     },
     {
-      icon: 'tuiIconLogOutLarge',
-      text: 'Выход',
+      icon: 'tuiIconAwardLarge',
+      text: 'Сдекла',
     },
   ];
 

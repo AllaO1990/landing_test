@@ -4,6 +4,7 @@ import { DESKTOP_STORE } from 'tokens/desktop';
 import { DesktopLkStore } from 'stores/desktop';
 import { Observable } from 'rxjs';
 import { StockInstrument } from 'types/stock';
+import { TuiHostedDropdownComponent } from '@taiga-ui/core';
 
 @Component({
   selector: 'vt-toolbar-main',
@@ -24,6 +25,16 @@ export class ToolbarComponent {
 
   public trackByIndex(index: number): number {
     return index;
+  }
+
+  onCloseDropDown(event: Event, item: { disabled: boolean }, hostedDropdown: TuiHostedDropdownComponent): void {
+    event.preventDefault();
+
+    if (item.disabled) {
+      return;
+    }
+
+    hostedDropdown.close();
   }
 
   logout() {
