@@ -7,64 +7,122 @@
 </tui-loader>
 
 <ng-template #show>
-  <div class="container" *ngIf="context">
-    <div class="container__sidebar container__widget">
-      <lib-enter-sidebar [data]="context.data.data"></lib-enter-sidebar>
-    </div>
-    <div class="container__chart container__widget">
-      <div class="widget">
-        <div class="widget__toolbar">
-          <div class="widget__space"></div>
-          <div class="widget__date-start date-start">
-            Идея от
-            <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>
-          </div>
-          <button
-            appearance="icon"
-            icon="tuiIconClose"
-            tuiIconButton
-            size="m"
-            type="button"
-            (click)="onClose($event)"
-          ></button>
+  <div class="container container--{{breakpoint$ | async}}" *ngIf="context">
+    <div class="container__toolbar">
+      <div class="container__actions">
+        <button
+          tuiIconButton
+          appearance="icon"
+          size="l"
+          type="button"
+          icon="tuiIconTrash"
+        ></button>
+        <button
+          class="save"
+          tuiIconButton
+          appearance="save"
+          size="l"
+          type="button"
+          icon="tuiIconSave"
+        ></button>
+        <div class="container__space"></div>
+        <lib-enter-sidebar-instrument [data]="context.data.data.instrument">
+        </lib-enter-sidebar-instrument>
+        <div class="container__space"></div>
+        <div class="date-start">
+          Идея от
+          <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>
         </div>
-        <vt-chart
-          [consolidationZones]="consolidationZones$ | async"
-          [data]="candles$ | async"
-          [selected]="selected$ | async"
-          [selectedIdea]="selectedIdea$ | async"
-        ></vt-chart>
+        <button
+          appearance="icon"
+          icon="tuiIconClose"
+          tuiIconButton
+          size="l"
+          type="button"
+          (click)="onClose($event)"
+        ></button>
       </div>
     </div>
-    <div class="container__idea container__widget">
-      <div class="widget">
-        <div class="widget__header">
-          <div class="header">
-            Идея
+    <div
+      [style.margin-left.%]="activeItemIndex * -100"
+      class="container__widget-list">
+      <div class="container__sidebar container__widget">
+        <lib-enter-sidebar [data]="context.data.data"></lib-enter-sidebar>
+      </div>
+      <div class="container__chart container__widget">
+        <div class="widget">
+          <div class="widget__toolbar">
+            <div class="widget__space"></div>
+            <div class="widget__date-start date-start">
+              Идея от
+              <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>
+            </div>
+            <button
+              appearance="icon"
+              icon="tuiIconClose"
+              tuiIconButton
+              size="m"
+              type="button"
+              (click)="onClose($event)"
+            ></button>
+          </div>
+          <vt-chart
+            [consolidationZones]="consolidationZones$ | async"
+            [data]="candles$ | async"
+            [selected]="selected$ | async"
+            [selectedIdea]="selectedIdea$ | async"
+          ></vt-chart>
+        </div>
+      </div>
+      <div class="container__idea container__widget">
+        <div class="widget">
+          <div class="widget__header">
+            <div class="header">
+              Идея
+            </div>
+          </div>
+          <div class="widget__content">
+            <tui-scrollbar class="scrollbar" [hidden]="true">
+              <lib-enter-idea [data]="context.data.data" class="tui-zero-scrollbar"></lib-enter-idea>
+            </tui-scrollbar>
           </div>
         </div>
-        <div class="widget__content">
-          <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-idea [data]="context.data.data" class="tui-zero-scrollbar"></lib-enter-idea>
-          </tui-scrollbar>
+      </div>
+      <div class="container__action container__widget">
+        <div class="widget">
+          <div class="widget__header">
+            <div class="header">
+              Действия
+            </div>
+          </div>
+          <div class="widget__content">
+            <tui-scrollbar class="scrollbar" [hidden]="true">
+              <lib-enter-action
+                [data]="context.data.type === 'position' ? context.data.data : null"
+                class="tui-zero-scrollbar"></lib-enter-action>
+            </tui-scrollbar>
+          </div>
         </div>
       </div>
     </div>
-    <div class="container__action container__widget">
-      <div class="widget">
-        <div class="widget__header">
-          <div class="header">
-            Действия
-          </div>
-        </div>
-        <div class="widget__content">
-          <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-action
-              [data]="context.data.type === 'position' ? context.data.data : null"
-              class="tui-zero-scrollbar"></lib-enter-action>
-          </tui-scrollbar>
-        </div>
-      </div>
+    <div class="container__tabs" *ngIf="(tabs$ | async) as tabs">
+      <tui-tabs
+        class="tabs"
+        [(activeItemIndex)]="activeItemIndex">
+        <button
+          *ngFor="let item of tabs; trackBy: trackByIndex; index as i"
+          class="tab"
+          [class.tab--active]="i === activeItemIndex"
+          tuiTab>
+          <tui-svg
+            class="tab__icon"
+            [src]="item.icon"
+          ></tui-svg>
+          <span class="tab__text">
+            {{ item.text }}
+          </span>
+        </button>
+      </tui-tabs>
     </div>
   </div>
 </ng-template>

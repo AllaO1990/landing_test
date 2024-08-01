@@ -121,7 +121,7 @@ export class MainComponent {
       text: 'Идея',
     },
     {
-      icon: 'tuiIconAwardLarge',
+      icon: 'tuiIconShoppingCartLarge',
       text: 'Сдекла',
     },
   ];
@@ -132,12 +132,12 @@ export class MainComponent {
       text: 'График',
     },
     {
-      icon: 'tuiIconLogInLarge',
-      text: 'Вход',
+      icon: 'tuiIconTargetLarge',
+      text: 'Идея',
     },
     {
-      icon: 'tuiIconLogOutLarge',
-      text: 'Выход',
+      icon: 'tuiIconShoppingCartLarge',
+      text: 'Сдекла',
     },
   ];
 
