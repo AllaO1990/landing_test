@@ -22,11 +22,11 @@ export class AuthService {
     // this._router.navigate(['lk']);
 
     this._http
-      .post<UserData>('https://trade.gpn.dev/api/v1/users/sign-up', { email })
+      .post<UserData>('https://trade.gpn.dev/api/v1/auth/sign-up', { email })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
-          return this._http.post<UserData>('https://trade.gpn.dev/api/v1/users/sign-in', { email });
+          return this._http.post<UserData>('https://trade.gpn.dev/api/v1/auth/sign-in', { email });
         })
       )
       .subscribe((data) => {
@@ -44,7 +44,7 @@ export class AuthService {
     formData.append('username', email);
     formData.append('password', password);
     this._http
-      .post<UserData>('https://trade.gpn.dev/api/v1/users/token', formData)
+      .post<UserData>('https://trade.gpn.dev/api/v1/auth/token', formData)
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
