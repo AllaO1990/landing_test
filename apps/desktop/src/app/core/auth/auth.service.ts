@@ -41,7 +41,7 @@ export class AuthService {
 
   login(email: string, password: string) {
     this._http
-      .post<UserData>('https://trade.gpn.dev/api/v1/auth/token', { username: email, password })
+      .post<UserData>('https://trade.gpn.dev/api/v1/auth/token', { username: email, password: +password })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
