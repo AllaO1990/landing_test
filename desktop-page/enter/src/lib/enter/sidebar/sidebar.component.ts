@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiButtonModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
+import { TuiButtonModule, TuiScrollbarModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { Idea } from 'types/idea';
 import { JsonPipe, NgIf } from '@angular/common';
-import { InstrumentComponent } from './instrument/instrument.component';
+import { InstrumentComponent } from '../instrument/instrument.component';
 import { ValidDateComponent } from './valid-date/valid-date.component';
 import { TuiFilterModule, TuiTextareaModule } from '@taiga-ui/kit';
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
@@ -27,6 +27,7 @@ import { Position } from 'types/position';
     TuiButtonModule,
     TuiSvgModule,
     TuiTextareaModule,
+    TuiScrollbarModule,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',

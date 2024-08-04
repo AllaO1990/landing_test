@@ -1,93 +1,97 @@
 <div *ngIf="data" class="widget">
-  <div class="widget__toolbar widget__padding">
-    <lib-enter-sidebar-instrument [data]="data.instrument">
-    </lib-enter-sidebar-instrument>
-  </div>
-  <div class="widget__valid-date widget__padding">
-    <lib-enter-sidebar-valid-date></lib-enter-sidebar-valid-date>
-  </div>
-  <div class="widget__timing widget__padding">
-    <tui-filter
-      [formControl]="controlFilterTiming"
-      size="s"
-      class="item"
-      [disabledItemHandler]="disabledItemHandler"
-      [identityMatcher]="identityMatcher"
-      [content]="content"
-      [items]="timing"
-    ></tui-filter>
-  </div>
-  <div class="widget__implementation widget__padding">
-    <tui-filter
-      [formControl]="controlFilterStrategy"
-      size="s"
-      class="item"
-      [disabledItemHandler]="disabledItemHandler"
-      [identityMatcher]="identityMatcher"
-      [content]="content"
-      [items]="strategy"
-    ></tui-filter>
-  </div>
-  <div class="widget__strategy widget__padding">
-    <tui-filter
-      [formControl]="controlFilterPositionType"
-      size="s"
-      class="item"
-      [disabledItemHandler]="disabledItemHandler"
-      [identityMatcher]="identityMatcher"
-      [content]="content"
-      [items]="positionType"
-    ></tui-filter>
-  </div>
-  <div class="widget__description description widget__padding">
-    <div class="description__row">
-      <div class="description__label">Вероятность успеха</div>
-      <div class="description__text">{{ data.strategy.successProbability * 100 }}%</div>
-    </div>
-    <div class="description__row">
-      <div class="description__label">% депозита</div>
-      <div class="description__text">{{ data.inPositionDepositShare * 100 }}%
+  <!--  <div class="widget__toolbar widget__padding">-->
+  <!--    <lib-enter-sidebar-instrument [data]="data.instrument">-->
+  <!--    </lib-enter-sidebar-instrument>-->
+  <!--  </div>-->
+  <tui-scrollbar>
+    <div class="tui-zero-scrollbar">
+      <div class="widget__valid-date widget__padding">
+        <lib-enter-sidebar-valid-date></lib-enter-sidebar-valid-date>
       </div>
+      <div class="widget__timing widget__padding">
+        <tui-filter
+          [formControl]="controlFilterTiming"
+          size="s"
+          class="item"
+          [disabledItemHandler]="disabledItemHandler"
+          [identityMatcher]="identityMatcher"
+          [content]="content"
+          [items]="timing"
+        ></tui-filter>
+      </div>
+      <div class="widget__implementation widget__padding">
+        <tui-filter
+          [formControl]="controlFilterStrategy"
+          size="s"
+          class="item"
+          [disabledItemHandler]="disabledItemHandler"
+          [identityMatcher]="identityMatcher"
+          [content]="content"
+          [items]="strategy"
+        ></tui-filter>
+      </div>
+      <div class="widget__strategy widget__padding">
+        <tui-filter
+          [formControl]="controlFilterPositionType"
+          size="s"
+          class="item"
+          [disabledItemHandler]="disabledItemHandler"
+          [identityMatcher]="identityMatcher"
+          [content]="content"
+          [items]="positionType"
+        ></tui-filter>
+      </div>
+      <div class="widget__description description widget__padding">
+        <div class="description__row">
+          <div class="description__label">Вероятность успеха</div>
+          <div class="description__text">{{ data.strategy.successProbability * 100 }}%</div>
+        </div>
+        <div class="description__row">
+          <div class="description__label">% депозита</div>
+          <div class="description__text">{{ data.inPositionDepositShare * 100 }}%
+          </div>
+        </div>
+        <div class="description__row">
+          <div class="description__label">Сектор экономики</div>
+          <div class="description__text">{{ data.instrument.sector }}</div>
+        </div>
+        <div class="description__row">
+          <div class="description__label">% Сектора в вашем портфеле</div>
+          <div class="description__text">&mdash;</div>
+        </div>
+      </div>
+      <div class="widget__comment comment widget__padding">
+        <div class="comment__label">
+          {{ constants.comment_label }}
+        </div>
+        <div class="comment__area">
+          <tui-textarea [formControl]="controlTextArea" tuiTextfieldSize="s">
+            {{ constants.comment_area }}
+          </tui-textarea>
+        </div>
+      </div>
+      <div class="widget__space"></div>
+      <!--  <div class="widget__action widget__padding">-->
+      <!--    <button-->
+      <!--      class="action save"-->
+      <!--      appearance="primary"-->
+      <!--      tuiButton-->
+      <!--      type="button"-->
+      <!--      size="m">-->
+      <!--      {{ constants.save }}-->
+      <!--    </button>-->
+      <!--    <button-->
+      <!--      class="action trash"-->
+      <!--      appearance="flat"-->
+      <!--      tuiButton-->
+      <!--      size="m"-->
+      <!--      type="button">-->
+      <!--      <tui-svg src="tuiIconTrash"></tui-svg>-->
+      <!--      {{ constants.delete }}-->
+      <!--    </button>-->
+      <!--  </div>-->
     </div>
-    <div class="description__row">
-      <div class="description__label">Сектор экономики</div>
-      <div class="description__text">{{ data.instrument.sector }}</div>
-    </div>
-    <div class="description__row">
-      <div class="description__label">% Сектора в вашем портфеле</div>
-      <div class="description__text">&mdash;</div>
-    </div>
-  </div>
-  <div class="widget__comment comment widget__padding">
-    <div class="comment__label">
-      {{ constants.comment_label }}
-    </div>
-    <div class="comment__area">
-      <tui-textarea [formControl]="controlTextArea" tuiTextfieldSize="s">
-        {{ constants.comment_area }}
-      </tui-textarea>
-    </div>
-  </div>
-  <div class="widget__space"></div>
-  <div class="widget__action widget__padding">
-    <button
-      class="action save"
-      appearance="primary"
-      tuiButton
-      type="button"
-      size="m">
-      {{ constants.save }}
-    </button>
-    <button
-      class="action trash"
-      appearance="flat"
-      tuiButton
-      size="m"
-      type="button">
-      <tui-svg src="tuiIconTrash"></tui-svg>
-      {{ constants.delete }}
-    </button>
-  </div>
+  </tui-scrollbar>
 </div>
 
 <ng-template #content let-item>

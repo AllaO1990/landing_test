@@ -67,18 +67,6 @@ body {
   height: 100%;
 }
 
-body {
-  margin: 0;
-  font-family: var(--tui-text-font);
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  line-height: 15px;
-  box-sizing: border-box;
-
-  background-color: var(--main-bg-color);
-}
-
 *::-webkit-scrollbar {
   width: 0.2em;
 }

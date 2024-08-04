@@ -7,7 +7,14 @@ import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
 import { IssuerInfoModule } from './shared/issuer-info/issuer-info.module';
 import { ToolbarComponent } from './shared/toolbar/toolbar.component';
-import { TuiButtonModule, TuiGroupModule, TuiSvgModule } from '@taiga-ui/core';
+import {
+  TuiButtonModule,
+  TuiDataListModule,
+  TuiGroupModule,
+  TuiHostedDropdownModule,
+  TuiSvgModule,
+} from '@taiga-ui/core';
+import { TuiBadgeModule, TuiItemsWithMoreModule } from '@taiga-ui/kit';
 
 @NgModule({
   declarations: [MainComponent, ToolbarComponent],
@@ -19,8 +26,12 @@ import { TuiButtonModule, TuiGroupModule, TuiSvgModule } from '@taiga-ui/core';
     VtCandleChartModule,
     VtScreenerWidgetModule,
     TuiGroupModule,
-    TuiSvgModule,
     TuiButtonModule,
+    TuiItemsWithMoreModule,
+    TuiDataListModule,
+    TuiSvgModule,
+    TuiBadgeModule,
+    TuiHostedDropdownModule,
   ],
   exports: [],
   providers: [],
