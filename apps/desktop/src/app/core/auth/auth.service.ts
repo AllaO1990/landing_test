@@ -5,8 +5,17 @@ import { EMPTY, catchError } from 'rxjs';
 import { VtLocalStorageService } from '../storage/local-storage.service';
 
 interface UserData {
+  data: { access_token: string; token_type: string };
+  ok: boolean;
+  message: string;
+  success: boolean;
+}
+
+interface UserSignUpData {
   data: string;
   ok: boolean;
+  message: string;
+  success: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,16 +31,16 @@ export class AuthService {
     // this._router.navigate(['lk']);
 
     this._http
-      .post<UserData>('https://trade.gpn.dev/api/v1/users/sign-up', { email })
+      .post<UserSignUpData>('https://trade.gpn.dev/api/v1/auth/sign-up', { email })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
-          return this._http.post<UserData>('https://trade.gpn.dev/api/v1/users/sign-in', { email });
+          return this._http.post<UserData>('https://trade.gpn.dev/api/v1/auth/sign-in', { email });
         })
       )
       .subscribe((data) => {
         // this.saveToken(data.token);
-        if (data.data) {
+        if (typeof data.data === 'string') {
           window.open(data.data, '_blank');
         }
 
@@ -40,11 +49,8 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    const formData = new FormData();
-    formData.append('username', email);
-    formData.append('password', password);
     this._http
-      .post<UserData>('https://trade.gpn.dev/api/v1/users/token', formData)
+      .post<UserData>('https://trade.gpn.dev/api/v1/auth/token', { username: email, password: +password })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
@@ -52,8 +58,7 @@ export class AuthService {
         })
       )
       .subscribe((data) => {
-        // @ts-expect-error ignore
-        this._saveToken(data['access_token']);
+        this._saveToken(data['data']['access_token']);
 
         this._router.navigate(['lk']);
       });

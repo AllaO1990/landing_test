@@ -1,22 +1,16 @@
+import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { StockEntryState } from 'types/stock-entry-state';
 import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { Idea } from 'types/idea';
-import { DesktopService } from '@desktop-data/desktop-data';
 import { StockId } from 'types/stock';
+import { StockEntryState } from 'types/stock-entry-state';
 
 export class EntryStore extends ComponentStore<StockEntryState> {
-  public readonly selected$: Observable<Idea | null> = this.select(
-    (state: StockEntryState) => state.selected
-  );
+  public readonly selected$: Observable<Idea | null> = this.select((state: StockEntryState) => state.selected);
 
-  public readonly list$: Observable<Idea[] | null> = this.select(
-    (state: StockEntryState) => state.list
-  );
+  public readonly list$: Observable<Idea[] | null> = this.select((state: StockEntryState) => state.list);
 
-  public readonly active$: Observable<StockId[] | null> = this.select(
-    (state: StockEntryState) => state.active
-  );
+  public readonly active$: Observable<StockId[] | null> = this.select((state: StockEntryState) => state.active);
 
   constructor(private readonly _api: DesktopService) {
     super({
@@ -52,9 +46,7 @@ export class EntryStore extends ComponentStore<StockEntryState> {
       switchMap((_) =>
         this._api.getIdeaList().pipe(
           tap((result: Idea[]) => this.updateList(result)),
-          tap((result: Idea[]) =>
-            this.updateActive(result.map((item: Idea) => item.instrument.id))
-          )
+          tap((result: Idea[]) => this.updateActive(result.map((item: Idea) => item.instrument.id)))
         )
       ),
       catchError((err: Error) => {
