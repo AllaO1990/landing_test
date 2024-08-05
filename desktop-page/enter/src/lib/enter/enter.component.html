@@ -7,25 +7,26 @@
 </tui-loader>
 
 <ng-template #show>
-  <div class="container container--{{breakpoint$ | async}}" *ngIf="context">
+  <div class="container container--{{breakpoint$ | async}} container--{{orientation$ | async}}" *ngIf="context">
     <div class="container__toolbar">
       <div class="container__actions">
         <button
+          class="action"
           tuiIconButton
-          appearance="icon"
+          appearance="outline"
           size="l"
           type="button"
           icon="tuiIconTrash"
         ></button>
         <button
-          class="save"
+          class="action save"
           tuiIconButton
-          appearance="save"
+          appearance="outline"
           size="l"
           type="button"
           icon="tuiIconSave"
         ></button>
-        <div class="container__space"></div>
+        <div class="container__space container__space--first"></div>
         <lib-enter-sidebar-instrument [data]="context.data.data.instrument">
         </lib-enter-sidebar-instrument>
         <div class="container__space"></div>
@@ -49,23 +50,44 @@
       <div class="container__sidebar container__widget">
         <lib-enter-sidebar [data]="context.data.data"></lib-enter-sidebar>
       </div>
+      <div class="container__submit container__widget">
+        <div class="submit">
+          <button
+            class="action save"
+            appearance="primary"
+            tuiButton
+            type="button"
+            size="m">
+            Сохранить
+          </button>
+          <button
+            class="action trash"
+            appearance="flat"
+            tuiButton
+            size="m"
+            type="button">
+            <tui-svg src="tuiIconTrash"></tui-svg>
+            Удалить идею
+          </button>
+        </div>
+      </div>
       <div class="container__chart container__widget">
         <div class="widget">
-          <div class="widget__toolbar">
-            <div class="widget__space"></div>
-            <div class="widget__date-start date-start">
-              Идея от
-              <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>
-            </div>
-            <button
-              appearance="icon"
-              icon="tuiIconClose"
-              tuiIconButton
-              size="m"
-              type="button"
-              (click)="onClose($event)"
-            ></button>
-          </div>
+          <!--          <div class="widget__toolbar">-->
+          <!--            <div class="widget__space"></div>-->
+          <!--            <div class="widget__date-start date-start">-->
+          <!--              Идея от-->
+          <!--              <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>-->
+          <!--            </div>-->
+          <!--            <button-->
+          <!--              appearance="icon"-->
+          <!--              icon="tuiIconClose"-->
+          <!--              tuiIconButton-->
+          <!--              size="m"-->
+          <!--              type="button"-->
+          <!--              (click)="onClose($event)"-->
+          <!--            ></button>-->
+          <!--          </div>-->
           <vt-chart
             [consolidationZones]="consolidationZones$ | async"
             [data]="candles$ | async"

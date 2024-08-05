@@ -53,11 +53,9 @@
             <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell"></ng-container>
           </td>
 
-          <td *tuiCell="'result'" tuiTd class="td td--center">
-            <ng-container *ngIf="item.result; else none">
-              {{ item.result.price | tuiFormatNumber }}
-              <div class="substring">{{ item.result.percentage | tuiFormatNumber:{ decimalLimit: 2 } }}%</div>
-            </ng-container>
+          <td *tuiCell="'result'" tuiTd class="td td--center" [uiPriceColor]="item.resultPercent">
+            {{ item.resultPercent * 100 | tuiFormatNumber:{ decimalLimit: 2 } }}%
+            <div class="substring">{{ item.resultPrice | tuiFormatNumber: { decimalLimit: 0 } }}</div>
           </td>
 
           <td *tuiCell="'ticker'"
@@ -101,25 +99,6 @@
               </div>
               <div class="td__row">
                 <div class="substring">{{ target.amount }}</div>
-                <!--                <div class="substring" style="margin-left: 8px">-->
-                <!--                  {{ target.depositShare * 100 | tuiFormatNumber :{ decimalLimit: 0 } }}%-->
-                <!--                </div>-->
-              </div>
-            </ng-container>
-          </td>
-
-          <td *tuiCell="'target2'" tuiTd class="td td--number">
-            <ng-container *ngIf="item.nextTarget as target; else none">
-              <div class="td__row">
-                <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
-                <span class="substring"
-                      style="margin-left: 8px">{{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 1 } }}%</span>
-              </div>
-              <div class="td__row">
-                <div class="substring">{{ target.amount }}</div>
-                <!--                <div class="substring"-->
-                <!--                     style="margin-left: 8px">{{ target.depositShare * 100 | tuiFormatNumber :{ decimalLimit: 0 } }}%-->
-                <!--                </div>-->
               </div>
             </ng-container>
           </td>

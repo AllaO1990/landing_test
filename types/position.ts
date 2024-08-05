@@ -58,23 +58,25 @@ export interface IPosition extends ResponsePosition {
   priceIncrement: number;
   profit: number;
   entryAveragePrice: number;
-  entryAverageCost: number;
 }
 
 export class Position implements IPosition {
+  private _lastPrice = -1;
+  private _profit = 0;
+  private _profitPercent = 0;
+  private _resultPrice = 0;
+  private _resultPercent = 0;
   private readonly _multiplier: number;
   id: number;
   author: string;
   createdAt: string;
   entries: StockPositionEntry[];
-  entryAverageCost: number;
   entryAveragePrice: number;
   inPosition: boolean;
   inPositionDepositShare: number;
   inPositionQuantity: number;
   inPositionQuantityValue: number;
   instrument: StockInstrument;
-  lastPrice: number;
   minPriceIncrement: number;
   positionType: StockPosition;
   priceIncrement: number;
@@ -83,14 +85,36 @@ export class Position implements IPosition {
   targets: StockPositionTarget[];
   updatedAt: string;
   currentTarget: StockPositionTarget | null;
-  nextTarget: StockPositionTarget | null;
 
   get profitPercent(): number {
-    return this._getProfitPercent(this.lastPrice);
+    return this._profitPercent;
   }
 
   get profit(): number {
-    return this._getProfit(this.lastPrice);
+    return this._profit;
+  }
+
+  get resultPercent(): number {
+    return this._resultPercent;
+  }
+
+  get resultPrice(): number {
+    return this._resultPrice;
+  }
+
+  set lastPrice(value: number) {
+    if (value !== this._lastPrice) {
+      this._profit = this._getProfit(value);
+      this._profitPercent = this._getProfitPercent(value);
+      this._resultPrice = this._getResultPrice(value);
+      this._resultPercent = this._getResultPercent(value);
+    }
+
+    this._lastPrice = value;
+  }
+
+  get lastPrice() {
+    return this._lastPrice;
   }
 
   constructor(data: ResponsePosition) {
@@ -105,7 +129,6 @@ export class Position implements IPosition {
     this.inPositionQuantity = data.inPositionQuantity * this._multiplier;
     this.inPositionQuantityValue = data.inPositionQuantity;
     this.instrument = data.instrument;
-    this.lastPrice = data.lastPrice;
     this.minPriceIncrement = data.minPriceIncrement;
     this.entries = data.entries;
     this.targets = data.targets;
@@ -115,9 +138,8 @@ export class Position implements IPosition {
 
     this.priceIncrement = getPriceIncrement(data.minPriceIncrement);
     this.entryAveragePrice = this._getAveragePrice(data.entries);
-    this.entryAverageCost = this.entryAveragePrice * data.inPositionQuantity;
     this.currentTarget = this._getCurrentTarget(data.targets);
-    this.nextTarget = this._getNextTarget(data.targets);
+    this.lastPrice = data.lastPrice;
   }
 
   private _getAveragePrice(data: StockPositionEntry[]): number {
@@ -136,8 +158,26 @@ export class Position implements IPosition {
     return targets.find((target: StockPositionTarget) => target.stopDate === null) || null;
   }
 
-  private _getNextTarget(targets: StockPositionTarget[]): StockPositionTarget | null {
-    const index = targets.findIndex((target: StockPositionTarget) => target.stopDate === null);
-    return index === -1 || index === targets.length - 1 ? null : targets[index + 1];
+  private _getResultPrice(lastPrice: number): number {
+    if (!this.targets[0].stopDate) {
+      return this._profit;
+    }
+
+    return (
+      this.targets.reduce((acc: number, item: StockPositionTarget) => {
+        if (item.stopDate) {
+          acc += item.price * item.amount;
+        } else {
+          acc += item.amount * lastPrice;
+        }
+
+        return acc;
+      }, 0) -
+      this.entryAveragePrice * this.inPositionQuantityValue
+    );
+  }
+
+  private _getResultPercent(lastPrice: number): number {
+    return this._resultPrice / (this.entryAveragePrice * this.inPositionQuantityValue);
   }
 }
