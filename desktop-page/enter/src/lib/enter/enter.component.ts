@@ -10,7 +10,7 @@ import {
 } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 import { ChartComponent } from '@ui/chart';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
 import { StockInstrument } from 'types/stock';
@@ -21,6 +21,15 @@ import { EnterSidebarComponent } from './sidebar/sidebar.component';
 import { TuiTabsModule } from '@taiga-ui/kit';
 import { map } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
+
+type ScreenOrientation = 'landscape' | 'portrait';
+
+export interface TabItem {
+  text: string;
+  icon: string;
+}
 
 @Component({
   selector: 'lib-enter',
@@ -53,9 +62,12 @@ export class VtEnterComponent {
 
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
-  public readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
+  public readonly breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
 
-  public readonly size$ = inject(TUI_WINDOW_SIZE).pipe(map(({ width, height }: ClientRect) => width < height));
+  public readonly orientation$: Observable<ScreenOrientation> = inject(TUI_WINDOW_SIZE).pipe(
+    map(({ width, height }): ScreenOrientation => (width > height ? 'landscape' : 'portrait')),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   public readonly consolidationZones$: Observable<any | null> = this._store.consolidationZones$;
 
@@ -65,53 +77,8 @@ export class VtEnterComponent {
 
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
 
-  public readonly tabTabletList: { text: string; icon: string }[] = [
-    {
-      icon: 'tuiIconFileTextLarge',
-      text: 'Инфо',
-    },
-    {
-      icon: 'tuiIconChartLineLarge',
-      text: 'График',
-    },
-    {
-      icon: 'tuiIconShoppingCartLarge',
-      text: 'Сделка',
-    },
-  ];
-
-  public readonly tabMobileList: { text: string; icon: string }[] = [
-    {
-      icon: 'tuiIconFileTextLarge',
-      text: 'Инфо',
-    },
-    {
-      icon: 'tuiIconChartLineLarge',
-      text: 'График',
-    },
-    {
-      icon: 'tuiIconTargetLarge',
-      text: 'Идея',
-    },
-    {
-      icon: 'tuiIconShoppingCartLarge',
-      text: 'Сдекла',
-    },
-  ];
-
-  public readonly tabs$: Observable<{ text: string; icon: string }[] | null> = this.breakpoint$.pipe(
-    map((screen: string | null): { text: string; icon: string }[] | null => {
-      if (screen === 'mobile') {
-        return this.tabMobileList;
-      }
-
-      if (screen === 'desktopSmall') {
-        return this.tabTabletList;
-      }
-
-      this.activeItemIndex = 0;
-      return null;
-    })
+  public readonly tabs$: Observable<TabItem[] | null> = combineLatest([this.breakpoint$, this.orientation$]).pipe(
+    map(([screen, orientation]): TabItem[] | null => this._condition(screen, orientation))
   );
 
   activeItemIndex = 0;
@@ -124,5 +91,28 @@ export class VtEnterComponent {
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  private _condition(screen: TuiBreakpointMediaKey | null, orientation: ScreenOrientation): TabItem[] | null {
+    if (screen === 'mobile') {
+      return MOBILE_LIST;
+    }
+
+    if (screen === 'desktopSmall' && orientation === 'landscape') {
+      if (this.activeItemIndex > 1) {
+        this.activeItemIndex = 1;
+      }
+      return TABLET_LANDSCAPE_LIST;
+    }
+
+    if (screen === 'desktopSmall' && orientation === 'portrait') {
+      if (this.activeItemIndex > 2) {
+        this.activeItemIndex = 2;
+      }
+      return TABLET_PORTRAIT_LIST;
+    }
+
+    this.activeItemIndex = 0;
+    return null;
   }
 }
