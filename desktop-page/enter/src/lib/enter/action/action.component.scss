@@ -39,45 +39,46 @@
   align-items: center;
 
   height: 28px;
-
-  padding: 0 var(--padding-2);
 }
 
 
 .row {
   &__item {
     margin: 0 var(--padding-2);
-  }
 
-  &__right {
-    text-align: right;
-  }
+    overflow: hidden;
 
-  &__first {
-    width: 40px;
+    min-width: 60px;
+    max-width: 100px;
   }
+}
 
-  &__date {
-    width: 90px;
+.entry {
+  .row__item {
+    flex: 0 0 calc(100% / 5 - var(--padding-4));
   }
+}
 
-  &__price {
-    width: 60px;
+.out {
+  .row__item {
+    flex: 0 0 calc(100% / 8 - var(--padding-4));
   }
+}
 
-  &__quantity {
-    width: 60px;
+.balance {
+  .row__item {
+    flex: 0 0 calc(100% / 8 - var(--padding-4));
   }
+}
 
-  &__deposit {
-    width: 60px;
+.result {
+  .row__item {
+    flex: 0 0 calc(100% / 8 - var(--padding-4));
   }
+}
 
-  &__total {
-    width: 60px;
-  }
-
-  &__profit {
-    width: 60px;
+::ng-deep {
+  .balance tui-scrollbar .t-content, .result tui-scrollbar .t-content, .out tui-scrollbar .t-content {
+    width: auto;
   }
 }

@@ -20,7 +20,7 @@
         <div class="item__value row__item row__first">
           <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
         </div>
-        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
         <div class="item__value row__right row__item row__price">{{ item.price| tuiFormatNumber }}</div>
         <div class="item__value row__right row__item row__quantity">{{ item.quantity| tuiFormatNumber }}</div>
         <div class="item__value row__right row__item row__total">{{ item.totalPrice| tuiFormatNumber }}</div>
@@ -57,7 +57,7 @@
         <div class="item__value row__item row__first">
           <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
         </div>
-        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
         <div
           class="item__value row__right row__item row__price">{{ item.price | tuiFormatNumber }}
         </div>
@@ -124,7 +124,7 @@
         <div class="item__value row__item row__first">
           <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
         </div>
-        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
         <div class="item__value row__item row__right row__price">{{ item.price }}</div>
         <div class="item__value row__item row__right row__profit">{{ item.lossPercent }}%</div>
         <div class="item__value row__item row__right row__profit">{{ item.loss }}</div>

@@ -53,9 +53,11 @@
             <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell"></ng-container>
           </td>
 
-          <td *tuiCell="'result'" tuiTd class="td td--center" [uiPriceColor]="item.resultPercent">
-            {{ item.resultPercent * 100 | tuiFormatNumber:{ decimalLimit: 2 } }}%
-            <div class="substring">{{ item.resultPrice | tuiFormatNumber: { decimalLimit: 0 } }}</div>
+          <td *tuiCell="'result'" tuiTd class="td td--number" [uiPriceColor]="item.resultPercent">
+            <ng-container *ngIf="item.resultPercent; else none">
+              {{ item.resultPercent * 100 | tuiFormatNumber:{ decimalLimit: 1 } }}%
+              <div class="substring">{{ item.resultPrice | tuiFormatNumber: { decimalLimit: 0 } }}</div>
+            </ng-container>
           </td>
 
           <td *tuiCell="'ticker'"
