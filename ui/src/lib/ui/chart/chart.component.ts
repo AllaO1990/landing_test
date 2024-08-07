@@ -299,7 +299,6 @@ export class ChartComponent {
       this.chart?.removeAnnotation(0);
     }
     (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].name = value?.ticker;
-    console.log(value);
   }
 
   @Input()
@@ -332,52 +331,54 @@ export class ChartComponent {
       return;
     }
 
-    const getF = function (): Highcharts.AnnotationsShapesOptions[] {
-      return value.map((item: any) => {
-        return item.points.map((data: any) => {
-          return {
-            // type: 'rect',
-            type: 'path',
+    setTimeout(() => {
+      const getF = function (): Highcharts.AnnotationsShapesOptions[] {
+        return value.map((item: any) => {
+          return item.points.map((data: any) => {
+            return {
+              // type: 'rect',
+              type: 'path',
 
-            dashStyle: item.dash ? 'Dash' : null,
-            fill: 'rgba(0,0,0,0)',
-            stroke: item.color,
-            strokeWidth: 1.5,
-            ry: Math.PI,
-            points: data,
-          };
+              dashStyle: item.dash ? 'Dash' : null,
+              fill: 'rgba(0,0,0,0)',
+              stroke: item.color,
+              strokeWidth: 1.5,
+              ry: Math.PI,
+              points: data,
+            };
+          });
         });
+      };
+
+      this.chart.addAnnotation({
+        id: 0,
+        draggable: '',
+        shapes: getF().flat(),
+
+        // infinityLine: {
+        //   typeOptions: {
+        //     // type: 'ray',
+        //     xAxis: 0,
+        //     yAxis: 0,
+        //     line: { fill: 'red' },
+
+        //     points: [
+        //       { x: new Date().setMonth(new Date().getMonth() - 1).valueOf(), y: 3 },
+        //       { x: new Date().setMonth(new Date().getMonth()).valueOf(), y: 3 },
+        //       { x: new Date().setMonth(new Date().getMonth() + 0.3).valueOf(), y: 2 },
+        //     ],
+        //   },
+        // },
       });
-    };
 
-    this.chart.addAnnotation({
-      id: 0,
-      draggable: '',
-      shapes: getF().flat(),
+      this.chart?.xAxis[0].setExtremes(
+        new Date().setMonth(new Date().getMonth() - 2).valueOf(),
+        new Date().setMonth(new Date().getMonth() + 1).valueOf()
+      );
+      this.chart?.yAxis[0].setExtremes();
 
-      // infinityLine: {
-      //   typeOptions: {
-      //     // type: 'ray',
-      //     xAxis: 0,
-      //     yAxis: 0,
-      //     line: { fill: 'red' },
-
-      //     points: [
-      //       { x: new Date().setMonth(new Date().getMonth() - 1).valueOf(), y: 3 },
-      //       { x: new Date().setMonth(new Date().getMonth()).valueOf(), y: 3 },
-      //       { x: new Date().setMonth(new Date().getMonth() + 0.3).valueOf(), y: 2 },
-      //     ],
-      //   },
-      // },
-    });
-
-    this.chart?.xAxis[0].setExtremes(
-      new Date().setMonth(new Date().getMonth() - 2).valueOf(),
-      new Date().setMonth(new Date().getMonth() + 1).valueOf()
-    );
-    this.chart?.yAxis[0].setExtremes();
-
-    this.consolidationZonesIsExist = true;
+      this.consolidationZonesIsExist = true;
+    }, 10);
   }
 
   public chart!: Highcharts.StockChart;

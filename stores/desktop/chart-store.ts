@@ -6,8 +6,12 @@ import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { ChartState } from 'types/chart-state';
 import { transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
 import { StockId } from 'types/stock';
+import { Queue } from 'utils/queue';
 
 export class ChartStore extends ComponentStore<ChartState> {
+  private _queueCandles: Queue<any> = new Queue(3);
+  private _queueConsolidationZones: Queue<any> = new Queue(3);
+
   public readonly candles$: Observable<any[] | null> = this.select((state: ChartState) => state.candles);
 
   public readonly consolidationZones$: Observable<ActiveZone[] | null> = this.select(
@@ -44,7 +48,7 @@ export class ChartStore extends ComponentStore<ChartState> {
         index = val.index;
       }),
       skipWhile((value) => value.source === null),
-      switchMap((data: { source: any; index: number }) => this._api.getCandles(data)),
+      switchMap((data: { source: any; index: number }) => this._getCandles(data)),
       map((data: any) => {
         return data.data.map((item: any) => {
           // x,open,high,low,close
@@ -65,9 +69,7 @@ export class ChartStore extends ComponentStore<ChartState> {
     (stream$: Observable<{ type: string; value: { id: string } }>) => {
       return stream$.pipe(
         skipWhile((value) => value === null),
-        switchMap((data: { type: string; value: { id: string } }) => {
-          return this._api.getConsolidationZones(data.value.id);
-        }),
+        switchMap((data: { type: string; value: { id: string } }) => this._getConsolidationZones(data.value)),
         map((data: ConsolidationZones) => {
           return transformActiveConsolidationZones(data?.data);
         }),
@@ -85,9 +87,7 @@ export class ChartStore extends ComponentStore<ChartState> {
   public readonly loadConsolidationZonesV2 = this.effect((stream$: Observable<{ id: StockId } | null>) => {
     return stream$.pipe(
       filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
-      switchMap((data: { id: StockId }) => {
-        return this._api.getConsolidationZones(data.id);
-      }),
+      switchMap((data: { id: StockId }) => this._getConsolidationZones(data)),
       map((data: ConsolidationZones) => {
         return transformActiveConsolidationZones(data?.data);
       }),
@@ -100,4 +100,27 @@ export class ChartStore extends ComponentStore<ChartState> {
       })
     );
   });
+
+  private _getCandles(data: { source: any; index: number }): Observable<any> {
+    const value = this._queueCandles.getValue(data.source.id);
+
+    if (value && data.index === 0) {
+      return of(value);
+    }
+
+    return this._api.getCandles(data).pipe(tap((res: any) => this._queueCandles.setValue(data.source.id, res)));
+  }
+
+  private _getConsolidationZones(data: { id: StockId }): Observable<any> {
+    const key = data.id.toString();
+    const value = this._queueConsolidationZones.getValue(key);
+
+    if (value) {
+      return of(value);
+    }
+
+    return this._api
+      .getConsolidationZones(data.id)
+      .pipe(tap((res: any) => this._queueConsolidationZones.setValue(key, res)));
+  }
 }
