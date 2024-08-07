@@ -1,23 +1,17 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ContentChild,
-  Input,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef, ViewChild } from '@angular/core';
 import { ItemComponent } from './item/item.component';
 import { ItemDirective } from './item/item.directive';
 import {
   CdkFixedSizeVirtualScroll,
   CdkVirtualForOf,
   CdkVirtualForOfContext,
+  CdkVirtualScrollableElement,
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
 import { StockId } from 'types/stock';
-import { NgIf } from '@angular/common';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
-import { PolymorpheusModule } from '@tinkoff/ng-polymorpheus';
+import { PolymorpheusContent, PolymorpheusModule } from '@tinkoff/ng-polymorpheus';
 
 @Component({
   selector: 'lib-enter-list[itemSize]',
@@ -28,10 +22,12 @@ import { PolymorpheusModule } from '@tinkoff/ng-polymorpheus';
     CdkVirtualScrollViewport,
     CdkVirtualForOf,
     NgIf,
+    NgTemplateOutlet,
     TuiLoaderModule,
     CdkFixedSizeVirtualScroll,
     TuiScrollbarModule,
     PolymorpheusModule,
+    CdkVirtualScrollableElement,
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
@@ -45,6 +41,10 @@ export class ListComponent {
   @Input() list: { id: StockId }[] | null = null;
 
   @Input() itemSize = 28;
+
+  @Input() header: PolymorpheusContent | null = null;
+
+  @Input() footer: PolymorpheusContent | null = null;
 
   @ContentChild(ItemDirective)
   public readonly item: ItemDirective | null = null;

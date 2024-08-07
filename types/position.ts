@@ -18,7 +18,6 @@ export interface ResponsePosition {
   lastPrice: number;
   minPriceIncrement: number;
   entries: StockPositionEntry[];
-  // entry: { price: number; quantity: number; totalPrice: number; depositShare: number };
   targets: StockPositionTarget[];
   stop: StockPositionStop;
   strategy: StockPositionStrategy;
@@ -64,9 +63,9 @@ export class Position implements IPosition {
   private _lastPrice = -1;
   private _profit = 0;
   private _profitPercent = 0;
-  private _resultPrice = 0;
-  private _resultPercent = 0;
-  private readonly _multiplier: number;
+  private _resultPrice: number | null = null;
+  private _resultPercent: number | null = null;
+  readonly multiplier: number;
   id: number;
   author: string;
   createdAt: string;
@@ -94,11 +93,11 @@ export class Position implements IPosition {
     return this._profit;
   }
 
-  get resultPercent(): number {
+  get resultPercent(): number | null {
     return this._resultPercent;
   }
 
-  get resultPrice(): number {
+  get resultPrice(): number | null {
     return this._resultPrice;
   }
 
@@ -118,7 +117,7 @@ export class Position implements IPosition {
   }
 
   constructor(data: ResponsePosition) {
-    this._multiplier = data.positionType === 'short' ? -1 : 1;
+    this.multiplier = data.positionType === 'short' ? -1 : 1;
 
     this.id = data.id;
     this.createdAt = data.createdAt;
@@ -126,7 +125,7 @@ export class Position implements IPosition {
     this.positionType = data.positionType;
     this.inPosition = data.inPosition;
     this.inPositionDepositShare = data.inPositionDepositShare;
-    this.inPositionQuantity = data.inPositionQuantity * this._multiplier;
+    this.inPositionQuantity = data.inPositionQuantity * this.multiplier;
     this.inPositionQuantityValue = data.inPositionQuantity;
     this.instrument = data.instrument;
     this.minPriceIncrement = data.minPriceIncrement;
@@ -147,37 +146,39 @@ export class Position implements IPosition {
   }
 
   private _getProfitPercent(lastPrice: number): number {
-    return ((lastPrice - this.entryAveragePrice) / lastPrice) * this._multiplier;
+    return ((lastPrice - this.entryAveragePrice) / lastPrice) * this.multiplier;
   }
 
   private _getProfit(lastPrice: number): number {
-    return (lastPrice - this.entryAveragePrice) * this.inPositionQuantityValue * this._multiplier;
+    return (lastPrice - this.entryAveragePrice) * this.inPositionQuantityValue * this.multiplier;
   }
 
   private _getCurrentTarget(targets: StockPositionTarget[]): StockPositionTarget | null {
     return targets.find((target: StockPositionTarget) => target.stopDate === null) || null;
   }
 
-  private _getResultPrice(lastPrice: number): number {
+  private _getResultPrice(lastPrice: number): number | null {
     if (!this.targets[0].stopDate) {
-      return this._profit;
+      return null;
     }
 
     return (
       this.targets.reduce((acc: number, item: StockPositionTarget) => {
         if (item.stopDate) {
-          acc += item.price * item.amount;
+          acc += (item.price - this.entryAveragePrice) * item.amount;
         } else {
-          acc += item.amount * lastPrice;
+          acc += (lastPrice - this.entryAveragePrice) * item.amount;
         }
-
         return acc;
-      }, 0) -
-      this.entryAveragePrice * this.inPositionQuantityValue
+      }, 0) * this.multiplier
     );
   }
 
-  private _getResultPercent(lastPrice: number): number {
+  private _getResultPercent(lastPrice: number): number | null {
+    if (!this._resultPrice) {
+      return null;
+    }
+
     return this._resultPrice / (this.entryAveragePrice * this.inPositionQuantityValue);
   }
 }

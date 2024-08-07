@@ -1,29 +1,23 @@
 <div class="entry">
-  <lib-enter-list-header class="header row">
-    <div class="header__item row__item row__date">Вход</div>
-    <div class="header__item row__item row__right row__price">Цена</div>
-    <div class="header__item row__item row__right row__quantity">Кол-во</div>
-    <div class="header__item row__item row__right row__total">Стоимость</div>
-    <div class="header__item row__item row__right row__deposit">% депо</div>
-  </lib-enter-list-header>
   <lib-enter-list
     class="list"
-    [style.height.px]="listEntry.length > 2 ? 84 : listEntry.length * 28"
+    [style.height.px]="listEntry.length > 2 ? 84 : listEntry.length * 28 + 56"
     [list]="listEntry"
+    [header]="entryHeader"
+    [footer]="entryFooter"
     [itemSize]="28">
     <div class="item" *libEnterListItem="let item">
-      <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+      <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
       <div class="item__value row__item row__right row__price">{{ item.price }}</div>
       <div class="item__value row__item row__right row__quantity">{{ item.quantity }}</div>
-      <div class="item__value row__item row__right row__total">{{ item.totalPrice }}</div>
-      <div class="item__value row__item row__right row__deposit">{{ item.depositShare * 100 }}%</div>
+      <div class="item__value row__item row__right row__total">
+        {{ item.totalPrice | tuiFormatNumber: { decimalLimit: 0 } }}
+      </div>
+      <div class="item__value row__item row__right row__deposit">
+        {{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      </div>
     </div>
   </lib-enter-list>
-  <div class="total">
-    <div class="total__item">Всего</div>
-    <div class="total__item"></div>
-    <div class="total__item"></div>
-  </div>
   <div class="action">
     <button
       class="button"
@@ -36,37 +30,36 @@
 </div>
 
 <div class="out">
-  <lib-enter-list-header class="header">
-    <div class="header__item row__item row__date">Выход</div>
-    <div class="header__item row__item row__right row__price">Цена</div>
-    <div class="header__item row__item row__right row__quantity">Кол-во</div>
-    <div class="header__item row__item row__right row__total">Стоимость</div>
-    <div class="header__item row__item row__right row__profit">Прибыль</div>
-    <div class="header__item row__item row__right row__profit">Приб. %</div>
-    <div class="header__item row__item row__right row__deposit">% депо</div>
-    <div class="header__item row__item row__broker">Брокер</div>
-  </lib-enter-list-header>
   <lib-enter-list
     class="list"
-    [style.height.px]="listOut.length > 2 ? 84 : listOut.length * 28"
+    [style.height.px]="listOut.length > 2 ? 84 : listOut.length * 28 + 28"
     [list]="listOut"
+    [header]="outHeader"
     [itemSize]="28">
     <div class="item" *libEnterListItem="let item">
-      <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy hh.mm' }}</div>
+      <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
       <div class="item__value row__item row__right row__price">{{ item.price }}</div>
-      <div class="item__value row__item row__right row__quantity">{{ item.quantity }}</div>
-      <div class="item__value row__item row__right row__total">{{ item.totalPrice }}</div>
-      <div class="item__value row__item row__right row__profit">{{ item.profit }}</div>
-      <div class="item__value row__item row__right row__profit">{{ item.profitPercent * 100 }}%</div>
-      <div class="item__value row__item row__right row__deposit">{{ item.depositShare * 100 }}%</div>
-      <div class="item__value row__item row__broker">{{ item.broker }}</div>
+      <div class="item__value row__item row__right row__quantity">{{ item.amount }}</div>
+      <div class="item__value row__item row__right row__total">
+        {{ item.totalPrice | tuiFormatNumber: { decimalLimit: 2 } }}
+      </div>
+      <div class="item__value row__item row__right row__profit">
+        {{ item.profit | tuiFormatNumber: { decimalLimit: 2 } }}
+      </div>
+      <div class="item__value row__item row__right row__profit">
+        {{ item.profitPercent | tuiFormatNumber: { decimalLimit: 2 } }}%
+      </div>
+      <div class="item__value row__item row__right row__deposit">
+        {{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      </div>
+      <div class="item__value row__item row__broker">
+        <ng-container *ngIf="item.broker; else none">
+          {{ item.broker }}
+        </ng-container>
+      </div>
     </div>
   </lib-enter-list>
-  <div class="total">
-    <div class="total__item">Всего</div>
-    <div class="total__item"></div>
-    <div class="total__item"></div>
-  </div>
+
   <div class="action">
     <button
       class="button"
@@ -81,37 +74,128 @@
 <div class="space"></div>
 
 <div class="balance">
-  <lib-enter-list-header class="header">
-    <div class="header__item row__item">Остаток</div>
-    <div class="header__item row__item">Цена</div>
-    <div class="header__item row__item">Кол-во</div>
-    <div class="header__item row__item">Стоимость</div>
-    <div class="header__item row__item">Прибыль</div>
-    <div class="header__item row__item">Приб. %</div>
-    <div class="header__item row__item">% депо</div>
-    <div class="header__item row__item">Брокер</div>
-  </lib-enter-list-header>
-  <div class="total">
-    <div class="total__item row__item">Всего</div>
-    <div class="total__item row__item"></div>
-    <div class="total__item row__item"></div>
-  </div>
+  <tui-scrollbar>
+    <lib-enter-list-header class="header balance__header">
+      <div class="header__item row__item">Остаток</div>
+      <div class="header__item row__item">Цена</div>
+      <div class="header__item row__item">Кол-во</div>
+      <div class="header__item row__item">Стоимость</div>
+      <div class="header__item row__item">Прибыль</div>
+      <div class="header__item row__item">Приб. %</div>
+      <div class="header__item row__item">% депо</div>
+      <div class="header__item row__item">Брокер</div>
+    </lib-enter-list-header>
+    <div class="total balance__row">
+      <div class="total__item row__item">Всего</div>
+      <div class="total__item row__item">
+        {{ remainder.price | tuiFormatNumber }}
+      </div>
+      <div class="total__item row__item">
+        {{ remainder.amount }}
+      </div>
+      <div class="total__item row__item">
+        {{ remainder.totalPrice | tuiFormatNumber: { decimalLimit: 2 } }}
+      </div>
+      <div class="total__item row__item">
+        {{ remainder.profit | tuiFormatNumber: { decimalLimit: 2 } }}
+      </div>
+      <div class="total__item row__item">
+        {{ remainder.profitPercent * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      </div>
+      <div class="total__item row__item">
+        {{ remainder.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      </div>
+      <div class="total__item row__item">
+        <ng-container *ngIf="remainder.broker; else none">{{ result.broker }}</ng-container>
+      </div>
+    </div>
+  </tui-scrollbar>
 </div>
 
 <div class="result">
-  <lib-enter-list-header class="header">
-    <div class="header__item row__item">Результат</div>
-    <div class="header__item row__item">Цена</div>
-    <div class="header__item row__item">Кол-во</div>
-    <div class="header__item row__item">Стоимость</div>
-    <div class="header__item row__item">Прибыль</div>
-    <div class="header__item row__item">Приб. %</div>
-    <div class="header__item row__item">% депо</div>
-    <div class="header__item row__item">Брокер</div>
+  <tui-scrollbar>
+    <lib-enter-list-header class="header">
+      <div class="header__item row__item">Результат</div>
+      <div class="header__item row__item">Цена</div>
+      <div class="header__item row__item">Кол-во</div>
+      <div class="header__item row__item">Стоимость</div>
+      <div class="header__item row__item">Прибыль</div>
+      <div class="header__item row__item">Приб. %</div>
+      <div class="header__item row__item">% депо</div>
+      <div class="header__item row__item">Брокер</div>
+    </lib-enter-list-header>
+    <div class="total">
+      <div class="total__item row__item">Всего</div>
+      <div class="total__item row__item">
+        {{ result.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+      </div>
+      <div class="total__item row__item">
+        {{ result.amount }}
+      </div>
+      <div class="total__item row__item">
+        {{ result.totalPrice | tuiFormatNumber: { decimalLimit: 2 } }}
+      </div>
+      <div class="total__item row__item">
+        {{ result.profit | tuiFormatNumber: { decimalLimit: 2 } }}
+      </div>
+      <div class="total__item row__item">
+        {{ result.profitPercent * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      </div>
+      <div class="total__item row__item">
+        {{ result.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      </div>
+      <div class="total__item row__item">
+        <ng-container *ngIf="result.broker; else none">{{ result.broker }}</ng-container>
+      </div>
+    </div>
+  </tui-scrollbar>
+</div>
+
+<ng-template #none>
+  <div style="text-align: center; width: 100%">&mdash;</div>
+</ng-template>
+
+<ng-template #entryHeader>
+  <lib-enter-list-header class="header row">
+    <div class="header__item row__item row__date">Вход</div>
+    <div class="header__item row__item row__right row__price">Цена</div>
+    <div class="header__item row__item row__right row__quantity">Кол-во</div>
+    <div class="header__item row__item row__right row__total">Стоимость</div>
+    <div class="header__item row__item row__right row__deposit">% депо</div>
   </lib-enter-list-header>
+</ng-template>
+
+<ng-template #entryFooter>
+  <div class="total" *ngIf="totalEntry">
+    <div class="total__item row__item">Всего</div>
+    <div class="total__item row__item">{{ totalEntry.price }}</div>
+    <div class="total__item row__item">{{ totalEntry.quantity }}</div>
+    <div class="total__item row__item">
+      {{ totalEntry.totalPrice | tuiFormatNumber: { decimalLimit: 0 } }}
+    </div>
+    <div class="total__item row__item">
+      {{ totalEntry.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #outHeader>
+  <lib-enter-list-header class="header">
+    <div class="header__item row__item row__date">Выход</div>
+    <div class="header__item row__item row__right row__price">Цена</div>
+    <div class="header__item row__item row__right row__quantity">Кол-во</div>
+    <div class="header__item row__item row__right row__total">Стоимость</div>
+    <div class="header__item row__item row__right row__profit">Прибыль</div>
+    <div class="header__item row__item row__right row__profit">Приб. %</div>
+    <div class="header__item row__item row__right row__deposit">% депо</div>
+    <div class="header__item row__item row__broker">Брокер</div>
+  </lib-enter-list-header>
+</ng-template>
+
+<ng-template #outFooter>
   <div class="total">
     <div class="total__item row__item">Всего</div>
     <div class="total__item row__item"></div>
     <div class="total__item row__item"></div>
   </div>
-</div>
+</ng-template>
