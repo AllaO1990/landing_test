@@ -1,0 +1,40 @@
+<tui-scrollbar
+  class="scrollbar"
+  *ngIf="list !== null; else loader">
+  <cdk-virtual-scroll-viewport
+    tuiScrollable
+    class="viewport tui-zero-scrollbar"
+    #viewport
+    [itemSize]="itemSize">
+    <ng-container
+      *ngIf="header"
+      [ngTemplateOutlet]="headerTemplate"
+      [ngTemplateOutletContext]="{ viewport: viewport }">
+    </ng-container>
+    <ng-container
+      *cdkVirtualFor="let item of list; template: template">
+    </ng-container>
+    <ng-container *polymorpheusOutlet="footer as text">{{ text }}</ng-container>
+  </cdk-virtual-scroll-viewport>
+</tui-scrollbar>
+
+<ng-template #loader>
+  <tui-loader
+    [overlay]="true"
+    [showLoader]="true"
+    class="loader">
+    <div class="loader__text">Загрузка...</div>
+  </tui-loader>
+</ng-template>
+
+<ng-template #simple let-item>
+  {{ item.id }}
+</ng-template>
+
+<ng-template #headerTemplate let-viewport="viewport">
+  <div
+    class="sticky"
+    [style.top.px]="-viewport['_renderedContentOffset']">
+    <ng-container *polymorpheusOutlet="header as text">{{ text }}</ng-container>
+  </div>
+</ng-template>

@@ -48,6 +48,6 @@ export const MOBILE_LIST: {
   },
   {
     icon: 'tuiIconShoppingCartLarge',
-    text: 'Сдекла',
+    text: 'Сделка',
   },
 ];
