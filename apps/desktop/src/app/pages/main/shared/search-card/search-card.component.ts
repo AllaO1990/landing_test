@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TuiDialog } from '@taiga-ui/cdk';
+import { TuiAutoFocusModule, TuiDialog } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 import { TuiInputModule } from '@taiga-ui/kit';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -26,6 +26,7 @@ import { EventSelected } from 'types/events';
     ListComponent,
     ItemDirective,
     HeaderComponent,
+    TuiAutoFocusModule,
   ],
   templateUrl: './search-card.component.html',
   styleUrl: './search-card.component.scss',
