@@ -10,10 +10,9 @@ import { StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiFormatNumberPipeModule, TuiHintModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { DesktopLkStore } from '../../../../../../../stores/desktop';
-import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
+import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
-import { QueryParams } from 'utils/query-params';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -40,7 +39,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class StockListComponent implements AfterContentInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _list$: Subject<StockListItemWithPrice[] | null> = new BehaviorSubject<
     StockListItemWithPrice[] | null

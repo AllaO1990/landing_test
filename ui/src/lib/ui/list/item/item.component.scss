@@ -1,0 +1,20 @@
+:host {
+  display: flex;
+  flex-flow: row nowrap;
+
+  align-items: center;
+
+  height: 28px;
+
+  background-color: var(--tui-base-02, #F6F7FB);
+
+  user-select: none;
+
+  &:not(.disabled) {
+    cursor: pointer;
+  }
+
+  &.checked {
+    background-color: var(--tui-success-bg-night-hover, rgba(3, 147, 34, 0.07));
+  }
+}

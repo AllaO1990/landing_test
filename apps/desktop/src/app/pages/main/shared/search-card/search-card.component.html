@@ -1,0 +1,55 @@
+<form class="form" [formGroup]="form">
+  <tui-input
+    formControlName="search"
+    tuiTextfieldSize="l"
+    [tuiTextfieldCleaner]="true"
+    [tuiTextfieldLabelOutside]="true"
+  >
+    Введите название тикера
+    <input
+      tuiTextfield
+    />
+  </tui-input>
+</form>
+<div class="list">
+  <lib-list
+    class="viewport"
+    [list]="list$ | async"
+    [header]="headerTemplate"
+    [itemSize]="40">
+    <div class="item row" *libListItem="let item" (click)="onClick($event, item)">
+      <div class="cell item__ticker">
+        <div class="item__img">
+          <img
+            src="/assets/tickers-v2/{{ item.ticker }}.{{item.type === 'crypto' ? 'svg' : 'png'}}"
+            [attr.alt]="item.name"
+          />
+        </div>
+        <div class="item__column">
+          <div class="item__title ellipsis" [title]="item.ticker">
+            {{ item.ticker }}
+          </div>
+          <div class="item__subtitle ellipsis" [title]="item.name">
+            {{ item.name }}
+          </div>
+        </div>
+      </div>
+      <div class="cell item__sector ellipsis" [title]="item.sector">
+        {{ item.sector }}
+      </div>
+      <div class="cell item__exchange">{{ item.realExchange }}</div>
+    </div>
+  </lib-list>
+</div>
+
+<ng-template #headerTemplate>
+  <lib-list-header class="header">
+    <div class="cell">Тикер</div>
+    <div class="cell">Сектор</div>
+    <div class="cell">Биржа</div>
+  </lib-list-header>
+</ng-template>
+
+<ng-template #noSearch>
+  Ничего не найдено
+</ng-template>

@@ -1,6 +1,6 @@
 <div class="toolbar">
   <div class="toolbar__ticker" *ngIf="(selected$ | async) as selected">
-    <div class="ticker">
+    <div class="ticker" (click)="onSearch($event, selected)">
       <div class="ticker__img">
         <img
           src="/assets/tickers-v2/{{ selected.ticker }}.{{ selected.type === 'crypto' ? 'svg' : 'png' }}"

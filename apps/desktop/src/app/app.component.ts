@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { TuiDialogModule, TuiModeModule, TuiRootModule } from '@taiga-ui/core';
 import { TUI_DIALOGS } from '@taiga-ui/cdk';
 import { EnterDialogService } from 'desktop-page/enter';
+import { DialogService } from '@ui/dialog';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,12 @@ import { EnterDialogService } from 'desktop-page/enter';
       multi: true,
     },
     EnterDialogService,
+    {
+      provide: TUI_DIALOGS,
+      useExisting: DialogService,
+      multi: true,
+    },
+    DialogService,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

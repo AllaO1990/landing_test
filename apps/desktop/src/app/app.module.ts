@@ -6,12 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DesktopApiService } from '@desktop-data/desktop-data';
 import { TUI_DIALOGS } from '@taiga-ui/cdk';
-import {
-  TUI_BUTTON_OPTIONS,
-  TuiDialogModule,
-  TuiModeModule,
-  TuiRootModule,
-} from '@taiga-ui/core';
+import { TUI_BUTTON_OPTIONS, TuiDialogModule, TuiModeModule, TuiRootModule } from '@taiga-ui/core';
 import { EnterDialogService } from 'desktop-page/enter';
 import { DESKTOP_API, DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 import { QUERY_PARAMS } from 'tokens/desktop/query-params';
@@ -19,6 +14,7 @@ import { QueryParams } from 'utils/query-params';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { DialogService } from '@ui/dialog';
 
 @NgModule({
   declarations: [AppComponent],
@@ -45,8 +41,7 @@ import { AppComponent } from './app.component';
     },
     {
       provide: QUERY_PARAMS,
-      useFactory: (router: Router, activatedRoute: ActivatedRoute) =>
-        new QueryParams(router, activatedRoute),
+      useFactory: (router: Router, activatedRoute: ActivatedRoute) => new QueryParams(router, activatedRoute),
       deps: [Router, ActivatedRoute],
     },
     {
@@ -64,6 +59,11 @@ import { AppComponent } from './app.component';
     {
       provide: TUI_DIALOGS,
       useExisting: EnterDialogService,
+      multi: true,
+    },
+    {
+      provide: TUI_DIALOGS,
+      useExisting: DialogService,
       multi: true,
     },
   ],
