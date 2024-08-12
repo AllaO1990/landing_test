@@ -54,8 +54,6 @@ export class EnterActionComponent {
       this.listOut = this._getListOut(value.targets, value.entryAveragePrice, value.multiplier);
       this.remainder = this._getRemainder(value.targets, value.entryAveragePrice, value.lastPrice, value.multiplier);
       this.result = this._getResult(this.listOut, value.entryAveragePrice, value.multiplier);
-
-      console.log(value);
     }
   }
 

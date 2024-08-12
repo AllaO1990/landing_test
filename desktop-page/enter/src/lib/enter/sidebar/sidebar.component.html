@@ -44,11 +44,14 @@
       <div class="widget__description description widget__padding">
         <div class="description__row">
           <div class="description__label">Вероятность успеха</div>
-          <div class="description__text">{{ data.strategy.successProbability * 100 }}%</div>
+          <div class="description__text">
+            {{ data.strategy.successProbability * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+          </div>
         </div>
         <div class="description__row">
           <div class="description__label">% депозита</div>
-          <div class="description__text">{{ data.inPositionDepositShare * 100 }}%
+          <div class="description__text">
+            {{ data.inPositionDepositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
           </div>
         </div>
         <div class="description__row">
