@@ -1,7 +1,10 @@
-import { StockId, StockInstrument, StockList } from './stock';
+import { StockGroups, StockId, StockInstrument, StockListItems } from './stock';
 
 export interface StockListState {
-  list: null | StockList;
+  groups: null | StockGroups;
+  map: null | Map<string, StockListItems>;
+  list: null | StockListItems;
+  watch: null | StockListItems;
   active: null | StockId[];
   selected: null | StockInstrument;
 }

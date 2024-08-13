@@ -56,6 +56,18 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/instruments?sub=true`);
   }
 
+  getInstrumentsLists(): Observable<Response<{ id: string; name: string }>> {
+    return this._http.get<Response<{ id: string; name: string }>>(`https://trade.gpn.dev/api/v1/instruments-lists`);
+  }
+
+  getInstrumentsListItems(id: StockId): Observable<Response<Stock>> {
+    return this._http.get<Response<any>>(`https://trade.gpn.dev/api/v1/instruments-list-items`, { params: { id } });
+  }
+
+  getWatchInstrumentsListItems(): Observable<Response<Stock>> {
+    return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/watch-instruments-list-items`);
+  }
+
   public getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>> {
     return this._http
       .post<Response<StockPrice<WithLastPrice>>>(`https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`, {

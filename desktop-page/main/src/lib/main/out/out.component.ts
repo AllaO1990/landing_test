@@ -42,7 +42,7 @@ export class OutComponent {
         this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
       ]).pipe(
         map(([search, stock, strategy]: [string, FilterListItem[], FilterListItem[]]) =>
-          this._filterData(this._searchData(data || [], search), stock, strategy)
+          this._filterData(this._searchData(data, search), stock, strategy)
         )
       )
     )
@@ -87,7 +87,11 @@ export class OutComponent {
     }));
   }
 
-  private _searchData(data: Position[], search: string | null): Position[] {
+  private _searchData(data: Position[] | null, search: string | null): Position[] | null {
+    if (data === null) {
+      return data;
+    }
+
     if (!search) {
       return data;
     }
@@ -99,7 +103,15 @@ export class OutComponent {
     });
   }
 
-  private _filterData(data: Position[], valueStock: FilterListItem[], valueStrategy: FilterListItem[]): Position[] {
+  private _filterData(
+    data: Position[] | null,
+    valueStock: FilterListItem[],
+    valueStrategy: FilterListItem[]
+  ): Position[] | null {
+    if (data === null) {
+      return data;
+    }
+
     const mapStock = this._getObject(valueStock);
     const mapStrategy = this._getObject(valueStrategy);
 

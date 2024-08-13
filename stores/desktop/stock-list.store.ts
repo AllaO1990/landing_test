@@ -1,7 +1,16 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { catchError, Observable, of, switchMap, tap } from 'rxjs';
-import { Stock, StockId, StockInstrument, StockList } from 'types/stock';
-import { filter } from 'rxjs/operators';
+import { catchError, forkJoin, Observable, of, switchMap, tap } from 'rxjs';
+import {
+  Stock,
+  StockGroups,
+  StockGroupType,
+  StockId,
+  StockInstrument,
+  StockList,
+  StockListItems,
+  StockLists,
+} from 'types/stock';
+import { filter, map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { StockListState } from 'types/stock-list-state';
 import { DesktopService } from '@desktop-data/desktop-data';
@@ -11,36 +20,57 @@ export class StockListStore extends ComponentStore<StockListState> {
     (state: StockListState) => state.selected
   );
 
-  public readonly list$: Observable<StockList | null> = this.select(
-    (state: StockListState) => state.list
-  );
+  readonly groups$: Observable<StockGroups | null> = this.select((state: StockListState) => state.groups);
 
-  public readonly active$: Observable<StockId[] | null> = this.select(
-    (state: StockListState) => state.active
-  );
+  readonly map$: Observable<Map<string, StockListItems> | null> = this.select((state: StockListState) => state.map);
+
+  public readonly list$: Observable<StockListItems | null> = this.select((state: StockListState) => state.list);
+
+  public readonly active$: Observable<StockId[] | null> = this.select((state: StockListState) => state.active);
 
   constructor(private readonly _api: DesktopService) {
     super({
+      groups: null,
+      watch: null,
       list: null,
+      map: null,
       active: null,
       selected: null,
     });
   }
 
   public readonly updateSelected = this.updater(
-    (
-      state: StockListState,
-      selected: StockInstrument | null
-    ): StockListState => ({
+    (state: StockListState, selected: StockInstrument | null): StockListState => ({
       ...state,
       selected,
     })
   );
 
+  public readonly updateLists = this.updater(
+    (state: StockListState, groups: StockGroups): StockListState => ({
+      ...state,
+      groups,
+    })
+  );
+
   public readonly updateList = this.updater(
-    (state: StockListState, list: StockList): StockListState => ({
+    (state: StockListState, list: StockListItems): StockListState => ({
       ...state,
       list,
+    })
+  );
+
+  public readonly updateWatchList = this.updater(
+    (state: StockListState, watch: StockListItems): StockListState => ({
+      ...state,
+      watch,
+    })
+  );
+
+  public readonly updateMap = this.updater(
+    (state: StockListState, map: Map<string, StockListItems>): StockListState => ({
+      ...state,
+      map,
     })
   );
 
@@ -51,7 +81,7 @@ export class StockListStore extends ComponentStore<StockListState> {
     })
   );
 
-  public readonly load = this.effect((stream$: Observable<void>) =>
+  public readonly loadList = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
       switchMap((_) =>
         this._api.getStockList().pipe(
@@ -65,4 +95,60 @@ export class StockListStore extends ComponentStore<StockListState> {
       })
     )
   );
+
+  public readonly load = this.effect((stream$: Observable<void>) =>
+    stream$.pipe(
+      switchMap((_) =>
+        this._api.getInstrumentsLists().pipe(
+          filter((result: Response<{ items: StockLists }>) => !!result.data),
+          map((result: Response<{ items: StockLists }>) => this._getStockGroup(result.data.items)),
+          tap((list: StockGroups) => this.updateLists(list)),
+          switchMap((list: StockGroups) =>
+            forkJoin(list.map((item: { id: string }) => this._getListItems(item.id))).pipe(
+              tap((listItems: Response<Stock>[]) => this._updateMap(list, listItems))
+            )
+          )
+        )
+      ),
+      catchError((err: Error) => {
+        console.error(err);
+        return of(null);
+      })
+    )
+  );
+
+  private _getListItems(id: string): Observable<Response<Stock>> {
+    if (id === 'watch') {
+      return this._api.getWatchInstrumentsListItems();
+    }
+
+    return this._api.getInstrumentsListItems(id);
+  }
+
+  private _getStockGroup(list: StockLists): StockGroups {
+    return [
+      ...list.map((item: StockList) => ({ ...item, type: StockGroupType.DEFAULT })),
+      { id: 'watch', name: 'Watch List', type: StockGroupType.DEFAULT },
+    ];
+  }
+
+  private _updateMap(list: StockGroups, listItems: Response<Stock>[]): void {
+    const map = new Map<string, StockListItems>();
+    let items: StockListItems = [];
+    let watchList: StockListItems = [];
+
+    list.forEach(({ id }: { id: string }, index: number) => {
+      map.set(id, listItems[index].data.items);
+
+      if (id === 'watch') {
+        watchList = [...watchList, ...listItems[index].data.items];
+      } else {
+        items = [...items, ...listItems[index].data.items];
+      }
+    });
+
+    // this.updateWatchList(watchList);
+    // this.updateList(items);
+    this.updateMap(map);
+  }
 }

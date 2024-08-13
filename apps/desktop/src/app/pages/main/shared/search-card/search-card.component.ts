@@ -7,7 +7,7 @@ import { TuiBreakpointService, TuiButtonModule, TuiTextfieldControllerModule } f
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { debounceTime, Observable, switchMap } from 'rxjs';
-import { StockInstrument, StockList } from 'types/stock';
+import { StockInstrument, StockListItems } from 'types/stock';
 import { filter, map, startWith } from 'rxjs/operators';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/list';
@@ -54,8 +54,8 @@ export class SearchCardComponent {
     return this.form.get('search') as FormControl;
   }
 
-  readonly list$: Observable<StockList | null> = this._store.stock$.pipe(
-    switchMap((stock: StockList | null) =>
+  readonly list$: Observable<StockListItems | null> = this._store.stock$.pipe(
+    switchMap((stock: StockListItems | null) =>
       this.controlSearch.valueChanges.pipe(
         debounceTime(300),
         filter((value: string) => value.length > 1 || value.length === 0),
@@ -66,7 +66,7 @@ export class SearchCardComponent {
     )
   );
 
-  private _searched(list: StockList | null, value: string): StockList | null {
+  private _searched(list: StockListItems | null, value: string): StockListItems | null {
     if (list === null) {
       return null;
     }

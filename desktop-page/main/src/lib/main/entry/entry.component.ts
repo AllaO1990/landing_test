@@ -43,7 +43,7 @@ export class EntryComponent {
         this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
       ]).pipe(
         map(([search, stock, strategy]: [string, FilterListItem[], FilterListItem[]]) =>
-          this._filterData(this._searchData(data || [], search), stock, strategy)
+          this._filterData(this._searchData(data, search), stock, strategy)
         )
       )
     )
@@ -68,7 +68,11 @@ export class EntryComponent {
     }));
   }
 
-  private _searchData(data: Idea[], search: string | null): Idea[] {
+  private _searchData(data: Idea[] | null, search: string | null): Idea[] | null {
+    if (data === null) {
+      return data;
+    }
+
     if (!search) {
       return data;
     }
@@ -80,7 +84,15 @@ export class EntryComponent {
     });
   }
 
-  private _filterData(data: Idea[], valueStock: FilterListItem[], valueStrategy: FilterListItem[]): Idea[] {
+  private _filterData(
+    data: Idea[] | null,
+    valueStock: FilterListItem[],
+    valueStrategy: FilterListItem[]
+  ): Idea[] | null {
+    if (data === null) {
+      return data;
+    }
+
     const mapStock = this._getObject(valueStock);
     const mapStrategy = this._getObject(valueStrategy);
 
