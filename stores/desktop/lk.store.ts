@@ -7,7 +7,7 @@ import { ActiveZone } from 'types/chart';
 import { EventSelected } from 'types/events';
 import { Idea } from 'types/idea';
 import { DesktopLkState } from 'types/lk-state';
-import { StockId, StockInstrument, StockList, StockPrice, WithLastPrice } from 'types/stock';
+import { StockGroups, StockId, StockInstrument, StockListItems, StockPrice, WithLastPrice } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
 import { ChartStore } from './chart-store';
 import { EntryStore } from './entry.store';
@@ -28,7 +28,11 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public readonly selectedPosition$: Observable<Position | null> = this._positionStore.selected$;
 
-  public readonly stock$: Observable<StockList | null> = this._stockListStore.list$;
+  public readonly stock$: Observable<StockListItems | null> = this._stockListStore.list$;
+
+  readonly stockGroups$: Observable<StockGroups | null> = this._stockListStore.groups$;
+
+  readonly stockMap$: Observable<Map<string, StockListItems> | null> = this._stockListStore.map$;
 
   public readonly entry$: Observable<Idea[] | null> = this._entryStore.list$;
 
@@ -63,6 +67,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       price: null,
     });
 
+    this._stockListStore.loadList();
     this._stockListStore.load();
     this._entryStore.load();
     this._positionStore.load();
@@ -107,8 +112,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       filter((event: StockEvent): boolean => event.type === EventSelected.STOCK_LIST),
       switchMap((event: StockEvent) =>
         this.stock$.pipe(
-          filter((list: StockList | null): list is StockList => list !== null),
-          map((list: StockList): StockInstrument => list.find((item: StockInstrument) => item.id === event.id)!),
+          filter((list: StockListItems | null): list is StockListItems => list !== null),
+          map((list: StockListItems): StockInstrument => list.find((item: StockInstrument) => item.id === event.id)!),
           tap((value: StockInstrument) => {
             this._stockListStore.updateSelected(value);
             this._entryStore.updateSelected(null);

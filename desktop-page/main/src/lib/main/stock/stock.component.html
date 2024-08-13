@@ -1,4 +1,4 @@
-<tui-loader class="loader" [overlay]="true" [showLoader]="!loaded">
+<tui-loader class="loader" [overlay]="true" [showLoader]="!((groups$ | async) || false)">
   <div class="list">
     <div class="list__action action">
       <form class="action__form">
@@ -23,12 +23,30 @@
             </tui-opt-group>
             <tui-opt-group>
               <button
+                class="item"
                 *ngFor="let item of (groups$ | async) || []; trackBy: trackByGroupId"
                 tuiOption
                 [disabled]="false"
                 [value]="item"
               >
                 {{ item.name }}
+
+                <!--                <div class="actions">-->
+                <!--                  <button-->
+                <!--                    class="edit"-->
+                <!--                    tuiIconButton-->
+                <!--                    appearance="icon"-->
+                <!--                    icon="tuiIconEdit2"-->
+                <!--                    (click)="onRemove($event, item)">-->
+                <!--                  </button>-->
+                <!--                  <button-->
+                <!--                    appearance="icon"-->
+                <!--                    class="remove"-->
+                <!--                    tuiIconButton-->
+                <!--                    icon="tuiIconClose"-->
+                <!--                    (click)="onRemove($event, item)">-->
+                <!--                  </button>-->
+                <!--                </div>-->
               </button>
             </tui-opt-group>
           </tui-data-list>
@@ -42,7 +60,7 @@
             tuiTextfieldSize="s"
             [tuiTextfieldCleaner]="true">
             Название списка
-            <input tuiTextfield/>
+            <input tuiTextfield />
           </tui-input>
           <button
             tuiIconButton

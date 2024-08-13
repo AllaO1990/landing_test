@@ -4,16 +4,17 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { StockListItemComponent } from '../item/item.component';
 import { AsyncPipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
-import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiFormatNumberPipeModule, TuiHintModule, TuiScrollbarModule } from '@taiga-ui/core';
-import { DesktopLkStore } from '../../../../../../../stores/desktop';
+import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StockListWithType } from '../stock.component';
 
 @Component({
   selector: 'vt-stock-list',
@@ -40,17 +41,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class StockListComponent implements AfterContentInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-  private readonly _list$: Subject<StockListItemWithPrice[] | null> = new BehaviorSubject<
-    StockListItemWithPrice[] | null
-  >(null);
+  private readonly _list$: Subject<StockListWithType | null> = new BehaviorSubject<StockListWithType | null>(null);
 
-  public list$: Observable<StockListItemWithPrice[] | null> = this._list$.asObservable();
+  public stockList$: Observable<StockListWithType | null> = this._list$.asObservable();
 
-  @Output() selected: Observable<StockInstrument> = this.list$.pipe(
-    filter((list: StockListItemWithPrice[] | null): list is StockListItemWithPrice[] => !!list),
-    switchMap((list: StockListItemWithPrice[]) =>
+  public list$: Observable<StockListItemWithPrice[] | null> = this.stockList$.pipe(
+    map((list: StockListWithType | null) => list && list.items)
+  );
+
+  @Output() selected: Observable<StockInstrument> = this.stockList$.pipe(
+    filter((list: StockListWithType | null): list is StockListWithType => !!list),
+    switchMap((list: StockListWithType) =>
       this.controlItem.valueChanges.pipe(
-        map((value: string) => list.find((item: StockListItemWithPrice) => item.id === value)!)
+        map((value: string) => list.items.find((item: StockListItemWithPrice) => item.id === value)!)
       )
     )
   );
@@ -60,7 +63,7 @@ export class StockListComponent implements AfterContentInit {
   public readonly header: { name: string; label: string }[] = STOCK_LIST_HEADER;
 
   @Input()
-  set list(value: StockListItemWithPrice[]) {
+  set list(value: StockListWithType) {
     this._list$.next(value);
   }
 
@@ -73,10 +76,16 @@ export class StockListComponent implements AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    this._store.event$
+    combineLatest([
+      this._store.event$,
+      this.stockList$.pipe(
+        map((list: StockListWithType | null) => list && list.type),
+        distinctUntilChanged()
+      ),
+    ])
       .pipe(
         takeUntilDestroyed(this._destroyRef),
-        map((event: StockEvent | null) => this._getValue(event)),
+        map(([event, type]: [StockEvent | null, EventSelected | null]) => this._getValue(event, type)),
         distinctUntilChanged()
       )
       .subscribe((value: StockId | null) => {
@@ -95,8 +104,8 @@ export class StockListComponent implements AfterContentInit {
     //   );
   }
 
-  private _getValue(event: StockEvent | null): StockId | null {
-    if (event === null || event.type !== EventSelected.STOCK_LIST) {
+  private _getValue(event: StockEvent | null, type: EventSelected | null): StockId | null {
+    if (event === null || event.type !== type) {
       return null;
     }
     return event.id;

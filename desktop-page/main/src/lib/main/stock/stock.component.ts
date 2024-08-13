@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
 import {
@@ -15,33 +10,29 @@ import {
 } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  startWith,
-  Subject,
-  tap,
-} from 'rxjs';
+import { combineLatest, debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { StockListComponent } from './list/list.component';
 import { filter, map } from 'rxjs/operators';
 import {
   StockGroup,
-  StockGroupType,
+  StockGroups,
   StockId,
   StockInstrument,
-  StockList,
+  StockListItems,
   StockListItemWithPrice,
   StockPrice,
-  StockUserGroup,
   WithLastPrice,
 } from 'types/stock';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { StockService } from './stock.service';
-import { STOCK_GROUPS } from './stock.constant';
 import { EventSelected } from 'types/events';
 import { DesktopLkStore } from 'stores/desktop';
 import { QueryParams } from 'utils/query-params';
+
+export interface StockListWithType {
+  type: EventSelected;
+  items: StockListItemWithPrice[];
+}
 
 @Component({
   selector: 'vt-stock',
@@ -67,84 +58,47 @@ import { QueryParams } from 'utils/query-params';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockComponent {
-  private _map: Map<StockGroup, StockList> = new Map<StockGroup, StockList>();
-
   private readonly _service: StockService = inject(StockService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  private readonly _price$: Subject<StockPrice<WithLastPrice> | null> =
-    new BehaviorSubject<StockPrice<WithLastPrice> | null>(null);
-  private readonly _groups$: Subject<StockGroup[]> = new BehaviorSubject<
-    StockGroup[]
-  >([]);
-
-  public readonly defaultGroups = STOCK_GROUPS;
-  public groups = STOCK_GROUPS;
-
-  public loaded = false;
-
   public signatureVisible = false;
 
-  public readonly controlGroup: FormControl<StockGroup | null> =
-    new FormControl<StockGroup | null>(null);
+  public readonly controlGroup: FormControl<StockGroup | null> = new FormControl<StockGroup | null>(null);
 
-  public readonly controlGroupName: FormControl<string | null> =
-    new FormControl<string | null>(null);
+  public readonly controlGroupName: FormControl<string | null> = new FormControl<string | null>(null);
 
-  @Input() set group(value: StockUserGroup[] | null) {
-    if (value) {
-    }
-  }
+  public readonly stringify: TuiStringHandler<StockGroup> = (item: StockGroup) => item.name;
 
-  @Input() set list(value: StockList | null) {
-    if (value) {
-      this.loaded = true;
-      const groups: StockGroup[] = [];
-      this._map = this._service.getMapGroupList(
-        value,
-        this.defaultGroups,
-        this._map
-      );
+  readonly groups$: Observable<StockGroups | null> = this._store.stockGroups$.pipe(
+    tap((groups: StockGroups | null) => groups && this.controlGroup.patchValue(groups[0])),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
-      this._map.forEach((_: StockList, key: StockGroup) => {
-        groups.push(key);
-      });
-
-      this.groups = groups;
-      this._groups$.next(groups);
-      this.controlGroup.patchValue(groups[0]);
-    }
-  }
-
-  @Input()
-  set price(value: StockPrice<WithLastPrice> | null) {
-    this._price$.next(value);
-  }
-
-  public readonly stringify: TuiStringHandler<StockGroup> = (
-    item: StockGroup
-  ) => item.name;
-
-  public readonly groups$: Observable<StockGroup[]> =
-    this._groups$.asObservable();
-
-  public readonly list$: Observable<StockListItemWithPrice[]> = combineLatest([
-    this.controlGroup.valueChanges.pipe(
-      startWith(this.controlGroup.value),
-      filter((value: StockGroup | null): value is StockGroup => value !== null),
-      map((value: StockGroup) => this._map.get(value) || []),
-      tap((list: StockList) =>
-        this._store.updateStockActive(
-          list.map((item: StockInstrument) => item.id)
-        )
-      )
+  private readonly _list$: Observable<StockListItems> = this._store.stockMap$.pipe(
+    filter(
+      (stockMap: Map<string, StockListItems> | null): stockMap is Map<string, StockListItems> => stockMap !== null
     ),
-    this._price$.asObservable(),
-  ]).pipe(
-    map(([list, price]: [StockList | null, StockPrice<WithLastPrice> | null]) =>
-      this._service.getListWithPrice(list, price)
+    switchMap((stockMap: Map<string, StockListItems>) =>
+      this.controlGroup.valueChanges.pipe(
+        startWith(this.controlGroup.value),
+        filter((value: StockGroup | null): value is StockGroup => value !== null),
+        map((value: StockGroup) => stockMap.get(value.id) || []),
+        tap((list: StockListItems) => this._store.updateStockActive(list.map((item: StockInstrument) => item.id)))
+      )
     )
+  );
+
+  public readonly list$: Observable<StockListWithType> = combineLatest([
+    this._list$,
+    this._store.price$,
+    this.controlGroup.valueChanges,
+  ]).pipe(
+    debounceTime(0),
+    map(([list, price, value]: [StockListItems | null, StockPrice<WithLastPrice> | null, StockGroup | null]) => ({
+      type: value && value.id === 'watch' ? EventSelected.WATCH_LIST : EventSelected.STOCK_LIST,
+      items: this._service.getListWithPrice(list, price),
+    }))
   );
 
   public toggle(): void {
@@ -154,7 +108,7 @@ export class StockComponent {
   public addGroup(event: Event): void {
     event.preventDefault();
 
-    this._createGroup();
+    // this._createGroup();
     this.toggle();
   }
 
@@ -163,27 +117,40 @@ export class StockComponent {
   }
 
   public onSelect(value: StockInstrument): void {
+    let type = EventSelected.STOCK_LIST;
+
+    if (this.controlGroup.value) {
+      type =
+        (this.controlGroup.value as StockGroup).id === 'watch' ? EventSelected.WATCH_LIST : EventSelected.STOCK_LIST;
+    }
+
     this._queryParams.update({
-      type: EventSelected.STOCK_LIST,
+      type,
       id: value.id,
     });
   }
 
   private _createGroup(): void {
-    const stockName: StockGroup = {
-      id: new Date().toISOString(),
-      name: this.controlGroupName.value as string,
-      type: StockGroupType.CUSTOM,
-    };
+    // const stockName: StockGroup = {
+    //   id: new Date().toISOString(),
+    //   name: this.controlGroupName.value as string,
+    //   type: StockGroupType.CUSTOM,
+    // };
+    //
+    // this.groups.push(stockName);
+    // this._groups$.next(this.groups);
+    //
+    // if (this._map) {
+    //   this._map.set(stockName, []);
+    // }
+    //
+    // this.controlGroup.patchValue(stockName);
+    // this.controlGroupName.reset();
+  }
 
-    this.groups.push(stockName);
-    this._groups$.next(this.groups);
+  onRemove(event: Event, item: StockGroup): void {
+    event.stopPropagation();
 
-    if (this._map) {
-      this._map.set(stockName, []);
-    }
-
-    this.controlGroup.patchValue(stockName);
-    this.controlGroupName.reset();
+    console.log(item);
   }
 }

@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiButtonModule, TuiScrollbarModule, TuiSvgModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
+import {
+  TuiButtonModule,
+  TuiFormatNumberPipeModule,
+  TuiScrollbarModule,
+  TuiSvgModule,
+  TuiTextfieldControllerModule,
+} from '@taiga-ui/core';
 import { Idea } from 'types/idea';
 import { JsonPipe, NgIf } from '@angular/common';
 import { InstrumentComponent } from '../instrument/instrument.component';
@@ -28,6 +34,7 @@ import { Position } from 'types/position';
     TuiSvgModule,
     TuiTextareaModule,
     TuiScrollbarModule,
+    TuiFormatNumberPipeModule,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
@@ -73,8 +80,6 @@ export class EnterSidebarComponent {
   @Input()
   set data(value: Idea | Position | null) {
     this._data = value;
-
-    console.log(value);
 
     if (value) {
       this.controlFilterTiming.disable();

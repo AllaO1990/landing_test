@@ -11,6 +11,40 @@
   --tui-height-s: 24px;
 }
 
+.actions {
+  overflow: hidden;
+  position: absolute;
+
+  right: 5px;
+
+  z-index: -1;
+  opacity: 0;
+
+  transition: opacity 0.25s ease-in-out;
+
+
+  button:not(:last-child) {
+    margin-right: var(--padding-2);
+  }
+}
+
+//.item {
+//  &:hover {
+//    .actions {
+//      opacity: 1;
+//      z-index: 1;
+//
+//      transition: none;
+//    }
+//
+//    ::ng-deep {
+//      tui-svg.t-checkmark {
+//        opacity: 0;
+//      }
+//    }
+//  }
+//}
+
 .list {
   display: flex;
   flex-flow: column nowrap;

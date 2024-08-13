@@ -30,6 +30,18 @@ export class DesktopStubService extends DesktopService {
     return of([]);
   }
 
+  getInstrumentsLists(): Observable<any> {
+    return of([]);
+  }
+
+  getInstrumentsListItems(listId: StockId): Observable<any> {
+    return of([]);
+  }
+
+  getWatchInstrumentsListItems(): Observable<any> {
+    return of([]);
+  }
+
   getStockList(): Observable<Response<Stock>> {
     return of();
   }

@@ -1,14 +1,24 @@
+<div class="actions" *ngIf="isMobile$ | async">
+  <div class="space"></div>
+  <button
+    class="close"
+    appearance="icon"
+    icon="tuiIconClose"
+    tuiIconButton
+    size="l"
+    type="button"
+    (click)="onClose($event)"
+  ></button>
+</div>
 <form class="form" [formGroup]="form">
   <tui-input
+    tuiAutoFocus
     formControlName="search"
     tuiTextfieldSize="l"
     [tuiTextfieldCleaner]="true"
-    [tuiTextfieldLabelOutside]="true"
-  >
+    [tuiTextfieldLabelOutside]="true">
     Введите название тикера
-    <input
-      tuiTextfield
-    />
+    <input tuiTextfield />
   </tui-input>
 </form>
 <div class="list">
@@ -25,7 +35,7 @@
             [attr.alt]="item.name"
           />
         </div>
-        <div class="item__column">
+        <div class="item__column item__description">
           <div class="item__title ellipsis" [title]="item.ticker">
             {{ item.ticker }}
           </div>

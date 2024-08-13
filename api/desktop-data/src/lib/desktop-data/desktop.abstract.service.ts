@@ -15,6 +15,12 @@ export abstract class DesktopService {
 
   public abstract getStock(id: StockId): Observable<StockInstrument[]>;
 
+  public abstract getInstrumentsLists(): Observable<Response<any>>;
+
+  public abstract getWatchInstrumentsListItems(): Observable<Response<Stock>>;
+
+  public abstract getInstrumentsListItems(listId: StockId): Observable<Response<Stock>>;
+
   public abstract getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>>;
 
   public abstract getPositionList(): Observable<Position[]>;

@@ -48,10 +48,12 @@ export type StockListItemWithPrice = StockInstrument & StockListItemPrice;
  * Элемент из выпадающего списка для Stock
  */
 export interface StockGroup {
-  id: StockId;
+  id: string;
   name: string;
   type: StockGroupType;
 }
+
+export type StockGroups = StockGroup[];
 
 export interface StockUserGroup {
   id: string;
@@ -61,10 +63,17 @@ export interface StockUserGroup {
 
 export interface Stock {
   total: number;
-  items: StockList;
+  items: StockListItems;
 }
 
-export type StockList = StockInstrument[];
+export type StockLists = StockList[];
+
+export interface StockList {
+  id: string;
+  name: string;
+}
+
+export type StockListItems = StockInstrument[];
 
 export interface StockPrice<T> {
   [key: string]: null | T;
