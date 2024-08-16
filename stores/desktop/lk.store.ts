@@ -109,7 +109,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public readonly onChangeEventStock = this.effect((stream$: Observable<StockEvent | null>) =>
     stream$.pipe(
       filter((event: StockEvent | null): event is StockEvent => event !== null),
-      filter((event: StockEvent): boolean => event.type === EventSelected.STOCK_LIST),
+      filter(
+        (event: StockEvent): boolean =>
+          event.type === EventSelected.STOCK_LIST || event.type === EventSelected.WATCH_LIST
+      ),
       switchMap((event: StockEvent) =>
         this.stock$.pipe(
           filter((list: StockListItems | null): list is StockListItems => list !== null),

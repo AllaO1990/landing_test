@@ -10,16 +10,8 @@
   flex-flow: column nowrap;
 }
 
-.entry {
-  flex: 1 1;
-}
-
-.target {
-  flex: 2 2;
-}
-
-.stop {
-  flex: 1 1;
+.space {
+  flex: 1;
 }
 
 .item {
@@ -39,6 +31,8 @@
 }
 
 .header {
+  background-color: var(--block-bg-color);
+
   &__item:first-child {
     font-weight: 700;
   }
@@ -50,7 +44,9 @@
   align-items: center;
 
   height: 28px;
+}
 
+.action {
   padding: 0 var(--padding-2);
 }
 
@@ -61,49 +57,89 @@
 .row {
   &__item {
     margin: 0 var(--padding-2);
-  }
 
-  &__right {
-    text-align: right;
-  }
+    overflow: hidden;
 
-  &__first {
-    width: 40px;
+    min-width: 65px;
+    max-width: 100px;
   }
 
   &__date {
-    width: 90px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
-  &__price {
-    width: 60px;
-  }
-
-  &__quantity {
-    width: 60px;
-  }
-
-  &__deposit {
-    width: 60px;
-  }
-
-  &__total {
-    width: 60px;
-  }
-
-  &__profit {
-    width: 60px;
-  }
-
-  &__fix-half {
-    width: 40px;
-  }
-
-  &__fix {
-    width: 96px;
-  }
+  //
+  //&__price {
+  //  width: 60px;
+  //}
+  //
+  //&__quantity {
+  //  width: 60px;
+  //}
+  //
+  //&__deposit {
+  //  width: 60px;
+  //}
+  //
+  //&__total {
+  //  width: 60px;
+  //}
+  //
+  //&__profit {
+  //  width: 60px;
+  //}
+  //
+  //&__fix-half {
+  //  width: 40px;
+  //}
+  //
+  //&__fix {
+  //  width: 96px;
+  //}
 
   &__space {
     flex: 1;
+  }
+}
+
+.entry {
+  .row__item {
+    flex: 0 0 calc((100% - 40px - var(--padding-4)) / 8 - var(--padding-4));
+  }
+
+  .row__first {
+    flex: 0 0 40px;
+    min-width: 40px;
+  }
+}
+
+.target {
+  .row__item {
+    flex: 0 0 calc((100% - 40px - var(--padding-4)) / 8 - var(--padding-4));
+  }
+
+  .row__first {
+    flex: 0 0 40px;
+    min-width: 40px;
+  }
+
+  .row__fix {
+    flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 8 - var(--padding-4)) * 2);
+  }
+}
+
+.stop {
+  .row__item {
+    flex: 0 0 calc((100% - 40px - var(--padding-4)) / 8 - var(--padding-4));
+  }
+
+  .row__first {
+    flex: 0 0 40px;
+    min-width: 40px;
+  }
+
+  .row__fix {
+    flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 8 - var(--padding-4)) * 2);
   }
 }
