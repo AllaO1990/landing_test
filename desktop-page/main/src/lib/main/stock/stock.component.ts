@@ -116,18 +116,8 @@ export class StockComponent {
     return item.id;
   }
 
-  public onSelect(value: StockInstrument): void {
-    let type = EventSelected.STOCK_LIST;
-
-    if (this.controlGroup.value) {
-      type =
-        (this.controlGroup.value as StockGroup).id === 'watch' ? EventSelected.WATCH_LIST : EventSelected.STOCK_LIST;
-    }
-
-    this._queryParams.update({
-      type,
-      id: value.id,
-    });
+  public onSelect(value: { type: EventSelected; id: StockId }): void {
+    this._queryParams.update(value);
   }
 
   private _createGroup(): void {

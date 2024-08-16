@@ -41,6 +41,14 @@
   height: 28px;
 }
 
+.total, .header {
+  background-color: var(--block-bg-color);
+}
+
+.action {
+  padding: 0 var(--padding-2);
+}
+
 
 .row {
   &__item {

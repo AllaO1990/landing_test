@@ -49,11 +49,12 @@ export class StockListComponent implements AfterContentInit {
     map((list: StockListWithType | null) => list && list.items)
   );
 
-  @Output() selected: Observable<StockInstrument> = this.stockList$.pipe(
+  @Output() selected: Observable<{ id: StockId; type: EventSelected }> = this.stockList$.pipe(
     filter((list: StockListWithType | null): list is StockListWithType => !!list),
     switchMap((list: StockListWithType) =>
       this.controlItem.valueChanges.pipe(
-        map((value: string) => list.items.find((item: StockListItemWithPrice) => item.id === value)!)
+        map((value: string) => list.items.find((item: StockListItemWithPrice) => item.id === value)!),
+        map((instrument: StockInstrument) => ({ id: instrument.id, type: list.type }))
       )
     )
   );

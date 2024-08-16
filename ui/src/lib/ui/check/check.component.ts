@@ -3,7 +3,7 @@ import { NgIf } from '@angular/common';
 import { TuiSvgModule } from '@taiga-ui/core';
 
 @Component({
-  selector: 'lib-enter-list-check',
+  selector: 'lib-check',
   standalone: true,
   imports: [TuiSvgModule, NgIf],
   templateUrl: './check.component.html',

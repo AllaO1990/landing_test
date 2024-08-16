@@ -75,6 +75,8 @@ export class Position implements IPosition {
   inPositionDepositShare: number;
   inPositionQuantity: number;
   inPositionQuantityValue: number;
+  fullPositionQuantityValue: number;
+  fullPositionPrice: number;
   instrument: StockInstrument;
   minPriceIncrement: number;
   positionType: StockPosition;
@@ -135,6 +137,8 @@ export class Position implements IPosition {
     this.strategy = data.strategy;
     this.author = data.author;
 
+    this.fullPositionQuantityValue = this._getFulPositionQuantity(data.targets);
+    this.fullPositionPrice = this._getFullPositionPrice(data.entries);
     this.priceIncrement = getPriceIncrement(data.minPriceIncrement);
     this.entryAveragePrice = this._getAveragePrice(data.entries);
     this.currentTarget = this._getCurrentTarget(data.targets);
@@ -180,5 +184,13 @@ export class Position implements IPosition {
     }
 
     return this._resultPrice / (this.entryAveragePrice * this.inPositionQuantityValue);
+  }
+
+  private _getFulPositionQuantity(targets: StockPositionTarget[]): number {
+    return targets.reduce((acc: number, item: StockPositionTarget) => (acc += item.amount), 0);
+  }
+
+  private _getFullPositionPrice(targets: StockPositionEntry[]): number {
+    return targets.reduce((acc: number, item: StockPositionEntry) => (acc += item.totalPrice), 0);
   }
 }

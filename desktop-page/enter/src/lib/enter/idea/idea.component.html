@@ -1,76 +1,78 @@
 <div class="entry table" [formGroup]="formEntry">
-  <lib-enter-list-header class="header row">
-    <div class="header__item row__item row__first">Вход</div>
-    <div class="header__item row__item row__date">Время достиж.</div>
-    <div class="header__item row__item row__right row__price">Цена</div>
-    <div class="header__item row__item row__right row__quantity">Кол-во</div>
-    <div class="header__item row__item row__right row__total">Стоимость</div>
-    <div class="header__item row__item row__right row__deposit">% депо</div>
-  </lib-enter-list-header>
-  <lib-enter-list
+  <lib-list
     class="list"
-    [style.height.px]="listEntry.length > 2 ? 3 * itemHeight : listEntry.length * itemHeight"
+    [style.height.px]="listEntry.length > 2 ? 3 * itemHeight : listEntry.length * itemHeight + 28"
     [list]="listEntry"
+    [header]="entryHeader"
     [itemSize]="itemHeight">
-    <lib-enter-list-item
+    <lib-list-item
       class="row"
-      #libEnterListItem
-      *libEnterListItem="let item" [formControlName]="item.id">
+      #libListItem
+      *libListItem="let item" [formControlName]="item.id">
       <div class="item">
         <div class="item__value row__item row__first">
-          <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
+          <lib-check [value]="libListItem.value"></lib-check>
         </div>
-        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
-        <div class="item__value row__right row__item row__price">{{ item.price| tuiFormatNumber }}</div>
-        <div class="item__value row__right row__item row__quantity">{{ item.quantity| tuiFormatNumber }}</div>
-        <div class="item__value row__right row__item row__total">{{ item.totalPrice| tuiFormatNumber }}</div>
-        <div
-          class="item__value row__right row__item row__deposit">{{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}
-          %
+        <div class="item__value row__item row__date">
+          {{ item.date | date: 'dd.MM.yy' }}
+        </div>
+        <div class="item__value row__item row__price">
+          {{ item.price| tuiFormatNumber }}
+        </div>
+        <div class="item__value row__item row__quantity">
+          {{ item.quantity| tuiFormatNumber: { decimalLimit: 0 } }}
+        </div>
+        <div class="item__value row__item row__total">
+          {{ item.totalPrice| tuiFormatNumber: { decimalLimit: 0 } }}
+        </div>
+        <div class="item__value row__item row__deposit">
+          {{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
         </div>
       </div>
-    </lib-enter-list-item>
-  </lib-enter-list>
+    </lib-list-item>
+  </lib-list>
 </div>
 
+<div class="space"></div>
+
 <div class="target table" [formGroup]="formTarget">
-  <lib-enter-list-header class="header row">
-    <div class="header__item row__item row__first">Цели</div>
-    <div class="header__item row__item row__date">Время достиж.</div>
-    <div class="header__item row__right row__item row__price">Цена</div>
-    <div class="header__item row__right row__item row__profit">Прибыль %</div>
-    <div class="header__item row__right row__item row__profit">Прибыль</div>
-    <div class="header__item row__right row__item row__deposit">% депо</div>
-    <div class="header__item row__right row__item row__fix">Сколько фикс.</div>
-  </lib-enter-list-header>
-  <lib-enter-list
+  <lib-list
     class="list"
-    [style.height.px]="listTarget.length > 2 ? 3 * itemHeight : listTarget.length * itemHeight"
+    [style.height.px]="listTarget.length > 3 ? 3 * itemHeight : listTarget.length * itemHeight + 56"
     [list]="listTarget"
+    [header]="targetHeader"
+    [footer]="targetFooter"
     [itemSize]="itemHeight">
-    <lib-enter-list-item
+    <lib-list-item
       class="row"
-      #libEnterListItem
-      *libEnterListItem="let item"
+      #libListItem
+      *libListItem="let item"
       [formControlName]="item.id">
       <div class="item">
         <div class="item__value row__item row__first">
-          <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
+          <lib-check [value]="libListItem.value"></lib-check>
         </div>
-        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
-        <div
-          class="item__value row__right row__item row__price">{{ item.price | tuiFormatNumber }}
+        <div class="item__value row__item row__date">
+          {{ item.date | date: 'dd.MM.yy' }}
         </div>
-        <div class="item__value row__right row__item row__profit">{{ item.profitPercent }}%</div>
-        <div
-          class="item__value row__right row__item row__profit">{{ item.price * item.profitPercent / 100 | tuiFormatNumber: { decimalLimit: data.priceIncrement || 2 } }}
+        <div class="item__value row__right row__item row__price">
+          {{ item.price | tuiFormatNumber }}
         </div>
-        <div
-          class="item__value row__right row__item row__deposit">{{ item.depositShare * 100| tuiFormatNumber: { decimalLimit: 2 } }}
-          %
+        <div class="item__value row__right row__item row__profit">
+          {{ item.profitPercent | tuiFormatNumber: { decimalLimit: 2 } }}%
         </div>
-        <div class="item__value row__right row__item row__fix-half">{{ item.quantity }}</div>
-        <div class="item__value row__right row__item row__fix-half">{{ item.quantityPercent }}%</div>
+        <div class="item__value row__right row__item row__profit">
+          {{ item.profit | tuiFormatNumber: { decimalLimit: 2 } }}
+        </div>
+        <div class="item__value row__right row__item row__deposit">
+          {{ item.depositShare * 100| tuiFormatNumber: { decimalLimit: 2 } }}%
+        </div>
+        <div class="item__value row__right row__item row__fix-half">
+          {{ item.amount | tuiFormatNumber: { decimalLimit: 0 } }}
+        </div>
+        <div class="item__value row__right row__item row__fix-half">
+          {{ item.amountPercent * 100 | tuiFormatNumber: { decimalLimit: 2, rounding: 'round' } }}%
+        </div>
         <div class="row__space"></div>
         <div class="item__value">
           <button
@@ -82,13 +84,9 @@
           ></button>
         </div>
       </div>
-    </lib-enter-list-item>
-  </lib-enter-list>
-  <div class="total">
-    <div class="total__item">Всего</div>
-    <div class="total__item"></div>
-    <div class="total__item"></div>
-  </div>
+    </lib-list-item>
+  </lib-list>
+
   <div class="action">
     <button
       class="button"
@@ -100,41 +98,101 @@
   </div>
 </div>
 
+<div class="space"></div>
+
 <div class="stop table" [formGroup]="formStop">
-  <lib-enter-list-header class="header row">
-    <div class="header__item row__item row__first">Стоп</div>
-    <div class="header__item row__item row__date">Время достиж.</div>
-    <div class="header__item row__item row__right row__price">Цена</div>
-    <div class="header__item row__item row__right row__profit">Убыль %</div>
-    <div class="header__item row__item row__right row__profit">Убыль</div>
-    <div class="header__item row__item row__right row__deposit">% депо</div>
-    <div class="header__item row__item row__right row__fix">Сколько фикс.</div>
-  </lib-enter-list-header>
-  <lib-enter-list
+  <lib-list
     class="list"
-    [style.height.px]="listStop.length > 2 ? 3 * itemHeight : listStop.length * itemHeight"
+    [style.height.px]="listStop.length > 2 ? 3 * itemHeight : listStop.length * itemHeight + 28"
     [list]="listStop"
+    [header]="stopHeader"
     [itemSize]="itemHeight">
-    <lib-enter-list-item
+    <lib-list-item
       class="row"
-      #libEnterListItem
-      *libEnterListItem="let item"
+      #libListItem
+      *libListItem="let item"
       [formControlName]="item.id">
       <div class="item">
         <div class="item__value row__item row__first">
-          <lib-enter-list-check [value]="libEnterListItem.value"></lib-enter-list-check>
+          <lib-check [value]="libListItem.value"></lib-check>
         </div>
-        <div class="item__value row__item row__date">{{ item.date | date: 'dd.MM.yy' }}</div>
-        <div class="item__value row__item row__right row__price">{{ item.price }}</div>
-        <div class="item__value row__item row__right row__profit">{{ item.lossPercent }}%</div>
-        <div class="item__value row__item row__right row__profit">{{ item.loss }}</div>
-        <div
-          class="item__value row__item row__right row__deposit">{{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}
-          %
+        <div class="item__value row__item row__date">
+          {{ item.date | date: 'dd.MM.yy' }}
         </div>
-        <div class="item__value row__item row__right row__fix-half">{{ item.quantity }}</div>
-        <div class="item__value row__item row__right row__fix-half">{{ item.quantityPercent }}%</div>
+        <div class="item__value row__item row__right row__price">
+          {{ item.price }}
+        </div>
+        <div class="item__value row__item row__right row__profit">
+          {{ item.lossPercent | tuiFormatNumber: { decimalLimit: 2 } }}%
+        </div>
+        <div class="item__value row__item row__right row__profit">
+          {{ item.loss | tuiFormatNumber: { decimalLimit: 2 } }}
+        </div>
+        <div class="item__value row__item row__right row__deposit">
+          {{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+        </div>
+        <div class="item__value row__item row__right row__fix-half">
+          {{ item.amount | tuiFormatNumber: { decimalLimit: 0 } }}
+        </div>
+        <div class="item__value row__item row__right row__fix-half">
+          {{ item.amountPercent * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+        </div>
       </div>
-    </lib-enter-list-item>
-  </lib-enter-list>
+    </lib-list-item>
+  </lib-list>
 </div>
+
+<ng-template #entryHeader>
+  <lib-list-header class="header row">
+    <div class="header__item row__item row__first">Вход</div>
+    <div class="header__item row__item row__date">Время достиж.</div>
+    <div class="header__item row__item row__price">Цена</div>
+    <div class="header__item row__item row__quantity">Кол-во</div>
+    <div class="header__item row__item row__total">Стоимость</div>
+    <div class="header__item row__item row__deposit">% депо</div>
+  </lib-list-header>
+</ng-template>
+
+<ng-template #targetHeader>
+  <lib-list-header class="header row">
+    <div class="header__item row__item row__first">Цели</div>
+    <div class="header__item row__item row__date">Время достиж.</div>
+    <div class="header__item row__item row__price">Цена</div>
+    <div class="header__item row__item row__profit">Прибыль %</div>
+    <div class="header__item row__item row__profit">Прибыль</div>
+    <div class="header__item row__item row__deposit">% депо</div>
+    <div class="header__item row__item row__fix">Сколько фикс.</div>
+  </lib-list-header>
+</ng-template>
+
+<ng-template #targetFooter>
+  <div class="total row" *ngIf="totalTarget">
+    <div class="total__item row__item row__first">Всего</div>
+    <div class="total__item row__item"></div>
+    <div class="total__item row__item"></div>
+    <div class="total__item row__item">
+      {{ totalTarget.profitPercent * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+    </div>
+    <div class="total__item row__item">
+      {{ totalTarget.profit | tuiFormatNumber: { decimalLimit: 2 } }}
+    </div>
+    <div class="total__item row__item">
+      {{ totalTarget.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+    </div>
+    <div class="total__item row__item">
+      {{ totalTarget.amount | tuiFormatNumber: { decimalLimit: 0 } }}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #stopHeader>
+  <lib-list-header class="header row">
+    <div class="header__item row__item row__first">Стоп</div>
+    <div class="header__item row__item row__date">Время достиж.</div>
+    <div class="header__item row__item row__price">Цена</div>
+    <div class="header__item row__item row__profit">Прибыль %</div>
+    <div class="header__item row__item row__profit">Прибыль</div>
+    <div class="header__item row__item row__deposit">% депо</div>
+    <div class="header__item row__item row__fix">Сколько фикс.</div>
+  </lib-list-header>
+</ng-template>

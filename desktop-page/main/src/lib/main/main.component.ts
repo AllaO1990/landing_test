@@ -118,7 +118,7 @@ export class MainComponent {
     },
     {
       icon: 'tuiIconShoppingCartLarge',
-      text: 'Сдекла',
+      text: 'Сделка',
     },
   ];
 
@@ -133,7 +133,7 @@ export class MainComponent {
     },
     {
       icon: 'tuiIconShoppingCartLarge',
-      text: 'Сдекла',
+      text: 'Сделка',
     },
   ];
 
