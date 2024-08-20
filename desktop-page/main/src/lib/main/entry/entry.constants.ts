@@ -1,7 +1,8 @@
 import { EntryEnums } from './entry.enums';
 import { EntryHeaderItem } from './entry.types';
-import { sortNumber, sortText } from '../main.utils';
+import { sortNumber } from '../main.utils';
 import { IdeaAuthor, ResponseIdea } from 'types/idea';
+import { sortText } from 'utils/sort-text';
 
 export const ENTRY_CONSTANTS: { [key in EntryEnums]: string } = {
   [EntryEnums.TITLE]: 'Вход',

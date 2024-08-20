@@ -65,4 +65,8 @@ export class DesktopStubService extends DesktopService {
   getConsolidationZones(): Observable<ConsolidationZones> {
     return of();
   }
+
+  getWatchlistConsolidationZone(id: StockId): Observable<any> {
+    return of();
+  }
 }

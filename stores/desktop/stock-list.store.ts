@@ -14,6 +14,7 @@ import { filter, map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { StockListState } from 'types/stock-list-state';
 import { DesktopService } from '@desktop-data/desktop-data';
+import { sortText } from 'utils/sort-text';
 
 export class StockListStore extends ComponentStore<StockListState> {
   public readonly selected$: Observable<StockInstrument | null> = this.select(
@@ -105,7 +106,7 @@ export class StockListStore extends ComponentStore<StockListState> {
           tap((list: StockGroups) => this.updateLists(list)),
           switchMap((list: StockGroups) =>
             forkJoin(list.map((item: { id: string }) => this._getListItems(item.id))).pipe(
-              tap((listItems: Response<Stock>[]) => this._updateMap(list, listItems))
+              tap((listItems: StockListItems[]) => this._updateMap(list, listItems))
             )
           )
         )
@@ -117,12 +118,14 @@ export class StockListStore extends ComponentStore<StockListState> {
     )
   );
 
-  private _getListItems(id: string): Observable<Response<Stock>> {
+  private _getListItems(id: string): Observable<StockListItems> {
     if (id === 'watch') {
-      return this._api.getWatchInstrumentsListItems();
+      return this._api
+        .getWatchInstrumentsListItems()
+        .pipe(map((result: Response<Stock>) => this._sortWatchList(result.data.items)));
     }
 
-    return this._api.getInstrumentsListItems(id);
+    return this._api.getInstrumentsListItems(id).pipe(map((result: Response<Stock>) => result.data.items));
   }
 
   private _getStockGroup(list: StockLists): StockGroups {
@@ -132,23 +135,47 @@ export class StockListStore extends ComponentStore<StockListState> {
     ];
   }
 
-  private _updateMap(list: StockGroups, listItems: Response<Stock>[]): void {
+  private _updateMap(list: StockGroups, listItems: StockListItems[]): void {
     const map = new Map<string, StockListItems>();
     let items: StockListItems = [];
     let watchList: StockListItems = [];
 
     list.forEach(({ id }: { id: string }, index: number) => {
-      map.set(id, listItems[index].data.items);
+      map.set(id, listItems[index]);
 
       if (id === 'watch') {
-        watchList = [...watchList, ...listItems[index].data.items];
+        watchList = [...watchList, ...listItems[index]];
       } else {
-        items = [...items, ...listItems[index].data.items];
+        items = [...items, ...listItems[index]];
       }
     });
 
     // this.updateWatchList(watchList);
     // this.updateList(items);
     this.updateMap(map);
+  }
+
+  private _sortWatchList(list: StockListItems): StockListItems {
+    const { moex, crypto, forts } = list.reduce(
+      (acc: { moex: StockListItems; crypto: StockListItems; forts: StockListItems }, item: StockInstrument) => {
+        let type: 'moex' | 'crypto' | 'forts' = 'moex';
+
+        if (item.realExchange === 'moex') {
+          type = item.exchange === 'FORTS_EVENING' ? 'forts' : 'moex';
+        } else {
+          type = 'crypto';
+        }
+        acc[type].push(item);
+
+        return acc;
+      },
+      { moex: [], crypto: [], forts: [] }
+    );
+
+    return [
+      ...moex.sort((a, b) => sortText(a.ticker, b.ticker)),
+      ...forts.sort((a, b) => sortText(a.ticker, b.ticker)),
+      ...crypto.sort((a, b) => sortText(a.ticker, b.ticker)),
+    ];
   }
 }
