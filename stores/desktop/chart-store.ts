@@ -4,9 +4,10 @@ import { catchError, EMPTY, Observable, of, switchMap, tap } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { ChartState } from 'types/chart-state';
-import { transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
+import { getPointsActiveZones, transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
 import { StockId } from 'types/stock';
 import { Queue } from 'utils/queue';
+import { Response } from 'types/response';
 
 export class ChartStore extends ComponentStore<ChartState> {
   private _queueCandles: Queue<any> = new Queue(3);
@@ -65,24 +66,22 @@ export class ChartStore extends ComponentStore<ChartState> {
     );
   });
 
-  public readonly loadConsolidationZones = this.effect(
-    (stream$: Observable<{ type: string; value: { id: string } }>) => {
-      return stream$.pipe(
-        skipWhile((value) => value === null),
-        switchMap((data: { type: string; value: { id: string } }) => this._getConsolidationZones(data.value)),
-        map((data: ConsolidationZones) => {
-          return transformActiveConsolidationZones(data?.data);
-        }),
-        tap((zones) => {
-          this.updateConsolidationZones(zones);
-        }),
-        catchError((err: Error) => {
-          console.error(err);
-          return EMPTY;
-        })
-      );
-    }
-  );
+  public readonly loadWatchlistConsolidationZones = this.effect((stream$: Observable<{ id: StockId } | null>) => {
+    return stream$.pipe(
+      filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
+      switchMap((value: { id: StockId }) => this._getWatchlistConsolidationZone(value)),
+      map((result: Response<ActiveZone>) => {
+        return [{ points: getPointsActiveZones([result.data]), color: 'rgba(0, 64, 255, 1)' }];
+      }),
+      tap((zones) => {
+        this.updateConsolidationZones(zones);
+      }),
+      catchError((err: Error) => {
+        console.error(err);
+        return EMPTY;
+      })
+    );
+  });
 
   public readonly loadConsolidationZonesV2 = this.effect((stream$: Observable<{ id: StockId } | null>) => {
     return stream$.pipe(
@@ -109,6 +108,19 @@ export class ChartStore extends ComponentStore<ChartState> {
     }
 
     return this._api.getCandles(data).pipe(tap((res: any) => this._queueCandles.setValue(data.source.id, res)));
+  }
+
+  private _getWatchlistConsolidationZone(data: { id: StockId }): Observable<Response<ActiveZone>> {
+    const key = data.id.toString();
+    const value = this._queueConsolidationZones.getValue(key);
+
+    if (value) {
+      return of(value);
+    }
+
+    return this._api
+      .getWatchlistConsolidationZone(data.id)
+      .pipe(tap((res: any) => this._queueConsolidationZones.setValue(key, res)));
   }
 
   private _getConsolidationZones(data: { id: StockId }): Observable<any> {

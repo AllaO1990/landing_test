@@ -116,4 +116,15 @@ export class DesktopApiService extends DesktopService {
       },
     });
   }
+
+  getWatchlistConsolidationZone(id: StockId): Observable<any> {
+    return this._http
+      .get<any>(`https://trade.gpn.dev/api/v1/chart/watchlist-consolidation-zone`, { params: { id } })
+      .pipe(
+        catchError((error: Error) => {
+          console.log(error);
+          return of(null);
+        })
+      );
+  }
 }

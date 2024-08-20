@@ -1,6 +1,7 @@
 import { OutHeaderItem } from './out.types';
-import { sortNumber, sortText } from '../main.utils';
+import { sortNumber } from '../main.utils';
 import { OutEnums } from './out.enums';
+import { sortText } from 'utils/sort-text';
 
 export const OUT_HEADER: OutHeaderItem[] = [
   {

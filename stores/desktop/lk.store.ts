@@ -69,7 +69,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
     this._stockListStore.loadList();
     this._stockListStore.load();
-    this._entryStore.load();
+    this._entryStore.load(timer(0, TIMER_INTERVAL).pipe(map(() => void 0)));
     this._positionStore.load();
 
     this.loadActivePrice(
@@ -80,9 +80,23 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
     this._chartStore.loadConsolidationZonesV2(merge(this._entryStore.selected$, this._positionStore.selected$));
 
+    this._chartStore.loadWatchlistConsolidationZones(
+      this.event$.pipe(
+        filter((event: StockEvent | null): event is StockEvent => event !== null),
+        map((event: StockEvent) => (event.type === EventSelected.WATCH_LIST ? event : null))
+      )
+    );
+
     this.onChangeEventStock(this.event$);
     this.onChangeEventEntry(this.event$);
     this.onChangeEventPosition(this.event$);
+
+    // this._stockListStore.selected$
+    //   .pipe(
+    //     filter((selected: StockInstrument | null): selected is StockInstrument => !!selected),
+    //     switchMap((selected: StockInstrument) => this._api.getWatchlistConsolidationZone(selected.id))
+    //   )
+    //   .subscribe((res) => console.log(res));
   }
 
   public updateSelect = this.updater((state: DesktopLkState, selected: any) => ({ ...state, selected }));
@@ -118,7 +132,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
           filter((list: StockListItems | null): list is StockListItems => list !== null),
           map((list: StockListItems): StockInstrument => list.find((item: StockInstrument) => item.id === event.id)!),
           tap((value: StockInstrument) => {
-            this._stockListStore.updateSelected(value);
+            this._stockListStore.updateSelected({ ...value });
             this._entryStore.updateSelected(null);
             this._positionStore.updateSelected(null);
           })

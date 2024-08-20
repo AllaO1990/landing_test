@@ -310,6 +310,7 @@ export class ChartComponent {
   set data(value: any[]) {
     // this.chart?.zoomOut();
     (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value;
+
     // this.updateExtremes
     // this.chart?.xAxis[0].setExtremes();
     // this.chart?.yAxis[0].setExtremes();
@@ -338,7 +339,6 @@ export class ChartComponent {
             return {
               // type: 'rect',
               type: 'path',
-
               dashStyle: item.dash ? 'Dash' : null,
               fill: 'rgba(0,0,0,0)',
               stroke: item.color,
@@ -349,6 +349,17 @@ export class ChartComponent {
           });
         });
       };
+
+      // {
+      //   "id": 19180,
+      //   "timeframe": 5,
+      //   "startTime": "2024-02-19T00:00:00Z",
+      //   "endTime": "2024-03-21T00:00:00Z",
+      //   "high": 4.096,
+      //   "low": 3.851,
+      //   "isActive": false,
+      //   "splash": false
+      // },
 
       this.chart.addAnnotation({
         id: 0,

@@ -1,37 +1,9 @@
-import { ConsolidationZonesData } from '../types/chart';
+import { ActiveZone, ConsolidationZonesData } from '../types/chart';
 
 export function transformActiveConsolidationZones(zones: ConsolidationZonesData) {
   const commonAxisValues = { xAxis: 0, yAxis: 0 };
 
-  const activeZones = zones?.activeZones.map((item) => {
-    return [
-      {
-        x: new Date(item.startTime).valueOf(),
-        y: item.low,
-        ...commonAxisValues,
-      },
-      {
-        x: new Date(item.startTime).valueOf(),
-        y: item.high,
-        ...commonAxisValues,
-      },
-      {
-        x: new Date(item.endTime).valueOf(),
-        y: item.high,
-        ...commonAxisValues,
-      },
-      {
-        x: new Date(item.endTime).valueOf(),
-        y: item.low,
-        ...commonAxisValues,
-      },
-      {
-        x: new Date(item.startTime).valueOf(),
-        y: item.low,
-        ...commonAxisValues,
-      },
-    ];
-  });
+  const activeZones = getPointsActiveZones(zones?.activeZones);
 
   const priceIn = [
     { x: new Date(zones.ideaParams.priceInDate).valueOf(), y: zones.ideaParams.priceIn, ...commonAxisValues },
@@ -53,9 +25,43 @@ export function transformActiveConsolidationZones(zones: ConsolidationZonesData)
   });
 
   return [
-    { points: [...activeZones], color: 'rgba(0, 64, 255, 1)' },
+    { points: activeZones, color: 'rgba(0, 64, 255, 1)' },
     { points: [priceIn], color: 'rgba(64, 224, 208, 1)' },
     { points: [stop], color: 'rgba(255,0,0,1)', dash: true },
     { points: targets, color: 'rgba(0, 255, 0, 1)', dash: true },
   ];
 }
+
+export const getPointsActiveZones = (list: ActiveZone[]) => {
+  const commonAxisValues = { xAxis: 0, yAxis: 0 };
+
+  return list.map((item: ActiveZone) => {
+    return [
+      {
+        x: new Date(item.startTime).valueOf(),
+        y: item.low,
+        ...commonAxisValues,
+      },
+      {
+        x: new Date(item.startTime).valueOf(),
+        y: item.high,
+        ...commonAxisValues,
+      },
+      {
+        x: new Date(item.endTime).valueOf(),
+        y: item.high,
+        ...commonAxisValues,
+      },
+      {
+        x: new Date(item.endTime).valueOf(),
+        y: item.low,
+        ...commonAxisValues,
+      },
+      {
+        x: new Date(item.startTime).valueOf(),
+        y: item.low,
+        ...commonAxisValues,
+      },
+    ];
+  });
+};
