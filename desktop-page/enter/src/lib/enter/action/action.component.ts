@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '../list';
 import { DatePipe, NgIf } from '@angular/common';
-import { TuiButtonModule, TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TUI_NUMBER_FORMAT, TuiButtonModule, TuiFormatNumberPipeModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { Position } from 'types/position';
 import { ActionService } from './action.service';
 import {
@@ -29,7 +29,16 @@ import {
   ],
   templateUrl: './action.component.html',
   styleUrl: './action.component.scss',
-  providers: [ActionService],
+  providers: [
+    ActionService,
+    {
+      provide: TUI_NUMBER_FORMAT,
+      useValue: {
+        zeroPadding: false,
+        decimalLimit: 2,
+      },
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterActionComponent {

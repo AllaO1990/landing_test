@@ -20,7 +20,7 @@
           {{ item.price| tuiFormatNumber }}
         </div>
         <div class="item__value row__item row__quantity">
-          {{ item.quantity| tuiFormatNumber: { decimalLimit: 0 } }}
+          {{ item.quantity| tuiFormatNumber: { decimalLimit: 2 } }}
         </div>
         <div class="item__value row__item row__total">
           {{ item.totalPrice| tuiFormatNumber: { decimalLimit: 0 } }}
@@ -123,19 +123,19 @@
           {{ item.price }}
         </div>
         <div class="item__value row__item row__right row__profit">
-          {{ item.lossPercent | tuiFormatNumber: { decimalLimit: 2 } }}%
+          {{ item.lossPercent | tuiFormatNumber }}%
         </div>
         <div class="item__value row__item row__right row__profit">
-          {{ item.loss | tuiFormatNumber: { decimalLimit: 2 } }}
+          {{ item.loss | tuiFormatNumber }}
         </div>
         <div class="item__value row__item row__right row__deposit">
-          {{ item.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+          {{ item.depositShare * 100 | tuiFormatNumber }}%
         </div>
         <div class="item__value row__item row__right row__fix-half">
-          {{ item.amount | tuiFormatNumber: { decimalLimit: 0 } }}
+          {{ item.amount | tuiFormatNumber }}
         </div>
         <div class="item__value row__item row__right row__fix-half">
-          {{ item.amountPercent * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+          {{ item.amountPercent * 100 | tuiFormatNumber }}%
         </div>
       </div>
     </lib-list-item>
@@ -171,16 +171,16 @@
     <div class="total__item row__item"></div>
     <div class="total__item row__item"></div>
     <div class="total__item row__item">
-      {{ totalTarget.profitPercent * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      {{ totalTarget.profitPercent * 100 | tuiFormatNumber }}%
     </div>
     <div class="total__item row__item">
-      {{ totalTarget.profit | tuiFormatNumber: { decimalLimit: 2 } }}
+      {{ totalTarget.profit | tuiFormatNumber }}
     </div>
     <div class="total__item row__item">
-      {{ totalTarget.depositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+      {{ totalTarget.depositShare * 100 | tuiFormatNumber }}%
     </div>
     <div class="total__item row__item">
-      {{ totalTarget.amount | tuiFormatNumber: { decimalLimit: 0 } }}
+      {{ totalTarget.amount | tuiFormatNumber }}
     </div>
   </div>
 </ng-template>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { DatePipe, JsonPipe, NgIf } from '@angular/common';
-import { TuiButtonModule, TuiFormatNumberPipeModule, TuiSvgModule } from '@taiga-ui/core';
+import { TUI_NUMBER_FORMAT, TuiButtonModule, TuiFormatNumberPipeModule, TuiSvgModule } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { StockId } from 'types/stock';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/list';
@@ -32,7 +32,16 @@ import { IdeaEntry, IdeaTarget, IdeaTotalTarget } from './idea.types';
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
-  providers: [IdeaService],
+  providers: [
+    IdeaService,
+    {
+      provide: TUI_NUMBER_FORMAT,
+      useValue: {
+        zeroPadding: false,
+        decimalLimit: 2,
+      },
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterIdeaComponent {
