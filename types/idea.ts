@@ -1,4 +1,5 @@
 import { StockId, StockInstrument, StockPosition } from './stock';
+import { StockPositionEntry, StockPositionStop, StockPositionTarget } from './position';
 
 export interface ResponseListIdea {
   items: ResponseIdea[];
@@ -16,27 +17,9 @@ export interface ResponseIdea {
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
-  entries: {
-    price: number;
-    quantity: number;
-    totalPrice: number;
-    depositShare: number;
-    date: string | null;
-  }[];
-  targets: {
-    price: number;
-    amount: number;
-    profitPercent: number;
-    depositShare: number;
-    reached: boolean;
-    stopDate: null | string;
-  }[];
-  stop: {
-    price: number;
-    lossPercent: number;
-    depositShare: number;
-    stopCandleDate: string;
-  };
+  entries: StockPositionEntry[];
+  targets: StockPositionTarget[];
+  stop: StockPositionStop;
   strategy: {
     successProbability: number;
     type: string;

@@ -1,7 +1,7 @@
-export class Queue<T> {
+export class Queue<K = string, T = unknown> {
   private _limit: number = 3;
-  private _direction: string[] = [];
-  private _setQueue: Map<string, T> = new Map();
+  private _direction: K[] = [];
+  private _setQueue: Map<K, T> = new Map();
 
   constructor(limit: number = 3) {
     this._limit = limit;
@@ -11,7 +11,7 @@ export class Queue<T> {
     this._limit = limit;
   }
 
-  getValue(key: string): T | null {
+  getValue(key: K): T | null {
     if (this._setQueue.has(key)) {
       return this._setQueue.get(key) as T;
     }
@@ -19,7 +19,7 @@ export class Queue<T> {
     return null;
   }
 
-  setValue(key: string, value: T): void {
+  setValue(key: K, value: T): void {
     if (this._setQueue.has(key)) {
       this._setQueue.set(key, value);
 

@@ -14,6 +14,7 @@ import { StockComponent } from './stock/stock.component';
 import { TuiTabsModule } from '@taiga-ui/kit';
 import { TuiBreakpointService, TuiSvgModule } from '@taiga-ui/core';
 import { Position } from 'types/position';
+import { MainChartComponent } from './chart/chart.component';
 
 @Component({
   selector: 'lib-main',
@@ -29,6 +30,7 @@ import { Position } from 'types/position';
     ChartComponent,
     TuiTabsModule,
     TuiSvgModule,
+    MainChartComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
@@ -63,30 +65,7 @@ export class MainComponent {
 
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
 
-  public readonly tradeList$: Observable<Position[] | null> = combineLatest([
-    this._store.position$,
-    this._store.price$,
-  ]).pipe(
-    map(([list, price]: [Position[] | null, StockPrice<WithLastPrice> | null]): Position[] | null => {
-      if (!list) {
-        return null;
-      }
-
-      if (list && !price) {
-        return list;
-      }
-
-      // return list.map((item: Position) => ({ ...item, lastPrice: price![item.instrument.id]!.last || item.lastPrice }));
-      return list.map((item: Position) => {
-        item.lastPrice = price![item.instrument.id]!.last || item.lastPrice;
-        return item;
-      });
-    })
-  );
-
-  public readonly candles$: Observable<any | null> = this._store.candles$;
-
-  public readonly consolidationZones$: Observable<any | null> = this._store.consolidationZones$;
+  public readonly positionList$: Observable<Position[] | null> = this._store.position$;
 
   public readonly tabs$: Observable<{ text: string; icon: string }[] | null> = this.breakpoint$.pipe(
     map((screen: string | null): { text: string; icon: string }[] | null => {

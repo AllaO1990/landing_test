@@ -2,9 +2,15 @@ import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@an
 import { OUT_HEADER } from '../out.constants';
 import { CdkFixedSizeVirtualScroll, ScrollingModule } from '@angular/cdk/scrolling';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import {
+  TUI_NUMBER_FORMAT,
+  TuiFormatNumberPipeModule,
+  TuiHintModule,
+  TuiLoaderModule,
+  TuiScrollbarModule,
+} from '@taiga-ui/core';
 import { OutHeaderItem } from '../out.types';
-import { AsyncPipe, DatePipe, JsonPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Position } from 'types/position';
 import { DatePassedPipe } from '../../common/date-passed.pipe';
 import { Idea } from 'types/idea';
@@ -38,10 +44,18 @@ import { ColorPriceDirective, LastPriceDirective } from '@ui/price';
     LastPriceDirective,
     ColorPriceDirective,
     TuiHintModule,
-    JsonPipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
+  providers: [
+    {
+      provide: TUI_NUMBER_FORMAT,
+      useValue: {
+        decimalLimit: 2,
+        zeroPadding: false,
+      },
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutTableComponent {

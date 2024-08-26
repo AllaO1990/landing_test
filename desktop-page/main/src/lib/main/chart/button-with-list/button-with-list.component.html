@@ -1,0 +1,34 @@
+<tui-badged-content
+  size="xs"
+  [contentTop]="length$ | async">
+  <button
+    appearance="outline"
+    tuiIconButton
+    type="button"
+    [icon]="icon"
+    size="l"
+    [disabled]="disabled"
+    [tuiDropdown]="content"
+    [tuiDropdownManual]="controlOpen"
+    [tuiDropdownAlign]="'right'"
+    [tuiDropdownOffset]="8"
+    (click)="onOpenMore()"
+    (tuiActiveZoneChange)="onActiveZoneMore($event)"
+    (tuiObscured)="onObscuredMore($event)">
+  </button>
+</tui-badged-content>
+
+<ng-template #content>
+  <tui-data-list size="s">
+    <tui-opt-group
+      tuiMultiSelectGroup
+      [formControl]="control">
+      <button
+        *ngFor="let item of list"
+        tuiOption
+        [value]="item">
+        {{ item.name }}
+      </button>
+    </tui-opt-group>
+  </tui-data-list>
+</ng-template>

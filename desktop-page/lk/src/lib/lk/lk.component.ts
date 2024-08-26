@@ -1,8 +1,17 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
 import { ToolbarSearchModule } from '../../../../../apps/desktop/src/app/shared/components/toolbar-search';
-import { ChartStore, DesktopLkStore, EntryStore, PositionStore, StockListStore } from 'stores/desktop';
-import { DESKTOP_API, DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
+import {
+  ChartStore,
+  DesktopLkStore,
+  EntryStore,
+  IndicatorAtrStore,
+  IndicatorEmaStore,
+  IndicatorSmaStore,
+  PositionStore,
+  StockListStore,
+} from 'stores/desktop';
+import { DESKTOP_API, DESKTOP_STORE, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { QueryParams } from 'utils/query-params';
 import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, shareReplay } from 'rxjs';
@@ -11,7 +20,16 @@ import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 
 const createStore = (api: DesktopService) =>
-  new DesktopLkStore(api, new StockListStore(api), new EntryStore(api), new PositionStore(api), new ChartStore(api));
+  new DesktopLkStore(
+    api,
+    new StockListStore(api),
+    new EntryStore(api),
+    new PositionStore(api),
+    new ChartStore(api),
+    new IndicatorAtrStore(api),
+    new IndicatorEmaStore(api),
+    new IndicatorSmaStore(api)
+  );
 
 @Component({
   selector: 'lib-lk',
@@ -32,6 +50,7 @@ export class LkComponent implements OnInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
 
   get queryId(): StockId | null {
     return this._queryParams.value()['id'] || null;
@@ -50,6 +69,11 @@ export class LkComponent implements OnInit {
         id: '72187db2-44d8-4b2e-8b43-c41fd30c4a39',
       });
     }
+
+    this._globalDateRangeService.setRange({
+      from: new Date(new Date(new Date().getFullYear() - 1, 0, 1, 3, 0, 0, 0)).toISOString(),
+      to: new Date(Date.now()).toISOString(),
+    });
   }
 
   private _getParamsKey<T>(key: string, stream$: Observable<Params>): Observable<T> {

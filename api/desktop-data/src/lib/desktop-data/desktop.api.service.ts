@@ -9,6 +9,8 @@ import { Response, ResponseMessage } from 'types/response';
 import { Stock, StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
+import { IndicatorEmaParams } from 'types/indicator-ema';
+import { IndicatorSmaParams } from 'types/indicator-sma';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -22,11 +24,7 @@ export class DesktopApiService extends DesktopService {
           ...item,
           priceIncrement: getPriceIncrement(item.minPriceIncrement),
         }))
-      ),
-      catchError((error: Error) => {
-        console.log(error);
-        return of([]);
-      })
+      )
     );
   }
 
@@ -90,11 +88,7 @@ export class DesktopApiService extends DesktopService {
       filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
       map((response: Response<ResponsePositions>) =>
         response.data.items.map((item: ResponsePosition) => new Position(item))
-      ),
-      catchError((error: Error) => {
-        console.log(error);
-        return of([]);
-      })
+      )
     );
   }
 
@@ -126,5 +120,17 @@ export class DesktopApiService extends DesktopService {
           return of(null);
         })
       );
+  }
+
+  getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>> {
+    return this._http.get<Response<any>>('https://trade.gpn.dev/api/v1/chart/atr', { params: { id, interval, date } });
+  }
+
+  getIndicatorEma(params: IndicatorEmaParams): Observable<Response<any>> {
+    return this._http.post<Response<any>>('https://trade.gpn.dev/api/v1/chart/ema', params);
+  }
+
+  getIndicatorSma(params: IndicatorSmaParams): Observable<Response<any>> {
+    return this._http.post<Response<any>>('https://trade.gpn.dev/api/v1/chart/sma', params);
   }
 }

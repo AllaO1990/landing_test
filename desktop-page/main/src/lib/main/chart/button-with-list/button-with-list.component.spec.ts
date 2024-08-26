@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HeaderComponent } from './header.component';
+import { ButtonWithListComponent } from './button-with-list.component';
 
-describe('HeaderComponent', () => {
-  let component: HeaderComponent;
-  let fixture: ComponentFixture<HeaderComponent>;
+describe('ButtonWithListComponent', () => {
+  let component: ButtonWithListComponent;
+  let fixture: ComponentFixture<ButtonWithListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeaderComponent],
+      imports: [ButtonWithListComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HeaderComponent);
+    fixture = TestBed.createComponent(ButtonWithListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

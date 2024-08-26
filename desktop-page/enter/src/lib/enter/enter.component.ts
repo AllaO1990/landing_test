@@ -71,7 +71,11 @@ export class VtEnterComponent {
 
   public readonly consolidationZones$: Observable<any | null> = this._store.consolidationZones$;
 
-  public readonly candles$: Observable<any | null> = this._store.candles$;
+  public readonly candles$: Observable<any | null> = combineLatest([
+    this._store.candles$,
+    this._store.indicatorEma$,
+    this._store.indicatorSma$,
+  ]);
 
   public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
 

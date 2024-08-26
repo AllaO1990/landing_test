@@ -12,11 +12,10 @@ import HDraggablePoints from 'highcharts/modules/draggable-points';
 import HFullScreen from 'highcharts/modules/full-screen';
 import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
-
-import { CommonModule } from '@angular/common';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockInstrument } from 'types/stock';
+import { ColorIndicator } from 'types/color';
 
 HC_exporting(Highcharts);
 
@@ -33,7 +32,7 @@ HStockTools(Highcharts);
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
   standalone: true,
-  imports: [HighchartsChartModule, CommonModule],
+  imports: [HighchartsChartModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartComponent {
@@ -228,68 +227,132 @@ export class ChartComponent {
         },
       },
       {
-        type: 'ema',
-        color: 'red',
-        linkedTo: 'primary',
-        params: { period: 200 },
-        tooltip: {
-          pointFormat:
-            '<span style="color:{point.color}">●</span>' +
-            '<b style="font-size:12px"> {series.name} </b>' +
-            '<p style="font-size:12px">{point.y}</p>',
-        },
+        id: 'ema10',
+        type: 'spline',
+        name: 'EMA 10',
+        color: ColorIndicator.EMA10,
+        lineWidth: 1,
+        showInLegend: false,
       },
       {
-        type: 'ema',
-        color: 'gray',
-        linkedTo: 'primary',
-        params: { period: 30 },
-        lineWidth: 0.5,
-        tooltip: {
-          pointFormat:
-            '<span style="color:{point.color}">●</span>' +
-            '<b style="font-size:12px"> {series.name} </b>' +
-            '<p style="font-size:12px">{point.y}</p>',
-        },
+        id: 'ema20',
+        type: 'spline',
+        name: 'EMA 20',
+        color: ColorIndicator.EMA20,
+        lineWidth: 1,
+        showInLegend: false,
       },
       {
-        type: 'ema',
-        color: 'blue',
-        linkedTo: 'primary',
-        params: { period: 20 },
-        lineWidth: 0.5,
-        tooltip: {
-          pointFormat:
-            '<span style="color:{point.color}">●</span>' +
-            '<b style="font-size:12px"> {series.name} </b>' +
-            '<p style="font-size:12px">{point.y}</p>',
-        },
+        id: 'ema30',
+        type: 'spline',
+        name: 'EMA 30',
+        color: ColorIndicator.EMA30,
+        lineWidth: 1,
+        showInLegend: false,
       },
       {
-        type: 'sma',
-        color: 'rgba(250, 150, 150, 1)',
-        linkedTo: 'primary',
-        params: { period: 200 },
-        tooltip: {
-          pointFormat:
-            '<span style="color:{point.color}">●</span>' +
-            '<b style="font-size:12px"> {series.name} </b>' +
-            '<p style="font-size:12px">{point.y}</p>',
-        },
+        id: 'ema50',
+        type: 'spline',
+        name: 'EMA 50',
+        color: ColorIndicator.EMA50,
+        lineWidth: 1,
+        showInLegend: false,
       },
       {
-        type: 'sma',
-        color: 'orange',
-        linkedTo: 'primary',
-        params: { period: 10 },
-        lineWidth: 0.5,
-        tooltip: {
-          pointFormat:
-            '<span style="color:{point.color}">●</span>' +
-            '<b style="font-size:12px"> {series.name} </b>' +
-            '<p style="font-size:12px">{point.y}</p>',
-        },
+        id: 'ema100',
+        type: 'spline',
+        name: 'EMA 100',
+        color: ColorIndicator.EMA100,
+        lineWidth: 1,
+        showInLegend: false,
       },
+      {
+        id: 'ema200',
+        type: 'spline',
+        name: 'EMA 200',
+        color: ColorIndicator.EMA200,
+        lineWidth: 2,
+        showInLegend: false,
+      },
+      {
+        id: 'sma10',
+        type: 'spline',
+        name: 'SMA 10',
+        color: ColorIndicator.SMA10,
+        lineWidth: 1,
+        showInLegend: false,
+      },
+      {
+        id: 'sma200',
+        type: 'spline',
+        name: 'SMA 200',
+        color: ColorIndicator.SMA200,
+        lineWidth: 2,
+        showInLegend: false,
+      },
+      // {
+      //   type: 'ema',
+      //   color: 'red',
+      //   linkedTo: 'primary',
+      //   params: { period: 200 },
+      //   tooltip: {
+      //     pointFormat:
+      //       '<span style="color:{point.color}">●</span>' +
+      //       '<b style="font-size:12px"> {series.name} </b>' +
+      //       '<p style="font-size:12px">{point.y}</p>',
+      //   },
+      // },
+      // {
+      //   type: 'ema',
+      //   color: 'gray',
+      //   linkedTo: 'primary',
+      //   params: { period: 30 },
+      //   lineWidth: 0.5,
+      //   tooltip: {
+      //     pointFormat:
+      //       '<span style="color:{point.color}">●</span>' +
+      //       '<b style="font-size:12px"> {series.name} </b>' +
+      //       '<p style="font-size:12px">{point.y}</p>',
+      //   },
+      // },
+      // {
+      //   type: 'ema',
+      //   color: 'blue',
+      //   linkedTo: 'primary',
+      //   params: { period: 20 },
+      //   lineWidth: 0.5,
+      //   tooltip: {
+      //     pointFormat:
+      //       '<span style="color:{point.color}">●</span>' +
+      //       '<b style="font-size:12px"> {series.name} </b>' +
+      //       '<p style="font-size:12px">{point.y}</p>',
+      //   },
+      // },
+      // {
+      //   type: 'sma',
+      //   color: 'rgba(250, 150, 150, 1)',
+      //   linkedTo: 'primary',
+      //   params: { period: 200 },
+      //   tooltip: {
+      //     pointFormat:
+      //       '<span style="color:{point.color}">●</span>' +
+      //       '<b style="font-size:12px"> {series.name} </b>' +
+      //       '<p style="font-size:12px">{point.y}</p>',
+      //   },
+      // },
+      // {
+      //   type: 'sma',
+      //   color: 'orange',
+      //   linkedTo: 'primary',
+      //   params: { period: 10 },
+      //   lineWidth: 0.5,
+      //   tooltip: {
+      //     pointFormat:
+      //       '<span style="color:{point.color}">●</span>' +
+      //       '<b style="font-size:12px"> {series.name} </b>' +
+      //       '<p style="font-size:12px">{point.y}</p>',
+      //   },
+      // },
     ],
   };
 
@@ -309,7 +372,36 @@ export class ChartComponent {
   @Input()
   set data(value: any[]) {
     // this.chart?.zoomOut();
-    (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value;
+    if (value === null) {
+      return;
+    }
+
+    (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value[0];
+
+    if (value[1]) {
+      value[1].forEach((item: any) => {
+        const index = this.chartOptions.series?.findIndex((row: any) => row.id === item.id);
+        if (index !== -1 || index !== undefined) {
+          (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[index as number].data = item.data;
+        }
+      });
+    }
+
+    if (value[2]) {
+      value[2].forEach((item: any) => {
+        const index = this.chartOptions.series?.findIndex((row: any) => row.id === item.id);
+        if (index !== -1 || index !== undefined) {
+          (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[index as number].data = item.data;
+        }
+      });
+    }
+
+    console.log(this.chartOptions.series);
+
+    this.chart?.xAxis[0].setExtremes(
+      new Date().setMonth(new Date().getMonth() - 2).valueOf(),
+      new Date().setMonth(new Date().getMonth() + 1).valueOf()
+    );
 
     // this.updateExtremes
     // this.chart?.xAxis[0].setExtremes();
@@ -335,18 +427,28 @@ export class ChartComponent {
     setTimeout(() => {
       const getF = function (): Highcharts.AnnotationsShapesOptions[] {
         return value.map((item: any) => {
-          return item.points.map((data: any) => {
-            return {
-              // type: 'rect',
-              type: 'path',
-              dashStyle: item.dash ? 'Dash' : null,
-              fill: 'rgba(0,0,0,0)',
-              stroke: item.color,
-              strokeWidth: 1.5,
-              ry: Math.PI,
-              points: data,
-            };
-          });
+          return {
+            // type: 'rect',
+            type: 'path',
+            dashStyle: item.dash ? 'Dash' : null,
+            fill: 'rgba(0,0,0,0)',
+            stroke: item.color,
+            strokeWidth: 1.5,
+            ry: Math.PI,
+            points: item.points,
+          };
+          // return item.points.map((data: any) => {
+          //   return {
+          //     // type: 'rect',
+          //     type: 'path',
+          //     dashStyle: item.dash ? 'Dash' : null,
+          //     fill: 'rgba(0,0,0,0)',
+          //     stroke: item.color,
+          //     strokeWidth: 1.5,
+          //     ry: Math.PI,
+          //     points: data,
+          //   };
+          // }
         });
       };
 
@@ -364,7 +466,7 @@ export class ChartComponent {
       this.chart.addAnnotation({
         id: 0,
         draggable: '',
-        shapes: getF().flat(),
+        shapes: getF(),
 
         // infinityLine: {
         //   typeOptions: {

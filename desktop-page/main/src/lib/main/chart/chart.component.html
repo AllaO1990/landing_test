@@ -1,0 +1,44 @@
+<tui-loader class="loader" [overlay]="true" [showLoader]="(candles$ | async) === null">
+  <ng-container *ngIf="(candles$ | async); else empty">
+    <div class="chart">
+      <vt-chart
+        [consolidationZones]="consolidationZones$ | async"
+        [data]="data$ | async"
+        [selected]="selected$ | async"
+      ></vt-chart>
+    </div>
+    <div class="actions">
+      <lib-button-with-list
+        class="action"
+        [formControl]="controlEma"
+        [icon]="emaIcon"
+        [list]="emaList"
+        (opened)="onendedEma($event)">
+      </lib-button-with-list>
+
+      <lib-button-with-list
+        class="action"
+        [formControl]="controlSma"
+        [icon]="smaIcon"
+        [list]="smaList"
+        (opened)="onendedSma($event)">
+      </lib-button-with-list>
+    </div>
+  </ng-container>
+</tui-loader>
+
+<ng-template #emaIcon>
+  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
+    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">EMA</text>
+  </svg>
+</ng-template>
+
+<ng-template #smaIcon>
+  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
+    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">SMA</text>
+  </svg>
+</ng-template>
+
+<ng-template #empty>
+  <div class="empty">Загрузка...</div>
+</ng-template>
