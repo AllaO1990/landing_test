@@ -216,6 +216,7 @@ export class ChartComponent {
         data: [],
         id: 'primary',
         showInLegend: false,
+        opacity: 1,
         tooltip: {
           pointFormat:
             '<span style="color:{point.color}">●</span>' +
@@ -289,6 +290,9 @@ export class ChartComponent {
         color: ColorIndicator.SMA200,
         lineWidth: 2,
         showInLegend: false,
+        tooltip: {
+          pointFormat: '',
+        },
       },
       // {
       //   type: 'ema',
@@ -375,6 +379,8 @@ export class ChartComponent {
     if (value === null) {
       return;
     }
+
+    console.log(this.chart);
 
     (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value[0];
 
@@ -531,6 +537,18 @@ export class ChartComponent {
         shortMonths: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
       },
     });
+
+    // Highcharts.stockChart({
+    //   navigation: {
+    //     bindings: {
+    //       indicators: {
+    //         init() {
+    //           console.log(this);
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
   }
 
   chartEvent($event: Highcharts.Chart) {

@@ -1,6 +1,6 @@
 <tui-loader class="loader" [overlay]="true" [showLoader]="(candles$ | async) === null">
-  <ng-container *ngIf="(candles$ | async); else empty">
-    <div class="chart">
+  <div class="container" *ngIf="(candles$ | async); else empty">
+    <div class="charts">
       <vt-chart
         [consolidationZones]="consolidationZones$ | async"
         [data]="data$ | async"
@@ -24,7 +24,7 @@
         (opened)="onendedSma($event)">
       </lib-button-with-list>
     </div>
-  </ng-container>
+  </div>
 </tui-loader>
 
 <ng-template #emaIcon>
