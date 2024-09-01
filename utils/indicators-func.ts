@@ -1,0 +1,29 @@
+import { SeriesSplineOptions } from 'highcharts';
+
+export const indicatorGetUniq = (data: { id: string; interval: number; types: string[] }): string => {
+  return `${data.id}'◬'${data.interval}'◬'${data.types.join('◬')}`;
+};
+
+export const indicatorTransformToSeries = (
+  data: { dates: string[] } & {
+    [key: string]: number[];
+  }
+): SeriesSplineOptions[] => {
+  const series: { id: string; type: 'spline'; data: [number, number][] }[] = Object.keys(data)
+    .filter((item: string) => item !== 'dates')
+    .map((item: string) => ({
+      id: item,
+      type: 'spline',
+      data: [],
+    }));
+
+  return data.dates.reduce((acc, item: string, index: number) => {
+    const valueOf = new Date(item).valueOf();
+
+    acc.forEach((row: { id: string; data: [number, number][] }) => {
+      row.data.push([valueOf, data[row.id][index]]);
+    });
+
+    return acc;
+  }, series);
+};

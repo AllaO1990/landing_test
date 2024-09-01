@@ -28,7 +28,7 @@ export class ChartStore extends ComponentStore<ChartState> {
     });
   }
 
-  public updateCandles = this.updater((state: ChartState, data: { candles: any; index: number }) => {
+  public updateCandles = this.updater((state: ChartState, data: { candles: any[]; index: number }) => {
     const candlesArray = state.candles;
     if (data.index && candlesArray && data.candles) {
       for (let i = 0; i < data.candles.length; i++) {

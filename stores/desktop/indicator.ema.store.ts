@@ -6,6 +6,7 @@ import { Response } from 'types/response';
 import { IndicatorEmaParams, IndicatorEmaState } from 'types/indicator-ema';
 import { map } from 'rxjs/operators';
 import { SeriesSplineOptions } from 'highcharts';
+import { indicatorGetUniq, indicatorTransformToSeries } from 'utils/indicators-func';
 
 export class IndicatorEmaStore extends ComponentStore<IndicatorEmaState> {
   private _queue: Queue<any> = new Queue(3);
@@ -29,8 +30,7 @@ export class IndicatorEmaStore extends ComponentStore<IndicatorEmaState> {
     stream$.pipe(
       switchMap((data: IndicatorEmaParams | null) =>
         this._getIndicator(data).pipe(tap((series) => this.updateSeries(series)))
-      ),
-      tap((data) => console.log(data))
+      )
     )
   );
 
@@ -39,40 +39,22 @@ export class IndicatorEmaStore extends ComponentStore<IndicatorEmaState> {
       return of(null);
     }
 
-    const uniqKey = this._getUniq(data);
+    const uniqKey = indicatorGetUniq(data);
     const value = this._queue.getValue(uniqKey);
 
     if (value) {
       return of(value);
     }
 
+    if (data.types.length === 0) {
+      this._queue.setValue(uniqKey, []);
+
+      return of([]);
+    }
+
     return this._api.getIndicatorEma(data).pipe(
-      map((res: Response<any>) => this._transformToSeries(res.data)),
+      map((res: Response<any>) => indicatorTransformToSeries(res.data)),
       tap((value: SeriesSplineOptions[]) => this._queue.setValue(uniqKey, value))
     );
-  }
-
-  private _getUniq(data: IndicatorEmaParams): string {
-    return `${data.id}'◬'${data.interval}'◬'${data.types.join('◬')}`;
-  }
-
-  private _transformToSeries(data: { dates: string[] } & { [key: string]: number[] }): SeriesSplineOptions[] {
-    const series: { id: string; type: 'spline'; data: [number, number][] }[] = Object.keys(data)
-      .filter((item: string) => item !== 'dates')
-      .map((item: string) => ({
-        id: item,
-        type: 'spline',
-        data: [],
-      }));
-
-    return data.dates.reduce((acc, item: string, index: number) => {
-      const valueOf = new Date(item).valueOf();
-
-      acc.forEach((row: { id: string; data: [number, number][] }) => {
-        row.data.push([valueOf, data[row.id][index]]);
-      });
-
-      return acc;
-    }, series);
   }
 }

@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { Idea } from 'types/idea';
 import { Response } from 'types/response';
-import { Stock, StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
+import { Stock, StockId, StockPrice, WithLastPrice } from 'types/stock';
 
 import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { Position } from 'types/position';
@@ -14,8 +14,6 @@ export abstract class DesktopService {
   public abstract getStockList(): Observable<Response<Stock>>;
 
   public abstract getList(): Observable<unknown>;
-
-  public abstract getStock(id: StockId): Observable<StockInstrument[]>;
 
   public abstract getInstrumentsLists(): Observable<Response<any>>;
 

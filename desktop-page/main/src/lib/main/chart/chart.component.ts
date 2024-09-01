@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ChartComponent } from '@ui/chart';
-import { combineLatest, debounceTime, Observable, tap } from 'rxjs';
+import { combineLatest, debounceTime, Observable, shareReplay } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
@@ -10,6 +10,7 @@ import { CHART_EMA_LIST, CHART_SMA_LIST } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { sortText } from 'utils/sort-text';
 import { TuiLoaderModule } from '@taiga-ui/core';
+import { map } from 'rxjs/operators';
 
 interface IndicatorListItem {
   name: string;
@@ -27,16 +28,15 @@ interface IndicatorListItem {
 export class MainChartComponent implements OnInit {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
-  readonly candles$: Observable<any | null> = this._store.candles$;
-  readonly data$: Observable<any | null> = combineLatest([
-    this._store.candles$,
-    this._store.indicatorEma$,
-    this._store.indicatorSma$,
-  ]).pipe(
+  readonly candles$: Observable<any | null> = this._store.candles$.pipe(shareReplay(1));
+  readonly indicators$: Observable<any[]> = combineLatest([this._store.indicatorEma$, this._store.indicatorSma$]).pipe(
     debounceTime(0),
-    tap((data) => console.log(data))
+    map((data: any[][]) => data.flat())
   );
   readonly consolidationZones$: Observable<any | null> = this._store.consolidationZones$;
+  readonly text$: Observable<string | null> = this._store.indicatorAtr$.pipe(
+    map((value: { atr: number }) => value && `1 ATR: ${value.atr}`)
+  );
 
   emaList: IndicatorListItem[] = CHART_EMA_LIST;
   isOpenEma = false;

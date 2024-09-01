@@ -3,8 +3,10 @@
     <div class="charts">
       <vt-chart
         [consolidationZones]="consolidationZones$ | async"
-        [data]="data$ | async"
+        [data]="candles$ | async"
+        [indicators]="indicators$ | async"
         [selected]="selected$ | async"
+        [text]="text$ | async"
       ></vt-chart>
     </div>
     <div class="actions">

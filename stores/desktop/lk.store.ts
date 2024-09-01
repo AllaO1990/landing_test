@@ -54,6 +54,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   readonly indicatorSma$: Observable<any[]> = this._indicatorSmaStore.series$;
 
+  readonly indicatorAtr$: Observable<any> = this._indicatorAtrStore.selected$;
+
   public readonly stockActive$: Observable<StockId[] | null> = this.select(
     this._stockListStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
     this._entryStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
@@ -105,37 +107,36 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this.onChangeEventEntry(this.event$);
     this.onChangeEventPosition(this.event$);
 
+    const stockInstrumentId$ = this._stockListStore.selected$.pipe(
+      filter((selected: StockInstrument | null): selected is StockInstrument => selected !== null),
+      map((instrument: StockInstrument) => instrument.id.toString())
+    );
+
     this._indicatorEmaStore.load(
-      combineLatest([
-        this._stockListStore.selected$.pipe(
-          filter((selected: StockInstrument | null): selected is StockInstrument => selected !== null),
-          map((instrument: StockInstrument) => instrument.id.toString())
-        ),
-        this._indicatorEmaStore.selected$.pipe(
-          filter((value: string[] | null): value is string[] => !!(value && value.length))
-        ),
-        this._range$,
-      ]).pipe(
-        map(([id, types, period]: [string, string[], DateRange]) =>
-          Object.assign({ id }, { types }, { period }, { interval: Timeframe.CANDLE_INTERVAL_DAY })
-        )
+      combineLatest([stockInstrumentId$, this._indicatorEmaStore.selected$, this._range$]).pipe(
+        map(([id, types, period]: [string, string[], DateRange]) => ({
+          id,
+          types,
+          period,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+        }))
       )
     );
 
     this._indicatorSmaStore.load(
-      combineLatest([
-        this._stockListStore.selected$.pipe(
-          filter((selected: StockInstrument | null): selected is StockInstrument => selected !== null),
-          map((instrument: StockInstrument) => instrument.id.toString())
-        ),
-        this._indicatorSmaStore.selected$.pipe(
-          filter((value: string[] | null): value is string[] => !!(value && value.length))
-        ),
-        this._range$,
-      ]).pipe(
-        map(([id, types, period]: [string, string[], DateRange]) =>
-          Object.assign({ id }, { types }, { period }, { interval: Timeframe.CANDLE_INTERVAL_DAY })
-        )
+      combineLatest([stockInstrumentId$, this._indicatorSmaStore.selected$, this._range$]).pipe(
+        map(([id, types, period]: [string, string[], DateRange]) => ({
+          id,
+          types,
+          period,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+        }))
+      )
+    );
+
+    this._indicatorAtrStore.load(
+      stockInstrumentId$.pipe(
+        map((id: string) => ({ id, interval: Timeframe.CANDLE_INTERVAL_DAY, date: new Date().toISOString() }))
       )
     );
   }

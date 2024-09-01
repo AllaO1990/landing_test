@@ -1,10 +1,20 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Input,
+  NgZone,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 
 import * as Highcharts from 'highcharts/highstock';
 
 import HC_exporting from 'highcharts/modules/exporting';
 
-import { HighchartsChartModule } from 'highcharts-angular';
+import { HighchartsChartComponent, HighchartsChartModule } from 'highcharts-angular';
 import HIndicatorsAll from 'highcharts/indicators/indicators-all';
 import HAnnotationsAdvanced from 'highcharts/modules/annotations-advanced';
 import HDragPanes from 'highcharts/modules/drag-panes';
@@ -12,10 +22,12 @@ import HDraggablePoints from 'highcharts/modules/draggable-points';
 import HFullScreen from 'highcharts/modules/full-screen';
 import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
-import { DesktopLkStore } from 'stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockInstrument } from 'types/stock';
 import { ColorIndicator } from 'types/color';
+import { defer, map, Observable, ReplaySubject, Subject, switchMap, take } from 'rxjs';
+import { SeriesSplineOptions } from 'highcharts';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CHART_INDICATORS_NAME } from './chart.constants';
 
 HC_exporting(Highcharts);
 
@@ -35,8 +47,18 @@ HStockTools(Highcharts);
   imports: [HighchartsChartModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartComponent {
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+export class ChartComponent implements OnInit {
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly _ngZone: NgZone = inject(NgZone);
+
+  private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
+
+  private readonly _indicators$: Subject<Highcharts.SeriesSplineOptions[] | null> = new ReplaySubject(1);
+  private readonly _candlestick$: Subject<Highcharts.SeriesCandlestickOptions> = new ReplaySubject(1);
+  private readonly _text$: Subject<string | number | null> = new ReplaySubject(1);
+
+  private _text: Highcharts.SVGElement | null = null;
+
   #zoomMode: 'x' | 'y' | 'xy' = 'xy';
   #prevXExtremes: [number | undefined, number | undefined] = [undefined, undefined];
   #zoomDirectionOut = 1;
@@ -51,17 +73,13 @@ export class ChartComponent {
     boost: { useGPUTranslations: true, usePreallocated: true },
     navigator: { enabled: false },
     credits: { enabled: false },
+    legend: { enabled: false },
     xAxis: {
       ordinal: false,
-      // endOnTick: true,
-      // overscroll: '1%',
-
-      // max: 25,
       maxPadding: 0.5,
       endOnTick: true,
     },
     yAxis: {
-      // scrollbar: { enabled: true },
       endOnTick: false,
       startOnTick: false,
       crosshair: {
@@ -78,62 +96,13 @@ export class ChartComponent {
     chart: {
       animation: false,
       zooming: {
-        // type: 'y',
-        // key: 'ctrl',
         mouseWheel: { type: 'x' },
         resetButton: { position: { x: -60 } },
       },
       panning: { enabled: true, type: 'xy' },
-      // panKey: 'shift',
-    },
-    plotOptions: {
-      series: {
-        point: {
-          events: {
-            click: (event) => {
-              // Do nothing
-            },
-            mouseOver: () => {
-              // Do nothing
-            },
-          },
-        },
-      },
-      candlestick: {
-        color: '#ff0043',
-        lineColor: '#ff0043',
-        upColor: '#00a281',
-        upLineColor: '#00a281',
-        allowPointSelect: true,
-      },
-      ema: {
-        // color: 'red',
-        marker: { enabled: false },
-        lastVisiblePrice: {
-          enabled: true,
-          label: {
-            enabled: false,
-            formatter: (value: number) => {
-              return value.toFixed(2);
-            },
-          },
-        },
-      },
-      sma: {
-        // color: 'green',
-        marker: { enabled: false },
-        lastVisiblePrice: {
-          enabled: false,
-          label: {
-            enabled: true,
-            formatter: (value: number) => {
-              return value.toFixed(2);
-            },
-          },
-        },
-      },
     },
     rangeSelector: {
+      inputEnabled: false,
       allButtonsEnabled: true,
       buttons: [
         {
@@ -207,12 +176,56 @@ export class ChartComponent {
         return position;
       },
     },
-    legend: { enabled: false },
-
+    plotOptions: {
+      candlestick: {
+        color: '#ff0043',
+        lineColor: '#ff0043',
+        upColor: '#00a281',
+        upLineColor: '#00a281',
+        allowPointSelect: true,
+        dataGrouping: {
+          forced: true,
+          enabled: true,
+          units: [
+            ['day', [1]],
+            ['week', [1]],
+            ['month', [6]],
+            ['year', null],
+          ],
+        },
+      },
+      spline: {
+        allowPointSelect: false,
+        marker: { enabled: false },
+        label: { enabled: false },
+        lastPrice: { enabled: false },
+        lastVisiblePrice: {
+          enabled: false,
+        },
+        showInLegend: false,
+        showInNavigator: false,
+        tooltip: {
+          followPointer: false,
+          followTouchMove: false,
+        },
+      },
+      series: {
+        point: {
+          events: {
+            click: (event) => {
+              // Do nothing
+            },
+            mouseOver: () => {
+              // Do nothing
+            },
+          },
+        },
+      },
+    },
     series: [
       {
         type: 'candlestick',
-        name: 'USD to EUR',
+        name: '',
         data: [],
         id: 'primary',
         showInLegend: false,
@@ -294,71 +307,22 @@ export class ChartComponent {
           pointFormat: '',
         },
       },
-      // {
-      //   type: 'ema',
-      //   color: 'red',
-      //   linkedTo: 'primary',
-      //   params: { period: 200 },
-      //   tooltip: {
-      //     pointFormat:
-      //       '<span style="color:{point.color}">●</span>' +
-      //       '<b style="font-size:12px"> {series.name} </b>' +
-      //       '<p style="font-size:12px">{point.y}</p>',
-      //   },
-      // },
-      // {
-      //   type: 'ema',
-      //   color: 'gray',
-      //   linkedTo: 'primary',
-      //   params: { period: 30 },
-      //   lineWidth: 0.5,
-      //   tooltip: {
-      //     pointFormat:
-      //       '<span style="color:{point.color}">●</span>' +
-      //       '<b style="font-size:12px"> {series.name} </b>' +
-      //       '<p style="font-size:12px">{point.y}</p>',
-      //   },
-      // },
-      // {
-      //   type: 'ema',
-      //   color: 'blue',
-      //   linkedTo: 'primary',
-      //   params: { period: 20 },
-      //   lineWidth: 0.5,
-      //   tooltip: {
-      //     pointFormat:
-      //       '<span style="color:{point.color}">●</span>' +
-      //       '<b style="font-size:12px"> {series.name} </b>' +
-      //       '<p style="font-size:12px">{point.y}</p>',
-      //   },
-      // },
-      // {
-      //   type: 'sma',
-      //   color: 'rgba(250, 150, 150, 1)',
-      //   linkedTo: 'primary',
-      //   params: { period: 200 },
-      //   tooltip: {
-      //     pointFormat:
-      //       '<span style="color:{point.color}">●</span>' +
-      //       '<b style="font-size:12px"> {series.name} </b>' +
-      //       '<p style="font-size:12px">{point.y}</p>',
-      //   },
-      // },
-      // {
-      //   type: 'sma',
-      //   color: 'orange',
-      //   linkedTo: 'primary',
-      //   params: { period: 10 },
-      //   lineWidth: 0.5,
-      //   tooltip: {
-      //     pointFormat:
-      //       '<span style="color:{point.color}">●</span>' +
-      //       '<b style="font-size:12px"> {series.name} </b>' +
-      //       '<p style="font-size:12px">{point.y}</p>',
-      //   },
-      // },
     ],
   };
+
+  @ViewChild(HighchartsChartComponent, { static: true })
+  private readonly _highchartsChart: HighchartsChartComponent | null = null;
+
+  private _chart$: Observable<Highcharts.Chart> = defer(() => {
+    if (this._highchartsChart) {
+      return this._highchartsChart.chartInstance;
+    }
+
+    return this._ngZone.onStable.asObservable().pipe(
+      take(1),
+      switchMap((_) => this._chart$)
+    );
+  });
 
   @Input()
   set selected(value: StockInstrument | null) {
@@ -369,57 +333,18 @@ export class ChartComponent {
   }
 
   @Input()
-  set selectedIdea(value: any) {
-    return;
+  set data(value: [string | number, number, number, number, number][]) {
+    this._candlestick$.next({ type: 'candlestick', data: value || [] });
   }
 
   @Input()
-  set data(value: any[]) {
-    // this.chart?.zoomOut();
-    if (value === null) {
-      return;
-    }
+  set indicators(value: SeriesSplineOptions[] | null) {
+    this._indicators$.next(value);
+  }
 
-    console.log(this.chart);
-
-    (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].data = value[0];
-
-    if (value[1]) {
-      value[1].forEach((item: any) => {
-        const index = this.chartOptions.series?.findIndex((row: any) => row.id === item.id);
-        if (index !== -1 || index !== undefined) {
-          (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[index as number].data = item.data;
-        }
-      });
-    }
-
-    if (value[2]) {
-      value[2].forEach((item: any) => {
-        const index = this.chartOptions.series?.findIndex((row: any) => row.id === item.id);
-        if (index !== -1 || index !== undefined) {
-          (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[index as number].data = item.data;
-        }
-      });
-    }
-
-    console.log(this.chartOptions.series);
-
-    this.chart?.xAxis[0].setExtremes(
-      new Date().setMonth(new Date().getMonth() - 2).valueOf(),
-      new Date().setMonth(new Date().getMonth() + 1).valueOf()
-    );
-
-    // this.updateExtremes
-    // this.chart?.xAxis[0].setExtremes();
-    // this.chart?.yAxis[0].setExtremes();
-
-    this.chart?.update(this.chartOptions);
-    const xAxis = this.chart?.xAxis[0];
-    if (xAxis) {
-      this.#prevXExtremes = [xAxis.min, xAxis.max];
-    }
-    // this.chart?.xAxis[0].setExtremes(undefined, undefined);
-    // this.chart?.yAxis[0].setExtremes(undefined, undefined);
+  @Input()
+  set text(value: string | number | null) {
+    this._text$.next(value);
   }
 
   @Input()
@@ -537,18 +462,77 @@ export class ChartComponent {
         shortMonths: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
       },
     });
+  }
 
-    // Highcharts.stockChart({
-    //   navigation: {
-    //     bindings: {
-    //       indicators: {
-    //         init() {
-    //           console.log(this);
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
+  ngOnInit(): void {
+    const chart$ = this._chart$.pipe(takeUntilDestroyed(this._destroyRef));
+
+    chart$
+      .pipe(
+        switchMap((chart: Highcharts.Chart) =>
+          this._indicators$
+            .asObservable()
+            .pipe(map((indicators: Highcharts.SeriesSplineOptions[] | null) => ({ chart, indicators })))
+        )
+      )
+      .subscribe(({ chart, indicators }) => this._updateChartIndicators(chart, indicators));
+
+    chart$
+      .pipe(
+        switchMap((chart: Highcharts.Chart) =>
+          this._candlestick$
+            .asObservable()
+            .pipe(map((candlestick: Highcharts.SeriesCandlestickOptions) => ({ chart, candlestick })))
+        )
+      )
+      .subscribe(({ chart, candlestick }) => this._updateChartCandlestick(chart, candlestick));
+
+    chart$
+      .pipe(
+        switchMap((chart: Highcharts.Chart) =>
+          this._text$.asObservable().pipe(map((text: string | number | null) => ({ chart, text })))
+        )
+      )
+      .subscribe(({ chart, text }) => {
+        console.log(chart);
+
+        if (this._text !== null) {
+          this._text.destroy();
+          this._text = null;
+        }
+
+        if (text === null) {
+          return;
+        }
+
+        this._text = chart.renderer
+          .g('customText')
+          .translate(chart.plotWidth, chart.plotTop)
+          .attr({ opacity: 0 })
+          .add();
+
+        let textSvg: Highcharts.SVGElement | null = chart.renderer
+          .text(text.toString(), 0, 0)
+          .attr({
+            'font-size': '0.8em',
+          })
+          .add(this._text);
+        const textSvgWidth = textSvg.getBBox().width + 16;
+
+        textSvg.destroy();
+        textSvg = null;
+
+        chart.renderer.rect(0, 0, textSvgWidth, 22, 2).attr({ fill: '#e6e9ff', 'z-index': 3 }).add(this._text);
+        chart.renderer
+          .text(text.toString(), 8, 15.5)
+          .attr({
+            'font-size': '0.8em',
+            'z-index': 5,
+          })
+          .add(this._text);
+
+        this._text.translate(chart.plotWidth - textSvgWidth - 50, 10).attr({ opacity: 1 });
+      });
   }
 
   chartEvent($event: Highcharts.Chart) {
@@ -649,5 +633,32 @@ export class ChartComponent {
       // xAxis.setExtremes(xAxis.min, xAxis.max);
     }
     this.#prevXExtremes = [xAxis.min, xAxis.max];
+  }
+
+  private _updateChartIndicators(chart: Highcharts.Chart, indicators: Highcharts.SeriesSplineOptions[] | null): void {
+    this._indicatorsName.forEach((name: string) => {
+      const series = chart.get(name);
+      if (series) {
+        if (indicators === null) {
+          (series as Highcharts.Series).data = [];
+        } else {
+          const indicator = indicators.find((item) => item.id === name) || { type: 'spline', data: [] };
+          (series as Highcharts.Series).update(indicator);
+        }
+      }
+    });
+  }
+
+  private _updateChartCandlestick(chart: Highcharts.Chart, candlestick: Highcharts.SeriesCandlestickOptions): void {
+    const series = chart.get('primary');
+
+    if (series) {
+      (series as Highcharts.Series).update(candlestick);
+
+      chart.xAxis[0].setExtremes(
+        new Date().setMonth(new Date().getMonth() - 2).valueOf(),
+        new Date().setMonth(new Date().getMonth() + 1).valueOf()
+      );
+    }
   }
 }
