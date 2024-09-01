@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
+import { combineLatest, forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ActiveZone } from 'types/chart';
 import { EventSelected } from 'types/events';
@@ -15,11 +15,19 @@ import { StockListStore } from './stock-list.store';
 import { PositionStore } from './position.store';
 import { Position } from 'types/position';
 import { breakArray } from 'utils/break-array';
+import { IndicatorAtrStore } from './indicator.atr.store';
+import { IndicatorEmaStore } from './indicator.ema.store';
+import { DateRange } from 'types/date-range';
+import { GLOBAL_DATE_RANGE } from 'tokens/desktop';
+import { IndicatorSmaStore } from './indicator.sma.store';
+import { Timeframe } from 'types/timeframe';
 
-const TIMER_INTERVAL = 0.1 * 60 * 60 * 1000;
+const TIMER_INTERVAL = 60 * 1000;
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
+  private readonly _range$: Observable<DateRange> = inject(GLOBAL_DATE_RANGE);
+
   public readonly event$: Observable<StockEvent | null> = this.select((state: DesktopLkState) => state.event);
 
   public readonly selectedInstrument$: Observable<StockInstrument | null> = this._stockListStore.selected$;
@@ -42,11 +50,16 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public readonly consolidationZones$: Observable<ActiveZone[] | null> = this._chartStore.consolidationZones$;
 
+  readonly indicatorEma$: Observable<any[]> = this._indicatorEmaStore.series$;
+
+  readonly indicatorSma$: Observable<any[]> = this._indicatorSmaStore.series$;
+
+  readonly indicatorAtr$: Observable<any> = this._indicatorAtrStore.selected$;
+
   public readonly stockActive$: Observable<StockId[] | null> = this.select(
     this._stockListStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
     this._entryStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
-    this._positionStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
-    (stock: StockId[], entry: StockId[], position: StockId[]) => [...stock, ...entry, ...position],
+    (stock: StockId[], entry: StockId[]) => [...stock, ...entry],
     { debounce: true }
   );
 
@@ -59,7 +72,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     private readonly _stockListStore: StockListStore,
     private readonly _entryStore: EntryStore,
     private readonly _positionStore: PositionStore,
-    private readonly _chartStore: ChartStore
+    private readonly _chartStore: ChartStore,
+    private readonly _indicatorAtrStore: IndicatorAtrStore,
+    private readonly _indicatorEmaStore: IndicatorEmaStore,
+    private readonly _indicatorSmaStore: IndicatorSmaStore
   ) {
     super({
       event: null,
@@ -70,7 +86,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._stockListStore.loadList();
     this._stockListStore.load();
     this._entryStore.load(timer(0, TIMER_INTERVAL).pipe(map(() => void 0)));
-    this._positionStore.load();
+    this._positionStore.load(timer(0, TIMER_INTERVAL).pipe(map(() => void 0)));
 
     this.loadActivePrice(
       this._timer(this.stockActive$, 60 * 1000).pipe(map((value: { source: StockId[] | null }) => value.source))
@@ -91,12 +107,38 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this.onChangeEventEntry(this.event$);
     this.onChangeEventPosition(this.event$);
 
-    // this._stockListStore.selected$
-    //   .pipe(
-    //     filter((selected: StockInstrument | null): selected is StockInstrument => !!selected),
-    //     switchMap((selected: StockInstrument) => this._api.getWatchlistConsolidationZone(selected.id))
-    //   )
-    //   .subscribe((res) => console.log(res));
+    const stockInstrumentId$ = this._stockListStore.selected$.pipe(
+      filter((selected: StockInstrument | null): selected is StockInstrument => selected !== null),
+      map((instrument: StockInstrument) => instrument.id.toString())
+    );
+
+    this._indicatorEmaStore.load(
+      combineLatest([stockInstrumentId$, this._indicatorEmaStore.selected$, this._range$]).pipe(
+        map(([id, types, period]: [string, string[], DateRange]) => ({
+          id,
+          types,
+          period,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+        }))
+      )
+    );
+
+    this._indicatorSmaStore.load(
+      combineLatest([stockInstrumentId$, this._indicatorSmaStore.selected$, this._range$]).pipe(
+        map(([id, types, period]: [string, string[], DateRange]) => ({
+          id,
+          types,
+          period,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+        }))
+      )
+    );
+
+    this._indicatorAtrStore.load(
+      stockInstrumentId$.pipe(
+        map((id: string) => ({ id, interval: Timeframe.CANDLE_INTERVAL_DAY, date: new Date().toISOString() }))
+      )
+    );
   }
 
   public updateSelect = this.updater((state: DesktopLkState, selected: any) => ({ ...state, selected }));
@@ -106,6 +148,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public updatePrice = this.updater(
     (state: DesktopLkState, price: StockPrice<WithLastPrice>): DesktopLkState => ({ ...state, price })
   );
+
+  public updateIndicatorEmaSelected = this._indicatorEmaStore.updateSelected;
+
+  public updateIndicatorSmaSelected = this._indicatorSmaStore.updateSelected;
 
   public readonly loadActivePrice = this.effect((stream$: Observable<StockId[] | null>) =>
     stream$.pipe(

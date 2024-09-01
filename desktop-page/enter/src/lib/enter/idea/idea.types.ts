@@ -1,28 +1,26 @@
-export interface IdeaTarget {
-  id: string;
-  date: string | null;
-  price: number;
-  profit: number;
-  profitPercent: number;
-  amount: number;
-  amountPercent: number;
-  depositShare: number;
-  checked: boolean;
-}
-
-export interface IdeaEntry {
-  id: string;
-  date: string | null;
-  depositShare: number;
-  price: number;
-  quantity: number;
-  totalPrice: number;
-  checked: boolean;
-}
+import { StockPositionEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 
 export interface IdeaTotalTarget {
   profitPercent: number;
   profit: number;
   depositShare: number;
   amount: number;
+}
+
+export interface IdeaEntry extends StockPositionEntry {
+  id: number;
+}
+
+export interface IdeaTarget extends StockPositionTarget {
+  id: number;
+  date: string | null;
+  profit: number;
+}
+
+export interface IdeaStop extends StockPositionStop {
+  id: number;
+  date: string | null;
+  loss: number;
+  amount: number;
+  amountPercent: number;
 }

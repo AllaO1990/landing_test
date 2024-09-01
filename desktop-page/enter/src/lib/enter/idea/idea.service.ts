@@ -1,39 +1,45 @@
 import { Injectable } from '@angular/core';
-import { StockPositionEntry, StockPositionTarget } from 'types/position';
-import { IdeaEntry, IdeaTarget, IdeaTotalTarget } from './idea.types';
+import { IdeaEntry, IdeaStop, IdeaTarget, IdeaTotalTarget } from './idea.types';
+import { FormControl } from '@angular/forms';
+import { Position } from 'types/position';
 
 @Injectable()
 export class IdeaService {
-  getListEntry(list: StockPositionEntry[]): IdeaEntry[] {
-    return list.map((item: StockPositionEntry, index: number) => ({
-      id: index.toString(),
+  getIdeaEntries(position: Position): IdeaEntry[] {
+    return position.entries.map((item, index: number) => ({
+      id: index,
       ...item,
-      date: item.date,
-      checked: !!item.date,
     }));
   }
 
-  getListTarget(
-    list: StockPositionTarget[],
-    averagePrice: number,
-    fullQuantity: number,
-    multiplier: number
-  ): IdeaTarget[] {
-    return list.map((item: StockPositionTarget, index: number) => ({
-      id: index.toString(),
-      ...item,
+  getIdeaTargets(position: Position): IdeaTarget[] {
+    return position.targets.map((item, index: number) => ({
+      id: index,
       date: item.stopDate,
-      profit: (item.price - averagePrice) * item.amount * multiplier,
-      amountPercent: item.amount / fullQuantity,
-      checked: !!item.stopDate,
+      profit: (item.price - position.entryAveragePrice) * item.amount * position.multiplier,
+      ...item,
     }));
+  }
+
+  getIdeaStops(position: Position): IdeaStop[] {
+    return [
+      {
+        ...position.stop,
+        // position.stop.stopCandleDate,
+        date: null,
+        id: 0,
+        loss: (position.stop.price - position.entryAveragePrice) * position.inPositionQuantity,
+        amount: position.inPositionQuantityValue,
+        amountPercent: position.inPositionQuantityValue / position.fullPositionQuantity,
+      },
+    ];
   }
 
   getTotalTarget(list: IdeaTarget[], totalPrice: number): IdeaTotalTarget {
     const total = list.reduce(
       (acc, item: IdeaTarget) => {
         return {
-          profitPercent: 0,
+          profitPercent: acc.profitPercent,
           depositShare: acc.depositShare + item.depositShare,
           amount: acc.amount + item.amount,
           profit: acc.profit + item.profit,
@@ -45,5 +51,20 @@ export class IdeaService {
     total.profitPercent = total.profit / totalPrice;
 
     return total;
+  }
+
+  getControlFromList(list: { date: string | null }[]): {
+    [key: string]: FormControl<boolean>;
+  } {
+    return list.reduce((acc: { [key: string]: FormControl<boolean> }, item: { date: string | null }, index: number) => {
+      acc[index] = new FormControl<boolean>(
+        { value: !!item.date, disabled: true },
+        {
+          nonNullable: true,
+        }
+      );
+
+      return acc;
+    }, {});
   }
 }

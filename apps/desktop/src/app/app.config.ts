@@ -6,7 +6,7 @@ import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { DesktopApiService } from '@desktop-data/desktop-data';
 import { TUI_BUTTON_OPTIONS, TUI_NUMBER_FORMAT, TuiRootModule } from '@taiga-ui/core';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
-import { DESKTOP_API, DESKTOP_ENVIRONMENT, QUERY_PARAMS } from 'tokens/desktop';
+import { DESKTOP_API, DESKTOP_ENVIRONMENT, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
 import { environment } from '../environments/environment';
 import { routes } from './app-routing.module';
@@ -52,5 +52,6 @@ export const appConfig: ApplicationConfig = {
         decimalSeparator: '.',
       },
     },
+    GlobalDateRangeService,
   ],
 };

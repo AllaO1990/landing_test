@@ -1,10 +1,7 @@
-export interface ActionEntryItem {
+import { StockPositionEntry, StockPositionTarget } from 'types/position';
+
+export interface ActionEntry extends StockPositionEntry {
   id: string;
-  date: string | null;
-  price: number;
-  quantity: number;
-  totalPrice: number;
-  depositShare: number;
 }
 
 export interface ActionTotalEntry {
@@ -14,15 +11,12 @@ export interface ActionTotalEntry {
   depositShare: number;
 }
 
-export interface ActionOutItem {
+export interface ActionOut extends StockPositionTarget {
   id: string;
   date: string | null;
-  price: number;
   quantity: number;
   totalPrice: number;
   profit: number;
-  profitPercent: number;
-  depositShare: number;
   broker: string | null;
 }
 

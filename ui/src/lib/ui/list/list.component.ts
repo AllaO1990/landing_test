@@ -33,12 +33,12 @@ import { PolymorpheusContent, PolymorpheusModule } from '@tinkoff/ng-polymorpheu
   styleUrl: './list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListComponent {
+export class ListComponent<T> {
   get template(): TemplateRef<any> {
     return this.item ? this.item.template : this.simple;
   }
 
-  @Input() list: { id: StockId }[] | null = null;
+  @Input() list: T[] | null = null;
 
   @Input() itemSize = 28;
 

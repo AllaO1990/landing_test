@@ -3,3 +3,6 @@ export * from './stock-list.store';
 export * from './entry.store';
 export * from './chart-store';
 export * from './position.store';
+export * from './indicator.atr.store';
+export * from './indicator.ema.store';
+export * from './indicator.sma.store';

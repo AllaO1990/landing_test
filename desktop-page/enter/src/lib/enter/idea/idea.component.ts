@@ -1,13 +1,18 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { DatePipe, JsonPipe, NgIf } from '@angular/common';
-import { TUI_NUMBER_FORMAT, TuiButtonModule, TuiFormatNumberPipeModule, TuiSvgModule } from '@taiga-ui/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { StockId } from 'types/stock';
+import {
+  TUI_NUMBER_FORMAT,
+  TuiButtonModule,
+  TuiFormatNumberPipeModule,
+  TuiLoaderModule,
+  TuiSvgModule,
+} from '@taiga-ui/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/list';
 import { CheckComponent } from '@ui/check';
 import { Position } from 'types/position';
 import { IdeaService } from './idea.service';
-import { IdeaEntry, IdeaTarget, IdeaTotalTarget } from './idea.types';
+import { IdeaEntry, IdeaStop, IdeaTarget, IdeaTotalTarget } from './idea.types';
 
 @Component({
   selector: 'lib-enter-idea',
@@ -29,6 +34,7 @@ import { IdeaEntry, IdeaTarget, IdeaTotalTarget } from './idea.types';
     HeaderComponent,
     ItemDirective,
     CheckComponent,
+    TuiLoaderModule,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
@@ -46,74 +52,48 @@ import { IdeaEntry, IdeaTarget, IdeaTotalTarget } from './idea.types';
 })
 export class EnterIdeaComponent {
   private readonly _service: IdeaService = inject(IdeaService);
-  public readonly itemHeight = 28;
-  public priceIncrement = 2;
+  readonly itemHeight = 28;
+  priceIncrement = 2;
+  inPositionQuantityValue = 0;
+  entryAveragePrice = 0;
 
   @Input()
   set data(value: Position | null) {
     if (value) {
       this.priceIncrement = value.priceIncrement;
+      this.inPositionQuantityValue = value.inPositionQuantityValue;
+      this.entryAveragePrice = value.entryAveragePrice;
 
-      this.listEntry = this._service.getListEntry(value.entries);
-      this.listTarget = this._service.getListTarget(
-        value.targets,
-        value.entryAveragePrice,
-        value.fullPositionQuantityValue,
-        value.multiplier
-      );
+      this.listEntry = this._service.getIdeaEntries(value);
+      this.listTarget = this._service.getIdeaTargets(value);
+      this.listStop = this._service.getIdeaStops(value);
+      this.totalTarget = this._service.getTotalTarget(this.listTarget, value.inPositionPrice);
 
-      this.totalTarget = this._service.getTotalTarget(this.listTarget, value.fullPositionPrice);
-
-      this.listStop = [
-        {
-          id: '0',
-          ...value.stop,
-          amount: value.fullPositionQuantityValue,
-          amountPercent: 1,
-          loss: (value.fullPositionQuantityValue * value.stop.price - value.fullPositionPrice) * value.multiplier,
-          checked: false,
-          date: '',
-        },
-      ];
-
-      this.formEntry = new FormGroup(this._getControlFromList(this.listEntry));
-      this.formTarget = new FormGroup(this._getControlFromList(this.listTarget));
-      this.formStop = new FormGroup(this._getControlFromList(this.listStop));
+      this.formEntry = new FormGroup(this._service.getControlFromList(this.listEntry));
+      this.formTarget = new FormGroup(this._service.getControlFromList(this.listTarget));
+      this.formStop = new FormGroup(this._service.getControlFromList(this.listStop));
     }
   }
 
-  listEntry: IdeaEntry[] = [];
+  listEntry: IdeaEntry[] | null = null;
 
-  formEntry = new FormGroup(this._getControlFromList(this.listEntry));
+  formEntry = new FormGroup({});
 
-  listTarget: IdeaTarget[] = [];
+  listTarget: IdeaTarget[] | null = null;
 
   totalTarget: null | IdeaTotalTarget = null;
 
-  formTarget = new FormGroup(this._getControlFromList(this.listTarget));
+  formTarget = new FormGroup({});
 
-  listStop: any[] = [];
+  listStop: IdeaStop[] | null = null;
 
-  formStop = new FormGroup(this._getControlFromList(this.listStop));
+  formStop = new FormGroup({});
 
-  onRemove(event: Event, data: { id: StockId }): void {
+  onRemove(event: Event, data: { id: number }): void {
     event.preventDefault();
 
-    this.listTarget = this.listTarget.filter((item: { id: StockId }) => item.id !== data.id);
-  }
-
-  private _getControlFromList(list: { id: StockId; checked: boolean }[]): {
-    [key: string]: FormControl<boolean>;
-  } {
-    return list.reduce((acc: { [key: string]: FormControl<boolean> }, item: { id: StockId; checked: boolean }) => {
-      acc[item.id] = new FormControl<boolean>(
-        { value: item.checked, disabled: true },
-        {
-          nonNullable: true,
-        }
-      );
-
-      return acc;
-    }, {});
+    if (this.listTarget) {
+      this.listTarget = this.listTarget.filter((item: { id: number }) => item.id !== data.id);
+    }
   }
 }

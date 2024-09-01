@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { StockPositionEntry, StockPositionTarget } from 'types/position';
+import { Position, StockPositionEntry, StockPositionTarget } from 'types/position';
 import {
-  ActionEntryItem,
-  ActionOutItem,
+  ActionEntry,
+  ActionOut,
   ActionRemainder,
   ActionResult,
   ActionTotalEntry,
@@ -11,20 +11,20 @@ import {
 
 @Injectable()
 export class ActionService {
-  getListEntry(list: StockPositionEntry[]): ActionEntryItem[] {
-    return list.map((item: StockPositionEntry, index: number) => ({
+  getActionEntry(position: Position): ActionEntry[] {
+    return position.entries.map((item: StockPositionEntry, index: number) => ({
       id: index.toString(),
       ...item,
     }));
   }
 
-  getTotalEntry(list: ActionEntryItem[]): ActionTotalEntry | null {
+  getActionTotalEntry(list: ActionEntry[]): ActionTotalEntry | null {
     if (!list.length) {
       return null;
     }
 
     const total = list.reduce(
-      (acc: ActionTotalEntry, item: ActionEntryItem) => {
+      (acc: ActionTotalEntry, item: ActionEntry) => {
         acc.price = 0;
         acc.totalPrice += item.totalPrice;
         acc.depositShare += item.depositShare;
@@ -40,8 +40,8 @@ export class ActionService {
     return total;
   }
 
-  getListOut(list: StockPositionTarget[], averagePrice: number, multiplier: number): ActionOutItem[] {
-    return list
+  getActionOut(position: Position): ActionOut[] {
+    return position.targets
       .filter((item: StockPositionTarget) => !!item.stopDate)
       .map((item: StockPositionTarget, index: number) => ({
         id: index.toString(),
@@ -50,17 +50,17 @@ export class ActionService {
         quantity: item.amount,
         broker: null,
         totalPrice: item.amount * item.price,
-        profit: (item.price - averagePrice) * item.amount * multiplier,
+        profit: (item.price - position.entryAveragePrice) * item.amount * position.multiplier,
       }));
   }
 
-  getTotalOut(list: ActionOutItem[], averagePrice: number, multiplier: number): ActionTotalOut | null {
+  getActionTotalOut(list: ActionOut[], averagePrice: number, multiplier: number): ActionTotalOut | null {
     if (!list.length) {
       return null;
     }
 
     const total = list.reduce(
-      (acc: ActionTotalOut, item: ActionOutItem) => {
+      (acc: ActionTotalOut, item: ActionOut) => {
         return {
           price: 0,
           quantity: acc.quantity + item.quantity,
@@ -86,13 +86,8 @@ export class ActionService {
     return total;
   }
 
-  getRemainder(
-    list: StockPositionTarget[],
-    averagePrice: number,
-    lastPrice: number,
-    multiplier: number
-  ): ActionRemainder {
-    const remainder: ActionRemainder = list.reduce(
+  getRemainder(position: Position): ActionRemainder {
+    const remainder: ActionRemainder = position.targets.reduce(
       (acc: ActionRemainder, item: StockPositionTarget) => {
         if (item.stopDate) {
           return acc;
@@ -101,13 +96,13 @@ export class ActionService {
         return {
           ...acc,
           quantity: acc.quantity + item.amount,
-          totalPrice: acc.totalPrice + item.amount * averagePrice,
-          totalProfit: acc.totalProfit + item.amount * lastPrice,
+          totalPrice: acc.totalPrice + item.amount * position.entryAveragePrice,
+          totalProfit: acc.totalProfit + item.amount * position.lastPrice,
           depositShare: acc.depositShare + item.depositShare,
         };
       },
       {
-        price: lastPrice,
+        price: position.lastPrice,
         quantity: 0,
         totalPrice: 0,
         totalProfit: 0,
@@ -118,18 +113,13 @@ export class ActionService {
       }
     );
 
-    remainder.profit = (remainder.totalProfit - remainder.totalPrice) * multiplier;
+    remainder.profit = (remainder.totalProfit - remainder.totalPrice) * position.multiplier;
     remainder.profitPercent = remainder.profit / remainder.totalPrice;
 
     return remainder;
   }
 
-  getResult(
-    totalOut: ActionTotalOut | null,
-    remainder: ActionRemainder,
-    averagePrice: number,
-    multiplier: number
-  ): ActionResult {
+  getResult(totalOut: ActionTotalOut | null, remainder: ActionRemainder, position: Position): ActionResult {
     if (!totalOut) {
       return remainder;
     }
@@ -143,7 +133,7 @@ export class ActionService {
       totalPrice: (remainder.quantity + totalOut.quantity) * price,
       quantity: remainder.quantity + totalOut.quantity,
       profit: remainder.profit + totalOut.profit,
-      profitPercent: ((price - averagePrice) / averagePrice) * multiplier,
+      profitPercent: ((price - position.entryAveragePrice) / position.entryAveragePrice) * position.multiplier,
       totalProfit: 0,
       depositShare: remainder.depositShare + totalOut.depositShare,
       broker: remainder.broker,

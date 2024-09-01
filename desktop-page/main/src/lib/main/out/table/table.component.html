@@ -42,10 +42,10 @@
 
           <td *tuiCell="'cost'" tuiTd class="td td--number">
             <div class="ellipsis bold" [title]="item.lastPrice" [uiLastPrice]="item">
-              {{ item.lastPrice | tuiFormatNumber }}
+              {{ item.lastPrice | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
             </div>
             <div class="substring">
-              {{ (item.inPositionQuantity * item.lastPrice) | tuiFormatNumber : { decimalLimit: 0 } }}
+              {{ item.inPositionPrice | tuiFormatNumber : { decimalLimit: 0 } }}
             </div>
           </td>
 
@@ -53,10 +53,12 @@
             <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell"></ng-container>
           </td>
 
-          <td *tuiCell="'result'" tuiTd class="td td--number" [uiPriceColor]="item.resultPercent">
-            <ng-container *ngIf="item.resultPercent; else none">
-              {{ item.resultPercent * 100 | tuiFormatNumber:{ decimalLimit: 1 } }}%
-              <div class="substring">{{ item.resultPrice | tuiFormatNumber: { decimalLimit: 0 } }}</div>
+          <td *tuiCell="'result'" tuiTd class="td td--number" [uiPriceColor]="item.result.profitPercent">
+            <ng-container *ngIf="item.result.profitPercent; else none">
+              {{ item.result.profitPercent | tuiFormatNumber }}%
+              <div class="substring">
+                {{ item.result.profitPrice | tuiFormatNumber:  { decimalLimit: 0 } }}
+              </div>
             </ng-container>
           </td>
 
@@ -89,15 +91,17 @@
             <div class="ellipsis" [title]="item.inPositionQuantity">
               {{ item.inPositionQuantity | tuiFormatNumber }}
             </div>
-            <div class="substring">{{ item.inPositionDepositShare * 100 | tuiFormatNumber:{ decimalLimit: 0 } }}%</div>
+            <div class="substring">{{ item.inPositionDepositShare * 100 | tuiFormatNumber }}%</div>
           </td>
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">
             <ng-container *ngIf="item.currentTarget as target; else none">
               <div class="td__row bold">
-                <div class="ellipsis" [title]="target.price">{{ target.price | tuiFormatNumber }}</div>
+                <div class="ellipsis" [title]="target.price">
+                  {{ target.price | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
+                </div>
                 <span class="substring" style="margin-left: 8px">
-                  {{ target.profitPercent | tuiFormatNumber :{ decimalLimit: 1 } }}%</span>
+                  {{ target.profitPercent | tuiFormatNumber }}%</span>
               </div>
               <div class="td__row">
                 <div class="substring">{{ target.amount }}</div>
@@ -106,11 +110,11 @@
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number">
-            <div class="ellipsis" [title]="item.entryAveragePrice">
-              {{ item.entryAveragePrice | tuiFormatNumber }}
+            <div class="ellipsis" [title]="item.entries[0].price">
+              {{ item.entries[0].price | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
             </div>
-            <div
-              class="substring">{{ (item.entryAveragePrice * item.inPositionQuantity) | tuiFormatNumber :{ decimalLimit: 0 } }}
+            <div class="substring">
+              {{ (item.entries[0].totalPrice) | tuiFormatNumber }}
             </div>
           </td>
 
@@ -120,17 +124,24 @@
           </td>
 
           <td *tuiCell="'profit'" tuiTd class="td td--number">
-            <div class="ellipsis" [uiPriceColor]="item.profitPercent">
-              {{ item.profitPercent * 100 | tuiFormatNumber :{ decimalLimit: 1 } }}%
+            <div class="ellipsis" [uiPriceColor]="item.inPositionProfitPercent">
+              {{ item.inPositionProfitPercent | tuiFormatNumber }}%
             </div>
-            <div class="substring">{{ item.profit | tuiFormatNumber:{ decimalLimit: 0 } }}</div>
+            <div class="substring">
+              {{ item.inPositionResult | tuiFormatNumber:  { decimalLimit: 0 } }}
+            </div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">
-            <div class="ellipsis" [uiPriceColor]="item.stop.lossPercent" [title]="item.stop.price">
-              {{ item.stop.price | tuiFormatNumber }}
+            <div
+              class="ellipsis"
+              [uiPriceColor]="item.stop.lossPercent"
+              [title]="item.stop.price">
+              {{ item.stop.price | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
             </div>
-            <div class="substring">{{ item.stop.lossPercent | tuiFormatNumber :{ decimalLimit: 2 } }}%</div>
+            <div class="substring">
+              {{ item.stop.lossPercent | tuiFormatNumber }}%
+            </div>
           </td>
         </tr>
         </tbody>

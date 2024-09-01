@@ -9,6 +9,7 @@ import { Stock, StockId, StockInstrument } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 import { Position } from 'types/position';
+import { IndicatorEmaParams } from 'types/indicator-ema';
 
 @Injectable()
 export class DesktopStubService extends DesktopService {
@@ -67,6 +68,18 @@ export class DesktopStubService extends DesktopService {
   }
 
   getWatchlistConsolidationZone(id: StockId): Observable<any> {
+    return of();
+  }
+
+  getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>> {
+    return of();
+  }
+
+  getIndicatorEma(params: IndicatorEmaParams): Observable<Response<any>> {
+    return of();
+  }
+
+  getIndicatorSma(params: IndicatorEmaParams): Observable<Response<any>> {
     return of();
   }
 }
