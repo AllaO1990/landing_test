@@ -15,7 +15,8 @@
         [formControl]="controlEma"
         [icon]="emaIcon"
         [list]="emaList"
-        (opened)="onendedEma($event)">
+        (toggled)="onToggledEma()"
+        (opened)="onOpenedEma($event)">
       </lib-button-with-list>
 
       <lib-button-with-list
@@ -23,8 +24,19 @@
         [formControl]="controlSma"
         [icon]="smaIcon"
         [list]="smaList"
-        (opened)="onendedSma($event)">
+        (toggled)="onToggledSma()"
+        (opened)="onOpenedSma($event)">
       </lib-button-with-list>
+
+      <button
+        class="action"
+        [appearance]="toggle ? 'primary' : 'secondary'"
+        tuiButton
+        type="button"
+        [icon]="atrIcon"
+        size="l"
+        (click)="onToggle($event)">
+      </button>
     </div>
   </div>
 </tui-loader>
@@ -38,6 +50,12 @@
 <ng-template #smaIcon>
   <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
     <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">SMA</text>
+  </svg>
+</ng-template>
+
+<ng-template #atrIcon>
+  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
+    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">ATR</text>
   </svg>
 </ng-template>
 

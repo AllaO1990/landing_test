@@ -12,7 +12,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { TuiBadgedContentComponent, TuiBadgedContentModule, TuiMultiSelectModule } from '@taiga-ui/kit';
-import { TuiButtonModule, TuiDataListModule, TuiDropdownModule } from '@taiga-ui/core';
+import { TuiButtonModule, TuiDataListModule, TuiDropdownModule, TuiGroupModule } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
 import { ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
@@ -39,6 +39,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     TuiBadgedContentModule,
     ReactiveFormsModule,
     AsyncPipe,
+    TuiGroupModule,
   ],
   templateUrl: './button-with-list.component.html',
   styleUrl: './button-with-list.component.scss',
@@ -68,6 +69,8 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
 
   @Output() opened: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+  @Output() toggled: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   get controlOpen() {
     return this._controlOpen;
   }
@@ -76,6 +79,8 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
     this._controlOpen = value;
     this.opened.emit(value);
   }
+
+  appearance: 'primary' | 'secondary' = 'secondary';
 
   control: FormControl<{ name: string }[] | null> = new FormControl(null);
 
@@ -96,6 +101,10 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit() {
     this.control.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => this.onChange(res));
+
+    this.length$
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((res) => (this.appearance = res === 0 ? 'secondary' : 'primary'));
   }
 
   writeValue(obj: any): void {
@@ -126,5 +135,20 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
 
   onActiveZoneMore(active: boolean): void {
     this.controlOpen = active && this.controlOpen;
+  }
+
+  onToggle(event: Event): void {
+    event.preventDefault();
+
+    if (this.appearance === 'primary') {
+      this.onChange([]);
+      this.appearance = 'secondary';
+      this.toggled.emit(false);
+      return;
+    }
+
+    this.onChange(this.control.value);
+    this.appearance = 'primary';
+    this.toggled.emit(true);
   }
 }
