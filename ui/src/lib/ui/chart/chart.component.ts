@@ -24,7 +24,7 @@ import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
 import { StockInstrument } from 'types/stock';
 import { ColorIndicator } from 'types/color';
-import { defer, map, Observable, ReplaySubject, Subject, switchMap, take } from 'rxjs';
+import { defer, distinctUntilChanged, map, Observable, ReplaySubject, Subject, switchMap, take } from 'rxjs';
 import { SeriesSplineOptions } from 'highcharts';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CHART_INDICATORS_NAME } from './chart.constants';
@@ -490,49 +490,13 @@ export class ChartComponent implements OnInit {
     chart$
       .pipe(
         switchMap((chart: Highcharts.Chart) =>
-          this._text$.asObservable().pipe(map((text: string | number | null) => ({ chart, text })))
+          this._text$.asObservable().pipe(
+            distinctUntilChanged(),
+            map((text: string | number | null) => ({ chart, text }))
+          )
         )
       )
-      .subscribe(({ chart, text }) => {
-        console.log(chart);
-
-        if (this._text !== null) {
-          this._text.destroy();
-          this._text = null;
-        }
-
-        if (text === null) {
-          return;
-        }
-
-        this._text = chart.renderer
-          .g('customText')
-          .translate(chart.plotWidth, chart.plotTop)
-          .attr({ opacity: 0 })
-          .add();
-
-        let textSvg: Highcharts.SVGElement | null = chart.renderer
-          .text(text.toString(), 0, 0)
-          .attr({
-            'font-size': '0.8em',
-          })
-          .add(this._text);
-        const textSvgWidth = textSvg.getBBox().width + 16;
-
-        textSvg.destroy();
-        textSvg = null;
-
-        chart.renderer.rect(0, 0, textSvgWidth, 22, 2).attr({ fill: '#e6e9ff', 'z-index': 3 }).add(this._text);
-        chart.renderer
-          .text(text.toString(), 8, 15.5)
-          .attr({
-            'font-size': '0.8em',
-            'z-index': 5,
-          })
-          .add(this._text);
-
-        this._text.translate(chart.plotWidth - textSvgWidth, chart.plotHeight + 10).attr({ opacity: 1 });
-      });
+      .subscribe(({ chart, text }) => this._updateChartText(chart, text));
   }
 
   chartEvent($event: Highcharts.Chart) {
@@ -660,5 +624,44 @@ export class ChartComponent implements OnInit {
         new Date().setMonth(new Date().getMonth() + 1).valueOf()
       );
     }
+  }
+
+  private _updateChartText(chart: Highcharts.Chart, text: string | number | null): void {
+    if (this._text !== null) {
+      this._text.destroy();
+      this._text = null;
+    }
+
+    if (text === null) {
+      return;
+    }
+
+    this._text = chart.renderer
+      .g('custom-text')
+      .translate(chart.plotWidth, chart.plotTop)
+      .attr({ opacity: 0, zIndex: 5 })
+      .add();
+
+    let textSvg: Highcharts.SVGElement | null = chart.renderer
+      .text(text.toString(), 0, 0)
+      .attr({
+        'font-size': '0.8em',
+      })
+      .add(this._text);
+    const textSvgWidth = textSvg.getBBox().width + 16;
+
+    textSvg.destroy();
+    textSvg = null;
+
+    chart.renderer.rect(0, 0, textSvgWidth, 22, 2).attr({ fill: '#e6e9ff', 'z-index': 3 }).add(this._text);
+    chart.renderer
+      .text(text.toString(), 8, 15.5)
+      .attr({
+        'font-size': '0.8em',
+        'z-index': 5,
+      })
+      .add(this._text);
+
+    this._text.translate(chart.plotWidth - textSvgWidth, chart.plotHeight + 10).attr({ opacity: 1 });
   }
 }
