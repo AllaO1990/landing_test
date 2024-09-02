@@ -531,7 +531,7 @@ export class ChartComponent implements OnInit {
           })
           .add(this._text);
 
-        this._text.translate(chart.plotWidth - textSvgWidth - 50, 10).attr({ opacity: 1 });
+        this._text.translate(chart.plotWidth - textSvgWidth, chart.plotHeight + 10).attr({ opacity: 1 });
       });
   }
 
