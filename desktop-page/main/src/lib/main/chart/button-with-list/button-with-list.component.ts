@@ -63,7 +63,7 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
 
   @ViewChild(TuiBadgedContentComponent, { static: true }) badge!: TuiBadgedContentComponent;
 
-  @Input() list: { name: string }[] = [];
+  @Input() list: { name: string; disabled: boolean }[] = [];
 
   @Input() icon: PolymorpheusContent;
 

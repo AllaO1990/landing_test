@@ -1,0 +1,30 @@
+:host {
+  display: inline-flex;
+}
+
+.list {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+
+  width: 100%;
+  overflow: hidden;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+
+  height: 24px;
+
+  white-space: nowrap;
+  overflow: hidden;
+
+  &:not(:last-child) {
+    margin-right: var(--padding-2);
+  }
+
+  &__icon {
+    margin-right: var(--padding-1);
+  }
+}

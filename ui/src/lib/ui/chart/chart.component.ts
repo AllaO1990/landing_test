@@ -58,6 +58,7 @@ export class ChartComponent implements OnInit {
   private readonly _text$: Subject<string | number | null> = new ReplaySubject(1);
 
   private _text: Highcharts.SVGElement | null = null;
+  private _textSvgWidth = 0;
 
   #zoomMode: 'x' | 'y' | 'xy' = 'xy';
   #prevXExtremes: [number | undefined, number | undefined] = [undefined, undefined];
@@ -73,7 +74,9 @@ export class ChartComponent implements OnInit {
     boost: { useGPUTranslations: true, usePreallocated: true },
     navigator: { enabled: false },
     credits: { enabled: false },
-    legend: { enabled: false },
+    legend: {
+      enabled: false,
+    },
     xAxis: {
       ordinal: false,
       maxPadding: 0.5,
@@ -100,6 +103,21 @@ export class ChartComponent implements OnInit {
         resetButton: { position: { x: -60 } },
       },
       panning: { enabled: true, type: 'xy' },
+      marginBottom: 5,
+      events: {
+        render: (event: any) => {
+          if (this._text) {
+            const { e, f } = new DOMMatrix(this._text.getStyle('transform'));
+            const { plotWidth, plotHeight, plotTop, plotLeft } = event.target;
+            const x = plotWidth + plotLeft - this._textSvgWidth - 35;
+            const y = plotHeight + plotTop - 25;
+
+            if (x !== e || y !== f) {
+              this._text.translate(x, y);
+            }
+          }
+        },
+      },
     },
     rangeSelector: {
       inputEnabled: false,
@@ -639,7 +657,7 @@ export class ChartComponent implements OnInit {
     this._text = chart.renderer
       .g('custom-text')
       .translate(chart.plotWidth, chart.plotTop)
-      .attr({ opacity: 0, zIndex: 5 })
+      .attr({ opacity: 0, zIndex: 7 })
       .add();
 
     let textSvg: Highcharts.SVGElement | null = chart.renderer
@@ -648,12 +666,12 @@ export class ChartComponent implements OnInit {
         'font-size': '0.8em',
       })
       .add(this._text);
-    const textSvgWidth = textSvg.getBBox().width + 16;
+    this._textSvgWidth = Math.ceil(textSvg.getBBox().width + 16);
 
     textSvg.destroy();
     textSvg = null;
 
-    chart.renderer.rect(0, 0, textSvgWidth, 22, 2).attr({ fill: '#e6e9ff', 'z-index': 3 }).add(this._text);
+    chart.renderer.rect(0, 0, this._textSvgWidth, 22, 2).attr({ fill: '#e6e9ff', 'z-index': 3 }).add(this._text);
     chart.renderer
       .text(text.toString(), 8, 15.5)
       .attr({
@@ -662,6 +680,8 @@ export class ChartComponent implements OnInit {
       })
       .add(this._text);
 
-    this._text.translate(chart.plotWidth - textSvgWidth, chart.plotHeight + 10).attr({ opacity: 1 });
+    this._text
+      .translate(chart.plotWidth + chart.plotLeft - this._textSvgWidth - 35, chart.plotHeight + chart.plotTop - 25)
+      .attr({ opacity: 1 });
   }
 }
