@@ -1,7 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ChartComponent } from '@ui/chart';
-import { BehaviorSubject, combineLatest, debounceTime, Observable, shareReplay, Subject, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  Observable,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+} from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
@@ -11,10 +20,13 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { sortText } from 'utils/sort-text';
 import { TuiButtonModule, TuiLoaderModule, TuiSvgModule } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
+import { LegendComponent } from './legend/legend.component';
 
 interface IndicatorListItem {
   name: string;
   value: string;
+  disabled: boolean;
+  order: number;
 }
 
 @Component({
@@ -29,6 +41,7 @@ interface IndicatorListItem {
     NgIf,
     TuiButtonModule,
     TuiSvgModule,
+    LegendComponent,
   ],
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
@@ -55,8 +68,19 @@ export class MainChartComponent implements OnInit {
   smaList: IndicatorListItem[] = CHART_SMA_LIST;
   valueSma: IndicatorListItem[] | null = null;
 
-  readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[1], this.emaList[4]]);
+  readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[1], this.emaList[5]]);
   readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[1]]);
+
+  legend$: Observable<IndicatorListItem[]> = combineLatest([
+    this.controlEma.valueChanges.pipe(
+      startWith(this.controlEma.value),
+      map((list: IndicatorListItem[] | null) => (list ? list : []))
+    ),
+    this.controlSma.valueChanges.pipe(
+      startWith(this.controlSma.value),
+      map((list: IndicatorListItem[] | null) => (list ? list : []))
+    ),
+  ]).pipe(map(([ema, sma]) => [...ema, ...sma]));
 
   ngOnInit(): void {
     if (this.valueEma !== this.controlEma.value) {

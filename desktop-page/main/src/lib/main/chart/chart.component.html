@@ -1,13 +1,18 @@
 <tui-loader class="loader" [overlay]="true" [showLoader]="(candles$ | async) === null">
   <div class="container" *ngIf="(candles$ | async); else empty">
-    <div class="charts">
-      <vt-chart
-        [consolidationZones]="consolidationZones$ | async"
-        [data]="candles$ | async"
-        [indicators]="indicators$ | async"
-        [selected]="selected$ | async"
-        [text]="text$ | async"
-      ></vt-chart>
+    <div class="column">
+      <div class="charts">
+        <vt-chart
+          [consolidationZones]="consolidationZones$ | async"
+          [data]="candles$ | async"
+          [indicators]="indicators$ | async"
+          [selected]="selected$ | async"
+          [text]="text$ | async"
+        ></vt-chart>
+      </div>
+      <div class="legend">
+        <lib-chart-legend [list]="(legend$ | async) || []"></lib-chart-legend>
+      </div>
     </div>
     <div class="actions">
       <lib-button-with-list
@@ -31,7 +36,7 @@
       <button
         class="action"
         [appearance]="toggle ? 'primary' : 'secondary'"
-        tuiButton
+        tuiIconButton
         type="button"
         [icon]="atrIcon"
         size="l"

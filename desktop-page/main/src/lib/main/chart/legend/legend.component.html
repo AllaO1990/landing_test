@@ -1,0 +1,20 @@
+<ul class="list">
+  <li
+    class="item"
+    *ngFor="let item of list | legendSort; trackBy: trackByValue">
+    <ng-container *ngTemplateOutlet="icon; context: { $implicit: item.value | legendColor }"></ng-container>
+    {{ item.name }}
+  </li>
+</ul>
+
+<ng-template #icon let-color>
+  <svg
+    class="item__icon"
+    [style.color]="color"
+    viewBox="0 0 16 16"
+    height="32px"
+    width="32px"
+    xmlns="http://www.w3.org/2000/svg">
+    <path stroke="currentColor" d="M0 8 L 16 8" />
+  </svg>
+</ng-template>

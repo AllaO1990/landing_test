@@ -30,6 +30,15 @@
   overflow: hidden;
 }
 
+.column {
+  display: flex;
+  flex-flow: column nowrap;
+
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .charts {
   flex: 1;
   overflow: hidden;
@@ -44,8 +53,20 @@
   margin: var(--padding-2);
 }
 
+.legend {
+  flex: 0;
+
+  text-align: center;
+
+  margin: var(--padding-2) 0;
+}
+
 .action {
   &:not(:last-child) {
     margin-bottom: var(--padding-2);
   }
+}
+
+button.action[size="l"] {
+  width: auto;
 }

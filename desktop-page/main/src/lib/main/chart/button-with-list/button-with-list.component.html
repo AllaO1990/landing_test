@@ -39,6 +39,7 @@
       <button
         *ngFor="let item of list"
         tuiOption
+        [disabled]="item.disabled"
         [value]="item">
         {{ item.name }}
       </button>
