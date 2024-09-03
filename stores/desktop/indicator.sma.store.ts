@@ -39,7 +39,7 @@ export class IndicatorSmaStore extends ComponentStore<IndicatorSmaState> {
       return of(null);
     }
 
-    const uniqKey = indicatorGetUniq(data);
+    const uniqKey = indicatorGetUniq(data.id, data.interval, ...data.types);
     const value = this._queue.getValue(uniqKey);
 
     if (value) {

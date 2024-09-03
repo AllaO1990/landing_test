@@ -1,7 +1,8 @@
 import { SeriesSplineOptions } from 'highcharts';
 
-export const indicatorGetUniq = (data: { id: string; interval: number; types: string[] }): string => {
-  return `${data.id}'◬'${data.interval}'◬'${data.types.join('◬')}`;
+export const indicatorGetUniq = (...args: any): string => {
+  return args.join('◬');
+  // return `${data.id}'◬'${data.interval}'◬'${data.types.join('◬')}`;
 };
 
 export const indicatorTransformToSeries = (

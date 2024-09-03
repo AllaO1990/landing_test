@@ -96,6 +96,9 @@ export class ChartComponent implements OnInit {
         },
       },
     },
+    scrollbar: {
+      margin: 0,
+    },
     chart: {
       animation: false,
       zooming: {
@@ -103,7 +106,7 @@ export class ChartComponent implements OnInit {
         resetButton: { position: { x: -60 } },
       },
       panning: { enabled: true, type: 'xy' },
-      marginBottom: 5,
+      // marginBottom: 30,
       events: {
         render: (event: any) => {
           if (this._text) {

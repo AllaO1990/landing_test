@@ -29,7 +29,7 @@
             {{ item.totalPrice| tuiFormatNumber: { decimalLimit: 0 } }}
           </div>
           <div class="item__value row__item row__deposit">
-            {{ item.depositShare * 100 | tuiFormatNumber }}%
+            {{ item.depositShare | tuiFormatNumber }}%
           </div>
         </div>
       </lib-list-item>
@@ -71,7 +71,7 @@
             {{ item.profit | tuiFormatNumber }}
           </div>
           <div class="item__value row__right row__item row__deposit">
-            {{ item.depositShare * 100| tuiFormatNumber }}%
+            {{ item.depositShare | tuiFormatNumber }}%
           </div>
           <div class="item__value row__right row__item row__fix-half">
             {{ item.amount | tuiFormatNumber: { decimalLimit: 0 } }}
@@ -138,13 +138,13 @@
             {{ item.loss | tuiFormatNumber }}
           </div>
           <div class="item__value row__item row__right row__deposit">
-            {{ item.depositShare * 100 | tuiFormatNumber }}%
+            {{ item.depositShare | tuiFormatNumber }}%
           </div>
           <div class="item__value row__item row__right row__fix-half">
             {{ item.amount | tuiFormatNumber }}
           </div>
           <div class="item__value row__item row__right row__fix-half">
-            {{ item.amountPercent * 100 | tuiFormatNumber }}%
+            {{ item.amountPercent | tuiFormatNumber }}%
           </div>
         </div>
       </lib-list-item>
@@ -181,13 +181,13 @@
     <div class="total__item row__item"></div>
     <div class="total__item row__item"></div>
     <div class="total__item row__item">
-      {{ totalTarget.profitPercent * 100 | tuiFormatNumber }}%
+      {{ totalTarget.profitPercent | tuiFormatNumber }}%
     </div>
     <div class="total__item row__item">
       {{ totalTarget.profit | tuiFormatNumber }}
     </div>
     <div class="total__item row__item">
-      {{ totalTarget.depositShare * 100 | tuiFormatNumber }}%
+      {{ totalTarget.depositShare | tuiFormatNumber }}%
     </div>
     <div class="total__item row__item">
       {{ totalTarget.amount | tuiFormatNumber }}

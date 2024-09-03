@@ -81,7 +81,7 @@ export class ActionService {
     );
 
     total.price = total.totalPrice / total.quantity;
-    total.profitPercent = ((total.price - averagePrice) / total.price) * multiplier;
+    total.profitPercent = ((total.price - averagePrice) / total.price) * multiplier * 100;
 
     return total;
   }
@@ -114,7 +114,7 @@ export class ActionService {
     );
 
     remainder.profit = (remainder.totalProfit - remainder.totalPrice) * position.multiplier;
-    remainder.profitPercent = remainder.profit / remainder.totalPrice;
+    remainder.profitPercent = (remainder.profit / remainder.totalPrice) * 100;
 
     return remainder;
   }
@@ -133,7 +133,7 @@ export class ActionService {
       totalPrice: (remainder.quantity + totalOut.quantity) * price,
       quantity: remainder.quantity + totalOut.quantity,
       profit: remainder.profit + totalOut.profit,
-      profitPercent: ((price - position.entryAveragePrice) / position.entryAveragePrice) * position.multiplier,
+      profitPercent: ((price - position.entryAveragePrice) / position.entryAveragePrice) * position.multiplier * 100,
       totalProfit: 0,
       depositShare: remainder.depositShare + totalOut.depositShare,
       broker: remainder.broker,
