@@ -58,8 +58,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public readonly stockActive$: Observable<StockId[] | null> = this.select(
     this._stockListStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
-    this._entryStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
-    (stock: StockId[], entry: StockId[]) => [...stock, ...entry],
+    (stock: StockId[]) => [...stock],
     { debounce: true }
   );
 
@@ -89,7 +88,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._positionStore.load(timer(0, TIMER_INTERVAL).pipe(map(() => void 0)));
 
     this.loadActivePrice(
-      this._timer(this.stockActive$, 60 * 1000).pipe(map((value: { source: StockId[] | null }) => value.source))
+      this._timer(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
     );
 
     this._chartStore.loadCandles(this._timer(this._stockListStore.selected$, TIMER_INTERVAL));
@@ -134,9 +133,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       )
     );
 
+    const today = new Date(new Date().setUTCHours(0, 0, 0, 0));
     this._indicatorAtrStore.load(
       stockInstrumentId$.pipe(
-        map((id: string) => ({ id, interval: Timeframe.CANDLE_INTERVAL_DAY, date: new Date().toISOString() }))
+        map((id: string) => ({ id, interval: Timeframe.CANDLE_INTERVAL_DAY, date: today.toISOString() }))
       )
     );
   }
@@ -188,38 +188,34 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   );
 
   public readonly onChangeEventEntry = this.effect((stream$: Observable<StockEvent | null>) =>
-    stream$.pipe(
-      filter((event: StockEvent | null): event is StockEvent => event !== null),
-      filter((event: StockEvent): boolean => event.type === EventSelected.IDEA),
-      switchMap((event: StockEvent) =>
-        this.entry$.pipe(
-          filter((list: Idea[] | null): list is Idea[] => list !== null),
-          map((list: Idea[]): Idea => list.find((item: Idea) => item.id === +event.id)!),
-          tap((value: Idea) => {
-            this._stockListStore.updateSelected(value.instrument);
-            this._entryStore.updateSelected(value);
-            this._positionStore.updateSelected(null);
-          })
-        )
-      )
+    combineLatest([stream$, this.entry$]).pipe(
+      filter(
+        (result: [StockEvent | null, Idea[] | null]): result is [StockEvent, Idea[]] =>
+          result[0] !== null && result[1] !== null
+      ),
+      filter(([event, _]: [StockEvent, Idea[]]): boolean => event.type === EventSelected.IDEA),
+      map(([event, list]: [StockEvent, Idea[]]): Idea => list.find((item: Idea) => item.id === +event.id)!),
+      tap((value: Idea) => {
+        this._stockListStore.updateSelected(value.instrument);
+        this._entryStore.updateSelected(value);
+        this._positionStore.updateSelected(null);
+      })
     )
   );
 
   public readonly onChangeEventPosition = this.effect((stream$: Observable<StockEvent | null>) =>
-    stream$.pipe(
-      filter((event: StockEvent | null): event is StockEvent => event !== null),
-      filter((event: StockEvent): boolean => event.type === EventSelected.POSITION),
-      switchMap((event: StockEvent) =>
-        this.position$.pipe(
-          filter((list: Position[] | null): list is Position[] => list !== null),
-          map((list: Position[]): Position => list.find((item: Position) => item.id === +event.id)!),
-          tap((value: Position) => {
-            this._stockListStore.updateSelected(value.instrument);
-            this._entryStore.updateSelected(null);
-            this._positionStore.updateSelected(value);
-          })
-        )
-      )
+    combineLatest([stream$, this.position$]).pipe(
+      filter(
+        (result: [StockEvent | null, Position[] | null]): result is [StockEvent, Position[]] =>
+          result[0] !== null && result[1] !== null
+      ),
+      filter(([event, _]: [StockEvent, Position[]]): boolean => event.type === EventSelected.POSITION),
+      map(([event, list]: [StockEvent, Position[]]): Position => list.find((item: Position) => item.id === +event.id)!),
+      tap((value: Position) => {
+        this._stockListStore.updateSelected(value.instrument);
+        this._entryStore.updateSelected(null);
+        this._positionStore.updateSelected(value);
+      })
     )
   );
 

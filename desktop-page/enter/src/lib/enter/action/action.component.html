@@ -22,7 +22,7 @@
           {{ item.totalPrice | tuiFormatNumber }}
         </div>
         <div class="item__value row__item row__right row__deposit">
-          {{ item.depositShare * 100 | tuiFormatNumber }}%
+          {{ item.depositShare | tuiFormatNumber }}%
         </div>
       </div>
     </lib-list>
@@ -72,7 +72,7 @@
           {{ item.profitPercent | tuiFormatNumber }}%
         </div>
         <div class="item__value row__item row__right row__deposit">
-          {{ item.depositShare * 100 | tuiFormatNumber }}%
+          {{ item.depositShare | tuiFormatNumber }}%
         </div>
         <div class="item__value row__item row__broker">
           <ng-container *ngIf="item.broker; else none">
@@ -126,10 +126,10 @@
           {{ remainder.profit | tuiFormatNumber }}
         </div>
         <div class="total__item row__item">
-          {{ remainder.profitPercent * 100 | tuiFormatNumber }}%
+          {{ remainder.profitPercent | tuiFormatNumber }}%
         </div>
         <div class="total__item row__item">
-          {{ remainder.depositShare * 100 | tuiFormatNumber }}%
+          {{ remainder.depositShare | tuiFormatNumber }}%
         </div>
         <div class="total__item row__item">
           <ng-container *ngIf="remainder.broker; else none">{{ remainder.broker }}</ng-container>
@@ -169,10 +169,10 @@
           {{ result.profit | tuiFormatNumber }}
         </div>
         <div class="total__item row__item">
-          {{ result.profitPercent * 100 | tuiFormatNumber }}%
+          {{ result.profitPercent | tuiFormatNumber }}%
         </div>
         <div class="total__item row__item">
-          {{ result.depositShare * 100 | tuiFormatNumber }}%
+          {{ result.depositShare | tuiFormatNumber }}%
         </div>
         <div class="total__item row__item">
           <ng-container *ngIf="result.broker; else none">{{ result.broker }}</ng-container>
@@ -209,7 +209,7 @@
       {{ totalEntry.totalPrice | tuiFormatNumber }}
     </div>
     <div class="total__item row__item">
-      {{ totalEntry.depositShare * 100 | tuiFormatNumber }}%
+      {{ totalEntry.depositShare | tuiFormatNumber }}%
     </div>
   </div>
 </ng-template>
@@ -243,10 +243,10 @@
       {{ totalOut.profit | tuiFormatNumber }}
     </div>
     <div class="total__item row__item">
-      {{ totalOut.profitPercent * 100 | tuiFormatNumber }}%
+      {{ totalOut.profitPercent | tuiFormatNumber }}%
     </div>
     <div class="total__item row__item">
-      {{ totalOut.depositShare * 100 | tuiFormatNumber }}%
+      {{ totalOut.depositShare | tuiFormatNumber }}%
     </div>
   </div>
 </ng-template>

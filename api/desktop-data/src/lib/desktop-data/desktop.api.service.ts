@@ -95,8 +95,8 @@ export class DesktopApiService extends DesktopService {
 
     const from: string =
       selected.index === 0
-        ? new Date(new Date(lastYear - 1, 0, 1, 3, 0, 0, 0)).toISOString()
-        : new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+        ? new Date(new Date(lastYear - 1, 0, 1, 23).setUTCHours(0, 0, 0, 0)).toISOString()
+        : new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString();
 
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {

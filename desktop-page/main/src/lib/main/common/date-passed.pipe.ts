@@ -12,7 +12,7 @@ export class DatePassedPipe implements PipeTransform {
       date = new Date(compare);
     } else {
       date = new Date();
-      date.setHours(23, 59, 59, 0);
+      date.setUTCHours(23, 59, 59, 0);
     }
 
     const calc = date.valueOf() - new Date(value).valueOf();

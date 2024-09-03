@@ -5,6 +5,7 @@ import { Queue } from 'utils/queue';
 import { StockId } from 'types/stock';
 import { Response } from 'types/response';
 import { map } from 'rxjs/operators';
+import { indicatorGetUniq } from 'utils/indicators-func';
 
 export interface IndicatorAtrState {
   selected: null | any;
@@ -43,7 +44,8 @@ export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
       return of(null);
     }
 
-    const value = this._queue.getValue(data);
+    const uniqKey = indicatorGetUniq(data.id, data.interval, data.date);
+    const value = this._queue.getValue(uniqKey);
 
     if (value) {
       return of(value);
@@ -51,7 +53,7 @@ export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
 
     return this._api.getIndicatorAtr(data.id, data.interval, data.date).pipe(
       map((value: Response<any>) => value.data),
-      tap((value: any) => this._queue.setValue(data, value))
+      tap((value: any) => this._queue.setValue(uniqKey, value))
     );
   }
 }
