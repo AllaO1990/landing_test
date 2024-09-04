@@ -54,11 +54,15 @@
 }
 
 .legend {
-  flex: 0;
+  flex: 0 0 auto;
 
-  text-align: center;
+  height: 72px;
 
-  margin: var(--padding-2) 0;
+  margin: var(--padding-2) auto;
+}
+
+.chart-legend {
+  margin: 0 var(--padding-2);
 }
 
 .action {
@@ -67,6 +71,16 @@
   }
 }
 
+.space {
+  flex: 1;
+}
+
 button.action[size="l"] {
   width: auto;
+}
+
+@media screen and (min-width: 1024px) {
+  .legend {
+    height: 40px;
+  }
 }

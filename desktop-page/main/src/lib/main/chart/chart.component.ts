@@ -50,6 +50,7 @@ interface IndicatorListItem {
 export class MainChartComponent implements OnInit {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   toggle = true;
+  toggleLegend = true;
   private readonly _text$: Subject<boolean> = new BehaviorSubject<boolean>(this.toggle);
   readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
   readonly candles$: Observable<any | null> = this._store.candles$.pipe(shareReplay(1));
@@ -92,7 +93,7 @@ export class MainChartComponent implements OnInit {
     }
   }
 
-  onToggle(event: Event): void {
+  onToggleAtr(event: Event): void {
     event.preventDefault();
 
     this.toggle = !this.toggle;
@@ -121,6 +122,12 @@ export class MainChartComponent implements OnInit {
     if (this.valueSma !== this.controlSma.value) {
       this._actionSma();
     }
+  }
+
+  onToggleLegend(event: Event): void {
+    event.preventDefault();
+
+    this.toggleLegend = !this.toggleLegend;
   }
 
   private _getValue(value: IndicatorListItem[] | null): string[] {

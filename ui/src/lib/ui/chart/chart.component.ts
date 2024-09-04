@@ -197,6 +197,11 @@ export class ChartComponent implements OnInit {
         return position;
       },
     },
+    stockTools: {
+      gui: {
+        visible: false,
+      },
+    },
     plotOptions: {
       candlestick: {
         color: '#ff0043',
@@ -216,6 +221,10 @@ export class ChartComponent implements OnInit {
         },
       },
       spline: {
+        dataGrouping: {
+          groupAll: true,
+          groupPixelWidth: 10,
+        },
         allowPointSelect: false,
         marker: { enabled: false },
         label: { enabled: false },
