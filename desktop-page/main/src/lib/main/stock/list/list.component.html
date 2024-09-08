@@ -10,12 +10,13 @@
 
   <tui-scrollbar class="list__scrollbar">
     <cdk-virtual-scroll-viewport
+      *ngIf="list$ | async as list"
       tuiScrollable
       itemSize="32"
       class="list__viewport  tui-zero-scrollbar">
       <vt-stock-list-item
         class="list__item stock-item"
-        *cdkVirtualFor="let item of (list$ | async) || []; trackBy: trackByStockListItem"
+        *cdkVirtualFor="let item of list.items; trackBy: trackByStockListItem"
         [item]="item.id"
         [formControl]="controlItem">
         <div
@@ -56,9 +57,23 @@
             *ngIf="item.change !== null; else skeleton">
             {{ item.change | tuiFormatNumber : { decimalLimit: item.increment } }}
           </div>
-          <div class="stock-item__percent stock-item__change-percent"
-               *ngIf="item.changePercent !== null; else skeleton">
+          <div
+            class="stock-item__percent stock-item__change-percent"
+            *ngIf="item.changePercent !== null; else skeleton">
             {{ item.changePercent | tuiFormatNumber : { decimalLimit: 2 } }}%
+          </div>
+          <div
+            *ngIf="list.type | stockItemRemove"
+            class="stock-item__remove">
+            <button
+              class="remove"
+              size="s"
+              icon="tuiIconTrash2"
+              tuiIconButton
+              appearance="secondary"
+              type="button"
+              (click)="onRemove($event, item)">
+            </button>
           </div>
         </div>
       </vt-stock-list-item>

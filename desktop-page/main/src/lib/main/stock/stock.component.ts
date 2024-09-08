@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiDataListWrapperModule, TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
 import {
   TuiButtonModule,
   TuiDataListModule,
+  TuiDropdownModule,
   TuiLoaderModule,
   TuiSvgModule,
   TuiTextfieldControllerModule,
@@ -11,11 +12,12 @@ import {
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
 import { combineLatest, debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
-import { StockListComponent } from './list/list.component';
+import { StockListComponent } from './list';
 import { filter, map } from 'rxjs/operators';
 import {
   StockGroup,
   StockGroups,
+  StockGroupType,
   StockId,
   StockInstrument,
   StockListItems,
@@ -28,6 +30,17 @@ import { StockService } from './stock.service';
 import { EventSelected } from 'types/events';
 import { DesktopLkStore } from 'stores/desktop';
 import { QueryParams } from 'utils/query-params';
+import { FormInputComponent } from './form-input';
+import { FormInputEvent } from './form-input/form-input.types';
+import { PolymorpheusComponent, PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
+import { DialogService } from '@ui/dialog';
+import { DialogComponent } from './dialog';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SearchCardComponent } from 'ui-common';
+
+type IsRename = 'edit' | 'new' | false;
+
+type MapGroup = Map<string, StockListItems>;
 
 export interface StockListWithType {
   type: EventSelected;
@@ -51,6 +64,11 @@ export interface StockListWithType {
     TuiButtonModule,
     StockListComponent,
     TuiLoaderModule,
+    TuiDataListWrapperModule,
+    TuiDropdownModule,
+    FormInputComponent,
+    DialogComponent,
+    SearchCardComponent,
   ],
   templateUrl: './stock.component.html',
   styleUrls: ['./stock.component.scss'],
@@ -58,32 +76,58 @@ export interface StockListWithType {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockComponent {
+  private readonly _injector: Injector = inject(Injector);
   private readonly _service: StockService = inject(StockService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+  private readonly _dialogService: DialogService = inject(DialogService);
+  private readonly _dialogApproveContent: PolymorpheusContent = new PolymorpheusComponent(
+    DialogComponent,
+    this._injector
+  );
+  private readonly _dialogSearchContent: PolymorpheusContent = new PolymorpheusComponent(
+    SearchCardComponent,
+    this._injector
+  );
+  private readonly _destroyRef$: DestroyRef = inject(DestroyRef);
 
-  public signatureVisible = false;
+  isRename: IsRename = false;
+  default: StockGroup = {
+    id: '',
+    name: 'Новый список',
+    type: StockGroupType.CUSTOM,
+  };
 
   public readonly controlGroup: FormControl<StockGroup | null> = new FormControl<StockGroup | null>(null);
 
-  public readonly controlGroupName: FormControl<string | null> = new FormControl<string | null>(null);
+  readonly controlRename: FormControl<StockGroup | null> = new FormControl<StockGroup | null>(null);
 
   public readonly stringify: TuiStringHandler<StockGroup> = (item: StockGroup) => item.name;
 
   readonly groups$: Observable<StockGroups | null> = this._store.stockGroups$.pipe(
+    tap((data) => console.log(data)),
     tap((groups: StockGroups | null) => groups && this.controlGroup.patchValue(groups[0])),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  readonly groupsCustom$ = this.groups$.pipe(
+    map((groups: StockGroups | null) =>
+      groups ? groups.filter((item: StockGroup) => item.type === StockGroupType.CUSTOM) : null
+    )
+  );
+  readonly groupsDefault$ = this.groups$.pipe(
+    map((groups: StockGroups | null) =>
+      groups ? groups.filter((item: StockGroup) => item.type === StockGroupType.DEFAULT) : null
+    )
+  );
+
   private readonly _list$: Observable<StockListItems> = this._store.stockMap$.pipe(
-    filter(
-      (stockMap: Map<string, StockListItems> | null): stockMap is Map<string, StockListItems> => stockMap !== null
-    ),
-    switchMap((stockMap: Map<string, StockListItems>) =>
+    filter((stockMap: MapGroup | null): stockMap is MapGroup => stockMap !== null),
+    switchMap((stockMap: MapGroup) =>
       this.controlGroup.valueChanges.pipe(
         startWith(this.controlGroup.value),
         filter((value: StockGroup | null): value is StockGroup => value !== null),
-        map((value: StockGroup) => stockMap.get(value.id) || []),
+        map((value: StockGroup) => stockMap.get(value.id) as StockListItems),
         tap((list: StockListItems) => this._store.updateStockActive(list.map((item: StockInstrument) => item.id)))
       )
     )
@@ -91,7 +135,7 @@ export class StockComponent {
 
   public readonly list$: Observable<StockListWithType> = combineLatest([
     this._list$,
-    this._store.price$,
+    this._store.price$.pipe(filter((price: StockPrice<WithLastPrice> | null) => !!price)),
     this.controlGroup.valueChanges,
   ]).pipe(
     debounceTime(0),
@@ -101,46 +145,77 @@ export class StockComponent {
     }))
   );
 
-  public toggle(): void {
-    this.signatureVisible = !this.signatureVisible;
-  }
-
-  public addGroup(event: Event): void {
-    event.preventDefault();
-
-    // this._createGroup();
-    this.toggle();
-  }
-
-  public trackByGroupId(_: number, item: StockGroup): StockId {
-    return item.id;
-  }
-
-  public onSelect(value: { type: EventSelected; id: StockId }): void {
+  onSelect(value: { type: EventSelected; id: StockId }): void {
     this._queryParams.update(value);
   }
 
-  private _createGroup(): void {
-    // const stockName: StockGroup = {
-    //   id: new Date().toISOString(),
-    //   name: this.controlGroupName.value as string,
-    //   type: StockGroupType.CUSTOM,
-    // };
-    //
-    // this.groups.push(stockName);
-    // this._groups$.next(this.groups);
-    //
-    // if (this._map) {
-    //   this._map.set(stockName, []);
-    // }
-    //
-    // this.controlGroup.patchValue(stockName);
-    // this.controlGroupName.reset();
+  onAddInstrument(event: Event): void {
+    event.preventDefault();
+
+    this.showDialog<StockInstrument | null, null>(this._dialogSearchContent, {
+      appearance: 'search-card',
+      data: null,
+    }).subscribe((instrument: StockInstrument | null) => {
+      if (instrument !== null && this.controlGroup.value !== null) {
+        this._store.addStockInstrument({
+          instrumentsListId: this.controlGroup.value.id,
+          instrumentId: instrument.id,
+        });
+      }
+    });
+  }
+
+  onFormEvent(event: FormInputEvent<StockGroup>): void {
+    if (event.type === 'cancel') {
+      this.isRename = false;
+      return;
+    }
+
+    if (event.type === 'submit') {
+      if (this.isRename === 'new' && event.changed) {
+        this._store.createStockList(event.changed);
+        this.isRename = false;
+        this.controlGroup.patchValue(event.value);
+        return;
+      }
+
+      if (this.isRename === 'edit' && event.changed) {
+        this._store.editStockList({ id: event.value.id, name: event.changed });
+        this.isRename = false;
+        return;
+      }
+    }
+  }
+
+  onEdit(event: Event, item: StockGroup, type: IsRename): void {
+    event.stopPropagation();
+
+    this.isRename = type;
+    this.controlRename.patchValue(item);
   }
 
   onRemove(event: Event, item: StockGroup): void {
     event.stopPropagation();
 
-    console.log(item);
+    this.showDialog<boolean, StockGroup>(this._dialogApproveContent, {
+      data: item,
+      appearance: 'dialog-remove',
+    }).subscribe((result: boolean) => {
+      if (result) {
+        this._store.deleteStockList(item.id);
+      }
+    });
+  }
+
+  onDeleteInstrument(event: StockInstrument): void {
+    console.log(event);
+
+    if (event !== null && this.controlGroup.value !== null) {
+      this._store.deleteStockInstrument({ instrumentId: event.id, instrumentsListId: this.controlGroup.value.id });
+    }
+  }
+
+  showDialog<T, D>(component: PolymorpheusContent, options: { data: D; appearance: string }): Observable<T> {
+    return this._dialogService.open<T>(component, options).pipe(takeUntilDestroyed(this._destroyRef$));
   }
 }

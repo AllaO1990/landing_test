@@ -32,6 +32,7 @@
       "store/*": ["store/*"],
       "tokens/*": ["tokens/*"],
       "types/*": ["types/*"],
+      "ui-common": ["ui-common/src/index.ts"],
       "utils/*": ["utils/*"]
     }
   },

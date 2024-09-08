@@ -1,13 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject, Injector } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { DESKTOP_STORE } from 'tokens/desktop';
+import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { DesktopLkStore } from 'stores/desktop';
 import { Observable } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { TuiHostedDropdownComponent } from '@taiga-ui/core';
 import { DialogService } from '@ui/dialog';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
-import { SearchCardComponent } from '../search-card/search-card.component';
+import { QueryParams } from 'utils/query-params';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EventSelected } from 'types/events';
+import { SearchCardComponent } from 'ui-common';
 
 @Component({
   selector: 'vt-toolbar-main',
@@ -16,12 +19,14 @@ import { SearchCardComponent } from '../search-card/search-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolbarComponent {
-  private readonly _authService: AuthService = inject(AuthService);
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _injector: Injector = inject(Injector);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+  private readonly _authService: AuthService = inject(AuthService);
   private readonly _dialogService: DialogService = inject(DialogService);
 
-  private readonly _component: PolymorpheusComponent<any> = new PolymorpheusComponent(
+  private readonly _component: PolymorpheusComponent<SearchCardComponent> = new PolymorpheusComponent(
     SearchCardComponent,
     this._injector
   );
@@ -51,12 +56,18 @@ export class ToolbarComponent {
     event.preventDefault();
 
     this._dialogService
-      .open(this._component, {
+      .open<StockInstrument | null>(this._component, {
         data: selected.ticker,
         appearance: 'search-card',
       })
-      .subscribe(() => {
-        console.log('open');
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((instrument: StockInstrument | null) => {
+        if (instrument !== null) {
+          this._queryParams.update({
+            type: EventSelected.STOCK_LIST,
+            id: instrument.id,
+          });
+        }
       });
   }
 

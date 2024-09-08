@@ -17,7 +17,7 @@ export enum StockCurrency {
   USDT = 'usdt',
 }
 
-export type StockId = string | number;
+export type StockId = string;
 
 /**
  * Элемент списокв тикеров с полной информацией по эмитенту без цены
@@ -44,21 +44,23 @@ export interface StockListItemPrice {
 
 export type StockListItemWithPrice = StockInstrument & StockListItemPrice;
 
+export interface StockInstrumentList {
+  id: string;
+  name: string;
+}
+
 /**
  * Элемент из выпадающего списка для Stock
  */
-export interface StockGroup {
-  id: string;
-  name: string;
+export interface StockGroup extends StockInstrumentList {
   type: StockGroupType;
 }
 
 export type StockGroups = StockGroup[];
 
-export interface StockUserGroup {
-  id: string;
-  name: string;
-  list: string[];
+export interface StockLinkListInstrument {
+  instrumentId: string;
+  instrumentsListId: string;
 }
 
 export interface Stock {

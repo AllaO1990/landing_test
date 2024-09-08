@@ -12,38 +12,37 @@
 }
 
 .actions {
-  overflow: hidden;
-  position: absolute;
-
-  right: 5px;
+  display: flex;
 
   z-index: -1;
   opacity: 0;
 
   transition: opacity 0.25s ease-in-out;
 
-
   button:not(:last-child) {
     margin-right: var(--padding-2);
   }
 }
 
-//.item {
-//  &:hover {
-//    .actions {
-//      opacity: 1;
-//      z-index: 1;
-//
-//      transition: none;
-//    }
-//
-//    ::ng-deep {
-//      tui-svg.t-checkmark {
-//        opacity: 0;
-//      }
-//    }
-//  }
-//}
+.space {
+  flex: 1;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+
+  height: 100%;
+
+  &:hover {
+    .actions {
+      opacity: 1;
+      z-index: 1;
+
+      transition: none;
+    }
+  }
+}
 
 .list {
   display: flex;
@@ -53,7 +52,7 @@
   overflow: hidden;
 
   &__action {
-    margin: var(--padding-2) var(--padding-2) 0;
+    margin: var(--padding-2);
   }
 
   &__container {
@@ -64,7 +63,20 @@
 
 .action {
   &__form {
-    margin-bottom: var(--padding-2);
+    display: flex;
+    align-items: center;
+  }
+
+  &__rename {
+    flex: 1;
+  }
+
+  &__add-instrument {
+    margin-left: var(--padding-2);
+  }
+
+  &__select {
+    flex: 1;
   }
 
   &__addition {
@@ -113,5 +125,13 @@
     height: 100%;
 
     margin-top: -16px;
+  }
+}
+
+::ng-deep {
+  .data-list-wrapper tui-data-list[data-list-size="s"] .t-checkmark,
+  .data-list-wrapper tui-data-list[data-list-size="s"] .t-checkmark {
+    width: 1.75rem;
+    margin-inline-end: 0 !important;
   }
 }

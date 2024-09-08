@@ -1,4 +1,15 @@
-import { AfterContentInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Input, Output } from '@angular/core';
+import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  Pipe,
+  PipeTransform,
+} from '@angular/core';
 import { STOCK_LIST_HEADER } from '../stock.constant';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
@@ -8,13 +19,23 @@ import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from '
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiHintModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiButtonModule, TuiFormatNumberPipeModule, TuiHintModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockListWithType } from '../stock.component';
+
+@Pipe({
+  name: 'stockItemRemove',
+  standalone: true,
+})
+export class StockListRemovePipe implements PipeTransform {
+  transform(value: EventSelected): boolean {
+    return EventSelected.STOCK_LIST === value;
+  }
+}
 
 @Component({
   selector: 'vt-stock-list',
@@ -36,6 +57,8 @@ import { StockListWithType } from '../stock.component';
     TuiScrollbarModule,
     TuiHintModule,
     NgTemplateOutlet,
+    StockListRemovePipe,
+    TuiButtonModule,
   ],
 })
 export class StockListComponent implements AfterContentInit {
@@ -43,13 +66,9 @@ export class StockListComponent implements AfterContentInit {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _list$: Subject<StockListWithType | null> = new BehaviorSubject<StockListWithType | null>(null);
 
-  public stockList$: Observable<StockListWithType | null> = this._list$.asObservable();
+  readonly list$: Observable<StockListWithType | null> = this._list$.asObservable();
 
-  public list$: Observable<StockListItemWithPrice[] | null> = this.stockList$.pipe(
-    map((list: StockListWithType | null) => list && list.items)
-  );
-
-  @Output() selected: Observable<{ id: StockId; type: EventSelected }> = this.stockList$.pipe(
+  @Output() selected: Observable<{ id: StockId; type: EventSelected }> = this.list$.pipe(
     filter((list: StockListWithType | null): list is StockListWithType => !!list),
     switchMap((list: StockListWithType) =>
       this.controlItem.valueChanges.pipe(
@@ -58,6 +77,8 @@ export class StockListComponent implements AfterContentInit {
       )
     )
   );
+
+  @Output() delete: EventEmitter<StockInstrument> = new EventEmitter<StockInstrument>();
 
   public readonly controlItem: FormControl = new FormControl<string | null>(null);
 
@@ -68,18 +89,24 @@ export class StockListComponent implements AfterContentInit {
     this._list$.next(value);
   }
 
-  public trackByHeader(index: number, _: { name: string; label: string }): number {
+  trackByHeader(index: number, _: { name: string; label: string }): number {
     return index;
   }
 
-  public trackByStockListItem(_: number, item: StockInstrument): StockId {
+  trackByStockListItem(_: number, item: StockInstrument): StockId {
     return item.id;
+  }
+
+  onRemove(event: Event, item: StockInstrument): void {
+    event.stopPropagation();
+
+    this.delete.emit(item);
   }
 
   ngAfterContentInit(): void {
     combineLatest([
       this._store.event$,
-      this.stockList$.pipe(
+      this.list$.pipe(
         map((list: StockListWithType | null) => list && list.type),
         distinctUntilChanged()
       ),
@@ -92,17 +119,6 @@ export class StockListComponent implements AfterContentInit {
       .subscribe((value: StockId | null) => {
         this.controlItem.patchValue(value, { emitEvent: false });
       });
-
-    // this.controlItem.patchValue('72187db2-44d8-4b2e-8b43-c41fd30c4a39');
-
-    //
-    // this._store.selected$
-    //   .pipe(
-    //     filter((result: StockEvent | null) => this._conditionFilter(result))
-    //   )
-    //   .subscribe((_) =>
-    //     this.controlItem.patchValue(null, { emitEvent: false })
-    //   );
   }
 
   private _getValue(event: StockEvent | null, type: EventSelected | null): StockId | null {

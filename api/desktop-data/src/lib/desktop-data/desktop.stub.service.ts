@@ -5,7 +5,7 @@ import { filter } from 'rxjs/operators';
 import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Response, ResponseMessage } from 'types/response';
-import { Stock, StockId, StockInstrument } from 'types/stock';
+import { Stock, StockId, StockInstrumentList, StockLinkListInstrument } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 import { Position } from 'types/position';
@@ -27,16 +27,16 @@ export class DesktopStubService extends DesktopService {
     );
   }
 
-  getStock(id: StockId): Observable<StockInstrument[]> {
-    return of([]);
-  }
-
   getInstrumentsLists(): Observable<any> {
     return of([]);
   }
 
   getInstrumentsListItems(listId: StockId): Observable<any> {
     return of([]);
+  }
+
+  addInstrumentsListItems(value: StockLinkListInstrument): Observable<Response<StockLinkListInstrument>> {
+    return of();
   }
 
   getWatchInstrumentsListItems(): Observable<any> {
@@ -80,6 +80,22 @@ export class DesktopStubService extends DesktopService {
   }
 
   getIndicatorSma(params: IndicatorEmaParams): Observable<Response<any>> {
+    return of();
+  }
+
+  createInstrumentsListItems(name: string): Observable<Response<{ id: string; name: string }>> {
+    return of();
+  }
+
+  deleteInstrumentsLists(name: string): Observable<Response<{ id: string }>> {
+    return of();
+  }
+
+  editInstrumentsListItems(value: StockInstrumentList): Observable<Response<StockInstrumentList>> {
+    return of();
+  }
+
+  deleteInstrumentsListsItems(value: StockLinkListInstrument): Observable<Response<StockLinkListInstrument>> {
     return of();
   }
 }

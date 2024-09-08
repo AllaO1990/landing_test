@@ -14,13 +14,13 @@ import {
 import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
-import { ButtonWithListComponent } from './button-with-list/button-with-list.component';
+import { ButtonWithListComponent } from './button-with-list';
 import { CHART_EMA_LIST, CHART_SMA_LIST } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { sortText } from 'utils/sort-text';
 import { TuiButtonModule, TuiLoaderModule, TuiSvgModule } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
-import { LegendComponent } from './legend/legend.component';
+import { LegendComponent } from './legend';
 
 interface IndicatorListItem {
   name: string;
@@ -47,9 +47,10 @@ interface IndicatorListItem {
   styleUrl: './chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MainChartComponent implements OnInit {
+export class ChartCandlestickComponent implements OnInit {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   toggle = true;
+  toggleLegend = true;
   private readonly _text$: Subject<boolean> = new BehaviorSubject<boolean>(this.toggle);
   readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
   readonly candles$: Observable<any | null> = this._store.candles$.pipe(shareReplay(1));
@@ -92,7 +93,7 @@ export class MainChartComponent implements OnInit {
     }
   }
 
-  onToggle(event: Event): void {
+  onToggleAtr(event: Event): void {
     event.preventDefault();
 
     this.toggle = !this.toggle;
@@ -121,6 +122,12 @@ export class MainChartComponent implements OnInit {
     if (this.valueSma !== this.controlSma.value) {
       this._actionSma();
     }
+  }
+
+  onToggleLegend(event: Event): void {
+    event.preventDefault();
+
+    this.toggleLegend = !this.toggleLegend;
   }
 
   private _getValue(value: IndicatorListItem[] | null): string[] {

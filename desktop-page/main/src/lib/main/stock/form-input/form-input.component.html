@@ -1,0 +1,27 @@
+<form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <tui-input
+    class="form__input"
+    tuiAutoFocus
+    formControlName="name"
+    tuiTextfieldSize="s"
+    [tuiTextfieldCleaner]="true">
+    Название списка
+    <input tuiTextfield />
+  </tui-input>
+  <button
+    class="form__action form__submit"
+    size="s"
+    icon="tuiIconCheck"
+    tuiIconButton
+    [disabled]="form.invalid"
+    type="submit">
+  </button>
+  <button
+    class="form__action form__cancel"
+    size="s"
+    tuiIconButton
+    type="button"
+    icon="tuiIconClose"
+    appearance="secondary"
+    (click)="onCancel($event)"></button>
+</form>

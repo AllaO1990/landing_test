@@ -24,7 +24,18 @@ import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
 import { StockInstrument } from 'types/stock';
 import { ColorIndicator } from 'types/color';
-import { defer, distinctUntilChanged, map, Observable, ReplaySubject, Subject, switchMap, take } from 'rxjs';
+import {
+  defer,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  ReplaySubject,
+  shareReplay,
+  Subject,
+  switchMap,
+  take,
+} from 'rxjs';
 import { SeriesSplineOptions } from 'highcharts';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CHART_INDICATORS_NAME } from './chart.constants';
@@ -197,6 +208,11 @@ export class ChartComponent implements OnInit {
         return position;
       },
     },
+    stockTools: {
+      gui: {
+        visible: false,
+      },
+    },
     plotOptions: {
       candlestick: {
         color: '#ff0043',
@@ -216,6 +232,10 @@ export class ChartComponent implements OnInit {
         },
       },
       spline: {
+        dataGrouping: {
+          groupAll: true,
+          groupPixelWidth: 10,
+        },
         allowPointSelect: false,
         marker: { enabled: false },
         label: { enabled: false },
@@ -486,7 +506,14 @@ export class ChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const chart$ = this._chart$.pipe(takeUntilDestroyed(this._destroyRef));
+    const chart$ = this._chart$.pipe(
+      filter((chart: Highcharts.Chart) => !!chart),
+      takeUntilDestroyed(this._destroyRef),
+      shareReplay({
+        refCount: true,
+        bufferSize: 1,
+      })
+    );
 
     chart$
       .pipe(

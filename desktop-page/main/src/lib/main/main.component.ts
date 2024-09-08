@@ -1,6 +1,5 @@
-import { AsyncPipe, JsonPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ChartComponent } from '@ui/chart';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
@@ -14,7 +13,7 @@ import { StockComponent } from './stock/stock.component';
 import { TuiTabsModule } from '@taiga-ui/kit';
 import { TuiBreakpointService, TuiSvgModule } from '@taiga-ui/core';
 import { Position } from 'types/position';
-import { MainChartComponent } from './chart/chart.component';
+import { ChartCandlestickComponent } from 'ui-common';
 
 @Component({
   selector: 'lib-main',
@@ -26,11 +25,9 @@ import { MainChartComponent } from './chart/chart.component';
     EntryModule,
     OutModule,
     StockComponent,
-    JsonPipe,
-    ChartComponent,
     TuiTabsModule,
     TuiSvgModule,
-    MainChartComponent,
+    ChartCandlestickComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
