@@ -7,4 +7,5 @@ export interface StockListState {
   watch: null | StockListItems;
   active: null | StockId[];
   selected: null | StockInstrument;
+  now: number;
 }

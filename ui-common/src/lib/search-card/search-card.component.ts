@@ -5,14 +5,12 @@ import { TuiInputModule } from '@taiga-ui/kit';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TuiBreakpointService, TuiButtonModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { DesktopLkStore } from 'stores/desktop';
-import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
+import { DESKTOP_STORE } from 'tokens/desktop';
 import { debounceTime, Observable, switchMap } from 'rxjs';
 import { StockInstrument, StockListItems } from 'types/stock';
 import { filter, map, startWith } from 'rxjs/operators';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/list';
-import { QueryParams } from 'utils/query-params';
-import { EventSelected } from 'types/events';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 
 @Component({
@@ -38,7 +36,6 @@ import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.servic
 export class SearchCardComponent {
   public readonly _breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
-  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
   readonly context: TuiDialog<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
@@ -85,17 +82,12 @@ export class SearchCardComponent {
   onClick(event: Event, value: StockInstrument): void {
     event.preventDefault();
 
-    this._queryParams.update({
-      type: EventSelected.STOCK_LIST,
-      id: value.id,
-    });
-
-    this.context.$implicit.complete();
+    this.context.completeWith(value);
   }
 
   onClose(event: Event): void {
     event.preventDefault();
 
-    this.context.$implicit.complete();
+    this.context.completeWith(null);
   }
 }

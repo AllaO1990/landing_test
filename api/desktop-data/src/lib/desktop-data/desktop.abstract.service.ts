@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { Idea } from 'types/idea';
 import { Response } from 'types/response';
-import { Stock, StockId, StockPrice, WithLastPrice } from 'types/stock';
+import { Stock, StockId, StockInstrumentList, StockLinkListInstrument, StockPrice, WithLastPrice } from 'types/stock';
 
 import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { Position } from 'types/position';
@@ -13,13 +13,15 @@ export abstract class DesktopService {
 
   public abstract getStockList(): Observable<Response<Stock>>;
 
-  public abstract getList(): Observable<unknown>;
-
   public abstract getInstrumentsLists(): Observable<Response<any>>;
 
   public abstract getWatchInstrumentsListItems(): Observable<Response<Stock>>;
 
   public abstract getInstrumentsListItems(listId: StockId): Observable<Response<Stock>>;
+
+  public abstract addInstrumentsListItems(
+    value: StockLinkListInstrument
+  ): Observable<Response<StockLinkListInstrument>>;
 
   public abstract getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>>;
 
@@ -36,4 +38,14 @@ export abstract class DesktopService {
   public abstract getIndicatorEma(params: IndicatorEmaParams): Observable<Response<any>>;
 
   public abstract getIndicatorSma(params: IndicatorSmaParams): Observable<Response<any>>;
+
+  public abstract createInstrumentsListItems(name: string): Observable<Response<StockInstrumentList>>;
+
+  public abstract deleteInstrumentsLists(name: string): Observable<Response<{ id: string }>>;
+
+  public abstract editInstrumentsListItems(value: StockInstrumentList): Observable<Response<StockInstrumentList>>;
+
+  public abstract deleteInstrumentsListsItems(
+    value: StockLinkListInstrument
+  ): Observable<Response<StockLinkListInstrument>>;
 }

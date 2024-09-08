@@ -1,4 +1,4 @@
-import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiDialog } from '@taiga-ui/cdk';
 import {
@@ -9,7 +9,6 @@ import {
   TuiSvgModule,
 } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
-import { ChartComponent } from '@ui/chart';
 import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
@@ -23,6 +22,7 @@ import { map } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
+import { ChartCandlestickComponent } from 'ui-common';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -36,7 +36,6 @@ export interface TabItem {
   standalone: true,
   imports: [
     NgIf,
-    JsonPipe,
     TuiLoaderModule,
     TuiButtonModule,
     EnterActionComponent,
@@ -44,12 +43,12 @@ export interface TabItem {
     EnterSidebarComponent,
     DatePipe,
     AsyncPipe,
-    ChartComponent,
     TuiScrollbarModule,
     NgForOf,
     TuiTabsModule,
     TuiSvgModule,
     InstrumentComponent,
+    ChartCandlestickComponent,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',

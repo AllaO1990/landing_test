@@ -88,11 +88,8 @@
           <!--              (click)="onClose($event)"-->
           <!--            ></button>-->
           <!--          </div>-->
-          <vt-chart
-            [consolidationZones]="consolidationZones$ | async"
-            [data]="candles$ | async"
-            [selected]="selected$ | async"
-          ></vt-chart>
+
+          <lib-chart></lib-chart>
         </div>
       </div>
       <div class="container__idea container__widget">

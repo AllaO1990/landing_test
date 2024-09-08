@@ -166,6 +166,16 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public updateStockActive = this._stockListStore.updateActive;
 
+  readonly createStockList = this._stockListStore.create;
+
+  readonly deleteStockList = this._stockListStore.delete;
+
+  readonly editStockList = this._stockListStore.edit;
+
+  readonly addStockInstrument = this._stockListStore.addInstrument;
+
+  readonly deleteStockInstrument = this._stockListStore.deleteInstrument;
+
   public readonly onChangeEventStock = this.effect((stream$: Observable<StockEvent | null>) =>
     stream$.pipe(
       filter((event: StockEvent | null): event is StockEvent => event !== null),
@@ -194,7 +204,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
           result[0] !== null && result[1] !== null
       ),
       filter(([event, _]: [StockEvent, Idea[]]): boolean => event.type === EventSelected.IDEA),
-      map(([event, list]: [StockEvent, Idea[]]): Idea => list.find((item: Idea) => item.id === +event.id)!),
+      map(([event, list]: [StockEvent, Idea[]]): Idea => list.find((item: Idea) => item.id === event.id)!),
       tap((value: Idea) => {
         this._stockListStore.updateSelected(value.instrument);
         this._entryStore.updateSelected(value);
@@ -210,7 +220,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
           result[0] !== null && result[1] !== null
       ),
       filter(([event, _]: [StockEvent, Position[]]): boolean => event.type === EventSelected.POSITION),
-      map(([event, list]: [StockEvent, Position[]]): Position => list.find((item: Position) => item.id === +event.id)!),
+      map(([event, list]: [StockEvent, Position[]]): Position => list.find((item: Position) => item.id === event.id)!),
       tap((value: Position) => {
         this._stockListStore.updateSelected(value.instrument);
         this._entryStore.updateSelected(null);

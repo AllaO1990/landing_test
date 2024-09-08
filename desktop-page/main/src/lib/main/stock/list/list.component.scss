@@ -137,6 +137,31 @@
       margin-right: 8px;
     }
   }
+
+  &__remove {
+    position: absolute;
+    left: 264px;
+
+    opacity: 0;
+    width: 40px;
+
+    z-index: -1;
+  }
+
+  &:hover &__remove {
+    opacity: 1;
+    z-index: 10;
+  }
+}
+
+.remove[tuiIconButton] {
+  width: 100%;
+
+  ::ng-deep {
+    [tuiWrapper][data-appearance='secondary'] {
+      background-color: var(--tui-secondary);
+    }
+  }
 }
 
 .list {

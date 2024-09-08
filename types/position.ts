@@ -1,4 +1,4 @@
-import { StockInstrument, StockPosition } from './stock';
+import { StockId, StockInstrument, StockPosition } from './stock';
 import { getPriceIncrement } from '../utils/get-price-increment';
 
 export interface ResponsePositions {
@@ -7,7 +7,7 @@ export interface ResponsePositions {
 }
 
 export interface ResponsePosition {
-  id: number;
+  id: string;
   createdAt: string;
   updatedAt: string;
   positionType: StockPosition;
@@ -62,7 +62,7 @@ export interface StockPositionTarget {
 
 export class Position implements ResponsePosition {
   readonly multiplier: number;
-  id: number;
+  id: StockId;
   author: string;
   createdAt: string;
   entries: StockPositionEntry[];

@@ -2,7 +2,6 @@ import { Component, Input, Pipe, PipeTransform } from '@angular/core';
 import { NgFor, NgTemplateOutlet } from '@angular/common';
 import { ColorIndicator } from 'types/color';
 import { TuiSvgModule } from '@taiga-ui/core';
-import { sortNumber } from '../../main.utils';
 
 @Pipe({
   name: 'legendColor',
@@ -22,7 +21,7 @@ export class LegendColorPipe implements PipeTransform {
 })
 export class LegendSortPipe implements PipeTransform {
   transform(value: { name: string; value: string; order: number }[]) {
-    return value.sort((a, b) => sortNumber(b.order, a.order));
+    return value.sort((a, b) => b.order - a.order);
   }
 }
 

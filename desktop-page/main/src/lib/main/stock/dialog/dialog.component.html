@@ -1,0 +1,30 @@
+<div class="dialog">
+  <div class="dialog__title">
+    Удавить список {{ data.name }}
+  </div>
+  <div class="dialog__container">
+    <div class="dialog__content">
+      <p>Хотите удалить список: <strong>{{ data.name }}</strong>?</p>
+      <p>Все инструменты списка будут удалены!</p>
+    </div>
+    <div class="dialog__actions">
+      <button
+        class="dialog__action"
+        size="m"
+        tuiButton
+        type="submit"
+        (click)="submit($event)">
+        Да
+      </button>
+      <button
+        class="dialog__action"
+        appearance="secondary"
+        size="m"
+        tuiButton
+        type="button"
+        (click)="cancel($event)">
+        Нет
+      </button>
+    </div>
+  </div>
+</div>

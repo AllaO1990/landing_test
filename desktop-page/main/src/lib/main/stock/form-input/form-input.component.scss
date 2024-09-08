@@ -1,0 +1,15 @@
+.form {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  overflow: hidden;
+
+  &__input {
+    flex: 1;
+  }
+
+  &__action {
+    margin-left: var(--padding-2);
+  }
+}
