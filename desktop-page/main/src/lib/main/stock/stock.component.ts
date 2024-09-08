@@ -105,7 +105,6 @@ export class StockComponent {
   public readonly stringify: TuiStringHandler<StockGroup> = (item: StockGroup) => item.name;
 
   readonly groups$: Observable<StockGroups | null> = this._store.stockGroups$.pipe(
-    tap((data) => console.log(data)),
     tap((groups: StockGroups | null) => groups && this.controlGroup.patchValue(groups[0])),
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -127,7 +126,8 @@ export class StockComponent {
       this.controlGroup.valueChanges.pipe(
         startWith(this.controlGroup.value),
         filter((value: StockGroup | null): value is StockGroup => value !== null),
-        map((value: StockGroup) => stockMap.get(value.id) as StockListItems),
+        map((value: StockGroup) => stockMap.get(value.id)),
+        filter((list: StockListItems | undefined): list is StockListItems => !!list),
         tap((list: StockListItems) => this._store.updateStockActive(list.map((item: StockInstrument) => item.id)))
       )
     )
@@ -208,8 +208,6 @@ export class StockComponent {
   }
 
   onDeleteInstrument(event: StockInstrument): void {
-    console.log(event);
-
     if (event !== null && this.controlGroup.value !== null) {
       this._store.deleteStockInstrument({ instrumentId: event.id, instrumentsListId: this.controlGroup.value.id });
     }
