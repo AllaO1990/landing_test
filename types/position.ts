@@ -123,7 +123,7 @@ export class Position implements ResponsePosition {
   constructor(data: ResponsePosition) {
     this.multiplier = data.positionType === 'short' ? -1 : 1;
 
-    this.id = data.id;
+    this.id = data.id.toString();
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;
     this.positionType = data.positionType;
