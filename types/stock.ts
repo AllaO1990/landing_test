@@ -86,3 +86,10 @@ export interface WithLastPrice {
   minPriceIncrement: number;
   last: number;
 }
+
+export interface StockParamsConsolidationZones {
+  id: string;
+  interval: number;
+  from: string;
+  to: string;
+}

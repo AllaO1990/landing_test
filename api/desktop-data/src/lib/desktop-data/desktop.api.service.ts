@@ -29,10 +29,11 @@ export class DesktopApiService extends DesktopService {
     );
   }
 
-  public getConsolidationZones(ideaId: string): Observable<any> {
+  public getChartFigures(ideaId: string, from: string, to: string): Observable<any> {
     return this._http
       .get<ConsolidationZones>('https://trade.gpn.dev/api/v1/chart-figures', {
-        params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
+        params: { ideaId, from, to },
+        // params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
       })
       .pipe(
         catchError((error: Error) => {
@@ -164,5 +165,9 @@ export class DesktopApiService extends DesktopService {
 
   getIndicatorSma(params: IndicatorSmaParams): Observable<Response<any>> {
     return this._http.post<Response<any>>('https://trade.gpn.dev/api/v1/chart/sma', params);
+  }
+
+  getConsolidationZones(params: { id: string; interval: number; from: string; to: string }): Observable<Response<any>> {
+    return this._http.get<Response<any>>('https://trade.gpn.dev/api/v1/chart/consolidation-zones', { params });
   }
 }

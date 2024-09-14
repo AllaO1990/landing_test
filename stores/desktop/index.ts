@@ -6,3 +6,4 @@ export * from './position.store';
 export * from './indicator.atr.store';
 export * from './indicator.ema.store';
 export * from './indicator.sma.store';
+export * from './consolidation-zones.store';

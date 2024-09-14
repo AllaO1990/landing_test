@@ -11,11 +11,16 @@ import { Response } from 'types/response';
 import { MAP_COLOR_CONSOLIDATION } from 'types/color';
 
 export class ChartStore extends ComponentStore<ChartState> {
+  private readonly _from: Date = new Date(new Date(2014, 0, 1, 12).setUTCHours(0, 0, 0, 0));
+  private readonly _to: Date = new Date(new Date().setUTCHours(23, 59, 59, 0));
+
   private _queueCandles: Queue<any> = new Queue(3);
   private _colorConsolidation = MAP_COLOR_CONSOLIDATION;
-  private _queueConsolidationZones: Queue<string, Response<ActiveZone>> = new Queue(3);
+  private _queueChartFigures: Queue<string, Response<ActiveZone>> = new Queue(3);
 
   public readonly candles$: Observable<any[] | null> = this.select((state: ChartState) => state.candles);
+
+  readonly zones$: Observable<ActiveZone[] | null> = this.select((state: ChartState) => state.zones);
 
   public readonly consolidationZones$: Observable<ActiveZone[] | null> = this.select(
     (state: ChartState) => state.consolidationZones
@@ -25,6 +30,7 @@ export class ChartStore extends ComponentStore<ChartState> {
     super({
       candles: null,
       consolidationZones: null,
+      zones: null,
     });
   }
 
@@ -43,6 +49,11 @@ export class ChartStore extends ComponentStore<ChartState> {
   public updateConsolidationZones = this.updater((state: ChartState, data: any) => {
     return { ...state, consolidationZones: data };
   });
+
+  updateZones = this.updater((state: ChartState, zones: ActiveZone[]) => ({
+    ...state,
+    zones,
+  }));
 
   public readonly loadCandles = this.effect((stream$: Observable<{ source: any | null; index: number }>) => {
     let index = 0;
@@ -90,10 +101,10 @@ export class ChartStore extends ComponentStore<ChartState> {
     );
   });
 
-  public readonly loadConsolidationZonesV2 = this.effect((stream$: Observable<{ id: StockId } | null>) => {
+  public readonly loadChartFigures = this.effect((stream$: Observable<{ id: StockId } | null>) => {
     return stream$.pipe(
       filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
-      switchMap((data: { id: StockId }) => this._getConsolidationZones(data)),
+      switchMap((data: { id: StockId }) => this._getChartFigures(data)),
       map((data: ConsolidationZones) => {
         return transformActiveConsolidationZones(data?.data);
       }),
@@ -119,7 +130,7 @@ export class ChartStore extends ComponentStore<ChartState> {
 
   private _getWatchlistConsolidationZone(data: { id: StockId }): Observable<Response<ActiveZone>> {
     const key = data.id.toString();
-    const value = this._queueConsolidationZones.getValue(key);
+    const value = this._queueChartFigures.getValue(key);
 
     if (value) {
       return of(value);
@@ -127,19 +138,19 @@ export class ChartStore extends ComponentStore<ChartState> {
 
     return this._api
       .getWatchlistConsolidationZone(data.id)
-      .pipe(tap((res: any) => this._queueConsolidationZones.setValue(key, res)));
+      .pipe(tap((res: any) => this._queueChartFigures.setValue(key, res)));
   }
 
-  private _getConsolidationZones(data: { id: StockId }): Observable<any> {
+  private _getChartFigures(data: { id: StockId }): Observable<any> {
     const key = data.id.toString();
-    const value = this._queueConsolidationZones.getValue(key);
+    const value = this._queueChartFigures.getValue(key);
 
     if (value) {
       return of(value);
     }
 
     return this._api
-      .getConsolidationZones(data.id)
-      .pipe(tap((res: any) => this._queueConsolidationZones.setValue(key, res)));
+      .getChartFigures(data.id, this._from.toISOString(), this._to.toISOString())
+      .pipe(tap((res: any) => this._queueChartFigures.setValue(key, res)));
   }
 }

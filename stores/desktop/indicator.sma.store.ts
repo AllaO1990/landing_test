@@ -53,7 +53,7 @@ export class IndicatorSmaStore extends ComponentStore<IndicatorSmaState> {
     }
 
     return this._api.getIndicatorSma(data).pipe(
-      map((res: Response<any>) => indicatorTransformToSeries(res.data)),
+      map((res: Response<any>) => res.data && indicatorTransformToSeries(res.data)),
       tap((value: SeriesSplineOptions[]) => this._queue.setValue(uniqKey, value))
     );
   }
