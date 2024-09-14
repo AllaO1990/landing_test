@@ -1,3 +1,5 @@
+import { Timeframe } from 'types/timeframe';
+
 export const CHART_EMA_LIST = [
   {
     name: 'EMA 10',
@@ -48,6 +50,27 @@ export const CHART_SMA_LIST = [
     name: 'SMA 200',
     value: 'sma200',
     order: 12,
+    disabled: false,
+  },
+];
+
+export const CHART_ZONE_LIST = [
+  {
+    name: 'День',
+    value: Timeframe.CANDLE_INTERVAL_DAY,
+    order: 21,
+    disabled: false,
+  },
+  {
+    name: 'Неделя',
+    value: Timeframe.CANDLE_INTERVAL_WEEK,
+    order: 22,
+    disabled: false,
+  },
+  {
+    name: 'Месяц',
+    value: Timeframe.CANDLE_INTERVAL_MONTH,
+    order: 23,
     disabled: false,
   },
 ];

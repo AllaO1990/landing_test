@@ -147,6 +147,10 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
       return;
     }
 
+    if (this.control.value && this.control.value.length === 0) {
+      return;
+    }
+
     this.onChange(this.control.value);
     this.appearance = 'primary';
     this.toggled.emit(true);

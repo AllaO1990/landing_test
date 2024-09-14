@@ -1,7 +1,15 @@
 import { Observable } from 'rxjs';
 import { Idea } from 'types/idea';
 import { Response } from 'types/response';
-import { Stock, StockId, StockInstrumentList, StockLinkListInstrument, StockPrice, WithLastPrice } from 'types/stock';
+import {
+  Stock,
+  StockId,
+  StockInstrumentList,
+  StockLinkListInstrument,
+  StockParamsConsolidationZones,
+  StockPrice,
+  WithLastPrice,
+} from 'types/stock';
 
 import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { Position } from 'types/position';
@@ -29,7 +37,7 @@ export abstract class DesktopService {
 
   public abstract getCandles(id: any): Observable<unknown>;
 
-  public abstract getConsolidationZones(ideaId: StockId): Observable<ConsolidationZones>;
+  public abstract getChartFigures(ideaId: string, from: string, to: string): Observable<ConsolidationZones>;
 
   public abstract getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone>>;
 
@@ -48,4 +56,6 @@ export abstract class DesktopService {
   public abstract deleteInstrumentsListsItems(
     value: StockLinkListInstrument
   ): Observable<Response<StockLinkListInstrument>>;
+
+  public abstract getConsolidationZones(params: StockParamsConsolidationZones): Observable<Response<ActiveZone[]>>;
 }

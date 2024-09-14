@@ -9,6 +9,7 @@ import { indicatorGetUniq } from 'utils/indicators-func';
 
 export interface IndicatorAtrState {
   selected: null | any;
+  value: null | any;
 }
 
 export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
@@ -16,13 +17,18 @@ export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
 
   readonly selected$: Observable<null | any> = this.select((state: IndicatorAtrState) => state.selected);
 
+  readonly value$: Observable<null | any> = this.select((state: IndicatorAtrState) => state.value);
+
   constructor(private readonly _api: DesktopService) {
     super({
       selected: null,
+      value: null,
     });
   }
 
   updateSelected = this.updater((state: IndicatorAtrState, selected: any) => ({ ...state, selected }));
+
+  updateValue = this.updater((state: IndicatorAtrState, value: any) => ({ ...state, value }));
 
   readonly load = this.effect(
     (
@@ -34,7 +40,7 @@ export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
     ) =>
       stream$.pipe(
         switchMap((data: { id: StockId; interval: number; date: string } | null) =>
-          this._getIndicator(data).pipe(tap((data) => this.updateSelected(data)))
+          this._getIndicator(data).pipe(tap((data) => this.updateValue(data)))
         )
       )
   );

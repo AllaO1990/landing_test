@@ -25,6 +25,8 @@ import HStockTools from 'highcharts/modules/stock-tools';
 import { StockInstrument } from 'types/stock';
 import { ColorIndicator } from 'types/color';
 import {
+  combineLatest,
+  debounceTime,
   defer,
   distinctUntilChanged,
   filter,
@@ -67,6 +69,7 @@ export class ChartComponent implements OnInit {
   private readonly _indicators$: Subject<Highcharts.SeriesSplineOptions[] | null> = new ReplaySubject(1);
   private readonly _candlestick$: Subject<Highcharts.SeriesCandlestickOptions> = new ReplaySubject(1);
   private readonly _text$: Subject<string | number | null> = new ReplaySubject(1);
+  private readonly _selected$: Subject<StockInstrument | null> = new ReplaySubject(1);
 
   private _text: Highcharts.SVGElement | null = null;
   private _textSvgWidth = 0;
@@ -272,6 +275,11 @@ export class ChartComponent implements OnInit {
         showInLegend: false,
         opacity: 1,
         tooltip: {
+          // pointFormatter: function () {
+          //   console.log(this.series.name);
+          //
+          //   return 'dsfsdfsdf';
+          // },
           pointFormat:
             '<span style="color:{point.color}">●</span>' +
             '<b> {series.name} </b>' +
@@ -370,12 +378,14 @@ export class ChartComponent implements OnInit {
     if (this.consolidationZonesIsExist) {
       this.chart?.removeAnnotation(0);
     }
-    (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].name = value?.ticker;
+
+    this._selected$.next(value);
+    // (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].name = value?.ticker;
   }
 
   @Input()
-  set data(value: [string | number, number, number, number, number][]) {
-    this._candlestick$.next({ type: 'candlestick', data: value || [] });
+  set data(value: [string | number, number, number, number, number][] | null) {
+    this._candlestick$.next({ type: 'candlestick', name: '', data: value || [] });
   }
 
   @Input()
@@ -528,12 +538,22 @@ export class ChartComponent implements OnInit {
     chart$
       .pipe(
         switchMap((chart: Highcharts.Chart) =>
-          this._candlestick$
-            .asObservable()
-            .pipe(map((candlestick: Highcharts.SeriesCandlestickOptions) => ({ chart, candlestick })))
+          combineLatest([
+            this._candlestick$.asObservable(),
+            this._selected$
+              .asObservable()
+              .pipe(filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null)),
+          ]).pipe(
+            debounceTime(100),
+            map(([candlestick, instrument]: [Highcharts.SeriesCandlestickOptions, StockInstrument]) => ({
+              chart,
+              candlestick,
+              instrument,
+            }))
+          )
         )
       )
-      .subscribe(({ chart, candlestick }) => this._updateChartCandlestick(chart, candlestick));
+      .subscribe(({ chart, candlestick, instrument }) => this._updateChartCandlestick(chart, candlestick, instrument));
 
     chart$
       .pipe(
@@ -647,25 +667,32 @@ export class ChartComponent implements OnInit {
     this.#prevXExtremes = [xAxis.min, xAxis.max];
   }
 
-  private _updateChartIndicators(chart: Highcharts.Chart, indicators: Highcharts.SeriesSplineOptions[] | null): void {
+  private _updateChartIndicators(
+    chart: Highcharts.Chart,
+    indicators: (Highcharts.SeriesSplineOptions | null)[] | null
+  ): void {
     this._indicatorsName.forEach((name: string) => {
       const series = chart.get(name);
       if (series) {
         if (indicators === null) {
           (series as Highcharts.Series).data = [];
         } else {
-          const indicator = indicators.find((item) => item.id === name) || { type: 'spline', data: [] };
+          const indicator = indicators.find((item) => item && item.id === name) || { type: 'spline', data: [] };
           (series as Highcharts.Series).update(indicator);
         }
       }
     });
   }
 
-  private _updateChartCandlestick(chart: Highcharts.Chart, candlestick: Highcharts.SeriesCandlestickOptions): void {
+  private _updateChartCandlestick(
+    chart: Highcharts.Chart,
+    candlestick: Highcharts.SeriesCandlestickOptions,
+    instrument: StockInstrument
+  ): void {
     const series = chart.get('primary');
 
     if (series) {
-      (series as Highcharts.Series).update(candlestick);
+      (series as Highcharts.Series).update({ ...candlestick, name: instrument.ticker });
 
       chart.xAxis[0].setExtremes(
         new Date().setMonth(new Date().getMonth() - 2).valueOf(),

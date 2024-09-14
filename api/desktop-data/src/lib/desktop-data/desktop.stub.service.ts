@@ -5,7 +5,13 @@ import { filter } from 'rxjs/operators';
 import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Response, ResponseMessage } from 'types/response';
-import { Stock, StockId, StockInstrumentList, StockLinkListInstrument } from 'types/stock';
+import {
+  Stock,
+  StockId,
+  StockInstrumentList,
+  StockLinkListInstrument,
+  StockParamsConsolidationZones,
+} from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 import { Position } from 'types/position';
@@ -63,7 +69,7 @@ export class DesktopStubService extends DesktopService {
     return of([]);
   }
 
-  getConsolidationZones(): Observable<ConsolidationZones> {
+  getChartFigures(): Observable<ConsolidationZones> {
     return of();
   }
 
@@ -96,6 +102,10 @@ export class DesktopStubService extends DesktopService {
   }
 
   deleteInstrumentsListsItems(value: StockLinkListInstrument): Observable<Response<StockLinkListInstrument>> {
+    return of();
+  }
+
+  getConsolidationZones(params: StockParamsConsolidationZones): Observable<Response<any>> {
     return of();
   }
 }

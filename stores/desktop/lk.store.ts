@@ -21,6 +21,7 @@ import { DateRange } from 'types/date-range';
 import { GLOBAL_DATE_RANGE } from 'tokens/desktop';
 import { IndicatorSmaStore } from './indicator.sma.store';
 import { Timeframe } from 'types/timeframe';
+import { ConsolidationZonesStore } from './consolidation-zones.store';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -48,13 +49,15 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public readonly candles$: Observable<any[] | null> = this._chartStore.candles$;
 
+  readonly zones$: Observable<ActiveZone[] | null> = this._consolidationZonesStore.zones$;
+
   public readonly consolidationZones$: Observable<ActiveZone[] | null> = this._chartStore.consolidationZones$;
 
   readonly indicatorEma$: Observable<any[]> = this._indicatorEmaStore.series$;
 
   readonly indicatorSma$: Observable<any[]> = this._indicatorSmaStore.series$;
 
-  readonly indicatorAtr$: Observable<any> = this._indicatorAtrStore.selected$;
+  readonly indicatorAtr$: Observable<any> = this._indicatorAtrStore.value$;
 
   public readonly stockActive$: Observable<StockId[] | null> = this.select(
     this._stockListStore.active$.pipe(filter((result: StockId[] | null): result is StockId[] => result !== null)),
@@ -74,7 +77,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     private readonly _chartStore: ChartStore,
     private readonly _indicatorAtrStore: IndicatorAtrStore,
     private readonly _indicatorEmaStore: IndicatorEmaStore,
-    private readonly _indicatorSmaStore: IndicatorSmaStore
+    private readonly _indicatorSmaStore: IndicatorSmaStore,
+    private readonly _consolidationZonesStore: ConsolidationZonesStore
   ) {
     super({
       event: null,
@@ -93,7 +97,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
     this._chartStore.loadCandles(this._timer(this._stockListStore.selected$, TIMER_INTERVAL));
 
-    this._chartStore.loadConsolidationZonesV2(merge(this._entryStore.selected$, this._positionStore.selected$));
+    this._chartStore.loadChartFigures(merge(this._entryStore.selected$, this._positionStore.selected$));
 
     this._chartStore.loadWatchlistConsolidationZones(
       this.event$.pipe(
@@ -101,6 +105,13 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
         map((event: StockEvent) => (event.type === EventSelected.WATCH_LIST ? event : null))
       )
     );
+
+    // this._chartStore.loadConsolidationZones(
+    //   this._stockListStore.selected$.pipe(
+    //     filter((selected: StockInstrument | null): selected is StockInstrument => selected !== null),
+    //     map((selected: StockInstrument) => ({ id: selected.id, interval: Timeframe.CANDLE_INTERVAL_DAY }))
+    //   )
+    // );
 
     this.onChangeEventStock(this.event$);
     this.onChangeEventEntry(this.event$);
@@ -135,8 +146,34 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
     const today = new Date(new Date().setUTCHours(0, 0, 0, 0));
     this._indicatorAtrStore.load(
-      stockInstrumentId$.pipe(
-        map((id: string) => ({ id, interval: Timeframe.CANDLE_INTERVAL_DAY, date: today.toISOString() }))
+      combineLatest([stockInstrumentId$, this._indicatorAtrStore.selected$]).pipe(
+        map(([id, selected]: [string, boolean]) => {
+          if (!selected) {
+            return null;
+          }
+
+          return {
+            id,
+            interval: Timeframe.CANDLE_INTERVAL_DAY,
+            date: today.toISOString(),
+          };
+        })
+      )
+    );
+
+    this._consolidationZonesStore.load(
+      combineLatest([stockInstrumentId$, this._consolidationZonesStore.selected$, this._range$]).pipe(
+        map(([id, zones, range]: [string, number[] | null, DateRange]) => {
+          if (zones === null || zones.length === 0) {
+            return null;
+          }
+
+          return {
+            id,
+            interval: zones,
+            ...range,
+          };
+        })
       )
     );
   }
@@ -152,6 +189,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
   public updateIndicatorEmaSelected = this._indicatorEmaStore.updateSelected;
 
   public updateIndicatorSmaSelected = this._indicatorSmaStore.updateSelected;
+
+  public updateIndicatorAtrSelected = this._indicatorAtrStore.updateSelected;
+
+  updateConsolidationZoneSelected = this._consolidationZonesStore.updateSelected;
 
   public readonly loadActivePrice = this.effect((stream$: Observable<StockId[] | null>) =>
     stream$.pipe(

@@ -3,6 +3,7 @@ import { Params, RouterOutlet } from '@angular/router';
 import { ToolbarSearchModule } from '../../../../../apps/desktop/src/app/shared/components/toolbar-search';
 import {
   ChartStore,
+  ConsolidationZonesStore,
   DesktopLkStore,
   EntryStore,
   IndicatorAtrStore,
@@ -28,7 +29,8 @@ const createStore = (api: DesktopService) =>
     new ChartStore(api),
     new IndicatorAtrStore(api),
     new IndicatorEmaStore(api),
-    new IndicatorSmaStore(api)
+    new IndicatorSmaStore(api),
+    new ConsolidationZonesStore(api)
   );
 
 @Component({
@@ -71,8 +73,8 @@ export class LkComponent implements OnInit {
     }
 
     this._globalDateRangeService.setRange({
-      from: new Date(new Date(new Date().getFullYear() - 1, 0, 1, 3, 0, 0, 0)).toISOString(),
-      to: new Date(Date.now()).toISOString(),
+      from: new Date(new Date(new Date().getFullYear() - 1, 0, 1, 12).setUTCHours(0, 0, 0, 0)).toISOString(),
+      to: new Date(new Date().setUTCHours(23, 59, 59, 0)).toISOString(),
     });
   }
 
