@@ -71,6 +71,7 @@ export class ChartComponent implements OnInit {
   private readonly _text$: Subject<string | number | null> = new ReplaySubject(1);
   private readonly _selected$: Subject<StockInstrument | null> = new ReplaySubject(1);
 
+  private _currentTicker: string | null = null;
   private _text: Highcharts.SVGElement | null = null;
   private _textSvgWidth = 0;
 
@@ -466,11 +467,11 @@ export class ChartComponent implements OnInit {
         // },
       });
 
-      this.chart?.xAxis[0].setExtremes(
-        new Date().setMonth(new Date().getMonth() - 2).valueOf(),
-        new Date().setMonth(new Date().getMonth() + 1).valueOf()
-      );
-      this.chart?.yAxis[0].setExtremes();
+      // this.chart?.xAxis[0].setExtremes(
+      //   new Date().setMonth(new Date().getMonth() - 2).valueOf(),
+      //   new Date().setMonth(new Date().getMonth() + 1).valueOf()
+      // );
+      // this.chart?.yAxis[0].setExtremes();
 
       this.consolidationZonesIsExist = true;
     }, 10);
@@ -694,10 +695,14 @@ export class ChartComponent implements OnInit {
     if (series) {
       (series as Highcharts.Series).update({ ...candlestick, name: instrument.ticker });
 
-      chart.xAxis[0].setExtremes(
-        new Date().setMonth(new Date().getMonth() - 2).valueOf(),
-        new Date().setMonth(new Date().getMonth() + 1).valueOf()
-      );
+      if (this._currentTicker !== instrument.ticker) {
+        chart.xAxis[0].setExtremes(
+          new Date().setMonth(new Date().getMonth() - 2).valueOf(),
+          new Date().setMonth(new Date().getMonth() + 1).valueOf()
+        );
+
+        this._currentTicker = instrument.ticker;
+      }
     }
   }
 

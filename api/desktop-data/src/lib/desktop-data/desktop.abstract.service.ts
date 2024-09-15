@@ -35,7 +35,7 @@ export abstract class DesktopService {
 
   public abstract getPositionList(): Observable<Position[]>;
 
-  public abstract getCandles(id: any): Observable<unknown>;
+  public abstract getCandles(id: any): Observable<any>;
 
   public abstract getChartFigures(ideaId: string, from: string, to: string): Observable<ConsolidationZones>;
 

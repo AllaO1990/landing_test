@@ -52,11 +52,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     },
   ],
 })
-export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
+export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _ngZone: NgZone = inject(NgZone);
   private _controlOpen = false;
 
+  value: any = null;
   disabled = false;
   private onChange = (value: any) => {};
   private onTouched = () => {};
@@ -76,20 +77,26 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
   }
 
   set controlOpen(value: boolean) {
-    this._controlOpen = value;
-    this.opened.emit(value);
+    if (this._controlOpen !== value) {
+      this._controlOpen = value;
+      this.opened.emit(value);
+
+      if (!value) {
+        this.onChange(this.value);
+      }
+    }
   }
 
   appearance: 'primary' | 'secondary' = 'secondary';
 
-  control: FormControl<{ name: string }[] | null> = new FormControl(null);
+  control: FormControl<T[] | null> = new FormControl(null);
 
   readonly length$: Observable<number> = defer(() => {
     if (this.badge) {
       return this.control.valueChanges.pipe(
-        shareReplay(1),
         startWith(this.control.value),
-        map((value: { name: string }[] | null) => (value && value.length) || 0)
+        map((value: T[] | null) => (value && value.length) || 0),
+        shareReplay(1)
       );
     }
 
@@ -100,7 +107,9 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
   });
 
   ngOnInit() {
-    this.control.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => this.onChange(res));
+    this.control.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => {
+      this.value = res;
+    });
 
     this.length$
       .pipe(takeUntilDestroyed(this._destroyRef))
@@ -108,6 +117,7 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
   }
 
   writeValue(obj: any): void {
+    this.value = obj;
     this.control.patchValue(obj, { emitEvent: true });
   }
 
@@ -141,6 +151,7 @@ export class ButtonWithListComponent implements ControlValueAccessor, OnInit {
     event.preventDefault();
 
     if (this.appearance === 'primary') {
+      this.value = [];
       this.onChange([]);
       this.appearance = 'secondary';
       this.toggled.emit(false);
