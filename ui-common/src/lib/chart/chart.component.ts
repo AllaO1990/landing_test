@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ChartComponent } from '@ui/chart';
-import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap } from 'rxjs';
+import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
@@ -15,6 +15,7 @@ import { ActiveZone } from 'types/chart';
 import { Timeframe } from 'types/timeframe';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface IndicatorListItem<T = string> {
   name: string;
@@ -43,6 +44,7 @@ interface IndicatorListItem<T = string> {
 })
 export class ChartCandlestickComponent implements OnInit {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _destroy$: DestroyRef = inject(DestroyRef);
 
   toggleLegend = true;
   toggleActions = true;
@@ -95,16 +97,34 @@ export class ChartCandlestickComponent implements OnInit {
       startWith(this.controlSma.value),
       map((list: IndicatorListItem[] | null) => (list ? list : []))
     ),
-  ]).pipe(map(([ema, sma]) => [...ema, ...sma]));
+  ]).pipe(
+    map(([ema, sma]: [IndicatorListItem[], IndicatorListItem[]]) => [...ema, ...sma]),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
+
+  isDisabledButtonLegend$: Observable<boolean> = combineLatest([
+    this.controlEma.valueChanges,
+    this.controlSma.valueChanges,
+  ]).pipe(
+    map(
+      ([emaList, smaList]: [IndicatorListItem[] | null, IndicatorListItem[] | null]) =>
+        !((emaList && emaList.length > 0) || (smaList && smaList.length > 0))
+    ),
+    tap((value: boolean) => (this.toggleLegend = !value))
+  );
 
   ngOnInit(): void {
-    if (this.valueEma !== this.controlEma.value) {
-      this._store.updateIndicatorEmaSelected(this._getValue(this.controlEma.value));
-    }
+    this.controlEma.valueChanges
+      .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlEma.value))
+      .subscribe((result: IndicatorListItem[] | null) => {
+        this._store.updateIndicatorEmaSelected(this._getValue(result));
+      });
 
-    if (this.valueSma !== this.controlSma.value) {
-      this._store.updateIndicatorSmaSelected(this._getValue(this.controlSma.value));
-    }
+    this.controlSma.valueChanges
+      .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlSma.value))
+      .subscribe((result: IndicatorListItem[] | null) => {
+        this._store.updateIndicatorSmaSelected(this._getValue(result));
+      });
 
     if (this.valueZone !== this.controlZone.value) {
       this._store.updateConsolidationZoneSelected(this._getValue(this.controlZone.value));

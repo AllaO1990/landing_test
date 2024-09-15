@@ -32,18 +32,14 @@
           class="action"
           [formControl]="controlEma"
           [icon]="emaIcon"
-          [list]="emaList"
-          (toggled)="onToggledEma()"
-          (opened)="onOpenedEma($event)">
+          [list]="emaList">
         </lib-button-with-list>
 
         <lib-button-with-list
           class="action"
           [formControl]="controlSma"
           [icon]="smaIcon"
-          [list]="smaList"
-          (toggled)="onToggledSma()"
-          (opened)="onOpenedSma($event)">
+          [list]="smaList">
         </lib-button-with-list>
 
         <button
@@ -70,6 +66,7 @@
         <button
           class="action"
           [appearance]="toggleLegend ? 'primary' : 'secondary'"
+          [disabled]="(isDisabledButtonLegend$ | async) || false"
           tuiIconButton
           type="button"
           icon="tuiIconLink"
@@ -102,7 +99,7 @@
 
 <ng-template #consolidationIcon>
   <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">Zone</text>
+    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">ZONE</text>
   </svg>
 </ng-template>
 

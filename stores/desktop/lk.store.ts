@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { combineLatest, forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
+import { combineLatest, distinctUntilChanged, forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ActiveZone } from 'types/chart';
 import { EventSelected } from 'types/events';
@@ -24,6 +24,16 @@ import { Timeframe } from 'types/timeframe';
 import { ConsolidationZonesStore } from './consolidation-zones.store';
 
 const TIMER_INTERVAL = 60 * 1000;
+
+const timerWithIndex = <T>(
+  source$: Observable<T>,
+  interval: number = 10000,
+  start: number = 0
+): Observable<{ source: T; index: number }> => {
+  return source$.pipe(
+    switchMap((source: T) => timer(start, interval).pipe(map((index: number) => ({ source, index }))))
+  );
+};
 
 @Injectable()
 export class DesktopLkStore extends ComponentStore<DesktopLkState> {
@@ -92,10 +102,8 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
     this._positionStore.load(timer(0, TIMER_INTERVAL).pipe(map(() => void 0)));
 
     this.loadActivePrice(
-      this._timer(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
+      timerWithIndex(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
     );
-
-    this._chartStore.loadCandles(this._timer(this._stockListStore.selected$, TIMER_INTERVAL));
 
     this._chartStore.loadChartFigures(merge(this._entryStore.selected$, this._positionStore.selected$));
 
@@ -106,21 +114,17 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       )
     );
 
-    // this._chartStore.loadConsolidationZones(
-    //   this._stockListStore.selected$.pipe(
-    //     filter((selected: StockInstrument | null): selected is StockInstrument => selected !== null),
-    //     map((selected: StockInstrument) => ({ id: selected.id, interval: Timeframe.CANDLE_INTERVAL_DAY }))
-    //   )
-    // );
-
     this.onChangeEventStock(this.event$);
     this.onChangeEventEntry(this.event$);
     this.onChangeEventPosition(this.event$);
 
     const stockInstrumentId$ = this._stockListStore.selected$.pipe(
       filter((selected: StockInstrument | null): selected is StockInstrument => selected !== null),
-      map((instrument: StockInstrument) => instrument.id.toString())
+      map((instrument: StockInstrument) => instrument.id.toString()),
+      distinctUntilChanged()
     );
+
+    this._chartStore.loadCandles(timerWithIndex(stockInstrumentId$, TIMER_INTERVAL));
 
     this._indicatorEmaStore.load(
       combineLatest([stockInstrumentId$, this._indicatorEmaStore.selected$, this._range$]).pipe(
@@ -269,16 +273,6 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       })
     )
   );
-
-  private _timer<T>(
-    source$: Observable<T>,
-    interval: number = 10000,
-    start: number = 0
-  ): Observable<{ source: T; index: number }> {
-    return source$.pipe(
-      switchMap((source: T) => timer(start, interval).pipe(map((index: number) => ({ source, index }))))
-    );
-  }
 
   private _concatActivePrice(list: StockPrice<WithLastPrice>[]): StockPrice<WithLastPrice> {
     return list.reduce(

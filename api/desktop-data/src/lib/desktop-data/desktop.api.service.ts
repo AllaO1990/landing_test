@@ -126,7 +126,6 @@ export class DesktopApiService extends DesktopService {
   }
 
   getCandles(selected: { source: any; index: number }): Observable<any> {
-    // console.log(selected);
     const lastYear = new Date().getFullYear();
 
     const from: string =
@@ -136,7 +135,7 @@ export class DesktopApiService extends DesktopService {
 
     return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
       params: {
-        id: selected?.source.id,
+        id: selected?.source,
         interval: Timeframe.CANDLE_INTERVAL_DAY,
         from,
         to: new Date(Date.now()).toISOString(),

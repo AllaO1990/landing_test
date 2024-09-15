@@ -20,8 +20,6 @@ export class ChartStore extends ComponentStore<ChartState> {
 
   public readonly candles$: Observable<any[] | null> = this.select((state: ChartState) => state.candles);
 
-  readonly zones$: Observable<ActiveZone[] | null> = this.select((state: ChartState) => state.zones);
-
   public readonly consolidationZones$: Observable<ActiveZone[] | null> = this.select(
     (state: ChartState) => state.consolidationZones
   );
@@ -30,7 +28,6 @@ export class ChartStore extends ComponentStore<ChartState> {
     super({
       candles: null,
       consolidationZones: null,
-      zones: null,
     });
   }
 
@@ -49,11 +46,6 @@ export class ChartStore extends ComponentStore<ChartState> {
   public updateConsolidationZones = this.updater((state: ChartState, data: any) => {
     return { ...state, consolidationZones: data };
   });
-
-  updateZones = this.updater((state: ChartState, zones: ActiveZone[]) => ({
-    ...state,
-    zones,
-  }));
 
   public readonly loadCandles = this.effect((stream$: Observable<{ source: any | null; index: number }>) => {
     let index = 0;
@@ -119,13 +111,16 @@ export class ChartStore extends ComponentStore<ChartState> {
   });
 
   private _getCandles(data: { source: any; index: number }): Observable<any> {
-    const value = this._queueCandles.getValue(data.source.id);
+    const value = this._queueCandles.getValue(data.source);
 
     if (value && data.index === 0) {
       return of(value);
     }
 
-    return this._api.getCandles(data).pipe(tap((res: any) => this._queueCandles.setValue(data.source.id, res)));
+    return this._api.getCandles(data).pipe(
+      filter((result: Response<any>) => result !== null && result.data !== null && result.data.length !== 0),
+      tap((res: any) => this._queueCandles.setValue(data.source, res))
+    );
   }
 
   private _getWatchlistConsolidationZone(data: { id: StockId }): Observable<Response<ActiveZone>> {
