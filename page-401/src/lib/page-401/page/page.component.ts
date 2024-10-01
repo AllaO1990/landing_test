@@ -8,7 +8,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { finalize, ReplaySubject, Subject, takeWhile, timer } from 'rxjs';
+import { ReplaySubject, Subject, takeWhile, timer } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -38,8 +38,7 @@ export class PageComponent implements AfterViewInit, OnDestroy {
       .pipe(
         takeUntil(this._destroyed$),
         takeWhile((value: number) => value <= this.time),
-        map((value: number) => time - value),
-        finalize(() => console.log('finalize'))
+        map((value: number) => time - value)
       )
       .subscribe((result: number) => {
         if (result === 0) {

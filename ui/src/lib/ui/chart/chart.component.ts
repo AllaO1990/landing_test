@@ -401,7 +401,10 @@ export class ChartComponent implements OnInit {
 
   @Input()
   set consolidationZones(value: any) {
+    console.log(value);
+
     this.chart?.removeAnnotation(0);
+    this.chart?.removeAnnotation('zones');
 
     if (!value) {
       return;
@@ -409,30 +412,61 @@ export class ChartComponent implements OnInit {
 
     setTimeout(() => {
       const getF = function (): Highcharts.AnnotationsShapesOptions[] {
-        return value.map((item: any) => {
-          return {
-            // type: 'rect',
-            type: 'path',
-            dashStyle: item.dash ? 'Dash' : null,
-            fill: 'rgba(0,0,0,0)',
-            stroke: item.color,
-            strokeWidth: 1.5,
-            ry: Math.PI,
-            points: item.points,
-          };
-          // return item.points.map((data: any) => {
-          //   return {
-          //     // type: 'rect',
-          //     type: 'path',
-          //     dashStyle: item.dash ? 'Dash' : null,
-          //     fill: 'rgba(0,0,0,0)',
-          //     stroke: item.color,
-          //     strokeWidth: 1.5,
-          //     ry: Math.PI,
-          //     points: data,
-          //   };
-          // }
-        });
+        return value
+          .filter((item: any) => item.id && item.id.toString().indexOf('line') !== -1)
+          .map((item: any) => {
+            return {
+              // type: 'rect',
+              type: 'path',
+              dashStyle: item.dash ? 'Dash' : null,
+              fill: 'rgba(0,0,0,0)',
+              stroke: item.color,
+              strokeWidth: 1.5,
+              ry: Math.PI,
+              points: item.points,
+            };
+            // return item.points.map((data: any) => {
+            //   return {
+            //     // type: 'rect',
+            //     type: 'path',
+            //     dashStyle: item.dash ? 'Dash' : null,
+            //     fill: 'rgba(0,0,0,0)',
+            //     stroke: item.color,
+            //     strokeWidth: 1.5,
+            //     ry: Math.PI,
+            //     points: data,
+            //   };
+            // }
+          });
+      };
+
+      const getZ = function (): Highcharts.AnnotationsShapesOptions[] {
+        return value
+          .filter((item: any) => item.id && item.id.toString().indexOf('zone') !== -1)
+          .map((item: any) => {
+            return {
+              // type: 'rect',
+              type: 'path',
+              dashStyle: item.dash ? 'Dash' : null,
+              fill: 'rgba(0,0,0,0)',
+              stroke: item.color,
+              strokeWidth: 1.5,
+              ry: Math.PI,
+              points: item.points,
+            };
+            // return item.points.map((data: any) => {
+            //   return {
+            //     // type: 'rect',
+            //     type: 'path',
+            //     dashStyle: item.dash ? 'Dash' : null,
+            //     fill: 'rgba(0,0,0,0)',
+            //     stroke: item.color,
+            //     strokeWidth: 1.5,
+            //     ry: Math.PI,
+            //     points: data,
+            //   };
+            // }
+          });
       };
 
       // {
@@ -445,6 +479,18 @@ export class ChartComponent implements OnInit {
       //   "isActive": false,
       //   "splash": false
       // },
+
+      // const { zones, other } = getF().reduce(
+      //   (acc, item) => {
+      //     if (item?.id === 'zones') {
+      //       acc.zones.push(item);
+      //     } else {
+      //     }
+      //
+      //     return acc;
+      //   },
+      //   { zones: [], other: [] }
+      // );
 
       this.chart.addAnnotation({
         id: 0,
@@ -467,14 +513,27 @@ export class ChartComponent implements OnInit {
         // },
       });
 
+      this.chart.addAnnotation({
+        id: 'zones',
+        draggable: '',
+        shapes: getZ(),
+      });
+
       // this.chart?.xAxis[0].setExtremes(
       //   new Date().setMonth(new Date().getMonth() - 2).valueOf(),
       //   new Date().setMonth(new Date().getMonth() + 1).valueOf()
       // );
       // this.chart?.yAxis[0].setExtremes();
 
+      console.log(this.chart);
+
       this.consolidationZonesIsExist = true;
     }, 10);
+
+    if (this.chart) {
+      this.chart.removeAnnotation('line');
+      this.chart.removeAnnotation('zones');
+    }
   }
 
   public chart!: Highcharts.StockChart;

@@ -91,7 +91,7 @@
             <div class="ellipsis" [title]="item.inPositionQuantity">
               {{ item.inPositionQuantity | tuiFormatNumber }}
             </div>
-            <div class="substring">{{ item.inPositionDepositShare * 100 | tuiFormatNumber }}%</div>
+            <div class="substring">{{ item.inPositionDepositShare | tuiFormatNumber }}%</div>
           </td>
 
           <td *tuiCell="'target1'" tuiTd class="td td--number">

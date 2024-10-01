@@ -93,13 +93,13 @@ export class ChartStore extends ComponentStore<ChartState> {
     );
   });
 
-  public readonly loadChartFigures = this.effect((stream$: Observable<{ id: StockId } | null>) => {
+  public readonly loadChartFigures = this.effect((stream$: Observable<StockId>) => {
     return stream$.pipe(
-      filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
-      switchMap((data: { id: StockId }) => this._getChartFigures(data)),
+      switchMap((id: StockId) => this._getChartFigures(id)),
       map((data: ConsolidationZones) => {
         return transformActiveConsolidationZones(data?.data);
       }),
+      tap((data) => console.log(data)),
       tap((zones) => {
         this.updateConsolidationZones(zones);
       }),
@@ -136,8 +136,8 @@ export class ChartStore extends ComponentStore<ChartState> {
       .pipe(tap((res: any) => this._queueChartFigures.setValue(key, res)));
   }
 
-  private _getChartFigures(data: { id: StockId }): Observable<any> {
-    const key = data.id.toString();
+  private _getChartFigures(id: StockId): Observable<any> {
+    const key = id.toString();
     const value = this._queueChartFigures.getValue(key);
 
     if (value) {
@@ -145,7 +145,7 @@ export class ChartStore extends ComponentStore<ChartState> {
     }
 
     return this._api
-      .getChartFigures(data.id, this._from.toISOString(), this._to.toISOString())
+      .getChartFigures(id, this._from.toISOString(), this._to.toISOString())
       .pipe(tap((res: any) => this._queueChartFigures.setValue(key, res)));
   }
 }

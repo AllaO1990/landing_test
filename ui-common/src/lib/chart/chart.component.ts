@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ChartComponent } from '@ui/chart';
-import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { combineLatest, debounceTime, Observable, shareReplay, startWith, tap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
@@ -13,8 +13,6 @@ import { map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
 import { ActiveZone } from 'types/chart';
 import { Timeframe } from 'types/timeframe';
-import { StockEvent } from 'types/stock-event';
-import { EventSelected } from 'types/events';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface IndicatorListItem<T = string> {
@@ -74,19 +72,35 @@ export class ChartCandlestickComponent implements OnInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly zone$: Observable<ActiveZone[] | null> = this._store.event$.pipe(
-    switchMap((event: StockEvent | null) => {
-      if (event === null) {
-        return of(null);
+  readonly zone$: Observable<ActiveZone[] | null> = combineLatest([this._store.zones$, this._store.chartFigures$]).pipe(
+    map(([zones, figures]: [ActiveZone[] | null, ActiveZone[] | null]) => {
+      const acc: ActiveZone[] = [];
+
+      if (zones !== null) {
+        acc.push(...zones);
       }
 
-      if (event.type === EventSelected.STOCK_LIST) {
-        return this._store.zones$;
+      if (figures !== null) {
+        acc.push(...figures);
       }
 
-      return this._store.consolidationZones$;
+      return acc;
     })
   );
+
+  //   this._store.event$.pipe(
+  //   switchMap((event: StockEvent | null) => {
+  //     if (event === null) {
+  //       return of(null);
+  //     }
+  //
+  //     if (event.type === EventSelected.STOCK_LIST) {
+  //       return this._store.zones$;
+  //     }
+  //
+  //     return this._store.chartFigures$;
+  //   })
+  // );
 
   legend$: Observable<IndicatorListItem[]> = combineLatest([
     this.controlEma.valueChanges.pipe(

@@ -61,7 +61,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   readonly zones$: Observable<ActiveZone[] | null> = this._consolidationZonesStore.zones$;
 
-  public readonly consolidationZones$: Observable<ActiveZone[] | null> = this._chartStore.consolidationZones$;
+  public readonly chartFigures$: Observable<ActiveZone[] | null> = this._chartStore.consolidationZones$;
 
   readonly indicatorEma$: Observable<any[]> = this._indicatorEmaStore.series$;
 
@@ -105,7 +105,13 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       timerWithIndex(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
     );
 
-    this._chartStore.loadChartFigures(merge(this._entryStore.selected$, this._positionStore.selected$));
+    this._chartStore.loadChartFigures(
+      merge(this._entryStore.selected$, this._positionStore.selected$).pipe(
+        filter((data: { id: StockId } | null): data is { id: StockId } => data !== null),
+        map((data: { id: StockId }) => data.id),
+        distinctUntilChanged()
+      )
+    );
 
     this._chartStore.loadWatchlistConsolidationZones(
       this.event$.pipe(

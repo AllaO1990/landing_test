@@ -23,16 +23,18 @@ export function transformActiveConsolidationZones(zones: ConsolidationZonesData)
   });
 
   return [
-    ...zones?.activeZones.map((zone) => ({
-      points: getPointsActiveZone(zone, commonAxisValues),
-      color: mapConsolidation[zone.timeframe as 5 | 12 | 13],
-    })),
-    { points: priceIn, color: 'rgba(64, 224, 208, 1)' },
-    { points: stop, color: 'rgba(255,0,0,1)', dash: true },
-    ...targets.map((target) => ({
+    // ...zones?.activeZones.map((zone) => ({
+    //   points: getPointsActiveZone(zone, commonAxisValues),
+    //   color: mapConsolidation[zone.timeframe as 5 | 12 | 13],
+    //   id: 'zones',
+    // })),
+    { points: priceIn, color: 'rgba(64, 224, 208, 1)', id: 'line-enter' },
+    { points: stop, color: 'rgba(255,0,0,1)', dash: true, id: 'line-stop' },
+    ...targets.map((target, index) => ({
       points: target,
       color: 'rgba(0, 255, 0, 1)',
       dash: true,
+      id: `line-target-${index + 1}`,
     })),
   ];
 }

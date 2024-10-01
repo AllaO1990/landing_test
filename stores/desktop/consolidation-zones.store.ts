@@ -62,6 +62,7 @@ export class ConsolidationZonesStore extends ComponentStore<ConsolidationZonesSt
         item.data.map((zone) => ({
           points: getPointsActiveZone(zone),
           color: this._colorConsolidation[zone.timeframe as 5 | 12 | 13],
+          id: 'zones',
         }))
       )
       .flat();

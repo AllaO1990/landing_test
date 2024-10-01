@@ -68,7 +68,7 @@ export class VtEnterComponent {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  public readonly consolidationZones$: Observable<any | null> = this._store.consolidationZones$;
+  public readonly consolidationZones$: Observable<any | null> = this._store.chartFigures$;
 
   public readonly candles$: Observable<any | null> = combineLatest([
     this._store.candles$,
