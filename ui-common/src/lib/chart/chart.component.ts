@@ -11,7 +11,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiButtonModule, TuiLoaderModule, TuiSvgModule } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
-import { ActiveZone } from 'types/chart';
+import { ChartFigure } from 'types/chart';
 import { Timeframe } from 'types/timeframe';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -72,35 +72,13 @@ export class ChartCandlestickComponent implements OnInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly zone$: Observable<ActiveZone[] | null> = combineLatest([this._store.zones$, this._store.chartFigures$]).pipe(
-    map(([zones, figures]: [ActiveZone[] | null, ActiveZone[] | null]) => {
-      const acc: ActiveZone[] = [];
-
-      if (zones !== null) {
-        acc.push(...zones);
-      }
-
-      if (figures !== null) {
-        acc.push(...figures);
-      }
-
-      return acc;
-    })
+  readonly zone$: Observable<ChartFigure[] | null> = combineLatest([
+    this._store.zones$.pipe(map((list: ChartFigure[] | null) => list || [])),
+    this._store.chartFigures$.pipe(map((list: ChartFigure[] | null) => list || [])),
+  ]).pipe(
+    map(([zones, figures]: [ChartFigure[], ChartFigure[]]) => [...zones, ...figures]),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
-
-  //   this._store.event$.pipe(
-  //   switchMap((event: StockEvent | null) => {
-  //     if (event === null) {
-  //       return of(null);
-  //     }
-  //
-  //     if (event.type === EventSelected.STOCK_LIST) {
-  //       return this._store.zones$;
-  //     }
-  //
-  //     return this._store.chartFigures$;
-  //   })
-  // );
 
   legend$: Observable<IndicatorListItem[]> = combineLatest([
     this.controlEma.valueChanges.pipe(
@@ -140,9 +118,11 @@ export class ChartCandlestickComponent implements OnInit {
         this._store.updateIndicatorSmaSelected(this._getValue(result));
       });
 
-    if (this.valueZone !== this.controlZone.value) {
-      this._store.updateConsolidationZoneSelected(this._getValue(this.controlZone.value));
-    }
+    this.controlZone.valueChanges
+      .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlZone.value))
+      .subscribe((result: IndicatorListItem<Timeframe>[] | null) => {
+        this._store.updateConsolidationZoneSelected(this._getValue(result));
+      });
 
     this._store.updateIndicatorAtrSelected(this.controlAtr.value);
   }

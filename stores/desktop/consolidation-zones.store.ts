@@ -4,7 +4,7 @@ import { Queue } from 'utils/queue';
 import { ConsolidationZonesState } from 'types/consolidation-zones';
 import { forkJoin, Observable, of, switchMap, tap } from 'rxjs';
 import { indicatorGetUniq } from 'utils/indicators-func';
-import { ActiveZone } from 'types/chart';
+import { ActiveZone, ChartFigure } from 'types/chart';
 import { map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { getPointsActiveZone } from 'utils/transform-consolidation-zones';
@@ -16,7 +16,7 @@ export class ConsolidationZonesStore extends ComponentStore<ConsolidationZonesSt
 
   readonly selected$: Observable<number[] | null> = this.select((state: ConsolidationZonesState) => state.selected);
 
-  readonly zones$: Observable<ActiveZone[] | null> = this.select((state: ConsolidationZonesState) => state.zones);
+  readonly zones$: Observable<ChartFigure[] | null> = this.select((state: ConsolidationZonesState) => state.zones);
 
   constructor(private readonly _api: DesktopService) {
     super({
@@ -27,7 +27,7 @@ export class ConsolidationZonesStore extends ComponentStore<ConsolidationZonesSt
 
   updateSelected = this.updater((state: ConsolidationZonesState, selected: number[]) => ({ ...state, selected }));
 
-  updateZone = this.updater((state: ConsolidationZonesState, zones: ActiveZone[] | null) => ({ ...state, zones }));
+  updateZone = this.updater((state: ConsolidationZonesState, zones: ChartFigure[] | null) => ({ ...state, zones }));
 
   readonly load = this.effect((stream$: Observable<null | any>) =>
     stream$.pipe(

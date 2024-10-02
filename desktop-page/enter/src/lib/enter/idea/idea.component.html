@@ -74,7 +74,7 @@
             {{ item.depositShare | tuiFormatNumber }}%
           </div>
           <div class="item__value row__right row__item row__fix-half">
-            {{ item.amount | tuiFormatNumber: { decimalLimit: 0 } }}
+            {{ item.amount | tuiFormatNumber }}
           </div>
           <div class="item__value row__right row__item row__fix-half">
             {{ item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: { rounding: 'round' } }}%

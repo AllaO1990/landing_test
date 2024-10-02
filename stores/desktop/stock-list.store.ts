@@ -1,5 +1,5 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { catchError, forkJoin, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, distinctUntilChanged, forkJoin, Observable, of, switchMap, tap } from 'rxjs';
 import {
   Stock,
   StockGroup,
@@ -22,7 +22,7 @@ import { sortText } from 'utils/sort-text';
 export class StockListStore extends ComponentStore<StockListState> {
   public readonly selected$: Observable<StockInstrument | null> = this.select(
     (state: StockListState) => state.selected
-  );
+  ).pipe(distinctUntilChanged((a: StockInstrument | null, b: StockInstrument | null) => a?.id === b?.id));
 
   readonly groups$: Observable<StockGroups | null> = this.select((state: StockListState) => state.groups);
 
