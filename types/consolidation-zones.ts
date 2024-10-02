@@ -1,6 +1,6 @@
-import { ActiveZone } from './chart';
+import { ChartFigure } from './chart';
 
 export interface ConsolidationZonesState {
   selected: null | number[];
-  zones: null | ActiveZone[];
+  zones: null | ChartFigure[];
 }

@@ -41,6 +41,7 @@ import {
 import { SeriesSplineOptions } from 'highcharts';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CHART_INDICATORS_NAME } from './chart.constants';
+import { ChartFigure } from 'types/chart';
 
 HC_exporting(Highcharts);
 
@@ -401,7 +402,10 @@ export class ChartComponent implements OnInit {
 
   @Input()
   set consolidationZones(value: any) {
-    this.chart?.removeAnnotation(0);
+    if (this.chart) {
+      this.chart.removeAnnotation(0);
+      this.chart.removeAnnotation('zones');
+    }
 
     if (!value) {
       return;
@@ -409,69 +413,48 @@ export class ChartComponent implements OnInit {
 
     setTimeout(() => {
       const getF = function (): Highcharts.AnnotationsShapesOptions[] {
-        return value.map((item: any) => {
-          return {
-            // type: 'rect',
-            type: 'path',
-            dashStyle: item.dash ? 'Dash' : null,
-            fill: 'rgba(0,0,0,0)',
-            stroke: item.color,
-            strokeWidth: 1.5,
-            ry: Math.PI,
-            points: item.points,
-          };
-          // return item.points.map((data: any) => {
-          //   return {
-          //     // type: 'rect',
-          //     type: 'path',
-          //     dashStyle: item.dash ? 'Dash' : null,
-          //     fill: 'rgba(0,0,0,0)',
-          //     stroke: item.color,
-          //     strokeWidth: 1.5,
-          //     ry: Math.PI,
-          //     points: data,
-          //   };
-          // }
-        });
+        return value
+          .filter((item: ChartFigure) => item.id && item.id.toString().indexOf('line') !== -1)
+          .map((item: ChartFigure) => {
+            return {
+              type: 'path',
+              dashStyle: item.dash ? 'Dash' : null,
+              fill: 'rgba(0,0,0,0)',
+              stroke: item.color,
+              strokeWidth: 1.5,
+              ry: Math.PI,
+              points: item.points,
+            };
+          });
       };
 
-      // {
-      //   "id": 19180,
-      //   "timeframe": 5,
-      //   "startTime": "2024-02-19T00:00:00Z",
-      //   "endTime": "2024-03-21T00:00:00Z",
-      //   "high": 4.096,
-      //   "low": 3.851,
-      //   "isActive": false,
-      //   "splash": false
-      // },
+      const getZ = function (): Highcharts.AnnotationsShapesOptions[] {
+        return value
+          .filter((item: ChartFigure) => item.id && item.id.toString().indexOf('zone') !== -1)
+          .map((item: ChartFigure) => {
+            return {
+              type: 'path',
+              dashStyle: item.dash ? 'Dash' : null,
+              fill: 'rgba(0,0,0,0)',
+              stroke: item.color,
+              strokeWidth: 1.5,
+              ry: Math.PI,
+              points: item.points,
+            };
+          });
+      };
 
       this.chart.addAnnotation({
         id: 0,
         draggable: '',
         shapes: getF(),
-
-        // infinityLine: {
-        //   typeOptions: {
-        //     // type: 'ray',
-        //     xAxis: 0,
-        //     yAxis: 0,
-        //     line: { fill: 'red' },
-
-        //     points: [
-        //       { x: new Date().setMonth(new Date().getMonth() - 1).valueOf(), y: 3 },
-        //       { x: new Date().setMonth(new Date().getMonth()).valueOf(), y: 3 },
-        //       { x: new Date().setMonth(new Date().getMonth() + 0.3).valueOf(), y: 2 },
-        //     ],
-        //   },
-        // },
       });
 
-      // this.chart?.xAxis[0].setExtremes(
-      //   new Date().setMonth(new Date().getMonth() - 2).valueOf(),
-      //   new Date().setMonth(new Date().getMonth() + 1).valueOf()
-      // );
-      // this.chart?.yAxis[0].setExtremes();
+      this.chart.addAnnotation({
+        id: 'zones',
+        draggable: '',
+        shapes: getZ(),
+      });
 
       this.consolidationZonesIsExist = true;
     }, 10);

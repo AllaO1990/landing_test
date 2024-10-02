@@ -2,7 +2,7 @@ import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
 import { catchError, EMPTY, Observable, of, switchMap, tap } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
-import { ActiveZone, ConsolidationZones } from 'types/chart';
+import { ActiveZone, ChartFigure, ConsolidationZones } from 'types/chart';
 import { ChartState } from 'types/chart-state';
 import { getPointsActiveZone, transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
 import { StockId } from 'types/stock';
@@ -20,7 +20,7 @@ export class ChartStore extends ComponentStore<ChartState> {
 
   public readonly candles$: Observable<any[] | null> = this.select((state: ChartState) => state.candles);
 
-  public readonly consolidationZones$: Observable<ActiveZone[] | null> = this.select(
+  public readonly consolidationZones$: Observable<ChartFigure[] | null> = this.select(
     (state: ChartState) => state.consolidationZones
   );
 
@@ -93,10 +93,9 @@ export class ChartStore extends ComponentStore<ChartState> {
     );
   });
 
-  public readonly loadChartFigures = this.effect((stream$: Observable<{ id: StockId } | null>) => {
+  public readonly loadChartFigures = this.effect((stream$: Observable<StockId>) => {
     return stream$.pipe(
-      filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
-      switchMap((data: { id: StockId }) => this._getChartFigures(data)),
+      switchMap((id: StockId) => this._getChartFigures(id)),
       map((data: ConsolidationZones) => {
         return transformActiveConsolidationZones(data?.data);
       }),
@@ -136,8 +135,8 @@ export class ChartStore extends ComponentStore<ChartState> {
       .pipe(tap((res: any) => this._queueChartFigures.setValue(key, res)));
   }
 
-  private _getChartFigures(data: { id: StockId }): Observable<any> {
-    const key = data.id.toString();
+  private _getChartFigures(id: StockId): Observable<any> {
+    const key = id.toString();
     const value = this._queueChartFigures.getValue(key);
 
     if (value) {
@@ -145,7 +144,7 @@ export class ChartStore extends ComponentStore<ChartState> {
     }
 
     return this._api
-      .getChartFigures(data.id, this._from.toISOString(), this._to.toISOString())
+      .getChartFigures(id, this._from.toISOString(), this._to.toISOString())
       .pipe(tap((res: any) => this._queueChartFigures.setValue(key, res)));
   }
 }

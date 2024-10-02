@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ChartComponent } from '@ui/chart';
-import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { combineLatest, debounceTime, Observable, shareReplay, startWith, tap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
@@ -11,10 +11,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiButtonModule, TuiLoaderModule, TuiSvgModule } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
-import { ActiveZone } from 'types/chart';
+import { ChartFigure } from 'types/chart';
 import { Timeframe } from 'types/timeframe';
-import { StockEvent } from 'types/stock-event';
-import { EventSelected } from 'types/events';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface IndicatorListItem<T = string> {
@@ -74,18 +72,12 @@ export class ChartCandlestickComponent implements OnInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly zone$: Observable<ActiveZone[] | null> = this._store.event$.pipe(
-    switchMap((event: StockEvent | null) => {
-      if (event === null) {
-        return of(null);
-      }
-
-      if (event.type === EventSelected.STOCK_LIST) {
-        return this._store.zones$;
-      }
-
-      return this._store.consolidationZones$;
-    })
+  readonly zone$: Observable<ChartFigure[] | null> = combineLatest([
+    this._store.zones$.pipe(map((list: ChartFigure[] | null) => list || [])),
+    this._store.chartFigures$.pipe(map((list: ChartFigure[] | null) => list || [])),
+  ]).pipe(
+    map(([zones, figures]: [ChartFigure[], ChartFigure[]]) => [...zones, ...figures]),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   legend$: Observable<IndicatorListItem[]> = combineLatest([
@@ -126,9 +118,11 @@ export class ChartCandlestickComponent implements OnInit {
         this._store.updateIndicatorSmaSelected(this._getValue(result));
       });
 
-    if (this.valueZone !== this.controlZone.value) {
-      this._store.updateConsolidationZoneSelected(this._getValue(this.controlZone.value));
-    }
+    this.controlZone.valueChanges
+      .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlZone.value))
+      .subscribe((result: IndicatorListItem<Timeframe>[] | null) => {
+        this._store.updateConsolidationZoneSelected(this._getValue(result));
+      });
 
     this._store.updateIndicatorAtrSelected(this.controlAtr.value);
   }

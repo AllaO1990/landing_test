@@ -36,3 +36,10 @@ export interface Target {
   value: number;
   reached: boolean;
 }
+
+export interface ChartFigure {
+  id: string;
+  points: Highcharts.AnnotationShapePointOptions[];
+  color: string;
+  dash: boolean | undefined;
+}

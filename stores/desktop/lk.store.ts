@@ -3,7 +3,7 @@ import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
 import { combineLatest, distinctUntilChanged, forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { ActiveZone } from 'types/chart';
+import { ChartFigure } from 'types/chart';
 import { EventSelected } from 'types/events';
 import { Idea } from 'types/idea';
 import { DesktopLkState } from 'types/lk-state';
@@ -59,9 +59,9 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
 
   public readonly candles$: Observable<any[] | null> = this._chartStore.candles$;
 
-  readonly zones$: Observable<ActiveZone[] | null> = this._consolidationZonesStore.zones$;
+  readonly zones$: Observable<ChartFigure[] | null> = this._consolidationZonesStore.zones$;
 
-  public readonly consolidationZones$: Observable<ActiveZone[] | null> = this._chartStore.consolidationZones$;
+  public readonly chartFigures$: Observable<ChartFigure[] | null> = this._chartStore.consolidationZones$;
 
   readonly indicatorEma$: Observable<any[]> = this._indicatorEmaStore.series$;
 
@@ -105,7 +105,13 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
       timerWithIndex(this.stockActive$, TIMER_INTERVAL).pipe(map((value: { source: StockId[] | null }) => value.source))
     );
 
-    this._chartStore.loadChartFigures(merge(this._entryStore.selected$, this._positionStore.selected$));
+    this._chartStore.loadChartFigures(
+      merge(this._entryStore.selected$, this._positionStore.selected$).pipe(
+        filter((data: { id: StockId } | null): data is { id: StockId } => data !== null),
+        map((data: { id: StockId }) => data.id),
+        distinctUntilChanged()
+      )
+    );
 
     this._chartStore.loadWatchlistConsolidationZones(
       this.event$.pipe(
@@ -233,7 +239,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
           filter((list: StockListItems | null): list is StockListItems => list !== null),
           map((list: StockListItems): StockInstrument => list.find((item: StockInstrument) => item.id === event.id)!),
           tap((value: StockInstrument) => {
-            this._stockListStore.updateSelected({ ...value });
+            this._stockListStore.updateSelected(value);
             this._entryStore.updateSelected(null);
             this._positionStore.updateSelected(null);
           })
