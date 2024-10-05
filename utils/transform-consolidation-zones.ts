@@ -39,6 +39,11 @@ export function transformActiveConsolidationZones(zones: ConsolidationZonesData)
   ];
 }
 
+export const getHorizontalBeam = (x: string | Date, y: number, axisValues = { xAxis: 0, yAxis: 0 }) => [
+  { x: new Date(x).valueOf(), y, ...axisValues },
+  { x: new Date().setFullYear(2029).valueOf(), y, ...axisValues },
+];
+
 export const getPointsActiveZone = (zone: ActiveZone, axisValues = { xAxis: 0, yAxis: 0 }) => [
   {
     x: new Date(zone.startTime).valueOf(),
