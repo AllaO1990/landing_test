@@ -4,7 +4,11 @@ import { catchError, EMPTY, Observable, of, switchMap, tap } from 'rxjs';
 import { filter, map, skipWhile } from 'rxjs/operators';
 import { ActiveZone, ChartFigure, ConsolidationZones } from 'types/chart';
 import { ChartState } from 'types/chart-state';
-import { getPointsActiveZone, transformActiveConsolidationZones } from 'utils/transform-consolidation-zones';
+import {
+  getHorizontalBeam,
+  getPointsActiveZone,
+  transformActiveConsolidationZones,
+} from 'utils/transform-consolidation-zones';
 import { StockId } from 'types/stock';
 import { Queue } from 'utils/queue';
 import { Response } from 'types/response';
@@ -16,7 +20,7 @@ export class ChartStore extends ComponentStore<ChartState> {
 
   private _queueCandles: Queue<any> = new Queue(3);
   private _colorConsolidation = MAP_COLOR_CONSOLIDATION;
-  private _queueChartFigures: Queue<string, Response<ActiveZone>> = new Queue(3);
+  private _queueChartFigures: Queue<string, Response<ActiveZone & { priceIn?: number }>> = new Queue(3);
 
   public readonly candles$: Observable<any[] | null> = this.select((state: ChartState) => state.candles);
 
@@ -75,9 +79,17 @@ export class ChartStore extends ComponentStore<ChartState> {
     return stream$.pipe(
       filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
       switchMap((value: { id: StockId }) => this._getWatchlistConsolidationZone(value)),
-      map((result: Response<ActiveZone>) => {
+      map((result: Response<ActiveZone & { priceIn?: number }>) => {
         return [
           {
+            id: 'line-enter',
+            dash: true,
+            points: getHorizontalBeam(result.data.startTime, result.data.priceIn!),
+            color: 'rgba(64, 224, 208, 1)',
+          },
+          {
+            id: 'zones-active',
+            dash: true,
             points: getPointsActiveZone(result.data),
             color: this._colorConsolidation[result.data.timeframe as 5 | 12 | 13],
           },
@@ -122,7 +134,13 @@ export class ChartStore extends ComponentStore<ChartState> {
     );
   }
 
-  private _getWatchlistConsolidationZone(data: { id: StockId }): Observable<Response<ActiveZone>> {
+  private _getWatchlistConsolidationZone(data: { id: StockId }): Observable<
+    Response<
+      ActiveZone & {
+        priceIn?: number;
+      }
+    >
+  > {
     const key = data.id.toString();
     const value = this._queueChartFigures.getValue(key);
 
