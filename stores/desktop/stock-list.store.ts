@@ -296,7 +296,10 @@ export class StockListStore extends ComponentStore<StockListState> {
     this.updateMap(map);
   }
 
-  private _sortWatchList(list: StockListItems): StockListItems {
+  private _sortWatchList(list: StockListItems | null): StockListItems {
+    if (list === null) {
+      return [];
+    }
     const { moex, crypto, forts } = list.reduce(
       (acc: { moex: StockListItems; crypto: StockListItems; forts: StockListItems }, item: StockInstrument) => {
         let type: 'moex' | 'crypto' | 'forts' = 'moex';

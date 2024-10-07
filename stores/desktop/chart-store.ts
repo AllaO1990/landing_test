@@ -79,7 +79,11 @@ export class ChartStore extends ComponentStore<ChartState> {
     return stream$.pipe(
       filter((value: { id: StockId } | null): value is { id: StockId } => value !== null),
       switchMap((value: { id: StockId }) => this._getWatchlistConsolidationZone(value)),
-      map((result: Response<ActiveZone & { priceIn?: number }>) => {
+      map((result: Response<(ActiveZone & { priceIn?: number }) | null>) => {
+        if (result.data === null) {
+          return [];
+        }
+
         return [
           {
             id: 'line-enter',
