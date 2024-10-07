@@ -1,7 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { combineLatest, distinctUntilChanged, forkJoin, merge, Observable, switchMap, tap, timer } from 'rxjs';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  forkJoin,
+  merge,
+  Observable,
+  startWith,
+  switchMap,
+  tap,
+  timer,
+} from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ChartFigure } from 'types/chart';
 import { EventSelected } from 'types/events';
@@ -211,6 +221,7 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
         forkJoin(breakArray(list).map((subList: StockId[]) => this._api.getActiveStock(subList)))
       ),
       map((list: StockPrice<WithLastPrice>[]) => this._concatActivePrice(list)),
+      startWith({}),
       tap((result: StockPrice<WithLastPrice>) => this.updatePrice(result))
     )
   );
