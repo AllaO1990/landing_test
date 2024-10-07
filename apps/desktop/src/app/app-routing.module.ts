@@ -1,11 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {
-  AuthGuard,
-  ForbiddenGuard,
-  LkGuard,
-  PermissionGuard,
-} from './core/routing/guards';
+import { AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard } from './core/routing/guards';
 import { ToolbarComponent } from './pages/main/shared/toolbar/toolbar.component';
 
 export const routes: Routes = [
@@ -36,8 +31,7 @@ export const routes: Routes = [
       },
       {
         path: 'main',
-        loadChildren: () =>
-          import('./pages/main/main.module').then((m) => m.MainModule),
+        loadChildren: () => import('./pages/main/main.module').then((m) => m.MainModule),
         // canActivate: [PermissionGuard],
       },
       // {
@@ -53,9 +47,12 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        loadChildren: () =>
-          import('dashboard').then((m) => m.ChartsDashboardModule),
+        loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
         canActivate: [PermissionGuard],
+      },
+      {
+        path: 'portfolio',
+        loadComponent: () => import('portfolio').then((m) => m.PortfolioComponent),
       },
       {
         path: '403',

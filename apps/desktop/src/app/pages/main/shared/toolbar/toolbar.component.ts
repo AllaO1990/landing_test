@@ -35,7 +35,7 @@ export class ToolbarComponent {
 
   public readonly links: { path: string[]; name: string; icon: string; disabled: boolean }[] = [
     { name: 'Терминал', path: ['/lk/main-v2'], icon: 'tuiIconTrello', disabled: false },
-    { name: 'Портфель', path: ['./portfolio'], icon: 'tuiIconBriefcase', disabled: true },
+    { name: 'Портфель', path: ['/lkÏ/portfolio'], icon: 'tuiIconBriefcase', disabled: true },
   ];
 
   public trackByIndex(index: number): number {
