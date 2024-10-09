@@ -1,17 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import {
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute } from '@angular/router';
 import { NgxMaskDirective } from 'ngx-mask';
-import { AuthService } from '../../../../../../apps/desktop/src/app/core/auth/auth.service';
+import { AuthService } from '@core/auth';
 
 @Component({
   selector: 'lib-tg-key',
@@ -35,10 +30,7 @@ export class TgKeyComponent implements OnInit {
 
   keyFormControl = new FormControl('', [Validators.required]);
 
-  constructor(
-    private _authService: AuthService,
-    private _router: ActivatedRoute
-  ) {}
+  constructor(private _authService: AuthService, private _router: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.email = this._router.snapshot.queryParamMap.get('email');
@@ -48,12 +40,7 @@ export class TgKeyComponent implements OnInit {
     // this._authService.login();
     // this._router.navigate(['lk']);
 
-    if (
-      !this.email ||
-      !this.keyFormControl.value ||
-      this.keyFormControl.errors ||
-      !this.keyFormControl.valid
-    ) {
+    if (!this.email || !this.keyFormControl.value || this.keyFormControl.errors || !this.keyFormControl.valid) {
       return;
     }
 

@@ -1,0 +1,35 @@
+:host {
+  flex: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  height: 100%;
+
+  margin: 0 var(--padding-2);
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+
+  &__description {
+    margin-right: var(--padding-2);
+  }
+
+  &__list {
+    display: flex;
+    flex-flow: row nowrap;
+  }
+
+  &__item {
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+  }
+
+  &__space {
+    flex: 1;
+  }
+}

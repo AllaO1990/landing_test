@@ -6,7 +6,6 @@ import { VtTableWidgetModule } from '../shared/table-widget/table.module';
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
 import { IssuerInfoModule } from './shared/issuer-info/issuer-info.module';
-import { ToolbarComponent } from './shared/toolbar/toolbar.component';
 import {
   TuiButtonModule,
   TuiDataListModule,
@@ -17,7 +16,7 @@ import {
 import { TuiBadgeModule, TuiItemsWithMoreModule } from '@taiga-ui/kit';
 
 @NgModule({
-  declarations: [MainComponent, ToolbarComponent],
+  declarations: [MainComponent],
   imports: [
     SharedModule,
     MainRoutingModule,

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
-import { ToolbarSearchModule } from '../../../../../apps/desktop/src/app/shared/components/toolbar-search';
 import {
   ChartStore,
   ConsolidationZonesStore,
@@ -19,6 +18,8 @@ import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observa
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
+import { NavComponent } from '../nav';
+import { LogoComponent } from '@ui/logo';
 
 const createStore = (api: DesktopService) =>
   new DesktopLkStore(
@@ -36,7 +37,7 @@ const createStore = (api: DesktopService) =>
 @Component({
   selector: 'lib-lk',
   standalone: true,
-  imports: [RouterOutlet, ToolbarSearchModule],
+  imports: [RouterOutlet, NavComponent, LogoComponent],
   templateUrl: './lk.component.html',
   styleUrl: './lk.component.scss',
   providers: [

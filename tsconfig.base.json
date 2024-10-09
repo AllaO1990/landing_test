@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@core/*": ["desktop-page/core/*"],
       "@desktop-data/*": ["api/desktop-data/src/lib/*"],
       "@ui/*": ["ui/src/lib/ui/*"],
       "constants/*": ["constants/*"],

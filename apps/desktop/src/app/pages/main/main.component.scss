@@ -3,7 +3,7 @@
   //grid-column: 1 / 4;
 
   display: grid;
-  //height: calc(100% - var(--main-toolbar-height));
+  //height: calc(100% - var(--main-nav-search-height));
   height: 100%;
   grid-template-columns: var(--main-left-side-width) auto auto;
   grid-template-rows: 1fr 1fr;

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard } from './core/routing/guards';
-import { ToolbarComponent } from './pages/main/shared/toolbar/toolbar.component';
 
 export const routes: Routes = [
   {
@@ -14,16 +13,9 @@ export const routes: Routes = [
   {
     path: 'lk',
     loadComponent: () => import('lk').then((m) => m.LkComponent),
-    // component: LkComponent,
     canActivate: [LkGuard],
     canActivateChild: [LkGuard],
-    // outlet: 'lk',
     children: [
-      {
-        path: '',
-        outlet: 'toolbar-main',
-        component: ToolbarComponent,
-      },
       {
         path: '',
         redirectTo: 'main-v2',
@@ -32,27 +24,40 @@ export const routes: Routes = [
       {
         path: 'main',
         loadChildren: () => import('./pages/main/main.module').then((m) => m.MainModule),
-        // canActivate: [PermissionGuard],
+      },
+      {
+        path: 'main-v2',
+        canActivate: [PermissionGuard],
+        children: [
+          {
+            path: '',
+            outlet: 'toolbar-main',
+            loadComponent: () => import('ui-common').then((m) => m.ToolbarSearchComponent),
+          },
+          {
+            path: '',
+            loadComponent: () => import('main').then((m) => m.MainComponent),
+          },
+        ],
       },
       // {
-      //   path: 'main-v2',
-      //   loadComponent: () =>
-      //     import('./pages/main-v2').then((m) => m.MainV2Component),
+      //   path: 'dashboard',
+      //   loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
       //   canActivate: [PermissionGuard],
       // },
       {
-        path: 'main-v2',
-        loadComponent: () => import('main').then((m) => m.MainComponent),
-        // canActivate: [PermissionGuard],
-      },
-      {
-        path: 'dashboard',
-        loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
-        canActivate: [PermissionGuard],
-      },
-      {
         path: 'portfolio',
-        loadComponent: () => import('portfolio').then((m) => m.PortfolioComponent),
+        children: [
+          {
+            path: '',
+            outlet: 'toolbar-main',
+            loadComponent: () => import('portfolio').then((m) => m.SwitcherComponent),
+          },
+          {
+            path: '',
+            loadComponent: () => import('portfolio').then((m) => m.LayoutComponent),
+          },
+        ],
       },
       {
         path: '403',
@@ -69,6 +74,10 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
+  },
+  {
+    path: '**',
+    loadChildren: () => import('page-404').then((m) => m.Page404Module),
   },
   // {
   //   path: '401',

@@ -1,5 +1,5 @@
 <div class="toolbar">
-  <vt-toolbar-logo class="toolbar__logo"></vt-toolbar-logo>
+  <lib-logo class="toolbar__logo"></lib-logo>
   <div class="toolbar__actions">
     <a
       *ngFor="let item of links; trackBy: trackByIndex"
@@ -8,8 +8,7 @@
       routerLinkActive
       [routerLink]="item.path"
       mat-button
-      [color]="rla.isActive ? 'primary' : null"
-    >
+      [color]="rla.isActive ? 'primary' : null">
       {{ item.name }}
     </a>
   </div>

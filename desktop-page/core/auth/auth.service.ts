@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { EMPTY, catchError } from 'rxjs';
-import { VtLocalStorageService } from '../storage/local-storage.service';
+import { catchError, EMPTY } from 'rxjs';
+import { VtLocalStorageService } from '../storage';
 
 interface UserData {
   data: { access_token: string; token_type: string };

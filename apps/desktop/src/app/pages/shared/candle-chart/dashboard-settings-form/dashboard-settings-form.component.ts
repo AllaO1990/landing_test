@@ -1,13 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { VtLocalStorageService } from '../../../../core/storage/local-storage.service';
+import { VtLocalStorageService } from '@core/storage';
 
 @Component({
   selector: 'vt-dashboard-settings-form',
@@ -42,13 +36,8 @@ export class VtDashboardSettingsFormComponent implements OnInit {
   }
 
   private _initForm() {
-    const savedSettings = this._storageService.getObject<{ timeframe: string }>(
-      'dashboard'
-    );
-    this.settingsFormGroup.addControl(
-      'timeframe',
-      new FormControl(savedSettings.timeframe ?? '1')
-    );
+    const savedSettings = this._storageService.getObject<{ timeframe: string }>('dashboard');
+    this.settingsFormGroup.addControl('timeframe', new FormControl(savedSettings.timeframe ?? '1'));
 
     this.formInitialized = true;
 

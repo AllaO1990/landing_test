@@ -14,7 +14,7 @@ import { HeaderComponent, ItemDirective, ListComponent } from '@ui/list';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 
 @Component({
-  selector: 'vt-search-card',
+  selector: 'lib-search-card',
   standalone: true,
   imports: [
     TuiInputModule,

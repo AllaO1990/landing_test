@@ -18,19 +18,6 @@
   &__space {
     flex: 1;
   }
-
-  &__actions {
-    flex: 1;
-    max-width: 400px;
-
-    display: flex;
-    justify-content: flex-end;
-
-    tui-items-with-more {
-      width: 100%;
-      justify-content: flex-end;
-    }
-  }
 }
 
 .ticker {
@@ -59,12 +46,4 @@
   }
 }
 
-.link-option {
-  justify-content: flex-start;
 
-  &--disabled {
-    cursor: default;
-
-    opacity: .5;
-  }
-}

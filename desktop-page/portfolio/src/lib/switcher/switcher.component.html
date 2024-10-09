@@ -1,0 +1,13 @@
+<div class="switcher">
+  <div class="switcher__description">
+    Общий портфель
+  </div>
+  <div class="switcher__list">
+    <div
+      class="switcher__item"
+      *ngFor="let item of list; trackBy: trackByIndex">
+      {{ item.name }}
+    </div>
+  </div>
+  <div class="switcher__space"></div>
+</div>
