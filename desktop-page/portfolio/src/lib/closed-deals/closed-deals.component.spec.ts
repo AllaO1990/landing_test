@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SwitcherComponent } from './switcher.component';
+import { ClosedDealsComponent } from './closed-deals.component';
 
-describe('SwitcherComponent', () => {
-  let component: SwitcherComponent;
-  let fixture: ComponentFixture<SwitcherComponent>;
+describe('ClosedDealsComponent', () => {
+  let component: ClosedDealsComponent;
+  let fixture: ComponentFixture<ClosedDealsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SwitcherComponent],
+      imports: [ClosedDealsComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SwitcherComponent);
+    fixture = TestBed.createComponent(ClosedDealsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

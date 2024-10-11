@@ -51,7 +51,7 @@ export const routes: Routes = [
           {
             path: '',
             outlet: 'toolbar-main',
-            loadComponent: () => import('portfolio').then((m) => m.SwitcherComponent),
+            loadComponent: () => import('portfolio').then((m) => m.FilterComponent),
           },
           {
             path: '',

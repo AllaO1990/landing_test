@@ -1,0 +1,32 @@
+
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  &__widget {
+    display: flex;
+    flex-flow: row nowrap;
+
+    flex: 1 1 auto;
+
+    width: 100%;
+    height: calc(100% - 60px);
+  }
+
+  &__tabs {
+    position: relative;
+    flex: 0 0 auto;
+    height: 60px;
+
+    box-shadow: var(--tui-shadow-sidebar);
+  }
+}
+
+.widget {
+  flex: 0 0 auto;
+  width: 100%;
+}

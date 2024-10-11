@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AsyncPipe, NgForOf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import {
   TuiButtonModule,
   TuiDataListModule,
@@ -39,6 +39,7 @@ type NavList = NavItem[];
     TuiDataListModule,
     TuiSvgModule,
     AsyncPipe,
+    NgIf,
   ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss',

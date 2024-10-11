@@ -1,2 +1,2 @@
 export * from './lib/layout';
-export * from './lib/switcher';
+export * from './lib/filter';

@@ -117,8 +117,4 @@ export class MainComponent {
       text: 'Сделка',
     },
   ];
-
-  trackByIndex(index: number): number {
-    return index;
-  }
 }

@@ -18,7 +18,13 @@ export class TabsComponent {
 
   @Output() activeItemIndexChange: EventEmitter<number> = new EventEmitter<number>();
 
+  onChange(event: number): void {
+    this.activeItemIndexChange.emit(event);
+  }
+
   trackByIndex(index: number): number {
     return index;
   }
+
+  protected readonly onchange = onchange;
 }

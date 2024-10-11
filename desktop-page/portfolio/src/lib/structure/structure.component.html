@@ -1,0 +1,71 @@
+<div class="structure" *ngIf="list; else load">
+  <div class="structure__switcher">
+    <div
+      tuiGroup
+      [collapsed]="true">
+      <tui-radio-block
+        *ngFor="let item of categories"
+        contentAlign="right"
+        size="l"
+        [formControl]="controlCategories"
+        [hideRadio]="true"
+        [item]="item"
+      >
+        {{ item.name }}
+      </tui-radio-block>
+    </div>
+  </div>
+  <div class="structure__list">
+    <div class="list">
+      <div
+        class="list__item item"
+        [class.item__active]="activeItemIndex === i"
+        (mouseenter)="onMouseenter($event, i)"
+        (mouseleave)="onMouseleave($event)"
+        *ngFor="let item of list; index as i; trackBy: trackByName">
+        <div class="item__name item__cell">
+          {{ item.name }}
+        </div>
+        <div class="item__percentage item__cell">
+          {{ item.percentage | tuiFormatNumber }}%
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="structure__chart">
+    <tui-ring-chart
+      [value]="list | getListValue"
+      [(activeItemIndex)]="activeItemIndex">
+      <ng-container
+        [ngTemplateOutlet]="(activeItemIndex | getIsNaN) ? full : item"
+        [ngTemplateOutletContext]="{ $implicit: activeItemIndex }"
+      ></ng-container>
+    </tui-ring-chart>
+  </div>
+</div>
+
+<ng-template #load>
+  <lib-loader></lib-loader>
+</ng-template>
+
+<ng-template #full>
+  <div class="chart__info">
+    <div class="chart__text">
+      Всего:
+    </div>
+    <div class="chart__value">
+      {{ summary | tuiFormatNumber }}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #item let-index>
+  <div class="chart__info" *ngIf="list">
+    <div class="chart__text">
+      {{ list[index].name }}:
+    </div>
+    <div class="chart__value">
+      {{ list[index].value | tuiFormatNumber }}
+    </div>
+  </div>
+</ng-template>

@@ -6,30 +6,27 @@
   align-items: center;
 
   height: 100%;
+  overflow: hidden;
 
   margin: 0 var(--padding-2);
 }
 
-.switcher {
-  display: flex;
-  align-items: center;
-
-  &__description {
-    margin-right: var(--padding-2);
-  }
+.filter {
+  width: 100%;
+  overflow: hidden;
 
   &__list {
     display: flex;
-    flex-flow: row nowrap;
+    align-items: center;
+
+    width: 100%;
   }
 
   &__item {
     &:not(:last-child) {
       margin-right: var(--padding-2);
     }
-  }
 
-  &__space {
     flex: 1;
   }
 }

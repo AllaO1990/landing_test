@@ -4,3 +4,4 @@ export * from './lib/ui/dialog';
 export * from './lib/ui/list';
 export * from './lib/ui/check';
 export * from './lib/ui/logo';
+export * from './lib/ui/loader';

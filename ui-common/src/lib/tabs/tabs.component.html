@@ -1,4 +1,7 @@
-<tui-tabs class="tabs" [(activeItemIndex)]="activeItemIndex">
+<tui-tabs
+  class="tabs"
+  [activeItemIndex]="activeItemIndex"
+  (activeItemIndexChange)="onChange($event)">
   <button
     *ngFor="let item of tabs; trackBy: trackByIndex; index as i"
     class="tab"

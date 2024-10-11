@@ -1,0 +1,68 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+  background-color: var(--block-bg-color);
+}
+
+.portfolio {
+  display: flex;
+  flex-flow: column nowrap;
+
+  &__actions {
+    display: flex;
+    flex-flow: row nowrap;
+
+    align-items: center;
+    justify-content: space-around;
+
+    margin: var(--padding-2);
+  }
+
+  &__action {
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+  }
+
+  &__deposit {
+
+  }
+}
+
+.deposit {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+
+  &__row {
+    display: flex;
+    flex-flow: row nowrap;
+
+    align-items: center;
+
+    height: 32px;
+    padding: 0;
+    margin: 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--main-bg-color)
+    }
+  }
+
+  &__cell {
+    padding: 0 var(--padding-2);
+  }
+
+  &__title {
+    flex: 0 0 auto;
+    width: 40%;
+  }
+
+  &__description {
+    flex: 0 0 auto;
+    width: 60%;
+  }
+}
