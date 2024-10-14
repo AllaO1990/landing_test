@@ -12,6 +12,7 @@ import { StockId } from 'types/stock';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { PolymorpheusContent, PolymorpheusModule } from '@tinkoff/ng-polymorpheus';
+import { LoaderComponent } from '../loader';
 
 @Component({
   selector: 'lib-list[itemSize]',
@@ -28,6 +29,7 @@ import { PolymorpheusContent, PolymorpheusModule } from '@tinkoff/ng-polymorpheu
     TuiScrollbarModule,
     PolymorpheusModule,
     CdkVirtualScrollableElement,
+    LoaderComponent,
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',

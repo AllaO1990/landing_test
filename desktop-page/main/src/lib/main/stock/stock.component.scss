@@ -115,17 +115,6 @@
 .loader {
   width: 100%;
   height: 100%;
-
-  &__text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    height: 100%;
-
-    margin-top: -16px;
-  }
 }
 
 ::ng-deep {

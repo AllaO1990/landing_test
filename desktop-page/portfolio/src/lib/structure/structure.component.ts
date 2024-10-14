@@ -1,12 +1,21 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { TuiRingChartModule } from '@taiga-ui/addon-charts';
 import { LoaderComponent } from '@ui/loader';
-import { NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
 import { TuiFormatNumberPipeModule, TuiGroupModule } from '@taiga-ui/core';
 import { TuiRadioBlockModule } from '@taiga-ui/kit';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { COLOR_LIST } from './structure.constants';
+import { filter, Observable, ReplaySubject, startWith, Subject, switchMap, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ItemDirective, ListComponent } from '@ui/list';
+
+interface StructureControl {
+  name: string;
+  value: string;
+}
 
 interface StructureItem {
   value: number;
@@ -14,32 +23,13 @@ interface StructureItem {
   percentage: number;
 }
 
-type StructureList = StructureItem[];
+type StructureList = {
+  name: string;
+  value: string;
+  list: StructureItem[];
+}[];
 
 let COLOR_LIMIT = 5;
-
-const COLOR_LIST = [
-  '#a8cef1',
-  '#3682db',
-  '#8dda71',
-  '#34b41f',
-  '#e29398',
-  '#b8474e',
-  '#fcc068',
-  '#ff8a00',
-  '#dab3f9',
-  '#7b439e',
-  '#fee797',
-  '#fcbb14',
-  '#ea97c4',
-  '#bd65a4',
-  '#7fd7cc',
-  '#2fad96',
-  '#d4aca2',
-  '#9d6f64',
-  '#d2e9a2',
-  '#aadc42',
-];
 
 @Component({
   selector: 'portfolio-structure',
@@ -56,45 +46,67 @@ const COLOR_LIST = [
     TuiRadioBlockModule,
     TuiGroupModule,
     ReactiveFormsModule,
+    AsyncPipe,
+    ListComponent,
+    ItemDirective,
   ],
   templateUrl: './structure.component.html',
   styleUrl: './structure.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StructureComponent {
-  readonly categories: { name: string; value: string }[] = [
-    { name: 'Активы', value: '' },
-    { name: 'Компании', value: '' },
-    { name: 'Отрасли', value: '' },
-    { name: 'Валюта', value: '' },
-    { name: 'Портфель', value: '' },
-  ];
-  readonly controlCategories: FormControl = new FormControl(this.categories[0], Validators.required);
+  private readonly _doc: Document = inject(DOCUMENT);
+  private readonly _styleId: string = 'structure';
+  private readonly _data$: Subject<StructureList> = new ReplaySubject(1);
+
+  readonly controlCategories: FormControl = new FormControl(null, Validators.required);
 
   activeItemIndex = Number.NaN;
-
-  list: StructureList | null = null;
   summary = 0;
+
+  private readonly data$: Observable<StructureList> = this._data$
+    .asObservable()
+    .pipe(filter((data: StructureList | null): data is StructureList => data !== null));
+
+  categories$: Observable<StructureControl[]> = this.data$.pipe(
+    map((data: StructureList) => data.map(({ name, value }: { name: string; value: string }) => ({ name, value }))),
+    tap((list: { name: string; value: string }[]) => this.controlCategories.patchValue(list[0]))
+  );
+
+  list$: Observable<StructureItem[]> = this.data$.pipe(
+    switchMap((list: StructureList) =>
+      this.controlCategories.valueChanges.pipe(
+        startWith(this.controlCategories.value),
+        map((controlValue: StructureControl) => {
+          const find = list.find((item: { value: string }) => item.value === controlValue.value);
+
+          return find ? find.list : [];
+        }),
+        tap((list: StructureItem[]) => (this.summary = list.reduce((acc, item) => (acc += item.value), 0)))
+      )
+    )
+  );
 
   @Input()
   set data(value: StructureList) {
     if (value) {
-      if (value.length > COLOR_LIMIT) {
-        this._generateColorList(value.length);
-        COLOR_LIMIT = value.length;
+      const max = Math.max(...value.map((item) => item.list.length));
+
+      if (max > COLOR_LIMIT) {
+        COLOR_LIMIT = max;
+        this._generateColorList(COLOR_LIMIT);
       }
-      this.summary = value.reduce((acc: number, item: StructureItem) => (acc += item.value), 0);
     }
 
-    this.list = value;
+    this._data$.next(value);
   }
 
   private _generateColorList(length: number): void {
+    const style = this._getStyleTag();
     const getColor = this._getColor(length);
-    const root: HTMLElement = this._getStyleRoot();
     const text: string = Array.from({ length }, (_, i: number) => `--tui-chart-${i}: ${getColor(i)};`).join('');
 
-    root.innerHTML = `:root {${text}}`;
+    style.innerHTML = `:root{${text}`;
   }
 
   private _getColor(length: number): (value: number) => string {
@@ -104,18 +116,18 @@ export class StructureComponent {
     return scaleLinear(domain, COLOR_LIST);
   }
 
-  private _getStyleRoot(): HTMLElement {
-    const root: HTMLElement | null = document.querySelector('style#root');
+  private _getStyleTag(): HTMLElement {
+    const root: HTMLElement | null = this._doc.querySelector(`style#${this._styleId}`);
 
     if (root !== null) {
       return root;
     }
 
-    const style: HTMLElement = document.createElement('style');
-    style.id = 'root';
-    document.head.appendChild(style);
+    const style: HTMLElement = this._doc.createElement('style');
+    style.id = this._styleId;
+    this._doc.head.appendChild(style);
 
-    return document.querySelector('style#root') as HTMLElement;
+    return this._doc.querySelector(`style#${this._styleId}`) as HTMLElement;
   }
 
   trackByName(_: number, item: StructureItem): string {

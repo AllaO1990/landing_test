@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@a
 import { TuiLoaderModule } from '@taiga-ui/core';
 
 @Component({
-  selector: 'lib-loader',
+  selector: 'ui-loader',
   standalone: true,
   imports: [TuiLoaderModule],
   templateUrl: './loader.component.html',

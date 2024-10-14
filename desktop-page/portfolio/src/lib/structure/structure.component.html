@@ -1,51 +1,57 @@
-<div class="structure" *ngIf="list; else load">
+<div class="structure">
   <div class="structure__switcher">
     <div
       tuiGroup
+      class="structure__controls"
       [collapsed]="true">
       <tui-radio-block
-        *ngFor="let item of categories"
+        *ngFor="let item of categories$ | async"
         contentAlign="right"
         size="l"
         [formControl]="controlCategories"
         [hideRadio]="true"
-        [item]="item"
-      >
+        [item]="item">
         {{ item.name }}
       </tui-radio-block>
     </div>
   </div>
-  <div class="structure__list">
-    <div class="list">
-      <div
-        class="list__item item"
-        [class.item__active]="activeItemIndex === i"
-        (mouseenter)="onMouseenter($event, i)"
-        (mouseleave)="onMouseleave($event)"
-        *ngFor="let item of list; index as i; trackBy: trackByName">
-        <div class="item__name item__cell">
-          {{ item.name }}
+  <div class="structure__container" *ngIf="(list$ | async) as list; else load">
+    <div class="structure__list">
+      <lib-list
+        class="list"
+        [list]="list"
+        [itemSize]="32">
+        <div
+          class="list__item item"
+          *libListItem="let item; index as i"
+          [class.item__active]="activeItemIndex === i"
+          (mouseenter)="onMouseenter($event, i)"
+          (mouseleave)="onMouseleave($event)">
+          <div class="item__name item__cell">
+            {{ item.name }}
+          </div>
+          <div class="item__percentage item__cell">
+            {{ item.percentage | tuiFormatNumber }}%
+          </div>
         </div>
-        <div class="item__percentage item__cell">
-          {{ item.percentage | tuiFormatNumber }}%
-        </div>
-      </div>
+      </lib-list>
     </div>
-  </div>
-  <div class="structure__chart">
-    <tui-ring-chart
-      [value]="list | getListValue"
-      [(activeItemIndex)]="activeItemIndex">
-      <ng-container
-        [ngTemplateOutlet]="(activeItemIndex | getIsNaN) ? full : item"
-        [ngTemplateOutletContext]="{ $implicit: activeItemIndex }"
-      ></ng-container>
-    </tui-ring-chart>
+    <div class="structure__chart">
+      <tui-ring-chart
+        size="xl"
+        [value]="list | getListValue"
+        [(activeItemIndex)]="activeItemIndex">
+        <ng-container
+          [ngTemplateOutlet]="(activeItemIndex | getIsNaN) ? full : item"
+          [ngTemplateOutletContext]="{ $implicit:  list[activeItemIndex] }"
+        ></ng-container>
+      </tui-ring-chart>
+    </div>
   </div>
 </div>
 
 <ng-template #load>
-  <lib-loader></lib-loader>
+  <ui-loader></ui-loader>
 </ng-template>
 
 <ng-template #full>
@@ -59,13 +65,13 @@
   </div>
 </ng-template>
 
-<ng-template #item let-index>
-  <div class="chart__info" *ngIf="list">
+<ng-template #item let-context>
+  <div class="chart__info">
     <div class="chart__text">
-      {{ list[index].name }}:
+      {{ context.name }}:
     </div>
     <div class="chart__value">
-      {{ list[index].value | tuiFormatNumber }}
+      {{ context.value | tuiFormatNumber }}
     </div>
   </div>
 </ng-template>
