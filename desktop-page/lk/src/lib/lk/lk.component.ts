@@ -19,7 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { NavComponent } from '../nav';
-import { LogoComponent } from '@ui/logo';
+import { LogoComponent } from '@ui/components/logo';
 
 const createStore = (api: DesktopService) =>
   new DesktopLkStore(

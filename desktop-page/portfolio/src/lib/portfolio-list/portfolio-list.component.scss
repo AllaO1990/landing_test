@@ -4,6 +4,10 @@
   height: 100%;
   width: 100%;
   background-color: var(--block-bg-color);
+
+  [data-size=l] {
+    font-weight: normal;
+  }
 }
 
 .portfolio {
@@ -12,7 +16,7 @@
 
   &__actions {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
 
     align-items: center;
     justify-content: space-around;
@@ -21,6 +25,8 @@
   }
 
   &__action {
+    margin-bottom: var(--padding-2);
+
     &:not(:last-child) {
       margin-right: var(--padding-2);
     }

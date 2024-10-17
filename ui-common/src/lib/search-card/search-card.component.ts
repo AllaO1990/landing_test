@@ -10,8 +10,8 @@ import { debounceTime, Observable, switchMap } from 'rxjs';
 import { StockInstrument, StockListItems } from 'types/stock';
 import { filter, map, startWith } from 'rxjs/operators';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/list';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
 
 @Component({
   selector: 'lib-search-card',

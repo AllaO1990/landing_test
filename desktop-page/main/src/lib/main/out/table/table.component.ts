@@ -23,7 +23,7 @@ import { Observable } from 'rxjs';
 import { StockId } from 'types/stock';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
-import { ColorPriceDirective, LastPriceDirective } from '@ui/price';
+import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
 
 @Component({
   selector: 'vt-out-table',

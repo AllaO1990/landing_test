@@ -266,7 +266,10 @@ export class DesktopLkStore extends ComponentStore<DesktopLkState> {
           result[0] !== null && result[1] !== null
       ),
       filter(([event, _]: [StockEvent, Idea[]]): boolean => event.type === EventSelected.IDEA),
-      map(([event, list]: [StockEvent, Idea[]]): Idea => list.find((item: Idea) => item.id === event.id)!),
+      map(
+        ([event, list]: [StockEvent, Idea[]]): Idea =>
+          list.find((item: Idea) => item.id.toString() === event.id.toString())!
+      ),
       tap((value: Idea) => {
         this._stockListStore.updateSelected(value.instrument);
         this._entryStore.updateSelected(value);

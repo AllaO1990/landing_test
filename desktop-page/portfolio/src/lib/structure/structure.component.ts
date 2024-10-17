@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { TuiRingChartModule } from '@taiga-ui/addon-charts';
-import { LoaderComponent } from '@ui/loader';
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
@@ -10,7 +9,8 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { COLOR_LIST } from './structure.constants';
 import { filter, Observable, ReplaySubject, startWith, Subject, switchMap, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ItemDirective, ListComponent } from '@ui/list';
+import { LoaderComponent } from '@ui/components/loader';
+import { ItemDirective, ListComponent } from '@ui/components/list';
 
 interface StructureControl {
   name: string;
@@ -128,10 +128,6 @@ export class StructureComponent {
     this._doc.head.appendChild(style);
 
     return this._doc.querySelector(`style#${this._styleId}`) as HTMLElement;
-  }
-
-  trackByName(_: number, item: StructureItem): string {
-    return item.name;
   }
 
   onMouseenter(event: Event, i: number): void {

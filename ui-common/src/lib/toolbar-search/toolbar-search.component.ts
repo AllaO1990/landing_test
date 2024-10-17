@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { Observable } from 'rxjs';
 import { StockInstrument } from 'types/stock';
-import { DialogService } from '@ui/dialog';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { QueryParams } from 'utils/query-params';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,6 +10,7 @@ import { DesktopLkStore } from 'stores/desktop';
 import { SearchCardComponent } from '../search-card';
 import { TuiSvgModule } from '@taiga-ui/core';
 import { AsyncPipe, NgIf } from '@angular/common';
+import { DialogService } from '@ui/components/dialog';
 
 @Component({
   selector: 'lib-toolbar-search',

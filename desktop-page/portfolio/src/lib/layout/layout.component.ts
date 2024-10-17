@@ -146,32 +146,37 @@ export class LayoutComponent {
 
   activeItemIndex = 0;
 
-  readonly tabMobileList: { text: string; icon: string }[] = [
+  readonly tabMobileList: { text: string; icon: string; title: string }[] = [
     {
-      icon: 'tuiIconTargetLarge',
-      text: 'Портфель',
+      icon: 'tuiIconBriefcaseLarge',
+      title: 'Портфель',
+      text: '',
     },
     {
-      icon: 'tuiIconListLarge',
-      text: 'Структура',
+      icon: 'tuiIconApertureLarge',
+      title: 'Структура',
+      text: '',
     },
     {
-      icon: 'tuiIconChartLineLarge',
-      text: 'Прибыль',
+      icon: 'tuiIconTrendingUpLarge',
+      title: 'Прибыль',
+      text: '',
     },
     {
       icon: 'tuiIconShoppingCartLarge',
-      text: 'Сделки',
+      title: 'Сделки',
+      text: '',
     },
     {
       icon: 'tuiIconChartLineLarge',
-      text: 'График',
+      title: 'График',
+      text: '',
     },
   ];
 
   readonly tabTabletList: { text: string; icon: string }[] = [
     {
-      icon: 'tuiIconTargetLarge',
+      icon: 'tuiIconBriefcaseLarge',
       text: 'Портфель',
     },
     {

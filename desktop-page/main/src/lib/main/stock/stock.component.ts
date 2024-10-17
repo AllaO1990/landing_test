@@ -33,11 +33,11 @@ import { QueryParams } from 'utils/query-params';
 import { FormInputComponent } from './form-input';
 import { FormInputEvent } from './form-input/form-input.types';
 import { PolymorpheusComponent, PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
-import { DialogService } from '@ui/dialog';
 import { DialogComponent } from './dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchCardComponent } from 'ui-common';
-import { LoaderComponent } from '@ui/loader';
+import { LoaderComponent } from '@ui/components/loader';
+import { DialogService } from '@ui/components/dialog';
 
 type IsRename = 'edit' | 'new' | false;
 

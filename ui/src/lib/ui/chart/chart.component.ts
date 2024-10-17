@@ -377,8 +377,9 @@ export class ChartComponent implements OnInit {
 
   @Input()
   set selected(value: StockInstrument | null) {
-    if (this.consolidationZonesIsExist) {
-      this.chart?.removeAnnotation(0);
+    if (this.chart) {
+      this.chart.removeAnnotation(0);
+      this.chart.removeAnnotation('zones');
     }
 
     this._selected$.next(value);
@@ -679,9 +680,11 @@ export class ChartComponent implements OnInit {
       (series as Highcharts.Series).update({ ...candlestick, name: instrument.ticker });
 
       if (this._currentTicker !== instrument.ticker) {
+        chart.yAxis[0].setExtremes();
         chart.xAxis[0].setExtremes(
           new Date().setMonth(new Date().getMonth() - 2).valueOf(),
-          new Date().setMonth(new Date().getMonth() + 1).valueOf()
+          new Date().setMonth(new Date().getMonth() + 1).valueOf(),
+          true
         );
 
         this._currentTicker = instrument.ticker;

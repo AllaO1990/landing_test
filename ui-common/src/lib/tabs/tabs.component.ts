@@ -12,7 +12,7 @@ import { NgForOf } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabsComponent {
-  @Input() tabs: { text: string; icon: string }[] = [];
+  @Input() tabs: { text: string; icon: string; title?: string }[] = [];
 
   @Input() activeItemIndex = -1;
 

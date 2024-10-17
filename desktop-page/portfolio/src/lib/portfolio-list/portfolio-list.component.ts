@@ -3,7 +3,7 @@ import { TuiButtonModule, TuiFormatNumberPipeModule, TuiLoaderModule } from '@ta
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
 import { NgForOf, NgIf } from '@angular/common';
-import { LoaderComponent } from '@ui/loader';
+import { LoaderComponent } from '@ui/components/loader';
 
 type PortfolioInfo = {
   [key in PortfolioInfoEnum]: number;
