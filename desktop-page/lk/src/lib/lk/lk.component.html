@@ -1,7 +1,8 @@
 <div class="layout">
-  <div class="layout__toolbar">
-    <vt-toolbar-search></vt-toolbar-search>
+  <div class="layout__toolbar toolbar">
+    <lib-logo class="toolbar__logo"></lib-logo>
     <router-outlet name="toolbar-main"></router-outlet>
+    <lk-nav class="toolbar__nav"></lk-nav>
   </div>
   <div class="layout__container">
     <router-outlet></router-outlet>

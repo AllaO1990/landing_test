@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'vt-toolbar-logo',
+  selector: 'lib-nav-search',
   templateUrl: './toolbar-logo.component.html',
   styleUrls: ['./toolbar-logo.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -8,11 +8,11 @@ import {
   TuiSvgModule,
 } from '@taiga-ui/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/list';
-import { CheckComponent } from '@ui/check';
 import { Position } from 'types/position';
 import { IdeaService } from './idea.service';
 import { IdeaEntry, IdeaStop, IdeaTarget, IdeaTotalTarget } from './idea.types';
+import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { CheckComponent } from '@ui/components/check';
 
 @Component({
   selector: 'lib-enter-idea',

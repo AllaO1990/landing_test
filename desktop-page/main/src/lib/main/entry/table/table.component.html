@@ -74,8 +74,8 @@
 
           <td *tuiCell="'luck'" tuiTd class="td td--number">
             {{ item.strategy.successProbability * 100 | tuiFormatNumber }}%
-            <div class="substring" [title]="item.strategy.type | strategyName">
-              {{ item.strategy.type | strategyName }}
+            <div class="substring" [title]="item.strategy.type | getStrategyName">
+              {{ item.strategy.type | getStrategyName }}
             </div>
           </td>
 

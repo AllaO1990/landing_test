@@ -1,0 +1,15 @@
+.loader {
+  height: 100%;
+  width: 100%;
+
+  &__text {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+    min-height: 32px;
+    width: 100%;
+  }
+}

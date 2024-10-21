@@ -1,0 +1,55 @@
+<div class="filter">
+  <div class="filter__list" [formGroup]="formGroup">
+    <div class="filter__item portfolio">
+      <tui-select
+        *ngIf="portfolio$ | async as list"
+        [stringify]="stringify"
+        tuiTextfieldSize="s"
+        formControlName="portfolio"
+        [tuiTextfieldLabelOutside]="true">
+        <tui-data-list-wrapper
+          *tuiDataList
+          size="s"
+          [items]="list"
+          [itemContent]="item">
+        </tui-data-list-wrapper>
+      </tui-select>
+    </div>
+    <div class="filter__item broker">
+      <tui-select
+        *ngIf="broker$ | async as list"
+        [stringify]="stringify"
+        tuiTextfieldSize="s"
+        formControlName="broker"
+        [tuiTextfieldLabelOutside]="true">
+        <tui-data-list-wrapper
+          *tuiDataList
+          size="s"
+          [items]="list"
+          [itemContent]="item">
+        </tui-data-list-wrapper>
+      </tui-select>
+    </div>
+    <div class="filter__item currency">
+      <tui-select
+        *ngIf="currency$ | async as list"
+        [stringify]="stringify"
+        tuiTextfieldSize="s"
+        formControlName="currency"
+        [tuiTextfieldLabelOutside]="true">
+        <tui-data-list-wrapper
+          *tuiDataList
+          size="s"
+          [items]="list"
+          [itemContent]="item">
+        </tui-data-list-wrapper>
+      </tui-select>
+    </div>
+  </div>
+</div>
+
+<ng-template #item let-item>
+  <div class="item">
+    {{ item.name }}
+  </div>
+</ng-template>

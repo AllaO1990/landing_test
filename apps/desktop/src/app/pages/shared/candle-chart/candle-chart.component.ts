@@ -18,10 +18,10 @@ import { IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { DataService } from '../../../core/data/data.service';
-import { VtLocalStorageService } from '../../../core/storage/local-storage.service';
 import { VtCommonSettings } from '../../../shared/interfaces/storage-interface';
 import { TvWidgetOptions } from './candle-chart.model';
 import { VtDashboardSettingsFormComponent } from './dashboard-settings-form/dashboard-settings-form.component';
+import { VtLocalStorageService } from '@core/storage';
 
 declare const TradingView: any;
 
@@ -39,9 +39,7 @@ let uniqueId = 0;
     class: 'vt-candle-chart-vt-widget',
   },
 })
-export class VtCandleChartComponent
-  implements OnInit, AfterViewInit, OnChanges
-{
+export class VtCandleChartComponent implements OnInit, AfterViewInit, OnChanges {
   uniqueId = `vt-chart-${uniqueId++}`;
   issuerControl = new UntypedFormControl('DSKY');
   lockControl = new UntypedFormControl(false);
@@ -124,8 +122,7 @@ export class VtCandleChartComponent
     private _router: Router,
     private _storageService: VtLocalStorageService
   ) {
-    this.storageCommonSettings =
-      this._storageService.getObject<VtCommonSettings>('vtCommonSettings');
+    this.storageCommonSettings = this._storageService.getObject<VtCommonSettings>('vtCommonSettings');
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -143,11 +140,7 @@ export class VtCandleChartComponent
     this.lockControl.valueChanges.subscribe(console.log);
 
     this.eventsFromWidget
-      .pipe(
-        distinctUntilChanged(
-          (prev: any, cur: any) => prev.original_name === cur.original_name
-        )
-      )
+      .pipe(distinctUntilChanged((prev: any, cur: any) => prev.original_name === cur.original_name))
       .subscribe((event) => {
         this._storageService.addOrUpdateObjectProperty('vtCommonSettings', {
           symbol: event.original_name,
@@ -210,9 +203,7 @@ export class VtCandleChartComponent
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.options.filter((option) =>
-      option.toLowerCase().includes(filterValue)
-    );
+    return this.options.filter((option) => option.toLowerCase().includes(filterValue));
   }
 
   // private _addHistogramSeries() {

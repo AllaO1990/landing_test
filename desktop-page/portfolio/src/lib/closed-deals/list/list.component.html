@@ -1,0 +1,175 @@
+<lib-list
+  [itemSize]="32"
+  [list]="list"
+  [header]="header">
+  <div
+    class="item row"
+    *libListItem="let item">
+    <div class="item__date row__item">
+      <div class="date">
+        <div class="date__open">
+          {{ item.createdAt | date: 'dd.MM.yy' }}
+        </div>
+        <div class="date__close">
+          {{ item.closeAt ? (item.closeAt | date: 'dd.MM.yy') : 'In stock' }}
+        </div>
+      </div>
+    </div>
+    <div class="item__position-type row__item">
+      {{ item.positionType | getNamePositionType }}
+    </div>
+    <div class="item__ticker row__item">
+      <div class="ticker">
+        <div class="ticker__instrument">{{ item.instrument.ticker }}</div>
+        <div class="ticker__exchange">{{ item.instrument.realExchange }}</div>
+        <div class="ticker__name">{{ item.instrument.name }}</div>
+      </div>
+    </div>
+    <div class="item__last-price row__item">
+      {{ item.lastPrice | tuiFormatNumber }}
+    </div>
+    <div class="item__cost row__item">
+      <div class="cost">
+        <div class="cost__quantity">
+          {{ item.inPositionQuantity | tuiFormatNumber }}
+        </div>
+        <div class="cost__price">
+          {{ item.inPositionPrice | tuiFormatNumber }}
+        </div>
+      </div>
+    </div>
+    <div class="item__result-price row__item">
+      ⚠️{{ item.lastPrice | tuiFormatNumber }}
+    </div>
+    <div class="item__cost row__item">
+      <div class="cost">
+        <div class="cost__quantity">
+          ⚠️{{ item.inPositionQuantity | tuiFormatNumber }}
+        </div>
+        <div class="cost__price">
+          ⚠️{{ item.inPositionPrice | tuiFormatNumber }}
+        </div>
+      </div>
+    </div>
+    <div class="item__dividend row__item">
+      ⚠️{{ item.dividend | tuiFormatNumber }}
+    </div>
+    <div class="item__profit row__item">
+      <div class="profit">
+        <div class="profit__percentage">
+          {{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+        </div>
+        <div class="profit__price">
+          {{ item.result.profitPrice | tuiFormatNumber }}
+        </div>
+      </div>
+    </div>
+    <div class="item__cost row__item">
+      <div class="cost">
+        <div class="cost__quantity">
+          ⚠️{{ item.inPositionQuantity | tuiFormatNumber }}
+        </div>
+        <div class="cost__price">
+          ⚠️{{ item.inPositionPrice | tuiFormatNumber }}
+        </div>
+      </div>
+    </div>
+    <div class="item__profit row__item">
+      <div class="profit">
+        <div class="profit__percentage">
+          ⚠️{{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+        </div>
+        <div class="profit__price">
+          ⚠️{{ item.result.profitPrice | tuiFormatNumber }}
+        </div>
+      </div>
+    </div>
+    <div class="item__result row__item">
+      <div class="result">
+        <div class="result__percentage">
+          ⚠️{{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+        </div>
+        <div class="result__price">
+          ⚠️{{ item.result.profitPrice | tuiFormatNumber }}
+        </div>
+      </div>
+    </div>
+    <div class="item__deposit row__item">
+      {{ item.inPositionDepositShare | tuiFormatNumber }}%
+    </div>
+    <div class="item__strategy row__item">
+      {{ item.strategy.type | getStrategyName }}
+    </div>
+    <div class="item__broker row__item">
+      <ng-container *ngIf="item.broker; else none">
+        {{ item.broker }}
+      </ng-container>
+    </div>
+    <div class="item__comment row__item">
+      <ng-container *ngIf="item.comment; else none">
+        {{ item.comment }}
+      </ng-container>
+    </div>
+    <div class="item__author row__item">
+      {{ item.author }}
+    </div>
+  </div>
+</lib-list>
+
+<ng-template #header>
+  <lib-list-header class="header item">
+    <div class="item__date row__item">
+      Дата вх<br>Дата вых
+    </div>
+    <div class="item__position-type row__item">
+      Напр.
+    </div>
+    <div class="item__ticker row__item">
+      Тикер
+    </div>
+    <div class="item__last-price row__item">
+      Цена уч.
+    </div>
+    <div class="item__cost row__item">
+      К-во вход <br> Стоим. уч.
+    </div>
+    <div class="item__result-price row__item">
+      Цена вых.
+    </div>
+    <div class="item__cost row__item">
+      К-во выход <br> Стоим. вых.
+    </div>
+    <div class="item__dividend row__item">
+      Дивиденд
+    </div>
+    <div class="item__profit row__item">
+      Приб. реализ.
+    </div>
+    <div class="item__cost row__item">
+      К-во ост. <br> Стоим. ост.
+    </div>
+    <div class="item__profit row__item">
+      Приб. нереализ.
+    </div>
+    <div class="item__result row__item">
+      Рез-т
+    </div>
+    <div class="item__deposit row__item">
+      % к депо
+    </div>
+    <div class="item__strategy row__item">
+      Стратегия
+    </div>
+    <div class="item__broker row__item">
+      Брокер
+    </div>
+    <div class="item__comment row__item">
+      Комментарий
+    </div>
+    <div class="item__author row__item">
+      Идея
+    </div>
+  </lib-list-header>
+</ng-template>
+
+<ng-template #none>&mdash;</ng-template>

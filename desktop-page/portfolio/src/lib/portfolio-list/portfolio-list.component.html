@@ -1,0 +1,38 @@
+<div class="portfolio">
+  <div class="portfolio__actions">
+    <button
+      class="portfolio__action button"
+      [disabled]="true"
+      tuiButton
+      size="l"
+      type="button">
+      Внести
+    </button>
+    <button
+      class="portfolio__action button"
+      [disabled]="true"
+      tuiButton
+      size="l"
+      type="button">
+      Вывести
+    </button>
+    <button
+      class="portfolio__action button"
+      [disabled]="true"
+      tuiButton
+      size="l"
+      type="button">
+      Комиссии
+    </button>
+  </div>
+  <div class="portfolio__deposit deposit" *ngIf="data; else load">
+    <dl class="deposit__row" *ngFor="let key of list">
+      <dt class="deposit__title deposit__cell">{{ constants[key] }}</dt>
+      <dd class="deposit__description deposit__cell">{{ data[key] | tuiFormatNumber }}</dd>
+    </dl>
+  </div>
+</div>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>

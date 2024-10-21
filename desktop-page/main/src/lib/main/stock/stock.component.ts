@@ -33,10 +33,11 @@ import { QueryParams } from 'utils/query-params';
 import { FormInputComponent } from './form-input';
 import { FormInputEvent } from './form-input/form-input.types';
 import { PolymorpheusComponent, PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
-import { DialogService } from '@ui/dialog';
 import { DialogComponent } from './dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchCardComponent } from 'ui-common';
+import { LoaderComponent } from '@ui/components/loader';
+import { DialogService } from '@ui/components/dialog';
 
 type IsRename = 'edit' | 'new' | false;
 
@@ -69,6 +70,7 @@ export interface StockListWithType {
     FormInputComponent,
     DialogComponent,
     SearchCardComponent,
+    LoaderComponent,
   ],
   templateUrl: './stock.component.html',
   styleUrls: ['./stock.component.scss'],
@@ -136,7 +138,7 @@ export class StockComponent {
   public readonly list$: Observable<StockListWithType> = combineLatest([
     this._list$,
     this._store.price$.pipe(filter((price: StockPrice<WithLastPrice> | null) => !!price)),
-    this.controlGroup.valueChanges,
+    this.controlGroup.valueChanges.pipe(startWith(this.controlGroup.value)),
   ]).pipe(
     debounceTime(0),
     map(([list, price, value]: [StockListItems | null, StockPrice<WithLastPrice> | null, StockGroup | null]) => ({

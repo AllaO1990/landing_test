@@ -16,19 +16,10 @@
       <vt-out [data]="positionList$ | async"></vt-out>
     </div>
   </div>
-  <div class="container__tabs" *ngIf="tabs$ | async as tabs">
-    <tui-tabs class="tabs" [(activeItemIndex)]="activeItemIndex">
-      <button
-        *ngFor="let item of tabs; trackBy: trackByIndex; index as i"
-        class="tab"
-        [class.tab--active]="i === activeItemIndex"
-        tuiTab
-      >
-        <tui-svg class="tab__icon" [src]="item.icon"></tui-svg>
-        <span class="tab__text">
-          {{ item.text }}
-        </span>
-      </button>
-    </tui-tabs>
-  </div>
+  <lib-tabs
+    class="container__tabs"
+    *ngIf="tabs$ | async as tabs"
+    [tabs]="tabs"
+    [(activeItemIndex)]="activeItemIndex">
+  </lib-tabs>
 </div>

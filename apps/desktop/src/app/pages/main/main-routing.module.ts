@@ -5,8 +5,8 @@ import { MainComponent } from './main.component';
 const routes: Routes = [
   // {
   //   path: '',
-  //   outlet: 'toolbar-main',
-  //   component: ToolbarComponent
+  //   outlet: 'nav-search-main',
+  //   component: NavComponent
   // },
   {
     path: '',

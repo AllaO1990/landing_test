@@ -7,7 +7,7 @@
     [mode]="(isHandset$ | async) ? 'over' : 'side'"
     [opened]="(isHandset$ | async) === false"
   >
-    <mat-toolbar-start class="vanya-toolbar-start">Menu</mat-toolbar-start>
+    <mat-nav-search-start class="vanya-nav-search-start">Menu</mat-nav-search-start>
     <mat-nav-stock>
       <a mat-stock-item [routerLink]="['/']">Link 1</a>
       <a mat-stock-item [routerLink]="['/second']">Link 2</a>
@@ -15,7 +15,7 @@
     </mat-nav-stock>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar-start color="primary" class="vanya-toolbar-start">
+    <mat-nav-search-start color="primary" class="vanya-nav-search-start">
       <button
         type="button"
         aria-label="Toggle sidenav"
@@ -25,7 +25,7 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span>desktop</span>
-    </mat-toolbar-start>
+    </mat-nav-search-start>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container> -->

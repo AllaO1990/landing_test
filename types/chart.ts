@@ -35,6 +35,7 @@ export interface IdeaParams {
 export interface Target {
   value: number;
   reached: boolean;
+  date: string | null;
 }
 
 export interface ChartFigure {

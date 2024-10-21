@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'vt-toolbar-start',
@@ -6,15 +6,11 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./toolbar-start.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ToolbarStartComponent implements OnInit {
+export class ToolbarStartComponent {
   public readonly links: { path: string[]; name: string }[] = [
     { name: 'Sign in', path: ['./sign-in'] },
     // { name: 'Sign up', path: ['./sign-up'] },
   ];
-
-  constructor() {}
-
-  ngOnInit(): void {}
 
   public trackByIndex(index: number): number {
     return index;

@@ -2,13 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@an
 import { OUT_HEADER } from '../out.constants';
 import { CdkFixedSizeVirtualScroll, ScrollingModule } from '@angular/cdk/scrolling';
 import { TuiTableModule } from '@taiga-ui/addon-table';
-import {
-  TUI_NUMBER_FORMAT,
-  TuiFormatNumberPipeModule,
-  TuiHintModule,
-  TuiLoaderModule,
-  TuiScrollbarModule,
-} from '@taiga-ui/core';
+import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
 import { OutHeaderItem } from '../out.types';
 import { AsyncPipe, DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Position } from 'types/position';
@@ -23,7 +17,7 @@ import { Observable } from 'rxjs';
 import { StockId } from 'types/stock';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
-import { ColorPriceDirective, LastPriceDirective } from '@ui/price';
+import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
 
 @Component({
   selector: 'vt-out-table',
@@ -47,15 +41,6 @@ import { ColorPriceDirective, LastPriceDirective } from '@ui/price';
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
-  providers: [
-    {
-      provide: TUI_NUMBER_FORMAT,
-      useValue: {
-        decimalLimit: 2,
-        zeroPadding: false,
-      },
-    },
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutTableComponent {

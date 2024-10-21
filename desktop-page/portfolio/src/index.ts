@@ -1,1 +1,2 @@
-export * from './lib/portfolio/portfolio.component';
+export * from './lib/layout';
+export * from './lib/filter';

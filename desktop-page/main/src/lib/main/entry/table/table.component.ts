@@ -16,7 +16,7 @@ import { QueryParams } from 'utils/query-params';
 import { ENTRY_HEADER } from '../entry.constants';
 import { EntryHeaderItem } from '../entry.types';
 import { DatePassedPipe } from '../../common/date-passed.pipe';
-import { StrategyNamePipe } from './strategy-name.pipe';
+import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { DesktopLkStore } from 'stores/desktop';
 
 @Component({
@@ -33,7 +33,7 @@ import { DesktopLkStore } from 'stores/desktop';
     TuiTableModule,
     VtEnterComponent,
     DatePassedPipe,
-    StrategyNamePipe,
+    GetStrategyNamePipe,
     TuiHintModule,
   ],
   templateUrl: './table.component.html',

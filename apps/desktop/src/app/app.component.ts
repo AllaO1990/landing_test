@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { TuiDialogModule, TuiModeModule, TuiRootModule } from '@taiga-ui/core';
 import { TUI_DIALOGS } from '@taiga-ui/cdk';
 import { EnterDialogService } from 'desktop-page/enter';
-import { DialogService } from '@ui/dialog';
+import { DialogService } from '@ui/components/dialog';
 
 @Component({
   selector: 'app-root',

@@ -6,8 +6,8 @@ import { ChartsDashboardComponent } from './charts-dashboard.component';
 const routes: Routes = [
   // {
   //   path: '',
-  //   outlet: 'toolbar-main',
-  //   component: ToolbarComponent
+  //   outlet: 'nav-search-main',
+  //   component: NavComponent
   // },
   {
     path: '',

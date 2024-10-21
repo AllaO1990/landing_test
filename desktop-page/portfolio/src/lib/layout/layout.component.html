@@ -1,0 +1,28 @@
+<div class="container container--{{ breakpoint$ | async }}">
+  <div
+    [style.margin-left.%]="activeItemIndex * -100"
+    class="container__widget">
+    <div class="widget portfolio-list">
+      <portfolio-list [data]="dataPortfolioList$ | async"></portfolio-list>
+    </div>
+    <div class="widget structure">
+      <portfolio-structure [data]="dataPortfolioStructure$ | async"></portfolio-structure>
+    </div>
+    <div class="widget profit">
+      <portfolio-profit></portfolio-profit>
+    </div>
+    <div class="widget closed-deals">
+      <portfolio-closed-deals></portfolio-closed-deals>
+    </div>
+
+    <div class="widget chart-container">
+      <lib-chart></lib-chart>
+    </div>
+  </div>
+  <lib-tabs
+    class="container__tabs"
+    *ngIf="tabs$ | async as tabs"
+    [tabs]="tabs"
+    [(activeItemIndex)]="activeItemIndex">
+  </lib-tabs>
+</div>

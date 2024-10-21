@@ -1,0 +1,32 @@
+:host {
+  flex: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  height: 100%;
+  overflow: hidden;
+
+  margin: 0 var(--padding-2);
+}
+
+.filter {
+  width: 100%;
+  overflow: hidden;
+
+  &__list {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+  }
+
+  &__item {
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+
+    flex: 1;
+  }
+}

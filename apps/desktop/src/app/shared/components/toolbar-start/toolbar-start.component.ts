@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'vt-toolbar-start',
+  selector: 'vt-nav-search-start',
   templateUrl: './toolbar-start.component.html',
   styleUrls: ['./toolbar-start.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

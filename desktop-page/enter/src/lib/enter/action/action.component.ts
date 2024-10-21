@@ -17,7 +17,7 @@ import {
   ActionTotalEntry,
   ActionTotalOut,
 } from './action.types';
-import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/list';
+import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 
 @Component({
   selector: 'lib-enter-action',
@@ -44,6 +44,7 @@ import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@u
       useValue: {
         zeroPadding: false,
         decimalLimit: 2,
+        decimalSeparator: '.',
       },
     },
   ],

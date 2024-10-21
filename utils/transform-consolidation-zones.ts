@@ -15,9 +15,12 @@ export function transformActiveConsolidationZones(zones: ConsolidationZonesData)
     { x: new Date().setFullYear(2029).valueOf(), y: zones.ideaParams.stop, ...commonAxisValues },
   ];
 
+  const currentDate = new Date().valueOf();
+
   const targets = zones.ideaParams.targets.map((item) => {
+    const startDate = item.date !== null ? new Date(item.date).valueOf() : currentDate;
     return [
-      { x: new Date().valueOf(), y: item.value, ...commonAxisValues },
+      { x: startDate, y: item.value, ...commonAxisValues },
       { x: new Date().setFullYear(2029).valueOf(), y: item.value, ...commonAxisValues },
     ];
   });

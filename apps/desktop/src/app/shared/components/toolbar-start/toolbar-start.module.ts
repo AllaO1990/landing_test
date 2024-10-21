@@ -8,13 +8,7 @@ import { ToolbarStartComponent } from './toolbar-start.component';
 
 @NgModule({
   declarations: [ToolbarStartComponent],
-  imports: [
-    CommonModule,
-    MatToolbarModule,
-    RouterModule,
-    MatButtonModule,
-    ToolbarLogoModule,
-  ],
+  imports: [CommonModule, MatToolbarModule, RouterModule, MatButtonModule, ToolbarLogoModule],
   exports: [ToolbarStartComponent],
 })
 export class ToolbarStartModule {}

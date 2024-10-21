@@ -1,18 +1,10 @@
-import {
-  HttpErrorResponse,
-  HttpHandlerFn,
-  HttpInterceptorFn,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 
 import { catchError, throwError } from 'rxjs';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '@core/auth';
 
-export const responseInterceptor: HttpInterceptorFn = (
-  req: HttpRequest<unknown>,
-  next: HttpHandlerFn
-) => {
+export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   // const _snackbar = inject(MatSnackBar);
 
   const _authService = inject(AuthService);

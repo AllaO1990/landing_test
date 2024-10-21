@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+}
+
+.tabs {
+  height: 100%;
+  width: 100%;
+}
+
+.tab {
+  flex: 1 1 auto;
+  justify-content: center;
+
+  &__icon {
+    margin-right: var(--padding-1);
+  }
+
+  &--active &__icon {
+    color: var(--tui-primary);
+  }
+}
