@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { TUI_NUMBER_FORMAT, TuiBreakpointService } from '@taiga-ui/core';
+import { TuiBreakpointService } from '@taiga-ui/core';
 import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
 import { Observable, of, shareReplay, switchMap, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -131,15 +131,6 @@ const INPUT_DATA_PORTFOLIO_STRUCTURE = [
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {
-      provide: TUI_NUMBER_FORMAT,
-      useValue: {
-        zeroPadding: false,
-        decimalLimit: 2,
-      },
-    },
-  ],
 })
 export class LayoutComponent {
   readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
@@ -191,6 +182,8 @@ export class LayoutComponent {
 
   readonly tabs$: Observable<{ text: string; icon: string }[] | null> = this.breakpoint$.pipe(
     map((screen: string | null): { text: string; icon: string }[] | null => {
+      this.activeItemIndex = 0;
+
       if (screen === 'mobile') {
         return this.tabMobileList;
       }
@@ -198,8 +191,7 @@ export class LayoutComponent {
       if (screen === 'desktopSmall') {
         return this.tabTabletList;
       }
-
-      this.activeItemIndex = 0;
+      
       return null;
     })
   );

@@ -1,0 +1,48 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  font-size: 8px;
+  font-weight: 400;
+  line-height: 10px;
+  white-space: nowrap;
+
+  color: var(--tui-text-01);
+  background: var(--tui-secondary-active);
+}
+
+.row {
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: row nowrap;
+
+  height: 32px;
+
+  font: var(--tui-font-text-s);
+
+  &:not(.header) {
+    border-bottom: 1px solid var(--tui-base-04);
+  }
+
+  &__item {
+    box-sizing: border-box;
+    flex: 0 0 calc(100% / 17);
+    min-width: 60px;
+    max-width: 100px;
+
+    display: flex;
+    align-items: center;
+
+    height: 100%;
+
+    overflow: hidden;
+
+    padding: 0 var(--padding-2);
+
+    border-right: 1px solid var(--tui-base-04);
+  }
+}

@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { INPUT_DATA } from './constants';
-import { DatePipe } from '@angular/common';
 import { STOCK_POSITION_TYPE } from 'constants/stock-position-type';
-import { GetPositionTypePipe } from '@ui/pipes/get-posiotion-type.pipe';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { WrapperListComponent } from './list/list.component';
+import { WrapperTableComponent } from './table/table.component';
 
 @Component({
   selector: 'portfolio-closed-deals',
   standalone: true,
-  imports: [ListComponent, ItemDirective, HeaderComponent, DatePipe, GetPositionTypePipe, GetPositionTypePipe],
+  imports: [WrapperListComponent, WrapperTableComponent],
   templateUrl: './closed-deals.component.html',
   styleUrl: './closed-deals.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.viewport {
+  height: 100%;
+  width: 100%;
+}
+
+table.table {
+  thead {
+    color: var(--tui-text-01);
+    background: var(--tui-secondary-active);
+  }
+
+  tr {
+    height: 32px;
+  }
+
+  th {
+    padding: 0 var(--padding-2);
+    background: inherit;
+  }
+
+  td {
+    padding: 0 var(--padding-2);
+
+    font-size: 11px;
+    line-height: 14px;
+  }
+
+  ::ng-deep {
+    button.t-sort {
+      font-size: 8px;
+      font-weight: 400;
+      line-height: 10px;
+    }
+  }
+}
+
+.ticker {
+  height: 32px;
+  overflow: hidden;
+}
+

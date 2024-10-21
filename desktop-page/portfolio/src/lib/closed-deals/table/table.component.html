@@ -1,0 +1,215 @@
+<cdk-virtual-scroll-viewport
+  #viewport
+  tuiScrollable
+  class="viewport tui-zero-scrollbar"
+  [itemSize]="32">
+  <table
+    class="table"
+    tuiTable
+    [columns]="columns">
+    <thead>
+    <tr tuiThGroup>
+      <ng-container *ngFor="let item of header; trackBy: trackByIndex">
+        <th
+          *tuiHead="item.name"
+          tuiTh
+          class="th th--{{item.name}}"
+          [sticky]="false"
+          [sorter]="item.sorter"
+          [style.top.px]="-viewport['_renderedContentOffset']">
+          <span [innerHTML]="item.text"></span>
+        </th>
+      </ng-container>
+    </tr>
+    </thead>
+    <tbody tuiTbody>
+    <tr
+      class=""
+      *cdkVirtualFor="let item of data || [] | tuiTableSort;trackBy: trackById"
+      tuiTr>
+      <td
+        class="td"
+        *tuiCell="'date'"
+        tuiTd>
+        <div class="date">
+          <div class="date__open">
+            {{ item.createdAt | date: 'dd.MM.yy' }}
+          </div>
+          <div class="date__close">
+            {{ item.closeAt ? (item.closeAt | date: 'dd.MM.yy') : 'In stock' }}
+          </div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'positionType'"
+        tuiTd>
+        {{ item.positionType | getNamePositionType }}
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'ticker'"
+        tuiTd>
+        <div class="ticker">
+          <div class="ticker__instrument">{{ item.instrument.ticker }}</div>
+          <div class="ticker__exchange">{{ item.instrument.realExchange }}</div>
+          <div class="ticker__name">{{ item.instrument.name }}</div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'lastPrice'"
+        tuiTd>
+        {{ item.lastPrice | tuiFormatNumber }}
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'costInPosition'"
+        tuiTd>
+        <div class="cost">
+          <div class="cost__quantity">
+            {{ item.inPositionQuantity | tuiFormatNumber }}
+          </div>
+          <div class="cost__price">
+            {{ item.inPositionPrice | tuiFormatNumber }}
+          </div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'resultPrice'"
+        tuiTd>
+        ⚠️{{ item.lastPrice | tuiFormatNumber }}
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'costOutPosition'"
+        tuiTd>
+        <div class="cost">
+          <div class="cost__quantity">
+            ⚠️{{ item.inPositionQuantity | tuiFormatNumber }}
+          </div>
+          <div class="cost__price">
+            ⚠️{{ item.inPositionPrice | tuiFormatNumber }}
+          </div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'dividend'"
+        tuiTd>
+        ⚠️{{ item.dividend | tuiFormatNumber }}
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'profitRealized'"
+        tuiTd>
+        <div class="profit-realized">
+          <div class="profit-realized__percentage">
+            {{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+          </div>
+          <div class="profit-realized__price">
+            {{ item.result.profitPrice | tuiFormatNumber }}
+          </div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'remainderInPosition'"
+        tuiTd>
+        <div class="remainder">
+          <div class="remainder__percentage">
+            ⚠️{{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+          </div>
+          <div class="remainder__price">
+            ⚠️{{ item.result.profitPrice | tuiFormatNumber }}
+          </div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'profitNotRealized'"
+        tuiTd>
+        <div class="profit-not-realized">
+          <div class="profit-not-realized__percentage">
+            {{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+          </div>
+          <div class="profit-not-realized__price">
+            {{ item.result.profitPrice | tuiFormatNumber }}
+          </div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'result'"
+        tuiTd>
+        <div class="remainder">
+          <div class="remainder__percentage">
+            ⚠️{{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+          </div>
+          <div class="remainder__price">
+            ⚠️{{ item.result.profitPrice | tuiFormatNumber }}
+          </div>
+        </div>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'deposit'"
+        tuiTd>
+        {{ item.inPositionDepositShare | tuiFormatNumber }}%
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'strategy'"
+        tuiTd>
+        {{ item.strategy.type | getStrategyName }}
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'broker'"
+        tuiTd>
+        <ng-container *ngIf="item.broker; else none">
+          {{ item.broker }}
+        </ng-container>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'comment'"
+        tuiTd>
+        <ng-container *ngIf="item.comment; else none">
+          <tui-svg src="tuiIconMessageSquare"></tui-svg>
+        </ng-container>
+      </td>
+
+      <td
+        class="td"
+        *tuiCell="'author'"
+        tuiTd>
+        <img
+          class="idea__icon"
+          *ngIf="item.author === 'bot'; else none"
+          src="/assets/icons/vanya.svg"
+          alt="Идея"
+        />
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</cdk-virtual-scroll-viewport>
+
+<ng-template #none>&mdash;</ng-template>

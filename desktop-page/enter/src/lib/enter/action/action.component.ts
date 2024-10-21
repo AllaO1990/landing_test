@@ -44,6 +44,7 @@ import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@u
       useValue: {
         zeroPadding: false,
         decimalLimit: 2,
+        decimalSeparator: '.',
       },
     },
   ],

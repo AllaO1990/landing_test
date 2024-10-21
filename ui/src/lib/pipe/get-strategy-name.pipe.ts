@@ -3,10 +3,10 @@ import { StockStrategyEnums } from 'types/stock-strategy';
 import { STOCK_STRATEGY } from 'constants/stock-strategy';
 
 @Pipe({
-  name: 'strategyName',
+  name: 'getStrategyName',
   standalone: true,
 })
-export class StrategyNamePipe implements PipeTransform {
+export class GetStrategyNamePipe implements PipeTransform {
   transform(value: StockStrategyEnums): string {
     return STOCK_STRATEGY[value];
   }

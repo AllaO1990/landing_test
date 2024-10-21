@@ -1,6 +1,6 @@
 export const INPUT_DATA = [
   {
-    id: 323,
+    id: '323',
     closeAt: '2024-10-16T12:30:41.669082Z',
     createdAt: '2024-10-13T12:30:41.669082Z',
     updatedAt: '2024-10-13T13:14:39.164126Z',
@@ -41,6 +41,7 @@ export const INPUT_DATA = [
       type: 'consolidation',
     },
     author: 'bot',
+    dividend: 5,
     RoundBase: 100,
     targets: [
       {
@@ -82,7 +83,7 @@ export const INPUT_DATA = [
     },
   },
   {
-    id: 318,
+    id: '318',
     closeAt: null,
     createdAt: '2024-10-10T06:05:01.180802Z',
     updatedAt: '2024-10-10T06:20:00.233744Z',
@@ -123,6 +124,7 @@ export const INPUT_DATA = [
       type: 'consolidation',
     },
     author: 'bot',
+    dividend: 1,
     RoundBase: 100,
     targets: [
       {
