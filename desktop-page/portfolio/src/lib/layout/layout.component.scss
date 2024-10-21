@@ -137,15 +137,15 @@
 @media screen and (min-width: 1440px) {
   .container {
     &__widget {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
 
   .closed-deals {
-    grid-column: 3 / 6;
+    grid-column: 3 / 7;
   }
 
   .chart-container {
-    grid-column: 3 / 6;
+    grid-column: 3 / 7;
   }
 }

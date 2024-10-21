@@ -51,7 +51,7 @@ export class NavComponent {
 
   readonly links$: Observable<NavList> = of([
     { name: 'Терминал', path: '/lk/main-v2', icon: 'tuiIconTrello', disabled: false },
-    { name: 'Портфель', path: '/lk/portfolio', icon: 'tuiIconBriefcase', disabled: false },
+    { name: 'Портфель', path: '/lk/portfolio', icon: 'tuiIconBriefcase', disabled: true },
   ]).pipe(
     switchMap((list) =>
       this._store.event$.pipe(
