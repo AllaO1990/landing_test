@@ -1,4 +1,7 @@
 <div class="structure">
+  <div class="structure__title">
+    <h3>Структура</h3>
+  </div>
   <div class="structure__switcher">
     <div
       tuiGroup
@@ -38,7 +41,7 @@
     </div>
     <div class="structure__chart">
       <tui-ring-chart
-        size="xl"
+        [size]="(ringChartSize$ | async) || 'xl'"
         [value]="list | getListValue"
         [(activeItemIndex)]="activeItemIndex">
         <ng-container

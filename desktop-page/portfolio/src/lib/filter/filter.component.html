@@ -4,7 +4,7 @@
       <tui-select
         *ngIf="portfolio$ | async as list"
         [stringify]="stringify"
-        tuiTextfieldSize="s"
+        [tuiTextfieldSize]="size"
         formControlName="portfolio"
         [tuiTextfieldLabelOutside]="true">
         <tui-data-list-wrapper
@@ -19,7 +19,7 @@
       <tui-select
         *ngIf="broker$ | async as list"
         [stringify]="stringify"
-        tuiTextfieldSize="s"
+        [tuiTextfieldSize]="size"
         formControlName="broker"
         [tuiTextfieldLabelOutside]="true">
         <tui-data-list-wrapper
@@ -34,7 +34,7 @@
       <tui-select
         *ngIf="currency$ | async as list"
         [stringify]="stringify"
-        tuiTextfieldSize="s"
+        [tuiTextfieldSize]="size"
         formControlName="currency"
         [tuiTextfieldLabelOutside]="true">
         <tui-data-list-wrapper

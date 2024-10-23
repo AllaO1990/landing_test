@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { PortfolioListComponent } from '../portfolio-list/portfolio-list.component';
 import { ProfitComponent } from '../profit/profit.component';
 import { StructureComponent } from '../structure';
-import { ClosedDealsComponent } from '../closed-deals/closed-deals.component';
+import { ClosedDealsComponent } from '../closed-deals';
 
 const INPUT_DATA_PORTFOLIO_LIST = {
   deposit: 1648492,
@@ -191,7 +191,7 @@ export class LayoutComponent {
       if (screen === 'desktopSmall') {
         return this.tabTabletList;
       }
-      
+
       return null;
     })
   );

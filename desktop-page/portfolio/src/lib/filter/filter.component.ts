@@ -51,6 +51,8 @@ const CURRENCY_LIST = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent {
+  readonly size = 'm';
+
   readonly formGroup: FormGroup = new FormGroup({
     portfolio: new FormControl({ value: null, disabled: false }, Validators.required),
     broker: new FormControl({ value: null, disabled: false }, Validators.required),

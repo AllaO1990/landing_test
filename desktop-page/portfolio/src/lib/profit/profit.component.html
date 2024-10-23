@@ -1,1 +1,37 @@
-<p>profit works!</p>
+<div class="profit">
+  <div class="profit__title">
+    <h3>Прибыль</h3>
+  </div>
+  <div class="profit__container">
+    <div class="profit__list">
+      <div class="profit__form control">
+        <div class="control__label">
+          Период:
+        </div>
+        <div class="control__range">
+          <tui-input-date-range
+            class="b-form"
+            tuiTextfieldSize="l"
+            [tuiTextfieldLabelOutside]="true"
+            [formControl]="controlRange">
+          </tui-input-date-range>
+        </div>
+      </div>
+
+    </div>
+    <div class="profit__chart">
+      <tui-axes
+        class="axes"
+        [axisXLabels]="labelsX"
+        [axisYLabels]="labelsY">
+        <tui-bar-chart
+          [max]="10000"
+          [tuiHintAppearance]="'onDark'"
+          [tuiHintContent]="hint"
+          [value]="value"
+        ></tui-bar-chart>
+      </tui-axes>
+    </div>
+  </div>
+</div>
+

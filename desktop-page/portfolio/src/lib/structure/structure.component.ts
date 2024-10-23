@@ -3,7 +3,7 @@ import { TuiRingChartModule } from '@taiga-ui/addon-charts';
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
-import { TuiFormatNumberPipeModule, TuiGroupModule } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiFormatNumberPipeModule, TuiGroupModule } from '@taiga-ui/core';
 import { TuiRadioBlockModule } from '@taiga-ui/kit';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { COLOR_LIST } from './structure.constants';
@@ -22,6 +22,8 @@ interface StructureItem {
   name: string;
   percentage: number;
 }
+
+type RingChartSize = 'm' | 'l' | 'xl' | 's' | 'xs';
 
 type StructureList = {
   name: string;
@@ -58,8 +60,25 @@ export class StructureComponent {
   private readonly _doc: Document = inject(DOCUMENT);
   private readonly _styleId: string = 'structure';
   private readonly _data$: Subject<StructureList> = new ReplaySubject(1);
+  private readonly _ringChartSizeMapper: { [key: string]: RingChartSize } = {
+    mobile: 'xl',
+    desktopSmall: 'xl',
+    desktopLarge: 'm',
+    desktopLarger: 'm',
+    desktopLargest: 'm',
+  };
+  readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
   readonly controlCategories: FormControl = new FormControl(null, Validators.required);
+
+  readonly ringChartSize$: Observable<RingChartSize> = this.breakpoint$.pipe(
+    map((desktopSize) => {
+      if (desktopSize !== null) {
+        return this._ringChartSizeMapper[desktopSize];
+      }
+      return 'xl';
+    })
+  );
 
   activeItemIndex = Number.NaN;
   summary = 0;
