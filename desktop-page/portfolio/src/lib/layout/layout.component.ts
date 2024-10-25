@@ -115,6 +115,20 @@ const INPUT_DATA_PORTFOLIO_STRUCTURE = [
   },
 ];
 
+const INPUT_DATA_PORTFOLIO_PROFIT = {
+  info: {
+    today: 123,
+    deposited: 123,
+    withdrawn: 123,
+    commissions: null,
+    turnover: 123,
+    transactionsCount: 123,
+    profitable: 123,
+    unprofitable: 123,
+  },
+  chart: [{ date: '', value: 123 }],
+};
+
 @Component({
   selector: 'lib-layout',
   standalone: true,
@@ -205,4 +219,6 @@ export class LayoutComponent {
     switchMap((_) => of(INPUT_DATA_PORTFOLIO_STRUCTURE)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+
+  readonly dataPortfolioProfit$: Observable<any> = timer(1300).pipe(switchMap((_) => of(INPUT_DATA_PORTFOLIO_PROFIT)));
 }

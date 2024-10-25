@@ -5,3 +5,20 @@
   width: 100%;
   background-color: var(--block-bg-color);
 }
+
+.closed-deals {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+
+  &__title {
+    flex: 0;
+
+    padding: 0 var(--padding-2);
+  }
+
+  &__table {
+    flex: 1;
+  }
+}

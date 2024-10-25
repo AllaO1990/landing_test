@@ -65,7 +65,7 @@ export class StructureComponent {
     desktopSmall: 'xl',
     desktopLarge: 'm',
     desktopLarger: 'm',
-    desktopLargest: 'm',
+    desktopLargest: 'l',
   };
   readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
