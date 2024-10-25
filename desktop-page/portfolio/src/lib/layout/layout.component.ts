@@ -185,6 +185,10 @@ export class LayoutComponent {
       text: 'Портфель',
     },
     {
+      icon: 'tuiIconApertureLarge',
+      text: 'Анатика',
+    },
+    {
       icon: 'tuiIconShoppingCartLarge',
       text: 'Закрытые сделки',
     },
