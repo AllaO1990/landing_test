@@ -5,3 +5,132 @@
   width: 100%;
   background-color: var(--block-bg-color);
 }
+
+.profit {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+
+  &__title {
+    flex: 0;
+
+    padding: 0 var(--padding-2);
+  }
+
+  &__container {
+    flex: 1;
+
+    display: flex;
+    flex-flow: column nowrap;
+  }
+
+  &__list {
+    flex: 1 1;
+
+    overflow: hidden;
+  }
+
+  &__chart {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: var(--padding-2);
+
+    width: 100%;
+    height: 40%;
+  }
+}
+
+.control {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  padding: var(--padding-4) var(--padding-2);
+
+  &__label {
+    padding-right: var(--padding-2);
+  }
+
+  &__range {
+    flex: 1;
+  }
+}
+
+.axes {
+  width: 100%;
+  height: 100%;
+
+  &:first-child {
+    --tui-chart-0: #a8cef1;
+    --tui-chart-1: #8dda71;
+  }
+}
+
+.deposit {
+  display: flex;
+  flex-flow: column nowrap;
+  flex-flow: column nowrap;
+
+  &__row {
+    display: flex;
+    flex-flow: row nowrap;
+
+    align-items: center;
+
+    height: 32px;
+    padding: 0;
+    margin: 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--main-bg-color)
+    }
+  }
+
+  &__cell {
+    padding: 0 var(--padding-2);
+  }
+
+  &__title {
+    flex: 0 0 auto;
+    width: 60%;
+  }
+
+  &__description {
+    flex: 1;
+
+    margin: 0;
+    text-align: right;
+  }
+}
+
+.today {
+  font-size: 16px;
+  line-height: 18px;
+}
+
+ui-loader {
+  width: 100%;
+  height: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .profit {
+    &__container {
+      flex-flow: row nowrap;
+    }
+
+    &__chart {
+      width: 50%;
+      height: 100%;
+
+      tui-axes {
+        max-height: 300px;
+      }
+    }
+  }
+}

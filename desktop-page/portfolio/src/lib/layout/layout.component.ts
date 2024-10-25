@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { PortfolioListComponent } from '../portfolio-list/portfolio-list.component';
 import { ProfitComponent } from '../profit/profit.component';
 import { StructureComponent } from '../structure';
-import { ClosedDealsComponent } from '../closed-deals/closed-deals.component';
+import { ClosedDealsComponent } from '../closed-deals';
 
 const INPUT_DATA_PORTFOLIO_LIST = {
   deposit: 1648492,
@@ -115,6 +115,20 @@ const INPUT_DATA_PORTFOLIO_STRUCTURE = [
   },
 ];
 
+const INPUT_DATA_PORTFOLIO_PROFIT = {
+  info: {
+    today: 123,
+    deposited: 123,
+    withdrawn: 123,
+    commissions: null,
+    turnover: 123,
+    transactionsCount: 123,
+    profitable: 123,
+    unprofitable: 123,
+  },
+  chart: [{ date: '', value: 123 }],
+};
+
 @Component({
   selector: 'lib-layout',
   standalone: true,
@@ -171,6 +185,10 @@ export class LayoutComponent {
       text: 'Портфель',
     },
     {
+      icon: 'tuiIconApertureLarge',
+      text: 'Анатика',
+    },
+    {
       icon: 'tuiIconShoppingCartLarge',
       text: 'Закрытые сделки',
     },
@@ -191,7 +209,7 @@ export class LayoutComponent {
       if (screen === 'desktopSmall') {
         return this.tabTabletList;
       }
-      
+
       return null;
     })
   );
@@ -205,4 +223,6 @@ export class LayoutComponent {
     switchMap((_) => of(INPUT_DATA_PORTFOLIO_STRUCTURE)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+
+  readonly dataPortfolioProfit$: Observable<any> = timer(1300).pipe(switchMap((_) => of(INPUT_DATA_PORTFOLIO_PROFIT)));
 }

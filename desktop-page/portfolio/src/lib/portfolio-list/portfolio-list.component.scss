@@ -11,6 +11,8 @@
 }
 
 .portfolio {
+  flex: 1;
+
   display: flex;
   flex-flow: column nowrap;
 
@@ -68,7 +70,14 @@
   }
 
   &__description {
-    flex: 0 0 auto;
-    width: 60%;
+    flex: 1;
+
+    margin: 0;
+    text-align: right;
   }
+}
+
+ui-loader {
+  width: 100%;
+  height: 100%;
 }

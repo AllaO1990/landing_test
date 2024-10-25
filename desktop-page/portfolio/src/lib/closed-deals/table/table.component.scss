@@ -30,6 +30,12 @@ table.table {
     line-height: 14px;
   }
 
+  .td {
+    &--number {
+      text-align: right;
+    }
+  }
+
   ::ng-deep {
     button.t-sort {
       font-size: 8px;

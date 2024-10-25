@@ -4,7 +4,7 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { DesktopApiService } from '@desktop-data/desktop-data';
-import { TUI_BUTTON_OPTIONS, TUI_NUMBER_FORMAT, TuiRootModule } from '@taiga-ui/core';
+import { TUI_BUTTON_OPTIONS, TUI_MEDIA, TUI_NUMBER_FORMAT, TuiRootModule } from '@taiga-ui/core';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { DESKTOP_API, DESKTOP_ENVIRONMENT, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
@@ -50,6 +50,16 @@ export const appConfig: ApplicationConfig = {
       provide: TUI_NUMBER_FORMAT,
       useValue: {
         decimalSeparator: '.',
+      },
+    },
+    {
+      provide: TUI_MEDIA,
+      useValue: {
+        mobile: 768,
+        desktopSmall: 1024,
+        desktopLarge: 1280,
+        desktopLarger: 1440,
+        desktopLargest: 1920,
       },
     },
     GlobalDateRangeService,

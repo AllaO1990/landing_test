@@ -1,1 +1,57 @@
-<p>profit works!</p>
+<div class="profit">
+  <div class="profit__title">
+    <h3>Прибыль</h3>
+  </div>
+  <div class="profit__container" *ngIf="data !== null; else load">
+    <div class="profit__list">
+      <div class="profit__deposit deposit">
+        <dl class="deposit__row today">
+          <dt class="deposit__title deposit__cell">{{ constants.today }}</dt>
+          <dd class="deposit__description deposit__cell">
+            {{ data.info.today !== null ? (data.info.today | tuiFormatNumber) : '—' }}
+          </dd>
+        </dl>
+      </div>
+      <div class="profit__form control">
+        <div class="control__label">
+          Период:
+        </div>
+        <div class="control__range">
+          <tui-input-date-range
+            class="b-form"
+            tuiTextfieldSize="l"
+            [tuiTextfieldLabelOutside]="true"
+            [formControl]="controlRange">
+          </tui-input-date-range>
+        </div>
+      </div>
+      <div class="profit__deposit deposit">
+        <dl class="deposit__row" *ngFor="let key of list; trackBy: trackByIndex">
+          <dt class="deposit__title deposit__cell">
+            {{ constants[key] }}
+          </dt>
+          <dd class="deposit__description deposit__cell">
+            {{ data.info[key] !== null ? ($any(data.info[key]) | tuiFormatNumber) : '—' }}
+          </dd>
+        </dl>
+      </div>
+    </div>
+    <div class="profit__chart">
+      <tui-axes
+        class="axes"
+        [axisXLabels]="labelsX"
+        [axisYLabels]="labelsY">
+        <tui-bar-chart
+          [max]="10000"
+          [tuiHintAppearance]="'onDark'"
+          [tuiHintContent]="hint"
+          [value]="value"
+        ></tui-bar-chart>
+      </tui-axes>
+    </div>
+  </div>
+</div>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>
