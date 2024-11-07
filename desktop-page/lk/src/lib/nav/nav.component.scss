@@ -1,6 +1,6 @@
 :host {
   flex: 1;
-  max-width: 400px;
+  max-width: 150px;
 
   display: flex;
   justify-content: flex-end;
@@ -18,5 +18,11 @@
     cursor: default;
 
     opacity: .5;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  :host {
+    max-width: 400px;
   }
 }

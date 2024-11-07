@@ -1,55 +1,99 @@
 <div class="filter">
-  <div class="filter__list" [formGroup]="formGroup">
-    <div class="filter__item portfolio">
-      <tui-select
-        *ngIf="portfolio$ | async as list"
-        [stringify]="stringify"
-        [tuiTextfieldSize]="size"
-        formControlName="portfolio"
-        [tuiTextfieldLabelOutside]="true">
-        <tui-data-list-wrapper
-          *tuiDataList
-          size="s"
-          [items]="list"
-          [itemContent]="item">
-        </tui-data-list-wrapper>
-      </tui-select>
-    </div>
-    <div class="filter__item broker">
-      <tui-select
-        *ngIf="broker$ | async as list"
-        [stringify]="stringify"
-        [tuiTextfieldSize]="size"
-        formControlName="broker"
-        [tuiTextfieldLabelOutside]="true">
-        <tui-data-list-wrapper
-          *tuiDataList
-          size="s"
-          [items]="list"
-          [itemContent]="item">
-        </tui-data-list-wrapper>
-      </tui-select>
-    </div>
-    <div class="filter__item currency">
-      <tui-select
-        *ngIf="currency$ | async as list"
-        [stringify]="stringify"
-        [tuiTextfieldSize]="size"
-        formControlName="currency"
-        [tuiTextfieldLabelOutside]="true">
-        <tui-data-list-wrapper
-          *tuiDataList
-          size="s"
-          [items]="list"
-          [itemContent]="item">
-        </tui-data-list-wrapper>
-      </tui-select>
-    </div>
-  </div>
+  <ng-container *ngIf="isMobile$ | async; else form">
+    <tui-hosted-dropdown
+      class="filter__hosted-dropdown"
+      [content]="dialog"
+      [(open)]="open">
+      <button
+        class="filter__action"
+        tuiButton
+        type="button"
+        appearance="icon"
+        iconRight="tuiIconFilter"
+        size="m">
+        <span class="filter__text">
+          {{ controlPortfolio.value ? controlPortfolio.value.name : '' }}
+        </span>
+      </button>
+    </tui-hosted-dropdown>
+  </ng-container>
 </div>
 
 <ng-template #item let-item>
   <div class="item">
     {{ item.name }}
+  </div>
+</ng-template>
+
+<ng-template #form>
+  <div class="filter__list" [formGroup]="formGroup">
+    <div class="filter__item portfolio">
+      <label>
+        {{ constants.portfolio }}
+        <tui-select
+          *ngIf="portfolio$ | async as list"
+          [stringify]="stringify"
+          [tuiTextfieldSize]="size"
+          formControlName="portfolio"
+          [tuiTextfieldLabelOutside]="true">
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="item">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </label>
+    </div>
+    <div class="filter__item broker">
+      <label>
+        {{ constants.broker }}
+        <tui-select
+          *ngIf="broker$ | async as list"
+          [stringify]="stringify"
+          [tuiTextfieldSize]="size"
+          formControlName="broker"
+          [tuiTextfieldLabelOutside]="true">
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="item">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </label>
+    </div>
+    <div class="filter__item currency">
+      <label>
+        {{ constants.currency }}
+        <tui-select
+          *ngIf="currency$ | async as list"
+          [stringify]="stringify"
+          [tuiTextfieldSize]="size"
+          formControlName="currency"
+          [tuiTextfieldLabelOutside]="true">
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="item">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </label>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #dialog>
+  <div class="filter-dialog">
+    <button
+      tuiIconButton
+      type="button"
+      appearance="icon"
+      icon="tuiIconCloseLarge"
+      size="m"
+      (click)="onClose($event)">
+    </button>
+    <ng-container [ngTemplateOutlet]="form"></ng-container>
   </div>
 </ng-template>
