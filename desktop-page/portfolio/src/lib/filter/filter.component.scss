@@ -15,8 +15,28 @@
   width: 100%;
   overflow: hidden;
 
+  &__hosted-dropdown {
+    width: 100%;
+    max-width: 5rem;
+  }
+
+  &__action {
+    --tui-padding: var(--padding-2);
+    width: 6rem;
+  }
+
+  &__text {
+    width: 100%;
+    text-align: right;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__list {
     display: flex;
+    flex-flow: column nowrap;
     align-items: center;
 
     width: 100%;
@@ -24,9 +44,36 @@
 
   &__item {
     &:not(:last-child) {
-      margin-right: var(--padding-2);
+      margin-bottom: var(--padding-2);
     }
 
-    flex: 1;
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
+.filter-dialog {
+  width: 100vw;
+  height: auto;
+
+  padding: var(--padding-2);
+
+  background-color: var(--tui-base-01);
+}
+
+@media screen and (min-width: 768px) {
+  .filter {
+    &__list {
+      flex-flow: row nowrap;
+    }
+
+    &__item {
+      &:not(:last-child) {
+        margin-bottom: 0;
+        margin-right: var(--padding-2);
+      }
+
+      max-width: 200px;
+    }
   }
 }

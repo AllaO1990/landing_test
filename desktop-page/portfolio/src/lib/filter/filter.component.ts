@@ -1,10 +1,25 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+} from '@angular/core';
+import { AsyncPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiStringHandler } from '@taiga-ui/cdk';
-import { TuiTextfieldControllerModule } from '@taiga-ui/core';
+import {
+  TuiBreakpointService,
+  TuiButtonModule,
+  TuiHostedDropdownModule,
+  TuiTextfieldControllerModule,
+} from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable, of, switchMap, tap, timer } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject, switchMap, tap, timer } from 'rxjs';
+import { BROKER_LIST, CURRENCY_LIST, FILTER_CONSTANTS, PORTFOLIO_LIST } from './filter.constants';
+import { map } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface SelectListItem {
   name: string;
@@ -13,44 +28,34 @@ interface SelectListItem {
 
 type SelectList = SelectListItem[];
 
-const PORTFOLIO_LIST = [
-  { name: 'Все', value: 'all' },
-  { name: 'Ребёнок 1', value: 'child' },
-  { name: 'Игральный', value: 'scalping' },
-];
-
-const BROKER_LIST = [
-  { name: 'Все', value: 'all' },
-  { name: 'Тинькофф', value: 'tinkoff' },
-  { name: 'Альфа', value: 'alfa' },
-  { name: 'ВТБ', value: 'vtb' },
-];
-
-const CURRENCY_LIST = [
-  { name: '₽', value: 'RUB' },
-  { name: '$', value: 'USD' },
-  { name: '€', value: 'EUR' },
-  { name: '£', value: 'CHF' },
-  { name: '¥', value: 'JPY' },
-];
-
 @Component({
   selector: 'portfolio-filter',
   standalone: true,
   imports: [
     NgFor,
+    NgIf,
     ReactiveFormsModule,
     AsyncPipe,
     TuiSelectModule,
     TuiTextfieldControllerModule,
     TuiDataListWrapperModule,
-    NgIf,
+    NgTemplateOutlet,
+    TuiButtonModule,
+    TuiHostedDropdownModule,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FilterComponent {
+export class FilterComponent implements AfterViewInit {
+  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly _breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
+  readonly isMobile$: Observable<boolean> = this._breakpoint$.pipe(
+    map((screen: string | null) => screen === 'mobile'),
+    tap((isMobile: boolean) => !isMobile && (this.open = false))
+  );
+  readonly constants = FILTER_CONSTANTS;
   readonly size = 'm';
 
   readonly formGroup: FormGroup = new FormGroup({
@@ -71,29 +76,55 @@ export class FilterComponent {
     return this.formGroup.get('currency') as FormControl;
   }
 
-  readonly portfolio$: Observable<SelectList> = timer(0).pipe(
-    switchMap((_) => of(PORTFOLIO_LIST)),
-    tap((list) => {
-      this.controlPortfolio.enable({ emitEvent: false });
-      this.controlPortfolio.patchValue(list[0]);
-    })
-  );
+  readonly portfolio$: Subject<SelectList> = new ReplaySubject(1);
 
-  readonly broker$: Observable<SelectList> = timer(1300).pipe(
-    switchMap((_) => of(BROKER_LIST)),
-    tap((list) => {
-      this.controlBroker.enable({ emitEvent: false });
-      this.controlBroker.patchValue(list[0]);
-    })
-  );
+  readonly broker$: Subject<SelectList> = new ReplaySubject(1);
 
-  readonly currency$: Observable<SelectList> = timer(900).pipe(
-    switchMap((_) => of(CURRENCY_LIST)),
-    tap((list) => {
-      this.controlCurrency.enable({ emitEvent: false });
-      this.controlCurrency.patchValue(list[0]);
-    })
-  );
+  readonly currency$: Subject<SelectList> = new ReplaySubject(1);
 
   readonly stringify: TuiStringHandler<SelectListItem> = (item: SelectListItem) => item.name;
+
+  open = false;
+
+  ngAfterViewInit(): void {
+    timer(0)
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        switchMap((_) => of(PORTFOLIO_LIST)),
+        tap((list) => {
+          this.controlPortfolio.enable({ emitEvent: false });
+          this.controlPortfolio.patchValue(list[0]);
+          this._cdr.markForCheck();
+        })
+      )
+      .subscribe((res: SelectList) => this.portfolio$.next(res));
+
+    timer(1300)
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        switchMap((_) => of(BROKER_LIST)),
+        tap((list) => {
+          this.controlBroker.enable({ emitEvent: false });
+          this.controlBroker.patchValue(list[0]);
+        })
+      )
+      .subscribe((res: SelectList) => this.broker$.next(res));
+
+    timer(900)
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        switchMap((_) => of(CURRENCY_LIST)),
+        tap((list) => {
+          this.controlCurrency.enable({ emitEvent: false });
+          this.controlCurrency.patchValue(list[0]);
+        })
+      )
+      .subscribe((res: SelectList) => this.currency$.next(res));
+  }
+
+  onClose(event: Event): void {
+    event.preventDefault();
+
+    this.open = false;
+  }
 }
