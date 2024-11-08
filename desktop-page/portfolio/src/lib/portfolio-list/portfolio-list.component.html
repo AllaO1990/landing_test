@@ -3,26 +3,27 @@
     <button
       class="portfolio__action button"
       [disabled]="true"
-      tuiButton
+      tuiIconButton
+      icon="tuiIconArrowDownCircle"
       size="l"
       type="button">
-      Внести
+    </button>
+
+    <button
+      class="portfolio__action button"
+      [disabled]="true"
+      tuiIconButton
+      icon="tuiIconArrowUpCircle"
+      size="l"
+      type="button">
     </button>
     <button
       class="portfolio__action button"
       [disabled]="true"
-      tuiButton
+      tuiIconButton
+      icon="tuiIconPercent"
       size="l"
       type="button">
-      Вывести
-    </button>
-    <button
-      class="portfolio__action button"
-      [disabled]="true"
-      tuiButton
-      size="l"
-      type="button">
-      Комиссии
     </button>
   </div>
   <div class="portfolio__deposit deposit" *ngIf="data; else load">
