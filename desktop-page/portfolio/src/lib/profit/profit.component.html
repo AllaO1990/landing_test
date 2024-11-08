@@ -1,4 +1,4 @@
-<div class="profit">
+<div class="profit" [formGroup]="form">
   <div class="profit__title">
     <h3>Прибыль</h3>
   </div>
@@ -21,7 +21,7 @@
             class="b-form"
             tuiTextfieldSize="l"
             [tuiTextfieldLabelOutside]="true"
-            [formControl]="controlRange">
+            formControlName="range">
           </tui-input-date-range>
         </div>
       </div>
@@ -48,6 +48,22 @@
           [value]="value"
         ></tui-bar-chart>
       </tui-axes>
+    </div>
+  </div>
+  <div class="profit__actions">
+    <div
+      tuiGroup
+      class="structure__controls"
+      [collapsed]="true">
+      <tui-radio-block
+        *ngFor="let item of list$ | async"
+        contentAlign="right"
+        size="l"
+        formControlName="list"
+        [hideRadio]="true"
+        [item]="item">
+        {{ item.name }}
+      </tui-radio-block>
     </div>
   </div>
 </div>
