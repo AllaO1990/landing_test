@@ -1,3 +1,4 @@
+import { TuiTextfieldControllerModule, TuiSelectModule } from "@taiga-ui/legacy";
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -7,14 +8,9 @@ import {
   inject,
 } from '@angular/core';
 import { AsyncPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { TuiStringHandler } from '@taiga-ui/cdk';
-import {
-  TuiBreakpointService,
-  TuiButtonModule,
-  TuiHostedDropdownModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/core';
+import { TuiBreakpointService, TuiDropdown, TuiButton } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable, of, ReplaySubject, Subject, switchMap, tap, timer } from 'rxjs';
 import { BROKER_LIST, CURRENCY_LIST, FILTER_CONSTANTS, PORTFOLIO_LIST } from './filter.constants';
@@ -38,10 +34,10 @@ type SelectList = SelectListItem[];
     AsyncPipe,
     TuiSelectModule,
     TuiTextfieldControllerModule,
-    TuiDataListWrapperModule,
+    TuiDataListWrapper,
     NgTemplateOutlet,
-    TuiButtonModule,
-    TuiHostedDropdownModule,
+    TuiButton,
+    TuiDropdown,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',

@@ -1,8 +1,8 @@
+import { TuiTable } from "@taiga-ui/addon-table";
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
 import { OUT_HEADER } from '../out.constants';
 import { CdkFixedSizeVirtualScroll, ScrollingModule } from '@angular/cdk/scrolling';
-import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiLoader, TuiScrollbar, TuiHint } from '@taiga-ui/core';
 import { OutHeaderItem } from '../out.types';
 import { AsyncPipe, DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Position } from 'types/position';
@@ -28,16 +28,16 @@ import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
     NgTemplateOutlet,
     CdkFixedSizeVirtualScroll,
     ScrollingModule,
-    TuiTableModule,
-    TuiLoaderModule,
-    TuiScrollbarModule,
-    TuiFormatNumberPipeModule,
+    TuiTable,
+    TuiLoader,
+    TuiScrollbar,
+    TuiFormatNumberPipe,
     DatePipe,
     DatePassedPipe,
     AsyncPipe,
     LastPriceDirective,
     ColorPriceDirective,
-    TuiHintModule,
+    TuiHint,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',

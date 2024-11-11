@@ -1,13 +1,13 @@
+import { TuiPopoverService } from "@taiga-ui/cdk";
 import { Injectable, Injector } from '@angular/core';
-import { AbstractTuiDialogService } from '@taiga-ui/cdk';
-import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { Observable } from 'rxjs';
 import { VtEnterComponent } from '../enter.component';
 import { EnterDialogComponent } from './dialog.component';
 import { EventSelected } from 'types/events';
 
 @Injectable()
-export class EnterDialogService extends AbstractTuiDialogService<any> {
+export class EnterDialogService extends TuiPopoverService<any> {
   protected override component = new PolymorpheusComponent(EnterDialogComponent);
 
   protected override defaultOptions: any = { data: null };

@@ -1,12 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { DatePipe, NgIf } from '@angular/common';
-import {
-  TUI_NUMBER_FORMAT,
-  TuiButtonModule,
-  TuiFormatNumberPipeModule,
-  TuiLoaderModule,
-  TuiScrollbarModule,
-} from '@taiga-ui/core';
+import { TUI_NUMBER_FORMAT, TuiFormatNumberPipe, TuiLoader, TuiScrollbar, TuiButton } from '@taiga-ui/core';
 import { Position } from 'types/position';
 import { ActionService } from './action.service';
 import {
@@ -27,13 +21,12 @@ import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@u
     ItemComponent,
     DatePipe,
     HeaderComponent,
-    TuiButtonModule,
-    TuiFormatNumberPipeModule,
-    TuiScrollbarModule,
+    TuiButton,
+    TuiFormatNumberPipe,
+    TuiScrollbar,
     ListComponent,
     ItemDirective,
-    HeaderComponent,
-    TuiLoaderModule,
+    TuiLoader,
   ],
   templateUrl: './action.component.html',
   styleUrl: './action.component.scss',

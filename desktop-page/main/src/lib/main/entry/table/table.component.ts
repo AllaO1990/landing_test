@@ -1,8 +1,8 @@
+import { TuiTable } from "@taiga-ui/addon-table";
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
-import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiLoader, TuiScrollbar, TuiHint } from '@taiga-ui/core';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -27,14 +27,14 @@ import { DesktopLkStore } from 'stores/desktop';
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
     CdkVirtualScrollViewport,
-    TuiFormatNumberPipeModule,
-    TuiLoaderModule,
-    TuiScrollbarModule,
-    TuiTableModule,
+    TuiFormatNumberPipe,
+    TuiLoader,
+    TuiScrollbar,
+    TuiTable,
     VtEnterComponent,
     DatePassedPipe,
     GetStrategyNamePipe,
-    TuiHintModule,
+    TuiHint,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',

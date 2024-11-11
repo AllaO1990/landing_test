@@ -1,16 +1,10 @@
+import { TuiTextfieldControllerModule, TuiInputModule, TuiSelectModule } from "@taiga-ui/legacy";
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiDataListWrapperModule, TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
-import {
-  TuiButtonModule,
-  TuiDataListModule,
-  TuiDropdownModule,
-  TuiLoaderModule,
-  TuiSvgModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/core';
+import { TuiDataListWrapper } from '@taiga-ui/kit';
+import { TuiDataList, TuiLoader, TuiDropdown, TuiIcon, TuiButton } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiStringHandler, TuiAutoFocus } from '@taiga-ui/cdk';
 import { combineLatest, debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { StockListComponent } from './list';
 import { filter, map } from 'rxjs/operators';
@@ -32,7 +26,7 @@ import { DesktopLkStore } from 'stores/desktop';
 import { QueryParams } from 'utils/query-params';
 import { FormInputComponent } from './form-input';
 import { FormInputEvent } from './form-input/form-input.types';
-import { PolymorpheusComponent, PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
+import { PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { DialogComponent } from './dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchCardComponent } from 'ui-common';
@@ -55,18 +49,18 @@ export interface StockListWithType {
     ReactiveFormsModule,
     TuiSelectModule,
     TuiTextfieldControllerModule,
-    TuiDataListModule,
+    TuiDataList,
     NgIf,
-    TuiSvgModule,
+    TuiIcon,
     AsyncPipe,
     NgForOf,
     TuiInputModule,
-    TuiAutoFocusModule,
-    TuiButtonModule,
+    TuiAutoFocus,
+    TuiButton,
     StockListComponent,
-    TuiLoaderModule,
-    TuiDataListWrapperModule,
-    TuiDropdownModule,
+    TuiLoader,
+    TuiDataListWrapper,
+    TuiDropdown,
     FormInputComponent,
     DialogComponent,
     SearchCardComponent,

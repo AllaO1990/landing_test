@@ -7,7 +7,7 @@ import { DESKTOP_STORE } from 'tokens/desktop';
 import { ButtonWithListComponent } from './button-with-list';
 import { CHART_EMA_LIST, CHART_SMA_LIST, CHART_ZONE_LIST } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiButtonModule, TuiLoaderModule, TuiSvgModule } from '@taiga-ui/core';
+import { TuiLoader, TuiIcon, TuiButton } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
 import { ChartFigure } from 'types/chart';
@@ -30,10 +30,10 @@ interface IndicatorListItem<T = string> {
     ChartComponent,
     ButtonWithListComponent,
     ReactiveFormsModule,
-    TuiLoaderModule,
+    TuiLoader,
     NgIf,
-    TuiButtonModule,
-    TuiSvgModule,
+    TuiButton,
+    TuiIcon,
     LegendComponent,
   ],
   templateUrl: './chart.component.html',

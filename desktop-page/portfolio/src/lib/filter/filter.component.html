@@ -1,21 +1,21 @@
 <div class="filter">
   <ng-container *ngIf="isMobile$ | async; else form">
-    <tui-hosted-dropdown
+    <div 
       class="filter__hosted-dropdown"
-      [content]="dialog"
-      [(open)]="open">
+      [tuiDropdown]="dialog"
+      [(tuiDropdownOpen)]="open">
       <button
         class="filter__action"
         tuiButton
         type="button"
         appearance="icon"
-        iconRight="tuiIconFilter"
+        iconEnd="@tui.filter"
         size="m">
         <span class="filter__text">
           {{ controlPortfolio.value ? controlPortfolio.value.name : '' }}
         </span>
       </button>
-    </tui-hosted-dropdown>
+    </div>
   </ng-container>
 </div>
 
@@ -90,7 +90,7 @@
       tuiIconButton
       type="button"
       appearance="icon"
-      icon="tuiIconCloseLarge"
+      iconStart="@tui.x"
       size="m"
       (click)="onClose($event)">
     </button>

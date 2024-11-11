@@ -1,8 +1,9 @@
+import { TuiCheckbox } from "@taiga-ui/kit";
+import { TuiLabel } from "@taiga-ui/core";
+import { TuiTextfieldControllerModule, TuiInputDateModule } from "@taiga-ui/legacy";
 import { ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject, OnInit } from '@angular/core';
 import { VALID_DATE_CONSTANTS } from './valid-date.constants';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { TuiCheckboxLabeledModule, TuiInputDateModule } from '@taiga-ui/kit';
-import { TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { TuiDay } from '@taiga-ui/cdk';
 import { JsonPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,7 +12,7 @@ import { distinctUntilChanged, startWith } from 'rxjs';
 @Component({
   selector: 'lib-enter-sidebar-valid-date',
   standalone: true,
-  imports: [JsonPipe, ReactiveFormsModule, TuiCheckboxLabeledModule, TuiInputDateModule, TuiTextfieldControllerModule],
+  imports: [JsonPipe, ReactiveFormsModule, TuiLabel, TuiInputDateModule, TuiTextfieldControllerModule, TuiCheckbox],
   templateUrl: './valid-date.component.html',
   styleUrl: './valid-date.component.scss',
   providers: [

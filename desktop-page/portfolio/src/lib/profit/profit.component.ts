@@ -1,14 +1,9 @@
+import { TuiTextfieldControllerModule, TuiInputDateRangeModule } from "@taiga-ui/legacy";
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
-import { TuiAxesModule, TuiBarChartModule } from '@taiga-ui/addon-charts';
-import { TuiContextWithImplicit, TuiDay, TuiDayRange } from '@taiga-ui/cdk';
-import {
-  tuiFormatNumber,
-  TuiFormatNumberPipeModule,
-  TuiGroupModule,
-  TuiHintModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/core';
-import { TuiInputDateRangeModule, TuiRadioBlockModule } from '@taiga-ui/kit';
+import { TuiAxes, TuiBarChart } from '@taiga-ui/addon-charts';
+import { TuiDay, TuiDayRange, TuiContext } from '@taiga-ui/cdk';
+import { tuiFormatNumber, TuiFormatNumberPipe, TuiGroup, TuiHint } from '@taiga-ui/core';
+import { TuiBlock, TuiRadio } from '@taiga-ui/kit';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LoaderComponent } from '@ui/components/loader';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
@@ -23,19 +18,19 @@ type ListItem = { name: string; value: TuiDayRange };
   selector: 'portfolio-profit',
   standalone: true,
   imports: [
-    TuiAxesModule,
-    TuiBarChartModule,
-    TuiHintModule,
+    TuiAxes,
+    TuiBarChart,
+    TuiHint,
     TuiInputDateRangeModule,
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
     LoaderComponent,
     NgForOf,
-    TuiFormatNumberPipeModule,
+    TuiFormatNumberPipe,
     NgIf,
     AsyncPipe,
-    TuiGroupModule,
-    TuiRadioBlockModule,
+    TuiGroup,
+    TuiBlock, TuiRadio,
   ],
   templateUrl: './profit.component.html',
   styleUrl: './profit.component.scss',
@@ -80,7 +75,7 @@ export class ProfitComponent implements OnInit {
     { name: '7', value: new TuiDayRange(new TuiDay(2018, 2, 10), new TuiDay(2018, 3, 20)) },
   ]);
 
-  readonly hint = ({ $implicit }: TuiContextWithImplicit<number>): string =>
+  readonly hint = ({ $implicit }: TuiContext<number>): string =>
     this.value.reduce((result, set) => `${result} ${tuiFormatNumber(set[$implicit])}\n`, '').trim();
 
   @Input() data: ProfitInputData | null = null;

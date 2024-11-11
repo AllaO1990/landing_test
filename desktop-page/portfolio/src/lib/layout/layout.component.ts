@@ -153,27 +153,27 @@ export class LayoutComponent {
 
   readonly tabMobileList: { text: string; icon: string; title: string }[] = [
     {
-      icon: 'tuiIconBriefcaseLarge',
+      icon: '@tui.briefcase',
       title: 'Портфель',
       text: '',
     },
     {
-      icon: 'tuiIconApertureLarge',
+      icon: '@tui.aperture',
       title: 'Структура',
       text: '',
     },
     {
-      icon: 'tuiIconTrendingUpLarge',
+      icon: '@tui.trending-up',
       title: 'Прибыль',
       text: '',
     },
     {
-      icon: 'tuiIconShoppingCartLarge',
+      icon: '@tui.shopping-cart',
       title: 'Сделки',
       text: '',
     },
     {
-      icon: 'tuiIconChartLineLarge',
+      icon: '@tui.chart-line',
       title: 'График',
       text: '',
     },
@@ -181,19 +181,19 @@ export class LayoutComponent {
 
   readonly tabTabletList: { text: string; icon: string }[] = [
     {
-      icon: 'tuiIconBriefcaseLarge',
+      icon: '@tui.briefcase',
       text: 'Портфель',
     },
     {
-      icon: 'tuiIconApertureLarge',
+      icon: '@tui.aperture',
       text: 'Анатика',
     },
     {
-      icon: 'tuiIconShoppingCartLarge',
+      icon: '@tui.shopping-cart',
       text: 'Закрытые сделки',
     },
     {
-      icon: 'tuiIconChartLineLarge',
+      icon: '@tui.chart-line',
       text: 'График',
     },
   ];

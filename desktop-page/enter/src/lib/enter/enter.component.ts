@@ -1,14 +1,9 @@
+import { TuiTabs } from "@taiga-ui/kit";
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TUI_WINDOW_SIZE, TuiDialog } from '@taiga-ui/cdk';
-import {
-  TuiBreakpointService,
-  TuiButtonModule,
-  TuiLoaderModule,
-  TuiScrollbarModule,
-  TuiSvgModule,
-} from '@taiga-ui/core';
-import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
+import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
+import { TuiBreakpointService, TuiLoader, TuiScrollbar, TuiIcon, TuiButton } from '@taiga-ui/core';
+import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
@@ -17,7 +12,6 @@ import { DesktopLkStore } from 'stores/desktop';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { TuiTabsModule } from '@taiga-ui/kit';
 import { map } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
@@ -36,17 +30,17 @@ export interface TabItem {
   standalone: true,
   imports: [
     NgIf,
-    TuiLoaderModule,
-    TuiButtonModule,
+    TuiLoader,
+    TuiButton,
     EnterActionComponent,
     EnterIdeaComponent,
     EnterSidebarComponent,
     DatePipe,
     AsyncPipe,
-    TuiScrollbarModule,
+    TuiScrollbar,
     NgForOf,
-    TuiTabsModule,
-    TuiSvgModule,
+    TuiTabs,
+    TuiIcon,
     InstrumentComponent,
     ChartCandlestickComponent,
   ],
@@ -55,7 +49,7 @@ export interface TabItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VtEnterComponent {
-  public readonly context: TuiDialog<any, Idea> = inject(POLYMORPHEUS_CONTEXT, {
+  public readonly context: TuiPopover<any, Idea> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
 

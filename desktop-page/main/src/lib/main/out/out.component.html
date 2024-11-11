@@ -22,7 +22,7 @@
         (click)="onOpenMore()"
         (tuiActiveZoneChange)="onActiveZoneMore($event)"
         (tuiObscured)="onObscuredMore($event)"
-        icon="tuiIconSearch"
+        iconStart="@tui.search"
         tuiIconButton
         type="button"
         appearance="icon"
@@ -32,7 +32,7 @@
 
       <button
         [disabled]="true"
-        icon="tuiIconMoreVertical"
+        iconStart="@tui.ellipsis-vertical"
         tuiIconButton
         type="button"
         appearance="icon"
@@ -62,11 +62,11 @@
     class="out__search"
     [formControl]="controlSearch"
     tuiTextfieldSize="s"
-    tuiTextfieldIconLeft="tuiIconSearch"
+    tuiTextfieldIconLeft="@tui.search"
     [tuiTextfieldCleaner]="true">
     {{ constants.search }}
     <input
-      tuiTextfield
+      tuiTextfieldLegacy
       type="text"
     />
   </tui-input>

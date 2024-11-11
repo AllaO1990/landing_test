@@ -1,3 +1,4 @@
+<!-- TODO: (Taiga UI migration) tuiFormatNumber pipe API has been changed. Learn how to migrate decimalLimit, decimal, zeroPadding: https://github.com/taiga-family/taiga-ui/issues/8335#migration -->
 <tui-loader class="entry-table__loader" [overlay]="true" [showLoader]="data === null">
   <tui-scrollbar *ngIf="data && data.length; else empty" class="entry-table__scrollbar">
     <cdk-virtual-scroll-viewport

@@ -1,11 +1,12 @@
+import { TuiTextfieldControllerModule, TuiInputModule } from "@taiga-ui/legacy";
 import { NgModule } from '@angular/core';
 import { OutComponent } from './out.component';
 import { IdeaComponent } from './idea/idea.component';
 import { OutTableComponent } from './table/table.component';
-import { TuiFilterModule, TuiInputModule } from '@taiga-ui/kit';
+import { TuiFilter } from '@taiga-ui/kit';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TuiButtonModule, TuiDropdownModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
-import { TuiActiveZoneModule, TuiAutoFocusModule, TuiObscuredModule } from '@taiga-ui/cdk';
+import { TuiDropdown, TuiButton } from '@taiga-ui/core';
+import { TuiActiveZone, TuiAutoFocus, TuiObscured } from '@taiga-ui/cdk';
 import { AsyncPipe } from '@angular/common';
 
 @NgModule({
@@ -13,15 +14,15 @@ import { AsyncPipe } from '@angular/common';
   imports: [
     ReactiveFormsModule,
     OutTableComponent,
-    TuiFilterModule,
+    TuiFilter,
     TuiInputModule,
     TuiTextfieldControllerModule,
-    TuiButtonModule,
-    TuiDropdownModule,
-    TuiActiveZoneModule,
-    TuiObscuredModule,
+    TuiButton,
+    ...TuiDropdown,
+    TuiActiveZone,
+    TuiObscured,
     AsyncPipe,
-    TuiAutoFocusModule,
+    TuiAutoFocus,
   ],
   exports: [OutComponent],
 })

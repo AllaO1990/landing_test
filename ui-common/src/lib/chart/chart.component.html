@@ -1,3 +1,4 @@
+<!-- Taiga migration TODO: tuiButton "whiteblock-active" appearance is no longer available. Use 'appearance="outline-grayscale" tuiAppearanceMode="checked"' -->
 <tui-loader class="loader" [overlay]="true" [showLoader]="(candles$ | async) === null">
   <div class="container" *ngIf="(candles$ | async); else empty">
     <div class="column">
@@ -22,7 +23,7 @@
         appearance="icon"
         tuiIconButton
         type="button"
-        [icon]="toggleActions ? 'tuiIconChevronRight' : 'tuiIconChevronLeft'"
+        [iconStart]="toggleActions ? '@tui.chevron-right' : '@tui.chevron-left'"
         size="xs"
         (click)="onToggleActions($event)">
       </button>
@@ -47,7 +48,7 @@
           [appearance]="controlAtr.value ? 'primary' : 'secondary'"
           tuiIconButton
           type="button"
-          [icon]="atrIcon"
+          [iconStart]="atrIcon"
           size="l"
           (click)="onToggleAtr($event)">
         </button>
@@ -69,7 +70,7 @@
           [disabled]="(isDisabledButtonLegend$ | async) || false"
           tuiIconButton
           type="button"
-          icon="tuiIconLink"
+          iconStart="@tui.link"
           size="l"
           (click)="onToggleLegend($event)">
         </button>

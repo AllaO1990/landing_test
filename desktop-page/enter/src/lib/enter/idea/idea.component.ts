@@ -1,12 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { DatePipe, JsonPipe, NgIf } from '@angular/common';
-import {
-  TUI_NUMBER_FORMAT,
-  TuiButtonModule,
-  TuiFormatNumberPipeModule,
-  TuiLoaderModule,
-  TuiSvgModule,
-} from '@taiga-ui/core';
+import { TUI_NUMBER_FORMAT, TuiFormatNumberPipe, TuiLoader, TuiIcon, TuiButton } from '@taiga-ui/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Position } from 'types/position';
 import { IdeaService } from './idea.service';
@@ -22,19 +16,15 @@ import { CheckComponent } from '@ui/components/check';
     ItemComponent,
     ItemDirective,
     HeaderComponent,
-    TuiButtonModule,
+    TuiButton,
     DatePipe,
     ReactiveFormsModule,
     NgIf,
-    TuiSvgModule,
+    TuiIcon,
     CheckComponent,
-    TuiFormatNumberPipeModule,
+    TuiFormatNumberPipe,
     ListComponent,
-    ItemComponent,
-    HeaderComponent,
-    ItemDirective,
-    CheckComponent,
-    TuiLoaderModule,
+    TuiLoader,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',

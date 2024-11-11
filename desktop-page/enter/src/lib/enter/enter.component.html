@@ -16,7 +16,7 @@
           appearance="outline"
           size="l"
           type="button"
-          icon="tuiIconTrash"
+          iconStart="@tui.trash"
         ></button>
         <button
           class="action save"
@@ -24,7 +24,7 @@
           appearance="outline"
           size="l"
           type="button"
-          icon="tuiIconSave"
+          iconStart="@tui.save"
         ></button>
         <div class="container__space container__space--first"></div>
         <lib-enter-sidebar-instrument [data]="context.data.data.instrument">
@@ -36,7 +36,7 @@
         </div>
         <button
           appearance="icon"
-          icon="tuiIconClose"
+          iconStart="@tui.x"
           tuiIconButton
           size="l"
           type="button"
@@ -66,7 +66,7 @@
             tuiButton
             size="m"
             type="button">
-            <tui-svg src="tuiIconTrash"></tui-svg>
+            <tui-icon  icon="@tui.trash"></tui-icon>
             Удалить идею
           </button>
         </div>
@@ -81,7 +81,7 @@
           <!--            </div>-->
           <!--            <button-->
           <!--              appearance="icon"-->
-          <!--              icon="tuiIconClose"-->
+          <!--              icon="@tui.x"-->
           <!--              tuiIconButton-->
           <!--              size="m"-->
           <!--              type="button"-->
@@ -132,10 +132,10 @@
           class="tab"
           [class.tab--active]="i === activeItemIndex"
           tuiTab>
-          <tui-svg
+          <tui-icon 
             class="tab__icon"
-            [src]="item.icon"
-          ></tui-svg>
+            [icon]="item.icon"
+          ></tui-icon>
           <span class="tab__text">
             {{ item.text }}
           </span>

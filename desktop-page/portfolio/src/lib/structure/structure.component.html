@@ -7,15 +7,15 @@
       tuiGroup
       class="structure__controls"
       [collapsed]="true">
-      <tui-radio-block
-        *ngFor="let item of categories$ | async"
-        contentAlign="right"
-        size="l"
+     <label *ngFor="let item of categories$ | async" tuiBlock="l" appearance=""> <input tuiRadio type="radio"
+        
+        
+        
         [formControl]="controlCategories"
-        [hideRadio]="true"
-        [item]="item">
+        
+        [value]="item">
         {{ item.name }}
-      </tui-radio-block>
+      </label>
     </div>
   </div>
   <div class="structure__container" *ngIf="(list$ | async) as list; else load">

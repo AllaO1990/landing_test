@@ -1,3 +1,4 @@
+<!-- Taiga migration TODO: tuiButton "whiteblock-active" appearance is no longer available. Use 'appearance="outline-grayscale" tuiAppearanceMode="checked"' -->
 <div
   tuiGroup
   [collapsed]="true">
@@ -5,21 +6,22 @@
     [appearance]="appearance"
     tuiIconButton
     type="button"
-    [icon]="icon"
+    [iconStart]="icon"
     size="l"
     (click)="onToggle($event)"
     [disabled]="disabled">
   </button>
-  <tui-badged-content
-    size="xs"
-    [contentTop]="length$ | async">
+  <!-- Taiga migration TODO: contentTop and contentBottom inputs has been removed. Use ng-content, see taiga-ui.dev/components/badged-content  -->
+<tui-badged-content
+   
+    [style.--tui-radius.%]="50">
     <button
       [appearance]="appearance"
       tuiIconButton
       size="l"
       type="button"
       [disabled]="disabled"
-      [icon]="controlOpen ? 'tuiIconChevronUp' : 'tuiIconChevronDown'"
+      [iconStart]="controlOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
       [tuiDropdown]="content"
       [tuiDropdownManual]="controlOpen"
       [tuiDropdownAlign]="'right'"

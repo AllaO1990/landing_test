@@ -205,7 +205,7 @@ table .td {
   color: var(--color-g-10);
   background-color: var(--block-bg-color);
 
-  box-shadow: var(--tui-shadow);
+  box-shadow: var(--tui-shadow-small);
 }
 
 .ticker {
@@ -239,6 +239,6 @@ table .td {
 }
 
 thead th {
-  color: var(--tui-text-01);
-  background: var(--tui-secondary-active);
+  color: var(--tui-text-primary);
+  background: var(--tui-background-neutral-1-pressed);
 }

@@ -1,15 +1,8 @@
+import { TuiItemsWithMore } from '@taiga-ui/kit';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import {
-  TuiButtonModule,
-  TuiDataListModule,
-  TuiGroupModule,
-  TuiHostedDropdownComponent,
-  TuiHostedDropdownModule,
-  TuiSvgModule,
-} from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiDropdownOpen, TuiGroup, TuiIcon } from '@taiga-ui/core';
 import { Params, RouterModule } from '@angular/router';
-import { TuiItemsWithMoreModule } from '@taiga-ui/kit';
 import { AuthService } from '@core/auth';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { DesktopLkStore } from 'stores/desktop';
@@ -32,12 +25,13 @@ type NavList = NavItem[];
   imports: [
     NgForOf,
     RouterModule,
-    TuiItemsWithMoreModule,
-    TuiGroupModule,
-    TuiButtonModule,
-    TuiHostedDropdownModule,
-    TuiDataListModule,
-    TuiSvgModule,
+    TuiItemsWithMore,
+    TuiGroup,
+    TuiButton,
+    TuiAppearance,
+    TuiDropdown,
+    TuiDataList,
+    TuiIcon,
     AsyncPipe,
     NgIf,
   ],
@@ -50,8 +44,8 @@ export class NavComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
   readonly links$: Observable<NavList> = of([
-    { name: 'Терминал', path: '/lk/main-v2', icon: 'tuiIconTrello', disabled: false },
-    { name: 'Портфель', path: '/lk/portfolio', icon: 'tuiIconBriefcase', disabled: false },
+    { name: 'Терминал', path: '/lk/main-v2', icon: '@tui.trello', disabled: false },
+    { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase', disabled: true },
   ]).pipe(
     switchMap((list) =>
       this._store.event$.pipe(
@@ -69,14 +63,14 @@ export class NavComponent {
     return item.path;
   }
 
-  onCloseDropDown(event: Event, item: { disabled: boolean }, hostedDropdown: TuiHostedDropdownComponent): void {
+  onCloseDropDown(event: Event, item: { disabled: boolean }, hostedDropdown: TuiDropdownOpen): void {
     event.preventDefault();
 
     if (item.disabled) {
       return;
     }
 
-    hostedDropdown.close();
+    // hostedDropdown.close();
   }
 
   logout() {

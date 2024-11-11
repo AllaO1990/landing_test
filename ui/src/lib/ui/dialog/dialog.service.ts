@@ -1,11 +1,11 @@
+import { TuiPopoverService } from "@taiga-ui/cdk";
 import { Injectable } from '@angular/core';
-import { AbstractTuiDialogService } from '@taiga-ui/cdk';
-import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { Observable } from 'rxjs';
 import { DialogComponent } from './dialog.component';
 
 @Injectable()
-export class DialogService extends AbstractTuiDialogService<any> {
+export class DialogService extends TuiPopoverService<any> {
   protected override component = new PolymorpheusComponent(DialogComponent);
 
   protected override defaultOptions: any = { data: null };

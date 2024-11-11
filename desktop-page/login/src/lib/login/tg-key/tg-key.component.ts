@@ -19,7 +19,6 @@ import { AuthService } from '@core/auth';
     MatInputModule,
     ReactiveFormsModule,
     MatCardModule,
-    MatInputModule,
     MatButtonModule,
     NgxMaskDirective,
   ],

@@ -1,9 +1,9 @@
+import { TuiTextfieldControllerModule, TuiInputModule } from "@taiga-ui/legacy";
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TuiAutoFocusModule, TuiDialog } from '@taiga-ui/cdk';
-import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
-import { TuiInputModule } from '@taiga-ui/kit';
+import { TuiAutoFocus, TuiPopover } from '@taiga-ui/cdk';
+import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TuiBreakpointService, TuiButtonModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton } from '@taiga-ui/core';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { debounceTime, Observable, switchMap } from 'rxjs';
@@ -26,8 +26,8 @@ import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/li
     ListComponent,
     ItemDirective,
     HeaderComponent,
-    TuiAutoFocusModule,
-    TuiButtonModule,
+    TuiAutoFocus,
+    TuiButton,
   ],
   templateUrl: './search-card.component.html',
   styleUrl: './search-card.component.scss',
@@ -37,7 +37,7 @@ export class SearchCardComponent {
   public readonly _breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
-  readonly context: TuiDialog<any, any> = inject(POLYMORPHEUS_CONTEXT);
+  readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   readonly form: FormGroup = new FormGroup({
     search: new FormControl<string>('', { nonNullable: true }),

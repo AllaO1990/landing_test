@@ -40,11 +40,11 @@
 
     ::ng-deep {
       [data-appearance='outline'], [data-appearance='outline']:after {
-        color: var(--tui-base-07)
+        color: var(--tui-background-accent-opposite-pressed)
       }
 
       .save [data-appearance='outline'] {
-        color: var(--tui-primary);
+        color: var(--tui-background-accent-1);
       }
     }
   }
@@ -68,7 +68,7 @@
     flex: 0 0 auto;
     height: 60px;
 
-    box-shadow: var(--tui-shadow-sidebar);
+    box-shadow: var(--tui-shadow-medium);
   }
 
   &__space {
@@ -106,7 +106,7 @@
   }
 
   &--active &__icon {
-    color: var(--tui-primary);
+    color: var(--tui-background-accent-1);
   }
 }
 
@@ -157,7 +157,7 @@
   line-height: 13px;
   font-weight: 300;
 
-  color: var(--tui-text-02);
+  color: var(--tui-text-secondary);
 }
 
 .header {

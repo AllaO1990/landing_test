@@ -1,0 +1,33 @@
+[NX Daemon Server] - 2024-11-11T08:48:58.917Z - Started listening on: /var/folders/l5/y7ppz0hd3ss5kc12432pg6dm0000gn/T/40b7dbabe88bf68f0ba1/d.sock
+[NX Daemon Server] - 2024-11-11T08:48:58.950Z - [WATCHER]: Subscribed to changes within: /Users/ivansoldatov/WebstormProjects/trade (native)
+[NX Daemon Server] - 2024-11-11T08:48:58.953Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-11-11T08:48:58.953Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-11-11T08:48:58.954Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-11-11T08:48:58.955Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-11-11T08:48:58.955Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-11-11T08:48:58.955Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 0.
+[NX Daemon Server] - 2024-11-11T08:48:58.956Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-11-11T08:48:58.956Z - [WATCHER]: Stopping the watcher for /Users/ivansoldatov/WebstormProjects/trade (sources)
+[NX Daemon Server] - 2024-11-11T08:48:58.956Z - [WATCHER]: Stopping the watcher for /Users/ivansoldatov/WebstormProjects/trade (outputs)
+[NX Daemon Server] - 2024-11-11T12:50:03.923Z - Started listening on: /var/folders/l5/y7ppz0hd3ss5kc12432pg6dm0000gn/T/40b7dbabe88bf68f0ba1/d.sock
+[NX Daemon Server] - 2024-11-11T12:50:03.928Z - [WATCHER]: Subscribed to changes within: /Users/ivansoldatov/WebstormProjects/trade (native)
+[NX Daemon Server] - 2024-11-11T12:50:03.932Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-11-11T12:50:03.933Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-11-11T12:50:03.934Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-11-11T12:50:03.935Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-11-11T12:50:03.935Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-11-11T12:50:03.935Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 0.
+[NX Daemon Server] - 2024-11-11T12:50:03.937Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-11-11T12:50:03.937Z - [WATCHER]: Stopping the watcher for /Users/ivansoldatov/WebstormProjects/trade (sources)
+[NX Daemon Server] - 2024-11-11T12:50:03.937Z - [WATCHER]: Stopping the watcher for /Users/ivansoldatov/WebstormProjects/trade (outputs)
+[NX Daemon Server] - 2024-11-11T12:50:59.511Z - Started listening on: /var/folders/l5/y7ppz0hd3ss5kc12432pg6dm0000gn/T/40b7dbabe88bf68f0ba1/d.sock
+[NX Daemon Server] - 2024-11-11T12:50:59.514Z - [WATCHER]: Subscribed to changes within: /Users/ivansoldatov/WebstormProjects/trade (native)
+[NX Daemon Server] - 2024-11-11T12:50:59.520Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-11-11T12:50:59.521Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-11-11T12:50:59.522Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-11-11T12:50:59.523Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-11-11T12:50:59.523Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-11-11T12:50:59.523Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 0.
+[NX Daemon Server] - 2024-11-11T12:50:59.524Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-11-11T12:50:59.524Z - [WATCHER]: Stopping the watcher for /Users/ivansoldatov/WebstormProjects/trade (sources)
+[NX Daemon Server] - 2024-11-11T12:50:59.524Z - [WATCHER]: Stopping the watcher for /Users/ivansoldatov/WebstormProjects/trade (outputs)

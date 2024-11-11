@@ -1,13 +1,13 @@
+import { TuiIcon } from "@taiga-ui/core";
+import { TuiCheckbox } from "@taiga-ui/kit";
 import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
-import { TuiCheckboxComponent } from '@taiga-ui/kit';
-import { TuiSvgModule } from '@taiga-ui/core';
 import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'lib-list-item',
   exportAs: '[libListItem]',
   standalone: true,
-  imports: [NgIf, TuiSvgModule],
+  imports: [NgIf, TuiIcon],
   templateUrl: './item.component.html',
   styleUrl: './item.component.scss',
   host: {
@@ -16,7 +16,7 @@ import { NgIf } from '@angular/common';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ItemComponent extends TuiCheckboxComponent {
+export class ItemComponent extends TuiCheckbox {
   @HostListener('click', ['$event']) onClick(event: Event): void {
     event.preventDefault();
 

@@ -1,10 +1,10 @@
+import { TuiLoader } from "@taiga-ui/core";
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
-import { TuiLoaderModule } from '@taiga-ui/core';
 
 @Component({
   selector: 'ui-loader',
   standalone: true,
-  imports: [TuiLoaderModule],
+  imports: [TuiLoader],
   templateUrl: './loader.component.html',
   styleUrl: './loader.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

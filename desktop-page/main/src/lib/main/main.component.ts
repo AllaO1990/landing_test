@@ -1,3 +1,4 @@
+import { TuiTabs } from "@taiga-ui/kit";
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -10,8 +11,7 @@ import { EntryModule } from './entry/entry.module';
 import { MainService } from './main.service';
 import { OutModule } from './out/out.module';
 import { StockComponent } from './stock/stock.component';
-import { TuiTabsModule } from '@taiga-ui/kit';
-import { TuiBreakpointService, TuiSvgModule } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiIcon } from '@taiga-ui/core';
 import { Position } from 'types/position';
 import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
 
@@ -25,8 +25,8 @@ import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
     EntryModule,
     OutModule,
     StockComponent,
-    TuiTabsModule,
-    TuiSvgModule,
+    TuiTabs,
+    TuiIcon,
     ChartCandlestickComponent,
     TabsComponent,
   ],
@@ -86,34 +86,34 @@ export class MainComponent {
 
   public readonly tabMobileList: { text: string; icon: string }[] = [
     {
-      icon: 'tuiIconChartLineLarge',
+      icon: '@tui.chart-line',
       text: 'График',
     },
     {
-      icon: 'tuiIconListLarge',
+      icon: '@tui.list',
       text: 'Список',
     },
     {
-      icon: 'tuiIconTargetLarge',
+      icon: '@tui.target',
       text: 'Идея',
     },
     {
-      icon: 'tuiIconShoppingCartLarge',
+      icon: '@tui.shopping-cart',
       text: 'Сделка',
     },
   ];
 
   public readonly tabTabletList: { text: string; icon: string }[] = [
     {
-      icon: 'tuiIconChartLineLarge',
+      icon: '@tui.chart-line',
       text: 'График',
     },
     {
-      icon: 'tuiIconTargetLarge',
+      icon: '@tui.target',
       text: 'Идея',
     },
     {
-      icon: 'tuiIconShoppingCartLarge',
+      icon: '@tui.shopping-cart',
       text: 'Сделка',
     },
   ];

@@ -86,7 +86,7 @@
 }
 
 .trash {
-  color: var(--tui-text-02);
+  color: var(--tui-text-secondary);
 
   tui-svg {
     margin-right: var(--padding-2);
@@ -117,7 +117,7 @@
     font-weight: 300;
     line-height: 13px;
 
-    color: var(--tui-text-02);
+    color: var(--tui-text-secondary);
   }
 
   &__text {

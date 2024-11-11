@@ -8,7 +8,7 @@
     [title]="item.title ? item.title : item.text"
     [class.tab--active]="i === activeItemIndex"
     tuiTab>
-    <tui-svg class="tab__icon" [src]="item.icon"></tui-svg>
+    <tui-icon  class="tab__icon" [icon]="item.icon"></tui-icon>
     <span class="tab__text">
       {{ item.text }}
     </span>

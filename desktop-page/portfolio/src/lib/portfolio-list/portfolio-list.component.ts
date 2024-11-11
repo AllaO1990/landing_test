@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TuiButtonModule, TuiFormatNumberPipeModule, TuiLoaderModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiLoader, TuiButton } from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
 import { NgForOf, NgIf } from '@angular/common';
@@ -12,7 +12,7 @@ type PortfolioInfo = {
 @Component({
   selector: 'portfolio-list',
   standalone: true,
-  imports: [TuiButtonModule, NgIf, NgForOf, TuiLoaderModule, TuiFormatNumberPipeModule, LoaderComponent],
+  imports: [TuiButton, NgIf, NgForOf, TuiLoader, TuiFormatNumberPipe, LoaderComponent],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

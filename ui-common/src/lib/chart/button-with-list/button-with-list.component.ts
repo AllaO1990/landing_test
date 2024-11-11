@@ -1,3 +1,4 @@
+import { TuiMultiSelectModule } from "@taiga-ui/legacy";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -11,12 +12,12 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { TuiBadgedContentComponent, TuiBadgedContentModule, TuiMultiSelectModule } from '@taiga-ui/kit';
-import { TuiButtonModule, TuiDataListModule, TuiDropdownModule, TuiGroupModule } from '@taiga-ui/core';
+import { TuiBadgedContentComponent, TuiBadgedContent } from '@taiga-ui/kit';
+import { TuiDataList, TuiGroup, TuiDropdown, TuiButton } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
+import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
 import { ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
+import { PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { map, take } from 'rxjs/operators';
 import { defer, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,19 +28,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [
     NgIf,
     NgForOf,
-    TuiButtonModule,
-    TuiDataListModule,
+    TuiButton,
+    TuiDataList,
     TuiMultiSelectModule,
-    TuiDropdownModule,
-    TuiActiveZoneModule,
-    TuiObscuredModule,
-    TuiDataListModule,
-    TuiMultiSelectModule,
+    TuiDropdown,
+    TuiActiveZone,
+    TuiObscured,
     FormsModule,
-    TuiBadgedContentModule,
+    TuiBadgedContent,
     ReactiveFormsModule,
     AsyncPipe,
-    TuiGroupModule,
+    TuiGroup,
   ],
   templateUrl: './button-with-list.component.html',
   styleUrl: './button-with-list.component.scss',

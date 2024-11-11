@@ -37,7 +37,8 @@
       </div>
     </div>
     <div class="profit__chart">
-      <tui-axes
+      <!-- TODO: (Taiga UI migration) labels positioning on x axes were updated. Add empty string to axisXLabels array. See https://taiga-ui.dev/charts/axes -->
+<tui-axes
         class="axes"
         [axisXLabels]="labelsX"
         [axisYLabels]="labelsY">
@@ -55,15 +56,15 @@
       tuiGroup
       class="structure__controls"
       [collapsed]="true">
-      <tui-radio-block
-        *ngFor="let item of list$ | async"
-        contentAlign="right"
-        size="l"
+     <label *ngFor="let item of list$ | async" tuiBlock="l" appearance=""> <input tuiRadio type="radio"
+        
+        
+        
         formControlName="list"
-        [hideRadio]="true"
-        [item]="item">
+        
+        [value]="item">
         {{ item.name }}
-      </tui-radio-block>
+      </label>
     </div>
   </div>
 </div>

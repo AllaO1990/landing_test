@@ -27,7 +27,7 @@
 
   &--checked {
     color: #FFFFFF;
-    border-color: var(--tui-positive, #039322);
-    background-color: var(--tui-positive, #039322);
+    border-color: var(--tui-text-positive, #039322);
+    background-color: var(--tui-text-positive, #039322);
   }
 }

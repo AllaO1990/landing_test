@@ -159,7 +159,7 @@
 
   ::ng-deep {
     [tuiWrapper][data-appearance='secondary'] {
-      background-color: var(--tui-secondary);
+      background-color: var(--tui-background-neutral-1);
     }
   }
 }
@@ -219,7 +219,7 @@
   color: var(--color-g-10);
   background-color: var(--block-bg-color);
 
-  box-shadow: var(--tui-shadow);
+  box-shadow: var(--tui-shadow-small);
 }
 
 .ticker {
