@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   ElementRef,
@@ -42,6 +43,7 @@ import { SeriesSplineOptions } from 'highcharts';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CHART_INDICATORS_NAME } from './chart.constants';
 import { ChartFigure } from 'types/chart';
+import { NgIf } from '@angular/common';
 
 HC_exporting(Highcharts);
 
@@ -58,10 +60,11 @@ HStockTools(Highcharts);
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
   standalone: true,
-  imports: [HighchartsChartModule],
+  imports: [HighchartsChartModule, NgIf],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartComponent implements OnInit {
+  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _ngZone: NgZone = inject(NgZone);
 
@@ -76,6 +79,7 @@ export class ChartComponent implements OnInit {
   private _text: Highcharts.SVGElement | null = null;
   private _textSvgWidth = 0;
 
+  candlesEmpty = false;
   #zoomMode: 'x' | 'y' | 'xy' = 'xy';
   #prevXExtremes: [number | undefined, number | undefined] = [undefined, undefined];
   #zoomDirectionOut = 1;
@@ -674,6 +678,9 @@ export class ChartComponent implements OnInit {
     candlestick: Highcharts.SeriesCandlestickOptions,
     instrument: StockInstrument
   ): void {
+    this.candlesEmpty = !(candlestick.data && candlestick.data.length);
+    this._cdr.markForCheck();
+
     const series = chart.get('primary');
 
     if (series) {
