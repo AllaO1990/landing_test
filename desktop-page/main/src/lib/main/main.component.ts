@@ -1,4 +1,4 @@
-import { TuiTabs } from "@taiga-ui/kit";
+import { TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -7,13 +7,10 @@ import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
 import { StockInstrument } from 'types/stock';
-import { EntryModule } from './entry/entry.module';
 import { MainService } from './main.service';
-import { OutModule } from './out/out.module';
-import { StockComponent } from './stock/stock.component';
 import { TuiBreakpointService, TuiIcon } from '@taiga-ui/core';
 import { Position } from 'types/position';
-import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
+import { TabsComponent } from 'ui-common';
 
 @Component({
   selector: 'lib-main',
@@ -22,13 +19,13 @@ import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
     AsyncPipe,
     NgFor,
     NgIf,
-    EntryModule,
-    OutModule,
-    StockComponent,
     TuiTabs,
     TuiIcon,
-    ChartCandlestickComponent,
     TabsComponent,
+    // EntryModule,
+    // OutModule,
+    // StockComponent,
+    // ChartCandlestickComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',

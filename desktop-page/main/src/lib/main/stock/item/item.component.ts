@@ -6,15 +6,15 @@ import { TuiRadioComponent } from '@taiga-ui/kit';
   standalone: true,
   templateUrl: './item.component.html',
   host: {
-    '[attr.checked]': 'checked || null',
+    '[attr.checked]': 'control.value || null',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StockListItemComponent extends TuiRadioComponent<unknown> {
+export class StockListItemComponent extends TuiRadioComponent {
   @HostListener('click', ['$event'])
   public onClick(event: Event): void {
     event.preventDefault();
 
-    this.onChecked(!this.checked);
+    // this.onChecked(!this.checked);
   }
 }

@@ -74,3 +74,6 @@ export const CHART_ZONE_LIST = [
     disabled: false,
   },
 ];
+
+export const CHART_EMA_ICON =
+  'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">EMA</text></svg>';

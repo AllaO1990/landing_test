@@ -5,9 +5,9 @@ import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { ButtonWithListComponent } from './button-with-list';
-import { CHART_EMA_LIST, CHART_SMA_LIST, CHART_ZONE_LIST } from './chart.constants';
+import { CHART_EMA_ICON, CHART_EMA_LIST, CHART_SMA_LIST, CHART_ZONE_LIST } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiLoader, TuiIcon, TuiButton } from '@taiga-ui/core';
+import { TuiButton, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
 import { ChartFigure } from 'types/chart';
@@ -47,6 +47,7 @@ export class ChartCandlestickComponent implements OnInit {
   toggleLegend = true;
   toggleActions = true;
 
+  emaIcon = CHART_EMA_ICON;
   emaList: IndicatorListItem[] = CHART_EMA_LIST;
   valueEma: IndicatorListItem[] | null = null;
   smaList: IndicatorListItem[] = CHART_SMA_LIST;

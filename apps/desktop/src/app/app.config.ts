@@ -52,6 +52,8 @@ export const appConfig: ApplicationConfig = {
       provide: TUI_NUMBER_FORMAT,
       useValue: {
         decimalSeparator: '.',
+        decimalLimit: 2,
+        zeroPadding: false,
       },
     },
     {

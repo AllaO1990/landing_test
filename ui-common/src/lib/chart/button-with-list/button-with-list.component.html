@@ -12,9 +12,13 @@
     [disabled]="disabled">
   </button>
   <!-- Taiga migration TODO: contentTop and contentBottom inputs has been removed. Use ng-content, see taiga-ui.dev/components/badged-content  -->
-<tui-badged-content
-   
+  <tui-badged-content
     [style.--tui-radius.%]="50">
+    <tui-badge-notification
+      size="s"
+      tuiSlot="top">
+      99
+    </tui-badge-notification>
     <button
       [appearance]="appearance"
       tuiIconButton

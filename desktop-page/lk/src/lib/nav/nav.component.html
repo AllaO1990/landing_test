@@ -1,4 +1,3 @@
-<!-- Taiga migration TODO: tuiButton "whiteblock-active" appearance is no longer available. Use 'appearance="outline-grayscale" tuiAppearanceMode="checked"' -->
 <tui-items-with-more
   tuiGroup
   [collapsed]="true">
@@ -9,10 +8,10 @@
       [queryParams]="item.params"
       routerLinkActive
       #rla="routerLinkActive"
-      [appearance]="rla.isActive ? 'secondary' : 'whiteblock'"
-      size="m"
+      [appearance]="rla.isActive ? 'primary' : 'outline-grayscale'"
+      [size]="size"
       tuiButton
-      [tuiAppearanceState]="item.disabled ? 'disabled' : 'active'"
+      [tuiAppearanceState]="item.disabled | isDisabledState"
       [iconStart]="item.icon"
       type="button">
       {{ item.name }}
@@ -20,8 +19,8 @@
   </ng-container>
   <button
     *tuiItem
-    appearance="whiteblock"
-    size="m"
+    appearance="outline-grayscale"
+    [size]="size"
     tuiIconButton
     iconStart="@tui.log-out"
     type="button"
@@ -32,10 +31,9 @@
     let-lastIndex
     tuiMore>
 
-    <div tuiDropdownOpen
+    <div [(tuiDropdownOpen)]="isDropdownOpen"
          tuiDropdownAlign="right"
          class="item"
-         #dropdownHost
          [tuiDropdown]="dropdown">
 
       <button
@@ -43,7 +41,7 @@
         tuiIconButton
         type="button"
         appearance="whiteblock"
-        size="m">
+        [size]="size">
       </button>
 
       <ng-template #dropdown>
@@ -51,27 +49,27 @@
           <tui-opt-group>
             <ng-container
               *ngFor="let item of (links$ | async); let index = index; trackBy: trackByIndex">
-              <!--              <a-->
-              <!--                tuiOption-->
-              <!--                (click)="onCloseDropDown($event, item, dropdownHost)"-->
-              <!--                class="link-option"-->
-              <!--                [class.link-option&#45;&#45;disabled]="item.disabled"-->
-              <!--                *ngIf="index > lastIndex"-->
-              <!--                [routerLink]="$any(item.disabled ? null : item.path)"-->
-              <!--                routerLinkActive-->
-              <!--                #rla="routerLinkActive"-->
-              <!--                [attr.aria-checked]="rla.isActive">-->
-              <!--                <tui-icon [icon]="item.icon"></tui-icon>-->
-              <!--                {{ item.name }}-->
-              <!--              </a>-->
+              <a
+                tuiOption
+                (click)="onCloseDropDown($event, item)"
+                [tuiAppearance]="rla.isActive ? 'flat' : 'flat-grayscale'"
+                [tuiAppearanceState]="item.disabled | isDisabledState"
+                *ngIf="index > lastIndex"
+                [routerLink]="$any(item.disabled ? null : item.path)"
+                routerLinkActive
+                #rla="routerLinkActive"
+                [iconStart]="item.icon"
+                [attr.aria-checked]="rla.isActive">
+                {{ item.name }}
+              </a>
             </ng-container>
-            <a
+            <button
               tuiOption
               class="link-option"
+              iconStart="@tui.log-out"
               (click)="logout()">
-              <tui-icon icon="@tui.log-out"></tui-icon>
               Выход
-            </a>
+            </button>
           </tui-opt-group>
         </tui-data-list>
       </ng-template>

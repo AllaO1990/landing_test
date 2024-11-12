@@ -1,5 +1,5 @@
-import { TuiIcon } from "@taiga-ui/core";
-import { TuiTabs } from "@taiga-ui/kit";
+import { TuiIcon } from '@taiga-ui/core';
+import { TuiTabs } from '@taiga-ui/kit';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgForOf } from '@angular/common';
 
@@ -25,6 +25,4 @@ export class TabsComponent {
   trackByIndex(index: number): number {
     return index;
   }
-
-  protected readonly onchange = onchange;
 }

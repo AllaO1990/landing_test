@@ -1,4 +1,4 @@
-import { TuiIcon } from "@taiga-ui/core";
+import { TuiIcon } from '@taiga-ui/core';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { Observable } from 'rxjs';
@@ -10,7 +10,7 @@ import { EventSelected } from 'types/events';
 import { DesktopLkStore } from 'stores/desktop';
 import { SearchCardComponent } from '../search-card';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { DialogService } from '@ui/components/dialog';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 @Component({
   selector: 'lib-toolbar-search',
@@ -25,7 +25,7 @@ export class ToolbarSearchComponent {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  private readonly _dialogService: DialogService = inject(DialogService);
+  private readonly _dialogService: DialogService = inject(DIALOG);
 
   private readonly _component: PolymorpheusComponent<SearchCardComponent> = new PolymorpheusComponent(
     SearchCardComponent,

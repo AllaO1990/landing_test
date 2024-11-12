@@ -1,4 +1,4 @@
-import { TuiMultiSelectModule } from "@taiga-ui/legacy";
+import { TuiMultiSelectModule } from '@taiga-ui/legacy';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,12 +12,11 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { TuiBadgedContentComponent, TuiBadgedContent } from '@taiga-ui/kit';
-import { TuiDataList, TuiGroup, TuiDropdown, TuiButton } from '@taiga-ui/core';
+import { TuiBadgedContent, TuiBadgedContentComponent } from '@taiga-ui/kit';
+import { TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
 import { ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { map, take } from 'rxjs/operators';
 import { defer, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -65,7 +64,7 @@ export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit 
 
   @Input() list: { name: string; disabled: boolean }[] = [];
 
-  @Input() icon: PolymorpheusContent;
+  @Input() icon = '';
 
   @Output() opened: EventEmitter<boolean> = new EventEmitter<boolean>();
 

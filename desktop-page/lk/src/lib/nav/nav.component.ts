@@ -1,13 +1,14 @@
 import { TuiItemsWithMore } from '@taiga-ui/kit';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiDropdownOpen, TuiGroup, TuiIcon } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { Params, RouterModule } from '@angular/router';
 import { AuthService } from '@core/auth';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { DesktopLkStore } from 'stores/desktop';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { StockEvent } from 'types/stock-event';
+import { IsDisabledStatePipe } from '@ui/pipes/is-disabled-state.pipe';
 
 interface NavItem {
   path: any[] | string | null | undefined;
@@ -31,9 +32,9 @@ type NavList = NavItem[];
     TuiAppearance,
     TuiDropdown,
     TuiDataList,
-    TuiIcon,
     AsyncPipe,
     NgIf,
+    IsDisabledStatePipe,
   ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss',
@@ -43,6 +44,7 @@ export class NavComponent {
   private readonly _authService: AuthService = inject(AuthService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
+  readonly size = 'l';
   readonly links$: Observable<NavList> = of([
     { name: 'Терминал', path: '/lk/main-v2', icon: '@tui.trello', disabled: false },
     { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase', disabled: true },
@@ -59,18 +61,20 @@ export class NavComponent {
     )
   );
 
+  isDropdownOpen = false;
+
   trackByIndex(_: number, item: NavItem): any {
     return item.path;
   }
 
-  onCloseDropDown(event: Event, item: { disabled: boolean }, hostedDropdown: TuiDropdownOpen): void {
+  onCloseDropDown(event: Event, item: { disabled: boolean }): void {
     event.preventDefault();
 
     if (item.disabled) {
       return;
     }
 
-    // hostedDropdown.close();
+    this.isDropdownOpen = false;
   }
 
   logout() {

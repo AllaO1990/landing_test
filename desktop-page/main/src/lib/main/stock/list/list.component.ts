@@ -1,4 +1,4 @@
-import { TuiTable } from "@taiga-ui/addon-table";
+import { TuiTable } from '@taiga-ui/addon-table';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -14,18 +14,18 @@ import {
 import { STOCK_LIST_HEADER } from '../stock.constant';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { StockListItemComponent } from '../item/item.component';
 import { AsyncPipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
-import { TuiFormatNumberPipe, TuiScrollbar, TuiButton, TuiHint } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockListWithType } from '../stock.component';
+import { StockListItemComponent } from '../item/item.component';
 
 @Pipe({
   name: 'stockItemRemove',
@@ -59,6 +59,7 @@ export class StockListRemovePipe implements PipeTransform {
     NgTemplateOutlet,
     StockListRemovePipe,
     TuiButton,
+    TuiScrollable,
   ],
 })
 export class StockListComponent implements AfterContentInit {
