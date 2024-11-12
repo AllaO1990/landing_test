@@ -39,7 +39,7 @@
         <lib-button-with-list
           class="action"
           [formControl]="controlSma"
-          [icon]="emaIcon"
+          [icon]="smaIcon"
           [list]="smaList">
         </lib-button-with-list>
 
@@ -48,7 +48,7 @@
           [appearance]="controlAtr.value ? 'primary' : 'secondary'"
           tuiIconButton
           type="button"
-          [iconStart]="emaIcon"
+          [iconStart]="artIcon"
           size="l"
           (click)="onToggleAtr($event)">
         </button>
@@ -56,7 +56,7 @@
         <lib-button-with-list
           class="action"
           [formControl]="controlZone"
-          [icon]="emaIcon"
+          [icon]="zoneIcon"
           [list]="zoneList"
           (toggled)="onToggledZone()"
           (opened)="onOpenedZone($event)">
@@ -79,30 +79,6 @@
     </div>
   </div>
 </tui-loader>
-
-<!--<ng-template #emaIcon>-->
-<!--  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">-->
-<!--    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">EMA</text>-->
-<!--  </svg>-->
-<!--</ng-template>-->
-
-<ng-template #smaIcon>
-  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">SMA</text>
-  </svg>
-</ng-template>
-
-<ng-template #atrIcon>
-  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">ATR</text>
-  </svg>
-</ng-template>
-
-<ng-template #consolidationIcon>
-  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">ZONE</text>
-  </svg>
-</ng-template>
 
 <ng-template #empty>
   <div class="empty">Загрузка...</div>

@@ -10,7 +10,7 @@ import { StockInstrument } from 'types/stock';
 import { MainService } from './main.service';
 import { TuiBreakpointService, TuiIcon } from '@taiga-ui/core';
 import { Position } from 'types/position';
-import { TabsComponent } from 'ui-common';
+import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
 
 @Component({
   selector: 'lib-main',
@@ -25,7 +25,7 @@ import { TabsComponent } from 'ui-common';
     // EntryModule,
     // OutModule,
     // StockComponent,
-    // ChartCandlestickComponent,
+    ChartCandlestickComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',

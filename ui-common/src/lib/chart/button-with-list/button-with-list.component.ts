@@ -12,7 +12,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { TuiBadgedContent, TuiBadgedContentComponent } from '@taiga-ui/kit';
+import { TuiBadge, TuiBadgedContent, TuiBadgedContentComponent } from '@taiga-ui/kit';
 import { TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
@@ -20,6 +20,7 @@ import { ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, Reac
 import { map, take } from 'rxjs/operators';
 import { defer, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IsDisabledStatePipe } from '@ui/pipes/is-disabled-state.pipe';
 
 @Component({
   selector: 'lib-button-with-list',
@@ -38,6 +39,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     ReactiveFormsModule,
     AsyncPipe,
     TuiGroup,
+    IsDisabledStatePipe,
+    TuiBadge,
   ],
   templateUrl: './button-with-list.component.html',
   styleUrl: './button-with-list.component.scss',
