@@ -10,3 +10,7 @@
   (touchstart)="onTouchStart($event)"
   (touchend)="onTouchEnd()">
 </highcharts-chart>
+
+<div class="no-data" *ngIf="candlesEmpty">
+  Нет данных
+</div>

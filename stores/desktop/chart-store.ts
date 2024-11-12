@@ -133,7 +133,7 @@ export class ChartStore extends ComponentStore<ChartState> {
     }
 
     return this._api.getCandles(data).pipe(
-      filter((result: Response<any>) => result !== null && result.data !== null && result.data.length !== 0),
+      filter((result: Response<any>) => result !== null && result.data !== null),
       tap((res: any) => this._queueCandles.setValue(data.source, res))
     );
   }
