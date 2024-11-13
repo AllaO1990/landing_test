@@ -25,7 +25,7 @@ import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockListWithType } from '../stock.component';
-import { StockListItemComponent } from '../item/item.component';
+import { StockListItemComponent } from '../item';
 
 @Pipe({
   name: 'stockItemRemove',

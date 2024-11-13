@@ -3,8 +3,7 @@
   <div class="list__header header">
     <div
       class="header__col header__col--{{ item.name }}"
-      *ngFor="let item of header; trackBy: trackByHeader"
-    >
+      *ngFor="let item of header; trackBy: trackByHeader">
       {{ item.label }}
     </div>
   </div>
@@ -31,41 +30,41 @@
               src="/assets/tickers-v2/{{ item.ticker }}.{{ item.type === 'crypto' ? 'svg' : 'png' }}"
               [attr.alt]="item.name"
             />
-          </div>
-          <div
-            tuiHint
-            [tuiHintContext]="item"
-            [tuiHintDirection]="'right'"
-            class="stock-item__name">
-            {{ item.ticker }}
+            <!--          </div>-->
+            <!--          <div-->
+            <!--            tuiHint-->
+            <!--            [tuiHintContext]="item"-->
+            <!--            [tuiHintDirection]="'right'"-->
+            <!--            class="stock-item__name">-->
+            <!--            {{ item.ticker }}-->
 
-            <tui-hint
-              class="hint"
-              *tuiHint="let data"
-              [@.disabled]="true">
-              <ng-container
-                [ngTemplateOutlet]="ticker"
-                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
-            </tui-hint>
-          </div>
-          <div
-            class="stock-item__price stock-item__last"
-            *ngIf="item.price !== null; else skeleton">
-            {{ item.price | tuiFormatNumber : { precision: item.increment } }}
-          </div>
-          <div
-            class="stock-item__price stock-item__change"
-            *ngIf="item.change !== null; else skeleton">
-            {{ item.change | tuiFormatNumber : { precision: item.increment } }}
-          </div>
-          <div
-            class="stock-item__percent stock-item__change-percent"
-            *ngIf="item.changePercent !== null; else skeleton">
-            {{ item.changePercent | tuiFormatNumber : { precision: 2 } }}%
-          </div>
-          <div
-            *ngIf="list.type | stockItemRemove"
-            class="stock-item__remove">
+            <!--            <tui-hint-->
+            <!--              class="hint"-->
+            <!--              *tuiHint="let data"-->
+            <!--              [@.disabled]="true">-->
+            <!--              <ng-container-->
+            <!--                [ngTemplateOutlet]="ticker"-->
+            <!--                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>-->
+            <!--            </tui-hint>-->
+            <!--          </div>-->
+            <!--          <div-->
+            <!--            class="stock-item__price stock-item__last"-->
+            <!--            *ngIf="item.price !== null; else skeleton">-->
+            <!--            {{ item.price | tuiFormatNumber : { precision: item.increment } }}-->
+            <!--          </div>-->
+            <!--          <div-->
+            <!--            class="stock-item__price stock-item__change"-->
+            <!--            *ngIf="item.change !== null; else skeleton">-->
+            <!--            &lt;!&ndash;            {{ item.change | tuiFormatNumber : { precision: item.increment } }}&ndash;&gt;-->
+            <!--          </div>-->
+            <!--          <div-->
+            <!--            class="stock-item__percent stock-item__change-percent"-->
+            <!--            *ngIf="item.changePercent !== null; else skeleton">-->
+            <!--            &lt;!&ndash;            {{ item.changePercent | tuiFormatNumber : { precision: 2 } }}%&ndash;&gt;-->
+            <!--          </div>-->
+            <!--          <div-->
+            <!--            *ngIf="list.type | stockItemRemove"-->
+            <!--            class="stock-item__remove">-->
             <button
               class="remove"
               size="s"

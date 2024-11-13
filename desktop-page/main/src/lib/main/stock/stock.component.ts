@@ -1,10 +1,10 @@
-import { TuiTextfieldControllerModule, TuiInputModule, TuiSelectModule } from "@taiga-ui/legacy";
+import { TuiInputModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
-import { TuiDataList, TuiLoader, TuiDropdown, TuiIcon, TuiButton } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiDropdown, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiStringHandler, TuiAutoFocus } from '@taiga-ui/cdk';
+import { TuiAutoFocus, TuiStringHandler } from '@taiga-ui/cdk';
 import { combineLatest, debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { StockListComponent } from './list';
 import { filter, map } from 'rxjs/operators';
@@ -31,7 +31,7 @@ import { DialogComponent } from './dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchCardComponent } from 'ui-common';
 import { LoaderComponent } from '@ui/components/loader';
-import { DialogService } from '@ui/components/dialog';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 type IsRename = 'edit' | 'new' | false;
 
@@ -76,7 +76,7 @@ export class StockComponent {
   private readonly _service: StockService = inject(StockService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  private readonly _dialogService: DialogService = inject(DialogService);
+  private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _dialogApproveContent: PolymorpheusContent = new PolymorpheusComponent(
     DialogComponent,
     this._injector
