@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, forwardRef, HostListener, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  forwardRef,
+  HostListener,
+  inject,
+  Input,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -17,12 +25,15 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StockListItemComponent implements ControlValueAccessor {
+export class StockListItemComponent<T = any> implements ControlValueAccessor {
+  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+
   onChange = (v: any) => {};
   onTouched = () => {};
 
-  @Input() isDisabled = false;
+  @Input() disabled = false;
   @Input() checked = false;
+  @Input() value: T | null = null;
 
   @HostListener('click', ['$event'])
   public onClick(event: Event): void {
@@ -33,11 +44,12 @@ export class StockListItemComponent implements ControlValueAccessor {
 
   onChecked(checked: boolean): void {
     this.checked = checked;
-    this.onChange(this.checked);
+    this.onChange(this.value);
   }
 
-  writeValue(obj: any): void {
-    console.log(obj);
+  writeValue(obj: T | null): void {
+    this.checked = obj === this.value;
+    this._cdr.markForCheck();
   }
 
   registerOnChange(fn: any): void {
@@ -49,6 +61,6 @@ export class StockListItemComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.isDisabled = isDisabled;
+    this.disabled = isDisabled;
   }
 }

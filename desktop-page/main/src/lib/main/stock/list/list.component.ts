@@ -53,14 +53,15 @@ export class StockListRemovePipe implements PipeTransform {
     StockListItemComponent,
     TuiTable,
     AsyncPipe,
-    TuiFormatNumberPipe,
     TuiScrollbar,
     TuiHint,
     NgTemplateOutlet,
     StockListRemovePipe,
     TuiButton,
     TuiScrollable,
+    TuiFormatNumberPipe,
   ],
+  providers: [],
 })
 export class StockListComponent implements AfterContentInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);

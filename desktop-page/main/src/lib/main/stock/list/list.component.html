@@ -14,10 +14,10 @@
       tuiScrollable
       itemSize="32"
       class="list__viewport  tui-zero-scrollbar">
-      <!--      [item]="item.id"-->
       <vt-stock-list-item
         class="list__item stock-item"
         *cdkVirtualFor="let item of list.items; trackBy: trackByStockListItem"
+        [value]="item.id"
         [formControl]="controlItem">
         <div
           class="stock-item__row"
@@ -30,47 +30,46 @@
               src="/assets/tickers-v2/{{ item.ticker }}.{{ item.type === 'crypto' ? 'svg' : 'png' }}"
               [attr.alt]="item.name"
             />
-            <!--          </div>-->
-            <!--          <div-->
-            <!--            tuiHint-->
-            <!--            [tuiHintContext]="item"-->
-            <!--            [tuiHintDirection]="'right'"-->
-            <!--            class="stock-item__name">-->
-            <!--            {{ item.ticker }}-->
-
-            <!--            <tui-hint-->
-            <!--              class="hint"-->
-            <!--              *tuiHint="let data"-->
-            <!--              [@.disabled]="true">-->
-            <!--              <ng-container-->
-            <!--                [ngTemplateOutlet]="ticker"-->
-            <!--                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>-->
-            <!--            </tui-hint>-->
-            <!--          </div>-->
-            <!--          <div-->
-            <!--            class="stock-item__price stock-item__last"-->
-            <!--            *ngIf="item.price !== null; else skeleton">-->
-            <!--            {{ item.price | tuiFormatNumber : { precision: item.increment } }}-->
-            <!--          </div>-->
-            <!--          <div-->
-            <!--            class="stock-item__price stock-item__change"-->
-            <!--            *ngIf="item.change !== null; else skeleton">-->
-            <!--            &lt;!&ndash;            {{ item.change | tuiFormatNumber : { precision: item.increment } }}&ndash;&gt;-->
-            <!--          </div>-->
-            <!--          <div-->
-            <!--            class="stock-item__percent stock-item__change-percent"-->
-            <!--            *ngIf="item.changePercent !== null; else skeleton">-->
-            <!--            &lt;!&ndash;            {{ item.changePercent | tuiFormatNumber : { precision: 2 } }}%&ndash;&gt;-->
-            <!--          </div>-->
-            <!--          <div-->
-            <!--            *ngIf="list.type | stockItemRemove"-->
-            <!--            class="stock-item__remove">-->
+          </div>
+          <div
+            tuiHint
+            [tuiHintContext]="item"
+            [tuiHintDirection]="'right'"
+            class="stock-item__name">
+            {{ item.ticker }}
+            <tui-hint
+              class="hint"
+              *tuiHint="let data"
+              [@.disabled]="true">
+              <ng-container
+                [ngTemplateOutlet]="ticker"
+                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
+            </tui-hint>
+          </div>
+          <div
+            class="stock-item__price stock-item__last"
+            *ngIf="item.price !== null; else skeleton">
+            {{ item.price | tuiFormatNumber : { precision: item.increment } | async }}
+          </div>
+          <div
+            class="stock-item__price stock-item__change"
+            *ngIf="item.change !== null; else skeleton">
+            {{ item.change | tuiFormatNumber : { precision: item.increment } | async }}
+          </div>
+          <div
+            class="stock-item__percent stock-item__change-percent"
+            *ngIf="item.changePercent !== null; else skeleton">
+            {{ item.changePercent | tuiFormatNumber | async }}%
+          </div>
+          <div
+            *ngIf="list.type | stockItemRemove"
+            class="stock-item__remove">
             <button
               class="remove"
               size="s"
               iconStart="@tui.trash-2"
               tuiIconButton
-              appearance="secondary"
+              appearance="icon"
               type="button"
               (click)="onRemove($event, item)">
             </button>

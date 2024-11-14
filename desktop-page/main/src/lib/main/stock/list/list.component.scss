@@ -157,8 +157,12 @@
 .remove[tuiIconButton] {
   width: 100%;
 
+  &[tuiIcons]:before {
+    font-size: 10px;
+  }
+
   ::ng-deep {
-    [tuiWrapper][data-appearance='secondary'] {
+    [tuiWrapper][data-appearance='flat'] {
       background-color: var(--tui-background-neutral-1);
     }
   }
