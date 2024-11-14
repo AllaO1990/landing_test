@@ -1,6 +1,6 @@
 import { TuiIcon } from '@taiga-ui/core';
 import { TuiCheckbox } from '@taiga-ui/kit';
-import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Input } from '@angular/core';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -22,4 +22,6 @@ export class ItemComponent extends TuiCheckbox {
 
     // this.value = !this.value;
   }
+
+  @Input() value: any;
 }

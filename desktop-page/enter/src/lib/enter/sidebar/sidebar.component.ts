@@ -1,9 +1,9 @@
-import { TuiTextfieldControllerModule, TuiTextareaModule } from "@taiga-ui/legacy";
+import { TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiFormatNumberPipe, TuiScrollbar, TuiIcon, TuiButton } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { Idea } from 'types/idea';
-import { JsonPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { InstrumentComponent } from '../instrument/instrument.component';
 import { ValidDateComponent } from './valid-date/valid-date.component';
 import { TuiFilter } from '@taiga-ui/kit';
@@ -23,7 +23,7 @@ import { Position } from 'types/position';
     TuiTextfieldControllerModule,
     InstrumentComponent,
     ValidDateComponent,
-    JsonPipe,
+    AsyncPipe,
     TuiFilter,
     TuiButton,
     TuiIcon,

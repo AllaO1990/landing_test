@@ -1,8 +1,8 @@
-import { TuiTable } from "@taiga-ui/addon-table";
+import { TuiTable } from '@taiga-ui/addon-table';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
-import { TuiFormatNumberPipe, TuiLoader, TuiScrollbar, TuiHint } from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -76,7 +76,7 @@ export class EntryTableComponent {
       id: item.id,
     });
 
-    this._dialogEnterService.openDialog({ data: item, type: EventSelected.IDEA }, this._injector).subscribe();
+    this._dialogEnterService.open({ data: item, type: EventSelected.IDEA }, this._injector).subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {

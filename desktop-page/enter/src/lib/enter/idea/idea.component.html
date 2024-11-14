@@ -1,4 +1,3 @@
-<!-- TODO: (Taiga UI migration) tuiFormatNumber pipe API has been changed. Learn how to migrate decimalLimit, decimal, zeroPadding: https://github.com/taiga-family/taiga-ui/issues/8335#migration -->
 <div class="entry table" [formGroup]="formEntry">
   <tui-loader class="loader" [overlay]="true" [showLoader]="listEntry === null">
     <lib-list
@@ -21,16 +20,16 @@
             {{ item.date | date: 'dd.MM.yy' }}
           </div>
           <div class="item__value row__item row__price">
-            {{ item.price| tuiFormatNumber: { decimalLimit: priceIncrement } }}
+            {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
           </div>
           <div class="item__value row__item row__quantity">
-            {{ item.quantity| tuiFormatNumber }}
+            {{ item.quantity | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__item row__total">
-            {{ item.totalPrice| tuiFormatNumber: { decimalLimit: 0 } }}
+            {{ item.totalPrice | tuiFormatNumber: { precision: 0 } | async }}
           </div>
           <div class="item__value row__item row__deposit">
-            {{ item.depositShare | tuiFormatNumber }}%
+            {{ item.depositShare | tuiFormatNumber | async }}%
           </div>
         </div>
       </lib-list-item>
@@ -63,22 +62,22 @@
             {{ item.date | date: 'dd.MM.yy' }}
           </div>
           <div class="item__value row__right row__item row__price">
-            {{ item.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+            {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
           </div>
           <div class="item__value row__right row__item row__profit">
-            {{ item.profitPercent | tuiFormatNumber }}%
+            {{ item.profitPercent | tuiFormatNumber | async }}%
           </div>
           <div class="item__value row__right row__item row__profit">
-            {{ item.profit | tuiFormatNumber }}
+            {{ item.profit | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__right row__item row__deposit">
-            {{ item.depositShare | tuiFormatNumber }}%
+            {{ item.depositShare | tuiFormatNumber | async }}%
           </div>
           <div class="item__value row__right row__item row__fix-half">
-            {{ item.amount | tuiFormatNumber }}
+            {{ item.amount | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__right row__item row__fix-half">
-            {{ item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: { rounding: 'round' } }}%
+            {{ item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: { rounding: 'round' } | async }}%
           </div>
           <div class="row__space"></div>
           <div class="item__value">
@@ -130,22 +129,22 @@
             {{ item.date | date: 'dd.MM.yy' }}
           </div>
           <div class="item__value row__item row__right row__price">
-            {{ item.price }}
+            {{ item.price | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__item row__right row__profit">
-            {{ item.lossPercent | tuiFormatNumber }}%
+            {{ item.lossPercent | tuiFormatNumber | async }}%
           </div>
           <div class="item__value row__item row__right row__profit">
-            {{ item.loss | tuiFormatNumber }}
+            {{ item.loss | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__item row__right row__deposit">
-            {{ item.depositShare | tuiFormatNumber }}%
+            {{ item.depositShare | tuiFormatNumber | async }}%
           </div>
           <div class="item__value row__item row__right row__fix-half">
-            {{ item.amount | tuiFormatNumber }}
+            {{ item.amount | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__item row__right row__fix-half">
-            {{ item.amountPercent | tuiFormatNumber }}%
+            {{ item.amountPercent | tuiFormatNumber | async }}%
           </div>
         </div>
       </lib-list-item>
@@ -182,16 +181,16 @@
     <div class="total__item row__item"></div>
     <div class="total__item row__item"></div>
     <div class="total__item row__item">
-      {{ totalTarget.profitPercent | tuiFormatNumber }}%
+      {{ totalTarget.profitPercent | tuiFormatNumber | async }}%
     </div>
     <div class="total__item row__item">
-      {{ totalTarget.profit | tuiFormatNumber }}
+      {{ totalTarget.profit | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalTarget.depositShare | tuiFormatNumber }}%
+      {{ totalTarget.depositShare | tuiFormatNumber | async }}%
     </div>
     <div class="total__item row__item">
-      {{ totalTarget.amount | tuiFormatNumber }}
+      {{ totalTarget.amount | tuiFormatNumber | async }}
     </div>
   </div>
 </ng-template>

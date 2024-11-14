@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
-import { DatePipe, JsonPipe, NgIf } from '@angular/common';
-import { TUI_NUMBER_FORMAT, TuiFormatNumberPipe, TuiLoader, TuiIcon, TuiButton } from '@taiga-ui/core';
+import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
+import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Position } from 'types/position';
 import { IdeaService } from './idea.service';
@@ -12,7 +12,7 @@ import { CheckComponent } from '@ui/components/check';
   selector: 'lib-enter-idea',
   standalone: true,
   imports: [
-    JsonPipe,
+    AsyncPipe,
     ItemComponent,
     ItemDirective,
     HeaderComponent,
@@ -28,16 +28,7 @@ import { CheckComponent } from '@ui/components/check';
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
-  providers: [
-    IdeaService,
-    {
-      provide: TUI_NUMBER_FORMAT,
-      useValue: {
-        zeroPadding: false,
-        decimalLimit: 2,
-      },
-    },
-  ],
+  providers: [IdeaService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterIdeaComponent {

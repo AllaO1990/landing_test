@@ -1,4 +1,3 @@
-<!-- TODO: (Taiga UI migration) tuiFormatNumber pipe API has been changed. Learn how to migrate decimalLimit, decimal, zeroPadding: https://github.com/taiga-family/taiga-ui/issues/8335#migration -->
 <div *ngIf="data" class="widget">
   <!--  <div class="widget__toolbar widget__padding">-->
   <!--    <lib-enter-sidebar-instrument [data]="data.instrument">-->
@@ -46,13 +45,13 @@
         <div class="description__row">
           <div class="description__label">Вероятность успеха</div>
           <div class="description__text">
-            {{ data.strategy.successProbability * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+            {{ data.strategy.successProbability * 100 | tuiFormatNumber | async }}%
           </div>
         </div>
         <div class="description__row">
           <div class="description__label">% депозита</div>
           <div class="description__text">
-            {{ data.inPositionDepositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+            {{ data.inPositionDepositShare * 100 | tuiFormatNumber | async }}%
           </div>
         </div>
         <div class="description__row">

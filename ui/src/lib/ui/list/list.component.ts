@@ -1,4 +1,4 @@
-import { PolymorpheusTemplate, PolymorpheusOutlet } from "@taiga-ui/polymorpheus";
+import { PolymorpheusContent, PolymorpheusOutlet, PolymorpheusTemplate } from '@taiga-ui/polymorpheus';
 import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef, ViewChild } from '@angular/core';
 import { ItemComponent } from './item/item.component';
 import { ItemDirective } from './item/item.directive';
@@ -11,8 +11,7 @@ import {
 } from '@angular/cdk/scrolling';
 import { StockId } from 'types/stock';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiLoader, TuiScrollbar } from '@taiga-ui/core';
-import { PolymorpheusContent } from '@taiga-ui/polymorpheus';
+import { TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { LoaderComponent } from '../loader';
 
 @Component({
@@ -28,9 +27,11 @@ import { LoaderComponent } from '../loader';
     TuiLoader,
     CdkFixedSizeVirtualScroll,
     TuiScrollbar,
-    PolymorpheusTemplate, PolymorpheusOutlet,
+    PolymorpheusTemplate,
+    PolymorpheusOutlet,
     CdkVirtualScrollableElement,
     LoaderComponent,
+    TuiScrollable,
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',

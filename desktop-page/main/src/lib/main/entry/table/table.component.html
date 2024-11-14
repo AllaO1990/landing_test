@@ -1,4 +1,3 @@
-<!-- TODO: (Taiga UI migration) tuiFormatNumber pipe API has been changed. Learn how to migrate decimalLimit, decimal, zeroPadding: https://github.com/taiga-family/taiga-ui/issues/8335#migration -->
 <tui-loader class="entry-table__loader" [overlay]="true" [showLoader]="data === null">
   <tui-scrollbar *ngIf="data && data.length; else empty" class="entry-table__scrollbar">
     <cdk-virtual-scroll-viewport
@@ -46,7 +45,7 @@
           </td>
 
           <td *tuiCell="'cost'" tuiTd>
-            {{ item.cost | tuiFormatNumber }}
+            {{ item.cost | tuiFormatNumber | async }}
           </td>
 
           <td *tuiCell="'direction'" tuiTd class="td td--direction">
@@ -64,25 +63,25 @@
           <td *tuiCell="'target'" tuiTd class="td td--number">
             <ng-container *ngIf="item.targets[0] as target ; else none">
               <span class="bold">
-                {{ item.targets[0].price | tuiFormatNumber : { decimalLimit: 2 } }}
+                {{ item.targets[0].price | tuiFormatNumber | async }}
               </span>
               <div class="substring">
-                <span class="long">{{ item.targets[0].profitPercent | tuiFormatNumber: { decimalLimit: 2 } }}%</span> /
-                {{ item.targets[0].depositShare | tuiFormatNumber: { decimalLimit: 2 } }}%
+                <span class="long">{{ item.targets[0].profitPercent | tuiFormatNumber | async }}%</span> /
+                {{ item.targets[0].depositShare | tuiFormatNumber | async }}%
               </div>
             </ng-container>
           </td>
 
           <td *tuiCell="'luck'" tuiTd class="td td--number">
-            {{ item.strategy.successProbability * 100 | tuiFormatNumber }}%
+            {{ item.strategy.successProbability * 100 | tuiFormatNumber | async }}%
             <div class="substring" [title]="item.strategy.type | getStrategyName">
               {{ item.strategy.type | getStrategyName }}
             </div>
           </td>
 
           <td *tuiCell="'deposit'" tuiTd class="td td--number">
-            {{ item.entries[0].totalPrice | tuiFormatNumber }}
-            <div class="substring">{{ item.entries[0].depositShare | tuiFormatNumber }}%</div>
+            {{ item.entries[0].totalPrice | tuiFormatNumber | async }}
+            <div class="substring">{{ item.entries[0].depositShare | tuiFormatNumber | async }}%</div>
           </td>
 
           <td *tuiCell="'idea'" tuiTd class="td td--center">
@@ -95,24 +94,24 @@
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number bold">
-            {{ item.entries[0].price | tuiFormatNumber }}
-            <div class="substring">{{ item.entries[0].quantity  | tuiFormatNumber }}</div>
+            {{ item.entries[0].price | tuiFormatNumber | async }}
+            <div class="substring">{{ item.entries[0].quantity  | tuiFormatNumber | async }}</div>
           </td>
 
           <td *tuiCell="'stop'" tuiTd class="td td--number">
             <span class="short">
-              {{ item.stop.price | tuiFormatNumber }}
+              {{ item.stop.price | tuiFormatNumber | async }}
             </span>
             <div class="substring">
               <span class="short">
-                {{ item.stop.lossPercent | tuiFormatNumber: { decimalLimit: 2 } }}%
+                {{ item.stop.lossPercent | tuiFormatNumber | async }}%
               </span> /
-              {{ item.stop.depositShare | tuiFormatNumber: { decimalLimit: 2 } }}%
+              {{ item.stop.depositShare | tuiFormatNumber | async }}%
             </div>
           </td>
 
           <td *tuiCell="'cost'" tuiTd class="td td--number">
-            {{ item.lastPrice | tuiFormatNumber }}
+            {{ item.lastPrice | tuiFormatNumber | async }}
           </td>
         </tr>
         </tbody>

@@ -1,10 +1,10 @@
-import { TuiTextfieldControllerModule, TuiInputModule } from "@taiga-ui/legacy";
+import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EntryComponent } from './entry.component';
 import { EntryIdeaComponent } from './idea/idea.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TuiFormatNumberPipe, TuiLoader, TuiScrollbar, TuiDropdown, TuiButton } from '@taiga-ui/core';
+import { TuiButton, TuiDropdown, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TuiFilter } from '@taiga-ui/kit';
 import { EntryTableComponent } from './table/table.component';
