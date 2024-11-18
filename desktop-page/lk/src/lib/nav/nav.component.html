@@ -7,6 +7,7 @@
       [routerLink]="$any(item.disabled ? null : item.path)"
       [queryParams]="item.params"
       routerLinkActive
+      [routerLinkActiveOptions]="{ matrixParams: 'exact', queryParams: 'ignored', paths: 'exact', fragment: 'exact' }"
       #rla="routerLinkActive"
       [appearance]="rla.isActive ? 'primary' : 'outline-grayscale'"
       [size]="size"

@@ -60,6 +60,9 @@ export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit 
 
   value: any = null;
   disabled = false;
+
+  readonly size = 's';
+
   private onChange = (value: any) => {};
   private onTouched = () => {};
 

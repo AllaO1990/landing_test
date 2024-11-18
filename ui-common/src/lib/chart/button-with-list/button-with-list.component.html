@@ -6,7 +6,7 @@
     tuiIconButton
     type="button"
     [iconStart]="icon"
-    size="l"
+    [size]="size"
     (click)="onToggle($event)"
     [tuiAppearanceState]="disabled | isDisabledState">
   </button>
@@ -20,7 +20,7 @@
     <button
       [appearance]="appearance"
       tuiIconButton
-      size="l"
+      [size]="size"
       type="button"
       [disabled]="disabled"
       [iconStart]="controlOpen ? '@tui.chevron-up' : '@tui.chevron-down'"

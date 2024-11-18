@@ -77,6 +77,7 @@ export class StockComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogService: DialogService = inject(DIALOG);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _dialogApproveContent: PolymorpheusContent = new PolymorpheusComponent(
     DialogComponent,
     this._injector
@@ -93,15 +94,18 @@ export class StockComponent {
     name: 'Новый список',
     type: StockGroupType.CUSTOM,
   };
+  isDisabled = true;
 
-  public readonly controlGroup: FormControl<StockGroup | null> = new FormControl<StockGroup | null>(null);
+  public readonly controlGroup: FormControl<StockGroup | null> = new FormControl<StockGroup | null>({
+    value: null,
+    disabled: this.isDisabled,
+  });
 
   readonly controlRename: FormControl<StockGroup | null> = new FormControl<StockGroup | null>(null);
 
   public readonly stringify: TuiStringHandler<StockGroup> = (item: StockGroup) => item.name;
 
   readonly groups$: Observable<StockGroups | null> = this._store.stockGroups$.pipe(
-    tap((groups: StockGroups | null) => groups && this.controlGroup.patchValue(groups[0])),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -140,6 +144,16 @@ export class StockComponent {
       items: this._service.getListWithPrice(list, price),
     }))
   );
+
+  constructor() {
+    this.groups$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((groups: StockGroups | null) => {
+      if (groups) {
+        this.controlGroup.patchValue(groups[0]);
+        this.controlGroup.enable();
+        this.isDisabled = false;
+      }
+    });
+  }
 
   onSelect(value: { type: EventSelected; id: StockId }): void {
     this._queryParams.update(value);

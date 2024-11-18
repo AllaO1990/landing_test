@@ -44,10 +44,10 @@ export class NavComponent {
   private readonly _authService: AuthService = inject(AuthService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
-  readonly size = 'l';
+  readonly size = 's';
   readonly links$: Observable<NavList> = of([
     { name: 'Терминал', path: '/lk/main-v2', icon: '@tui.trello', disabled: false },
-    { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase-business', disabled: true },
+    { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase-business', disabled: false },
   ]).pipe(
     switchMap((list) =>
       this._store.event$.pipe(

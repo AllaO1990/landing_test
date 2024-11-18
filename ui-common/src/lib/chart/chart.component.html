@@ -46,10 +46,10 @@
         <button
           class="action"
           [appearance]="controlAtr.value ? 'primary' : 'secondary'"
-          tuiIconButton
+          tuiButton
           type="button"
           [iconStart]="artIcon"
-          size="l"
+          [size]="size"
           (click)="onToggleAtr($event)">
         </button>
 
@@ -68,10 +68,10 @@
           class="action"
           [appearance]="toggleLegend ? 'primary' : 'secondary'"
           [disabled]="(isDisabledButtonLegend$ | async) || false"
-          tuiIconButton
+          tuiButton
           type="button"
-          iconStart="@tui.link"
-          size="l"
+          iconStart="@tui.table-of-contents"
+          [size]="size"
           (click)="onToggleLegend($event)">
         </button>
       </div>

@@ -34,7 +34,6 @@
   &__stock {
     margin: 0 var(--padding-2);
 
-    height: 16px;
     flex: 1 1;
     overflow: hidden;
 
@@ -49,6 +48,10 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+
+    button:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
   }
 
   &__add-idea {
@@ -73,15 +76,5 @@
   &__search {
     width: 150px;
     margin: var(--padding-2);
-  }
-}
-
-::ng-deep {
-  tui-filter label {
-    padding: 0 var(--padding-2) !important;
-  }
-
-  [data-size=s] tui-svg {
-    font-size: 10px;
   }
 }

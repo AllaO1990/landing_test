@@ -15,7 +15,7 @@ import { getColor, getRGBA } from 'utils/get-color';
 import { QueryParams } from 'utils/query-params';
 import { ENTRY_HEADER } from '../entry.constants';
 import { EntryHeaderItem } from '../entry.types';
-import { DatePassedPipe } from '../../common/date-passed.pipe';
+import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { DesktopLkStore } from 'stores/desktop';
 

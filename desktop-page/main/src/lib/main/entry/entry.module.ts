@@ -6,9 +6,9 @@ import { EntryIdeaComponent } from './idea/idea.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiDropdown, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TuiFilter } from '@taiga-ui/kit';
 import { EntryTableComponent } from './table/table.component';
 import { TuiActiveZone, TuiAutoFocus, TuiObscured } from '@taiga-ui/cdk';
+import { TuiFilter } from '@taiga-ui/kit';
 
 @NgModule({
   declarations: [EntryComponent, EntryIdeaComponent],

@@ -75,10 +75,10 @@ export const CHART_ZONE_LIST = [
   },
 ];
 
-export const CHART_EMA_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 6px Tahoma">EMA</text></svg>'`;
+export const CHART_EMA_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 7px Tahoma">EMA</text></svg>'`;
 
-export const CHART_SMA_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 6px Tahoma">SMA</text></svg>'`;
+export const CHART_SMA_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 7px Tahoma">SMA</text></svg>'`;
 
-export const CHART_ATR_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 6px Tahoma">ATR</text></svg>'`;
+export const CHART_ATR_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 7px Tahoma">ATR</text></svg>'`;
 
-export const CHART_ZONE_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 6px Tahoma">ZONE</text></svg>'`;
+export const CHART_ZONE_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 7px Tahoma">ZONE</text></svg>'`;

@@ -66,6 +66,7 @@ export class ChartCandlestickComponent implements OnInit {
   valueZone: IndicatorListItem<Timeframe>[] | null = null;
   artIcon = CHART_ATR_ICON;
 
+  readonly size = 's';
   readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[1], this.emaList[5]]);
   readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[1]]);
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });

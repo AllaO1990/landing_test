@@ -6,7 +6,7 @@
     <div class="entry__stock">
       <tui-filter
         [formControl]="controlFilterStock"
-        [size]="'s'"
+        [size]="size"
         class="item"
         [content]="content"
         [items]="filterStock"
@@ -18,7 +18,7 @@
         [disabled]="true"
         tuiButton
         type="button"
-        size="m"
+        [size]="size"
         appearance="secondary"
         class="entry__add-idea">
         {{ constants.add_idea }}
@@ -35,9 +35,9 @@
         iconStart="@tui.search"
         tuiIconButton
         type="button"
-        appearance="icon"
-        size="s"
-        class="entry__search">
+        appearance="outline-grayscale"
+        [size]="size"
+        class="entry__action-search">
       </button>
 
       <button
@@ -45,16 +45,16 @@
         iconStart="@tui.ellipsis-vertical"
         tuiIconButton
         type="button"
-        appearance="icon"
-        size="s"
-        class="entry__search">
+        appearance="outline-grayscale"
+        [size]="size"
+        class="entry__action-more">
       </button>
     </div>
   </div>
   <div class="entry__strategy">
     <tui-filter
       [formControl]="controlFilterStrategy"
-      [size]="'s'"
+      [size]="size"
       class="item"
       [content]="content"
       [items]="filterStrategy"

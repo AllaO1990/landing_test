@@ -13,6 +13,7 @@ import { Position } from 'types/position';
 import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
 import { StockComponent } from './stock/stock.component';
 import { EntryModule } from './entry/entry.module';
+import { OutModule } from './out/out.module';
 
 @Component({
   selector: 'lib-main',
@@ -25,7 +26,7 @@ import { EntryModule } from './entry/entry.module';
     TuiIcon,
     TabsComponent,
     EntryModule,
-    // OutModule,
+    OutModule,
     StockComponent,
     ChartCandlestickComponent,
   ],
