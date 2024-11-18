@@ -1,7 +1,7 @@
-import { TuiTextfieldControllerModule, TuiInputDateRangeModule } from "@taiga-ui/legacy";
+import { TuiInputDateRangeModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { TuiAxes, TuiBarChart } from '@taiga-ui/addon-charts';
-import { TuiDay, TuiDayRange, TuiContext } from '@taiga-ui/cdk';
+import { TuiContext, TuiDay, TuiDayRange } from '@taiga-ui/cdk';
 import { tuiFormatNumber, TuiFormatNumberPipe, TuiGroup, TuiHint } from '@taiga-ui/core';
 import { TuiBlock, TuiRadio } from '@taiga-ui/kit';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -30,7 +30,8 @@ type ListItem = { name: string; value: TuiDayRange };
     NgIf,
     AsyncPipe,
     TuiGroup,
-    TuiBlock, TuiRadio,
+    TuiBlock,
+    TuiRadio,
   ],
   templateUrl: './profit.component.html',
   styleUrl: './profit.component.scss',

@@ -1,6 +1,6 @@
 <div class="filter">
   <ng-container *ngIf="isMobile$ | async; else form">
-    <div 
+    <div
       class="filter__hosted-dropdown"
       [tuiDropdown]="dialog"
       [(tuiDropdownOpen)]="open">
@@ -52,8 +52,8 @@
           *ngIf="broker$ | async as list"
           [stringify]="stringify"
           [tuiTextfieldSize]="size"
-          formControlName="broker"
-          [tuiTextfieldLabelOutside]="true">
+          formControlName="broker">
+          {{ constants.broker }}
           <tui-data-list-wrapper
             *tuiDataList
             size="s"

@@ -5,7 +5,7 @@
       [disabled]="true"
       tuiIconButton
       iconStart="@tui.circle-arrow-down"
-      size="l"
+      [size]="size"
       type="button">
     </button>
 
@@ -14,7 +14,7 @@
       [disabled]="true"
       tuiIconButton
       iconStart="@tui.circle-arrow-up"
-      size="l"
+      [size]="size"
       type="button">
     </button>
     <button
@@ -22,14 +22,14 @@
       [disabled]="true"
       tuiIconButton
       iconStart="@tui.percent"
-      size="l"
+      [size]="size"
       type="button">
     </button>
   </div>
   <div class="portfolio__deposit deposit" *ngIf="data; else load">
     <dl class="deposit__row" *ngFor="let key of list">
       <dt class="deposit__title deposit__cell">{{ constants[key] }}</dt>
-      <dd class="deposit__description deposit__cell">{{ data[key] | tuiFormatNumber }}</dd>
+      <dd class="deposit__description deposit__cell">{{ data[key] | tuiFormatNumber | async }}</dd>
     </dl>
   </div>
 </div>

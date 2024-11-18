@@ -1,4 +1,4 @@
-import { TuiIcon } from "@taiga-ui/core";
+import { TuiIcon } from '@taiga-ui/core';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { NgIf } from '@angular/common';
 
@@ -11,5 +11,14 @@ import { NgIf } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheckComponent {
-  @Input() value: boolean | null = false;
+  private _value: boolean | null = false;
+
+  @Input()
+  set value(value: any) {
+    this._value = value;
+  }
+
+  get value() {
+    return this._value;
+  }
 }

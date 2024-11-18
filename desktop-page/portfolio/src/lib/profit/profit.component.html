@@ -8,7 +8,7 @@
         <dl class="deposit__row today">
           <dt class="deposit__title deposit__cell">{{ constants.today }}</dt>
           <dd class="deposit__description deposit__cell">
-            {{ data.info.today !== null ? (data.info.today | tuiFormatNumber) : '—' }}
+            {{ data.info.today !== null ? (data.info.today | tuiFormatNumber| async) : '—' }}
           </dd>
         </dl>
       </div>
@@ -19,7 +19,7 @@
         <div class="control__range">
           <tui-input-date-range
             class="b-form"
-            tuiTextfieldSize="l"
+            tuiTextfieldSize="s"
             [tuiTextfieldLabelOutside]="true"
             formControlName="range">
           </tui-input-date-range>
@@ -31,14 +31,14 @@
             {{ constants[key] }}
           </dt>
           <dd class="deposit__description deposit__cell">
-            {{ data.info[key] !== null ? ($any(data.info[key]) | tuiFormatNumber) : '—' }}
+            {{ data.info[key] !== null ? ($any(data.info[key]) | tuiFormatNumber | async) : '—' }}
           </dd>
         </dl>
       </div>
     </div>
     <div class="profit__chart">
       <!-- TODO: (Taiga UI migration) labels positioning on x axes were updated. Add empty string to axisXLabels array. See https://taiga-ui.dev/charts/axes -->
-<tui-axes
+      <tui-axes
         class="axes"
         [axisXLabels]="labelsX"
         [axisYLabels]="labelsY">
@@ -54,16 +54,18 @@
   <div class="profit__actions">
     <div
       tuiGroup
-      class="structure__controls"
-      [collapsed]="true">
-     <label *ngFor="let item of list$ | async" tuiBlock="l" appearance=""> <input tuiRadio type="radio"
-        
-        
-        
-        formControlName="list"
-        
-        [value]="item">
-        {{ item.name }}
+      [collapsed]="true"
+      class="profit__controls">
+      <label
+        *ngFor="let item of list$ | async"
+        appearance=""
+        tuiBlock="s">
+        <input
+          tuiBlock
+          formControlName="list"
+          [value]="item"
+          type="radio">
+        <span>{{ item.name }}</span>
       </label>
     </div>
   </div>

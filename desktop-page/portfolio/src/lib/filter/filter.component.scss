@@ -11,6 +11,16 @@
   margin: 0 var(--padding-2);
 }
 
+label {
+  display: flex;
+  align-items: center;
+
+  tui-select {
+    margin-left: var(--padding-2);
+    width: 100%;
+  }
+}
+
 .filter {
   width: 100%;
   overflow: hidden;

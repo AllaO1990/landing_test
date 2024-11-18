@@ -1,5 +1,5 @@
-import { TuiRingChart } from "@taiga-ui/addon-charts";
-import { TuiBlock, TuiRadio } from "@taiga-ui/kit";
+import { TuiRingChart } from '@taiga-ui/addon-charts';
+import { TuiBlock, TuiRadio } from '@taiga-ui/kit';
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
@@ -45,7 +45,8 @@ let COLOR_LIMIT = 5;
     NgForOf,
     TuiFormatNumberPipe,
     NgTemplateOutlet,
-    TuiBlock, TuiRadio,
+    TuiBlock,
+    TuiRadio,
     TuiGroup,
     ReactiveFormsModule,
     AsyncPipe,
@@ -62,7 +63,7 @@ export class StructureComponent {
   private readonly _data$: Subject<StructureList> = new ReplaySubject(1);
   private readonly _ringChartSizeMapper: { [key: string]: RingChartSize } = {
     mobile: 'xl',
-    desktopSmall: 'xl',
+    desktopSmall: 'm',
     desktopLarge: 'm',
     desktopLarger: 'm',
     desktopLargest: 'l',
@@ -123,7 +124,10 @@ export class StructureComponent {
   private _generateColorList(length: number): void {
     const style = this._getStyleTag();
     const getColor = this._getColor(length);
-    const text: string = Array.from({ length }, (_, i: number) => `--tui-chart-categorical-0${i}: ${getColor(i)};`).join('');
+    const text: string = Array.from(
+      { length },
+      (_, i: number) => `--tui-chart-categorical-0${i}: ${getColor(i)};`
+    ).join('');
 
     style.innerHTML = `:root{${text}`;
   }

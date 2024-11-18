@@ -14,7 +14,7 @@
           class="action"
           tuiIconButton
           appearance="outline"
-          size="l"
+          [size]="size"
           type="button"
           iconStart="@tui.trash"
         ></button>
@@ -22,23 +22,23 @@
           class="action save"
           tuiIconButton
           appearance="outline"
-          size="l"
+          [size]="size"
           type="button"
           iconStart="@tui.save"
         ></button>
         <div class="container__space container__space--first"></div>
-        <lib-enter-sidebar-instrument [data]="context.data.data.instrument">
+        <lib-enter-sidebar-instrument [data]="context.data.instrument">
         </lib-enter-sidebar-instrument>
         <div class="container__space"></div>
         <div class="date-start">
           Идея от
-          <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>
+          <span>{{ context.data.createdAt | date : 'dd.MM.yyyy' }}</span>
         </div>
         <button
           appearance="icon"
           iconStart="@tui.x"
           tuiIconButton
-          size="l"
+          [size]="size"
           type="button"
           (click)="onClose($event)"
         ></button>
@@ -48,7 +48,7 @@
       [style.margin-left.%]="activeItemIndex * -100"
       class="container__widget-list">
       <div class="container__sidebar container__widget">
-        <lib-enter-sidebar [data]="context.data.data"></lib-enter-sidebar>
+        <lib-enter-sidebar [data]="context.data"></lib-enter-sidebar>
       </div>
       <div class="container__submit container__widget">
         <div class="submit">
@@ -57,38 +57,22 @@
             appearance="primary"
             tuiButton
             type="button"
-            size="m">
+            [size]="size">
             Сохранить
           </button>
           <button
             class="action trash"
             appearance="flat"
             tuiButton
-            size="m"
+            [size]="size"
             type="button">
-            <tui-icon  icon="@tui.trash"></tui-icon>
+            <tui-icon icon="@tui.trash"></tui-icon>
             Удалить идею
           </button>
         </div>
       </div>
       <div class="container__chart container__widget">
         <div class="widget">
-          <!--          <div class="widget__toolbar">-->
-          <!--            <div class="widget__space"></div>-->
-          <!--            <div class="widget__date-start date-start">-->
-          <!--              Идея от-->
-          <!--              <span>{{ context.data.data.createdAt | date : 'dd.MM.yyyy' }}</span>-->
-          <!--            </div>-->
-          <!--            <button-->
-          <!--              appearance="icon"-->
-          <!--              icon="@tui.x"-->
-          <!--              tuiIconButton-->
-          <!--              size="m"-->
-          <!--              type="button"-->
-          <!--              (click)="onClose($event)"-->
-          <!--            ></button>-->
-          <!--          </div>-->
-
           <lib-chart></lib-chart>
         </div>
       </div>
@@ -101,7 +85,7 @@
           </div>
           <div class="widget__content">
             <tui-scrollbar class="scrollbar" [hidden]="true">
-              <lib-enter-idea [data]="context.data.data" class="tui-zero-scrollbar"></lib-enter-idea>
+              <lib-enter-idea [data]="context.data" class="tui-zero-scrollbar"></lib-enter-idea>
             </tui-scrollbar>
           </div>
         </div>
@@ -116,7 +100,7 @@
           <div class="widget__content">
             <tui-scrollbar class="scrollbar" [hidden]="true">
               <lib-enter-action
-                [data]="context.data.type === 'position' ? context.data.data : null"
+                [data]="context.type === 'position' ? context.data : null"
                 class="tui-zero-scrollbar"></lib-enter-action>
             </tui-scrollbar>
           </div>
@@ -132,7 +116,7 @@
           class="tab"
           [class.tab--active]="i === activeItemIndex"
           tuiTab>
-          <tui-icon 
+          <tui-icon
             class="tab__icon"
             [icon]="item.icon"
           ></tui-icon>

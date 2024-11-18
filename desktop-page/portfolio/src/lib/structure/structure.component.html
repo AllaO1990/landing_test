@@ -2,44 +2,27 @@
   <div class="structure__title">
     <h3>Структура</h3>
   </div>
-  <div class="structure__switcher">
-    <div
-      tuiGroup
-      class="structure__controls"
-      [collapsed]="true">
-     <label *ngFor="let item of categories$ | async" tuiBlock="l" appearance=""> <input tuiRadio type="radio"
-        
-        
-        
-        [formControl]="controlCategories"
-        
-        [value]="item">
-        {{ item.name }}
-      </label>
+  <div class="structure__container">
+    <div class="structure__switcher">
+      <div
+        tuiGroup
+        class="structure__controls"
+        orientation="vertical"
+        [collapsed]="true">
+        <label
+          *ngFor="let item of categories$ | async"
+          tuiBlock="s"
+          appearance="">
+          <input
+            tuiBlock
+            type="radio"
+            [formControl]="controlCategories"
+            [value]="item">
+          {{ item.name }}
+        </label>
+      </div>
     </div>
-  </div>
-  <div class="structure__container" *ngIf="(list$ | async) as list; else load">
-    <div class="structure__list">
-      <lib-list
-        class="list"
-        [list]="list"
-        [itemSize]="32">
-        <div
-          class="list__item item"
-          *libListItem="let item; index as i"
-          [class.item__active]="activeItemIndex === i"
-          (mouseenter)="onMouseenter($event, i)"
-          (mouseleave)="onMouseleave($event)">
-          <div class="item__name item__cell">
-            {{ item.name }}
-          </div>
-          <div class="item__percentage item__cell">
-            {{ item.percentage | tuiFormatNumber }}%
-          </div>
-        </div>
-      </lib-list>
-    </div>
-    <div class="structure__chart">
+    <div class="structure__chart" *ngIf="(list$ | async) as list">
       <tui-ring-chart
         [size]="(ringChartSize$ | async) || 'xl'"
         [value]="list | getListValue"
@@ -50,6 +33,26 @@
         ></ng-container>
       </tui-ring-chart>
     </div>
+  </div>
+  <div class="structure__list" *ngIf="(list$ | async) as list; else load">
+    <lib-list
+      class="list"
+      [list]="list"
+      [itemSize]="32">
+      <div
+        class="list__item item"
+        *libListItem="let item; index as i"
+        [class.item__active]="activeItemIndex === i"
+        (mouseenter)="onMouseenter($event, i)"
+        (mouseleave)="onMouseleave($event)">
+        <div class="item__name item__cell">
+          {{ item.name }}
+        </div>
+        <div class="item__percentage item__cell">
+          {{ item.percentage | tuiFormatNumber | async }}%
+        </div>
+      </div>
+    </lib-list>
   </div>
 </div>
 
@@ -63,7 +66,7 @@
       Всего:
     </div>
     <div class="chart__value">
-      {{ summary | tuiFormatNumber }}
+      {{ summary | tuiFormatNumber | async }}
     </div>
   </div>
 </ng-template>
@@ -74,7 +77,7 @@
       {{ context.name }}:
     </div>
     <div class="chart__value">
-      {{ context.value | tuiFormatNumber }}
+      {{ context.value | tuiFormatNumber | async }}
     </div>
   </div>
 </ng-template>

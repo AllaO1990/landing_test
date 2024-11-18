@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard, PermissionGuard } from './core/routing/guards';
+import { AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard } from './core/routing/guards';
 
 export const routes: Routes = [
   {
@@ -13,18 +13,14 @@ export const routes: Routes = [
   {
     path: 'lk',
     loadComponent: () => import('lk').then((m) => m.LkComponent),
-    // canActivate: [LkGuard],
-    // canActivateChild: [LkGuard],
+    canActivate: [LkGuard],
+    canActivateChild: [LkGuard],
     children: [
       {
         path: '',
         redirectTo: 'main-v2',
         pathMatch: 'full',
       },
-      //   {
-      //     path: 'main',
-      //     loadChildren: () => import('./pages/main/main.module').then((m) => m.MainModule),
-      //   },
       {
         path: 'main-v2',
         canActivate: [PermissionGuard],
@@ -40,34 +36,38 @@ export const routes: Routes = [
           },
         ],
       },
+      //   {
+      //     path: 'main',
+      //     loadChildren: () => import('./pages/main/main.module').then((m) => m.MainModule),
+      //   },
       //   // {
       //   //   path: 'dashboard',
       //   //   loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
       //   //   canActivate: [PermissionGuard],
       //   // },
-      //   {
-      //     path: 'portfolio',
-      //     children: [
-      //       {
-      //         path: '',
-      //         outlet: 'toolbar-main',
-      //         loadComponent: () => import('portfolio').then((m) => m.FilterComponent),
-      //       },
-      //       {
-      //         path: '',
-      //         loadComponent: () => import('portfolio').then((m) => m.LayoutComponent),
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     path: '403',
-      //     loadChildren: () => import('page-403').then((m) => m.Page403Module),
-      //     canActivate: [ForbiddenGuard],
-      //   },
-      //   {
-      //     path: '**',
-      //     loadChildren: () => import('page-404').then((m) => m.Page404Module),
-      //   },
+      {
+        path: 'portfolio',
+        children: [
+          {
+            path: '',
+            outlet: 'toolbar-main',
+            loadComponent: () => import('portfolio').then((m) => m.FilterComponent),
+          },
+          {
+            path: '',
+            loadComponent: () => import('portfolio').then((m) => m.LayoutComponent),
+          },
+        ],
+      },
+      {
+        path: '403',
+        loadChildren: () => import('page-403').then((m) => m.Page403Module),
+        canActivate: [ForbiddenGuard],
+      },
+      {
+        path: '**',
+        loadChildren: () => import('page-404').then((m) => m.Page404Module),
+      },
     ],
   },
   {

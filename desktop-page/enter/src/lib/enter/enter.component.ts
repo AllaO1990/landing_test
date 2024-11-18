@@ -1,8 +1,8 @@
-import { TuiTabs } from "@taiga-ui/kit";
-import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
+import { TuiTabs } from '@taiga-ui/kit';
+import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
-import { TuiBreakpointService, TuiLoader, TuiScrollbar, TuiIcon, TuiButton } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiIcon, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
@@ -30,6 +30,7 @@ export interface TabItem {
   standalone: true,
   imports: [
     NgIf,
+    JsonPipe,
     TuiLoader,
     TuiButton,
     EnterActionComponent,
@@ -56,28 +57,23 @@ export class VtEnterComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
   public readonly breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
-
   public readonly orientation$: Observable<ScreenOrientation> = inject(TUI_WINDOW_SIZE).pipe(
     map(({ width, height }): ScreenOrientation => (width > height ? 'landscape' : 'portrait')),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-
   public readonly consolidationZones$: Observable<any | null> = this._store.chartFigures$;
-
   public readonly candles$: Observable<any | null> = combineLatest([
     this._store.candles$,
     this._store.indicatorEma$,
     this._store.indicatorSma$,
   ]);
-
   public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
-
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
-
   public readonly tabs$: Observable<TabItem[] | null> = combineLatest([this.breakpoint$, this.orientation$]).pipe(
     map(([screen, orientation]): TabItem[] | null => this._condition(screen, orientation))
   );
 
+  readonly size = 's';
   activeItemIndex = 0;
 
   onClose(event: Event): void {

@@ -7,6 +7,7 @@ import { IdeaService } from './idea.service';
 import { IdeaEntry, IdeaStop, IdeaTarget, IdeaTotalTarget } from './idea.types';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { CheckComponent } from '@ui/components/check';
+import { ItemLikeCheckboxDirective } from '@ui/components/list/item/item-like-checkbox.directive';
 
 @Component({
   selector: 'lib-enter-idea',
@@ -25,6 +26,7 @@ import { CheckComponent } from '@ui/components/check';
     TuiFormatNumberPipe,
     ListComponent,
     TuiLoader,
+    ItemLikeCheckboxDirective,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',

@@ -18,6 +18,7 @@ import { EntryHeaderItem } from '../entry.types';
 import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { DesktopLkStore } from 'stores/desktop';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
 @Component({
   selector: 'vt-entry-table',
@@ -49,6 +50,10 @@ export class EntryTableComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
+  private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
+    VtEnterComponent,
+    this._injector
+  );
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
@@ -76,7 +81,18 @@ export class EntryTableComponent {
       id: item.id,
     });
 
-    this._dialogEnterService.open({ data: item, type: EventSelected.IDEA }, this._injector).subscribe();
+    console.log('onDblclick');
+
+    this._dialogEnterService
+      .open(
+        this._component
+        // {
+        //   data: item,
+        //   type: EventSelected.IDEA,
+        // }
+        // this._injector
+      )
+      .subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {

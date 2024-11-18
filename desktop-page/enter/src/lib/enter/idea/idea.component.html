@@ -9,12 +9,13 @@
       [itemSize]="itemHeight">
       <lib-list-item
         class="row"
-        #libListItem
+        libItemLikeCheckbox
+        #libListItem=libItemLikeCheckbox
         *libListItem="let item"
         [formControlName]="item.id">
         <div class="item">
           <div class="item__value row__item row__first">
-            <lib-check [value]="libListItem.value"></lib-check>
+            <lib-check [value]="libListItem.checked"></lib-check>
           </div>
           <div class="item__value row__item row__date">
             {{ item.date | date: 'dd.MM.yy' }}
@@ -50,13 +51,14 @@
       [footer]="targetFooter"
       [itemSize]="itemHeight">
       <lib-list-item
+        libItemLikeCheckbox
         class="row"
-        #libListItem
+        #libListItem=libItemLikeCheckbox
         *libListItem="let item"
         [formControlName]="item.id">
         <div class="item">
           <div class="item__value row__item row__first">
-            <lib-check [value]="libListItem.value"></lib-check>
+            <lib-check [value]="libListItem.checked"></lib-check>
           </div>
           <div class="item__value row__item row__date">
             {{ item.date | date: 'dd.MM.yy' }}
@@ -118,12 +120,13 @@
       [itemSize]="itemHeight">
       <lib-list-item
         class="row"
-        #libListItem
+        #libListItem=libItemLikeCheckbox
+        libItemLikeCheckbox
         *libListItem="let item"
         [formControlName]="item.id">
         <div class="item">
           <div class="item__value row__item row__first">
-            <lib-check [value]="libListItem.value"></lib-check>
+            <lib-check [value]="libListItem.checked"></lib-check>
           </div>
           <div class="item__value row__item row__date">
             {{ item.date | date: 'dd.MM.yy' }}
