@@ -48,7 +48,11 @@ export const appConfig: ApplicationConfig = {
         shape: null,
       },
     },
-    tuiNumberFormatProvider({ decimalSeparator: '.', precision: 2 }),
+    tuiNumberFormatProvider({
+      decimalSeparator: '.',
+      precision: 2,
+      decimalMode: 'pad',
+    }),
     {
       provide: TUI_MEDIA,
       useValue: {

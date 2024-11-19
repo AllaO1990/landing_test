@@ -36,6 +36,25 @@
         </dl>
       </div>
     </div>
+    <div class="profit__space"></div>
+    <div class="profit__actions">
+      <div
+        tuiGroup
+        [collapsed]="true"
+        class="profit__controls">
+        <label
+          *ngFor="let item of list$ | async"
+          appearance=""
+          tuiBlock="s">
+          <input
+            tuiBlock
+            formControlName="list"
+            [value]="item"
+            type="radio">
+          <span>{{ item.name }}</span>
+        </label>
+      </div>
+    </div>
     <div class="profit__chart">
       <!-- TODO: (Taiga UI migration) labels positioning on x axes were updated. Add empty string to axisXLabels array. See https://taiga-ui.dev/charts/axes -->
       <tui-axes
@@ -49,24 +68,6 @@
           [value]="value"
         ></tui-bar-chart>
       </tui-axes>
-    </div>
-  </div>
-  <div class="profit__actions">
-    <div
-      tuiGroup
-      [collapsed]="true"
-      class="profit__controls">
-      <label
-        *ngFor="let item of list$ | async"
-        appearance=""
-        tuiBlock="s">
-        <input
-          tuiBlock
-          formControlName="list"
-          [value]="item"
-          type="radio">
-        <span>{{ item.name }}</span>
-      </label>
     </div>
   </div>
 </div>

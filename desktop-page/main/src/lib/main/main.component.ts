@@ -94,7 +94,7 @@ export class MainComponent {
       text: 'Список',
     },
     {
-      icon: '@tui.target',
+      icon: '@tui.lightbulb',
       text: 'Идея',
     },
     {
@@ -109,7 +109,7 @@ export class MainComponent {
       text: 'График',
     },
     {
-      icon: '@tui.target',
+      icon: '@tui.lightbulb',
       text: 'Идея',
     },
     {

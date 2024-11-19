@@ -26,10 +26,10 @@
 </ng-template>
 
 <ng-template #form>
-  <div class="filter__list" [formGroup]="formGroup">
+  <div class="filter__list list" [formGroup]="formGroup">
     <div class="filter__item portfolio">
       <label>
-        {{ constants.portfolio }}
+        <span>{{ constants.portfolio }}</span>
         <tui-select
           *ngIf="portfolio$ | async as list"
           [stringify]="stringify"
@@ -47,7 +47,7 @@
     </div>
     <div class="filter__item broker">
       <label>
-        {{ constants.broker }}
+        <span>{{ constants.broker }}</span>
         <tui-select
           *ngIf="broker$ | async as list"
           [stringify]="stringify"
@@ -65,7 +65,7 @@
     </div>
     <div class="filter__item currency">
       <label>
-        {{ constants.currency }}
+        <span>{{ constants.currency }}</span>
         <tui-select
           *ngIf="currency$ | async as list"
           [stringify]="stringify"
@@ -86,14 +86,16 @@
 
 <ng-template #dialog>
   <div class="filter-dialog">
-    <button
-      tuiIconButton
-      type="button"
-      appearance="icon"
-      iconStart="@tui.x"
-      size="m"
-      (click)="onClose($event)">
-    </button>
+    <div class="filter-dialog__action">
+      <button
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        iconStart="@tui.x"
+        size="m"
+        (click)="onClose($event)">
+      </button>
+    </div>
     <ng-container [ngTemplateOutlet]="form"></ng-container>
   </div>
 </ng-template>
