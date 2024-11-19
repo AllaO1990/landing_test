@@ -6,12 +6,12 @@
     tuiTextfieldSize="s"
     [tuiTextfieldCleaner]="true">
     Название списка
-    <input tuiTextfield />
+    <input tuiTextfieldLegacy />
   </tui-input>
   <button
     class="form__action form__submit"
     size="s"
-    icon="tuiIconCheck"
+    iconStart="@tui.check"
     tuiIconButton
     [disabled]="form.invalid"
     type="submit">
@@ -21,7 +21,7 @@
     size="s"
     tuiIconButton
     type="button"
-    icon="tuiIconClose"
+    iconStart="@tui.x"
     appearance="secondary"
     (click)="onCancel($event)"></button>
 </form>

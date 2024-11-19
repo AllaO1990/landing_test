@@ -6,14 +6,8 @@ import { VtTableWidgetModule } from '../shared/table-widget/table.module';
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
 import { IssuerInfoModule } from './shared/issuer-info/issuer-info.module';
-import {
-  TuiButtonModule,
-  TuiDataListModule,
-  TuiGroupModule,
-  TuiHostedDropdownModule,
-  TuiSvgModule,
-} from '@taiga-ui/core';
-import { TuiBadgeModule, TuiItemsWithMoreModule } from '@taiga-ui/kit';
+import { TuiDataList, TuiGroup, TuiDropdown, TuiIcon, TuiButton } from '@taiga-ui/core';
+import { TuiItemsWithMore, TuiBadge } from '@taiga-ui/kit';
 
 @NgModule({
   declarations: [MainComponent],
@@ -24,13 +18,13 @@ import { TuiBadgeModule, TuiItemsWithMoreModule } from '@taiga-ui/kit';
     VtTableWidgetModule,
     VtCandleChartModule,
     VtScreenerWidgetModule,
-    TuiGroupModule,
-    TuiButtonModule,
-    TuiItemsWithMoreModule,
-    TuiDataListModule,
-    TuiSvgModule,
-    TuiBadgeModule,
-    TuiHostedDropdownModule,
+    TuiGroup,
+    TuiButton,
+    ...TuiItemsWithMore,
+    ...TuiDataList,
+    TuiIcon,
+    TuiBadge,
+    ...TuiDropdown,
   ],
   exports: [],
   providers: [],

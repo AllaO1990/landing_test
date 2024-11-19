@@ -5,9 +5,17 @@ import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { ButtonWithListComponent } from './button-with-list';
-import { CHART_EMA_LIST, CHART_SMA_LIST, CHART_ZONE_LIST } from './chart.constants';
+import {
+  CHART_ATR_ICON,
+  CHART_EMA_ICON,
+  CHART_EMA_LIST,
+  CHART_SMA_ICON,
+  CHART_SMA_LIST,
+  CHART_ZONE_ICON,
+  CHART_ZONE_LIST,
+} from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiButtonModule, TuiLoaderModule, TuiSvgModule } from '@taiga-ui/core';
+import { TuiButton, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
 import { ChartFigure } from 'types/chart';
@@ -30,10 +38,10 @@ interface IndicatorListItem<T = string> {
     ChartComponent,
     ButtonWithListComponent,
     ReactiveFormsModule,
-    TuiLoaderModule,
+    TuiLoader,
     NgIf,
-    TuiButtonModule,
-    TuiSvgModule,
+    TuiButton,
+    TuiIcon,
     LegendComponent,
   ],
   templateUrl: './chart.component.html',
@@ -47,13 +55,18 @@ export class ChartCandlestickComponent implements OnInit {
   toggleLegend = true;
   toggleActions = true;
 
+  emaIcon = CHART_EMA_ICON;
   emaList: IndicatorListItem[] = CHART_EMA_LIST;
   valueEma: IndicatorListItem[] | null = null;
+  smaIcon = CHART_SMA_ICON;
   smaList: IndicatorListItem[] = CHART_SMA_LIST;
   valueSma: IndicatorListItem[] | null = null;
+  zoneIcon = CHART_ZONE_ICON;
   zoneList: IndicatorListItem<Timeframe>[] = CHART_ZONE_LIST;
   valueZone: IndicatorListItem<Timeframe>[] | null = null;
+  artIcon = CHART_ATR_ICON;
 
+  readonly size = 's';
   readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[1], this.emaList[5]]);
   readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[1]]);
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });

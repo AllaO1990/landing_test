@@ -1,10 +1,11 @@
+import { NG_EVENT_PLUGINS } from '@taiga-ui/event-plugins';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { DesktopApiService } from '@desktop-data/desktop-data';
-import { TUI_BUTTON_OPTIONS, TUI_MEDIA, TUI_NUMBER_FORMAT, TuiRootModule } from '@taiga-ui/core';
+import { TUI_BUTTON_OPTIONS, TUI_MEDIA, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { DESKTOP_API, DESKTOP_ENVIRONMENT, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
@@ -19,7 +20,8 @@ export const appConfig: ApplicationConfig = {
     provideEnvironmentNgxMask(),
     provideHttpClient(withInterceptors(httpInterceptors)),
     provideAnimations(),
-    importProvidersFrom(TuiRootModule),
+    importProvidersFrom(),
+    NG_EVENT_PLUGINS,
     {
       provide: DESKTOP_ENVIRONMENT,
       useValue: environment,
@@ -46,12 +48,11 @@ export const appConfig: ApplicationConfig = {
         shape: null,
       },
     },
-    {
-      provide: TUI_NUMBER_FORMAT,
-      useValue: {
-        decimalSeparator: '.',
-      },
-    },
+    tuiNumberFormatProvider({
+      decimalSeparator: '.',
+      precision: 2,
+      decimalMode: 'pad',
+    }),
     {
       provide: TUI_MEDIA,
       useValue: {
@@ -63,5 +64,6 @@ export const appConfig: ApplicationConfig = {
       },
     },
     GlobalDateRangeService,
+    NG_EVENT_PLUGINS,
   ],
 };

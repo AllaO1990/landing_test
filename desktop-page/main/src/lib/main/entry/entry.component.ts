@@ -31,6 +31,7 @@ export class EntryComponent {
   public constants: { [key in EntryEnums]: string } = ENTRY_CONSTANTS;
   public filterStock: FilterListItem[] = MAIN_FILTER_STOCK;
   public filterStrategy: FilterListItem[] = STOCK_STRATEGY_LIST;
+  readonly size = 's';
 
   public readonly data$: Observable<Idea[] | null> = this._data$.asObservable().pipe(
     switchMap((data: Idea[] | null) =>

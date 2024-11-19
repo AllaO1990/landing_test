@@ -1,9 +1,9 @@
+<!-- TODO: (Taiga UI migration) tuiFormatNumber pipe API has been changed. Learn how to migrate decimalLimit, decimal, zeroPadding: https://github.com/taiga-family/taiga-ui/issues/8335#migration -->
 <div class="list">
   <div class="list__header header">
     <div
       class="header__col header__col--{{ item.name }}"
-      *ngFor="let item of header; trackBy: trackByHeader"
-    >
+      *ngFor="let item of header; trackBy: trackByHeader">
       {{ item.label }}
     </div>
   </div>
@@ -17,7 +17,7 @@
       <vt-stock-list-item
         class="list__item stock-item"
         *cdkVirtualFor="let item of list.items; trackBy: trackByStockListItem"
-        [item]="item.id"
+        [value]="item.id"
         [formControl]="controlItem">
         <div
           class="stock-item__row"
@@ -37,7 +37,6 @@
             [tuiHintDirection]="'right'"
             class="stock-item__name">
             {{ item.ticker }}
-
             <tui-hint
               class="hint"
               *tuiHint="let data"
@@ -50,17 +49,17 @@
           <div
             class="stock-item__price stock-item__last"
             *ngIf="item.price !== null; else skeleton">
-            {{ item.price | tuiFormatNumber : { decimalLimit: item.increment } }}
+            {{ item.price | tuiFormatNumber : { precision: item.increment } | async }}
           </div>
           <div
             class="stock-item__price stock-item__change"
             *ngIf="item.change !== null; else skeleton">
-            {{ item.change | tuiFormatNumber : { decimalLimit: item.increment } }}
+            {{ item.change | tuiFormatNumber : { precision: item.increment } | async }}
           </div>
           <div
             class="stock-item__percent stock-item__change-percent"
             *ngIf="item.changePercent !== null; else skeleton">
-            {{ item.changePercent | tuiFormatNumber : { decimalLimit: 2 } }}%
+            {{ item.changePercent | tuiFormatNumber | async }}%
           </div>
           <div
             *ngIf="list.type | stockItemRemove"
@@ -68,9 +67,9 @@
             <button
               class="remove"
               size="s"
-              icon="tuiIconTrash2"
+              iconStart="@tui.trash-2"
               tuiIconButton
-              appearance="secondary"
+              appearance="icon"
               type="button"
               (click)="onRemove($event, item)">
             </button>

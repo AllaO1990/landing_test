@@ -1,60 +1,61 @@
-<tui-loader class="loader" [overlay]="true" [showLoader]="!((groups$ | async) || false)">
-  <div class="list">
-    <div class="list__action action">
-      <form class="action__form" *ngIf="!isRename; else rename">
-        <tui-select
-          class="action__select"
-          [stringify]="stringify"
-          [tuiTextfieldSize]="'s'"
-          [formControl]="controlGroup"
-          [tuiTextfieldLabelOutside]="true">
-          Выберите список
-          <div *tuiDataList>
-            <tui-data-list>
-              <button
-                tuiOption
-                (click)="onEdit($event, default, 'new')">
-                <tui-svg src="tuiIconPlus"></tui-svg>
-                Добавить список
-              </button>
-            </tui-data-list>
-            <hr />
-            <tui-data-list-wrapper
-              class="data-list-wrapper"
-              size="s"
-              [items]="groupsCustom$ | async"
-              [itemContent]="item">
-            </tui-data-list-wrapper>
-            <hr />
-            <tui-data-list-wrapper
-              class="data-list-wrapper"
-              size="s"
-              [items]="groupsDefault$ | async"
-              [itemContent]="simple">
-            </tui-data-list-wrapper>
-          </div>
-        </tui-select>
-        <button
-          class="action__add-instrument"
-          size="s"
-          icon="tuiIconPlus"
-          tuiIconButton
-          appearance="secondary"
-          type="button"
-          (click)="onAddInstrument($event)">
-        </button>
-      </form>
-    </div>
-
-    <vt-stock-list
-      *ngIf="(list$ | async) as list; else load"
-      class="list__container"
-      [list]="list"
-      (delete)="onDeleteInstrument($event)"
-      (selected)="onSelect($event)">
-    </vt-stock-list>
+<!--<tui-loader class="loader" [overlay]="true" [showLoader]="!((groups$ | async) || false)">-->
+<div class="list">
+  <div class="list__action action">
+    <form class="action__form" *ngIf="!isRename; else rename">
+      <tui-select
+        class="action__select"
+        [stringify]="stringify"
+        [tuiTextfieldSize]="'s'"
+        [formControl]="controlGroup"
+        [tuiTextfieldLabelOutside]="true">
+        Выберите список
+        <div *tuiDataList>
+          <tui-data-list>
+            <button
+              tuiOption
+              (click)="onEdit($event, default, 'new')">
+              <tui-icon icon="@tui.plus"></tui-icon>
+              Добавить список
+            </button>
+          </tui-data-list>
+          <hr />
+          <tui-data-list-wrapper
+            class="data-list-wrapper"
+            size="s"
+            [items]="groupsCustom$ | async"
+            [itemContent]="item">
+          </tui-data-list-wrapper>
+          <hr />
+          <tui-data-list-wrapper
+            class="data-list-wrapper"
+            size="s"
+            [items]="groupsDefault$ | async"
+            [itemContent]="simple">
+          </tui-data-list-wrapper>
+        </div>
+      </tui-select>
+      <button
+        class="action__add-instrument"
+        size="s"
+        iconStart="@tui.plus"
+        tuiIconButton
+        appearance="secondary"
+        type="button"
+        [disabled]="isDisabled"
+        (click)="onAddInstrument($event)">
+      </button>
+    </form>
   </div>
-</tui-loader>
+
+  <vt-stock-list
+    *ngIf="(list$ | async) as list; else load"
+    class="list__container"
+    [list]="list"
+    (delete)="onDeleteInstrument($event)"
+    (selected)="onSelect($event)">
+  </vt-stock-list>
+</div>
+<!--</tui-loader>-->
 
 <ng-template #load>
   <div class="loader">
@@ -74,13 +75,15 @@
 
 <ng-template #item let-item>
   <div class="item">
-    {{ item.name }}
+    <div class="item__text">
+      {{ item.name }}
+    </div>
     <div class="space"></div>
     <div class="actions">
       <button
         class="edit"
         size="s"
-        icon="tuiIconEdit2"
+        iconStart="@tui.pencil"
         tuiIconButton
         appearance="icon"
         type="button"
@@ -89,7 +92,7 @@
       <button
         class="remove"
         size="s"
-        icon="tuiIconTrash2"
+        iconStart="@tui.trash-2"
         tuiIconButton
         appearance="icon"
         type="button"

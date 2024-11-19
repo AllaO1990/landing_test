@@ -19,8 +19,14 @@
 
   transition: opacity 0.25s ease-in-out;
 
-  button:not(:last-child) {
-    margin-right: var(--padding-2);
+  button {
+    &:before {
+      font-size: 1rem;
+    }
+
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
   }
 }
 
@@ -34,8 +40,20 @@
 
   height: 100%;
 
+  &__text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .actions {
+    width: 0;
+  }
+
   &:hover {
     .actions {
+      width: auto;
+
       opacity: 1;
       z-index: 1;
 
@@ -85,10 +103,10 @@
   }
 
   &__add-list {
-    color: var(--tui-link);
+    color: var(--tui-text-action);
 
     &:hover {
-      color: var(--tui-link-hover);
+      color: var(--tui-text-action-hover);
     }
   }
 }

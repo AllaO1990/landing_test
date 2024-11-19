@@ -16,6 +16,12 @@
   display: flex;
   flex-flow: column nowrap;
 
+  &__title {
+    flex: 0;
+
+    padding: 0 var(--padding-2);
+  }
+
   &__actions {
     display: flex;
     flex-flow: row wrap;

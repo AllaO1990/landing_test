@@ -1,3 +1,4 @@
+<!-- TODO: (Taiga UI migration) tuiFormatNumber pipe API has been changed. Learn how to migrate precision, decimal, zeroPadding: https://github.com/taiga-family/taiga-ui/issues/8335#migration -->
 <div class="entry">
   <tui-loader class="loader" [overlay]="true" [showLoader]="listEntry === null">
     <lib-list
@@ -13,16 +14,16 @@
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
         <div class="item__value row__item row__right row__price">
-          {{ item.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+          {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
         </div>
         <div class="item__value row__item row__right row__quantity">
-          {{ item.quantity | tuiFormatNumber }}
+          {{ item.quantity | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__total">
-          {{ item.totalPrice | tuiFormatNumber }}
+          {{ item.totalPrice | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__deposit">
-          {{ item.depositShare | tuiFormatNumber }}%
+          {{ item.depositShare | tuiFormatNumber | async }}%
         </div>
       </div>
     </lib-list>
@@ -57,22 +58,22 @@
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
         <div class="item__value row__item row__right row__price">
-          {{ item.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+          {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
         </div>
         <div class="item__value row__item row__right row__quantity">
-          {{ item.amount | tuiFormatNumber }}
+          {{ item.amount | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__total">
-          {{ item.totalPrice | tuiFormatNumber }}
+          {{ item.totalPrice | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__profit">
-          {{ item.profit | tuiFormatNumber }}
+          {{ item.profit | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__profit">
-          {{ item.profitPercent | tuiFormatNumber }}%
+          {{ item.profitPercent | tuiFormatNumber | async }}%
         </div>
         <div class="item__value row__item row__right row__deposit">
-          {{ item.depositShare | tuiFormatNumber }}%
+          {{ item.depositShare | tuiFormatNumber | async }}%
         </div>
         <div class="item__value row__item row__broker">
           <ng-container *ngIf="item.broker; else none">
@@ -114,22 +115,22 @@
       <div class="total balance__row">
         <div class="total__item row__item">Всего</div>
         <div class="total__item row__item">
-          {{ remainder.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+          {{ remainder.price | tuiFormatNumber: { precision: priceIncrement } | async }}
         </div>
         <div class="total__item row__item">
-          {{ remainder.quantity | tuiFormatNumber }}
+          {{ remainder.quantity | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__item">
-          {{ remainder.totalProfit | tuiFormatNumber }}
+          {{ remainder.totalProfit | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__item">
-          {{ remainder.profit | tuiFormatNumber }}
+          {{ remainder.profit | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__item">
-          {{ remainder.profitPercent | tuiFormatNumber }}%
+          {{ remainder.profitPercent | tuiFormatNumber | async }}%
         </div>
         <div class="total__item row__item">
-          {{ remainder.depositShare | tuiFormatNumber }}%
+          {{ remainder.depositShare | tuiFormatNumber | async }}%
         </div>
         <div class="total__item row__item">
           <ng-container *ngIf="remainder.broker; else none">{{ remainder.broker }}</ng-container>
@@ -157,22 +158,22 @@
       <div class="total">
         <div class="total__item row__item">Всего</div>
         <div class="total__item row__item">
-          {{ result.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+          {{ result.price | tuiFormatNumber: { precision: priceIncrement } | async }}
         </div>
         <div class="total__item row__item">
-          {{ result.quantity | tuiFormatNumber }}
+          {{ result.quantity | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__item">
-          {{ result.totalPrice | tuiFormatNumber }}
+          {{ result.totalPrice | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__item">
-          {{ result.profit | tuiFormatNumber }}
+          {{ result.profit | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__item">
-          {{ result.profitPercent | tuiFormatNumber }}%
+          {{ result.profitPercent | tuiFormatNumber | async }}%
         </div>
         <div class="total__item row__item">
-          {{ result.depositShare | tuiFormatNumber }}%
+          {{ result.depositShare | tuiFormatNumber | async }}%
         </div>
         <div class="total__item row__item">
           <ng-container *ngIf="result.broker; else none">{{ result.broker }}</ng-container>
@@ -200,16 +201,16 @@
   <div class="total" *ngIf="totalEntry">
     <div class="total__item row__item">Всего</div>
     <div class="total__item row__item">
-      {{ totalEntry.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+      {{ totalEntry.price | tuiFormatNumber: { precision: priceIncrement } | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalEntry.quantity | tuiFormatNumber }}
+      {{ totalEntry.quantity | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalEntry.totalPrice | tuiFormatNumber }}
+      {{ totalEntry.totalPrice | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalEntry.depositShare | tuiFormatNumber }}%
+      {{ totalEntry.depositShare | tuiFormatNumber | async }}%
     </div>
   </div>
 </ng-template>
@@ -231,22 +232,22 @@
   <div class="total" style="position: sticky; bottom: 0" *ngIf="totalOut">
     <div class="total__item row__item">Всего</div>
     <div class="total__item row__item">
-      {{ totalOut.price | tuiFormatNumber: { decimalLimit: priceIncrement } }}
+      {{ totalOut.price | tuiFormatNumber: { precision: priceIncrement } | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalOut.quantity | tuiFormatNumber }}
+      {{ totalOut.quantity | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalOut.totalPrice | tuiFormatNumber }}
+      {{ totalOut.totalPrice | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalOut.profit | tuiFormatNumber }}
+      {{ totalOut.profit | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalOut.profitPercent | tuiFormatNumber }}%
+      {{ totalOut.profitPercent | tuiFormatNumber | async }}%
     </div>
     <div class="total__item row__item">
-      {{ totalOut.depositShare | tuiFormatNumber }}%
+      {{ totalOut.depositShare | tuiFormatNumber | async }}%
     </div>
   </div>
 </ng-template>

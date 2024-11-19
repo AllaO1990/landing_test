@@ -30,9 +30,9 @@
   &__tabs {
     position: relative;
     flex: 0 0 auto;
-    height: 60px;
+    //height: 60px;
 
-    box-shadow: var(--tui-shadow-sidebar);
+    box-shadow: var(--tui-shadow-medium);
   }
 }
 

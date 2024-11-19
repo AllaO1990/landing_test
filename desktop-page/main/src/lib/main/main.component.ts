@@ -1,3 +1,4 @@
+import { TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -6,14 +7,13 @@ import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
 import { StockInstrument } from 'types/stock';
-import { EntryModule } from './entry/entry.module';
 import { MainService } from './main.service';
-import { OutModule } from './out/out.module';
-import { StockComponent } from './stock/stock.component';
-import { TuiTabsModule } from '@taiga-ui/kit';
-import { TuiBreakpointService, TuiSvgModule } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiIcon } from '@taiga-ui/core';
 import { Position } from 'types/position';
 import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
+import { StockComponent } from './stock/stock.component';
+import { EntryModule } from './entry/entry.module';
+import { OutModule } from './out/out.module';
 
 @Component({
   selector: 'lib-main',
@@ -22,13 +22,13 @@ import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
     AsyncPipe,
     NgFor,
     NgIf,
+    TuiTabs,
+    TuiIcon,
+    TabsComponent,
     EntryModule,
     OutModule,
     StockComponent,
-    TuiTabsModule,
-    TuiSvgModule,
     ChartCandlestickComponent,
-    TabsComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
@@ -86,34 +86,34 @@ export class MainComponent {
 
   public readonly tabMobileList: { text: string; icon: string }[] = [
     {
-      icon: 'tuiIconChartLineLarge',
+      icon: '@tui.chart-line',
       text: 'График',
     },
     {
-      icon: 'tuiIconListLarge',
+      icon: '@tui.list',
       text: 'Список',
     },
     {
-      icon: 'tuiIconTargetLarge',
+      icon: '@tui.lightbulb',
       text: 'Идея',
     },
     {
-      icon: 'tuiIconShoppingCartLarge',
+      icon: '@tui.shopping-cart',
       text: 'Сделка',
     },
   ];
 
   public readonly tabTabletList: { text: string; icon: string }[] = [
     {
-      icon: 'tuiIconChartLineLarge',
+      icon: '@tui.chart-line',
       text: 'График',
     },
     {
-      icon: 'tuiIconTargetLarge',
+      icon: '@tui.lightbulb',
       text: 'Идея',
     },
     {
-      icon: 'tuiIconShoppingCartLarge',
+      icon: '@tui.shopping-cart',
       text: 'Сделка',
     },
   ];

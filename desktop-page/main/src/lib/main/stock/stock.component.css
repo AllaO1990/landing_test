@@ -30,10 +30,10 @@
   margin-bottom: var(--padding-2);
 }
 .action__add-list {
-  color: var(--tui-link);
+  color: var(--tui-text-action);
 }
 .action__add-list:hover {
-  color: var(--tui-link-hover);
+  color: var(--tui-text-action-hover);
 }
 
 .addition {

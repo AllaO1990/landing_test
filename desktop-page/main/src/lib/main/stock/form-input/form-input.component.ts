@@ -1,20 +1,21 @@
+import { TuiButton } from "@taiga-ui/core";
+import { TuiTextfieldControllerModule, TuiInputModule, TuiInputPasswordModule } from "@taiga-ui/legacy";
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiButtonModule, TuiTextfieldControllerModule } from '@taiga-ui/core';
-import { TUI_ITEMS_HANDLERS, TuiInputModule, TuiInputPasswordModule, TuiItemsHandlers } from '@taiga-ui/kit';
+import { TUI_ITEMS_HANDLERS, TuiItemsHandlers } from '@taiga-ui/kit';
 import { FormInputEvent } from './form-input.types';
-import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiStringHandler, TuiAutoFocus } from '@taiga-ui/cdk';
 
 @Component({
   selector: 'lib-form-input',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    TuiButtonModule,
+    TuiButton,
     TuiInputModule,
     TuiInputPasswordModule,
     TuiTextfieldControllerModule,
-    TuiAutoFocusModule,
+    TuiAutoFocus,
   ],
   templateUrl: './form-input.component.html',
   styleUrl: './form-input.component.scss',

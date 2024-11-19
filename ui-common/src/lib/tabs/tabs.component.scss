@@ -13,9 +13,11 @@
 
   &__icon {
     margin-right: var(--padding-1);
+
+    font-size: 1rem;
   }
 
   &--active &__icon {
-    color: var(--tui-primary);
+    color: var(--tui-background-accent-1);
   }
 }

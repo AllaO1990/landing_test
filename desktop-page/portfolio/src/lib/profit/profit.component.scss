@@ -28,9 +28,11 @@
   &__list {
     flex: 0 auto;
 
-    width: 40%;
-
     overflow: hidden;
+  }
+
+  &__space {
+    flex: 1;
   }
 
   &__chart {
@@ -44,6 +46,16 @@
 
     width: 100%;
     height: 40%;
+  }
+
+  &__controls {
+    margin: var(--padding-2);
+
+    span {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
   }
 }
 
@@ -68,8 +80,8 @@
   height: 100%;
 
   &:first-child {
-    --tui-chart-0: #a8cef1;
-    --tui-chart-1: #8dda71;
+    --tui-chart-categorical-00: #a8cef1;
+    --tui-chart-categorical-01: #8dda71;
   }
 }
 
@@ -123,16 +135,29 @@ ui-loader {
 @media screen and (min-width: 768px) {
   .profit {
     &__container {
-      flex-flow: row nowrap;
+      flex-flow: row wrap;
+    }
+
+    &__list {
+      width: 50%;
     }
 
     &__chart {
       width: 50%;
-      height: 100%;
+      height: auto;
 
       tui-axes {
         max-height: 300px;
       }
+    }
+
+    &__actions {
+      order: 4;
+      width: 100%;
+    }
+
+    &__space {
+      flex: 0;
     }
   }
 }

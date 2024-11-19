@@ -1,6 +1,6 @@
 :host {
   flex: 1;
-  max-width: 150px;
+  max-width: 100px;
 
   display: flex;
   justify-content: flex-end;
@@ -11,14 +11,12 @@
   }
 }
 
+[tuiIcons]:before {
+  font-size: 1rem;
+}
+
 .link-option {
   justify-content: flex-start;
-
-  &--disabled {
-    cursor: default;
-
-    opacity: .5;
-  }
 }
 
 @media screen and (min-width: 768px) {

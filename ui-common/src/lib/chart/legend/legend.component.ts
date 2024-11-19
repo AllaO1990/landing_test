@@ -1,7 +1,7 @@
+import { TuiIcon } from "@taiga-ui/core";
 import { Component, Input, Pipe, PipeTransform } from '@angular/core';
 import { NgFor, NgTemplateOutlet } from '@angular/common';
 import { ColorIndicator } from 'types/color';
-import { TuiSvgModule } from '@taiga-ui/core';
 
 @Pipe({
   name: 'legendColor',
@@ -28,7 +28,7 @@ export class LegendSortPipe implements PipeTransform {
 @Component({
   selector: 'lib-chart-legend',
   standalone: true,
-  imports: [NgFor, LegendColorPipe, LegendSortPipe, TuiSvgModule, NgTemplateOutlet],
+  imports: [NgFor, LegendColorPipe, LegendSortPipe, TuiIcon, NgTemplateOutlet],
   templateUrl: './legend.component.html',
   styleUrl: './legend.component.scss',
 })

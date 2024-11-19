@@ -1,21 +1,21 @@
+import { TuiIcon } from '@taiga-ui/core';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { Observable } from 'rxjs';
 import { StockInstrument } from 'types/stock';
-import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { QueryParams } from 'utils/query-params';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventSelected } from 'types/events';
 import { DesktopLkStore } from 'stores/desktop';
 import { SearchCardComponent } from '../search-card';
-import { TuiSvgModule } from '@taiga-ui/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { DialogService } from '@ui/components/dialog';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 @Component({
   selector: 'lib-toolbar-search',
   standalone: true,
-  imports: [NgIf, AsyncPipe, TuiSvgModule],
+  imports: [NgIf, AsyncPipe, TuiIcon],
   templateUrl: './toolbar-search.component.html',
   styleUrls: ['./toolbar-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +25,7 @@ export class ToolbarSearchComponent {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  private readonly _dialogService: DialogService = inject(DialogService);
+  private readonly _dialogService: DialogService = inject(DIALOG);
 
   private readonly _component: PolymorpheusComponent<SearchCardComponent> = new PolymorpheusComponent(
     SearchCardComponent,

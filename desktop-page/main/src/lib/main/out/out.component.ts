@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { OUT_CONSTANTS } from './out.constants';
 import { OutEnums } from './out.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
@@ -22,6 +22,7 @@ interface FilterListItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutComponent {
+  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly _data$: Subject<Position[] | null> = new BehaviorSubject<Position[] | null>(null);
   public readonly constants: { [key in OutEnums]: string } = OUT_CONSTANTS;
   public filterStock: FilterListItem[] = MAIN_FILTER_STOCK;
@@ -30,6 +31,7 @@ export class OutComponent {
   public readonly controlSearch: FormControl<string> = new FormControl('', { nonNullable: true });
   public readonly controlFilterStock: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
   public readonly controlFilterStrategy: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
+  readonly size = 's';
 
   public readonly data$: Observable<Position[] | null> = this._data$.asObservable().pipe(
     switchMap((data: Position[] | null) =>
@@ -54,10 +56,11 @@ export class OutComponent {
 
   @Input()
   set data(value: Position[] | null) {
-    this.filterStock = this._updateFilterList(MAIN_FILTER_STOCK, value, (item: Position) => item.instrument.type);
-    this.filterStrategy = this._updateFilterList(STOCK_STRATEGY_LIST, value, (item: Position) => item.strategy.type);
+    this.filterStock = this._updateFilterList(this.filterStock, value, (item: Position) => item.instrument.type);
+    this.filterStrategy = this._updateFilterList(this.filterStrategy, value, (item: Position) => item.strategy.type);
 
     this._data$.next(value);
+    this._cdr.markForCheck();
   }
 
   public onOpenMore(): void {

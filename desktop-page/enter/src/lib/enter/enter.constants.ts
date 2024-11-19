@@ -3,11 +3,11 @@ export const TABLET_LANDSCAPE_LIST: {
   icon: string;
 }[] = [
   {
-    icon: 'tuiIconChartLineLarge',
+    icon: '@tui.chart-line',
     text: 'График',
   },
   {
-    icon: 'tuiIconShoppingCartLarge',
+    icon: '@tui.shopping-cart',
     text: 'Сделка',
   },
 ];
@@ -17,15 +17,15 @@ export const TABLET_PORTRAIT_LIST: {
   icon: string;
 }[] = [
   {
-    icon: 'tuiIconFileTextLarge',
+    icon: '@tui.file-text',
     text: 'Инфо',
   },
   {
-    icon: 'tuiIconChartLineLarge',
+    icon: '@tui.chart-line',
     text: 'График',
   },
   {
-    icon: 'tuiIconShoppingCartLarge',
+    icon: '@tui.shopping-cart',
     text: 'Сделка',
   },
 ];
@@ -35,19 +35,19 @@ export const MOBILE_LIST: {
   icon: string;
 }[] = [
   {
-    icon: 'tuiIconFileTextLarge',
+    icon: '@tui.file-text',
     text: 'Инфо',
   },
   {
-    icon: 'tuiIconChartLineLarge',
+    icon: '@tui.chart-line',
     text: 'График',
   },
   {
-    icon: 'tuiIconTargetLarge',
+    icon: '@tui.target',
     text: 'Идея',
   },
   {
-    icon: 'tuiIconShoppingCartLarge',
+    icon: '@tui.shopping-cart',
     text: 'Сделка',
   },
 ];

@@ -11,18 +11,30 @@
   margin: 0 var(--padding-2);
 }
 
+label {
+  display: flex;
+  align-items: center;
+
+  tui-select {
+    margin-left: var(--padding-2);
+
+    flex: 1;
+  }
+}
+
 .filter {
   width: 100%;
   overflow: hidden;
 
   &__hosted-dropdown {
     width: 100%;
-    max-width: 5rem;
+    max-width: 10rem;
   }
 
   &__action {
     --tui-padding: var(--padding-2);
-    width: 6rem;
+    width: 5rem;
+    padding: 0;
   }
 
   &__text {
@@ -53,12 +65,26 @@
 }
 
 .filter-dialog {
-  width: 100vw;
+  width: calc(100vw - 10px);
   height: auto;
 
-  padding: var(--padding-2);
+  background-color: var(--tui-background-base);
 
-  background-color: var(--tui-base-01);
+  &__action {
+    text-align: right;
+  }
+
+  .list {
+    padding: var(--padding-2);
+  }
+
+  label span {
+    width: 60px;
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 
 @media screen and (min-width: 768px) {

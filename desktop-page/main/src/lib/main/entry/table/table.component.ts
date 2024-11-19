@@ -1,8 +1,8 @@
+import { TuiTable } from '@taiga-ui/addon-table';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
-import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -15,9 +15,10 @@ import { getColor, getRGBA } from 'utils/get-color';
 import { QueryParams } from 'utils/query-params';
 import { ENTRY_HEADER } from '../entry.constants';
 import { EntryHeaderItem } from '../entry.types';
-import { DatePassedPipe } from '../../common/date-passed.pipe';
+import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { DesktopLkStore } from 'stores/desktop';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
 @Component({
   selector: 'vt-entry-table',
@@ -27,14 +28,14 @@ import { DesktopLkStore } from 'stores/desktop';
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
     CdkVirtualScrollViewport,
-    TuiFormatNumberPipeModule,
-    TuiLoaderModule,
-    TuiScrollbarModule,
-    TuiTableModule,
+    TuiFormatNumberPipe,
+    TuiLoader,
+    TuiScrollbar,
+    TuiTable,
     VtEnterComponent,
     DatePassedPipe,
     GetStrategyNamePipe,
-    TuiHintModule,
+    TuiHint,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -49,6 +50,10 @@ export class EntryTableComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
+  private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
+    VtEnterComponent,
+    this._injector
+  );
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
@@ -76,7 +81,18 @@ export class EntryTableComponent {
       id: item.id,
     });
 
-    this._dialogEnterService.openDialog({ data: item, type: EventSelected.IDEA }, this._injector).subscribe();
+    console.log('onDblclick');
+
+    this._dialogEnterService
+      .open(
+        this._component
+        // {
+        //   data: item,
+        //   type: EventSelected.IDEA,
+        // }
+        // this._injector
+      )
+      .subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {

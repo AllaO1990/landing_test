@@ -1,16 +1,10 @@
+import { TuiInputModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiDataListWrapperModule, TuiInputModule, TuiSelectModule } from '@taiga-ui/kit';
-import {
-  TuiButtonModule,
-  TuiDataListModule,
-  TuiDropdownModule,
-  TuiLoaderModule,
-  TuiSvgModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/core';
+import { TuiDataListWrapper } from '@taiga-ui/kit';
+import { TuiButton, TuiDataList, TuiDropdown, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiAutoFocusModule, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiAutoFocus, TuiStringHandler } from '@taiga-ui/cdk';
 import { combineLatest, debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { StockListComponent } from './list';
 import { filter, map } from 'rxjs/operators';
@@ -32,12 +26,12 @@ import { DesktopLkStore } from 'stores/desktop';
 import { QueryParams } from 'utils/query-params';
 import { FormInputComponent } from './form-input';
 import { FormInputEvent } from './form-input/form-input.types';
-import { PolymorpheusComponent, PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
+import { PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { DialogComponent } from './dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SearchCardComponent } from 'ui-common';
 import { LoaderComponent } from '@ui/components/loader';
-import { DialogService } from '@ui/components/dialog';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 type IsRename = 'edit' | 'new' | false;
 
@@ -55,18 +49,18 @@ export interface StockListWithType {
     ReactiveFormsModule,
     TuiSelectModule,
     TuiTextfieldControllerModule,
-    TuiDataListModule,
+    TuiDataList,
     NgIf,
-    TuiSvgModule,
+    TuiIcon,
     AsyncPipe,
     NgForOf,
     TuiInputModule,
-    TuiAutoFocusModule,
-    TuiButtonModule,
+    TuiAutoFocus,
+    TuiButton,
     StockListComponent,
-    TuiLoaderModule,
-    TuiDataListWrapperModule,
-    TuiDropdownModule,
+    TuiLoader,
+    TuiDataListWrapper,
+    TuiDropdown,
     FormInputComponent,
     DialogComponent,
     SearchCardComponent,
@@ -82,7 +76,8 @@ export class StockComponent {
   private readonly _service: StockService = inject(StockService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  private readonly _dialogService: DialogService = inject(DialogService);
+  private readonly _dialogService: DialogService = inject(DIALOG);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _dialogApproveContent: PolymorpheusContent = new PolymorpheusComponent(
     DialogComponent,
     this._injector
@@ -99,15 +94,18 @@ export class StockComponent {
     name: 'Новый список',
     type: StockGroupType.CUSTOM,
   };
+  isDisabled = true;
 
-  public readonly controlGroup: FormControl<StockGroup | null> = new FormControl<StockGroup | null>(null);
+  public readonly controlGroup: FormControl<StockGroup | null> = new FormControl<StockGroup | null>({
+    value: null,
+    disabled: this.isDisabled,
+  });
 
   readonly controlRename: FormControl<StockGroup | null> = new FormControl<StockGroup | null>(null);
 
   public readonly stringify: TuiStringHandler<StockGroup> = (item: StockGroup) => item.name;
 
   readonly groups$: Observable<StockGroups | null> = this._store.stockGroups$.pipe(
-    tap((groups: StockGroups | null) => groups && this.controlGroup.patchValue(groups[0])),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -146,6 +144,16 @@ export class StockComponent {
       items: this._service.getListWithPrice(list, price),
     }))
   );
+
+  constructor() {
+    this.groups$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((groups: StockGroups | null) => {
+      if (groups) {
+        this.controlGroup.patchValue(groups[0]);
+        this.controlGroup.enable();
+        this.isDisabled = false;
+      }
+    });
+  }
 
   onSelect(value: { type: EventSelected; id: StockId }): void {
     this._queryParams.update(value);

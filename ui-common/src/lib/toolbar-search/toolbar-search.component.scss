@@ -42,7 +42,13 @@
   &__name {
     font-size: 13px;
     font-weight: bold;
-    color: var(--tui-base-08);
+    color: var(--tui-background-accent-opposite-hover);
+
+    margin-left: var(--padding-1);
+  }
+
+  tui-icon {
+    font-size: 1rem;
   }
 }
 

@@ -5,21 +5,25 @@
     [appearance]="appearance"
     tuiIconButton
     type="button"
-    [icon]="icon"
-    size="l"
+    [iconStart]="icon"
+    [size]="size"
     (click)="onToggle($event)"
-    [disabled]="disabled">
+    [tuiAppearanceState]="disabled | isDisabledState">
   </button>
-  <tui-badged-content
-    size="xs"
-    [contentTop]="length$ | async">
+  <tui-badged-content>
+    <tui-badge
+      appearance="primary"
+      size="s"
+      tuiSlot="top">
+      {{ length$ | async }}
+    </tui-badge>
     <button
       [appearance]="appearance"
       tuiIconButton
-      size="l"
+      [size]="size"
       type="button"
       [disabled]="disabled"
-      [icon]="controlOpen ? 'tuiIconChevronUp' : 'tuiIconChevronDown'"
+      [iconStart]="controlOpen ? '@tui.chevron-up' : '@tui.chevron-down'"
       [tuiDropdown]="content"
       [tuiDropdownManual]="controlOpen"
       [tuiDropdownAlign]="'right'"

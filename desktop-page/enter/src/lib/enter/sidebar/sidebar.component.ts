@@ -1,17 +1,12 @@
+import { TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import {
-  TuiButtonModule,
-  TuiFormatNumberPipeModule,
-  TuiScrollbarModule,
-  TuiSvgModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { Idea } from 'types/idea';
-import { JsonPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { InstrumentComponent } from '../instrument/instrument.component';
 import { ValidDateComponent } from './valid-date/valid-date.component';
-import { TuiFilterModule, TuiTextareaModule } from '@taiga-ui/kit';
+import { TuiFilter } from '@taiga-ui/kit';
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
 import { SIDEBAR_CONSTANTS } from './sidebar.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
@@ -28,13 +23,13 @@ import { Position } from 'types/position';
     TuiTextfieldControllerModule,
     InstrumentComponent,
     ValidDateComponent,
-    JsonPipe,
-    TuiFilterModule,
-    TuiButtonModule,
-    TuiSvgModule,
+    AsyncPipe,
+    TuiFilter,
+    TuiButton,
+    TuiIcon,
     TuiTextareaModule,
-    TuiScrollbarModule,
-    TuiFormatNumberPipeModule,
+    TuiScrollbar,
+    TuiFormatNumberPipe,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
