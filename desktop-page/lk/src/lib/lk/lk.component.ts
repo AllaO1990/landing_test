@@ -20,7 +20,6 @@ import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { NavComponent } from '../nav';
 import { LogoComponent } from '@ui/components/logo';
-import { TUI_NUMBER_FORMAT } from '@taiga-ui/core';
 
 const createStore = (api: DesktopService) =>
   new DesktopLkStore(
@@ -47,14 +46,14 @@ const createStore = (api: DesktopService) =>
       useFactory: createStore,
       deps: [DESKTOP_API, QUERY_PARAMS],
     },
-    {
-      provide: TUI_NUMBER_FORMAT,
-      useValue: {
-        decimalSeparator: '.',
-        decimalLimit: 2,
-        zeroPadding: false,
-      },
-    },
+    // {
+    //   provide: TUI_NUMBER_FORMAT,
+    //   useValue: {
+    //     decimalSeparator: '.',
+    //     decimalLimit: 2,
+    //     zeroPadding: false,
+    //   },
+    // },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

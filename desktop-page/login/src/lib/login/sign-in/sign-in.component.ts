@@ -26,7 +26,6 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatInputModule,
     ReactiveFormsModule,
     MatCardModule,
-    MatInputModule,
     MatButtonModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

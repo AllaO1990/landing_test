@@ -1,3 +1,4 @@
+<!-- Taiga migration TODO: tuiButton "whiteblock-active" appearance is no longer available. Use 'appearance="outline-grayscale" tuiAppearanceMode="checked"' -->
 <tui-loader class="loader" [overlay]="true" [showLoader]="(candles$ | async) === null">
   <div class="container" *ngIf="(candles$ | async); else empty">
     <div class="column">
@@ -22,7 +23,7 @@
         appearance="icon"
         tuiIconButton
         type="button"
-        [icon]="toggleActions ? 'tuiIconChevronRight' : 'tuiIconChevronLeft'"
+        [iconStart]="toggleActions ? '@tui.chevron-right' : '@tui.chevron-left'"
         size="xs"
         (click)="onToggleActions($event)">
       </button>
@@ -45,17 +46,17 @@
         <button
           class="action"
           [appearance]="controlAtr.value ? 'primary' : 'secondary'"
-          tuiIconButton
+          tuiButton
           type="button"
-          [icon]="atrIcon"
-          size="l"
+          [iconStart]="artIcon"
+          [size]="size"
           (click)="onToggleAtr($event)">
         </button>
 
         <lib-button-with-list
           class="action"
           [formControl]="controlZone"
-          [icon]="consolidationIcon"
+          [icon]="zoneIcon"
           [list]="zoneList"
           (toggled)="onToggledZone()"
           (opened)="onOpenedZone($event)">
@@ -67,10 +68,10 @@
           class="action"
           [appearance]="toggleLegend ? 'primary' : 'secondary'"
           [disabled]="(isDisabledButtonLegend$ | async) || false"
-          tuiIconButton
+          tuiButton
           type="button"
-          icon="tuiIconLink"
-          size="l"
+          iconStart="@tui.table-of-contents"
+          [size]="size"
           (click)="onToggleLegend($event)">
         </button>
       </div>
@@ -78,30 +79,6 @@
     </div>
   </div>
 </tui-loader>
-
-<ng-template #emaIcon>
-  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">EMA</text>
-  </svg>
-</ng-template>
-
-<ng-template #smaIcon>
-  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">SMA</text>
-  </svg>
-</ng-template>
-
-<ng-template #atrIcon>
-  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">ATR</text>
-  </svg>
-</ng-template>
-
-<ng-template #consolidationIcon>
-  <svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" class="t-svg">
-    <text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font-size: 6px">ZONE</text>
-  </svg>
-</ng-template>
 
 <ng-template #empty>
   <div class="empty">Загрузка...</div>

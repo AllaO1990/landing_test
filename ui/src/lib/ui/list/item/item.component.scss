@@ -6,7 +6,7 @@
 
   height: 28px;
 
-  background-color: var(--tui-base-02, #F6F7FB);
+  background-color: var(--tui-background-base-alt, #F6F7FB);
 
   user-select: none;
 
@@ -15,6 +15,8 @@
   }
 
   &.checked {
-    background-color: var(--tui-success-bg-night-hover, rgba(3, 147, 34, 0.07));
+// TODO: night variables have been removed. Use tuiTheme="dark" on an element to switch colors to dark theme
+// TODO: night variables have been removed. Use tuiTheme="dark" on an element to switch colors to dark theme
+    background-color: var(--tui-status-positive-pale-hover, rgba(3, 147, 34, 0.07));
   }
 }

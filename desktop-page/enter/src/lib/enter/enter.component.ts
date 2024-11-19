@@ -1,14 +1,9 @@
-import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
+import { TuiTabs } from '@taiga-ui/kit';
+import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TUI_WINDOW_SIZE, TuiDialog } from '@taiga-ui/cdk';
-import {
-  TuiBreakpointService,
-  TuiButtonModule,
-  TuiLoaderModule,
-  TuiScrollbarModule,
-  TuiSvgModule,
-} from '@taiga-ui/core';
-import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
+import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
+import { TuiBreakpointService, TuiButton, TuiIcon, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
+import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { Idea } from 'types/idea';
@@ -17,7 +12,6 @@ import { DesktopLkStore } from 'stores/desktop';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { TuiTabsModule } from '@taiga-ui/kit';
 import { map } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
@@ -36,17 +30,18 @@ export interface TabItem {
   standalone: true,
   imports: [
     NgIf,
-    TuiLoaderModule,
-    TuiButtonModule,
+    JsonPipe,
+    TuiLoader,
+    TuiButton,
     EnterActionComponent,
     EnterIdeaComponent,
     EnterSidebarComponent,
     DatePipe,
     AsyncPipe,
-    TuiScrollbarModule,
+    TuiScrollbar,
     NgForOf,
-    TuiTabsModule,
-    TuiSvgModule,
+    TuiTabs,
+    TuiIcon,
     InstrumentComponent,
     ChartCandlestickComponent,
   ],
@@ -55,35 +50,30 @@ export interface TabItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VtEnterComponent {
-  public readonly context: TuiDialog<any, Idea> = inject(POLYMORPHEUS_CONTEXT, {
+  public readonly context: TuiPopover<any, Idea> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
 
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
 
   public readonly breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
-
   public readonly orientation$: Observable<ScreenOrientation> = inject(TUI_WINDOW_SIZE).pipe(
     map(({ width, height }): ScreenOrientation => (width > height ? 'landscape' : 'portrait')),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-
   public readonly consolidationZones$: Observable<any | null> = this._store.chartFigures$;
-
   public readonly candles$: Observable<any | null> = combineLatest([
     this._store.candles$,
     this._store.indicatorEma$,
     this._store.indicatorSma$,
   ]);
-
   public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
-
   public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
-
   public readonly tabs$: Observable<TabItem[] | null> = combineLatest([this.breakpoint$, this.orientation$]).pipe(
     map(([screen, orientation]): TabItem[] | null => this._condition(screen, orientation))
   );
 
+  readonly size = 's';
   activeItemIndex = 0;
 
   onClose(event: Event): void {

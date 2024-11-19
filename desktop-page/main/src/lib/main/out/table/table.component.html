@@ -1,157 +1,167 @@
-<tui-loader class="out__loader" [overlay]="true" [showLoader]="data === null">
-  <tui-scrollbar *ngIf="data && data.length; else empty" class="out__scrollbar">
-    <cdk-virtual-scroll-viewport
-      #viewport
-      tuiScrollable
-      class="out__viewport tui-zero-scrollbar"
-      [itemSize]="32">
-      <table class="out__table" tuiTable [columns]="columnList">
-        <thead>
-        <tr tuiThGroup>
-          <th
-            class="th th--{{item.name}}"
-            *ngFor="let item of header; trackBy: trackByIndex"
-            tuiTh
-            [sticky]="true"
-            [sorter]="item.sorter"
-            [title]="item.title || ''"
-            [style.top.px]="-viewport['_renderedContentOffset']">
-            <span [innerHTML]="item.label"></span>
-          </th>
-        </tr>
-        </thead>
-        <tbody tuiTbody>
-        <tr
-          class="out__table-tr"
-          (dblclick)="onDblclick($event, item)"
-          (click)="onClick($event, item)"
-          *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
-          [class.out__table-tr--active]="(activeIdeaId$ | async) === item.id"
-          tuiTr
+<tui-scrollbar
+  *ngIf="data; else noData"
+  class="out__scrollbar">
+  <cdk-virtual-scroll-viewport
+    #viewport
+    appendOnly
+    tuiScrollable
+    class="out__viewport tui-zero-scrollbar"
+    [itemSize]="32">
+    <table class="out__table" tuiTable [columns]="columnList">
+      <thead>
+      <tr tuiThGroup>
+        <th
+          class="th th--{{item.name}}"
+          *ngFor="let item of header; trackBy: trackByIndex"
+          tuiTh
+          [sticky]="true"
+          [sorter]="item.sorter"
+          [title]="item.title || ''"
+          [style.top.px]="-(viewport.getOffsetToRenderedContentStart() || 0)">
+          <!--            [style.top.px]="-viewport['_renderedContentOffset']"-->
+          <span [innerHTML]="item.label"></span>
+        </th>
+      </tr>
+      </thead>
+      <tbody tuiTbody>
+      <tr
+        class="out__table-tr"
+        (dblclick)="onDblclick($event, item)"
+        (click)="onClick($event, item)"
+        *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
+        [class.out__table-tr--active]="(activeIdeaId$ | async) === item.id"
+        tuiTr
+      >
+        <!--          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100 || 50)"-->
+        <td
+          class="td"
+          *tuiCell="'date'"
+          [title]="item.createdAt | date : 'dd.MM.yyyy'"
+          tuiTd
         >
-          <!--          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100 || 50)"-->
-          <td
-            class="td"
-            *tuiCell="'date'"
-            [title]="item.createdAt | date : 'dd.MM.yyyy'"
-            tuiTd
-          >
-            {{ item.createdAt | date : 'dd.MM' }}
-            <div class="substring">{{ item.createdAt | datePassed }} дней</div>
-          </td>
+          {{ item.createdAt | date : 'dd.MM' }}
+          <div class="substring">{{ item.createdAt | datePassed }} дней</div>
+        </td>
 
-          <td *tuiCell="'cost'" tuiTd class="td td--number">
-            <div class="ellipsis bold" [title]="item.lastPrice" [uiLastPrice]="item">
-              {{ item.lastPrice | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
-            </div>
+        <td *tuiCell="'cost'" tuiTd class="td td--number">
+          <div class="ellipsis bold" [title]="item.lastPrice" [uiLastPrice]="item">
+            {{ item.lastPrice | tuiFormatNumber: { precision: item.priceIncrement } | async }}
+          </div>
+          <div class="substring">
+            {{ item.inPositionPrice | tuiFormatNumber: { precision: 0 } | async }}
+          </div>
+        </td>
+
+        <td *tuiCell="'direction'" tuiTd class="td td--direction">
+          <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell"></ng-container>
+        </td>
+
+        <td *tuiCell="'result'" tuiTd class="td td--number" [uiPriceColor]="item.result.profitPercent">
+          <ng-container *ngIf="item.result.profitPercent; else none">
+            {{ item.result.profitPercent | tuiFormatNumber | async }}%
             <div class="substring">
-              {{ item.inPositionPrice | tuiFormatNumber : { decimalLimit: 0 } }}
+              {{ item.result.profitPrice | tuiFormatNumber:  { precision: 0 } | async }}
             </div>
-          </td>
+          </ng-container>
+        </td>
 
-          <td *tuiCell="'direction'" tuiTd class="td td--direction">
-            <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell"></ng-container>
-          </td>
-
-          <td *tuiCell="'result'" tuiTd class="td td--number" [uiPriceColor]="item.result.profitPercent">
-            <ng-container *ngIf="item.result.profitPercent; else none">
-              {{ item.result.profitPercent | tuiFormatNumber }}%
-              <div class="substring">
-                {{ item.result.profitPrice | tuiFormatNumber:  { decimalLimit: 0 } }}
-              </div>
-            </ng-container>
-          </td>
-
-          <td *tuiCell="'ticker'"
-              tuiTd
-              tuiHint
-              [tuiHintContext]="item.instrument"
-              [tuiHintDirection]="'right'">
-            <div class="td__row">
+        <td *tuiCell="'ticker'"
+            tuiTd
+            tuiHint
+            [tuiHintContext]="item.instrument"
+            [tuiHintDirection]="'right'">
+          <div class="td__row">
               <span class="ellipsis">
                 {{ item.instrument.ticker }}
               </span>
-            </div>
+          </div>
 
-            <tui-hint
-              class="hint"
-              *tuiHint="let data"
-              [@.disabled]="true">
-              <ng-container
-                [ngTemplateOutlet]="ticker"
-                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
-            </tui-hint>
-          </td>
+          <tui-hint
+            class="hint"
+            *tuiHint="let data"
+            [@.disabled]="true">
+            <ng-container
+              [ngTemplateOutlet]="ticker"
+              [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
+          </tui-hint>
+        </td>
 
-          <td *tuiCell="'luck'" tuiTd>
-            {{ item.luck }}
-          </td>
+        <td *tuiCell="'luck'" tuiTd>
+          {{ item.luck }}
+        </td>
 
-          <td *tuiCell="'deposit'" tuiTd class="td td--number">
-            <div class="ellipsis" [title]="item.inPositionQuantity">
-              {{ item.inPositionQuantity | tuiFormatNumber }}
-            </div>
-            <div class="substring">{{ item.inPositionDepositShare | tuiFormatNumber }}%</div>
-          </td>
+        <td *tuiCell="'deposit'" tuiTd class="td td--number">
+          <div class="ellipsis" [title]="item.inPositionQuantity">
+            {{ item.inPositionQuantity | tuiFormatNumber | async }}
+          </div>
+          <div class="substring">{{ item.inPositionDepositShare | tuiFormatNumber | async }}%</div>
+        </td>
 
-          <td *tuiCell="'target1'" tuiTd class="td td--number">
-            <ng-container *ngIf="item.currentTarget as target; else none">
-              <div class="td__row bold">
-                <div class="ellipsis" [title]="target.price">
-                  {{ target.price | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
-                </div>
-                <span class="substring" style="margin-left: 8px">
-                  {{ target.profitPercent | tuiFormatNumber }}%</span>
+        <td *tuiCell="'target1'" tuiTd class="td td--number">
+          <ng-container *ngIf="item.currentTarget as target; else none">
+            <div class="td__row bold">
+              <div class="ellipsis" [title]="target.price">
+                {{ target.price | tuiFormatNumber: { precision: item.priceIncrement } | async }}
               </div>
-              <div class="td__row">
-                <div class="substring">{{ target.amount }}</div>
-              </div>
-            </ng-container>
-          </td>
+              <span class="substring" style="margin-left: 8px">
+                  {{ target.profitPercent | tuiFormatNumber | async }}%</span>
+            </div>
+            <div class="td__row">
+              <div class="substring">{{ target.amount }}</div>
+            </div>
+          </ng-container>
+        </td>
 
-          <td *tuiCell="'enter'" tuiTd class="td td--number">
-            <div class="ellipsis" [title]="item.entries[0].price">
-              {{ item.entries[0].price | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
-            </div>
-            <div class="substring">
-              {{ (item.entries[0].totalPrice) | tuiFormatNumber }}
-            </div>
-          </td>
+        <td *tuiCell="'enter'" tuiTd class="td td--number">
+          <div class="ellipsis" [title]="item.entries[0].price">
+            {{ item.entries[0].price | tuiFormatNumber: { precision: item.priceIncrement } | async }}
+          </div>
+          <div class="substring">
+            {{ (item.entries[0].totalPrice) | tuiFormatNumber | async }}
+          </div>
+        </td>
 
-          <td *tuiCell="'out'" tuiTd class="td td--number">
-            {{ item.out.price | tuiFormatNumber }}
-            <div class="substring">{{ item.out.value }}</div>
-          </td>
+        <td *tuiCell="'out'" tuiTd class="td td--number">
+          {{ item.out.price | tuiFormatNumber | async }}
+          <div class="substring">{{ item.out.value }}</div>
+        </td>
 
-          <td *tuiCell="'profit'" tuiTd class="td td--number">
-            <div class="ellipsis" [uiPriceColor]="item.inPositionProfitPercent">
-              {{ item.inPositionProfitPercent | tuiFormatNumber }}%
-            </div>
-            <div class="substring">
-              {{ item.inPositionResult | tuiFormatNumber:  { decimalLimit: 0 } }}
-            </div>
-          </td>
+        <td *tuiCell="'profit'" tuiTd class="td td--number">
+          <div class="ellipsis" [uiPriceColor]="item.inPositionProfitPercent">
+            {{ item.inPositionProfitPercent | tuiFormatNumber | async }}%
+          </div>
+          <div class="substring">
+            {{ item.inPositionResult | tuiFormatNumber:  { precision: 0 } | async }}
+          </div>
+        </td>
 
-          <td *tuiCell="'stop'" tuiTd class="td td--number">
-            <div
-              class="ellipsis"
-              [uiPriceColor]="item.stop.lossPercent"
-              [title]="item.stop.price">
-              {{ item.stop.price | tuiFormatNumber: { decimalLimit: item.priceIncrement } }}
-            </div>
-            <div class="substring">
-              {{ item.stop.lossPercent | tuiFormatNumber }}%
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </cdk-virtual-scroll-viewport>
-  </tui-scrollbar>
-</tui-loader>
+        <td *tuiCell="'stop'" tuiTd class="td td--number">
+          <div
+            class="ellipsis"
+            [uiPriceColor]="item.stop.lossPercent"
+            [title]="item.stop.price">
+            {{ item.stop.price | tuiFormatNumber: { precision: item.priceIncrement } | async }}
+          </div>
+          <div class="substring">
+            {{ item.stop.lossPercent | tuiFormatNumber | async }}%
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </cdk-virtual-scroll-viewport>
+</tui-scrollbar>
+
+<ng-template #noData>
+  <ng-container [ngTemplateOutlet]="data === null ? load : empty"></ng-container>
+</ng-template>
 
 <ng-template #empty>
-  <div class="out__empty">{{ data === null ? 'Загрузка...' : 'Таблица входа пустая' }}</div>
+  <div class="out__empty">Таблица входа пустая</div>
+</ng-template>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
 </ng-template>
 
 <ng-template #buy>

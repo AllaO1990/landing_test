@@ -13,21 +13,20 @@
   width: 16px;
   height: 16px;
 
+  font-size: 12px;
+
   border-radius: 50%;
 
   border: 1px solid #B4B4D0;
   background-color: #FFF;
 
-  tui-svg {
-    width: 100%;
-    height: 100%;
-
-    font-size: 1em;
+  tui-icon {
+    font-size: inherit;
   }
 
   &--checked {
     color: #FFFFFF;
-    border-color: var(--tui-positive, #039322);
-    background-color: var(--tui-positive, #039322);
+    border-color: var(--tui-text-positive, #039322);
+    background-color: var(--tui-text-positive, #039322);
   }
 }

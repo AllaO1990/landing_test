@@ -6,14 +6,14 @@
     <div class="out__stock">
       <tui-filter
         [formControl]="controlFilterStock"
-        [size]="'s'"
+        [size]="size"
         class="item"
         [content]="content"
         [items]="filterStock"
         [disabledItemHandler]="disabledItemHandler"
       ></tui-filter>
     </div>
-    <div class="out__action">
+    <div class="out__actions">
       <button
         [tuiDropdown]="dropdownContentMore"
         [tuiDropdownManual]="openMore"
@@ -22,29 +22,29 @@
         (click)="onOpenMore()"
         (tuiActiveZoneChange)="onActiveZoneMore($event)"
         (tuiObscured)="onObscuredMore($event)"
-        icon="tuiIconSearch"
+        iconStart="@tui.search"
         tuiIconButton
         type="button"
-        appearance="icon"
-        size="s"
-        class="entry__search">
+        appearance="outline-grayscale"
+        [size]="size"
+        class="out__action-search">
       </button>
 
       <button
         [disabled]="true"
-        icon="tuiIconMoreVertical"
+        iconStart="@tui.ellipsis-vertical"
         tuiIconButton
         type="button"
-        appearance="icon"
-        size="s"
-        class="entry__search">
+        appearance="outline-grayscale"
+        [size]="size"
+        class="out__action-more">
       </button>
     </div>
   </div>
   <div class="out__strategy">
     <tui-filter
       [formControl]="controlFilterStrategy"
-      [size]="'s'"
+      [size]="size"
       class="item"
       [content]="content"
       [items]="filterStrategy"
@@ -62,11 +62,11 @@
     class="out__search"
     [formControl]="controlSearch"
     tuiTextfieldSize="s"
-    tuiTextfieldIconLeft="tuiIconSearch"
+    tuiTextfieldIconLeft="@tui.search"
     [tuiTextfieldCleaner]="true">
     {{ constants.search }}
     <input
-      tuiTextfield
+      tuiTextfieldLegacy
       type="text"
     />
   </tui-input>

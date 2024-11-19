@@ -1,10 +1,10 @@
+import { TuiRingChart } from '@taiga-ui/addon-charts';
+import { TuiBlock, TuiRadio } from '@taiga-ui/kit';
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
-import { TuiRingChartModule } from '@taiga-ui/addon-charts';
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
-import { TuiBreakpointService, TuiFormatNumberPipeModule, TuiGroupModule } from '@taiga-ui/core';
-import { TuiRadioBlockModule } from '@taiga-ui/kit';
+import { TuiBreakpointService, TuiFormatNumberPipe, TuiGroup } from '@taiga-ui/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { COLOR_LIST } from './structure.constants';
 import { filter, Observable, ReplaySubject, startWith, Subject, switchMap, tap } from 'rxjs';
@@ -37,16 +37,17 @@ let COLOR_LIMIT = 5;
   selector: 'portfolio-structure',
   standalone: true,
   imports: [
-    TuiRingChartModule,
+    TuiRingChart,
     LoaderComponent,
     NgIf,
     StructureListValuePipe,
     StructureIsNaNPipe,
     NgForOf,
-    TuiFormatNumberPipeModule,
+    TuiFormatNumberPipe,
     NgTemplateOutlet,
-    TuiRadioBlockModule,
-    TuiGroupModule,
+    TuiBlock,
+    TuiRadio,
+    TuiGroup,
     ReactiveFormsModule,
     AsyncPipe,
     ListComponent,
@@ -62,7 +63,7 @@ export class StructureComponent {
   private readonly _data$: Subject<StructureList> = new ReplaySubject(1);
   private readonly _ringChartSizeMapper: { [key: string]: RingChartSize } = {
     mobile: 'xl',
-    desktopSmall: 'xl',
+    desktopSmall: 'm',
     desktopLarge: 'm',
     desktopLarger: 'm',
     desktopLargest: 'l',
@@ -123,7 +124,10 @@ export class StructureComponent {
   private _generateColorList(length: number): void {
     const style = this._getStyleTag();
     const getColor = this._getColor(length);
-    const text: string = Array.from({ length }, (_, i: number) => `--tui-chart-${i}: ${getColor(i)};`).join('');
+    const text: string = Array.from(
+      { length },
+      (_, i: number) => `--tui-chart-categorical-0${i}: ${getColor(i)};`
+    ).join('');
 
     style.innerHTML = `:root{${text}`;
   }

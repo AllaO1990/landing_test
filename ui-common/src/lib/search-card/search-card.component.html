@@ -3,9 +3,9 @@
   <button
     class="close"
     appearance="icon"
-    icon="tuiIconClose"
+    iconStart="@tui.x"
     tuiIconButton
-    size="l"
+    size="s"
     type="button"
     (click)="onClose($event)"
   ></button>
@@ -14,11 +14,11 @@
   <tui-input
     tuiAutoFocus
     formControlName="search"
-    tuiTextfieldSize="l"
+    tuiTextfieldSize="s"
     [tuiTextfieldCleaner]="true"
     [tuiTextfieldLabelOutside]="true">
     Введите название тикера
-    <input tuiTextfield />
+    <input tuiTextfieldLegacy />
   </tui-input>
 </form>
 <div class="list">

@@ -1,53 +1,36 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
-import { DatePipe, JsonPipe, NgIf } from '@angular/common';
-import {
-  TUI_NUMBER_FORMAT,
-  TuiButtonModule,
-  TuiFormatNumberPipeModule,
-  TuiLoaderModule,
-  TuiSvgModule,
-} from '@taiga-ui/core';
+import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
+import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Position } from 'types/position';
 import { IdeaService } from './idea.service';
 import { IdeaEntry, IdeaStop, IdeaTarget, IdeaTotalTarget } from './idea.types';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { CheckComponent } from '@ui/components/check';
+import { ItemLikeCheckboxDirective } from '@ui/components/list/item/item-like-checkbox.directive';
 
 @Component({
   selector: 'lib-enter-idea',
   standalone: true,
   imports: [
-    JsonPipe,
+    AsyncPipe,
     ItemComponent,
     ItemDirective,
     HeaderComponent,
-    TuiButtonModule,
+    TuiButton,
     DatePipe,
     ReactiveFormsModule,
     NgIf,
-    TuiSvgModule,
+    TuiIcon,
     CheckComponent,
-    TuiFormatNumberPipeModule,
+    TuiFormatNumberPipe,
     ListComponent,
-    ItemComponent,
-    HeaderComponent,
-    ItemDirective,
-    CheckComponent,
-    TuiLoaderModule,
+    TuiLoader,
+    ItemLikeCheckboxDirective,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
-  providers: [
-    IdeaService,
-    {
-      provide: TUI_NUMBER_FORMAT,
-      useValue: {
-        zeroPadding: false,
-        decimalLimit: 2,
-      },
-    },
-  ],
+  providers: [IdeaService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterIdeaComponent {

@@ -22,10 +22,6 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'main',
-        loadChildren: () => import('./pages/main/main.module').then((m) => m.MainModule),
-      },
-      {
         path: 'main-v2',
         canActivate: [PermissionGuard],
         children: [
@@ -40,11 +36,15 @@ export const routes: Routes = [
           },
         ],
       },
-      // {
-      //   path: 'dashboard',
-      //   loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
-      //   canActivate: [PermissionGuard],
-      // },
+      //   {
+      //     path: 'main',
+      //     loadChildren: () => import('./pages/main/main.module').then((m) => m.MainModule),
+      //   },
+      //   // {
+      //   //   path: 'dashboard',
+      //   //   loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
+      //   //   canActivate: [PermissionGuard],
+      //   // },
       {
         path: 'portfolio',
         children: [

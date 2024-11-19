@@ -1,23 +1,25 @@
+import { TuiTable } from '@taiga-ui/addon-table';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
 import { OUT_HEADER } from '../out.constants';
-import { CdkFixedSizeVirtualScroll, ScrollingModule } from '@angular/cdk/scrolling';
-import { TuiTableModule } from '@taiga-ui/addon-table';
-import { TuiFormatNumberPipeModule, TuiHintModule, TuiLoaderModule, TuiScrollbarModule } from '@taiga-ui/core';
+import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { TuiFormatNumberPipe, TuiHint, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { OutHeaderItem } from '../out.types';
 import { AsyncPipe, DatePipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Position } from 'types/position';
-import { DatePassedPipe } from '../../common/date-passed.pipe';
+import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { Idea } from 'types/idea';
 import { EventSelected } from 'types/events';
 import { QueryParams } from 'utils/query-params';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
-import { EnterDialogService } from 'desktop-page/enter';
+import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { getColor, getRGBA } from 'utils/get-color';
 import { Observable } from 'rxjs';
 import { StockId } from 'types/stock';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
 import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
+import { LoaderComponent } from '@ui/components/loader';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
 @Component({
   selector: 'vt-out-table',
@@ -26,18 +28,20 @@ import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
     NgIf,
     NgFor,
     NgTemplateOutlet,
-    CdkFixedSizeVirtualScroll,
-    ScrollingModule,
-    TuiTableModule,
-    TuiLoaderModule,
-    TuiScrollbarModule,
-    TuiFormatNumberPipeModule,
+    TuiTable,
+    TuiScrollbar,
+    TuiScrollable,
+    TuiFormatNumberPipe,
     DatePipe,
     DatePassedPipe,
     AsyncPipe,
     LastPriceDirective,
     ColorPriceDirective,
-    TuiHintModule,
+    TuiHint,
+    LoaderComponent,
+    CdkVirtualForOf,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualScrollViewport,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -50,6 +54,10 @@ export class OutTableComponent {
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
+  private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
+    VtEnterComponent,
+    this._injector
+  );
 
   public readonly header: OutHeaderItem[] = OUT_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
@@ -69,7 +77,7 @@ export class OutTableComponent {
       id: item.id,
     });
 
-    this._dialogEnterService.openDialog({ data: item, type: EventSelected.POSITION }, this._injector).subscribe();
+    this._dialogEnterService.open(this._component, { data: item, type: EventSelected.POSITION }).subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {

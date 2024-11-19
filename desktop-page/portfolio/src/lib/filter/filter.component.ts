@@ -1,3 +1,4 @@
+import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -7,14 +8,9 @@ import {
   inject,
 } from '@angular/core';
 import { AsyncPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { TuiStringHandler } from '@taiga-ui/cdk';
-import {
-  TuiBreakpointService,
-  TuiButtonModule,
-  TuiHostedDropdownModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable, of, ReplaySubject, Subject, switchMap, tap, timer } from 'rxjs';
 import { BROKER_LIST, CURRENCY_LIST, FILTER_CONSTANTS, PORTFOLIO_LIST } from './filter.constants';
@@ -38,10 +34,10 @@ type SelectList = SelectListItem[];
     AsyncPipe,
     TuiSelectModule,
     TuiTextfieldControllerModule,
-    TuiDataListWrapperModule,
+    TuiDataListWrapper,
     NgTemplateOutlet,
-    TuiButtonModule,
-    TuiHostedDropdownModule,
+    TuiButton,
+    TuiDropdown,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
@@ -56,7 +52,7 @@ export class FilterComponent implements AfterViewInit {
     tap((isMobile: boolean) => !isMobile && (this.open = false))
   );
   readonly constants = FILTER_CONSTANTS;
-  readonly size = 'm';
+  readonly size = 's';
 
   readonly formGroup: FormGroup = new FormGroup({
     portfolio: new FormControl({ value: null, disabled: false }, Validators.required),

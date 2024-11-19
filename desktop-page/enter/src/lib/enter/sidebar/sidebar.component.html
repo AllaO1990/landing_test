@@ -45,13 +45,13 @@
         <div class="description__row">
           <div class="description__label">Вероятность успеха</div>
           <div class="description__text">
-            {{ data.strategy.successProbability * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+            {{ data.strategy.successProbability * 100 | tuiFormatNumber | async }}%
           </div>
         </div>
         <div class="description__row">
           <div class="description__label">% депозита</div>
           <div class="description__text">
-            {{ data.inPositionDepositShare * 100 | tuiFormatNumber: { decimalLimit: 2 } }}%
+            {{ data.inPositionDepositShare * 100 | tuiFormatNumber | async }}%
           </div>
         </div>
         <div class="description__row">

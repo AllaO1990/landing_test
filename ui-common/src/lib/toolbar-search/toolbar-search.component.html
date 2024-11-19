@@ -1,7 +1,7 @@
 <div class="toolbar">
   <div class="toolbar__ticker" *ngIf="(selected$ | async) as selected">
     <div class="ticker" (click)="onSearch($event, selected)">
-      <tui-svg src="tuiIconSearch"></tui-svg>
+      <tui-icon  icon="@tui.search"></tui-icon>
       <div class="ticker__name">
         {{ selected.ticker }}
       </div>

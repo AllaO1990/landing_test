@@ -1,11 +1,11 @@
+import { PolymorpheusTemplate, PolymorpheusOutlet } from "@taiga-ui/polymorpheus";
+import { TuiButton } from "@taiga-ui/core";
 import { NgModule } from '@angular/core';
-import { TuiButtonModule } from '@taiga-ui/core';
-import { PolymorpheusModule } from '@tinkoff/ng-polymorpheus';
 import { EnterDialogComponent } from './dialog.component';
 
 @NgModule({
   declarations: [EnterDialogComponent],
-  imports: [PolymorpheusModule, TuiButtonModule],
+  imports: [PolymorpheusTemplate, PolymorpheusOutlet, TuiButton],
   providers: [],
   exports: [EnterDialogComponent],
 })

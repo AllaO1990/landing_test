@@ -1,3 +1,4 @@
+import { TuiMultiSelectModule } from '@taiga-ui/legacy';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -11,15 +12,15 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { TuiBadgedContentComponent, TuiBadgedContentModule, TuiMultiSelectModule } from '@taiga-ui/kit';
-import { TuiButtonModule, TuiDataListModule, TuiDropdownModule, TuiGroupModule } from '@taiga-ui/core';
+import { TuiBadge, TuiBadgedContent, TuiBadgedContentComponent } from '@taiga-ui/kit';
+import { TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiActiveZoneModule, TuiObscuredModule } from '@taiga-ui/cdk';
+import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
 import { ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { PolymorpheusContent } from '@tinkoff/ng-polymorpheus';
 import { map, take } from 'rxjs/operators';
 import { defer, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IsDisabledStatePipe } from '@ui/pipes/is-disabled-state.pipe';
 
 @Component({
   selector: 'lib-button-with-list',
@@ -27,19 +28,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [
     NgIf,
     NgForOf,
-    TuiButtonModule,
-    TuiDataListModule,
+    TuiButton,
+    TuiDataList,
     TuiMultiSelectModule,
-    TuiDropdownModule,
-    TuiActiveZoneModule,
-    TuiObscuredModule,
-    TuiDataListModule,
-    TuiMultiSelectModule,
+    TuiDropdown,
+    TuiActiveZone,
+    TuiObscured,
     FormsModule,
-    TuiBadgedContentModule,
+    TuiBadgedContent,
     ReactiveFormsModule,
     AsyncPipe,
-    TuiGroupModule,
+    TuiGroup,
+    IsDisabledStatePipe,
+    TuiBadge,
   ],
   templateUrl: './button-with-list.component.html',
   styleUrl: './button-with-list.component.scss',
@@ -59,6 +60,9 @@ export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit 
 
   value: any = null;
   disabled = false;
+
+  readonly size = 's';
+
   private onChange = (value: any) => {};
   private onTouched = () => {};
 
@@ -66,7 +70,7 @@ export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit 
 
   @Input() list: { name: string; disabled: boolean }[] = [];
 
-  @Input() icon: PolymorpheusContent;
+  @Input() icon = '';
 
   @Output() opened: EventEmitter<boolean> = new EventEmitter<boolean>();
 

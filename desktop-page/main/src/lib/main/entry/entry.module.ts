@@ -1,39 +1,33 @@
+import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EntryComponent } from './entry.component';
 import { EntryIdeaComponent } from './idea/idea.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import {
-  TuiButtonModule,
-  TuiDropdownModule,
-  TuiFormatNumberPipeModule,
-  TuiLoaderModule,
-  TuiScrollbarModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/core';
+import { TuiButton, TuiDropdown, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TuiFilterModule, TuiInputModule } from '@taiga-ui/kit';
 import { EntryTableComponent } from './table/table.component';
-import { TuiActiveZoneModule, TuiAutoFocusModule, TuiObscuredModule } from '@taiga-ui/cdk';
+import { TuiActiveZone, TuiAutoFocus, TuiObscured } from '@taiga-ui/cdk';
+import { TuiFilter } from '@taiga-ui/kit';
 
 @NgModule({
   declarations: [EntryComponent, EntryIdeaComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    TuiFilterModule,
-    TuiScrollbarModule,
-    TuiFormatNumberPipeModule,
-    TuiLoaderModule,
-    TuiButtonModule,
+    TuiFilter,
+    TuiScrollbar,
+    TuiFormatNumberPipe,
+    TuiLoader,
+    TuiButton,
     ScrollingModule,
     EntryTableComponent,
-    TuiDropdownModule,
-    TuiActiveZoneModule,
-    TuiObscuredModule,
+    ...TuiDropdown,
+    TuiActiveZone,
+    TuiObscured,
     TuiInputModule,
     TuiTextfieldControllerModule,
-    TuiAutoFocusModule,
+    TuiAutoFocus,
   ],
   providers: [],
   exports: [EntryComponent],
