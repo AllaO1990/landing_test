@@ -51,7 +51,7 @@ export const appConfig: ApplicationConfig = {
     tuiNumberFormatProvider({
       decimalSeparator: '.',
       precision: 2,
-      decimalMode: 'pad',
+      decimalMode: 'not-zero',
     }),
     {
       provide: TUI_MEDIA,

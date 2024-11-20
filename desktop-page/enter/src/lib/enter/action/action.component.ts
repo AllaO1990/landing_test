@@ -40,7 +40,7 @@ export class EnterActionComponent {
   priceIncrement = 0;
 
   @Input()
-  set data(value: Position) {
+  set data(value: Position | null) {
     if (value) {
       this.priceIncrement = value.priceIncrement;
 

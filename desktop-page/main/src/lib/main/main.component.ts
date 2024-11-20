@@ -14,6 +14,7 @@ import { ChartCandlestickComponent, TabsComponent } from 'ui-common';
 import { StockComponent } from './stock/stock.component';
 import { EntryModule } from './entry/entry.module';
 import { OutModule } from './out/out.module';
+import { MAIN_TAB_MOBILE_LIST, MAIN_TAB_TABLET_LIST } from './main.constants';
 
 @Component({
   selector: 'lib-main',
@@ -40,26 +41,13 @@ export class MainComponent {
 
   private readonly _service: MainService = inject(MainService);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+
+  readonly tabMobileList = MAIN_TAB_MOBILE_LIST;
+  readonly tabTabletList = MAIN_TAB_TABLET_LIST;
+
   public readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
   public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
-
-  // public readonly ideaList$: Observable<Idea[] | null> = combineLatest([
-  //   this._store.entry$.pipe(map((list: Idea[] | null) => list && this._service.sortIdeaList(list))),
-  //   this._store.price$,
-  // ]).pipe(
-  //   map(([list, price]: [Idea[] | null, StockPrice<WithLastPrice> | null]): Idea[] | null => {
-  //     if (!list) {
-  //       return null;
-  //     }
-  //
-  //     if (list && !price) {
-  //       return list;
-  //     }
-  //
-  //     return list.map((item: Idea) => ({ ...item, lastPrice: price![item.instrument.id]!.last || item.lastPrice }));
-  //   })
-  // );
 
   public readonly ideaList$: Observable<Idea[] | null> = this._store.entry$.pipe(
     map((list: Idea[] | null) => list && this._service.sortIdeaList(list))
@@ -69,7 +57,7 @@ export class MainComponent {
 
   public readonly positionList$: Observable<Position[] | null> = this._store.position$;
 
-  public readonly tabs$: Observable<{ text: string; icon: string }[] | null> = this.breakpoint$.pipe(
+  readonly tabs$: Observable<{ text: string; icon: string }[] | null> = this.breakpoint$.pipe(
     map((screen: string | null): { text: string; icon: string }[] | null => {
       if (screen === 'mobile') {
         return this.tabMobileList;
@@ -83,38 +71,4 @@ export class MainComponent {
       return null;
     })
   );
-
-  public readonly tabMobileList: { text: string; icon: string }[] = [
-    {
-      icon: '@tui.chart-line',
-      text: 'График',
-    },
-    {
-      icon: '@tui.list',
-      text: 'Список',
-    },
-    {
-      icon: '@tui.lightbulb',
-      text: 'Идея',
-    },
-    {
-      icon: '@tui.shopping-cart',
-      text: 'Сделка',
-    },
-  ];
-
-  public readonly tabTabletList: { text: string; icon: string }[] = [
-    {
-      icon: '@tui.chart-line',
-      text: 'График',
-    },
-    {
-      icon: '@tui.lightbulb',
-      text: 'Идея',
-    },
-    {
-      icon: '@tui.shopping-cart',
-      text: 'Сделка',
-    },
-  ];
 }
