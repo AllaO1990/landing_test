@@ -1,5 +1,5 @@
 import { TuiTable } from '@taiga-ui/addon-table';
-import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, Input } from '@angular/core';
 import { OUT_HEADER } from '../out.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TuiFormatNumberPipe, TuiHint, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
@@ -13,13 +13,15 @@ import { QueryParams } from 'utils/query-params';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { getColor, getRGBA } from 'utils/get-color';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { StockId } from 'types/stock';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
 import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
 import { LoaderComponent } from '@ui/components/loader';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
+import { Params } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'vt-out-table',
@@ -47,12 +49,13 @@ import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
   styleUrl: './table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OutTableComponent {
+export class OutTableComponent implements AfterViewInit {
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
   private readonly _injector: Injector = inject(Injector);
   private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
   private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
     VtEnterComponent,
@@ -69,31 +72,40 @@ export class OutTableComponent {
 
   @Input() data: Position[] | null = null;
 
-  public onDblclick(event: Event, item: Idea): void {
+  ngAfterViewInit(): void {
+    this._queryParams
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        filter((params: Params) => params['id'] && params['type'] && params['dialog'] === 'visible'),
+        switchMap(() => this._dialogEnterService.open(this._component))
+      )
+      .subscribe();
+  }
+
+  onDblclick(event: Event, item: Position): void {
+    event.preventDefault();
+
+    this._queryParams.update({
+      type: EventSelected.POSITION,
+      id: item.id,
+      dialog: 'visible',
+    });
+  }
+
+  onClick(event: Event, item: Idea): void {
     event.preventDefault();
 
     this._queryParams.update({
       type: EventSelected.POSITION,
       id: item.id,
     });
-
-    this._dialogEnterService.open(this._component, { data: item, type: EventSelected.POSITION }).subscribe();
   }
 
-  public onClick(event: Event, item: Idea): void {
-    event.preventDefault();
-
-    this._queryParams.update({
-      type: EventSelected.POSITION,
-      id: item.id,
-    });
-  }
-
-  public trackByIndex(index: number): number {
+  trackByIndex(index: number): number {
     return index;
   }
 
-  public trackById(_: number, item: Position): StockId {
+  trackById(_: number, item: Position): StockId {
     return item.id;
   }
 }

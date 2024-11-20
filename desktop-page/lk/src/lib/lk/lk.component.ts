@@ -46,14 +46,6 @@ const createStore = (api: DesktopService) =>
       useFactory: createStore,
       deps: [DESKTOP_API, QUERY_PARAMS],
     },
-    // {
-    //   provide: TUI_NUMBER_FORMAT,
-    //   useValue: {
-    //     decimalSeparator: '.',
-    //     decimalLimit: 2,
-    //     zeroPadding: false,
-    //   },
-    // },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

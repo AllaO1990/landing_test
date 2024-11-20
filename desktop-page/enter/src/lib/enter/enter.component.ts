@@ -4,10 +4,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiIcon, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import { combineLatest, Observable, shareReplay } from 'rxjs';
+import { combineLatest, filter, Observable, of, shareReplay, switchMap } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
-import { Idea } from 'types/idea';
-import { StockInstrument } from 'types/stock';
 import { DesktopLkStore } from 'stores/desktop';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
@@ -17,6 +15,8 @@ import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
 import { ChartCandlestickComponent } from 'ui-common';
+import { StockEvent } from 'types/stock-event';
+import { EventSelected } from 'types/events';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -50,25 +50,32 @@ export interface TabItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VtEnterComponent {
-  public readonly context: TuiPopover<any, Idea> = inject(POLYMORPHEUS_CONTEXT, {
+  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+
+  public readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
 
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  readonly data$: Observable<any> = this._store.event$.pipe(
+    filter((event: StockEvent | null): event is StockEvent => event !== null),
+    switchMap((event: StockEvent) => {
+      if (event.type === EventSelected.POSITION) {
+        return this._store.selectedPosition$;
+      }
 
+      if (event.type === EventSelected.IDEA) {
+        return this._store.selectedIdea$;
+      }
+
+      return of(null);
+    })
+  );
   public readonly breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   public readonly orientation$: Observable<ScreenOrientation> = inject(TUI_WINDOW_SIZE).pipe(
     map(({ width, height }): ScreenOrientation => (width > height ? 'landscape' : 'portrait')),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-  public readonly consolidationZones$: Observable<any | null> = this._store.chartFigures$;
-  public readonly candles$: Observable<any | null> = combineLatest([
-    this._store.candles$,
-    this._store.indicatorEma$,
-    this._store.indicatorSma$,
-  ]);
-  public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
-  public readonly selectedIdea$: Observable<any> = this._store.selectedIdea$;
+
   public readonly tabs$: Observable<TabItem[] | null> = combineLatest([this.breakpoint$, this.orientation$]).pipe(
     map(([screen, orientation]): TabItem[] | null => this._condition(screen, orientation))
   );

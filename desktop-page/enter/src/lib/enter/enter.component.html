@@ -7,7 +7,9 @@
 </tui-loader>
 
 <ng-template #show>
-  <div class="container container--{{breakpoint$ | async}} container--{{orientation$ | async}}" *ngIf="context">
+  <div
+    class="container container--{{breakpoint$ | async}} container--{{orientation$ | async}}"
+    *ngIf="(data$ | async) as data">
     <div class="container__toolbar">
       <div class="container__actions">
         <button
@@ -27,12 +29,13 @@
           iconStart="@tui.save"
         ></button>
         <div class="container__space container__space--first"></div>
-        <lib-enter-sidebar-instrument [data]="context.data.instrument">
+        <lib-enter-sidebar-instrument
+          [data]="$any(data).instrument">
         </lib-enter-sidebar-instrument>
         <div class="container__space"></div>
         <div class="date-start">
           Идея от
-          <span>{{ context.data.createdAt | date : 'dd.MM.yyyy' }}</span>
+          <span>{{ $any(data).createdAt | date : 'dd.MM.yyyy' }}</span>
         </div>
         <button
           appearance="icon"
@@ -48,7 +51,7 @@
       [style.margin-left.%]="activeItemIndex * -100"
       class="container__widget-list">
       <div class="container__sidebar container__widget">
-        <lib-enter-sidebar [data]="context.data"></lib-enter-sidebar>
+        <lib-enter-sidebar [data]="$any(data)"></lib-enter-sidebar>
       </div>
       <div class="container__submit container__widget">
         <div class="submit">
@@ -85,7 +88,7 @@
           </div>
           <div class="widget__content">
             <tui-scrollbar class="scrollbar" [hidden]="true">
-              <lib-enter-idea [data]="context.data" class="tui-zero-scrollbar"></lib-enter-idea>
+              <lib-enter-idea [data]="$any(data)" class="tui-zero-scrollbar"></lib-enter-idea>
             </tui-scrollbar>
           </div>
         </div>
@@ -100,7 +103,7 @@
           <div class="widget__content">
             <tui-scrollbar class="scrollbar" [hidden]="true">
               <lib-enter-action
-                [data]="context.type === 'position' ? context.data : null"
+                [data]="$any(data)"
                 class="tui-zero-scrollbar"></lib-enter-action>
             </tui-scrollbar>
           </div>

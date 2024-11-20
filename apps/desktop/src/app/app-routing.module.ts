@@ -34,6 +34,10 @@ export const routes: Routes = [
             path: '',
             loadComponent: () => import('main').then((m) => m.MainComponent),
           },
+          {
+            path: ':type/:id',
+            loadComponent: () => import('main').then((m) => m.MainComponent),
+          },
         ],
       },
       //   {
