@@ -1,8 +1,8 @@
 import { TuiTabs } from '@taiga-ui/kit';
-import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
-import { TuiBreakpointService, TuiButton, TuiIcon, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { combineLatest, filter, Observable, of, shareReplay, switchMap } from 'rxjs';
 import { DESKTOP_STORE } from 'tokens/desktop';
@@ -10,13 +10,14 @@ import { DesktopLkStore } from 'stores/desktop';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
 import { ChartCandlestickComponent } from 'ui-common';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
+import { LoaderComponent } from '@ui/components/loader';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -30,8 +31,6 @@ export interface TabItem {
   standalone: true,
   imports: [
     NgIf,
-    JsonPipe,
-    TuiLoader,
     TuiButton,
     EnterActionComponent,
     EnterIdeaComponent,
@@ -44,6 +43,7 @@ export interface TabItem {
     TuiIcon,
     InstrumentComponent,
     ChartCandlestickComponent,
+    LoaderComponent,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',
@@ -68,7 +68,9 @@ export class VtEnterComponent {
       }
 
       return of(null);
-    })
+    }),
+    tap((data: any) => (this.isDisabled = data === null)),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   public readonly breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   public readonly orientation$: Observable<ScreenOrientation> = inject(TUI_WINDOW_SIZE).pipe(
@@ -81,6 +83,7 @@ export class VtEnterComponent {
   );
 
   readonly size = 's';
+  isDisabled = true;
   activeItemIndex = 0;
 
   onClose(event: Event): void {

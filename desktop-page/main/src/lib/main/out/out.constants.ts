@@ -38,12 +38,8 @@ export const OUT_HEADER: OutHeaderItem[] = [
   {
     name: 'enter',
     label: 'Цена уч <br> Стоим уч.',
-    sorter: (
-      a: { entry: { price: number } },
-      b: {
-        entry: { price: number };
-      }
-    ) => sortNumber(a.entry.price, b.entry.price),
+    sorter: (a: { entries: { price: number }[] }, b: { entries: { price: number }[] }) =>
+      sortNumber(a.entries[0].price, b.entries[0].price),
   },
   {
     name: 'profit',

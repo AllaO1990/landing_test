@@ -13,7 +13,7 @@ import { QueryParams } from 'utils/query-params';
 import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { getColor, getRGBA } from 'utils/get-color';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, startWith, switchMap } from 'rxjs';
 import { StockId } from 'types/stock';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { DesktopLkStore } from 'stores/desktop';
@@ -76,6 +76,7 @@ export class OutTableComponent implements AfterViewInit {
     this._queryParams
       .pipe(
         takeUntilDestroyed(this._destroyRef),
+        startWith(this._queryParams.value()),
         filter((params: Params) => params['id'] && params['type'] && params['dialog'] === 'visible'),
         switchMap(() => this._dialogEnterService.open(this._component))
       )
