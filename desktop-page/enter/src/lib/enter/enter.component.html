@@ -1,133 +1,136 @@
-<tui-loader
-  *ngIf="context === null; else show"
-  [overlay]="true"
-  [showLoader]="true"
-  class="widget">
-  <div class="widget__empty">Загрузка...</div>
-</tui-loader>
-
-<ng-template #show>
-  <div
-    class="container container--{{breakpoint$ | async}} container--{{orientation$ | async}}"
-    *ngIf="(data$ | async) as data">
-    <div class="container__toolbar">
-      <div class="container__actions">
-        <button
-          class="action"
-          tuiIconButton
-          appearance="outline"
-          [size]="size"
-          type="button"
-          iconStart="@tui.trash"
-        ></button>
-        <button
-          class="action save"
-          tuiIconButton
-          appearance="outline"
-          [size]="size"
-          type="button"
-          iconStart="@tui.save"
-        ></button>
-        <div class="container__space container__space--first"></div>
-        <lib-enter-sidebar-instrument
-          [data]="$any(data).instrument">
-        </lib-enter-sidebar-instrument>
-        <div class="container__space"></div>
-        <div class="date-start">
-          Идея от
-          <span>{{ $any(data).createdAt | date : 'dd.MM.yyyy' }}</span>
-        </div>
-        <button
-          appearance="icon"
-          iconStart="@tui.x"
-          tuiIconButton
-          [size]="size"
-          type="button"
-          (click)="onClose($event)"
-        ></button>
+<div
+  class="container container--{{breakpoint$ | async}} container--{{orientation$ | async}}">
+  <div class="container__toolbar">
+    <div class="container__actions">
+      <button
+        class="action"
+        tuiIconButton
+        appearance="outline"
+        [size]="size"
+        [disabled]="isDisabled"
+        type="button"
+        iconStart="@tui.trash"
+      ></button>
+      <button
+        class="action save"
+        tuiIconButton
+        appearance="outline"
+        [size]="size"
+        [disabled]="isDisabled"
+        type="button"
+        iconStart="@tui.save"
+      ></button>
+      <div class="container__space container__space--first"></div>
+      <lib-enter-sidebar-instrument
+        *ngIf="(data$ | async) as data; else load"
+        [data]="$any(data).instrument">
+      </lib-enter-sidebar-instrument>
+      <div class="container__space"></div>
+      <div class="date-start" *ngIf="(data$ | async) as data; else load">
+        Идея от
+        <span>{{ $any(data).createdAt | date : 'dd.MM.yyyy' }}</span>
       </div>
-    </div>
-    <div
-      [style.margin-left.%]="activeItemIndex * -100"
-      class="container__widget-list">
-      <div class="container__sidebar container__widget">
-        <lib-enter-sidebar [data]="$any(data)"></lib-enter-sidebar>
-      </div>
-      <div class="container__submit container__widget">
-        <div class="submit">
-          <button
-            class="action save"
-            appearance="primary"
-            tuiButton
-            type="button"
-            [size]="size">
-            Сохранить
-          </button>
-          <button
-            class="action trash"
-            appearance="flat"
-            tuiButton
-            [size]="size"
-            type="button">
-            <tui-icon icon="@tui.trash"></tui-icon>
-            Удалить идею
-          </button>
-        </div>
-      </div>
-      <div class="container__chart container__widget">
-        <div class="widget">
-          <lib-chart></lib-chart>
-        </div>
-      </div>
-      <div class="container__idea container__widget">
-        <div class="widget">
-          <div class="widget__header">
-            <div class="header">
-              Идея
-            </div>
-          </div>
-          <div class="widget__content">
-            <tui-scrollbar class="scrollbar" [hidden]="true">
-              <lib-enter-idea [data]="$any(data)" class="tui-zero-scrollbar"></lib-enter-idea>
-            </tui-scrollbar>
-          </div>
-        </div>
-      </div>
-      <div class="container__action container__widget">
-        <div class="widget">
-          <div class="widget__header">
-            <div class="header">
-              Действия
-            </div>
-          </div>
-          <div class="widget__content">
-            <tui-scrollbar class="scrollbar" [hidden]="true">
-              <lib-enter-action
-                [data]="$any(data)"
-                class="tui-zero-scrollbar"></lib-enter-action>
-            </tui-scrollbar>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container__tabs" *ngIf="(tabs$ | async) as tabs">
-      <tui-tabs
-        class="tabs"
-        [(activeItemIndex)]="activeItemIndex">
-        <button
-          *ngFor="let item of tabs; trackBy: trackByIndex; index as i"
-          class="tab"
-          [class.tab--active]="i === activeItemIndex"
-          tuiTab>
-          <tui-icon
-            class="tab__icon"
-            [icon]="item.icon"
-          ></tui-icon>
-          <span class="tab__text">
-            {{ item.text }}
-          </span>
-        </button>
-      </tui-tabs>
+      <button
+        appearance="icon"
+        iconStart="@tui.x"
+        tuiIconButton
+        [size]="size"
+        type="button"
+        (click)="onClose($event)"
+      ></button>
     </div>
   </div>
+  <div
+    [style.margin-left.%]="activeItemIndex * -100"
+    class="container__widget-list">
+    <div class="container__sidebar container__widget">
+      <lib-enter-sidebar
+        *ngIf="(data$ | async) as data; else load"
+        [data]="$any(data)">
+      </lib-enter-sidebar>
+    </div>
+    <div class="container__submit container__widget">
+      <div class="submit">
+        <button
+          class="action save"
+          appearance="primary"
+          tuiButton
+          type="button"
+          [size]="size">
+          Сохранить
+        </button>
+        <button
+          class="action trash"
+          appearance="flat"
+          tuiButton
+          [size]="size"
+          type="button">
+          <tui-icon icon="@tui.trash"></tui-icon>
+          Удалить идею
+        </button>
+      </div>
+    </div>
+    <div class="container__chart container__widget">
+      <div class="widget">
+        <lib-chart></lib-chart>
+      </div>
+    </div>
+    <div class="container__idea container__widget">
+      <div class="widget">
+        <div class="widget__header">
+          <div class="header">
+            Идея
+          </div>
+        </div>
+        <div class="widget__content">
+          <tui-scrollbar class="scrollbar" [hidden]="true">
+            <lib-enter-idea
+              *ngIf="(data$ | async) as data; else load"
+              [data]="$any(data)"
+              class="tui-zero-scrollbar">
+            </lib-enter-idea>
+          </tui-scrollbar>
+        </div>
+      </div>
+    </div>
+    <div class="container__action container__widget">
+      <div class="widget">
+        <div class="widget__header">
+          <div class="header">
+            Действия
+          </div>
+        </div>
+        <div class="widget__content">
+          <tui-scrollbar class="scrollbar" [hidden]="true" *ngIf="(data$ | async) as data; else load">
+            <lib-enter-action
+              [data]="$any(data)"
+              class="tui-zero-scrollbar"></lib-enter-action>
+          </tui-scrollbar>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container__tabs" *ngIf="(tabs$ | async) as tabs">
+    <tui-tabs
+      class="tabs"
+      [(activeItemIndex)]="activeItemIndex">
+      <button
+        *ngFor="let item of tabs; trackBy: trackByIndex; index as i"
+        class="tab"
+        [class.tab--active]="i === activeItemIndex"
+        tuiTab>
+        <tui-icon
+          class="tab__icon"
+          [icon]="item.icon"
+        ></tui-icon>
+        <span class="tab__text">
+            {{ item.text }}
+          </span>
+      </button>
+    </tui-tabs>
+  </div>
+</div>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
 </ng-template>
