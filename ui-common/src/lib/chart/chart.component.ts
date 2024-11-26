@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '
 import { AsyncPipe, NgIf } from '@angular/common';
 import { combineLatest, debounceTime, Observable, shareReplay, startWith, tap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
-import { DesktopLkStore } from 'stores/desktop';
 import { DESKTOP_STORE } from 'tokens/desktop';
 import { ButtonWithListComponent } from './button-with-list';
 import {
@@ -22,6 +21,7 @@ import { ChartFigure } from 'types/chart';
 import { Timeframe } from 'types/timeframe';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartComponent } from '@ui/components/chart';
+import { DesktopLkStore } from '../../../../stores/desktop/lk.store';
 
 interface IndicatorListItem<T = string> {
   name: string;

@@ -1,16 +1,15 @@
 import { TuiIcon } from '@taiga-ui/core';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
-import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
+import { QUERY_PARAMS } from 'tokens/desktop';
 import { Observable } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { QueryParams } from 'utils/query-params';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventSelected } from 'types/events';
-import { DesktopLkStore } from 'stores/desktop';
-import { SearchCardComponent } from '../search-card';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { DIALOG, DialogService } from '@ui/components/dialog';
+import { SelectFacade } from 'stores/facades/select.facade';
 
 @Component({
   selector: 'lib-toolbar-search',
@@ -23,28 +22,29 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 export class ToolbarSearchComponent {
   private readonly _injector: Injector = inject(Injector);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogService: DialogService = inject(DIALOG);
 
-  private readonly _component: PolymorpheusComponent<SearchCardComponent> = new PolymorpheusComponent(
-    SearchCardComponent,
-    this._injector
-  );
+  public readonly selected$: Observable<StockInstrument | null> = this._select.instrument$;
 
-  public readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
+  private _loadComponent: Promise<PolymorpheusComponent<unknown>> | null = null;
 
   public trackByIndex(index: number): number {
     return index;
   }
 
-  onSearch(event: Event, selected: StockInstrument): void {
+  async onSearch(event: Event, selected: StockInstrument) {
     event.preventDefault();
 
+    this._loadComponent = import('ui-common/lib/search-dialog')
+      .then((m) => m.SearchDialogComponent)
+      .then((c) => new PolymorpheusComponent(c, this._injector));
+
     this._dialogService
-      .open<StockInstrument | null>(this._component, {
+      .open<StockInstrument | null>(await this._loadComponent, {
         data: selected.ticker,
-        appearance: 'search-card',
+        appearance: 'search-dialog',
       })
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((instrument: StockInstrument | null) => {

@@ -29,9 +29,9 @@ import { FormInputEvent } from './form-input/form-input.types';
 import { PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { DialogComponent } from './dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SearchCardComponent } from 'ui-common';
 import { LoaderComponent } from '@ui/components/loader';
 import { DIALOG, DialogService } from '@ui/components/dialog';
+import { SearchDialogComponent } from 'ui-common/src/lib/search-dialog';
 
 type IsRename = 'edit' | 'new' | false;
 
@@ -63,7 +63,7 @@ export interface StockListWithType {
     TuiDropdown,
     FormInputComponent,
     DialogComponent,
-    SearchCardComponent,
+    SearchDialogComponent,
     LoaderComponent,
   ],
   templateUrl: './stock.component.html',
@@ -83,10 +83,9 @@ export class StockComponent {
     this._injector
   );
   private readonly _dialogSearchContent: PolymorpheusContent = new PolymorpheusComponent(
-    SearchCardComponent,
+    SearchDialogComponent,
     this._injector
   );
-  private readonly _destroyRef$: DestroyRef = inject(DestroyRef);
 
   isRename: IsRename = false;
   default: StockGroup = {
@@ -163,7 +162,7 @@ export class StockComponent {
     event.preventDefault();
 
     this.showDialog<StockInstrument | null, null>(this._dialogSearchContent, {
-      appearance: 'search-card',
+      appearance: 'search-dialog',
       data: null,
     }).subscribe((instrument: StockInstrument | null) => {
       if (instrument !== null && this.controlGroup.value !== null) {
@@ -224,6 +223,6 @@ export class StockComponent {
   }
 
   showDialog<T, D>(component: PolymorpheusContent, options: { data: D; appearance: string }): Observable<T> {
-    return this._dialogService.open<T>(component, options).pipe(takeUntilDestroyed(this._destroyRef$));
+    return this._dialogService.open<T>(component, options).pipe(takeUntilDestroyed(this._destroyRef));
   }
 }

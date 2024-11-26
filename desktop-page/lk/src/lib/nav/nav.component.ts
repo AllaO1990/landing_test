@@ -4,11 +4,10 @@ import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { Params, RouterModule } from '@angular/router';
 import { AuthService } from '@core/auth';
-import { DESKTOP_STORE } from 'tokens/desktop';
-import { DesktopLkStore } from 'stores/desktop';
 import { map, Observable, of, switchMap } from 'rxjs';
-import { StockEvent } from 'types/stock-event';
 import { IsDisabledStatePipe } from '@ui/pipes/is-disabled-state.pipe';
+import { StockEvent } from 'types/stock-event';
+import { SelectFacade } from 'stores/facades/select.facade';
 
 interface NavItem {
   path: any[] | string | null | undefined;
@@ -38,11 +37,12 @@ type NavList = NavItem[];
   ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss',
+  providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavComponent {
   private readonly _authService: AuthService = inject(AuthService);
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _select: SelectFacade = inject(SelectFacade);
 
   readonly size = 's';
   readonly links$: Observable<NavList> = of([
@@ -50,7 +50,7 @@ export class NavComponent {
     { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase-business', disabled: false },
   ]).pipe(
     switchMap((list) =>
-      this._store.event$.pipe(
+      this._select.event$.pipe(
         map((event: StockEvent | null) =>
           list.map((item, index: number) => ({
             ...item,

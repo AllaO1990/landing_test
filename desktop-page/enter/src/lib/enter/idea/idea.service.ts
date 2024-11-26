@@ -14,7 +14,7 @@ export class IdeaService {
 
   getIdeaTargets(position: Position): IdeaTarget[] {
     return position.targets.map((item, index: number) => ({
-      id: index,
+      id: `target-${index}`,
       date: item.stopDate,
       profit: (item.price - position.entryAveragePrice) * item.amount * position.multiplier,
       ...item,
@@ -53,18 +53,27 @@ export class IdeaService {
     return total;
   }
 
-  getControlFromList(list: { date: string | null }[]): {
+  getControlFromList(list: { id: number | string; date: string | null }[]): {
     [key: string]: FormControl<boolean>;
   } {
-    return list.reduce((acc: { [key: string]: FormControl<boolean> }, item: { date: string | null }, index: number) => {
-      acc[index] = new FormControl<boolean>(
-        { value: !!item.date, disabled: true },
-        {
-          nonNullable: true,
+    return list.reduce(
+      (
+        acc: { [key: string]: FormControl<boolean> },
+        item: {
+          id: number | string;
+          date: string | null;
         }
-      );
+      ) => {
+        acc[item.id] = new FormControl<boolean>(
+          { value: !!item.date, disabled: true },
+          {
+            nonNullable: true,
+          }
+        );
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {}
+    );
   }
 }

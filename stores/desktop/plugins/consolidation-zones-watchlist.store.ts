@@ -1,17 +1,15 @@
-import { ComponentStore } from '@ngrx/component-store';
 import { DesktopService } from '@desktop-data/desktop-data';
-import { Queue } from 'utils/queue';
 import { ConsolidationZonesState } from 'types/consolidation-zones';
 import { forkJoin, Observable, of, switchMap, tap } from 'rxjs';
-import { indicatorGetUniq } from 'utils/indicators-func';
 import { ActiveZone, ChartFigure } from 'types/chart';
 import { map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { getPointsActiveZone } from 'utils/transform-consolidation-zones';
 import { MAP_COLOR_CONSOLIDATION } from 'types/color';
+import { WithQueue } from '../core/with-queue.abstract';
+import { getJoinUniq } from 'utils/get-join-uniq';
 
-export class ConsolidationZonesStore extends ComponentStore<ConsolidationZonesState> {
-  private _queue: Queue<string, ActiveZone[] | null> = new Queue(9);
+export class ConsolidationZonesWatchlistStore extends WithQueue<ConsolidationZonesState> {
   private _colorConsolidation = MAP_COLOR_CONSOLIDATION;
 
   readonly selected$: Observable<number[] | null> = this.select((state: ConsolidationZonesState) => state.selected);
@@ -40,8 +38,8 @@ export class ConsolidationZonesStore extends ComponentStore<ConsolidationZonesSt
       return of(null);
     }
 
-    const uniqKey = indicatorGetUniq(params.id, params.from, params.to, ...params.interval);
-    const value = this._queue.getValue(uniqKey);
+    const uniqKey = getJoinUniq(params.id, params.from, params.to, ...params.interval);
+    const value = this.queue.getValue(uniqKey);
 
     if (value) {
       return of(value);
@@ -51,7 +49,7 @@ export class ConsolidationZonesStore extends ComponentStore<ConsolidationZonesSt
       params.interval.map((interval: number) => this._api.getConsolidationZones({ ...params, interval }))
     ).pipe(
       map((response: any) => this._getResponseData(response)),
-      tap((value: ActiveZone[]) => this._queue.setValue(uniqKey, value))
+      tap((value: ActiveZone[]) => this.queue.setValue(uniqKey, value))
     );
   }
 

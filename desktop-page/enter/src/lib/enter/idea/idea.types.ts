@@ -12,7 +12,7 @@ export interface IdeaEntry extends StockPositionEntry {
 }
 
 export interface IdeaTarget extends StockPositionTarget {
-  id: number;
+  id: number | string;
   date: string | null;
   profit: number;
 }

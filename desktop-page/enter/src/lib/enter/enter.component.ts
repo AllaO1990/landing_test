@@ -14,7 +14,6 @@ import { map, tap } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
-import { ChartCandlestickComponent } from 'ui-common';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
@@ -42,7 +41,7 @@ export interface TabItem {
     TuiTabs,
     TuiIcon,
     InstrumentComponent,
-    ChartCandlestickComponent,
+    // ChartCandlestickComponent,
     LoaderComponent,
   ],
   templateUrl: './enter.component.html',

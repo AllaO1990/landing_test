@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import { TuiDialogContext, TuiButton } from '@taiga-ui/core';
+import { TuiButton, TuiDialogContext } from '@taiga-ui/core';
 import { StockGroup } from 'types/stock';
 
 type Context = TuiDialogContext<boolean, StockGroup>;
@@ -14,6 +14,7 @@ type Context = TuiDialogContext<boolean, StockGroup>;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent {
+  readonly size = 's';
   readonly context: Context = inject(POLYMORPHEUS_CONTEXT) as Context;
 
   get data() {

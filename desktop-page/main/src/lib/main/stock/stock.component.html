@@ -1,4 +1,3 @@
-<!--<tui-loader class="loader" [overlay]="true" [showLoader]="!((groups$ | async) || false)">-->
 <div class="list">
   <div class="list__action action">
     <form class="action__form" *ngIf="!isRename; else rename">
@@ -13,6 +12,7 @@
           <tui-data-list>
             <button
               tuiOption
+              iconStart="@tui.plus"
               (click)="onEdit($event, default, 'new')">
               <tui-icon icon="@tui.plus"></tui-icon>
               Добавить список
@@ -55,7 +55,6 @@
     (selected)="onSelect($event)">
   </vt-stock-list>
 </div>
-<!--</tui-loader>-->
 
 <ng-template #load>
   <div class="loader">

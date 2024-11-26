@@ -2,12 +2,17 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } 
 import { OUT_CONSTANTS } from './out.constants';
 import { OutEnums } from './out.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { Position } from 'types/position';
 import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TuiBooleanHandler } from '@taiga-ui/cdk';
+import { TuiActiveZone, TuiAutoFocus, TuiBooleanHandler, TuiObscured } from '@taiga-ui/cdk';
+import { OutTableComponent } from './table/table.component';
+import { TuiBlock, TuiFilter } from '@taiga-ui/kit';
+import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiButton, TuiDropdown } from '@taiga-ui/core';
+import { AsyncPipe } from '@angular/common';
 
 interface FilterListItem {
   id: string;
@@ -17,6 +22,21 @@ interface FilterListItem {
 
 @Component({
   selector: 'vt-out',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    OutTableComponent,
+    TuiFilter,
+    TuiInputModule,
+    TuiTextfieldControllerModule,
+    TuiButton,
+    ...TuiDropdown,
+    TuiActiveZone,
+    TuiObscured,
+    AsyncPipe,
+    TuiBlock,
+    TuiAutoFocus,
+  ],
   templateUrl: './out.component.html',
   styleUrls: ['./out.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

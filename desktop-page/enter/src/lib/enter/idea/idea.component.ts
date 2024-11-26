@@ -76,7 +76,7 @@ export class EnterIdeaComponent {
     event.preventDefault();
 
     if (this.listTarget) {
-      this.listTarget = this.listTarget.filter((item: { id: number }) => item.id !== data.id);
+      this.listTarget = this.listTarget.filter((item: { id: number | string }) => item.id !== data.id);
     }
   }
 }
