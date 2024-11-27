@@ -10,11 +10,13 @@ import { FiguresStore } from './plugins/figures.store';
 import { StockPositionStore } from './plugins/stock-position.store';
 import { StockIdeaStore } from './plugins/stock-idea.store';
 import { StockListStore } from './plugins/stock-list.store';
+import { StockWatchStore } from 'stores/plugins/stock-watch.store';
 
 export class FacadeStore {
   readonly stockList = this._buildStockList();
   readonly positionList = this._buildStockPosition();
   readonly ideaList = this._buildStockIdea();
+  readonly watchList = this._buildStockWatch();
 
   constructor(private readonly _api: DesktopService) {}
 
@@ -52,6 +54,10 @@ export class FacadeStore {
 
   private _buildStockPosition() {
     return new StockPositionStore(this._api);
+  }
+
+  private _buildStockWatch() {
+    return new StockWatchStore(this._api);
   }
 
   private _buildStockIdea() {

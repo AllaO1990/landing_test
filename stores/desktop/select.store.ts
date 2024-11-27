@@ -8,6 +8,7 @@ import { StockEvent } from 'types/stock-event';
 export interface SelectState {
   event: null | StockEvent;
   instrument: null | StockInstrument;
+  watch: null | StockInstrument;
   position: null | Position;
   idea: null | Idea;
   group: null | StockGroup;
@@ -15,6 +16,7 @@ export interface SelectState {
 
 export class SelectStore extends ComponentStore<SelectState> {
   readonly instrument$: Observable<null | StockInstrument> = this.select((state: SelectState) => state.instrument);
+  readonly watch$: Observable<null | StockInstrument> = this.select((state: SelectState) => state.watch);
   readonly position$: Observable<null | Position> = this.select((state: SelectState) => state.position);
   readonly idea$: Observable<null | Idea> = this.select((state: SelectState) => state.idea);
   readonly group$: Observable<null | StockGroup> = this.select((state: SelectState) => state.group);
@@ -27,12 +29,18 @@ export class SelectStore extends ComponentStore<SelectState> {
       idea: null,
       group: null,
       event: null,
+      watch: null,
     });
   }
 
   updateInstrument = this.updater((state: SelectState, instrument: null | StockInstrument) => ({
     ...state,
     instrument,
+  }));
+
+  updateWatch = this.updater((state: SelectState, watch: null | StockInstrument) => ({
+    ...state,
+    watch,
   }));
 
   updatePosition = this.updater((state: SelectState, position: null | Position) => ({

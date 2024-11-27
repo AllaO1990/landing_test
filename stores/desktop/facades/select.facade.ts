@@ -13,6 +13,7 @@ export class SelectFacade {
   readonly instrument$: Observable<null | StockInstrument> = this._store.selected.instrument$;
   readonly position$: Observable<null | Position> = this._store.selected.position$;
   readonly idea$: Observable<null | Idea> = this._store.selected.idea$;
+  readonly watch$: Observable<null | StockInstrument> = this._store.selected.watch$;
   readonly group$: Observable<null | StockGroup> = this._store.selected.group$;
   readonly event$: Observable<null | StockEvent> = this._store.selected.event$;
 

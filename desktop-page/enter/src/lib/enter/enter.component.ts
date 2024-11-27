@@ -5,8 +5,6 @@ import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { combineLatest, filter, Observable, of, shareReplay, switchMap } from 'rxjs';
-import { DESKTOP_STORE } from 'tokens/desktop';
-import { DesktopLkStore } from 'stores/desktop';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
@@ -17,6 +15,7 @@ import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './ente
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
+import { SelectFacade } from 'stores/facades/select.facade';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -49,21 +48,21 @@ export interface TabItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VtEnterComponent {
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _select: SelectFacade = inject(SelectFacade);
 
   public readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
 
-  readonly data$: Observable<any> = this._store.event$.pipe(
+  readonly data$: Observable<any> = this._select.event$.pipe(
     filter((event: StockEvent | null): event is StockEvent => event !== null),
     switchMap((event: StockEvent) => {
       if (event.type === EventSelected.POSITION) {
-        return this._store.selectedPosition$;
+        return this._select.position$;
       }
 
       if (event.type === EventSelected.IDEA) {
-        return this._store.selectedIdea$;
+        return this._select.idea$;
       }
 
       return of(null);

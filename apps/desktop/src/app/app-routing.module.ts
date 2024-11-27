@@ -30,10 +30,10 @@ export const routes: Routes = [
             outlet: 'toolbar-main',
             loadComponent: () => import('main').then((m) => m.ToolbarSearchComponent),
           },
-          // {
-          //   path: '',
-          //   loadComponent: () => import('main').then((m) => m.MainComponent),
-          // },
+          {
+            path: '',
+            loadComponent: () => import('main').then((m) => m.MainComponent),
+          },
         ],
       },
       //   {

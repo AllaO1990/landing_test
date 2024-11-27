@@ -8,6 +8,8 @@ import { filter, map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { ComponentStore } from '@ngrx/component-store';
 import { StockId, StockInstrument, StockListItems } from 'types/stock';
+import { Position } from 'types/position';
+import { Idea } from 'types/idea';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -19,6 +21,7 @@ export class MainStore extends ComponentStore<any> {
   readonly stock = this._facade.stockList;
   readonly idea = this._facade.ideaList;
   readonly position = this._facade.positionList;
+  readonly watch = this._facade.watchList;
 
   constructor(private readonly api: DesktopService) {
     super();
@@ -36,24 +39,75 @@ export class MainStore extends ComponentStore<any> {
 
     this.stock.loadList();
     this.stock.loadGroup();
+    this.watch.load();
     this.idea.load(timerSource);
     this.position.load(timerSource);
 
     this.onChangeInstrument(this.selected.event$);
+    this.onChangePosition(this.selected.event$);
+    this.onChangeIdea(this.selected.event$);
+    this.onChangeWatch(this.selected.event$);
   }
 
   onChangeInstrument = this.effect((source$: Observable<null | StockEvent>) =>
     combineLatest([
-      source$.pipe(
-        filter((event: null | StockEvent): event is StockEvent => event !== null),
-        filter((event: StockEvent) => event.type === EventSelected.STOCK_LIST),
-        map((event: StockEvent) => event.id),
-        distinctUntilChanged()
-      ),
+      source$.pipe(this._getIdFrom(EventSelected.STOCK_LIST)),
       this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
       map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id)),
-      tap((instrument: StockInstrument | undefined) => this.selected.updateInstrument(instrument || null))
+      tap((instrument: StockInstrument | undefined) => this._updateSelected(instrument || null))
     )
   );
+
+  onChangePosition = this.effect((source$: Observable<StockEvent | null>) =>
+    combineLatest([
+      source$.pipe(this._getIdFrom(EventSelected.POSITION)),
+      this._facade.positionList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+    ]).pipe(
+      map(([id, list]: [StockId, Position[]]) => list.find((item: Position) => item.id === id)),
+      tap((position: Position | undefined) => this._updateSelected(null, position || null))
+    )
+  );
+
+  onChangeIdea = this.effect((source$: Observable<StockEvent | null>) =>
+    combineLatest([
+      source$.pipe(this._getIdFrom(EventSelected.IDEA)),
+      this._facade.ideaList.list$.pipe(filter((list: Idea[] | null): list is Idea[] => list !== null)),
+    ]).pipe(
+      map(([id, list]: [StockId, Idea[]]) => list.find((item: Idea) => item.id === id)),
+      tap((idea: Idea | undefined) => this._updateSelected(null, null, idea || null))
+    )
+  );
+
+  onChangeWatch = this.effect((source$: Observable<StockEvent | null>) =>
+    combineLatest([
+      source$.pipe(this._getIdFrom(EventSelected.WATCH_LIST)),
+      this._facade.watchList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
+    ]).pipe(
+      map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id)),
+      tap((instrument: StockInstrument | undefined) => this._updateSelected(null, null, null, instrument || null))
+    )
+  );
+
+  private _updateSelected(
+    instrument: StockInstrument | null = null,
+    position: Position | null = null,
+    idea: Idea | null = null,
+    watch: StockInstrument | null = null
+  ): void {
+    this.selected.updateInstrument(instrument);
+    this.selected.updatePosition(position);
+    this.selected.updateIdea(idea);
+    this.selected.updateWatch(watch);
+  }
+
+  private _getIdFrom(type: EventSelected) {
+    return (source$: Observable<StockEvent | null>) =>
+      source$.pipe(
+        filter((event: null | StockEvent): event is StockEvent => event !== null),
+        filter((event: StockEvent) => event.type === type),
+        map((event: StockEvent) => event.id),
+        distinctUntilChanged()
+      );
+  }
 }

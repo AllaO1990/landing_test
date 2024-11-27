@@ -13,6 +13,7 @@ import { SelectFacade } from 'stores/facades/select.facade';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { PositionFacade } from 'stores/facades/position.facade';
 import { TabsComponent } from 'ui-common/lib/tabs';
+import { OutComponent } from './out/out.component';
 
 @Component({
   selector: 'lib-main',
@@ -22,6 +23,7 @@ import { TabsComponent } from 'ui-common/lib/tabs';
     NgFor,
     NgIf,
     TabsComponent,
+    OutComponent,
     // EntryModule,
     // TabsComponent,
     // EntryModule,

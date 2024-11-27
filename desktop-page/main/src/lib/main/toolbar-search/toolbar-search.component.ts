@@ -10,6 +10,7 @@ import { EventSelected } from 'types/events';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { SelectFacade } from 'stores/facades/select.facade';
+import { SearchDialogComponent } from 'ui-common/lib/search-dialog';
 
 @Component({
   selector: 'lib-toolbar-search',
@@ -28,7 +29,7 @@ export class ToolbarSearchComponent {
 
   public readonly selected$: Observable<StockInstrument | null> = this._select.instrument$;
 
-  private _loadComponent: Promise<PolymorpheusComponent<unknown>> | null = null;
+  private _loadComponent: Promise<PolymorpheusComponent<SearchDialogComponent>> | null = null;
 
   public trackByIndex(index: number): number {
     return index;
