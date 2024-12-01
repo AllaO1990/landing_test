@@ -9,7 +9,7 @@ import { Params, RouterOutlet } from '@angular/router';
 //   IndicatorEmaStore,
 //   IndicatorSmaStore,
 //   PositionStore,
-//   StockListStore,
+//   _stockListStore,
 // } from 'stores/desktop';
 import { DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
@@ -29,7 +29,7 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
 // const createStore = (api: DesktopService) =>
 //   new DesktopLkStore(
 //     api,
-//     new StockListStore(api),
+//     new _stockListStore(api),
 //     new EntryStore(api),
 //     new PositionStore(api),
 //     new ChartStore(api),

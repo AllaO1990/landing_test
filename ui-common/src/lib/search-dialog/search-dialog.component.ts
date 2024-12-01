@@ -51,7 +51,7 @@ export class SearchDialogComponent {
     return this.form.get('search') as FormControl;
   }
 
-  readonly list$: Observable<StockListItems | null> = this._store.list$.pipe(
+  readonly list$: Observable<StockListItems | null> = this._store.listInstrument$.pipe(
     switchMap((stock: StockListItems | null) =>
       this.controlSearch.valueChanges.pipe(
         debounceTime(300),

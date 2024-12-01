@@ -1,6 +1,6 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
-import { StockGroup, StockInstrument } from 'types/stock';
+import { StockId, StockInstrument } from 'types/stock';
 import { Position } from 'types/position';
 import { Idea } from 'types/idea';
 import { StockEvent } from 'types/stock-event';
@@ -11,7 +11,7 @@ export interface SelectState {
   watch: null | StockInstrument;
   position: null | Position;
   idea: null | Idea;
-  group: null | StockGroup;
+  list: null | StockId[];
 }
 
 export class SelectStore extends ComponentStore<SelectState> {
@@ -19,7 +19,7 @@ export class SelectStore extends ComponentStore<SelectState> {
   readonly watch$: Observable<null | StockInstrument> = this.select((state: SelectState) => state.watch);
   readonly position$: Observable<null | Position> = this.select((state: SelectState) => state.position);
   readonly idea$: Observable<null | Idea> = this.select((state: SelectState) => state.idea);
-  readonly group$: Observable<null | StockGroup> = this.select((state: SelectState) => state.group);
+  readonly list$: Observable<null | StockId[]> = this.select((state: SelectState) => state.list);
   readonly event$: Observable<null | StockEvent> = this.select((state: SelectState) => state.event);
 
   constructor() {
@@ -27,9 +27,9 @@ export class SelectStore extends ComponentStore<SelectState> {
       instrument: null,
       position: null,
       idea: null,
-      group: null,
       event: null,
       watch: null,
+      list: null,
     });
   }
 
@@ -53,13 +53,13 @@ export class SelectStore extends ComponentStore<SelectState> {
     idea,
   }));
 
-  updateGroup = this.updater((state: SelectState, group: null | StockGroup) => ({
-    ...state,
-    group,
-  }));
-
   updateEvent = this.updater((state: SelectState, event: null | StockEvent) => ({
     ...state,
     event,
+  }));
+
+  updateList = this.updater((state: SelectState, list: null | StockId[]) => ({
+    ...state,
+    list,
   }));
 }

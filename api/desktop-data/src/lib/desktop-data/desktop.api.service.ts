@@ -6,7 +6,15 @@ import { ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Position, ResponsePosition, ResponsePositions } from 'types/position';
 import { Response, ResponseMessage } from 'types/response';
-import { Stock, StockId, StockInstrumentList, StockLinkListInstrument, StockPrice, WithLastPrice } from 'types/stock';
+import {
+  Stock,
+  StockId,
+  StockInstrumentList,
+  StockLinkListInstrument,
+  StockLists,
+  StockPrice,
+  WithLastPrice,
+} from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 import { IndicatorEmaParams } from 'types/indicator-ema';
@@ -52,8 +60,8 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/instruments?sub=true`);
   }
 
-  getInstrumentsLists(): Observable<Response<{ id: string; name: string }>> {
-    return this._http.get<Response<{ id: string; name: string }>>(`https://trade.gpn.dev/api/v1/instruments-lists`);
+  getInstrumentsLists(): Observable<Response<{ items: StockLists }>> {
+    return this._http.get<Response<{ items: StockLists }>>(`https://trade.gpn.dev/api/v1/instruments-lists`);
   }
 
   getInstrumentsListItems(id: StockId): Observable<Response<Stock>> {
@@ -84,6 +92,13 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<StockInstrumentList>>(`https://trade.gpn.dev/api/v1/instruments-lists/create`, {
       name,
     });
+  }
+
+  createDefaultInstrumentsListItems(): Observable<Response<{ items: StockLists }>> {
+    return this._http.post<Response<{ items: StockLists }>>(
+      `https://trade.gpn.dev/api/v1/instruments-lists/create-default`,
+      {}
+    );
   }
 
   deleteInstrumentsLists(id: string): Observable<Response<{ id: string }>> {

@@ -9,14 +9,16 @@ import { CandlesStore } from './plugins/candles.store';
 import { FiguresStore } from './plugins/figures.store';
 import { StockPositionStore } from './plugins/stock-position.store';
 import { StockIdeaStore } from './plugins/stock-idea.store';
-import { StockListStore } from './plugins/stock-list.store';
 import { StockWatchStore } from 'stores/plugins/stock-watch.store';
+import { StockListStore } from 'stores/plugins/stock-list.store';
+import { StockPriceStore } from 'stores/plugins/stock-price.store';
 
 export class FacadeStore {
   readonly stockList = this._buildStockList();
   readonly positionList = this._buildStockPosition();
   readonly ideaList = this._buildStockIdea();
   readonly watchList = this._buildStockWatch();
+  readonly priceList = this._buildStockPrice();
 
   constructor(private readonly _api: DesktopService) {}
 
@@ -66,5 +68,9 @@ export class FacadeStore {
 
   private _buildStockList() {
     return new StockListStore(this._api);
+  }
+
+  private _buildStockPrice() {
+    return new StockPriceStore(this._api);
   }
 }

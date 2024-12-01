@@ -10,6 +10,7 @@ import {
   StockId,
   StockInstrumentList,
   StockLinkListInstrument,
+  StockLists,
   StockParamsConsolidationZones,
 } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
@@ -90,6 +91,10 @@ export class DesktopStubService extends DesktopService {
   }
 
   createInstrumentsListItems(name: string): Observable<Response<{ id: string; name: string }>> {
+    return of();
+  }
+
+  createDefaultInstrumentsListItems(): Observable<Response<{ items: StockLists }>> {
     return of();
   }
 

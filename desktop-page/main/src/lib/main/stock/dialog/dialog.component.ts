@@ -2,13 +2,14 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { TuiButton, TuiDialogContext } from '@taiga-ui/core';
 import { StockGroup } from 'types/stock';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
 
 type Context = TuiDialogContext<boolean, StockGroup>;
 
 @Component({
   selector: 'lib-stock-dialog',
   standalone: true,
-  imports: [TuiButton],
+  imports: [TuiButton, TuiAutoFocus],
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

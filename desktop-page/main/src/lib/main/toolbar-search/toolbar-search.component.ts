@@ -7,7 +7,7 @@ import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { QueryParams } from 'utils/query-params';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventSelected } from 'types/events';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { SearchDialogComponent } from 'ui-common/lib/search-dialog';
@@ -15,7 +15,7 @@ import { SearchDialogComponent } from 'ui-common/lib/search-dialog';
 @Component({
   selector: 'lib-toolbar-search',
   standalone: true,
-  imports: [NgIf, AsyncPipe, TuiIcon],
+  imports: [NgIf, AsyncPipe, TuiIcon, JsonPipe],
   templateUrl: './toolbar-search.component.html',
   styleUrls: ['./toolbar-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,7 +29,7 @@ export class ToolbarSearchComponent {
 
   public readonly selected$: Observable<StockInstrument | null> = this._select.instrument$;
 
-  private _loadComponent: Promise<PolymorpheusComponent<SearchDialogComponent>> | null = null;
+  private _loadComponent: PolymorpheusComponent<SearchDialogComponent> | null = null;
 
   public trackByIndex(index: number): number {
     return index;
@@ -38,12 +38,12 @@ export class ToolbarSearchComponent {
   async onSearch(event: Event, selected: StockInstrument) {
     event.preventDefault();
 
-    this._loadComponent = import('ui-common/lib/search-dialog')
+    this._loadComponent = await import('ui-common/lib/search-dialog')
       .then((m) => m.SearchDialogComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
     this._dialogService
-      .open<StockInstrument | null>(await this._loadComponent, {
+      .open<StockInstrument | null>(this._loadComponent, {
         data: selected.ticker,
         appearance: 'search-dialog',
       })

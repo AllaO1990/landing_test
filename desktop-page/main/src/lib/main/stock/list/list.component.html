@@ -15,6 +15,7 @@
       class="list__viewport  tui-zero-scrollbar">
       <vt-stock-list-item
         class="list__item stock-item"
+        [class.stock-item--actions]="list.type.action | stockItemRemove"
         *cdkVirtualFor="let item of list.items; trackBy: trackByStockListItem"
         [value]="item.id"
         [formControl]="controlItem">
@@ -30,20 +31,33 @@
               [attr.alt]="item.name"
             />
           </div>
+
+
           <div
             tuiHint
-            [tuiHintContext]="item"
-            [tuiHintDirection]="'right'"
+            tuiHintDirection="right"
             class="stock-item__name">
             {{ item.ticker }}
+
             <tui-hint
+              *tuiHint
               class="hint"
-              *tuiHint="let data"
-              [@.disabled]="true">
-              <ng-container
-                [ngTemplateOutlet]="ticker"
-                [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
+              [@.disabled]="true"
+            >
+              You can expose the bubble component with
+              <code>*tuiHint</code>
+              directive to customize it
             </tui-hint>
+
+            <!--            <tui-hint-->
+            <!--              class="hint"-->
+            <!--              *tuiHint-->
+            <!--              [@.disabled]="true">-->
+            <!--              sdfsdfsdf-->
+            <!--              &lt;!&ndash;              <ng-container&ndash;&gt;-->
+            <!--              &lt;!&ndash;                [ngTemplateOutlet]="ticker"&ndash;&gt;-->
+            <!--              &lt;!&ndash;                [ngTemplateOutletContext]="{ $implicit: item}"></ng-container>&ndash;&gt;-->
+            <!--            </tui-hint>-->
           </div>
           <div
             class="stock-item__price stock-item__last"
@@ -61,7 +75,7 @@
             {{ item.changePercent | tuiFormatNumber | async }}%
           </div>
           <div
-            *ngIf="list.type | stockItemRemove"
+            *ngIf="list.type.action | stockItemRemove"
             class="stock-item__remove">
             <button
               class="remove"

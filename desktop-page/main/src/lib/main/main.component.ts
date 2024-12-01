@@ -14,6 +14,7 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { PositionFacade } from 'stores/facades/position.facade';
 import { TabsComponent } from 'ui-common/lib/tabs';
 import { OutComponent } from './out/out.component';
+import { StockComponent } from './stock/stock.component';
 
 @Component({
   selector: 'lib-main',
@@ -24,6 +25,8 @@ import { OutComponent } from './out/out.component';
     NgIf,
     TabsComponent,
     OutComponent,
+    StockComponent,
+    // StockComponent,
     // EntryModule,
     // TabsComponent,
     // EntryModule,

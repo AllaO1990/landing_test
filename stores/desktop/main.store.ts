@@ -1,7 +1,18 @@
 import { FacadeStore } from './facade';
 import { SelectStore } from './select.store';
 import { DesktopService } from '@desktop-data/desktop-data';
-import { combineLatest, distinctUntilChanged, Observable, shareReplay, tap, timer } from 'rxjs';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+  timer,
+} from 'rxjs';
 import { Injectable } from '@angular/core';
 import { StockEvent } from 'types/stock-event';
 import { filter, map } from 'rxjs/operators';
@@ -15,6 +26,8 @@ const TIMER_INTERVAL = 60 * 1000;
 
 @Injectable()
 export class MainStore extends ComponentStore<any> {
+  private _destroyed$ = new Subject<void>();
+
   private readonly _facade = new FacadeStore(this.api);
 
   readonly selected = new SelectStore();
@@ -22,6 +35,7 @@ export class MainStore extends ComponentStore<any> {
   readonly idea = this._facade.ideaList;
   readonly position = this._facade.positionList;
   readonly watch = this._facade.watchList;
+  readonly price = this._facade.priceList;
 
   constructor(private readonly api: DesktopService) {
     super();
@@ -39,7 +53,7 @@ export class MainStore extends ComponentStore<any> {
 
     this.stock.loadList();
     this.stock.loadGroup();
-    this.watch.load();
+
     this.idea.load(timerSource);
     this.position.load(timerSource);
 
@@ -48,6 +62,18 @@ export class MainStore extends ComponentStore<any> {
     this.onChangeIdea(this.selected.event$);
     this.onChangeWatch(this.selected.event$);
   }
+
+  onLoadPrice = (stream$: StockId[] | null) => {
+    this._destroyed$.next();
+
+    return this.price.load(
+      of(stream$).pipe(
+        switchMap(() => timer(0, TIMER_INTERVAL)),
+        takeUntil(this._destroyed$),
+        map(() => stream$)
+      )
+    );
+  };
 
   onChangeInstrument = this.effect((source$: Observable<null | StockEvent>) =>
     combineLatest([

@@ -1,3 +1,5 @@
+import { EventSelected } from './events';
+
 export enum StockGroupType {
   'DEFAULT' = 'default',
   'CUSTOM' = 'custom',
@@ -53,7 +55,10 @@ export interface StockInstrumentList {
  * Элемент из выпадающего списка для Stock
  */
 export interface StockGroup extends StockInstrumentList {
-  type: StockGroupType;
+  type: {
+    event: EventSelected.STOCK_LIST | EventSelected.WATCH_LIST;
+    action: StockGroupType;
+  };
 }
 
 export type StockGroups = StockGroup[];
@@ -93,3 +98,5 @@ export interface StockParamsConsolidationZones {
   from: string;
   to: string;
 }
+
+export type StockGroupList = StockGroup & { items: StockListItems };

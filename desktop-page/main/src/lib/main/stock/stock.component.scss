@@ -20,8 +20,10 @@
   transition: opacity 0.25s ease-in-out;
 
   button {
+    --t-size: 20px;
+
     &:before {
-      font-size: 1rem;
+      font-size: 12px;
     }
 
     &:not(:last-child) {
