@@ -34,7 +34,6 @@ export class MainStore extends ComponentStore<any> {
   readonly stock = this._facade.stockList;
   readonly idea = this._facade.ideaList;
   readonly position = this._facade.positionList;
-  readonly watch = this._facade.watchList;
   readonly price = this._facade.priceList;
 
   constructor(private readonly api: DesktopService) {
@@ -108,7 +107,7 @@ export class MainStore extends ComponentStore<any> {
   onChangeWatch = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([
       source$.pipe(this._getIdFrom(EventSelected.WATCH_LIST)),
-      this._facade.watchList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
+      this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
       map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id)),
       tap((instrument: StockInstrument | undefined) => this._updateSelected(null, null, null, instrument || null))

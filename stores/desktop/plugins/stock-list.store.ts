@@ -17,6 +17,7 @@ import { filter, map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { EventSelected } from 'types/events';
+import { sortText } from 'utils/sort-text';
 
 export interface StockState {
   list: null | StockListItems;
@@ -184,7 +185,7 @@ export class StockListStore extends ComponentStore<StockState> {
                 )
               ),
               this._api.getWatchInstrumentsListItems().pipe(
-                map((result: Response<Stock>) => result.data.items || []),
+                map((result: Response<Stock>) => this._sortWatchList(result.data.items)),
                 map((items: StockListItems): StockGroupList => ({ ...this._watchGroup, items }))
               ),
             ]).pipe(tap((list: StockGroupList[]) => this.updateGroup(list)))
@@ -274,4 +275,31 @@ export class StockListStore extends ComponentStore<StockState> {
       })
     )
   );
+
+  private _sortWatchList(list: StockListItems | null): StockListItems {
+    if (list === null) {
+      return [];
+    }
+    const { moex, crypto, forts } = list.reduce(
+      (acc: { moex: StockListItems; crypto: StockListItems; forts: StockListItems }, item: StockInstrument) => {
+        let type: 'moex' | 'crypto' | 'forts' = 'moex';
+
+        if (item.realExchange === 'moex') {
+          type = item.exchange === 'FORTS_EVENING' ? 'forts' : 'moex';
+        } else {
+          type = 'crypto';
+        }
+        acc[type].push(item);
+
+        return acc;
+      },
+      { moex: [], crypto: [], forts: [] }
+    );
+
+    return [
+      ...moex.sort((a, b) => sortText(a.ticker, b.ticker)),
+      ...forts.sort((a, b) => sortText(a.ticker, b.ticker)),
+      ...crypto.sort((a, b) => sortText(a.ticker, b.ticker)),
+    ];
+  }
 }
