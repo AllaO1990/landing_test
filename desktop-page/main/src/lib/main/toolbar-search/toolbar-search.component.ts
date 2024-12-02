@@ -7,15 +7,16 @@ import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { QueryParams } from 'utils/query-params';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventSelected } from 'types/events';
-import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { SearchDialogComponent } from 'ui-common/lib/search-dialog';
+import { LoaderComponent } from '@ui/components/loader';
 
 @Component({
   selector: 'lib-toolbar-search',
   standalone: true,
-  imports: [NgIf, AsyncPipe, TuiIcon, JsonPipe],
+  imports: [NgIf, AsyncPipe, TuiIcon, LoaderComponent],
   templateUrl: './toolbar-search.component.html',
   styleUrls: ['./toolbar-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

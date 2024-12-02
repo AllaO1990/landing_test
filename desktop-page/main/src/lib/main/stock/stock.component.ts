@@ -77,11 +77,8 @@ export class StockComponent {
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _dialogApproveContent: PolymorpheusContent = new PolymorpheusComponent(
-    DialogComponent,
-    this._injector
-  );
 
+  private _loadDialogApproveContent: PolymorpheusContent<DialogComponent> | null = null;
   private _loadComponent: PolymorpheusComponent<SearchDialogComponent> | null = null;
 
   readonly size = 's';
@@ -203,10 +200,14 @@ export class StockComponent {
     this.controlRename.patchValue(item);
   }
 
-  onRemove(event: Event, item: StockGroup): void {
+  async onRemove(event: Event, item: StockGroup) {
     event.stopPropagation();
 
-    this.showDialog<boolean, StockGroup>(this._dialogApproveContent, {
+    this._loadDialogApproveContent = await import('./dialog')
+      .then((m) => m.DialogComponent)
+      .then((c) => new PolymorpheusComponent(c, this._injector));
+
+    this.showDialog<boolean, StockGroup>(this._loadDialogApproveContent, {
       data: item,
       appearance: 'dialog-remove',
     }).subscribe((result: boolean) => {
@@ -256,22 +257,24 @@ export class StockComponent {
    */
   private _initGroupSelected(): void {
     combineLatest([
-      this._select.event$.pipe(filter((event: null | StockEvent): event is StockEvent => event !== null)),
+      this.event$.pipe(filter((event: null | StockEvent): event is StockEvent => event !== null)),
       this._group$.pipe(filter((list: StockGroupList[] | null): list is StockGroupList[] => list !== null)),
     ])
       .pipe(
         takeUntilDestroyed(this._destroyRef),
         take(1),
-        map(([event, list]: [StockEvent, StockGroupList[]]): StockGroupList | null => {
+        map(([event, list]: [StockEvent, StockGroupList[]]): StockGroupList => {
+          const selected: StockGroupList = list.find((item: StockGroupList) => item.id === 'watch') || list[0];
+
           if (event.type === EventSelected.WATCH_LIST) {
-            return list.find((item: StockGroupList) => item.id === 'watch') || null;
+            return selected;
           }
 
           return (
             list
               .filter((item: StockGroupList) => item.id !== 'watch')
               .find((group: StockGroupList) => group.items.find((item: StockInstrument) => item.id === event.id)) ||
-            null
+            selected
           );
         })
       )

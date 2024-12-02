@@ -1,5 +1,5 @@
 <div class="toolbar">
-  <div class="toolbar__ticker" *ngIf="(selected$ | async) as selected">
+  <div class="toolbar__ticker" *ngIf="(selected$ | async) as selected; else load">
     <div class="ticker" (click)="onSearch($event, selected)">
       <tui-icon icon="@tui.search"></tui-icon>
       <div class="ticker__name">
@@ -9,3 +9,7 @@
   </div>
   <div class="toolbar__space"></div>
 </div>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>

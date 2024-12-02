@@ -79,8 +79,8 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.STOCK_LIST)),
       this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
-      map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id)),
-      tap((instrument: StockInstrument | undefined) => this._updateSelected(instrument || null))
+      map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id) || null),
+      tap((instrument: StockInstrument | null) => this._updateSelected(instrument))
     )
   );
 
@@ -89,8 +89,8 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.POSITION)),
       this._facade.positionList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
-      map(([id, list]: [StockId, Position[]]) => list.find((item: Position) => item.id === id)),
-      tap((position: Position | undefined) => this._updateSelected(null, position || null))
+      map(([id, list]: [StockId, Position[]]) => list.find((item: Position) => item.id === id) || null),
+      tap((position: Position | null) => this._updateSelected(position && position.instrument, position || null))
     )
   );
 
@@ -100,7 +100,7 @@ export class MainStore extends ComponentStore<any> {
       this._facade.ideaList.list$.pipe(filter((list: Idea[] | null): list is Idea[] => list !== null)),
     ]).pipe(
       map(([id, list]: [StockId, Idea[]]) => list.find((item: Idea) => item.id === id)),
-      tap((idea: Idea | undefined) => this._updateSelected(null, null, idea || null))
+      tap((idea: Idea | undefined) => this._updateSelected(idea && idea.instrument, null, idea || null))
     )
   );
 
@@ -109,8 +109,8 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.WATCH_LIST)),
       this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
-      map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id)),
-      tap((instrument: StockInstrument | undefined) => this._updateSelected(null, null, null, instrument || null))
+      map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id) || null),
+      tap((instrument: StockInstrument | null) => this._updateSelected(instrument, null, null, instrument))
     )
   );
 
