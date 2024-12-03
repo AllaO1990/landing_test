@@ -14,7 +14,7 @@ export class SelectFacade {
   readonly instrument$: Observable<null | StockInstrument> = this._select.instrument$;
   readonly position$: Observable<null | Position> = this._select.position$;
   readonly idea$: Observable<null | Idea> = this._select.idea$;
-  readonly watch$: Observable<null | StockInstrument> = this._select.watch$;
+  readonly group$: Observable<null | StockId> = this._select.group$;
   readonly list$: Observable<null | StockId[]> = this._select.list$;
   readonly event$: Observable<null | StockEvent> = this._select.event$;
 
@@ -28,5 +28,9 @@ export class SelectFacade {
 
   updateList(list: null | StockId[]): void {
     this._select.updateList(list);
+  }
+
+  updateGroup(group: null | StockId): void {
+    this._select.updateGroup(group);
   }
 }

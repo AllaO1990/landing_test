@@ -15,6 +15,8 @@ import { PositionFacade } from 'stores/facades/position.facade';
 import { TabsComponent } from 'ui-common/lib/tabs';
 import { OutComponent } from './out/out.component';
 import { StockComponent } from './stock/stock.component';
+import { EntryModule } from './entry/entry.module';
+import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 
 @Component({
   selector: 'lib-main',
@@ -26,6 +28,8 @@ import { StockComponent } from './stock/stock.component';
     TabsComponent,
     OutComponent,
     StockComponent,
+    EntryModule,
+    ChartCandlestickComponent,
     // StockComponent,
     // EntryModule,
     // TabsComponent,

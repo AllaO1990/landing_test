@@ -73,7 +73,6 @@ export class StockListRemovePipe implements PipeTransform {
 })
 export class StockListComponent implements AfterContentInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  // private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _list$: Subject<StockListWithType | null> = new BehaviorSubject<StockListWithType | null>(null);
   private readonly _event$: Subject<StockEvent | null> = new BehaviorSubject<StockEvent | null>(null);
 
@@ -84,7 +83,7 @@ export class StockListComponent implements AfterContentInit {
     switchMap((list: StockListWithType) =>
       this.controlItem.valueChanges.pipe(
         map((value: string) => list.items.find((item: StockListItemWithPrice) => item.id === value)!),
-        map((instrument: StockInstrument) => ({ id: instrument.id, type: list.type.event }))
+        map((instrument: StockInstrument) => ({ id: instrument.id, type: list.type.event, group: list.id }))
       )
     )
   );
@@ -126,15 +125,6 @@ export class StockListComponent implements AfterContentInit {
         map(([event]: [StockEvent | null, StockListWithType | null]) => event)
       )
       .subscribe((event: StockEvent | null) => this.controlItem.patchValue(event && event.id, { emitEvent: false }));
-
-    //   .pipe(
-    // //     ,
-    // //     map(([event, type]: [StockEvent | null, EventSelected | null]) => this._getValue(event, type)),
-    // //     distinctUntilChanged()
-    //   )
-    //   .subscribe((value: StockId | null) => {
-    //     this.controlItem.patchValue(value, { emitEvent: false });
-    //   });
   }
 
   private _getValue(event: StockEvent | null, type: EventSelected | null): StockId | null {

@@ -16,8 +16,9 @@
       <vt-stock-list-item
         class="list__item stock-item"
         [class.stock-item--actions]="list.type.action | stockItemRemove"
-        *cdkVirtualFor="let item of list.items; trackBy: trackByStockListItem"
+        *cdkVirtualFor="let item of list.items; trackBy: trackByStockListItem; templateCacheSize: 0"
         [value]="item.id"
+        #checkbox='stockListItem'
         [formControl]="controlItem">
         <div
           class="stock-item__row"
@@ -31,7 +32,6 @@
               [attr.alt]="item.name"
             />
           </div>
-
 
           <div
             tuiHint

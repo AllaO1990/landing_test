@@ -31,7 +31,6 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { StockListComponent } from './list';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
 import { SearchDialogComponent } from 'ui-common/lib/search-dialog';
-import { SelectFacade } from 'stores/facades/select.facade';
 import { StockEvent } from 'types/stock-event';
 
 type IsRename = 'edit' | 'new' | false;
@@ -73,7 +72,6 @@ export class StockComponent {
   private readonly _injector: Injector = inject(Injector);
   private readonly _service: StockService = inject(StockService);
   private readonly _stock: StockListFacade = inject(StockListFacade);
-  private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
@@ -264,6 +262,14 @@ export class StockComponent {
         takeUntilDestroyed(this._destroyRef),
         take(1),
         map(([event, list]: [StockEvent, StockGroupList[]]): StockGroupList => {
+          if (event.group) {
+            const group = list.find((item: StockGroupList) => item.id === event.group) || null;
+
+            if (group) {
+              return group;
+            }
+          }
+
           const selected: StockGroupList = list.find((item: StockGroupList) => item.id === 'watch') || list[0];
 
           if (event.type === EventSelected.WATCH_LIST) {

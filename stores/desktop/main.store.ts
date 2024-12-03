@@ -79,8 +79,11 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.STOCK_LIST)),
       this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
-      map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id) || null),
-      tap((instrument: StockInstrument | null) => this._updateSelected(instrument))
+      tap(([event, list]: [StockEvent, StockListItems]) => {
+        const find = list.find((item: StockInstrument) => item.id === event.id) || null;
+
+        this._updateSelected(find, null, null, event.group);
+      })
     )
   );
 
@@ -89,8 +92,10 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.POSITION)),
       this._facade.positionList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
-      map(([id, list]: [StockId, Position[]]) => list.find((item: Position) => item.id === id) || null),
-      tap((position: Position | null) => this._updateSelected(position && position.instrument, position || null))
+      tap(([event, list]: [StockEvent, Position[]]) => {
+        const find = list.find((item: Position) => item.id === event.id) || null;
+        this._updateSelected(find && find.instrument, find);
+      })
     )
   );
 
@@ -99,8 +104,10 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.IDEA)),
       this._facade.ideaList.list$.pipe(filter((list: Idea[] | null): list is Idea[] => list !== null)),
     ]).pipe(
-      map(([id, list]: [StockId, Idea[]]) => list.find((item: Idea) => item.id === id)),
-      tap((idea: Idea | undefined) => this._updateSelected(idea && idea.instrument, null, idea || null))
+      tap(([event, list]: [StockEvent, Idea[]]) => {
+        const find = list.find((item: Idea) => item.id === event.id) || null;
+        this._updateSelected(find && find.instrument, null, find);
+      })
     )
   );
 
@@ -109,8 +116,10 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.WATCH_LIST)),
       this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
-      map(([id, list]: [StockId, StockListItems]) => list.find((item: StockInstrument) => item.id === id) || null),
-      tap((instrument: StockInstrument | null) => this._updateSelected(instrument, null, null, instrument))
+      tap(([event, list]: [StockEvent, StockListItems]) => {
+        const find = list.find((item: StockInstrument) => item.id === event.id) || null;
+        this._updateSelected(find, null, null, event.group);
+      })
     )
   );
 
@@ -118,12 +127,12 @@ export class MainStore extends ComponentStore<any> {
     instrument: StockInstrument | null = null,
     position: Position | null = null,
     idea: Idea | null = null,
-    watch: StockInstrument | null = null
+    group: StockId | null = null
   ): void {
     this.selected.updateInstrument(instrument);
     this.selected.updatePosition(position);
     this.selected.updateIdea(idea);
-    this.selected.updateWatch(watch);
+    this.selected.updateGroup(group);
   }
 
   private _getIdFrom(type: EventSelected) {
@@ -131,7 +140,7 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(
         filter((event: null | StockEvent): event is StockEvent => event !== null),
         filter((event: StockEvent) => event.type === type),
-        map((event: StockEvent) => event.id),
+        map((event: StockEvent) => event),
         distinctUntilChanged()
       );
   }

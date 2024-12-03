@@ -1,7 +1,7 @@
 <div class="container container--{{ breakpoint$ | async }}">
   <div [style.margin-left.%]="activeItemIndex * -100" class="container__widget">
     <div class="widget vt-chart-container">
-      <!--      <lib-chart></lib-chart>-->
+      <lib-chart></lib-chart>
     </div>
 
     <div class="widget stock">
@@ -9,7 +9,7 @@
     </div>
 
     <div class="widget entry">
-      <!--      <vt-entry [data]="ideaList$ | async"></vt-entry>-->
+      <vt-entry [data]="ideaList$ | async"></vt-entry>
     </div>
 
     <div class="widget out">

@@ -13,7 +13,16 @@ import { Params, RouterOutlet } from '@angular/router';
 // } from 'stores/desktop';
 import { DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
-import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, shareReplay } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  shareReplay,
+  startWith,
+} from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
@@ -76,9 +85,19 @@ export class LkComponent implements OnInit {
   ngOnInit(): void {
     const stream$ = this._queryParams.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-    combineLatest([this._getParamsKey<EventSelected>('type', stream$), this._getParamsKey<StockId>('id', stream$)])
+    combineLatest([
+      this._getParamsKey<EventSelected>('type', stream$),
+      this._getParamsKey<StockId>('id', stream$),
+      this._getParamsKey<StockId>('group', stream$).pipe(startWith('')),
+    ])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(300))
-      .subscribe(([type, id]: [EventSelected, StockId]) => this._select.updateEvent({ type, id }));
+      .subscribe(([type, id, group]: [EventSelected, StockId, StockId | undefined]) =>
+        this._select.updateEvent({
+          type,
+          id,
+          group,
+        })
+      );
 
     if (!this.queryId) {
       this._queryParams.update({
