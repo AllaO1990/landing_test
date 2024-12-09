@@ -148,14 +148,19 @@ export class DesktopApiService extends DesktopService {
         ? new Date(new Date(lastYear - 1, 0, 1, 23).setUTCHours(0, 0, 0, 0)).toISOString()
         : new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString();
 
-    return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
-      params: {
-        id: selected?.source,
-        interval: Timeframe.CANDLE_INTERVAL_DAY,
-        from,
-        to: new Date(Date.now()).toISOString(),
-      },
-    });
+    return this._http
+      .get<Response<any>>(`https://trade.gpn.dev/api/v1/candles`, {
+        params: {
+          id: selected?.source,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+          from,
+          to: new Date(Date.now()).toISOString(),
+        },
+      })
+      .pipe(
+        filter((response: Response<any>) => response && response.message === ResponseMessage.success),
+        map((response: Response<any>) => response.data)
+      );
   }
 
   getWatchlistConsolidationZone(id: StockId): Observable<any> {

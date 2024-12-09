@@ -24,6 +24,16 @@ import { Idea } from 'types/idea';
 
 const TIMER_INTERVAL = 60 * 1000;
 
+const timerWithIndex = <T>(
+  source$: Observable<T>,
+  interval: number = 10000,
+  start: number = 0
+): Observable<{ source: T; index: number }> => {
+  return source$.pipe(
+    switchMap((source: T) => timer(start, interval).pipe(map((index: number) => ({ source, index }))))
+  );
+};
+
 @Injectable()
 export class MainStore extends ComponentStore<any> {
   private _destroyed$ = new Subject<void>();
@@ -35,6 +45,7 @@ export class MainStore extends ComponentStore<any> {
   readonly idea = this._facade.ideaList;
   readonly position = this._facade.positionList;
   readonly price = this._facade.priceList;
+  readonly candles = this._facade.candles;
 
   constructor(private readonly api: DesktopService) {
     super();
@@ -60,6 +71,8 @@ export class MainStore extends ComponentStore<any> {
     this.onChangePosition(this.selected.event$);
     this.onChangeIdea(this.selected.event$);
     this.onChangeWatch(this.selected.event$);
+
+    this.candles.loadCandles(timerWithIndex(this.selected.instrument$, TIMER_INTERVAL));
   }
 
   onLoadPrice = (stream$: StockId[] | null) => {

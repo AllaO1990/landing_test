@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { combineLatest, Observable, of, shareReplay, startWith, tap } from 'rxjs';
+import { combineLatest, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { ButtonWithListComponent } from './button-with-list';
 import {
@@ -14,14 +14,14 @@ import {
 } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiIcon, TuiLoader } from '@taiga-ui/core';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
 import { Timeframe } from 'types/timeframe';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartComponent } from '@ui/components/chart';
-import { SelectFacade } from 'stores/facades/select.facade';
 import { LoaderComponent } from '@ui/components/loader';
 import { StockEvent } from 'types/stock-event';
+import { CandlesFacade } from 'stores/facades/candles.facade';
 
 interface IndicatorListItem<T = string> {
   name: string;
@@ -50,11 +50,10 @@ interface IndicatorListItem<T = string> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartCandlestickComponent implements OnInit {
-  // private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _store: CandlesFacade = inject(CandlesFacade);
   private readonly _destroy$: DestroyRef = inject(DestroyRef);
-  private readonly _selectFacade: SelectFacade = inject(SelectFacade);
 
-  toggleLegend = true;
+  toggleLegend = false;
   toggleActions = true;
 
   emaIcon = CHART_EMA_ICON;
@@ -76,13 +75,24 @@ export class ChartCandlestickComponent implements OnInit {
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
   readonly controlZone: FormControl<IndicatorListItem<Timeframe>[] | null> = new FormControl([this.zoneList[0]]);
 
-  readonly selected$: Observable<StockInstrument | null> = this._selectFacade.instrument$;
-  readonly candles$: Observable<[string | number, number, number, number, number][] | null> = of(null).pipe(
-    shareReplay(1)
+  readonly selected$: Observable<StockInstrument | null> = this._store.selected$;
+
+  readonly isUpdate$: Observable<boolean | null> = this._store.selected$.pipe(
+    filter((select: null | StockInstrument): select is StockInstrument => select !== null),
+    switchMap((select: StockInstrument) =>
+      this._store.instrument$.pipe(
+        filter((candles: any | null): candles is any => candles !== null),
+        map((candles: any) => select.id !== candles.id)
+      )
+    ),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
-  // readonly candles$: Observable<[string | number, number, number, number, number][] | null> = this._store.candles$.pipe(
-  //   shareReplay(1)
-  // );
+
+  readonly candles$: Observable<any | null> = this._store.instrument$.pipe(
+    shareReplay(1),
+    tap((data) => console.log(data))
+  );
+
   // readonly indicators$: Observable<any[]> = combineLatest([this._store.indicatorEma$, this._store.indicatorSma$]).pipe(
   //   debounceTime(0),
   //   map((data: any[][]) => data.flat())

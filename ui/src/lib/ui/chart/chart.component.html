@@ -1,14 +1,17 @@
 <highcharts-chart
   class="vt-highcharts"
-  #highcharts
   [Highcharts]="Highcharts"
-  (chartInstance)="chartEvent($event)"
   [constructorType]="'stockChart'"
-  [options]="chartOptions"
-  (mousewheel)="onMouseWheel($event)"
+  (chartInstance)="onInstance($event)"
+  (wheel)="onMouseWheel($event)"
   (touchmove)="onTouchMove($event)"
-  (touchstart)="onTouchStart($event)"
-  (touchend)="onTouchEnd()">
+  [options]="chartOptions"
+>
+  <!--  (chartInstance)="chartEvent($event)"-->
+  <!--  -->
+  <!--  (touchmove)="onTouchMove($event)"-->
+  <!--  (touchstart)="onTouchStart($event)"-->
+  <!--  (touchend)="onTouchEnd()"-->
 </highcharts-chart>
 
 <div class="no-data" *ngIf="candlesEmpty">

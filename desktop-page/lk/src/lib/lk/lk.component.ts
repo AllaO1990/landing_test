@@ -28,25 +28,13 @@ import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { NavComponent } from '../nav';
 import { LogoComponent } from '@ui/components/logo';
-import { MainStore } from '../../../../../stores/desktop/main.store';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { PositionFacade } from 'stores/facades/position.facade';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
-
-// const createStore = (api: DesktopService) =>
-//   new DesktopLkStore(
-//     api,
-//     new _stockListStore(api),
-//     new EntryStore(api),
-//     new PositionStore(api),
-//     new ChartStore(api),
-//     new IndicatorAtrStore(api),
-//     new IndicatorEmaStore(api),
-//     new IndicatorSmaStore(api),
-//     new ConsolidationZonesStore(api)
-//   );
+import { CandlesFacade } from 'stores/facades/candles.facade';
+import { MainStore } from 'stores/main.store';
 
 @Component({
   selector: 'lib-lk',
@@ -64,11 +52,7 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
     PositionFacade,
     IdeaFacade,
     StockListFacade,
-    // {
-    //   provide: DESKTOP_STORE,
-    //   useFactory: createStore,
-    //   deps: [DESKTOP_API, QUERY_PARAMS],
-    // },
+    CandlesFacade,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

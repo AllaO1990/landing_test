@@ -1,13 +1,21 @@
-<div class="container" *ngIf="(candles$ | async); else loader">
+<div
+  class="container"
+  [class.container--update]="isUpdate$ | async"
+  *ngIf="(candles$ | async) as data; else loader">
   <div class="column">
     <div class="charts">
-      <!--        <vt-chart-->
-      <!--          [consolidationZones]="zone$ | async"-->
-      <!--          [data]="candles$ | async"-->
-      <!--          [indicators]="indicators$ | async"-->
-      <!--          [selected]="selected$ | async"-->
-      <!--          [text]="text$ | async"-->
-      <!--        ></vt-chart>-->
+      <vt-chart
+        [data]="data"
+      ></vt-chart>
+
+      <!--      <vt-chart-->
+      <!--        [consolidationZones]="zone$ | async"-->
+      <!--        [data]="candles$ | async"-->
+      <!--        [indicators]="indicators$ | async"-->
+      <!--        [selected]="selected$ | async"-->
+      <!--        [text]="text$ | async"-->
+      <!--      ></vt-chart>-->
+
     </div>
     <div class="legend" *ngIf="toggleLegend">
       <lib-chart-legend class="chart-legend" [list]="(legend$ | async) || []"></lib-chart-legend>
@@ -73,8 +81,11 @@
         (click)="onToggleLegend($event)">
       </button>
     </div>
-
   </div>
+</div>
+
+<div class="update" *ngIf="isUpdate$ | async">
+  <ui-loader class="loader"></ui-loader>
 </div>
 
 <ng-template #loader>
