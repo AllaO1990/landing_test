@@ -18,6 +18,9 @@ export class FacadeStore {
   readonly ideaList = this._buildStockIdea();
   readonly priceList = this._buildStockPrice();
   readonly candles = this._buildCandles();
+  readonly sma = this._buildIndicatorSma();
+  readonly ema = this._buildIndicatorEma();
+  readonly consolidationZones = this._buildConsolidationZones();
 
   constructor(private readonly _api: DesktopService) {}
 

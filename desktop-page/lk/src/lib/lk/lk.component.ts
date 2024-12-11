@@ -33,7 +33,7 @@ import { SelectFacade } from 'stores/facades/select.facade';
 import { PositionFacade } from 'stores/facades/position.facade';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
-import { CandlesFacade } from 'stores/facades/candles.facade';
+import { ChartFacade } from 'stores/facades/chart.facade';
 import { MainStore } from 'stores/main.store';
 
 @Component({
@@ -52,7 +52,7 @@ import { MainStore } from 'stores/main.store';
     PositionFacade,
     IdeaFacade,
     StockListFacade,
-    CandlesFacade,
+    ChartFacade,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

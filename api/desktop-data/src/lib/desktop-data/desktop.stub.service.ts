@@ -50,6 +50,10 @@ export class DesktopStubService extends DesktopService {
     return of([]);
   }
 
+  getIdeaConsolidationZone(ideaId: string): Observable<ConsolidationZones> {
+    return of();
+  }
+
   getStockList(): Observable<Response<Stock>> {
     return of();
   }

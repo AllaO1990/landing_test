@@ -1,7 +1,7 @@
 import { DesktopService } from '@desktop-data/desktop-data';
-import { ConsolidationZonesState } from 'types/consolidation-zones';
+import { ConsolidationZonesShape, ConsolidationZonesState } from 'types/consolidation-zones';
 import { forkJoin, Observable, of, switchMap, tap } from 'rxjs';
-import { ActiveZone, ChartFigure } from 'types/chart';
+import { ActiveZone } from 'types/chart';
 import { map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { getPointsActiveZone } from 'utils/transform-consolidation-zones';
@@ -14,7 +14,9 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
 
   readonly selected$: Observable<number[] | null> = this.select((state: ConsolidationZonesState) => state.selected);
 
-  readonly zones$: Observable<ChartFigure[] | null> = this.select((state: ConsolidationZonesState) => state.zones);
+  readonly zones$: Observable<ConsolidationZonesShape | null> = this.select(
+    (state: ConsolidationZonesState) => state.zones
+  );
 
   constructor(private readonly _api: DesktopService) {
     super({
@@ -25,7 +27,10 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
 
   updateSelected = this.updater((state: ConsolidationZonesState, selected: number[]) => ({ ...state, selected }));
 
-  updateZone = this.updater((state: ConsolidationZonesState, zones: ChartFigure[] | null) => ({ ...state, zones }));
+  updateZone = this.updater((state: ConsolidationZonesState, zones: ConsolidationZonesShape | null) => ({
+    ...state,
+    zones,
+  }));
 
   readonly load = this.effect((stream$: Observable<null | any>) =>
     stream$.pipe(

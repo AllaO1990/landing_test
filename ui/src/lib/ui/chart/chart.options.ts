@@ -1,5 +1,6 @@
 import * as Highcharts from 'highcharts/highstock';
 import { PositionObject } from 'highcharts';
+import { ColorIndicator } from 'types/color';
 
 function createRect(chart: Highcharts.Chart) {
   const yAxis: any = chart.yAxis[0];
@@ -64,27 +65,6 @@ export const HIGHCHARTS_OPTIONS: Highcharts.Options = {
     },
     selected: 0,
   },
-  plotOptions: {
-    candlestick: {
-      navigatorOptions: {
-        connectNulls: true,
-      },
-      color: '#ff0043',
-      lineColor: '#ff0043',
-      upColor: '#00a281',
-      upLineColor: '#00a281',
-      dataGrouping: {
-        forced: true,
-        enabled: true,
-        units: [
-          ['day', [1]],
-          ['week', [1]],
-          ['month', [6]],
-          ['year', null],
-        ],
-      },
-    },
-  },
   navigator: {
     enabled: false,
   },
@@ -111,6 +91,7 @@ export const HIGHCHARTS_OPTIONS: Highcharts.Options = {
     {
       id: 'candlestick',
       type: 'candlestick',
+      name: '',
       data: [],
       tooltip: {
         pointFormat:
@@ -121,6 +102,102 @@ export const HIGHCHARTS_OPTIONS: Highcharts.Options = {
           'МИН: {point.low} <br/>' +
           'ЗАКР: {point.close}',
       },
+    },
+    {
+      id: 'ema10',
+      type: 'spline',
+      name: 'EMA 10',
+      color: ColorIndicator.EMA10,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'ema20',
+      type: 'spline',
+      name: 'EMA 20',
+      color: ColorIndicator.EMA20,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'ema30',
+      type: 'spline',
+      name: 'EMA 30',
+      color: ColorIndicator.EMA30,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'ema50',
+      type: 'spline',
+      name: 'EMA 50',
+      color: ColorIndicator.EMA50,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'ema100',
+      type: 'spline',
+      name: 'EMA 100',
+      color: ColorIndicator.EMA100,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'ema200',
+      type: 'spline',
+      name: 'EMA 200',
+      color: ColorIndicator.EMA200,
+      lineWidth: 2,
+      showInLegend: false,
+    },
+    {
+      id: 'sma10',
+      type: 'spline',
+      name: 'SMA 10',
+      color: ColorIndicator.SMA10,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'sma20',
+      type: 'spline',
+      name: 'SMA 20',
+      color: ColorIndicator.SMA20,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'sma30',
+      type: 'spline',
+      name: 'SMA 30',
+      color: ColorIndicator.SMA30,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'sma50',
+      type: 'spline',
+      name: 'SMA 50',
+      color: ColorIndicator.SMA50,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'sma100',
+      type: 'spline',
+      name: 'SMA 100',
+      color: ColorIndicator.SMA100,
+      lineWidth: 1,
+      showInLegend: false,
+    },
+    {
+      id: 'sma200',
+      type: 'spline',
+      name: 'SMA 200',
+      color: ColorIndicator.SMA200,
+      lineWidth: 2,
+      showInLegend: false,
     },
   ],
 };

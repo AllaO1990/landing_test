@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { combineLatest, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { combineLatest, debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { ButtonWithListComponent } from './button-with-list';
 import {
@@ -21,7 +21,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartComponent } from '@ui/components/chart';
 import { LoaderComponent } from '@ui/components/loader';
 import { StockEvent } from 'types/stock-event';
-import { CandlesFacade } from 'stores/facades/candles.facade';
+import { ChartFacade } from 'stores/facades/chart.facade';
+import { ConsolidationZonesShape } from 'types/consolidation-zones';
 
 interface IndicatorListItem<T = string> {
   name: string;
@@ -50,7 +51,7 @@ interface IndicatorListItem<T = string> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartCandlestickComponent implements OnInit {
-  private readonly _store: CandlesFacade = inject(CandlesFacade);
+  private readonly _store: ChartFacade = inject(ChartFacade);
   private readonly _destroy$: DestroyRef = inject(DestroyRef);
 
   toggleLegend = false;
@@ -70,8 +71,8 @@ export class ChartCandlestickComponent implements OnInit {
   @Input() event: null | StockEvent = null;
 
   readonly size = 's';
-  readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[1], this.emaList[5]]);
-  readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[1]]);
+  readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[0], this.emaList[5]]);
+  readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[5]]);
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
   readonly controlZone: FormControl<IndicatorListItem<Timeframe>[] | null> = new FormControl([this.zoneList[0]]);
 
@@ -93,22 +94,25 @@ export class ChartCandlestickComponent implements OnInit {
     tap((data) => console.log(data))
   );
 
-  // readonly indicators$: Observable<any[]> = combineLatest([this._store.indicatorEma$, this._store.indicatorSma$]).pipe(
-  //   debounceTime(0),
-  //   map((data: any[][]) => data.flat())
-  // );
+  readonly indicators$: Observable<any[]> = combineLatest([this._store.ema$, this._store.sma$]).pipe(
+    debounceTime(0),
+    map((data: any[][]) => data.flat())
+  );
+
   // readonly text$: Observable<string | null> = this._store.indicatorAtr$.pipe(
   //   map((value: { atr: number }) => value && `1 ATR: ${value.atr}`),
   //   shareReplay({ bufferSize: 1, refCount: true })
   // );
 
-  // readonly zone$: Observable<ChartFigure[] | null> = combineLatest([
-  //   this._store.zones$.pipe(map((list: ChartFigure[] | null) => list || [])),
-  //   this._store.chartFigures$.pipe(map((list: ChartFigure[] | null) => list || [])),
-  // ]).pipe(
-  //   map(([zones, figures]: [ChartFigure[], ChartFigure[]]) => [...zones, ...figures]),
-  //   shareReplay({ bufferSize: 1, refCount: true })
-  // );
+  readonly zone$: Observable<ConsolidationZonesShape | null> = this._store.zones$
+    // combineLatest([
+    // this._store.zones$.pipe(map((data: { zone: ActiveZone[], instrument: string  } | null) => )),
+    // this._store.chartFigures$.pipe(map((list: ChartFigure[] | null) => list || [])),
+    // ]).
+    .pipe(
+      // map(([zones, figures]: [ChartFigure[], ChartFigure[]]) => [...zones, ...figures]),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
   legend$: Observable<IndicatorListItem[]> = combineLatest([
     this.controlEma.valueChanges.pipe(
@@ -131,26 +135,27 @@ export class ChartCandlestickComponent implements OnInit {
     map(
       ([emaList, smaList]: [IndicatorListItem[] | null, IndicatorListItem[] | null]) =>
         !((emaList && emaList.length > 0) || (smaList && smaList.length > 0))
-    ),
-    tap((value: boolean) => (this.toggleLegend = !value))
+    )
+    // tap((value: boolean) => (this.toggleLegend = !value))
   );
 
   ngOnInit(): void {
     this.controlEma.valueChanges
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlEma.value))
       .subscribe((result: IndicatorListItem[] | null) => {
-        // this._store.updateIndicatorEmaSelected(this._getValue(result));
+        this._store.updateSelectedEma(this._getValue(result));
       });
 
     this.controlSma.valueChanges
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlSma.value))
       .subscribe((result: IndicatorListItem[] | null) => {
-        // this._store.updateIndicatorSmaSelected(this._getValue(result));
+        this._store.updateSelectedSma(this._getValue(result));
       });
 
     this.controlZone.valueChanges
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlZone.value))
       .subscribe((result: IndicatorListItem<Timeframe>[] | null) => {
+        this._store.updateSelectedConsolidationZones(this._getValue(result));
         // this._store.updateConsolidationZoneSelected(this._getValue(result));
       });
 

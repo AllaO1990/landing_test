@@ -13,7 +13,7 @@ import {
   tap,
   timer,
 } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { StockEvent } from 'types/stock-event';
 import { filter, map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
@@ -21,6 +21,9 @@ import { ComponentStore } from '@ngrx/component-store';
 import { StockId, StockInstrument, StockListItems } from 'types/stock';
 import { Position } from 'types/position';
 import { Idea } from 'types/idea';
+import { DateRange } from 'types/date-range';
+import { Timeframe } from 'types/timeframe';
+import { GLOBAL_DATE_RANGE } from 'tokens/desktop';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -36,6 +39,7 @@ const timerWithIndex = <T>(
 
 @Injectable()
 export class MainStore extends ComponentStore<any> {
+  private readonly _range$: Observable<DateRange> = inject(GLOBAL_DATE_RANGE);
   private _destroyed$ = new Subject<void>();
 
   private readonly _facade = new FacadeStore(this.api);
@@ -46,6 +50,9 @@ export class MainStore extends ComponentStore<any> {
   readonly position = this._facade.positionList;
   readonly price = this._facade.priceList;
   readonly candles = this._facade.candles;
+  readonly sma = this._facade.sma;
+  readonly ema = this._facade.ema;
+  readonly consolidationZones = this._facade.consolidationZones;
 
   constructor(private readonly api: DesktopService) {
     super();
@@ -65,7 +72,7 @@ export class MainStore extends ComponentStore<any> {
     this.stock.loadGroup();
 
     this.idea.load(timerSource);
-    this.position.load(timerSource);
+    this.position.load(timer(0, 10000));
 
     this.onChangeInstrument(this.selected.event$);
     this.onChangePosition(this.selected.event$);
@@ -73,6 +80,65 @@ export class MainStore extends ComponentStore<any> {
     this.onChangeWatch(this.selected.event$);
 
     this.candles.loadCandles(timerWithIndex(this.selected.instrument$, TIMER_INTERVAL));
+
+    this.ema.load(
+      combineLatest([
+        this.selected.instrument$.pipe(
+          filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
+          map((instrument: StockInstrument) => instrument.id)
+        ),
+        this.ema.selected$.pipe(filter((selected: null | any): selected is any => selected !== null)),
+        this._range$,
+      ]).pipe(
+        map(([id, types, period]: [string, string[], DateRange]) => ({
+          id,
+          types,
+          period,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+        }))
+      )
+    );
+    this.sma.load(
+      combineLatest([
+        this.selected.instrument$.pipe(
+          filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
+          map((instrument: StockInstrument) => instrument.id)
+        ),
+        this.sma.selected$.pipe(filter((selected: null | any): selected is any => selected !== null)),
+        this._range$,
+      ]).pipe(
+        map(([id, types, period]: [string, string[], DateRange]) => ({
+          id,
+          types,
+          period,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+        }))
+      )
+    );
+    this.consolidationZones.load(
+      combineLatest([
+        this.selected.instrument$.pipe(
+          filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
+          map((instrument: StockInstrument) => instrument.id)
+        ),
+        this.consolidationZones.selected$.pipe(
+          filter((selected: number[] | null): selected is number[] => selected !== null)
+        ),
+        this._range$,
+      ]).pipe(
+        map(([id, zones, range]: [string, number[] | null, DateRange]) => {
+          if (zones === null || zones.length === 0) {
+            return null;
+          }
+
+          return {
+            id,
+            interval: zones,
+            ...range,
+          };
+        })
+      )
+    );
   }
 
   onLoadPrice = (stream$: StockId[] | null) => {
@@ -89,7 +155,10 @@ export class MainStore extends ComponentStore<any> {
 
   onChangeInstrument = this.effect((source$: Observable<null | StockEvent>) =>
     combineLatest([
-      source$.pipe(this._getIdFrom(EventSelected.STOCK_LIST)),
+      source$.pipe(
+        filter((event: StockEvent | null): event is StockEvent => event !== null),
+        filter((event: StockEvent) => event.type === EventSelected.STOCK_LIST)
+      ),
       this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
       tap(([event, list]: [StockEvent, StockListItems]) => {
@@ -105,6 +174,8 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.POSITION)),
       this._facade.positionList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
+      filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
+      tap((data) => console.log(data)),
       tap(([event, list]: [StockEvent, Position[]]) => {
         const find = list.find((item: Position) => item.id === event.id) || null;
         this._updateSelected(find && find.instrument, find);
@@ -117,6 +188,7 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.IDEA)),
       this._facade.ideaList.list$.pipe(filter((list: Idea[] | null): list is Idea[] => list !== null)),
     ]).pipe(
+      filter((combine: [StockEvent | null, Idea[]]): combine is [StockEvent, Idea[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Idea[]]) => {
         const find = list.find((item: Idea) => item.id === event.id) || null;
         this._updateSelected(find && find.instrument, null, find);
@@ -129,6 +201,9 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.WATCH_LIST)),
       this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
     ]).pipe(
+      filter(
+        (combine: [StockEvent | null, StockListItems]): combine is [StockEvent, StockListItems] => combine[0] !== null
+      ),
       tap(([event, list]: [StockEvent, StockListItems]) => {
         const find = list.find((item: StockInstrument) => item.id === event.id) || null;
         this._updateSelected(find, null, null, event.group);
@@ -152,8 +227,7 @@ export class MainStore extends ComponentStore<any> {
     return (source$: Observable<StockEvent | null>) =>
       source$.pipe(
         filter((event: null | StockEvent): event is StockEvent => event !== null),
-        filter((event: StockEvent) => event.type === type),
-        map((event: StockEvent) => event),
+        map((event: StockEvent) => (event.type === type ? event : null)),
         distinctUntilChanged()
       );
   }

@@ -6,6 +6,8 @@
     <div class="charts">
       <vt-chart
         [data]="data"
+        [indicators]="indicators$ | async"
+        [zones]="zone$ | async"
       ></vt-chart>
 
       <!--      <vt-chart-->

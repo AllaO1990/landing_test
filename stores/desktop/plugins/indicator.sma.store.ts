@@ -1,9 +1,9 @@
 import { DesktopService } from '@desktop-data/desktop-data';
 import { Observable, of, switchMap, tap } from 'rxjs';
 import { Response } from 'types/response';
+import { IndicatorSmaParams, IndicatorSmaState } from 'types/indicator-sma';
 import { map } from 'rxjs/operators';
 import { SeriesSplineOptions } from 'highcharts';
-import { IndicatorSmaParams, IndicatorSmaState } from 'types/indicator-sma';
 import { indicatorTransformToSeries } from 'utils/indicators-func';
 import { WithQueue } from '../core/with-queue.abstract';
 import { getJoinUniq } from 'utils/get-join-uniq';
@@ -52,6 +52,7 @@ export class IndicatorSmaStore extends WithQueue<IndicatorSmaState> {
 
     return this._api.getIndicatorSma(data).pipe(
       map((res: Response<any>) => res.data && indicatorTransformToSeries(res.data)),
+      map((list: SeriesSplineOptions[]) => list.map((item: SeriesSplineOptions) => ({ ...item, instrument: data.id }))),
       tap((value: SeriesSplineOptions[]) => this.queue.setValue(uniqKey, value))
     );
   }

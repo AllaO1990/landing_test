@@ -1,5 +1,5 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { StockId, StockInstrument } from 'types/stock';
 import { Position } from 'types/position';
 import { Idea } from 'types/idea';
@@ -15,12 +15,22 @@ export interface SelectState {
 }
 
 export class SelectStore extends ComponentStore<SelectState> {
-  readonly instrument$: Observable<null | StockInstrument> = this.select((state: SelectState) => state.instrument);
+  readonly instrument$: Observable<null | StockInstrument> = this.select((state: SelectState) => state.instrument).pipe(
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
   readonly group$: Observable<null | StockId> = this.select((state: SelectState) => state.group);
-  readonly position$: Observable<null | Position> = this.select((state: SelectState) => state.position);
-  readonly idea$: Observable<null | Idea> = this.select((state: SelectState) => state.idea);
-  readonly list$: Observable<null | StockId[]> = this.select((state: SelectState) => state.list);
-  readonly event$: Observable<null | StockEvent> = this.select((state: SelectState) => state.event);
+  readonly position$: Observable<null | Position> = this.select((state: SelectState) => state.position).pipe(
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+  readonly idea$: Observable<null | Idea> = this.select((state: SelectState) => state.idea).pipe(
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+  readonly list$: Observable<null | StockId[]> = this.select((state: SelectState) => state.list).pipe(
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+  readonly event$: Observable<null | StockEvent> = this.select((state: SelectState) => state.event).pipe(
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   constructor() {
     super({

@@ -17,6 +17,7 @@ export class StockPositionStore extends ComponentStore<StockPositionState> {
   );
 
   selectItem(id: StockId): Observable<Position | null> {
+    console.log('selectItem', id);
     return this.select((state: StockPositionState) => {
       if (!state.list) {
         return null;

@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  inject,
-  Input,
-  OnDestroy,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
 
 import * as Highcharts from 'highcharts/highstock';
 import HC_exporting from 'highcharts/modules/exporting';
@@ -21,9 +13,10 @@ import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
 import { NgIf } from '@angular/common';
 import { HIGHCHARTS_LANG, HIGHCHARTS_OPTIONS } from './chart.options';
-import { BehaviorSubject, filter, map, shareReplay, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, map, shareReplay, Subject, switchMap, tap } from 'rxjs';
 import { WheelSetExtremes } from './chart.utils';
 import { tuiFormatNumber } from '@taiga-ui/core';
+import { CHART_INDICATORS_NAME } from './chart.constants';
 
 HC_exporting(Highcharts);
 
@@ -45,6 +38,11 @@ interface Candle {
   volume: number;
 }
 
+type SeriesSpline = Highcharts.SeriesSplineOptions & { instrument: string };
+type Zones = { data: Highcharts.AnnotationsOptions[]; instrument: string };
+
+let CHART_INCREMENT = 2;
+
 @Component({
   selector: 'vt-chart',
   templateUrl: './chart.component.html',
@@ -54,12 +52,14 @@ interface Candle {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartComponent implements AfterViewInit, OnDestroy {
-  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
+  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13'];
   private _instrument$: Subject<any> = new BehaviorSubject(null);
+  private _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
+  private _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
   private _chart$: Subject<Highcharts.Chart | null> = new BehaviorSubject<Highcharts.Chart | null>(null);
 
-  increment = 5;
-
+  private _prevZonesName: string[] = [];
   private _chartOptions: Highcharts.Options = {
     chart: {
       panning: {
@@ -89,9 +89,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
           WheelSetExtremes(chart, 'yAxis', 0.1);
 
           Promise.resolve().then(() => {
-            const dateUTC = new Date(xAxis.max).setUTCHours(12, 0, 0, 0);
-            const min = new Date(dateUTC).setMonth(new Date().getMonth() - 4).valueOf();
-            const max = new Date(dateUTC).setMonth(new Date().getMonth() + 1).valueOf();
+            const min = new Date(xAxis.max).setMonth(new Date().getMonth() - 4).valueOf();
+            const max = new Date(xAxis.max).setMonth(new Date().getMonth() + 1).valueOf();
 
             xAxis.setExtremes(min, max, true);
           });
@@ -150,9 +149,49 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         pinchType: 'x',
       },
     },
+    plotOptions: {
+      candlestick: {
+        navigatorOptions: {
+          connectNulls: true,
+        },
+        color: '#ff0043',
+        lineColor: '#ff0043',
+        upColor: '#00a281',
+        upLineColor: '#00a281',
+        dataGrouping: {
+          forced: false,
+          enabled: true,
+          units: [
+            ['day', [1]],
+            ['week', [1]],
+            ['month', [6]],
+            ['year', null],
+          ],
+        },
+      },
+      spline: {
+        states: {
+          hover: {
+            enabled: false,
+          },
+        },
+        tooltip: {
+          pointFormatter: function () {
+            if (!this.y) {
+              return '';
+            }
+
+            return `<span style="color:${this.color}">●</span> ${this.series.name}: ${tuiFormatNumber(this.y, {
+              precision: CHART_INCREMENT,
+            })}`;
+          },
+        },
+      },
+    },
     xAxis: {
       startOnTick: false,
       endOnTick: false,
+      maxPadding: 1,
       crosshair: {
         snap: false,
         dashStyle: 'LongDash',
@@ -171,7 +210,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         dashStyle: 'LongDash',
         label: {
           enabled: true,
-          formatter: (value: number) => tuiFormatNumber(value, { precision: this.increment }),
+          formatter: (value: number) => tuiFormatNumber(value, { precision: CHART_INCREMENT }),
         },
       },
     },
@@ -185,25 +224,21 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
 
   @Input()
   set data(instrument: any | null) {
-    console.log('set data', instrument);
-
     this.candlesEmpty = instrument.candles === null;
-
-    // (this.chartOptions.yAxis as any).crosshair.label.format = '{value:.6f}';
-
-    // (this.chartOptions.yAxis as Highcharts.YAxisOptions).crosshair = {
-    //   label: {
-    //     format: '{value:.6f}',
-    //   },
-    // };
-    // (this.chartOptions.xAxis as Highcharts.XAxisOptions).max =
-    //   instrument.candles[instrument.candles.length - 1].x + 24 * 60 * 60 * 1000 * 30;
-    // (this.chartOptions.xAxis as any).dataMax =
-    //   instrument.candles[instrument.candles.length - 1].x + 24 * 60 * 60 * 1000 * 30;
 
     if (instrument.candles !== null) {
       this._instrument$.next(instrument);
     }
+  }
+
+  @Input()
+  set indicators(value: SeriesSpline[] | null) {
+    this._indicators$.next(value);
+  }
+
+  @Input()
+  set zones(value: Zones | null) {
+    this._zone$.next(value);
   }
 
   constructor() {
@@ -230,6 +265,16 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       shareReplay(1)
     );
 
+    const chartWithInstrumentId$ = this._chart$.asObservable().pipe(
+      filter((chart: Highcharts.Chart | null): chart is Highcharts.Chart => chart !== null),
+      switchMap((chart: Highcharts.Chart) =>
+        this._instrument$.asObservable().pipe(
+          filter((instrument: any | null): instrument is any => instrument !== null),
+          map((instrument) => ({ chart, id: instrument.id }))
+        )
+      )
+    );
+
     chart$
       .pipe(
         switchMap((chart: Highcharts.Chart) =>
@@ -240,33 +285,87 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         )
       )
       .subscribe(({ chart, instrument }: { chart: Highcharts.Chart; instrument: any }) => {
-        const candlestick = chart.series[0];
+        const candlestick = chart.get('candlestick');
 
         if (candlestick) {
-          this.increment = instrument.increment;
+          CHART_INCREMENT = instrument.increment;
 
-          candlestick.name = instrument.name;
-          candlestick.setData(instrument.candles, true, false, false);
+          (candlestick as any).setName(instrument.name);
+          (candlestick as Highcharts.Series).setData(instrument.candles, true, false, false);
 
           chart.yAxis[0].setExtremes();
         }
       });
-  }
 
-  private _setExtremesX(chart: Highcharts.Chart): void {
-    const xAxis = chart.xAxis[0];
+    chartWithInstrumentId$
+      .pipe(
+        switchMap(({ chart, id }: { chart: Highcharts.Chart; id: string }) =>
+          this._indicators$.asObservable().pipe(
+            filter((indicators: SeriesSpline[] | null): indicators is SeriesSpline[] => indicators !== null),
+            map((indicators: SeriesSpline[]) => indicators.filter((item) => item.instrument === id)),
+            map((indicators: SeriesSpline[]) => ({ chart, indicators }))
+          )
+        )
+      )
+      .subscribe(({ chart, indicators }: { chart: Highcharts.Chart; indicators: SeriesSpline[] }) => {
+        this._indicatorsName.forEach((name: string) => {
+          const series = chart.get(name);
+          const indicator = indicators.find((item) => item && item.id === name) || { type: 'spline', data: [] };
 
-    if (xAxis.max) {
-      const date = new Date(xAxis.max);
-      const start = new Date().setFullYear(date.getFullYear(), date.getMonth() - 5, date.getDate()).valueOf();
-      const end = new Date().setFullYear(date.getFullYear(), date.getMonth() + 1, date.getDate()).valueOf();
+          if (series) {
+            (series as Highcharts.Series).setData(indicator.data as any[], false, false);
+          }
+        });
 
-      xAxis.setExtremes(start, end, true, false);
-    }
+        chart.redraw(false);
+      });
+
+    chartWithInstrumentId$
+      .pipe(
+        tap(({ chart }: { chart: Highcharts.Chart; id: string }) => this._removeZones([], chart)),
+        switchMap(({ chart, id }: { chart: Highcharts.Chart; id: string }) =>
+          this._zone$.asObservable().pipe(
+            map((zones: Zones | null) => {
+              if (zones === null) {
+                return { chart, zones: [] };
+              }
+
+              return { chart, zones: zones.instrument === id ? zones.data : [] };
+            })
+          )
+        )
+      )
+      .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
+        this._removeZones(zones, chart);
+        this._addZones(zones, chart);
+      });
   }
 
   ngOnDestroy(): void {
     this._chart$.complete();
     this._instrument$.complete();
+  }
+
+  private _addZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
+    const ids: string[] = zones.map((zone: Highcharts.AnnotationsOptions) => zone.id as string);
+
+    zones.forEach((item: Highcharts.AnnotationsOptions) => {
+      if (!this._prevZonesName.includes(item.id as string)) {
+        chart.addAnnotation(item, false);
+      }
+    });
+
+    this._prevZonesName = ids;
+    chart.redraw(false);
+  }
+
+  private _removeZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
+    const ids: string[] = zones.map((zone: Highcharts.AnnotationsOptions) => zone.id as string);
+
+    this._zonesName
+      .filter((id: string) => !ids.includes(id))
+      .forEach((id: string) => {
+        chart.removeAnnotation(id);
+      });
   }
 }

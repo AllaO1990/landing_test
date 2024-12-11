@@ -21,7 +21,7 @@ import { LoaderComponent } from '@ui/components/loader';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { Params } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SelectFacade } from 'stores/facades/select.facade';
+import { PositionFacade } from 'stores/facades/position.facade';
 
 @Component({
   selector: 'vt-out-table',
@@ -53,7 +53,7 @@ export class OutTableComponent implements AfterViewInit {
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
   private readonly _injector: Injector = inject(Injector);
-  private readonly _select: SelectFacade = inject(SelectFacade);
+  private readonly _store: PositionFacade = inject(PositionFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
@@ -68,9 +68,10 @@ export class OutTableComponent implements AfterViewInit {
   public readonly header: OutHeaderItem[] = OUT_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
-  public activeIdeaId$: Observable<StockId | null> = this._select.position$.pipe(
+  public activeIdeaId$: Observable<StockId | null> = this._store.select$.pipe(
     map((result: Position | null) => (result ? result.id : null)),
-    distinctUntilChanged()
+    distinctUntilChanged(),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
 
   @Input() data: Position[] | null = null;
