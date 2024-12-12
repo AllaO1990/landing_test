@@ -47,9 +47,33 @@ export const CHART_SMA_LIST = [
     disabled: false,
   },
   {
+    name: 'SMA 20',
+    value: 'sma20',
+    order: 12,
+    disabled: false,
+  },
+  {
+    name: 'SMA 30',
+    value: 'sma30',
+    order: 13,
+    disabled: true,
+  },
+  {
+    name: 'SMA 50',
+    value: 'sma50',
+    order: 14,
+    disabled: false,
+  },
+  {
+    name: 'SMA 100',
+    value: 'sma100',
+    order: 15,
+    disabled: false,
+  },
+  {
     name: 'SMA 200',
     value: 'sma200',
-    order: 12,
+    order: 16,
     disabled: false,
   },
 ];

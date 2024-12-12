@@ -16,24 +16,30 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { AsyncPipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from 'rxjs';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
-import { StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
-import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
-import { DesktopLkStore } from 'stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
+import { filter, map } from 'rxjs/operators';
+import { StockGroupType, StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
+import {
+  TuiButton,
+  TuiFormatNumberPipe,
+  TuiHintComponent,
+  TuiHintDirective,
+  TuiHintUnstyled,
+  TuiScrollable,
+  TuiScrollbar,
+} from '@taiga-ui/core';
 import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockListWithType } from '../stock.component';
 import { StockListItemComponent } from '../item';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Pipe({
   name: 'stockItemRemove',
   standalone: true,
 })
 export class StockListRemovePipe implements PipeTransform {
-  transform(value: EventSelected): boolean {
-    return EventSelected.STOCK_LIST === value;
+  transform(value: StockGroupType): boolean {
+    return StockGroupType.CUSTOM === value;
   }
 }
 
@@ -54,28 +60,30 @@ export class StockListRemovePipe implements PipeTransform {
     TuiTable,
     AsyncPipe,
     TuiScrollbar,
-    TuiHint,
     NgTemplateOutlet,
     StockListRemovePipe,
     TuiButton,
     TuiScrollable,
     TuiFormatNumberPipe,
+    TuiHintDirective,
+    TuiHintComponent,
+    TuiHintUnstyled,
   ],
   providers: [],
 })
 export class StockListComponent implements AfterContentInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
   private readonly _list$: Subject<StockListWithType | null> = new BehaviorSubject<StockListWithType | null>(null);
+  private readonly _event$: Subject<StockEvent | null> = new BehaviorSubject<StockEvent | null>(null);
 
   readonly list$: Observable<StockListWithType | null> = this._list$.asObservable();
 
   @Output() selected: Observable<{ id: StockId; type: EventSelected }> = this.list$.pipe(
-    filter((list: StockListWithType | null): list is StockListWithType => !!list),
+    filter((list: StockListWithType | null): list is StockListWithType => list !== null),
     switchMap((list: StockListWithType) =>
       this.controlItem.valueChanges.pipe(
         map((value: string) => list.items.find((item: StockListItemWithPrice) => item.id === value)!),
-        map((instrument: StockInstrument) => ({ id: instrument.id, type: list.type }))
+        map((instrument: StockInstrument) => ({ id: instrument.id, type: list.type.event, group: list.id }))
       )
     )
   );
@@ -89,6 +97,11 @@ export class StockListComponent implements AfterContentInit {
   @Input()
   set list(value: StockListWithType) {
     this._list$.next(value);
+  }
+
+  @Input()
+  set select(value: null | StockEvent) {
+    this._event$.next(value);
   }
 
   trackByHeader(index: number, _: { name: string; label: string }): number {
@@ -106,21 +119,12 @@ export class StockListComponent implements AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    combineLatest([
-      this._store.event$,
-      this.list$.pipe(
-        map((list: StockListWithType | null) => list && list.type),
-        distinctUntilChanged()
-      ),
-    ])
+    combineLatest([this._event$, this.list$])
       .pipe(
         takeUntilDestroyed(this._destroyRef),
-        map(([event, type]: [StockEvent | null, EventSelected | null]) => this._getValue(event, type)),
-        distinctUntilChanged()
+        map(([event]: [StockEvent | null, StockListWithType | null]) => event)
       )
-      .subscribe((value: StockId | null) => {
-        this.controlItem.patchValue(value, { emitEvent: false });
-      });
+      .subscribe((event: StockEvent | null) => this.controlItem.patchValue(event && event.id, { emitEvent: false }));
   }
 
   private _getValue(event: StockEvent | null, type: EventSelected | null): StockId | null {

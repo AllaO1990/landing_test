@@ -11,6 +11,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'vt-stock-list-item',
+  exportAs: 'stockListItem',
   standalone: true,
   templateUrl: './item.component.html',
   host: {

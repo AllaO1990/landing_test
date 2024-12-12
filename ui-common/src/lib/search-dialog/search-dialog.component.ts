@@ -1,20 +1,19 @@
-import { TuiTextfieldControllerModule, TuiInputModule } from "@taiga-ui/legacy";
+import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TuiAutoFocus, TuiPopover } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TuiBreakpointService, TuiButton } from '@taiga-ui/core';
-import { DesktopLkStore } from 'stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
 import { debounceTime, Observable, switchMap } from 'rxjs';
 import { StockInstrument, StockListItems } from 'types/stock';
 import { filter, map, startWith } from 'rxjs/operators';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { StockListFacade } from 'stores/facades/stock-list.facade';
 
 @Component({
-  selector: 'lib-search-card',
+  selector: 'lib-search-dialog',
   standalone: true,
   imports: [
     TuiInputModule,
@@ -29,13 +28,14 @@ import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/li
     TuiAutoFocus,
     TuiButton,
   ],
-  templateUrl: './search-card.component.html',
-  styleUrl: './search-card.component.scss',
+  templateUrl: './search-dialog.component.html',
+  styleUrl: './search-dialog.component.scss',
+  providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchCardComponent {
+export class SearchDialogComponent {
   public readonly _breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _store: StockListFacade = inject(StockListFacade);
 
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
@@ -51,7 +51,7 @@ export class SearchCardComponent {
     return this.form.get('search') as FormControl;
   }
 
-  readonly list$: Observable<StockListItems | null> = this._store.stock$.pipe(
+  readonly list$: Observable<StockListItems | null> = this._store.listInstrument$.pipe(
     switchMap((stock: StockListItems | null) =>
       this.controlSearch.valueChanges.pipe(
         debounceTime(300),

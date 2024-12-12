@@ -1,20 +1,17 @@
-import { ComponentStore } from '@ngrx/component-store';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { Observable, of, switchMap, tap } from 'rxjs';
-import { Queue } from 'utils/queue';
 import { StockId } from 'types/stock';
 import { Response } from 'types/response';
 import { map } from 'rxjs/operators';
-import { indicatorGetUniq } from 'utils/indicators-func';
+import { WithQueue } from '../core/with-queue.abstract';
+import { getJoinUniq } from 'utils/get-join-uniq';
 
 export interface IndicatorAtrState {
   selected: null | any;
   value: null | any;
 }
 
-export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
-  private _queue: Queue<any> = new Queue(3);
-
+export class IndicatorAtrStore extends WithQueue<IndicatorAtrState> {
   readonly selected$: Observable<null | any> = this.select((state: IndicatorAtrState) => state.selected);
 
   readonly value$: Observable<null | any> = this.select((state: IndicatorAtrState) => state.value);
@@ -50,8 +47,8 @@ export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
       return of(null);
     }
 
-    const uniqKey = indicatorGetUniq(data.id, data.interval, data.date);
-    const value = this._queue.getValue(uniqKey);
+    const uniqKey = getJoinUniq(data.id, data.interval, data.date);
+    const value = this.queue.getValue(uniqKey);
 
     if (value) {
       return of(value);
@@ -59,7 +56,7 @@ export class IndicatorAtrStore extends ComponentStore<IndicatorAtrState> {
 
     return this._api.getIndicatorAtr(data.id, data.interval, data.date).pipe(
       map((value: Response<any>) => value.data),
-      tap((value: any) => this._queue.setValue(uniqKey, value))
+      tap((value: any) => this.queue.setValue(uniqKey, value))
     );
   }
 }

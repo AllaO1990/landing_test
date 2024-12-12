@@ -28,14 +28,10 @@ export const routes: Routes = [
           {
             path: '',
             outlet: 'toolbar-main',
-            loadComponent: () => import('ui-common').then((m) => m.ToolbarSearchComponent),
+            loadComponent: () => import('main').then((m) => m.ToolbarSearchComponent),
           },
           {
             path: '',
-            loadComponent: () => import('main').then((m) => m.MainComponent),
-          },
-          {
-            path: ':type/:id',
             loadComponent: () => import('main').then((m) => m.MainComponent),
           },
         ],
@@ -49,20 +45,20 @@ export const routes: Routes = [
       //   //   loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
       //   //   canActivate: [PermissionGuard],
       //   // },
-      {
-        path: 'portfolio',
-        children: [
-          {
-            path: '',
-            outlet: 'toolbar-main',
-            loadComponent: () => import('portfolio').then((m) => m.FilterComponent),
-          },
-          {
-            path: '',
-            loadComponent: () => import('portfolio').then((m) => m.LayoutComponent),
-          },
-        ],
-      },
+      // {
+      //   path: 'portfolio',
+      //   children: [
+      //     {
+      //       path: '',
+      //       outlet: 'toolbar-main',
+      //       loadComponent: () => import('portfolio').then((m) => m.FilterComponent),
+      //     },
+      //     {
+      //       path: '',
+      //       loadComponent: () => import('portfolio').then((m) => m.LayoutComponent),
+      //     },
+      //   ],
+      // },
       {
         path: '403',
         loadChildren: () => import('page-403').then((m) => m.Page403Module),

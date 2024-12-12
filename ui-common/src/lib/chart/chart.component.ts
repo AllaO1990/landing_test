@@ -1,9 +1,7 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { combineLatest, debounceTime, Observable, shareReplay, startWith, tap } from 'rxjs';
+import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
-import { DesktopLkStore } from 'stores/desktop';
-import { DESKTOP_STORE } from 'tokens/desktop';
 import { ButtonWithListComponent } from './button-with-list';
 import {
   CHART_ATR_ICON,
@@ -16,12 +14,18 @@ import {
 } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiIcon, TuiLoader } from '@taiga-ui/core';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
-import { ChartFigure } from 'types/chart';
 import { Timeframe } from 'types/timeframe';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChartComponent } from '@ui/components/chart';
+import { LoaderComponent } from '@ui/components/loader';
+import { StockEvent } from 'types/stock-event';
+import { ChartFacade } from 'stores/facades/chart.facade';
+import { ConsolidationZonesShape } from 'types/consolidation-zones';
+import { SelectFacade } from 'stores/facades/select.facade';
+import { EventSelected } from 'types/events';
+import * as Highcharts from 'highcharts/highstock';
 
 interface IndicatorListItem<T = string> {
   name: string;
@@ -43,16 +47,18 @@ interface IndicatorListItem<T = string> {
     TuiButton,
     TuiIcon,
     LegendComponent,
+    LoaderComponent,
   ],
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartCandlestickComponent implements OnInit {
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _store: ChartFacade = inject(ChartFacade);
+  private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _destroy$: DestroyRef = inject(DestroyRef);
 
-  toggleLegend = true;
+  toggleLegend = false;
   toggleActions = true;
 
   emaIcon = CHART_EMA_ICON;
@@ -66,30 +72,84 @@ export class ChartCandlestickComponent implements OnInit {
   valueZone: IndicatorListItem<Timeframe>[] | null = null;
   artIcon = CHART_ATR_ICON;
 
+  @Input() event: null | StockEvent = null;
+
   readonly size = 's';
-  readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[1], this.emaList[5]]);
-  readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[1]]);
+  readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[0], this.emaList[5]]);
+  readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[5]]);
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
   readonly controlZone: FormControl<IndicatorListItem<Timeframe>[] | null> = new FormControl([this.zoneList[0]]);
 
-  readonly selected$: Observable<StockInstrument | null> = this._store.selectedInstrument$;
-  readonly candles$: Observable<[string | number, number, number, number, number][] | null> = this._store.candles$.pipe(
-    shareReplay(1)
+  readonly selected$: Observable<StockInstrument | null> = this._store.selected$;
+
+  readonly isUpdate$: Observable<boolean | null> = this._store.selected$.pipe(
+    filter((select: null | StockInstrument): select is StockInstrument => select !== null),
+    switchMap((select: StockInstrument) =>
+      this._store.instrument$.pipe(
+        filter((candles: any | null): candles is any => candles !== null),
+        map((candles: any) => select.id !== candles.id)
+      )
+    ),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
-  readonly indicators$: Observable<any[]> = combineLatest([this._store.indicatorEma$, this._store.indicatorSma$]).pipe(
+
+  readonly candles$: Observable<any | null> = this._store.instrument$.pipe(shareReplay(1));
+
+  readonly indicators$: Observable<any[]> = combineLatest([this._store.ema$, this._store.sma$]).pipe(
     debounceTime(0),
     map((data: any[][]) => data.flat())
   );
-  readonly text$: Observable<string | null> = this._store.indicatorAtr$.pipe(
-    map((value: { atr: number }) => value && `1 ATR: ${value.atr}`),
-    shareReplay({ bufferSize: 1, refCount: true })
+
+  // readonly text$: Observable<string | null> = this._store.indicatorAtr$.pipe(
+  //   map((value: { atr: number }) => value && `1 ATR: ${value.atr}`),
+  //   shareReplay({ bufferSize: 1, refCount: true })
+  // );
+
+  readonly zoneIdea$: Observable<null | ConsolidationZonesShape> = this._select.event$.pipe(
+    filter((event: null | StockEvent): event is StockEvent => event !== null),
+    switchMap((event: StockEvent) => {
+      if (event.type !== EventSelected.IDEA && event.type !== EventSelected.POSITION) {
+        return of(null);
+      }
+
+      return this._store.zonesIdea$;
+    })
   );
 
-  readonly zone$: Observable<ChartFigure[] | null> = combineLatest([
-    this._store.zones$.pipe(map((list: ChartFigure[] | null) => list || [])),
-    this._store.chartFigures$.pipe(map((list: ChartFigure[] | null) => list || [])),
+  readonly zone$: Observable<ConsolidationZonesShape | null> = combineLatest([
+    this._store.zones$,
+    this.zoneIdea$,
+    this._store.zonesWatch$,
   ]).pipe(
-    map(([zones, figures]: [ChartFigure[], ChartFigure[]]) => [...zones, ...figures]),
+    map(
+      ([zones, zonesIdea, zondesWatch]: [
+        ConsolidationZonesShape | null,
+        ConsolidationZonesShape | null,
+        ConsolidationZonesShape | null
+      ]) => {
+        let data: Highcharts.AnnotationsOptions[] = [];
+
+        if (zones === null) {
+          return null;
+        }
+
+        data = zones.data;
+
+        if (zonesIdea !== null) {
+          if (zones.instrument === zonesIdea.instrument) {
+            data = [...data, ...zonesIdea.data];
+          }
+        }
+
+        if (zondesWatch !== null) {
+          if (zones.instrument === zondesWatch.instrument) {
+            data = [...data, ...zondesWatch.data];
+          }
+        }
+
+        return { ...zones, data };
+      }
+    ),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -114,30 +174,32 @@ export class ChartCandlestickComponent implements OnInit {
     map(
       ([emaList, smaList]: [IndicatorListItem[] | null, IndicatorListItem[] | null]) =>
         !((emaList && emaList.length > 0) || (smaList && smaList.length > 0))
-    ),
-    tap((value: boolean) => (this.toggleLegend = !value))
+    )
+    // tap((value: boolean) => (this.toggleLegend = !value))
   );
 
   ngOnInit(): void {
     this.controlEma.valueChanges
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlEma.value))
       .subscribe((result: IndicatorListItem[] | null) => {
-        this._store.updateIndicatorEmaSelected(this._getValue(result));
+        this._store.updateSelectedEma(this._getValue(result));
       });
 
     this.controlSma.valueChanges
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlSma.value))
       .subscribe((result: IndicatorListItem[] | null) => {
-        this._store.updateIndicatorSmaSelected(this._getValue(result));
+        this._store.updateSelectedSma(this._getValue(result));
       });
 
     this.controlZone.valueChanges
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlZone.value))
       .subscribe((result: IndicatorListItem<Timeframe>[] | null) => {
-        this._store.updateConsolidationZoneSelected(this._getValue(result));
+        this._store.updateSelectedConsolidationZones(this._getValue(result));
+        // this._store.updateSelectedConsolidationZonesIdea(this._getValue(result));
+        // this._store.updateConsolidationZoneSelected(this._getValue(result));
       });
 
-    this._store.updateIndicatorAtrSelected(this.controlAtr.value);
+    // this._store.updateIndicatorAtrSelected(this.controlAtr.value);
   }
 
   onToggleAtr(event: Event): void {
@@ -146,7 +208,7 @@ export class ChartCandlestickComponent implements OnInit {
     const value = !this.controlAtr.value;
 
     this.controlAtr.patchValue(value);
-    this._store.updateIndicatorAtrSelected(value);
+    // this._store.updateIndicatorAtrSelected(value);
   }
 
   onOpenedEma(event: boolean): void {
@@ -209,16 +271,16 @@ export class ChartCandlestickComponent implements OnInit {
 
   private _actionEma(): void {
     this.valueEma = this.controlEma.value;
-    this._store.updateIndicatorEmaSelected(this._getValue(this.controlEma.value));
+    // this._store.updateIndicatorEmaSelected(this._getValue(this.controlEma.value));
   }
 
   private _actionSma(): void {
     this.valueSma = this.controlSma.value;
-    this._store.updateIndicatorSmaSelected(this._getValue(this.controlSma.value));
+    // this._store.updateIndicatorSmaSelected(this._getValue(this.controlSma.value));
   }
 
   private _actionZone(): void {
     this.valueZone = this.controlZone.value;
-    this._store.updateConsolidationZoneSelected(this._getValue(this.controlZone.value) as number[]);
+    // this._store.updateConsolidationZoneSelected(this._getValue(this.controlZone.value) as number[]);
   }
 }

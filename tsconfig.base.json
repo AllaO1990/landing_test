@@ -69,8 +69,8 @@
       "shall": [
         "desktop-page/shall/src/index.ts"
       ],
-      "store/*": [
-        "store/*"
+      "stores/*": [
+        "stores/desktop/*"
       ],
       "tokens/*": [
         "tokens/*"
@@ -78,8 +78,8 @@
       "types/*": [
         "types/*"
       ],
-      "ui-common": [
-        "ui-common/src/index.ts"
+      "ui-common/*": [
+        "ui-common/src/*"
       ],
       "utils/*": [
         "utils/*"

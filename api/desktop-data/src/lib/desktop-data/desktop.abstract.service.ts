@@ -6,6 +6,7 @@ import {
   StockId,
   StockInstrumentList,
   StockLinkListInstrument,
+  StockLists,
   StockParamsConsolidationZones,
   StockPrice,
   WithLastPrice,
@@ -21,7 +22,7 @@ export abstract class DesktopService {
 
   public abstract getStockList(): Observable<Response<Stock>>;
 
-  public abstract getInstrumentsLists(): Observable<Response<any>>;
+  public abstract getInstrumentsLists(): Observable<Response<{ items: StockLists }>>;
 
   public abstract getWatchInstrumentsListItems(): Observable<Response<Stock>>;
 
@@ -39,7 +40,9 @@ export abstract class DesktopService {
 
   public abstract getChartFigures(ideaId: string, from: string, to: string): Observable<ConsolidationZones>;
 
-  public abstract getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone>>;
+  public abstract getIdeaConsolidationZone(ideaId: string): Observable<Response<ActiveZone | null> | null>;
+
+  public abstract getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone> | null>;
 
   public abstract getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>>;
 
@@ -48,6 +51,8 @@ export abstract class DesktopService {
   public abstract getIndicatorSma(params: IndicatorSmaParams): Observable<Response<any>>;
 
   public abstract createInstrumentsListItems(name: string): Observable<Response<StockInstrumentList>>;
+
+  public abstract createDefaultInstrumentsListItems(): Observable<Response<{ items: StockLists }>>;
 
   public abstract deleteInstrumentsLists(name: string): Observable<Response<{ id: string }>>;
 

@@ -4,6 +4,12 @@ export interface ConsolidationZones {
   data: ConsolidationZonesData;
 }
 
+export interface ConsolidationZonesIdea {
+  success: boolean;
+  message: string;
+  data: ActiveZone;
+}
+
 export interface ConsolidationZonesData {
   activeZones: ActiveZone[];
   ideaParams: IdeaParams;

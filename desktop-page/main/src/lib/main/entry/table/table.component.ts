@@ -2,11 +2,11 @@ import { TuiTable } from '@taiga-ui/addon-table';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
-import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { DESKTOP_STORE, QUERY_PARAMS } from 'tokens/desktop';
+import { QUERY_PARAMS } from 'tokens/desktop';
 import { EventSelected } from 'types/events';
 import { Idea } from 'types/idea';
 import { StockId } from 'types/stock';
@@ -17,8 +17,8 @@ import { ENTRY_HEADER } from '../entry.constants';
 import { EntryHeaderItem } from '../entry.types';
 import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
-import { DesktopLkStore } from 'stores/desktop';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
+import { SelectFacade } from 'stores/facades/select.facade';
 
 @Component({
   selector: 'vt-entry-table',
@@ -36,6 +36,7 @@ import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
     DatePassedPipe,
     GetStrategyNamePipe,
     TuiHint,
+    TuiScrollable,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -47,7 +48,7 @@ export class EntryTableComponent {
 
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _store: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
   private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
@@ -58,7 +59,7 @@ export class EntryTableComponent {
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
-  public activeIdeaId$: Observable<StockId | null> = this._store.selectedIdea$.pipe(
+  public activeIdeaId$: Observable<StockId | null> = this._store.idea$.pipe(
     map((result: Idea | null) => (result ? result.id : null)),
     distinctUntilChanged()
   );

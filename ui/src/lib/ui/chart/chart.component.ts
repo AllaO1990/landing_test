@@ -1,21 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  DestroyRef,
-  ElementRef,
-  inject,
-  Input,
-  NgZone,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
 
 import * as Highcharts from 'highcharts/highstock';
-
 import HC_exporting from 'highcharts/modules/exporting';
 
-import { HighchartsChartComponent, HighchartsChartModule } from 'highcharts-angular';
+import { HighchartsChartModule } from 'highcharts-angular';
 import HIndicatorsAll from 'highcharts/indicators/indicators-all';
 import HAnnotationsAdvanced from 'highcharts/modules/annotations-advanced';
 import HDragPanes from 'highcharts/modules/drag-panes';
@@ -23,27 +11,12 @@ import HDraggablePoints from 'highcharts/modules/draggable-points';
 import HFullScreen from 'highcharts/modules/full-screen';
 import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
-import { StockInstrument } from 'types/stock';
-import { ColorIndicator } from 'types/color';
-import {
-  combineLatest,
-  debounceTime,
-  defer,
-  distinctUntilChanged,
-  filter,
-  map,
-  Observable,
-  ReplaySubject,
-  shareReplay,
-  Subject,
-  switchMap,
-  take,
-} from 'rxjs';
-import { SeriesSplineOptions } from 'highcharts';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CHART_INDICATORS_NAME } from './chart.constants';
-import { ChartFigure } from 'types/chart';
 import { NgIf } from '@angular/common';
+import { HIGHCHARTS_LANG, HIGHCHARTS_OPTIONS } from './chart.options';
+import { BehaviorSubject, filter, map, shareReplay, Subject, switchMap, tap } from 'rxjs';
+import { WheelSetExtremes } from './chart.utils';
+import { tuiFormatNumber } from '@taiga-ui/core';
+import { CHART_INDICATORS_NAME } from './chart.constants';
 
 HC_exporting(Highcharts);
 
@@ -55,6 +28,21 @@ HPriceIndicator(Highcharts);
 HFullScreen(Highcharts);
 HStockTools(Highcharts);
 
+interface Candle {
+  close: number;
+  high: number;
+  isComplete: boolean;
+  low: number;
+  open: number;
+  time: string;
+  volume: number;
+}
+
+type SeriesSpline = Highcharts.SeriesSplineOptions & { instrument: string };
+type Zones = { data: Highcharts.AnnotationsOptions[]; instrument: string };
+
+let CHART_INCREMENT = 2;
+
 @Component({
   selector: 'vt-chart',
   templateUrl: './chart.component.html',
@@ -63,174 +51,115 @@ HStockTools(Highcharts);
   imports: [HighchartsChartModule, NgIf],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartComponent implements OnInit {
-  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _ngZone: NgZone = inject(NgZone);
-
+export class ChartComponent implements AfterViewInit, OnDestroy {
   private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
+  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch'];
+  private _instrument$: Subject<any> = new BehaviorSubject(null);
+  private _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
+  private _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
+  private _chart$: Subject<Highcharts.Chart | null> = new BehaviorSubject<Highcharts.Chart | null>(null);
 
-  private readonly _indicators$: Subject<Highcharts.SeriesSplineOptions[] | null> = new ReplaySubject(1);
-  private readonly _candlestick$: Subject<Highcharts.SeriesCandlestickOptions> = new ReplaySubject(1);
-  private readonly _text$: Subject<string | number | null> = new ReplaySubject(1);
-  private readonly _selected$: Subject<StockInstrument | null> = new ReplaySubject(1);
-
-  private _currentTicker: string | null = null;
-  private _text: Highcharts.SVGElement | null = null;
-  private _textSvgWidth = 0;
-
-  candlesEmpty = false;
-  #zoomMode: 'x' | 'y' | 'xy' = 'xy';
-  #prevXExtremes: [number | undefined, number | undefined] = [undefined, undefined];
-  #zoomDirectionOut = 1;
-  #zoomFromStartShare = {
-    x: 0.5,
-    y: 0.5,
-  };
-  #startPanZoomY = -1;
-  consolidationZonesIsExist = false;
-
-  chartOptions: Highcharts.Options = {
-    boost: { useGPUTranslations: true, usePreallocated: true },
-    navigator: { enabled: false },
-    credits: { enabled: false },
-    legend: {
-      enabled: false,
-    },
-    xAxis: {
-      ordinal: false,
-      maxPadding: 0.5,
-      endOnTick: true,
-    },
-    yAxis: {
-      endOnTick: false,
-      startOnTick: false,
-      crosshair: {
-        snap: false,
-        label: {
-          backgroundColor: '#33333388',
-          enabled: true,
-          formatter: (value: number) => {
-            return value.toFixed(5);
-          },
-        },
-      },
-    },
-    scrollbar: {
-      margin: 0,
-    },
+  private _prevZonesName: string[] = [];
+  private _chartOptions: Highcharts.Options = {
     chart: {
-      animation: false,
-      zooming: {
-        mouseWheel: { type: 'x' },
-        resetButton: { position: { x: -60 } },
+      panning: {
+        enabled: true,
+        type: 'xy',
       },
-      panning: { enabled: true, type: 'xy' },
-      // marginBottom: 30,
       events: {
-        render: (event: any) => {
-          if (this._text) {
-            const { e, f } = new DOMMatrix(this._text.getStyle('transform'));
-            const { plotWidth, plotHeight, plotTop, plotLeft } = event.target;
-            const x = plotWidth + plotLeft - this._textSvgWidth - 35;
-            const y = plotHeight + plotTop - 25;
+        load: function () {
+          const chart: Highcharts.Chart = this;
+          const yAxis: any = chart.yAxis[0];
+          const xAxis: any = chart.xAxis[0];
+          let startAxisMove = false;
+          let startChartMove = false;
 
-            if (x !== e || y !== f) {
-              this._text.translate(x, y);
+          if (!yAxis['axisRect']) {
+            yAxis['axisRect'] = chart.renderer
+              .rect()
+              .attr({
+                fill: 'transparent',
+              })
+              .css({
+                cursor: 'ns-resize',
+              })
+              .add(yAxis.labelGroup);
+          }
+
+          WheelSetExtremes(chart, 'yAxis', 0.1);
+
+          Promise.resolve().then(() => {
+            const min = new Date(xAxis.max).setMonth(new Date().getMonth() - 4).valueOf();
+            const max = new Date(xAxis.max).setMonth(new Date().getMonth() + 1).valueOf();
+
+            xAxis.setExtremes(min, max, true);
+          });
+
+          yAxis['axisRect'].on('wheel', (event: WheelEvent) => {
+            WheelSetExtremes(chart, 'yAxis', 0.0001 * event.deltaY);
+          });
+
+          (chart as any)['chartBackground'].on('mousedown', () => {
+            startChartMove = true;
+          });
+
+          yAxis['axisRect'].on('mousedown', () => {
+            startAxisMove = true;
+          });
+
+          document.addEventListener('mousemove', (event: MouseEvent) => {
+            event.stopPropagation();
+
+            if (startAxisMove && event.movementY !== 0) {
+              WheelSetExtremes(chart, 'yAxis', 0.001 * event.movementY);
             }
+
+            if (startChartMove && event.movementY !== 0) {
+              const { min, max } = yAxis.getExtremes();
+              const step = event.movementY * yAxis.toValue(1) * 0.001;
+
+              yAxis.setExtremes(min + step, max + step, true, false);
+            }
+          });
+
+          document.addEventListener('mouseup', () => {
+            startChartMove = startAxisMove = false;
+          });
+        },
+        render: function () {
+          const chart: Highcharts.Chart = this;
+
+          const yAxis: any = chart.yAxis[0];
+
+          if (yAxis.tickPositions && yAxis.tickPositions.length) {
+            const width = Math.max(
+              ...yAxis.tickPositions.map((item: number) => yAxis.ticks[item].label.getBBox().width)
+            );
+
+            yAxis['axisRect'].attr({
+              width: width + 30,
+              height: yAxis.height,
+              x: yAxis.width + yAxis.left,
+              y: yAxis.top,
+            });
           }
         },
       },
-    },
-    rangeSelector: {
-      inputEnabled: false,
-      allButtonsEnabled: true,
-      buttons: [
-        {
-          type: 'year',
-          count: 2,
-          text: 'День',
-          preserveDataGrouping: true,
-          dataGrouping: {
-            forced: true,
-            units: [['day', [1]]],
-          },
-        },
-        {
-          type: 'year',
-          count: 2,
-          text: 'Неделя',
-          preserveDataGrouping: true,
-          dataGrouping: {
-            forced: true,
-            units: [['week', [1]]],
-          },
-        },
-        {
-          type: 'all',
-          text: 'Месяц',
-          preserveDataGrouping: true,
-          dataGrouping: {
-            forced: true,
-            units: [['month', [1]]],
-          },
-        },
-      ],
-      buttonTheme: {
-        width: 60,
-      },
-      selected: 0,
-    },
-    tooltip: {
-      shape: 'rect',
-      headerShape: 'callout',
-      borderWidth: 0,
-      // split: true,
-      backgroundColor: 'rgba(0,0,0,0)',
-      shadow: false,
-      positioner: function (width, height, point) {
-        const chart = this.chart;
-        let position;
-
-        if (point.isHeader) {
-          position = {
-            x: Math.max(
-              // Left side limit
-              0,
-              Math.min(
-                point.plotX + chart.plotLeft - width / 2,
-                // Right side limit
-                //@ts-expect-error sdfs
-                chart.chartWidth - width - chart.marginRight
-              )
-            ),
-            y: point.plotY,
-          };
-        } else {
-          position = {
-            x: point.series.chart.plotLeft,
-            //@ts-expect-error sdfs
-            y: point.series.yAxis.top - chart.plotTop,
-          };
-        }
-
-        return position;
-      },
-    },
-    stockTools: {
-      gui: {
-        visible: false,
+      zooming: {
+        pinchType: 'x',
       },
     },
     plotOptions: {
       candlestick: {
+        navigatorOptions: {
+          connectNulls: true,
+        },
         color: '#ff0043',
         lineColor: '#ff0043',
         upColor: '#00a281',
         upLineColor: '#00a281',
-        allowPointSelect: true,
         dataGrouping: {
-          forced: true,
+          forced: false,
           enabled: true,
           units: [
             ['day', [1]],
@@ -241,502 +170,202 @@ export class ChartComponent implements OnInit {
         },
       },
       spline: {
-        dataGrouping: {
-          groupAll: true,
-          groupPixelWidth: 10,
+        states: {
+          hover: {
+            enabled: false,
+          },
         },
-        allowPointSelect: false,
-        marker: { enabled: false },
-        label: { enabled: false },
-        lastPrice: { enabled: false },
-        lastVisiblePrice: {
-          enabled: false,
-        },
-        showInLegend: false,
-        showInNavigator: false,
         tooltip: {
-          followPointer: false,
-          followTouchMove: false,
-        },
-      },
-      series: {
-        point: {
-          events: {
-            click: (event) => {
-              // Do nothing
-            },
-            mouseOver: () => {
-              // Do nothing
-            },
+          pointFormatter: function () {
+            if (!this.y) {
+              return '';
+            }
+
+            return `<span style="color:${this.color}">●</span> ${this.series.name}: ${tuiFormatNumber(this.y, {
+              precision: CHART_INCREMENT,
+            })}`;
           },
         },
       },
     },
-    series: [
-      {
-        type: 'candlestick',
-        name: '',
-        data: [],
-        id: 'primary',
-        showInLegend: false,
-        opacity: 1,
-        tooltip: {
-          // pointFormatter: function () {
-          //   console.log(this.series.name);
-          //
-          //   return 'dsfsdfsdf';
-          // },
-          pointFormat:
-            '<span style="color:{point.color}">●</span>' +
-            '<b> {series.name} </b>' +
-            'Open: {point.open} ' +
-            'High: {point.high} ' +
-            'Low: {point.low} ' +
-            'Close: {point.close}',
+    xAxis: {
+      startOnTick: false,
+      endOnTick: false,
+      maxPadding: 1,
+      crosshair: {
+        snap: false,
+        dashStyle: 'LongDash',
+        label: {
+          enabled: true,
+          format: '{value:%d %b}',
         },
       },
-      {
-        id: 'ema10',
-        type: 'spline',
-        name: 'EMA 10',
-        color: ColorIndicator.EMA10,
-        lineWidth: 1,
-        showInLegend: false,
-      },
-      {
-        id: 'ema20',
-        type: 'spline',
-        name: 'EMA 20',
-        color: ColorIndicator.EMA20,
-        lineWidth: 1,
-        showInLegend: false,
-      },
-      {
-        id: 'ema30',
-        type: 'spline',
-        name: 'EMA 30',
-        color: ColorIndicator.EMA30,
-        lineWidth: 1,
-        showInLegend: false,
-      },
-      {
-        id: 'ema50',
-        type: 'spline',
-        name: 'EMA 50',
-        color: ColorIndicator.EMA50,
-        lineWidth: 1,
-        showInLegend: false,
-      },
-      {
-        id: 'ema100',
-        type: 'spline',
-        name: 'EMA 100',
-        color: ColorIndicator.EMA100,
-        lineWidth: 1,
-        showInLegend: false,
-      },
-      {
-        id: 'ema200',
-        type: 'spline',
-        name: 'EMA 200',
-        color: ColorIndicator.EMA200,
-        lineWidth: 2,
-        showInLegend: false,
-      },
-      {
-        id: 'sma10',
-        type: 'spline',
-        name: 'SMA 10',
-        color: ColorIndicator.SMA10,
-        lineWidth: 1,
-        showInLegend: false,
-      },
-      {
-        id: 'sma200',
-        type: 'spline',
-        name: 'SMA 200',
-        color: ColorIndicator.SMA200,
-        lineWidth: 2,
-        showInLegend: false,
-        tooltip: {
-          pointFormat: '',
+    },
+    yAxis: {
+      startOnTick: false,
+      endOnTick: false,
+      offset: 30,
+      crosshair: {
+        snap: false,
+        dashStyle: 'LongDash',
+        label: {
+          enabled: true,
+          formatter: (value: number) => tuiFormatNumber(value, { precision: CHART_INCREMENT }),
         },
       },
-    ],
+    },
   };
 
-  @ViewChild(HighchartsChartComponent, { static: true })
-  private readonly _highchartsChart: HighchartsChartComponent | null = null;
+  protected readonly Highcharts: typeof Highcharts = Highcharts;
 
-  private _chart$: Observable<Highcharts.Chart> = defer(() => {
-    if (this._highchartsChart) {
-      return this._highchartsChart.chartInstance;
-    }
+  candlesEmpty = false;
 
-    return this._ngZone.onStable.asObservable().pipe(
-      take(1),
-      switchMap((_) => this._chart$)
-    );
-  });
+  chartOptions: Highcharts.Options = Object.assign({}, HIGHCHARTS_OPTIONS, this._chartOptions);
 
   @Input()
-  set selected(value: StockInstrument | null) {
-    if (this.chart) {
-      this.chart.removeAnnotation(0);
-      this.chart.removeAnnotation('zones');
-    }
+  set data(instrument: any | null) {
+    this.candlesEmpty = instrument.candles === null;
 
-    this._selected$.next(value);
-    // (this.chartOptions.series as Highcharts.SeriesCandlestickOptions[])[0].name = value?.ticker;
+    if (instrument.candles !== null) {
+      this._instrument$.next(instrument);
+    }
   }
 
   @Input()
-  set data(value: [string | number, number, number, number, number][] | null) {
-    this._candlestick$.next({ type: 'candlestick', name: '', data: value || [] });
-  }
-
-  @Input()
-  set indicators(value: SeriesSplineOptions[] | null) {
+  set indicators(value: SeriesSpline[] | null) {
     this._indicators$.next(value);
   }
 
   @Input()
-  set text(value: string | number | null) {
-    this._text$.next(value);
+  set zones(value: Zones | null) {
+    this._zone$.next(value);
   }
-
-  @Input()
-  set consolidationZones(value: any) {
-    if (this.chart) {
-      this.chart.removeAnnotation(0);
-      this.chart.removeAnnotation('zones');
-    }
-
-    if (!value) {
-      return;
-    }
-
-    setTimeout(() => {
-      const getF = function (): Highcharts.AnnotationsShapesOptions[] {
-        return value
-          .filter((item: ChartFigure) => item.id && item.id.toString().indexOf('line') !== -1)
-          .map((item: ChartFigure) => {
-            return {
-              type: 'path',
-              dashStyle: item.dash ? 'Dash' : null,
-              fill: 'rgba(0,0,0,0)',
-              stroke: item.color,
-              strokeWidth: 1.5,
-              ry: Math.PI,
-              points: item.points,
-            };
-          });
-      };
-
-      const getZ = function (): Highcharts.AnnotationsShapesOptions[] {
-        return value
-          .filter((item: ChartFigure) => item.id && item.id.toString().indexOf('zone') !== -1)
-          .map((item: ChartFigure) => {
-            return {
-              type: 'path',
-              dashStyle: item.dash ? 'Dash' : null,
-              fill: 'rgba(0,0,0,0)',
-              stroke: item.color,
-              strokeWidth: 1.5,
-              ry: Math.PI,
-              points: item.points,
-            };
-          });
-      };
-
-      this.chart.addAnnotation({
-        id: 0,
-        draggable: '',
-        shapes: getF(),
-      });
-
-      this.chart.addAnnotation({
-        id: 'zones',
-        draggable: '',
-        shapes: getZ(),
-      });
-
-      this.consolidationZonesIsExist = true;
-    }, 10);
-  }
-
-  public chart!: Highcharts.StockChart;
-
-  Highcharts: typeof Highcharts = Highcharts;
-
-  @ViewChild('chart', { static: true })
-  private readonly _chartElement!: ElementRef;
 
   constructor() {
     Highcharts.setOptions({
-      lang: {
-        rangeSelectorZoom: 'Таймфрейм',
-        viewFullscreen: 'Полноэкранный режим',
-        exitFullscreen: 'Выйти из полноэкранного режима',
-        downloadPDF: 'Загрузить PDF',
-        downloadJPEG: 'Загрузить JPEG',
-        downloadPNG: 'Загрузить PNG',
-        downloadSVG: 'Загрузить SVG',
-        printChart: 'Распечатать',
-        weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-        loading: 'Загрузка...',
-        months: [
-          'Январь',
-          'Февраль',
-          'Март',
-          'Апрель',
-          'Май',
-          'Июнь',
-          'Июль',
-          'Август',
-          'Сентябрь',
-          'Октябрь',
-          'Ноябрь',
-          'Декабрь',
-        ],
-        shortMonths: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-      },
+      lang: HIGHCHARTS_LANG,
     });
   }
 
-  ngOnInit(): void {
-    const chart$ = this._chart$.pipe(
-      filter((chart: Highcharts.Chart) => !!chart),
-      takeUntilDestroyed(this._destroyRef),
-      shareReplay({
-        refCount: true,
-        bufferSize: 1,
-      })
+  onMouseWheel(event: WheelEvent): void {
+    // console.log(event);
+  }
+
+  onTouchMove(event: TouchEvent | MouseEvent): void {
+    console.log(event);
+  }
+
+  onInstance(chart: Highcharts.Chart): void {
+    this._chart$.next(chart);
+  }
+
+  ngAfterViewInit(): void {
+    const chart$ = this._chart$.asObservable().pipe(
+      filter((chart: Highcharts.Chart | null): chart is Highcharts.Chart => chart !== null),
+      shareReplay(1)
+    );
+
+    const chartWithInstrumentId$ = this._chart$.asObservable().pipe(
+      filter((chart: Highcharts.Chart | null): chart is Highcharts.Chart => chart !== null),
+      switchMap((chart: Highcharts.Chart) =>
+        this._instrument$.asObservable().pipe(
+          filter((instrument: any | null): instrument is any => instrument !== null),
+          map((instrument) => ({ chart, id: instrument.id }))
+        )
+      )
     );
 
     chart$
       .pipe(
         switchMap((chart: Highcharts.Chart) =>
-          this._indicators$
-            .asObservable()
-            .pipe(map((indicators: Highcharts.SeriesSplineOptions[] | null) => ({ chart, indicators })))
-        )
-      )
-      .subscribe(({ chart, indicators }) => this._updateChartIndicators(chart, indicators));
-
-    chart$
-      .pipe(
-        switchMap((chart: Highcharts.Chart) =>
-          combineLatest([
-            this._candlestick$.asObservable(),
-            this._selected$
-              .asObservable()
-              .pipe(filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null)),
-          ]).pipe(
-            debounceTime(100),
-            map(([candlestick, instrument]: [Highcharts.SeriesCandlestickOptions, StockInstrument]) => ({
-              chart,
-              candlestick,
-              instrument,
-            }))
+          this._instrument$.asObservable().pipe(
+            filter((instrument: any | null): instrument is any => instrument !== null),
+            map((instrument) => ({ chart, instrument }))
           )
         )
       )
-      .subscribe(({ chart, candlestick, instrument }) => this._updateChartCandlestick(chart, candlestick, instrument));
+      .subscribe(({ chart, instrument }: { chart: Highcharts.Chart; instrument: any }) => {
+        const candlestick = chart.get('candlestick');
 
-    chart$
-      .pipe(
-        switchMap((chart: Highcharts.Chart) =>
-          this._text$.asObservable().pipe(
-            distinctUntilChanged(),
-            map((text: string | number | null) => ({ chart, text }))
-          )
-        )
-      )
-      .subscribe(({ chart, text }) => this._updateChartText(chart, text));
-  }
+        if (candlestick) {
+          CHART_INCREMENT = instrument.increment;
 
-  chartEvent($event: Highcharts.Chart) {
-    this.chart = $event;
-  }
+          (candlestick as any).setName(instrument.name);
+          (candlestick as Highcharts.Series).setData(instrument.candles, true, false, false);
 
-  onMouseWheel(event: Event): void {
-    if (!this.chart || !(event instanceof WheelEvent)) {
-      return;
-    }
-    const leftBorder = this.chart.chartWidth - 60;
-    const bottomBorder = this.chart.chartHeight - 60;
-    const isInRightZone = event.x >= leftBorder && event.x <= this.chart.chartWidth && event.y <= bottomBorder;
-    this.#zoomDirectionOut = event.deltaY < 0 ? -1 : 1;
-    this.#zoomFromStartShare = {
-      x: Math.min(Math.max(event.layerX - (this.chart.chartWidth - this.chart.plotWidth), 0) / this.chart.plotWidth, 1),
-      y: Math.min((event.layerY - this.chart.plotTop) / this.chart.plotHeight, 1),
-    };
-
-    if (isInRightZone) {
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      this.updateZoomMode('y');
-    } else {
-      this.updateZoomMode('x');
-    }
-  }
-
-  onTouchMove(event: TouchEvent): void {
-    if (this.#startPanZoomY == -1) {
-      return;
-    }
-    const deltaY = this.#startPanZoomY - event.touches[0].clientY;
-    this.#zoomDirectionOut = deltaY < 0 ? 1 : -1;
-    this.#zoomFromStartShare = {
-      x: 0.5,
-      y: 0.5,
-    };
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    this.updateZoomMode('y');
-    this.#startPanZoomY = event.touches[0].clientY;
-  }
-
-  onTouchStart(event: TouchEvent): void {
-    const leftBorder = this.chart.chartWidth - 60;
-    const bottomBorder = this.chart.chartHeight - 60;
-    if (
-      event.touches[0].clientX >= leftBorder &&
-      event.touches[0].clientX <= this.chart.chartWidth &&
-      event.touches[0].clientY <= bottomBorder
-    ) {
-      this.#startPanZoomY = event.touches[0].clientY;
-    }
-  }
-
-  onTouchEnd(): void {
-    this.#startPanZoomY = -1;
-  }
-
-  private updateZoomMode(zoomMode: 'x' | 'y' | 'xy'): void {
-    this.#zoomMode = zoomMode;
-    const yAxis = this.chart?.yAxis[0];
-    if (!yAxis || yAxis.max === undefined || yAxis.min === undefined) {
-      return;
-    }
-    const xAxis = this.chart?.xAxis[0];
-    if (!xAxis || xAxis.max === undefined || xAxis.min === undefined) {
-      return;
-    }
-
-    const dataHeight = yAxis.max - yAxis.min;
-    const plotHeight = this.chart.plotHeight;
-    const deltaZoomY = (dataHeight / plotHeight) * 40;
-    const maxDeltaY = deltaZoomY * this.#zoomFromStartShare.y;
-    const minDeltaY = deltaZoomY - maxDeltaY;
-    const newYMin = yAxis.min - this.#zoomDirectionOut * minDeltaY;
-    const newYMax = yAxis.max + this.#zoomDirectionOut * maxDeltaY;
-
-    // const dataWidth = xAxis.max - xAxis.min;
-    // const plotWidtht = this.chart.plotWidth;
-    // const deltaZoomX = dataWidth / plotWidtht * 40;
-    // const minDeltaX = deltaZoomX * this.#zoomFromStartShare.x;
-    // const maxDeltaX = deltaZoomX - minDeltaX;
-    // const newXMin = xAxis.min - this.#zoomDirectionOut * minDeltaX;
-    // const newXMax = xAxis.max + this.#zoomDirectionOut * maxDeltaX;
-
-    if (this.#zoomMode === 'y') {
-      yAxis.setExtremes(newYMin, newYMax, true, true);
-      xAxis.setExtremes(this.#prevXExtremes[0], this.#prevXExtremes[1]);
-    } else if (this.#zoomMode === 'x') {
-      // xAxis.update({min: newXMin, max: newXMax});
-      // xAxis.setExtremes(xAxis.min, xAxis.max);
-    } else if (this.#zoomMode === 'xy') {
-      // xAxis.update({min: newXMin, max: newXMax});
-      // xAxis.setExtremes(xAxis.min, xAxis.max);
-    }
-    this.#prevXExtremes = [xAxis.min, xAxis.max];
-  }
-
-  private _updateChartIndicators(
-    chart: Highcharts.Chart,
-    indicators: (Highcharts.SeriesSplineOptions | null)[] | null
-  ): void {
-    this._indicatorsName.forEach((name: string) => {
-      const series = chart.get(name);
-      if (series) {
-        if (indicators === null) {
-          (series as Highcharts.Series).data = [];
-        } else {
-          const indicator = indicators.find((item) => item && item.id === name) || { type: 'spline', data: [] };
-          (series as Highcharts.Series).update(indicator);
+          chart.yAxis[0].setExtremes();
         }
+      });
+
+    chartWithInstrumentId$
+      .pipe(
+        switchMap(({ chart, id }: { chart: Highcharts.Chart; id: string }) =>
+          this._indicators$.asObservable().pipe(
+            filter((indicators: SeriesSpline[] | null): indicators is SeriesSpline[] => indicators !== null),
+            map((indicators: SeriesSpline[]) => indicators.filter((item) => item.instrument === id)),
+            map((indicators: SeriesSpline[]) => ({ chart, indicators }))
+          )
+        )
+      )
+      .subscribe(({ chart, indicators }: { chart: Highcharts.Chart; indicators: SeriesSpline[] }) => {
+        this._indicatorsName.forEach((name: string) => {
+          const series = chart.get(name);
+          const indicator = indicators.find((item) => item && item.id === name) || { type: 'spline', data: [] };
+
+          if (series) {
+            (series as Highcharts.Series).setData(indicator.data as any[], false, false);
+          }
+        });
+
+        chart.redraw(false);
+      });
+
+    chartWithInstrumentId$
+      .pipe(
+        tap(({ chart }: { chart: Highcharts.Chart; id: string }) => this._removeZones([], chart)),
+        switchMap(({ chart, id }: { chart: Highcharts.Chart; id: string }) =>
+          this._zone$.asObservable().pipe(
+            map((zones: Zones | null) => {
+              if (zones === null) {
+                return { chart, zones: [] };
+              }
+
+              return { chart, zones: zones.instrument === id ? zones.data : [] };
+            })
+          )
+        )
+      )
+      .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
+        this._removeZones(zones, chart);
+        this._addZones(zones, chart);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._chart$.complete();
+    this._instrument$.complete();
+  }
+
+  private _addZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
+    const ids: string[] = zones.map((zone: Highcharts.AnnotationsOptions) => zone.id as string);
+
+    zones.forEach((item: Highcharts.AnnotationsOptions) => {
+      if (!this._prevZonesName.includes(item.id as string)) {
+        chart.addAnnotation(item, false);
       }
     });
+
+    this._prevZonesName = ids;
+    chart.redraw(false);
   }
 
-  private _updateChartCandlestick(
-    chart: Highcharts.Chart,
-    candlestick: Highcharts.SeriesCandlestickOptions,
-    instrument: StockInstrument
-  ): void {
-    this.candlesEmpty = !(candlestick.data && candlestick.data.length);
-    this._cdr.markForCheck();
+  private _removeZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
+    const ids: string[] = zones.map((zone: Highcharts.AnnotationsOptions) => zone.id as string);
 
-    const series = chart.get('primary');
-
-    if (series) {
-      (series as Highcharts.Series).update({ ...candlestick, name: instrument.ticker });
-
-      if (this._currentTicker !== instrument.ticker) {
-        chart.yAxis[0].setExtremes();
-        chart.xAxis[0].setExtremes(
-          new Date().setMonth(new Date().getMonth() - 2).valueOf(),
-          new Date().setMonth(new Date().getMonth() + 1).valueOf(),
-          true
-        );
-
-        this._currentTicker = instrument.ticker;
-      }
-    }
-  }
-
-  private _updateChartText(chart: Highcharts.Chart, text: string | number | null): void {
-    if (this._text !== null) {
-      this._text.destroy();
-      this._text = null;
-    }
-
-    if (text === null) {
-      return;
-    }
-
-    this._text = chart.renderer
-      .g('custom-text')
-      .translate(chart.plotWidth, chart.plotTop)
-      .attr({ opacity: 0, zIndex: 7 })
-      .add();
-
-    let textSvg: Highcharts.SVGElement | null = chart.renderer
-      .text(text.toString(), 0, 0)
-      .attr({
-        'font-size': '0.8em',
-      })
-      .add(this._text);
-    this._textSvgWidth = Math.ceil(textSvg.getBBox().width + 16);
-
-    textSvg.destroy();
-    textSvg = null;
-
-    chart.renderer.rect(0, 0, this._textSvgWidth, 22, 2).attr({ fill: '#e6e9ff', 'z-index': 3 }).add(this._text);
-    chart.renderer
-      .text(text.toString(), 8, 15.5)
-      .attr({
-        'font-size': '0.8em',
-        'z-index': 5,
-      })
-      .add(this._text);
-
-    this._text
-      .translate(chart.plotWidth + chart.plotLeft - this._textSvgWidth - 35, chart.plotHeight + chart.plotTop - 25)
-      .attr({ opacity: 1 });
+    this._zonesName
+      .filter((id: string) => !ids.includes(id))
+      .forEach((id: string) => {
+        chart.removeAnnotation(id);
+      });
   }
 }

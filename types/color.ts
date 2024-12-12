@@ -8,6 +8,10 @@ export enum ColorIndicator {
   EMA100 = 'rgb(40, 99, 254)',
   EMA200 = 'rgb(242, 54, 69)',
   SMA10 = 'rgb(255, 151, 0)',
+  SMA20 = 'rgb(255, 151, 0)',
+  SMA30 = 'rgb(255, 151, 0)',
+  SMA50 = 'rgb(255, 151, 0)',
+  SMA100 = 'rgb(255, 151, 0)',
   SMA200 = 'rgb(247, 124, 128)',
 }
 

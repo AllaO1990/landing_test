@@ -21,7 +21,7 @@ import { StockGroups, StockId, StockInstrument, StockListItems, StockPrice, With
 import { StockEvent } from 'types/stock-event';
 import { ChartStore } from './chart-store';
 import { EntryStore } from './entry.store';
-import { StockListStore } from './stock-list.store';
+import { StockListStore } from './_stock-list.store';
 import { PositionStore } from './position.store';
 import { Position } from 'types/position';
 import { breakArray } from 'utils/break-array';

@@ -1,84 +1,99 @@
-<!-- Taiga migration TODO: tuiButton "whiteblock-active" appearance is no longer available. Use 'appearance="outline-grayscale" tuiAppearanceMode="checked"' -->
-<tui-loader class="loader" [overlay]="true" [showLoader]="(candles$ | async) === null">
-  <div class="container" *ngIf="(candles$ | async); else empty">
-    <div class="column">
-      <div class="charts">
-        <vt-chart
-          [consolidationZones]="zone$ | async"
-          [data]="candles$ | async"
-          [indicators]="indicators$ | async"
-          [selected]="selected$ | async"
-          [text]="text$ | async"
-        ></vt-chart>
-      </div>
-      <div class="legend" *ngIf="toggleLegend">
-        <lib-chart-legend class="chart-legend" [list]="(legend$ | async) || []"></lib-chart-legend>
-      </div>
+<div
+  class="container"
+  [class.container--update]="isUpdate$ | async"
+  *ngIf="(candles$ | async) as data; else loader">
+  <div class="column">
+    <div class="charts">
+      <vt-chart
+        [data]="data"
+        [indicators]="indicators$ | async"
+        [zones]="zone$ | async"
+      ></vt-chart>
+
+      <!--      <vt-chart-->
+      <!--        [consolidationZones]="zone$ | async"-->
+      <!--        [data]="candles$ | async"-->
+      <!--        [indicators]="indicators$ | async"-->
+      <!--        [selected]="selected$ | async"-->
+      <!--        [text]="text$ | async"-->
+      <!--      ></vt-chart>-->
+
     </div>
-    <div
-      class="actions"
-      [class.actions--hide]="!toggleActions">
-      <button
-        class="toggle-action"
-        appearance="icon"
-        tuiIconButton
-        type="button"
-        [iconStart]="toggleActions ? '@tui.chevron-right' : '@tui.chevron-left'"
-        size="xs"
-        (click)="onToggleActions($event)">
-      </button>
-
-      <div class="actions__list">
-        <lib-button-with-list
-          class="action"
-          [formControl]="controlEma"
-          [icon]="emaIcon"
-          [list]="emaList">
-        </lib-button-with-list>
-
-        <lib-button-with-list
-          class="action"
-          [formControl]="controlSma"
-          [icon]="smaIcon"
-          [list]="smaList">
-        </lib-button-with-list>
-
-        <button
-          class="action"
-          [appearance]="controlAtr.value ? 'primary' : 'secondary'"
-          tuiButton
-          type="button"
-          [iconStart]="artIcon"
-          [size]="size"
-          (click)="onToggleAtr($event)">
-        </button>
-
-        <lib-button-with-list
-          class="action"
-          [formControl]="controlZone"
-          [icon]="zoneIcon"
-          [list]="zoneList"
-          (toggled)="onToggledZone()"
-          (opened)="onOpenedZone($event)">
-        </lib-button-with-list>
-
-        <div class="space"></div>
-
-        <button
-          class="action"
-          [appearance]="toggleLegend ? 'primary' : 'secondary'"
-          [disabled]="(isDisabledButtonLegend$ | async) || false"
-          tuiButton
-          type="button"
-          iconStart="@tui.table-of-contents"
-          [size]="size"
-          (click)="onToggleLegend($event)">
-        </button>
-      </div>
-
+    <div class="legend" *ngIf="toggleLegend">
+      <lib-chart-legend class="chart-legend" [list]="(legend$ | async) || []"></lib-chart-legend>
     </div>
   </div>
-</tui-loader>
+  <div
+    class="actions"
+    [class.actions--hide]="!toggleActions">
+    <button
+      class="toggle-action"
+      appearance="icon"
+      tuiIconButton
+      type="button"
+      [iconStart]="toggleActions ? '@tui.chevron-right' : '@tui.chevron-left'"
+      size="xs"
+      (click)="onToggleActions($event)">
+    </button>
+
+    <div class="actions__list">
+      <lib-button-with-list
+        class="action"
+        [formControl]="controlEma"
+        [icon]="emaIcon"
+        [list]="emaList">
+      </lib-button-with-list>
+
+      <lib-button-with-list
+        class="action"
+        [formControl]="controlSma"
+        [icon]="smaIcon"
+        [list]="smaList">
+      </lib-button-with-list>
+
+      <lib-button-with-list
+        class="action"
+        [formControl]="controlZone"
+        [icon]="zoneIcon"
+        [list]="zoneList"
+        (toggled)="onToggledZone()"
+        (opened)="onOpenedZone($event)">
+      </lib-button-with-list>
+
+      <button
+        class="action"
+        [appearance]="controlAtr.value ? 'primary' : 'secondary'"
+        tuiButton
+        type="button"
+        [iconStart]="artIcon"
+        [size]="size"
+        [disabled]="true"
+        (click)="onToggleAtr($event)">
+      </button>
+
+      <div class="space"></div>
+
+      <button
+        class="action"
+        [appearance]="toggleLegend ? 'primary' : 'secondary'"
+        [disabled]="(isDisabledButtonLegend$ | async) || false"
+        tuiButton
+        type="button"
+        iconStart="@tui.table-of-contents"
+        [size]="size"
+        (click)="onToggleLegend($event)">
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="update" *ngIf="isUpdate$ | async">
+  <ui-loader class="loader"></ui-loader>
+</div>
+
+<ng-template #loader>
+  <ui-loader class="loader"></ui-loader>
+</ng-template>
 
 <ng-template #empty>
   <div class="empty">Загрузка...</div>

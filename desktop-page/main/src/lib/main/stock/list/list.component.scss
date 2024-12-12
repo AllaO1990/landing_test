@@ -151,13 +151,13 @@
     z-index: -1;
   }
 
-  &:hover &__percent {
+  &--actions:hover &__percent {
     opacity: 0;
     z-index: -1;
     transition: none;
   }
 
-  &:hover &__remove {
+  &--actions:hover &__remove {
     opacity: 1;
     z-index: 10;
   }

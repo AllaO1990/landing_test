@@ -2,11 +2,19 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ConsolidationZones } from 'types/chart';
+import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Position, ResponsePosition, ResponsePositions } from 'types/position';
 import { Response, ResponseMessage } from 'types/response';
-import { Stock, StockId, StockInstrumentList, StockLinkListInstrument, StockPrice, WithLastPrice } from 'types/stock';
+import {
+  Stock,
+  StockId,
+  StockInstrumentList,
+  StockLinkListInstrument,
+  StockLists,
+  StockPrice,
+  WithLastPrice,
+} from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 import { IndicatorEmaParams } from 'types/indicator-ema';
@@ -52,8 +60,8 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/instruments?sub=true`);
   }
 
-  getInstrumentsLists(): Observable<Response<{ id: string; name: string }>> {
-    return this._http.get<Response<{ id: string; name: string }>>(`https://trade.gpn.dev/api/v1/instruments-lists`);
+  getInstrumentsLists(): Observable<Response<{ items: StockLists }>> {
+    return this._http.get<Response<{ items: StockLists }>>(`https://trade.gpn.dev/api/v1/instruments-lists`);
   }
 
   getInstrumentsListItems(id: StockId): Observable<Response<Stock>> {
@@ -84,6 +92,13 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<StockInstrumentList>>(`https://trade.gpn.dev/api/v1/instruments-lists/create`, {
       name,
     });
+  }
+
+  createDefaultInstrumentsListItems(): Observable<Response<{ items: StockLists }>> {
+    return this._http.post<Response<{ items: StockLists }>>(
+      `https://trade.gpn.dev/api/v1/instruments-lists/create-default`,
+      {}
+    );
   }
 
   deleteInstrumentsLists(id: string): Observable<Response<{ id: string }>> {
@@ -133,17 +148,35 @@ export class DesktopApiService extends DesktopService {
         ? new Date(new Date(lastYear - 1, 0, 1, 23).setUTCHours(0, 0, 0, 0)).toISOString()
         : new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString();
 
-    return this._http.get<any>(`https://trade.gpn.dev/api/v1/candles`, {
-      params: {
-        id: selected?.source,
-        interval: Timeframe.CANDLE_INTERVAL_DAY,
-        from,
-        to: new Date(Date.now()).toISOString(),
-      },
-    });
+    return this._http
+      .get<Response<any>>(`https://trade.gpn.dev/api/v1/candles`, {
+        params: {
+          id: selected?.source,
+          interval: Timeframe.CANDLE_INTERVAL_DAY,
+          from,
+          to: new Date(Date.now()).toISOString(),
+        },
+      })
+      .pipe(
+        filter((response: Response<any>) => response && response.message === ResponseMessage.success),
+        map((response: Response<any>) => response.data)
+      );
   }
 
-  getWatchlistConsolidationZone(id: StockId): Observable<any> {
+  getIdeaConsolidationZone(id: StockId): Observable<Response<ActiveZone | null> | null> {
+    return this._http
+      .get<Response<ActiveZone | null> | null>(`https://trade.gpn.dev/api/v1/chart/idea-consolidation-zone`, {
+        params: { ideaId: id },
+      })
+      .pipe(
+        catchError((error: Error) => {
+          console.log(error);
+          return of(null);
+        })
+      );
+  }
+
+  getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone> | null> {
     return this._http
       .get<any>(`https://trade.gpn.dev/api/v1/chart/watchlist-consolidation-zone`, { params: { id } })
       .pipe(

@@ -9,8 +9,9 @@
     </div>
     <div class="dialog__actions">
       <button
+        tuiAutoFocus
         class="dialog__action"
-        size="m"
+        [size]="size"
         tuiButton
         type="submit"
         (click)="submit($event)">
@@ -19,7 +20,7 @@
       <button
         class="dialog__action"
         appearance="secondary"
-        size="m"
+        [size]="size"
         tuiButton
         type="button"
         (click)="cancel($event)">

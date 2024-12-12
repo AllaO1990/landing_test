@@ -17,8 +17,8 @@ import { MAP_COLOR_CONSOLIDATION } from 'types/color';
 export class ChartStore extends ComponentStore<ChartState> {
   private readonly _from: Date = new Date(new Date(2014, 0, 1, 12).setUTCHours(0, 0, 0, 0));
   private readonly _to: Date = new Date(new Date().setUTCHours(23, 59, 59, 0));
+  private readonly _queueCandles: Queue<any> = new Queue(3);
 
-  private _queueCandles: Queue<any> = new Queue(3);
   private _colorConsolidation = MAP_COLOR_CONSOLIDATION;
   private _queueChartFigures: Queue<string, Response<ActiveZone & { priceIn?: number }>> = new Queue(3);
 

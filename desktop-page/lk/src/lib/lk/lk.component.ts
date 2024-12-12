@@ -1,38 +1,40 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
-import {
-  ChartStore,
-  ConsolidationZonesStore,
-  DesktopLkStore,
-  EntryStore,
-  IndicatorAtrStore,
-  IndicatorEmaStore,
-  IndicatorSmaStore,
-  PositionStore,
-  StockListStore,
-} from 'stores/desktop';
-import { DESKTOP_API, DESKTOP_STORE, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
-import { DesktopService } from '@desktop-data/desktop-data';
+// import {
+//   ChartStore,
+//   ConsolidationZonesStore,
+//   DesktopLkStore,
+//   EntryStore,
+//   IndicatorAtrStore,
+//   IndicatorEmaStore,
+//   IndicatorSmaStore,
+//   PositionStore,
+//   _stockListStore,
+// } from 'stores/desktop';
+import { DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
-import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, shareReplay } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  shareReplay,
+  startWith,
+} from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { NavComponent } from '../nav';
 import { LogoComponent } from '@ui/components/logo';
-
-const createStore = (api: DesktopService) =>
-  new DesktopLkStore(
-    api,
-    new StockListStore(api),
-    new EntryStore(api),
-    new PositionStore(api),
-    new ChartStore(api),
-    new IndicatorAtrStore(api),
-    new IndicatorEmaStore(api),
-    new IndicatorSmaStore(api),
-    new ConsolidationZonesStore(api)
-  );
+import { DesktopService } from '@desktop-data/desktop-data';
+import { SelectFacade } from 'stores/facades/select.facade';
+import { PositionFacade } from 'stores/facades/position.facade';
+import { IdeaFacade } from 'stores/facades/idea.facade';
+import { StockListFacade } from 'stores/facades/stock-list.facade';
+import { ChartFacade } from 'stores/facades/chart.facade';
+import { MainStore } from 'stores/main.store';
 
 @Component({
   selector: 'lib-lk',
@@ -42,17 +44,22 @@ const createStore = (api: DesktopService) =>
   styleUrl: './lk.component.scss',
   providers: [
     {
-      provide: DESKTOP_STORE,
-      useFactory: createStore,
-      deps: [DESKTOP_API, QUERY_PARAMS],
+      provide: MainStore,
+      useFactory: (api: DesktopService) => new MainStore(api),
+      deps: [DESKTOP_API],
     },
+    SelectFacade,
+    PositionFacade,
+    IdeaFacade,
+    StockListFacade,
+    ChartFacade,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LkComponent implements OnInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  private readonly _store: DesktopLkStore = inject(DESKTOP_STORE);
+  private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
 
   get queryId(): StockId | null {
@@ -62,9 +69,19 @@ export class LkComponent implements OnInit {
   ngOnInit(): void {
     const stream$ = this._queryParams.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-    combineLatest([this._getParamsKey<EventSelected>('type', stream$), this._getParamsKey<StockId>('id', stream$)])
+    combineLatest([
+      this._getParamsKey<EventSelected>('type', stream$),
+      this._getParamsKey<StockId>('id', stream$),
+      this._getParamsKey<StockId>('group', stream$).pipe(startWith('')),
+    ])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(300))
-      .subscribe(([type, id]: [EventSelected, StockId]) => this._store.updateEvent({ type, id }));
+      .subscribe(([type, id, group]: [EventSelected, StockId, StockId | undefined]) =>
+        this._select.updateEvent({
+          type,
+          id,
+          group,
+        })
+      );
 
     if (!this.queryId) {
       this._queryParams.update({

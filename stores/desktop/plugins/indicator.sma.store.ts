@@ -1,16 +1,14 @@
-import { ComponentStore } from '@ngrx/component-store';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { Observable, of, switchMap, tap } from 'rxjs';
-import { Queue } from 'utils/queue';
 import { Response } from 'types/response';
+import { IndicatorSmaParams, IndicatorSmaState } from 'types/indicator-sma';
 import { map } from 'rxjs/operators';
 import { SeriesSplineOptions } from 'highcharts';
-import { IndicatorSmaParams, IndicatorSmaState } from 'types/indicator-sma';
-import { indicatorGetUniq, indicatorTransformToSeries } from 'utils/indicators-func';
+import { indicatorTransformToSeries } from 'utils/indicators-func';
+import { WithQueue } from '../core/with-queue.abstract';
+import { getJoinUniq } from 'utils/get-join-uniq';
 
-export class IndicatorSmaStore extends ComponentStore<IndicatorSmaState> {
-  private _queue: Queue<any> = new Queue(3);
-
+export class IndicatorSmaStore extends WithQueue<IndicatorSmaState> {
   readonly selected$: Observable<null | any> = this.select((state: IndicatorSmaState) => state.selected);
 
   readonly series$: Observable<null | any> = this.select((state: IndicatorSmaState) => state.series);
@@ -39,22 +37,23 @@ export class IndicatorSmaStore extends ComponentStore<IndicatorSmaState> {
       return of(null);
     }
 
-    const uniqKey = indicatorGetUniq(data.id, data.interval, ...data.types);
-    const value = this._queue.getValue(uniqKey);
+    const uniqKey = getJoinUniq(data.id, data.interval, ...data.types);
+    const value = this.queue.getValue(uniqKey);
 
     if (value) {
       return of(value);
     }
 
     if (data.types.length === 0) {
-      this._queue.setValue(uniqKey, []);
+      this.queue.setValue(uniqKey, []);
 
       return of([]);
     }
 
     return this._api.getIndicatorSma(data).pipe(
       map((res: Response<any>) => res.data && indicatorTransformToSeries(res.data)),
-      tap((value: SeriesSplineOptions[]) => this._queue.setValue(uniqKey, value))
+      map((list: SeriesSplineOptions[]) => list.map((item: SeriesSplineOptions) => ({ ...item, instrument: data.id }))),
+      tap((value: SeriesSplineOptions[]) => this.queue.setValue(uniqKey, value))
     );
   }
 }
