@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ConsolidationZones } from 'types/chart';
+import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Position, ResponsePosition, ResponsePositions } from 'types/position';
 import { Response, ResponseMessage } from 'types/response';
@@ -163,16 +163,20 @@ export class DesktopApiService extends DesktopService {
       );
   }
 
-  getIdeaConsolidationZone(id: StockId): Observable<any> {
-    return this._http.get<any>(`trade.gpn.dev/api/v1/chart/idea-consolidation-zone`, { params: { ideaId: id } }).pipe(
-      catchError((error: Error) => {
-        console.log(error);
-        return of(null);
+  getIdeaConsolidationZone(id: StockId): Observable<Response<ActiveZone | null> | null> {
+    return this._http
+      .get<Response<ActiveZone | null> | null>(`https://trade.gpn.dev/api/v1/chart/idea-consolidation-zone`, {
+        params: { ideaId: id },
       })
-    );
+      .pipe(
+        catchError((error: Error) => {
+          console.log(error);
+          return of(null);
+        })
+      );
   }
 
-  getWatchlistConsolidationZone(id: StockId): Observable<any> {
+  getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone> | null> {
     return this._http
       .get<any>(`https://trade.gpn.dev/api/v1/chart/watchlist-consolidation-zone`, { params: { id } })
       .pipe(

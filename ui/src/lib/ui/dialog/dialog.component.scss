@@ -1,4 +1,8 @@
 .lib-dialog {
   animation: tuiReveal var(--tui-duration),
   tuiFadeIn var(--tui-duration);
+
+  margin: auto;
+  border: none;
+  border-radius: 0;
 }

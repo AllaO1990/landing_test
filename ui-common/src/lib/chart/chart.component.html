@@ -51,16 +51,6 @@
         [list]="smaList">
       </lib-button-with-list>
 
-      <button
-        class="action"
-        [appearance]="controlAtr.value ? 'primary' : 'secondary'"
-        tuiButton
-        type="button"
-        [iconStart]="artIcon"
-        [size]="size"
-        (click)="onToggleAtr($event)">
-      </button>
-
       <lib-button-with-list
         class="action"
         [formControl]="controlZone"
@@ -69,6 +59,17 @@
         (toggled)="onToggledZone()"
         (opened)="onOpenedZone($event)">
       </lib-button-with-list>
+
+      <button
+        class="action"
+        [appearance]="controlAtr.value ? 'primary' : 'secondary'"
+        tuiButton
+        type="button"
+        [iconStart]="artIcon"
+        [size]="size"
+        [disabled]="true"
+        (click)="onToggleAtr($event)">
+      </button>
 
       <div class="space"></div>
 

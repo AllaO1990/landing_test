@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ConsolidationZones } from 'types/chart';
+import { ActiveZone, ConsolidationZones } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Response, ResponseMessage } from 'types/response';
 import {
@@ -50,7 +50,7 @@ export class DesktopStubService extends DesktopService {
     return of([]);
   }
 
-  getIdeaConsolidationZone(ideaId: string): Observable<ConsolidationZones> {
+  getIdeaConsolidationZone(ideaId: string): Observable<Response<ActiveZone> | null> {
     return of();
   }
 
@@ -78,7 +78,7 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  getWatchlistConsolidationZone(id: StockId): Observable<any> {
+  getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone> | null> {
     return of();
   }
 

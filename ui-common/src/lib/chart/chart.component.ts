@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { combineLatest, debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { ButtonWithListComponent } from './button-with-list';
 import {
@@ -23,6 +23,9 @@ import { LoaderComponent } from '@ui/components/loader';
 import { StockEvent } from 'types/stock-event';
 import { ChartFacade } from 'stores/facades/chart.facade';
 import { ConsolidationZonesShape } from 'types/consolidation-zones';
+import { SelectFacade } from 'stores/facades/select.facade';
+import { EventSelected } from 'types/events';
+import * as Highcharts from 'highcharts/highstock';
 
 interface IndicatorListItem<T = string> {
   name: string;
@@ -52,6 +55,7 @@ interface IndicatorListItem<T = string> {
 })
 export class ChartCandlestickComponent implements OnInit {
   private readonly _store: ChartFacade = inject(ChartFacade);
+  private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _destroy$: DestroyRef = inject(DestroyRef);
 
   toggleLegend = false;
@@ -89,10 +93,7 @@ export class ChartCandlestickComponent implements OnInit {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
-  readonly candles$: Observable<any | null> = this._store.instrument$.pipe(
-    shareReplay(1),
-    tap((data) => console.log(data))
-  );
+  readonly candles$: Observable<any | null> = this._store.instrument$.pipe(shareReplay(1));
 
   readonly indicators$: Observable<any[]> = combineLatest([this._store.ema$, this._store.sma$]).pipe(
     debounceTime(0),
@@ -104,15 +105,53 @@ export class ChartCandlestickComponent implements OnInit {
   //   shareReplay({ bufferSize: 1, refCount: true })
   // );
 
-  readonly zone$: Observable<ConsolidationZonesShape | null> = this._store.zones$
-    // combineLatest([
-    // this._store.zones$.pipe(map((data: { zone: ActiveZone[], instrument: string  } | null) => )),
-    // this._store.chartFigures$.pipe(map((list: ChartFigure[] | null) => list || [])),
-    // ]).
-    .pipe(
-      // map(([zones, figures]: [ChartFigure[], ChartFigure[]]) => [...zones, ...figures]),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+  readonly zoneIdea$: Observable<null | ConsolidationZonesShape> = this._select.event$.pipe(
+    filter((event: null | StockEvent): event is StockEvent => event !== null),
+    switchMap((event: StockEvent) => {
+      if (event.type !== EventSelected.IDEA && event.type !== EventSelected.POSITION) {
+        return of(null);
+      }
+
+      return this._store.zonesIdea$;
+    })
+  );
+
+  readonly zone$: Observable<ConsolidationZonesShape | null> = combineLatest([
+    this._store.zones$,
+    this.zoneIdea$,
+    this._store.zonesWatch$,
+  ]).pipe(
+    map(
+      ([zones, zonesIdea, zondesWatch]: [
+        ConsolidationZonesShape | null,
+        ConsolidationZonesShape | null,
+        ConsolidationZonesShape | null
+      ]) => {
+        let data: Highcharts.AnnotationsOptions[] = [];
+
+        if (zones === null) {
+          return null;
+        }
+
+        data = zones.data;
+
+        if (zonesIdea !== null) {
+          if (zones.instrument === zonesIdea.instrument) {
+            data = [...data, ...zonesIdea.data];
+          }
+        }
+
+        if (zondesWatch !== null) {
+          if (zones.instrument === zondesWatch.instrument) {
+            data = [...data, ...zondesWatch.data];
+          }
+        }
+
+        return { ...zones, data };
+      }
+    ),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   legend$: Observable<IndicatorListItem[]> = combineLatest([
     this.controlEma.valueChanges.pipe(
@@ -156,6 +195,7 @@ export class ChartCandlestickComponent implements OnInit {
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlZone.value))
       .subscribe((result: IndicatorListItem<Timeframe>[] | null) => {
         this._store.updateSelectedConsolidationZones(this._getValue(result));
+        // this._store.updateSelectedConsolidationZonesIdea(this._getValue(result));
         // this._store.updateConsolidationZoneSelected(this._getValue(result));
       });
 

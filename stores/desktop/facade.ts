@@ -21,6 +21,8 @@ export class FacadeStore {
   readonly sma = this._buildIndicatorSma();
   readonly ema = this._buildIndicatorEma();
   readonly consolidationZones = this._buildConsolidationZones();
+  readonly consolidationZonesIdea = this._buildConsolidationZoneIdea();
+  readonly consolidationZonesWatch = this._buildConsolidationZoneWatchlist();
 
   constructor(private readonly _api: DesktopService) {}
 

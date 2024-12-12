@@ -122,6 +122,7 @@ export class StockComponent {
   public readonly list$: Observable<any> = this.controlGroup.valueChanges.pipe(
     startWith(this.controlGroup.value),
     filter((value: StockGroup | null): value is StockGroup => value !== null),
+    tap((value: StockGroup) => (this.isDisabled = value.type.action === StockGroupType.DEFAULT)),
     switchMap((value: StockGroup) => this._stock.selectStockGroupList(value.id)),
     filter((group: StockGroupList | null): group is StockGroupList => group !== null),
     tap((group: StockGroupList) => this._stock.loadPrice(group.items.map((item) => item.id))),
@@ -288,7 +289,7 @@ export class StockComponent {
         if (group) {
           this.controlGroup.patchValue(group);
           this.controlGroup.enable({ emitEvent: false });
-          this.isDisabled = false;
+          this.isDisabled = group.type.action === StockGroupType.DEFAULT;
         }
       });
   }

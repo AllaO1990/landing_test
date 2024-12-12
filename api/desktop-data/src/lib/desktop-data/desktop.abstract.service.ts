@@ -40,9 +40,9 @@ export abstract class DesktopService {
 
   public abstract getChartFigures(ideaId: string, from: string, to: string): Observable<ConsolidationZones>;
 
-  public abstract getIdeaConsolidationZone(ideaId: string): Observable<ConsolidationZones>;
+  public abstract getIdeaConsolidationZone(ideaId: string): Observable<Response<ActiveZone | null> | null>;
 
-  public abstract getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone>>;
+  public abstract getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone> | null>;
 
   public abstract getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>>;
 

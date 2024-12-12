@@ -53,7 +53,7 @@ let CHART_INCREMENT = 2;
 })
 export class ChartComponent implements AfterViewInit, OnDestroy {
   private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
-  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13'];
+  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch'];
   private _instrument$: Subject<any> = new BehaviorSubject(null);
   private _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
   private _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
