@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ActiveZone, ConsolidationZones } from 'types/chart';
+import { ActiveZone, FigureIdea } from 'types/chart';
 import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Position, ResponsePosition, ResponsePositions } from 'types/position';
 import { Response, ResponseMessage } from 'types/response';
@@ -37,21 +37,16 @@ export class DesktopApiService extends DesktopService {
     );
   }
 
-  public getChartFigures(ideaId: string, from: string, to: string): Observable<any> {
+  public getChartFigures(ideaId: string, from: string, to: string): Observable<Response<FigureIdea | null> | null> {
     return this._http
-      .get<ConsolidationZones>('https://trade.gpn.dev/api/v1/chart-figures', {
+      .get<Response<FigureIdea | null>>('https://trade.gpn.dev/api/v1/chart-figures', {
         params: { ideaId, from, to },
         // params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
       })
       .pipe(
         catchError((error: Error) => {
           console.log(error);
-          return of({
-            data: {
-              activeZones: [],
-              ideaParams: [],
-            },
-          });
+          return of(null);
         })
       );
   }

@@ -28,16 +28,6 @@ HPriceIndicator(Highcharts);
 HFullScreen(Highcharts);
 HStockTools(Highcharts);
 
-interface Candle {
-  close: number;
-  high: number;
-  isComplete: boolean;
-  low: number;
-  open: number;
-  time: string;
-  volume: number;
-}
-
 type SeriesSpline = Highcharts.SeriesSplineOptions & { instrument: string };
 type Zones = { data: Highcharts.AnnotationsOptions[]; instrument: string };
 
@@ -53,7 +43,7 @@ let CHART_INCREMENT = 2;
 })
 export class ChartComponent implements AfterViewInit, OnDestroy {
   private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
-  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch'];
+  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch', 'lines'];
   private _instrument$: Subject<any> = new BehaviorSubject(null);
   private _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
   private _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
@@ -191,7 +181,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     xAxis: {
       startOnTick: false,
       endOnTick: false,
-      maxPadding: 1,
+      ordinal: false,
+      maxPadding: 0.5,
       crosshair: {
         snap: false,
         dashStyle: 'LongDash',

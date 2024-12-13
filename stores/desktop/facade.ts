@@ -23,6 +23,7 @@ export class FacadeStore {
   readonly consolidationZones = this._buildConsolidationZones();
   readonly consolidationZonesIdea = this._buildConsolidationZoneIdea();
   readonly consolidationZonesWatch = this._buildConsolidationZoneWatchlist();
+  readonly figures = this._buildFigures();
 
   constructor(private readonly _api: DesktopService) {}
 

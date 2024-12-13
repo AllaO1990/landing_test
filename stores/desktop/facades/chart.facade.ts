@@ -15,6 +15,7 @@ export class ChartFacade {
   readonly zones$: Observable<null | ConsolidationZonesShape> = this._store.consolidationZones.zones$;
   readonly zonesIdea$: Observable<null | ConsolidationZonesShape> = this._store.consolidationZonesIdea.zones$;
   readonly zonesWatch$: Observable<null | ConsolidationZonesShape> = this._store.consolidationZonesWatch.zones$;
+  readonly figure$ = this._store.figures.zones$;
 
   readonly updateSelectedSma = this._store.sma.updateSelected;
   readonly updateSelectedEma = this._store.ema.updateSelected;

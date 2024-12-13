@@ -15,6 +15,10 @@ export interface ConsolidationZonesData {
   ideaParams: IdeaParams;
 }
 
+export interface FigureIdea {
+  ideaParams: IdeaParams;
+}
+
 export interface ActiveZone {
   id: number;
   timeframe: number;
