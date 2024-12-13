@@ -95,6 +95,7 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
         fill: 'rgba(0,0,0,0)',
         stroke: 'rgba(255,0,0,1)',
         strokeWidth: 1.5,
+        dashStyle: 'Dash',
         ry: Math.PI,
         points: [
           { x: new Date(data.ideaParams.stopDate).valueOf(), y: data.ideaParams.stop, ...this._commonAxisValues },
@@ -106,7 +107,7 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
     if (data.ideaParams.targets) {
       const currentDate = new Date().valueOf();
 
-      const targets = data.ideaParams.targets.map((item) => {
+      const targets: AnnotationsShapesOptions[] = data.ideaParams.targets.map((item) => {
         const startDate = item.date !== null ? new Date(item.date).valueOf() : currentDate;
         return {
           type: 'path',
@@ -114,7 +115,7 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
           stroke: 'rgba(0, 255, 0, 1)',
           strokeWidth: 1.5,
           ry: Math.PI,
-          dash: true,
+          dashStyle: 'Dash',
           points: [
             { x: startDate, y: item.value, ...this._commonAxisValues },
             { x: new Date().setFullYear(2029).valueOf(), y: item.value, ...this._commonAxisValues },
@@ -128,7 +129,7 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
     return {
       shapes: shapes,
       draggable: '',
-      zIndex: 30,
+      zIndex: 20,
       id: `lines`,
     };
   }

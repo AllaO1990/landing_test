@@ -49,6 +49,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   private _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
   private _chart$: Subject<Highcharts.Chart | null> = new BehaviorSubject<Highcharts.Chart | null>(null);
 
+  private _text: Highcharts.SVGElement | null = null;
+  private _textSvgWidth = 0;
   private _prevZonesName: string[] = [];
   private _chartOptions: Highcharts.Options = {
     chart: {
@@ -189,6 +191,9 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         label: {
           enabled: true,
           format: '{value:%d %b}',
+          style: {
+            zIndex: 50,
+          },
         },
       },
     },
@@ -202,6 +207,9 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         label: {
           enabled: true,
           formatter: (value: number) => tuiFormatNumber(value, { precision: CHART_INCREMENT }),
+          style: {
+            zIndex: 50,
+          },
         },
       },
     },
@@ -358,5 +366,46 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       .forEach((id: string) => {
         chart.removeAnnotation(id);
       });
+  }
+
+  private _updateChartText(chart: Highcharts.Chart, text: string | number | null): void {
+    if (this._text !== null) {
+      this._text.destroy();
+      this._text = null;
+    }
+
+    if (text === null) {
+      return;
+    }
+
+    this._text = chart.renderer
+      .g('custom-text')
+      .translate(chart.plotWidth, chart.plotTop)
+      .attr({ opacity: 0, zIndex: 7 })
+      .add();
+
+    let textSvg: Highcharts.SVGElement | null = chart.renderer
+      .text(text.toString(), 0, 0)
+      .attr({
+        'font-size': '0.8em',
+      })
+      .add(this._text);
+    this._textSvgWidth = Math.ceil(textSvg.getBBox().width + 16);
+
+    textSvg.destroy();
+    textSvg = null;
+
+    chart.renderer.rect(0, 0, this._textSvgWidth, 22, 2).attr({ fill: '#e6e9ff', 'z-index': 3 }).add(this._text);
+    chart.renderer
+      .text(text.toString(), 8, 15.5)
+      .attr({
+        'font-size': '0.8em',
+        'z-index': 5,
+      })
+      .add(this._text);
+
+    this._text
+      .translate(chart.plotWidth + chart.plotLeft - this._textSvgWidth - 35, chart.plotHeight + chart.plotTop - 25)
+      .attr({ opacity: 1 });
   }
 }

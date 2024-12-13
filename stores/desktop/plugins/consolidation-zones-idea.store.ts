@@ -71,7 +71,7 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
       type: 'path',
       fill: 'rgba(0,0,0,0)',
       stroke: this._colorConsolidation[data.timeframe as 5 | 12 | 13],
-      strokeWidth: 3,
+      strokeWidth: 1.5,
       dashStyle: 'Dash',
       ry: Math.PI,
       points: getPointsActiveZone(data),
