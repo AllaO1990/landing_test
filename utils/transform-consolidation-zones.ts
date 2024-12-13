@@ -1,7 +1,7 @@
-import { ActiveZone, ConsolidationZonesData } from '../types/chart';
+import { ActiveZone, FigureIdea } from '../types/chart';
 import { MAP_COLOR_CONSOLIDATION } from '../types/color';
 
-export function transformActiveConsolidationZones(zones: ConsolidationZonesData) {
+export function transformActiveConsolidationZones(zones: FigureIdea) {
   const mapConsolidation = MAP_COLOR_CONSOLIDATION;
   const commonAxisValues = { xAxis: 0, yAxis: 0 };
 

@@ -100,7 +100,7 @@ export class ChartCandlestickComponent implements OnInit {
     map((data: any[][]) => data.flat())
   );
 
-  // readonly text$: Observable<string | null> = this._store.indicatorAtr$.pipe(
+  // readonly tЕext$: Observable<string | null> = this._store.indicatorAtr$.pipe(
   //   map((value: { atr: number }) => value && `1 ATR: ${value.atr}`),
   //   shareReplay({ bufferSize: 1, refCount: true })
   // );
@@ -120,36 +120,9 @@ export class ChartCandlestickComponent implements OnInit {
     this._store.zones$,
     this.zoneIdea$,
     this._store.zonesWatch$,
+    this._store.figure$,
   ]).pipe(
-    map(
-      ([zones, zonesIdea, zondesWatch]: [
-        ConsolidationZonesShape | null,
-        ConsolidationZonesShape | null,
-        ConsolidationZonesShape | null
-      ]) => {
-        let data: Highcharts.AnnotationsOptions[] = [];
-
-        if (zones === null) {
-          return null;
-        }
-
-        data = zones.data;
-
-        if (zonesIdea !== null) {
-          if (zones.instrument === zonesIdea.instrument) {
-            data = [...data, ...zonesIdea.data];
-          }
-        }
-
-        if (zondesWatch !== null) {
-          if (zones.instrument === zondesWatch.instrument) {
-            data = [...data, ...zondesWatch.data];
-          }
-        }
-
-        return { ...zones, data };
-      }
-    ),
+    map((list) => this._concatZones(list)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -282,5 +255,40 @@ export class ChartCandlestickComponent implements OnInit {
   private _actionZone(): void {
     this.valueZone = this.controlZone.value;
     // this._store.updateConsolidationZoneSelected(this._getValue(this.controlZone.value) as number[]);
+  }
+
+  private _concatZones([zones, zonesIdea, zonesWatch, figure]: [
+    ConsolidationZonesShape | null,
+    ConsolidationZonesShape | null,
+    ConsolidationZonesShape | null,
+    ConsolidationZonesShape | null
+  ]): ConsolidationZonesShape | null {
+    let data: Highcharts.AnnotationsOptions[] = [];
+
+    if (zones === null) {
+      return null;
+    }
+
+    data = zones.data;
+
+    if (zonesIdea !== null) {
+      if (zones.instrument === zonesIdea.instrument) {
+        data = [...data, ...zonesIdea.data];
+      }
+    }
+
+    if (zonesWatch !== null) {
+      if (zones.instrument === zonesWatch.instrument) {
+        data = [...data, ...zonesWatch.data];
+      }
+    }
+
+    if (figure !== null) {
+      if (zones.instrument === figure.instrument) {
+        data = [...data, ...figure.data];
+      }
+    }
+
+    return { ...zones, data };
   }
 }

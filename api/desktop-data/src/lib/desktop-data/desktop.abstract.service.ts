@@ -12,7 +12,7 @@ import {
   WithLastPrice,
 } from 'types/stock';
 
-import { ActiveZone, ConsolidationZones } from 'types/chart';
+import { ActiveZone, FigureIdea } from 'types/chart';
 import { Position } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
@@ -38,7 +38,11 @@ export abstract class DesktopService {
 
   public abstract getCandles(id: any): Observable<any>;
 
-  public abstract getChartFigures(ideaId: string, from: string, to: string): Observable<ConsolidationZones>;
+  public abstract getChartFigures(
+    ideaId: string,
+    from: string,
+    to: string
+  ): Observable<Response<FigureIdea | null> | null>;
 
   public abstract getIdeaConsolidationZone(ideaId: string): Observable<Response<ActiveZone | null> | null>;
 

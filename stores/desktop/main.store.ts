@@ -56,6 +56,7 @@ export class MainStore extends ComponentStore<any> {
   readonly consolidationZones = this._facade.consolidationZones;
   readonly consolidationZonesIdea = this._facade.consolidationZonesIdea;
   readonly consolidationZonesWatch = this._facade.consolidationZonesWatch;
+  readonly figures = this._facade.figures;
 
   constructor(private readonly api: DesktopService) {
     super();
@@ -148,6 +149,11 @@ export class MainStore extends ComponentStore<any> {
         filter((event: null | StockEvent): event is StockEvent => event !== null),
         map((event: StockEvent) => (event.type === EventSelected.WATCH_LIST ? event : null)),
         distinctUntilChanged()
+      )
+    );
+    this.figures.load(
+      merge(this.selected.idea$, this.selected.position$).pipe(
+        filter((instrument: null | Position | Idea): instrument is Position | Idea => instrument !== null)
       )
     );
   }
