@@ -40,6 +40,7 @@ const timerWithIndex = <T>(
 
 @Injectable()
 export class MainStore extends ComponentStore<any> {
+  private readonly _today = new Date(new Date().setUTCHours(0, 0, 0, 0));
   private readonly _range$: Observable<DateRange> = inject(GLOBAL_DATE_RANGE);
   private _destroyed$ = new Subject<void>();
 
@@ -57,6 +58,7 @@ export class MainStore extends ComponentStore<any> {
   readonly consolidationZonesIdea = this._facade.consolidationZonesIdea;
   readonly consolidationZonesWatch = this._facade.consolidationZonesWatch;
   readonly figures = this._facade.figures;
+  readonly atr = this._facade.atr;
 
   constructor(private readonly api: DesktopService) {
     super();
@@ -154,6 +156,27 @@ export class MainStore extends ComponentStore<any> {
     this.figures.load(
       merge(this.selected.idea$, this.selected.position$).pipe(
         filter((instrument: null | Position | Idea): instrument is Position | Idea => instrument !== null)
+      )
+    );
+    this.atr.load(
+      combineLatest([
+        instrumentTrust$.pipe(
+          map((instrument: StockInstrument) => instrument.id),
+          distinctUntilChanged()
+        ),
+        this.atr.selected$.pipe(distinctUntilChanged()),
+      ]).pipe(
+        map(([id, selected]: [string, boolean]) => {
+          if (!selected) {
+            return null;
+          }
+
+          return {
+            id,
+            interval: Timeframe.CANDLE_INTERVAL_DAY,
+            date: this._today.toISOString(),
+          };
+        })
       )
     );
   }

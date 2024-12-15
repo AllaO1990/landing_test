@@ -100,10 +100,19 @@ export class ChartCandlestickComponent implements OnInit {
     map((data: any[][]) => data.flat())
   );
 
-  // readonly tЕext$: Observable<string | null> = this._store.indicatorAtr$.pipe(
-  //   map((value: { atr: number }) => value && `1 ATR: ${value.atr}`),
-  //   shareReplay({ bufferSize: 1, refCount: true })
-  // );
+  readonly text$: Observable<{ data: any; instrument: string } | null> = this._store.atr$.pipe(
+    map((value: { data: any; instrument: string } | null) => {
+      if (!value) {
+        return null;
+      }
+
+      return {
+        ...value,
+        data: `1 ATR: ${value.data.atr}`,
+      };
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   readonly zoneIdea$: Observable<null | ConsolidationZonesShape> = this._select.event$.pipe(
     filter((event: null | StockEvent): event is StockEvent => event !== null),
@@ -172,7 +181,7 @@ export class ChartCandlestickComponent implements OnInit {
         // this._store.updateConsolidationZoneSelected(this._getValue(result));
       });
 
-    // this._store.updateIndicatorAtrSelected(this.controlAtr.value);
+    this._store.updateSelectedAtr(this.controlAtr.value);
   }
 
   onToggleAtr(event: Event): void {
@@ -181,7 +190,7 @@ export class ChartCandlestickComponent implements OnInit {
     const value = !this.controlAtr.value;
 
     this.controlAtr.patchValue(value);
-    // this._store.updateIndicatorAtrSelected(value);
+    this._store.updateSelectedAtr(value);
   }
 
   onOpenedEma(event: boolean): void {
