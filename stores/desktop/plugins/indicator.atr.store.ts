@@ -7,8 +7,8 @@ import { WithQueue } from '../core/with-queue.abstract';
 import { getJoinUniq } from 'utils/get-join-uniq';
 
 export interface IndicatorAtrState {
-  selected: null | any;
-  value: null | any;
+  selected: null | boolean;
+  value: null | { data: any; instrument: StockId };
 }
 
 export class IndicatorAtrStore extends WithQueue<IndicatorAtrState> {
@@ -23,9 +23,17 @@ export class IndicatorAtrStore extends WithQueue<IndicatorAtrState> {
     });
   }
 
-  updateSelected = this.updater((state: IndicatorAtrState, selected: any) => ({ ...state, selected }));
+  updateSelected = this.updater((state: IndicatorAtrState, selected: boolean) => ({ ...state, selected }));
 
-  updateValue = this.updater((state: IndicatorAtrState, value: any) => ({ ...state, value }));
+  updateValue = this.updater(
+    (
+      state: IndicatorAtrState,
+      value: null | {
+        data: any;
+        instrument: StockId;
+      }
+    ) => ({ ...state, value })
+  );
 
   readonly load = this.effect(
     (
@@ -56,6 +64,7 @@ export class IndicatorAtrStore extends WithQueue<IndicatorAtrState> {
 
     return this._api.getIndicatorAtr(data.id, data.interval, data.date).pipe(
       map((value: Response<any>) => value.data),
+      map((value: any) => ({ data: value, instrument: data.id })),
       tap((value: any) => this.queue.setValue(uniqKey, value))
     );
   }

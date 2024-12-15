@@ -13,7 +13,17 @@ import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
 import { NgIf } from '@angular/common';
 import { HIGHCHARTS_LANG, HIGHCHARTS_OPTIONS } from './chart.options';
-import { BehaviorSubject, filter, map, shareReplay, Subject, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  map,
+  ReplaySubject,
+  shareReplay,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { WheelSetExtremes } from './chart.utils';
 import { tuiFormatNumber } from '@taiga-ui/core';
 import { CHART_INDICATORS_NAME } from './chart.constants';
@@ -44,10 +54,11 @@ let CHART_INCREMENT = 2;
 export class ChartComponent implements AfterViewInit, OnDestroy {
   private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
   private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch', 'lines'];
-  private _instrument$: Subject<any> = new BehaviorSubject(null);
-  private _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
-  private _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
-  private _chart$: Subject<Highcharts.Chart | null> = new BehaviorSubject<Highcharts.Chart | null>(null);
+  private readonly _instrument$: Subject<any> = new BehaviorSubject(null);
+  private readonly _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
+  private readonly _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
+  private readonly _chart$: Subject<Highcharts.Chart | null> = new BehaviorSubject<Highcharts.Chart | null>(null);
+  private readonly _text$: Subject<{ data: any; instrument: string } | null> = new ReplaySubject(1);
 
   private _text: Highcharts.SVGElement | null = null;
   private _textSvgWidth = 0;
@@ -240,6 +251,11 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     this._zone$.next(value);
   }
 
+  @Input()
+  set text(value: { data: any; instrument: string } | null) {
+    this._text$.next(value);
+  }
+
   constructor() {
     Highcharts.setOptions({
       lang: HIGHCHARTS_LANG,
@@ -337,6 +353,32 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
         this._removeZones(zones, chart);
         this._addZones(zones, chart);
+      });
+
+    chartWithInstrumentId$
+      .pipe(
+        switchMap(({ chart, id }: { chart: Highcharts.Chart; id: string }) =>
+          this._text$.asObservable().pipe(
+            map((value: { data: any; instrument: string } | null) => {
+              if (value === null) {
+                return null;
+              }
+
+              if (value.instrument !== id) {
+                return null;
+              }
+
+              return value.data;
+            }),
+            distinctUntilChanged(),
+            map((data: any) => ({ chart, data }))
+          )
+        )
+      )
+      .subscribe(({ chart, data }: { chart: Highcharts.Chart; data: any }) => {
+        setTimeout(() => {
+          this._updateChartText(chart, data);
+        }, 300);
       });
   }
 

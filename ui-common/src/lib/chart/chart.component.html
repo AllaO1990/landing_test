@@ -8,6 +8,7 @@
         [data]="data"
         [indicators]="indicators$ | async"
         [zones]="zone$ | async"
+        [text]="text$ | async"
       ></vt-chart>
 
       <!--      <vt-chart-->
@@ -67,7 +68,6 @@
         type="button"
         [iconStart]="artIcon"
         [size]="size"
-        [disabled]="true"
         (click)="onToggleAtr($event)">
       </button>
 
