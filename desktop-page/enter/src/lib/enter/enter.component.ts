@@ -16,6 +16,7 @@ import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
+import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -42,6 +43,7 @@ export interface TabItem {
     InstrumentComponent,
     // ChartCandlestickComponent,
     LoaderComponent,
+    ChartCandlestickComponent,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',

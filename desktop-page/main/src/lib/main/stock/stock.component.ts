@@ -271,9 +271,13 @@ export class StockComponent {
             }
           }
 
-          const selected: StockGroupList = list.find((item: StockGroupList) => item.id === 'watch') || list[0];
+          let selected: StockGroupList = list.find((item: StockGroupList) => item.id === 'watch') || list[0];
 
-          if (event.type === EventSelected.WATCH_LIST) {
+          if (selected && selected.items.length === 0) {
+            selected = list[0];
+          }
+
+          if (event.type === EventSelected.WATCH_LIST && selected) {
             return selected;
           }
 
