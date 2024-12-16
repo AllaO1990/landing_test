@@ -16,8 +16,9 @@ export const indicatorTransformToSeries = (
   return data.dates.reduce((acc, item: string, index: number) => {
     const valueOf = new Date(item).valueOf();
 
-    acc.forEach((row: { id: string; data: [number, number][] }) => {
-      row.data.push([valueOf, data[row.id][index]]);
+    acc.forEach((row: { id: string; data: [number, null | number][] }) => {
+      const value = data[row.id][index];
+      row.data.push([valueOf, value === 0 ? null : value]);
     });
 
     return acc;
