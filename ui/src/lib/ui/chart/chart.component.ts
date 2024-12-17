@@ -192,19 +192,17 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       },
     },
     xAxis: {
-      startOnTick: false,
+      // startOnTick: false,
       endOnTick: false,
-      ordinal: false,
-      maxPadding: 0.5,
+      // // ordinal: false,
+      minPadding: 50,
       crosshair: {
-        snap: false,
+        // snap: false,
         dashStyle: 'LongDash',
         label: {
+          backgroundColor: '#666',
           enabled: true,
           format: '{value:%d %b}',
-          style: {
-            zIndex: 50,
-          },
         },
       },
     },
@@ -446,8 +444,6 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       })
       .add(this._text);
 
-    this._text
-      .translate(chart.plotWidth + chart.plotLeft - this._textSvgWidth - 35, chart.plotHeight + chart.plotTop - 25)
-      .attr({ opacity: 1 });
+    this._text.translate(chart.plotLeft, chart.plotHeight + chart.plotTop - 25).attr({ opacity: 1 });
   }
 }

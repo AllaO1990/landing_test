@@ -1,5 +1,5 @@
 <tui-scrollbar
-  *ngIf="data; else noData"
+  *ngIf="data && data.length; else noData"
   class="out__scrollbar">
   <cdk-virtual-scroll-viewport
     #viewport

@@ -1,5 +1,5 @@
 import { TuiInputModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { TuiButton, TuiDataList, TuiDropdown, TuiIcon, TuiLoader } from '@taiga-ui/core';
@@ -68,7 +68,7 @@ export type StockListWithType = StockGroup & {
   providers: [StockService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StockComponent {
+export class StockComponent implements AfterViewInit {
   private readonly _injector: Injector = inject(Injector);
   private readonly _service: StockService = inject(StockService);
   private readonly _stock: StockListFacade = inject(StockListFacade);
@@ -139,7 +139,7 @@ export class StockComponent {
 
   event$: Observable<null | StockEvent> = this._stock.event$;
 
-  constructor() {
+  ngAfterViewInit(): void {
     this._initGroupSelected();
   }
 
