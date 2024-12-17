@@ -129,9 +129,12 @@ export class DesktopApiService extends DesktopService {
   getPositionList(): Observable<Position[]> {
     return this._http.get<Response<ResponsePositions>>(`https://trade.gpn.dev/api/v1/ideas/positions`).pipe(
       filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
-      map((response: Response<ResponsePositions>) =>
-        response.data.items.map((item: ResponsePosition) => new Position(item))
-      )
+      map((response: Response<ResponsePositions>) => {
+        if (response.data.items === null) {
+          return [];
+        }
+        return response.data.items.map((item: ResponsePosition) => new Position(item));
+      })
     );
   }
 

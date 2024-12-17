@@ -89,7 +89,7 @@ export class CandlesStore extends WithQueue<CandlesState> {
           data.map((item: any) => {
             const { time, ...other } = item;
 
-            return { ...other, x: new Date(time).setHours(23, 59, 59, 0) };
+            return { ...other, x: new Date(time).setUTCHours(23, 59, 59, 0) };
           })
         )
       ),

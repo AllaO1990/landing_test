@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { TuiBreakpointService } from '@taiga-ui/core';
-import { TabsComponent } from 'ui-common';
 import { Observable, of, shareReplay, switchMap, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PortfolioListComponent } from '../portfolio-list/portfolio-list.component';
 import { ProfitComponent } from '../profit/profit.component';
 import { StructureComponent } from '../structure';
 import { ClosedDealsComponent } from '../closed-deals';
+import { TabsComponent } from 'ui-common/lib/tabs';
+import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 
 const INPUT_DATA_PORTFOLIO_LIST = {
   deposit: 1648492,
@@ -140,7 +141,7 @@ const INPUT_DATA_PORTFOLIO_PROFIT = {
     ProfitComponent,
     StructureComponent,
     ClosedDealsComponent,
-    // ChartCandlestickComponent,
+    ChartCandlestickComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
