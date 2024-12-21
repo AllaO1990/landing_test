@@ -1,4 +1,4 @@
-<div *ngIf="data" class="widget">
+<div *ngIf="data" class="widget" [formGroup]="form">
   <!--  <div class="widget__toolbar widget__padding">-->
   <!--    <lib-enter-sidebar-instrument [data]="data.instrument">-->
   <!--    </lib-enter-sidebar-instrument>-->
@@ -6,7 +6,7 @@
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
       <div class="widget__valid-date widget__padding">
-        <lib-enter-sidebar-valid-date></lib-enter-sidebar-valid-date>
+        <lib-enter-sidebar-valid-date [formControl]="controlDate"></lib-enter-sidebar-valid-date>
       </div>
       <div class="widget__timing widget__padding">
         <tui-filter
@@ -42,7 +42,7 @@
         ></tui-filter>
       </div>
       <div class="widget__description description widget__padding">
-        <div class="description__row">
+        <div class="description__row" *ngIf="data.strategy">
           <div class="description__label">Вероятность успеха</div>
           <div class="description__text">
             {{ data.strategy.successProbability * 100 | tuiFormatNumber | async }}%
@@ -54,7 +54,7 @@
             {{ data.inPositionDepositShare * 100 | tuiFormatNumber | async }}%
           </div>
         </div>
-        <div class="description__row">
+        <div class="description__row" *ngIf="data.instrument">
           <div class="description__label">Сектор экономики</div>
           <div class="description__text">{{ data.instrument.sector }}</div>
         </div>

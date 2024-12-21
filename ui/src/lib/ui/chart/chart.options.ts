@@ -77,6 +77,7 @@ export const HIGHCHARTS_OPTIONS: Highcharts.Options = {
     shape: 'rect',
     shadow: false,
     headerFormat: undefined,
+    followTouchMove: false,
     borderRadius: 0,
     stickOnContact: false,
     positioner: (): PositionObject => ({

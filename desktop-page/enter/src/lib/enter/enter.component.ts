@@ -17,6 +17,10 @@ import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
+import { StockInstrument } from 'types/stock';
+import { SearchDialogDirective } from 'ui-common/lib/search-dialog';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -44,6 +48,7 @@ export interface TabItem {
     // ChartCandlestickComponent,
     LoaderComponent,
     ChartCandlestickComponent,
+    SearchDialogDirective,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',
@@ -51,8 +56,11 @@ export interface TabItem {
 })
 export class VtEnterComponent {
   private readonly _select: SelectFacade = inject(SelectFacade);
+  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  public readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
+  isEdit = false;
+
+  readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
 
@@ -65,6 +73,18 @@ export class VtEnterComponent {
 
       if (event.type === EventSelected.IDEA) {
         return this._select.idea$;
+      }
+
+      if (event.type === EventSelected.STOCK_LIST) {
+        this.isEdit = true;
+
+        return this._select.instrument$.pipe(
+          map((instrument: StockInstrument | null) => ({
+            instrument,
+            createdAt: new Date().toISOString(),
+            inPositionDepositShare: 0,
+          }))
+        );
       }
 
       return of(null);
@@ -90,6 +110,16 @@ export class VtEnterComponent {
     event.preventDefault();
 
     this.context.$implicit.complete();
+  }
+
+  onSelect(event: StockInstrument | null): void {
+    if (event !== null) {
+      this._queryParams.update({
+        // type: EventSelected.STOCK_LIST,
+        id: event.id,
+        // dialog: 'visible',
+      });
+    }
   }
 
   trackByIndex(index: number): number {

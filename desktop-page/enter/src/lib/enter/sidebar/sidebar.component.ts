@@ -1,6 +1,6 @@
 import { TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { Idea } from 'types/idea';
 import { AsyncPipe, NgIf } from '@angular/common';
@@ -13,6 +13,8 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { STOCK_TIMING_LIST } from 'constants/stock-timing';
 import { TuiBooleanHandler, TuiIdentityMatcher } from '@taiga-ui/cdk';
 import { Position } from 'types/position';
+
+type Item = { id: string; name: string };
 
 @Component({
   selector: 'lib-enter-sidebar',
@@ -38,39 +40,33 @@ import { Position } from 'types/position';
 export class EnterSidebarComponent {
   private _data: Idea | Position | null = null;
 
-  public readonly strategy: { id: string; name: string }[] = STOCK_STRATEGY_LIST;
+  public readonly strategy: Item[] = STOCK_STRATEGY_LIST;
 
-  public readonly positionType: { id: string; name: string }[] = STOCK_POSITION_TYPE_LIST;
+  public readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
 
-  public readonly timing: { id: string; name: string }[] = STOCK_TIMING_LIST;
+  public readonly timing: Item[] = STOCK_TIMING_LIST;
 
   public readonly constants = SIDEBAR_CONSTANTS;
 
-  public controlFilterTiming: FormControl<
-    | {
-        id: string;
-        name: string;
-      }[]
-    | null
-  > = new FormControl(null);
+  form: FormGroup = new FormGroup({
+    date: new FormControl({ value: null, disabled: true }),
+    timing: new FormControl({ value: null, disabled: true }),
+    strategy: new FormControl({ value: null, disabled: true }),
+    type: new FormControl({ value: null, disabled: true }),
+    area: new FormControl({ value: null, disabled: true }),
+  });
 
-  public controlFilterStrategy: FormControl<
-    | {
-        id: string;
-        name: string;
-      }[]
-    | null
-  > = new FormControl(null);
+  controlDate = new FormControl({ value: null, disabled: true });
 
-  public readonly controlFilterPositionType: FormControl<
-    | {
-        id: string;
-        name: string;
-      }[]
-    | null
-  > = new FormControl(null);
+  public controlFilterTiming: FormControl<Item[] | null> = new FormControl(null);
+
+  public controlFilterStrategy: FormControl<Item[] | null> = new FormControl(null);
+
+  public readonly controlFilterPositionType: FormControl<Item[] | null> = new FormControl(null);
 
   public controlTextArea = new FormControl(null);
+
+  @Input() edit = false;
 
   @Input()
   set data(value: Idea | Position | null) {
@@ -80,7 +76,7 @@ export class EnterSidebarComponent {
       this.controlFilterTiming.disable();
       this.controlFilterTiming.patchValue([this.timing[1]]);
       this.controlFilterStrategy.patchValue(
-        this.strategy.filter((item: { id: string }) => item.id === value.strategy.type) || null
+        this.strategy.filter((item: { id: string }) => item.id === (value.strategy && value.strategy.type)) || null
       );
       this.controlFilterPositionType.patchValue(
         this.positionType.filter((item: { id: string }) => item.id === value.positionType) || null
@@ -96,5 +92,5 @@ export class EnterSidebarComponent {
     return value.id === item.id;
   };
 
-  disabledItemHandler: TuiBooleanHandler<{ id: string }> = () => true;
+  disabledItemHandler: TuiBooleanHandler<{ id: string }> = () => !this.edit;
 }
