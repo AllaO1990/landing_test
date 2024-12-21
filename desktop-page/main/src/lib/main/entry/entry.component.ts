@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ENTRY_CONSTANTS } from './entry.constants';
 import { Idea } from 'types/idea';
@@ -6,8 +6,14 @@ import { EntryEnums } from './entry.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { TuiBooleanHandler } from '@taiga-ui/cdk';
+import { EventSelected } from 'types/events';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
+import { SelectFacade } from 'stores/facades/select.facade';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StockInstrument } from 'types/stock';
 
 interface FilterListItem {
   id: string;
@@ -23,6 +29,9 @@ interface FilterListItem {
 })
 export class EntryComponent {
   private readonly _data$: Subject<Idea[] | null> = new BehaviorSubject<Idea[] | null>(null);
+  private readonly _store: SelectFacade = inject(SelectFacade);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
   public controlSearch: FormControl<string> = new FormControl('', { nonNullable: true });
   public controlFilterStock: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
@@ -127,5 +136,23 @@ export class EntryComponent {
 
   public onActiveZoneMore(active: boolean): void {
     this.openMore = active && this.openMore;
+  }
+
+  onOpenDialog(event: Event): void {
+    event.preventDefault();
+
+    this._store.instrument$
+      .pipe(
+        take(1),
+        takeUntilDestroyed(this._destroyRef),
+        filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null)
+      )
+      .subscribe((instrument: StockInstrument) => {
+        this._queryParams.update({
+          type: EventSelected.STOCK_LIST,
+          id: instrument.id,
+          dialog: 'visible',
+        });
+      });
   }
 }

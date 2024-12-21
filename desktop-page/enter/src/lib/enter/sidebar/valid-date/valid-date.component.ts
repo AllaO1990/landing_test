@@ -1,18 +1,17 @@
-import { TuiCheckbox } from "@taiga-ui/kit";
-import { TuiLabel } from "@taiga-ui/core";
-import { TuiTextfieldControllerModule, TuiInputDateModule } from "@taiga-ui/legacy";
+import { TuiCheckbox } from '@taiga-ui/kit';
+import { TuiLabel } from '@taiga-ui/core';
+import { TuiInputDateModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject, OnInit } from '@angular/core';
 import { VALID_DATE_CONSTANTS } from './valid-date.constants';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { TuiDay } from '@taiga-ui/cdk';
-import { JsonPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, startWith } from 'rxjs';
 
 @Component({
   selector: 'lib-enter-sidebar-valid-date',
   standalone: true,
-  imports: [JsonPipe, ReactiveFormsModule, TuiLabel, TuiInputDateModule, TuiTextfieldControllerModule, TuiCheckbox],
+  imports: [ReactiveFormsModule, TuiLabel, TuiInputDateModule, TuiTextfieldControllerModule, TuiCheckbox],
   templateUrl: './valid-date.component.html',
   styleUrl: './valid-date.component.scss',
   providers: [
@@ -32,8 +31,8 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
   value: string | null = null;
 
   readonly form: FormGroup = new FormGroup({
-    calendar: new FormControl(this._getTuiDay(this.value)),
-    checkbox: new FormControl(true),
+    calendar: new FormControl({ value: this._getTuiDay(this.value), disabled: true }),
+    checkbox: new FormControl({ value: true, disabled: true }),
   });
 
   get controlCalendar(): FormControl {
@@ -79,8 +78,6 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
 
         this.onChange(result.calendar.toString());
       });
-
-    this.form.disable();
   }
 
   private _getTuiDay(value: string | null): TuiDay {

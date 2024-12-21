@@ -20,6 +20,20 @@
         type="button"
         iconStart="@tui.save"
       ></button>
+      <button
+        *ngIf="isEdit"
+        class="action search"
+        tuiIconButton
+        appearance="outline"
+        [size]="size"
+        [disabled]="isDisabled"
+        type="button"
+        searchDialog
+        #dialog=SearchDialog
+        (click)="dialog.onSearch($event)"
+        (selected)="onSelect($event)"
+        iconStart="@tui.search"
+      ></button>
       <div class="container__space container__space--first"></div>
       <lib-enter-sidebar-instrument
         *ngIf="(data$ | async) as data; else load"
@@ -46,6 +60,7 @@
     <div class="container__sidebar container__widget">
       <lib-enter-sidebar
         *ngIf="(data$ | async) as data; else load"
+        [edit]="isEdit"
         [data]="$any(data)">
       </lib-enter-sidebar>
     </div>

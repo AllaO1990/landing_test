@@ -92,10 +92,10 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
           WheelSetExtremes(chart, 'yAxis', 0.1);
 
           Promise.resolve().then(() => {
-            const min = new Date(xAxis.max).setMonth(new Date().getMonth() - 4).valueOf();
-            const max = new Date(xAxis.max).setMonth(new Date().getMonth() + 1).valueOf();
+            const min = new Date(xAxis.max).setMonth(new Date().getMonth() - 4);
+            const max = new Date(xAxis.max).setMonth(new Date().getMonth() + 1);
 
-            xAxis.setExtremes(min, max, true);
+            (xAxis as Highcharts.Axis).setExtremes(min, max, true, false);
           });
 
           yAxis['axisRect'].on('wheel', (event: WheelEvent) => {
@@ -192,10 +192,11 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       },
     },
     xAxis: {
-      // startOnTick: false,
+      startOnTick: false,
       endOnTick: false,
-      // // ordinal: false,
+      ordinal: false,
       minPadding: 50,
+      maxPadding: 0.5,
       crosshair: {
         // snap: false,
         dashStyle: 'LongDash',
@@ -265,7 +266,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   }
 
   onTouchMove(event: TouchEvent | MouseEvent): void {
-    console.log(event);
+    // console.log(event);
   }
 
   onInstance(chart: Highcharts.Chart): void {

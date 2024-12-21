@@ -1,7 +1,7 @@
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
+import { Observable, shareReplay, startWith, switchMap } from 'rxjs';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { Idea } from 'types/idea';
 import { MainService } from './main.service';
 import { TuiBreakpointService } from '@taiga-ui/core';
@@ -14,6 +14,12 @@ import { OutComponent } from './out/out.component';
 import { StockComponent } from './stock/stock.component';
 import { EntryModule } from './entry/entry.module';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
+import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
+import { Params } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 
 @Component({
   selector: 'lib-main',
@@ -33,12 +39,24 @@ import { ChartCandlestickComponent } from 'ui-common/lib/chart';
   providers: [MainService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MainComponent {
+export class MainComponent implements AfterViewInit {
   activeItemIndex = 0;
 
   private readonly _service: MainService = inject(MainService);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _position: PositionFacade = inject(PositionFacade);
+  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly _injector: Injector = inject(Injector);
+  private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
+  private readonly _query$: Observable<Params> = this._queryParams.pipe(
+    takeUntilDestroyed(this._destroyRef),
+    startWith(this._queryParams.value()),
+    distinctUntilChanged((a: Params, b: Params) => a['dialog'] === b['dialog']),
+    filter((params: Params) => params['dialog'] === 'visible'),
+    shareReplay({ refCount: false, bufferSize: 1 })
+  );
+  private _component: PolymorpheusComponent<VtEnterComponent> | null = null;
 
   readonly tabMobileList = MAIN_TAB_MOBILE_LIST;
   readonly tabTabletList = MAIN_TAB_TABLET_LIST;
@@ -65,4 +83,16 @@ export class MainComponent {
       return null;
     })
   );
+
+  ngAfterViewInit() {
+    this.onOpenDialog();
+  }
+
+  async onOpenDialog() {
+    this._component = await import('desktop-page/enter')
+      .then((m) => m.VtEnterComponent)
+      .then((c) => new PolymorpheusComponent(c, this._injector));
+
+    this._query$.pipe(switchMap(() => this._dialogEnterService.open(this._component))).subscribe();
+  }
 }

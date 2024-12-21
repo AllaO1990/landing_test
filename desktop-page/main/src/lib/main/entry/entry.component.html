@@ -15,12 +15,13 @@
     </div>
     <div class="entry__action">
       <button
-        [disabled]="true"
         tuiButton
         type="button"
         [size]="size"
         appearance="secondary"
-        class="entry__add-idea">
+        disabled
+        class="entry__add-idea"
+        (click)="onOpenDialog($event)">
         {{ constants.add_idea }}
       </button>
 

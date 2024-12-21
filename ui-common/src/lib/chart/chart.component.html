@@ -10,15 +10,6 @@
         [zones]="zone$ | async"
         [text]="text$ | async"
       ></vt-chart>
-
-      <!--      <vt-chart-->
-      <!--        [consolidationZones]="zone$ | async"-->
-      <!--        [data]="candles$ | async"-->
-      <!--        [indicators]="indicators$ | async"-->
-      <!--        [selected]="selected$ | async"-->
-      <!--        [text]="text$ | async"-->
-      <!--      ></vt-chart>-->
-
     </div>
     <div class="legend" *ngIf="toggleLegend">
       <lib-chart-legend class="chart-legend" [list]="(legend$ | async) || []"></lib-chart-legend>

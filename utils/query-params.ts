@@ -1,8 +1,5 @@
 import { ActivatedRoute, Params, QueryParamsHandling, Router } from '@angular/router';
 import { Observable, share, Subscriber } from 'rxjs';
-import { inject } from '@angular/core';
-
-export const queryParams = () => new QueryParams(inject(Router), inject(ActivatedRoute));
 
 export class QueryParams<T = any> extends Observable<T> {
   protected params$: Observable<Params> = this._activatedRoute.queryParams.pipe(

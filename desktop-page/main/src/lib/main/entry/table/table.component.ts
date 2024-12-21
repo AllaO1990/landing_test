@@ -3,7 +3,7 @@ import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
 import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
-import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
+import { VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { QUERY_PARAMS } from 'tokens/desktop';
@@ -17,7 +17,6 @@ import { ENTRY_HEADER } from '../entry.constants';
 import { EntryHeaderItem } from '../entry.types';
 import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
-import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { SelectFacade } from 'stores/facades/select.facade';
 
 @Component({
@@ -50,11 +49,11 @@ export class EntryTableComponent {
 
   private readonly _store: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
-  private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
-    VtEnterComponent,
-    this._injector
-  );
+  // private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
+  // private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
+  //   VtEnterComponent,
+  //   this._injector
+  // );
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
@@ -80,20 +79,21 @@ export class EntryTableComponent {
     this._queryParams.update({
       type: EventSelected.IDEA,
       id: item.id,
+      dialog: 'visible',
     });
 
     console.log('onDblclick');
 
-    this._dialogEnterService
-      .open(
-        this._component
-        // {
-        //   data: item,
-        //   type: EventSelected.IDEA,
-        // }
-        // this._injector
-      )
-      .subscribe();
+    // this._dialogEnterService
+    //   .open(
+    //     this._component
+    //     // {
+    //     //   data: item,
+    //     //   type: EventSelected.IDEA,
+    //     // }
+    //     // this._injector
+    //   )
+    //   .subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {
