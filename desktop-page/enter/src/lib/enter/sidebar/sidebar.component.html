@@ -1,26 +1,28 @@
 <div *ngIf="data" class="widget" [formGroup]="form">
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
-      <div class="widget__portfolio widget__padding">
-        <lib-portfolio>
+      <div class="widget__portfolio widget__padding portfolio">
+        <lib-portfolio
+          class="portfolio__select"
+          formControlName="portfolioId">
         </lib-portfolio>
         <!--        <div class="portfolio">-->
         <!--          <label>-->
         <!--            <span>{{ constants.portfolio }}</span>-->
-        <!--            <tui-select-->
-        <!--              class="portfolio__control"-->
-        <!--              *ngIf="portfolios$ | async as list"-->
-        <!--              [stringify]="stringifyPortfolio"-->
-        <!--              [tuiTextfieldSize]="size"-->
-        <!--              formControlName="portfolioId"-->
-        <!--              [tuiTextfieldLabelOutside]="true">-->
-        <!--              <tui-data-list-wrapper-->
-        <!--                *tuiDataList-->
-        <!--                size="s"-->
-        <!--                [items]="list"-->
-        <!--                [itemContent]="contentPortfolio">-->
-        <!--              </tui-data-list-wrapper>-->
-        <!--            </tui-select>-->
+        <tui-select
+          class="portfolio__currency"
+          *ngIf="currencies$ | async as list"
+          [stringify]="stringifyCurrency"
+          [tuiTextfieldSize]="size"
+          formControlName="currencyId"
+          [tuiTextfieldLabelOutside]="true">
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="contentCurrency">
+          </tui-data-list-wrapper>
+        </tui-select>
         <!--          </label>-->
         <!--          <button-->
         <!--            class="portfolio__action"-->
@@ -38,23 +40,23 @@
         <lib-enter-sidebar-valid-date formControlName="expirationDate">
         </lib-enter-sidebar-valid-date>
       </div>
-      <div class="widget__timing widget__padding">
-        <div>
-          <label
-            *ngFor="let item of timing"
-            appearance=""
-            class="item"
-            tuiBlock="s">
-            <input
-              size="s"
-              formControlName="timing"
-              tuiBlock
-              type="radio"
-              [value]="item.id" />
-            {{ item.name }}
-          </label>
-        </div>
-      </div>
+      <!--      <div class="widget__timing widget__padding">-->
+      <!--        <div>-->
+      <!--          <label-->
+      <!--            *ngFor="let item of timing"-->
+      <!--            appearance=""-->
+      <!--            class="item"-->
+      <!--            tuiBlock="s">-->
+      <!--            <input-->
+      <!--              size="s"-->
+      <!--              formControlName="timing"-->
+      <!--              tuiBlock-->
+      <!--              type="radio"-->
+      <!--              [value]="item.id" />-->
+      <!--            {{ item.name }}-->
+      <!--          </label>-->
+      <!--        </div>-->
+      <!--      </div>-->
       <div class="widget__implementation widget__padding">
         <div>
           <label
@@ -126,4 +128,8 @@
 
 <ng-template #contentPortfolio let-item>
   {{ item.portfolio }}
+</ng-template>
+
+<ng-template #contentCurrency let-item>
+  {{ item.currencySymbol }}
 </ng-template>

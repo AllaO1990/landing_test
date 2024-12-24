@@ -1,5 +1,6 @@
 export enum StockStrategyEnums {
   CONSOLIDATION = 'consolidation',
+  CONSOLIDATION_WATCHLIST = 'consolidationWatchlist',
   ACTIVE_ZONE = 'activeZone',
   SLIDING = 'sliding',
   USER = 'user',

@@ -1,26 +1,26 @@
 export const MAIN_FILTER_STOCK = [
   {
-    id: 'shares',
+    id: ['shares'],
     name: 'Акции',
     disabled: false,
   },
   {
-    id: 'futures',
+    id: ['futures'],
     name: 'Фьючерсы',
     disabled: false,
   },
   {
-    id: 'currencies',
+    id: ['currencies'],
     name: 'Валюта',
     disabled: false,
   },
   {
-    id: 'metal',
+    id: ['metal'],
     name: 'Металлы',
     disabled: false,
   },
   {
-    id: 'crypto',
+    id: ['crypto'],
     name: 'Крипто',
     disabled: false,
   },

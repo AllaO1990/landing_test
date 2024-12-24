@@ -19,7 +19,7 @@ import { StockEvent } from 'types/stock-event';
 import { filter, map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { ComponentStore } from '@ngrx/component-store';
-import { StockId, StockInstrument, StockListItems } from 'types/stock';
+import { StockId, StockInstrument, StockListItems, StockPrice, WithLastPrice } from 'types/stock';
 import { Position } from 'types/position';
 import { Idea } from 'types/idea';
 import { DateRange } from 'types/date-range';
@@ -255,6 +255,8 @@ export class MainStore extends ComponentStore<any> {
       })
     )
   );
+
+  getPriceOfInstruments = (list: StockId[]): Observable<StockPrice<WithLastPrice>> => this.api.getActiveStock(list);
 
   private _updateSelected(
     instrument: StockInstrument | null = null,

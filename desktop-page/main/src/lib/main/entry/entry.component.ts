@@ -16,7 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockInstrument } from 'types/stock';
 
 interface FilterListItem {
-  id: string;
+  id: string[];
   name: string;
   disabled: boolean;
 }
@@ -74,7 +74,7 @@ export class EntryComponent {
 
     return list.map((item: FilterListItem) => ({
       ...item,
-      disabled: !types.includes(item.id),
+      disabled: !types.some((type: string) => item.id.includes(type)),
     }));
   }
 
@@ -102,7 +102,6 @@ export class EntryComponent {
     if (data === null) {
       return data;
     }
-
     const mapStock = this._getObject(valueStock);
     const mapStrategy = this._getObject(valueStrategy);
 
@@ -118,7 +117,7 @@ export class EntryComponent {
     return list.reduce(
       (acc: { [key: string]: boolean }, item: FilterListItem) => ({
         ...acc,
-        [item.id]: true,
+        ...item.id.reduce((common, uid: string) => ({ ...common, [uid]: true }), {}),
       }),
       {}
     );

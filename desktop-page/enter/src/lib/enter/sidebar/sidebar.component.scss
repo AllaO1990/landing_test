@@ -50,6 +50,12 @@
     border-bottom: 1px solid var(--main-bg-color);
   }
 
+  &__portfolio {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+  }
+
   &__comment {
     padding: var(--padding-4) 0;
 
@@ -130,5 +136,17 @@
     font-size: 13px;
     font-weight: 400;
     line-height: 15px;
+  }
+}
+
+.portfolio {
+  &__select {
+    flex: 1;
+  }
+
+  &__currency {
+    width: 60px;
+
+    margin-left: var(--padding-4);
   }
 }

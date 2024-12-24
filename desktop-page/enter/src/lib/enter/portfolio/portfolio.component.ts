@@ -158,7 +158,7 @@ export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
       .pipe(takeUntilDestroyed(this._destroyed))
       .subscribe((result: boolean) => {
         if (result) {
-          // this._accountStore.deletePortfolio(item.portfolioId);
+          this._accountStore.deletePortfolio(item.portfolioId);
         }
       });
   }
@@ -182,8 +182,6 @@ export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
 
       this.isAdd = null;
     }
-
-    console.log(event);
   }
 
   readonly stringify: TuiStringHandler<AccountPortfolio> = (item: AccountPortfolio) => item.portfolio;

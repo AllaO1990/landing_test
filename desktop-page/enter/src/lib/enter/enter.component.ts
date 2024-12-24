@@ -85,7 +85,7 @@ export class VtEnterComponent {
           filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
           distinctUntilChanged((a, b) => a.id !== b.id),
           switchMap((instrument: StockInstrument) =>
-            this._stock.listPrice$.pipe(
+            this._stock.getPrice([instrument.id]).pipe(
               filter((price: StockPrice<WithLastPrice> | null): price is StockPrice<WithLastPrice> => price !== null),
               map((price: StockPrice<WithLastPrice>) => price[instrument.id] || null),
               filter((price: WithLastPrice | null): price is WithLastPrice => price !== null),

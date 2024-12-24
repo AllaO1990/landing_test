@@ -17,6 +17,7 @@ export class StockListFacade {
 
   readonly selectStockGroupList = this._stock.selectStockGroupList;
   readonly loadPrice = this._store.onLoadPrice;
+  readonly getPrice = this._store.getPriceOfInstruments;
 
   readonly addInstrument = this._stock.onAddInstrument;
   readonly deleteInstrument = this._stock.onDeleteInstrument;

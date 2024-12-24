@@ -10,7 +10,6 @@ import { TuiBlock, TuiDataListWrapperComponent, TuiFilter } from '@taiga-ui/kit'
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
 import { SIDEBAR_CONSTANTS } from './sidebar.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
-import { STOCK_TIMING_LIST } from 'constants/stock-timing';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { Position } from 'types/position';
 import { AccountFacade } from 'stores/facades/account.facade';
@@ -20,6 +19,7 @@ import { tap } from 'rxjs/operators';
 import { PortfolioComponent } from '../portfolio';
 
 type Item = { id: string; name: string };
+type StrategyItem = { id: string[]; name: string };
 
 @Component({
   selector: 'lib-enter-sidebar',
@@ -53,13 +53,18 @@ export class EnterSidebarComponent {
   private _data: Idea | Position | null = null;
   private _edit = false;
 
-  readonly strategy: Item[] = STOCK_STRATEGY_LIST;
-  readonly timing: Item[] = STOCK_TIMING_LIST;
+  readonly strategy: StrategyItem[] = STOCK_STRATEGY_LIST;
   readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
   readonly constants = SIDEBAR_CONSTANTS;
 
   readonly brokers$: Observable<null | AccountBroker[]> = this._accountStore.brokers$;
-  readonly currencies$: Observable<null | AccountCurrency[]> = this._accountStore.currencies$;
+  readonly currencies$: Observable<null | AccountCurrency[]> = this._accountStore.currencies$.pipe(
+    tap((list: AccountCurrency[] | null) => {
+      if (list !== null && this.controlCurrency.value === null) {
+        this.controlCurrency.patchValue(list[0], { emitEvent: false });
+      }
+    })
+  );
   readonly portfolios$: Observable<null | AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
     tap((list: AccountPortfolio[] | null) => {
       if (list !== null && this.controlPortfolio.value === null) {
@@ -72,11 +77,11 @@ export class EnterSidebarComponent {
 
   form: FormGroup = new FormGroup(
     {
+      currencyId: new FormControl({ value: null, disabled: true }),
       portfolioId: new FormControl({ value: null, disabled: true }, Validators.required),
       parentId: new FormControl({ value: null, disabled: true }, Validators.required),
       instrumentId: new FormControl({ value: null, disabled: true }, Validators.required),
       expirationDate: new FormControl({ value: null, disabled: true }),
-      timing: new FormControl({ value: this.timing[1].id, disabled: true }),
       strategyId: new FormControl({ value: null, disabled: true }),
       positionType: new FormControl({ value: null, disabled: true }),
       comment: new FormControl({ value: null, disabled: true }),
@@ -96,8 +101,8 @@ export class EnterSidebarComponent {
     return this.form.get('strategyId') as FormControl;
   }
 
-  get controlTiming(): FormControl {
-    return this.form.get('timing') as FormControl;
+  get controlCurrency(): FormControl {
+    return this.form.get('currencyId') as FormControl;
   }
 
   public controlFilterTiming: FormControl<Item[] | null> = new FormControl(null);
@@ -123,7 +128,6 @@ export class EnterSidebarComponent {
 
     if (value) {
       this.controlFilterTiming.disable();
-      this.controlFilterTiming.patchValue([this.timing[1]]);
       console.log(this.positionType.find((item: { id: string }) => item.id === value.positionType) || null);
 
       this.controlStrategy.patchValue((value.strategy && value.strategy.type) || null);
@@ -136,4 +140,5 @@ export class EnterSidebarComponent {
   }
 
   readonly stringifyPortfolio: TuiStringHandler<AccountPortfolio> = (item: AccountPortfolio) => item.portfolio;
+  readonly stringifyCurrency: TuiStringHandler<AccountCurrency> = (item: AccountCurrency) => item.currencySymbol;
 }
