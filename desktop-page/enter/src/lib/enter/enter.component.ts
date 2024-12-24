@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import { combineLatest, filter, Observable, of, shareReplay, switchMap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, filter, Observable, of, shareReplay, switchMap } from 'rxjs';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
@@ -17,10 +17,11 @@ import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
-import { StockInstrument } from 'types/stock';
-import { SearchDialogDirective } from 'ui-common/lib/search-dialog';
+import { StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
+import { StockListFacade } from 'stores/facades/stock-list.facade';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -45,7 +46,6 @@ export interface TabItem {
     TuiTabs,
     TuiIcon,
     InstrumentComponent,
-    // ChartCandlestickComponent,
     LoaderComponent,
     ChartCandlestickComponent,
     SearchDialogDirective,
@@ -56,6 +56,7 @@ export interface TabItem {
 })
 export class VtEnterComponent {
   private readonly _select: SelectFacade = inject(SelectFacade);
+  private readonly _stock: StockListFacade = inject(StockListFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
   isEdit = false;
@@ -67,6 +68,8 @@ export class VtEnterComponent {
   readonly data$: Observable<any> = this._select.event$.pipe(
     filter((event: StockEvent | null): event is StockEvent => event !== null),
     switchMap((event: StockEvent) => {
+      this.isEdit = false;
+
       if (event.type === EventSelected.POSITION) {
         return this._select.position$;
       }
@@ -79,11 +82,36 @@ export class VtEnterComponent {
         this.isEdit = true;
 
         return this._select.instrument$.pipe(
-          map((instrument: StockInstrument | null) => ({
-            instrument,
-            createdAt: new Date().toISOString(),
-            inPositionDepositShare: 0,
-          }))
+          filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
+          distinctUntilChanged((a, b) => a.id !== b.id),
+          switchMap((instrument: StockInstrument) =>
+            this._stock.listPrice$.pipe(
+              filter((price: StockPrice<WithLastPrice> | null): price is StockPrice<WithLastPrice> => price !== null),
+              map((price: StockPrice<WithLastPrice>) => price[instrument.id] || null),
+              filter((price: WithLastPrice | null): price is WithLastPrice => price !== null),
+              map((price: WithLastPrice) => {
+                const quantity = Math.floor(50000 / price.last);
+
+                return {
+                  instrument,
+                  createdAt: new Date().toISOString(),
+                  inPositionDepositShare: 0,
+                  price,
+                  entries: [
+                    {
+                      date: '',
+                      depositShare: null,
+                      price: price.last,
+                      quantity,
+                      totalPrice: quantity * price.last,
+                    },
+                  ],
+                  targets: [],
+                  stop: {},
+                };
+              })
+            )
+          )
         );
       }
 

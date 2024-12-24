@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, of } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { ActiveZone, FigureIdea } from 'types/chart';
-import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
-import { Response, ResponseMessage } from 'types/response';
+import { DataList, Response } from 'types/response';
 import {
   Stock,
   StockId,
@@ -13,25 +11,18 @@ import {
   StockLists,
   StockParamsConsolidationZones,
 } from 'types/stock';
-import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 import { Position } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
+import { Params } from '@angular/router';
+import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 
 @Injectable()
 export class DesktopStubService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
 
-  getIdeaList(): Observable<Idea[]> {
-    return this._http.get<Response<ResponseListIdea>>('/assets/mocks/ideas-response.json').pipe(
-      filter((response: Response<ResponseListIdea>) => response.message === ResponseMessage.success),
-      map((response: Response<ResponseListIdea>) =>
-        response.data.items.map((item: ResponseIdea) => ({
-          ...item,
-          priceIncrement: getPriceIncrement(item.minPriceIncrement),
-        }))
-      )
-    );
+  getIdeaList(): Observable<Position[]> {
+    return of([]);
   }
 
   getInstrumentsLists(): Observable<any> {
@@ -115,6 +106,30 @@ export class DesktopStubService extends DesktopService {
   }
 
   getConsolidationZones(params: StockParamsConsolidationZones): Observable<Response<any>> {
+    return of();
+  }
+
+  getAccountBrokers(params: Params): Observable<Response<DataList<AccountBroker>>> {
+    return of();
+  }
+
+  getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>> {
+    return of();
+  }
+
+  getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>> {
+    return of();
+  }
+
+  createAccountPortfolio(portfolio: string): Observable<Response<AccountPortfolio>> {
+    return of();
+  }
+
+  editAccountPortfolio(portfolio: AccountPortfolio): Observable<Response<AccountPortfolio>> {
+    return of();
+  }
+
+  deleteAccountPortfolio(portfolioId: number): Observable<Response<AccountPortfolio>> {
     return of();
   }
 }

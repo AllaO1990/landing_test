@@ -35,7 +35,7 @@ export class IdeaService {
     ];
   }
 
-  getTotalTarget(list: IdeaTarget[], totalPrice: number): IdeaTotalTarget {
+  getTotalTarget(list: IdeaTarget[], totalPrice = 0): IdeaTotalTarget {
     const total = list.reduce(
       (acc, item: IdeaTarget) => {
         return {
@@ -48,7 +48,7 @@ export class IdeaService {
       { profitPercent: 0, profit: 0, depositShare: 0, amount: 0 }
     );
 
-    total.profitPercent = total.profit / totalPrice;
+    total.profitPercent = totalPrice !== 0 ? total.profit / totalPrice : 0;
 
     return total;
   }

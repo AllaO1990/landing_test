@@ -46,6 +46,7 @@ export class MainStore extends ComponentStore<any> {
 
   private readonly _facade = new FacadeStore(this.api);
 
+  readonly account = this._facade.account;
   readonly selected = new SelectStore();
   readonly stock = this._facade.stockList;
   readonly idea = this._facade.ideaList;
@@ -76,6 +77,10 @@ export class MainStore extends ComponentStore<any> {
 
     this.stock.loadList();
     this.stock.loadGroup();
+
+    this.account.loadBrokers();
+    this.account.loadCurrencies();
+    this.account.loadPortfolios();
 
     this.idea.load(timerSource);
     this.position.load(timerSource);
@@ -230,6 +235,7 @@ export class MainStore extends ComponentStore<any> {
       filter((combine: [StockEvent | null, Idea[]]): combine is [StockEvent, Idea[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Idea[]]) => {
         const find = list.find((item: Idea) => item.id === event.id) || null;
+
         this._updateSelected(find && find.instrument, null, find);
       })
     )

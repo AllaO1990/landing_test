@@ -1,0 +1,67 @@
+:host {
+}
+
+.portfolio {
+  &__container {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    width: 100%;
+  }
+
+  &__control {
+    flex: 1;
+  }
+
+  &__action {
+    margin-left: var(--padding-2);
+  }
+}
+
+.item {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  &__text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__space {
+    flex: 1;
+  }
+
+  &__actions {
+    --tui-height-s: 24px;
+    --t-size: 20px;
+
+    [tuiIcons]:before, [tuiIcons]:after {
+      font-size: 12px;
+    }
+  }
+
+  &__edit {
+    margin-right: var(--padding-2);
+  }
+}
+
+.dialog {
+  &__title {
+    margin: 0 var(--padding-2);
+  }
+
+  &__content {
+    padding: var(--padding-2);
+
+    border-bottom: 1px solid var(--main-bg-color);
+  }
+}
+
+::ng-deep {
+  tui-data-list[data-size="s"] .t-checkmark, tui-data-list[data-size="s"] .t-checkmark {
+    margin-inline-start: .375rem;
+  }
+}

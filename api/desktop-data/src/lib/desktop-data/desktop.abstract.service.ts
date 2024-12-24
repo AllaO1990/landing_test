@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs';
-import { Idea } from 'types/idea';
-import { Response } from 'types/response';
+import { DataList, Response } from 'types/response';
 import {
   Stock,
   StockId,
@@ -16,9 +15,11 @@ import { ActiveZone, FigureIdea } from 'types/chart';
 import { Position } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
+import { Params } from '@angular/router';
+import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 
 export abstract class DesktopService {
-  public abstract getIdeaList(): Observable<Idea[]>;
+  public abstract getIdeaList(): Observable<Position[]>;
 
   public abstract getStockList(): Observable<Response<Stock>>;
 
@@ -67,4 +68,16 @@ export abstract class DesktopService {
   ): Observable<Response<StockLinkListInstrument>>;
 
   public abstract getConsolidationZones(params: StockParamsConsolidationZones): Observable<Response<ActiveZone[]>>;
+
+  abstract getAccountBrokers(params: Params): Observable<Response<DataList<AccountBroker>>>;
+
+  abstract getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>>;
+
+  abstract getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>>;
+
+  abstract createAccountPortfolio(name: string): Observable<Response<AccountPortfolio>>;
+
+  abstract editAccountPortfolio(portfolio: AccountPortfolio): Observable<Response<AccountPortfolio>>;
+
+  abstract deleteAccountPortfolio(id: number): Observable<Response<AccountPortfolio>>;
 }

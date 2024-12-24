@@ -78,3 +78,9 @@
     margin: var(--padding-2);
   }
 }
+
+.filter-content {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

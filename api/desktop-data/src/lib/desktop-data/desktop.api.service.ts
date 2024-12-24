@@ -3,9 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ActiveZone, FigureIdea } from 'types/chart';
-import { Idea, ResponseIdea, ResponseListIdea } from 'types/idea';
 import { Position, ResponsePosition, ResponsePositions } from 'types/position';
-import { Response, ResponseMessage } from 'types/response';
+import { DataList, Response, ResponseMessage } from 'types/response';
 import {
   Stock,
   StockId,
@@ -15,25 +14,26 @@ import {
   StockPrice,
   WithLastPrice,
 } from 'types/stock';
-import { getPriceIncrement } from 'utils/get-price-increment';
 import { DesktopService } from './desktop.abstract.service';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Timeframe } from 'types/timeframe';
+import { Params } from '@angular/router';
+import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
 
-  public getIdeaList(): Observable<Idea[]> {
-    return this._http.get<Response<ResponseListIdea>>(`https://trade.gpn.dev/api/v1/ideas`).pipe(
-      filter((response: Response<ResponseListIdea>) => response && response.message === ResponseMessage.success),
-      map((response: Response<ResponseListIdea>) =>
-        (response.data.items || []).map((item: ResponseIdea) => ({
-          ...item,
-          priceIncrement: getPriceIncrement(item.minPriceIncrement),
-        }))
-      )
+  public getIdeaList(): Observable<Position[]> {
+    return this._http.get<Response<ResponsePositions>>(`https://trade.gpn.dev/api/v1/ideas`).pipe(
+      filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
+      map((response: Response<ResponsePositions>) => {
+        if (response.data.items === null) {
+          return [];
+        }
+        return response.data.items.map((item: ResponsePosition) => new Position(item));
+      })
     );
   }
 
@@ -199,5 +199,41 @@ export class DesktopApiService extends DesktopService {
 
   getConsolidationZones(params: { id: string; interval: number; from: string; to: string }): Observable<Response<any>> {
     return this._http.get<Response<any>>('https://trade.gpn.dev/api/v1/chart/consolidation-zones', { params });
+  }
+
+  getAccountBrokers(params: Params): Observable<Response<DataList<AccountBroker>>> {
+    return this._http.get<Response<DataList<AccountBroker>>>('https://trade.gpn.dev/api/v1/account/brokers', {
+      params,
+    });
+  }
+
+  getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>> {
+    return this._http.get<Response<DataList<AccountCurrency>>>('https://trade.gpn.dev/api/v1/account/currencies', {
+      params,
+    });
+  }
+
+  getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>> {
+    return this._http.get<Response<DataList<AccountPortfolio>>>('https://trade.gpn.dev/api/v1/account/portfolios', {
+      params,
+    });
+  }
+
+  createAccountPortfolio(portfolio: string): Observable<Response<AccountPortfolio>> {
+    return this._http.post<Response<AccountPortfolio>>('https://trade.gpn.dev/api/v1/account/portfolio', {
+      portfolio,
+    });
+  }
+
+  editAccountPortfolio(portfolio: AccountPortfolio): Observable<Response<AccountPortfolio>> {
+    return this._http.patch<Response<AccountPortfolio>>('https://trade.gpn.dev/api/v1/account/portfolio', {
+      ...portfolio,
+    });
+  }
+
+  deleteAccountPortfolio(portfolioId: number): Observable<Response<AccountPortfolio>> {
+    return this._http.delete<Response<AccountPortfolio>>('https://trade.gpn.dev/api/v1/account/portfolio', {
+      body: { portfolioId },
+    });
   }
 }

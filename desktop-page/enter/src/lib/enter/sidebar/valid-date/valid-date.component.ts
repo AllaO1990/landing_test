@@ -60,7 +60,7 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.form[isDisabled ? 'disable' : 'enable']();
+    this.controlCheckbox[isDisabled ? 'disable' : 'enable']();
   }
 
   ngOnInit(): void {

@@ -1,7 +1,7 @@
 import { TuiTable } from '@taiga-ui/addon-table';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, Injector, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
@@ -43,17 +43,10 @@ import { SelectFacade } from 'stores/facades/select.facade';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryTableComponent {
-  private readonly _injector: Injector = inject(Injector);
-
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
   private readonly _store: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  // private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
-  // private readonly _component: PolymorpheusComponent<VtEnterComponent> = new PolymorpheusComponent(
-  //   VtEnterComponent,
-  //   this._injector
-  // );
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
@@ -81,19 +74,6 @@ export class EntryTableComponent {
       id: item.id,
       dialog: 'visible',
     });
-
-    console.log('onDblclick');
-
-    // this._dialogEnterService
-    //   .open(
-    //     this._component
-    //     // {
-    //     //   data: item,
-    //     //   type: EventSelected.IDEA,
-    //     // }
-    //     // this._injector
-    //   )
-    //   .subscribe();
   }
 
   public onClick(event: Event, item: Idea): void {

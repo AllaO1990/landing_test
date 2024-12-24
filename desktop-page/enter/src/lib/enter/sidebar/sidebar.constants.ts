@@ -3,6 +3,9 @@ export enum SidebarEnum {
   DELETE = 'delete',
   COMMENT_LABEL = 'comment_label',
   COMMENT_AREA = 'comment_area',
+  PORTFOLIO = 'portfolio',
+  BROKER = 'broker',
+  CURRENCY = 'currency',
 }
 
 export const SIDEBAR_CONSTANTS: { [key in SidebarEnum]: string } = {
@@ -10,4 +13,7 @@ export const SIDEBAR_CONSTANTS: { [key in SidebarEnum]: string } = {
   [SidebarEnum.DELETE]: 'Удалить идею',
   [SidebarEnum.COMMENT_LABEL]: 'Комментарий',
   [SidebarEnum.COMMENT_AREA]: 'Добавьте описание своей идеи',
+  [SidebarEnum.BROKER]: 'Брокер',
+  [SidebarEnum.CURRENCY]: 'Валюта',
+  [SidebarEnum.PORTFOLIO]: 'Портфель',
 };

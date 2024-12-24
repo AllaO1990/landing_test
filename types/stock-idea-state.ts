@@ -1,5 +1,5 @@
-import { Idea } from './idea';
+import { Position } from './position';
 
 export interface StockIdeaState {
-  list: null | Idea[];
+  list: null | Position[];
 }

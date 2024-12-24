@@ -19,7 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface SelectListItem {
   name: string;
-  value: string;
+  id: string;
 }
 
 type SelectList = SelectListItem[];

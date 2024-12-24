@@ -1,0 +1,32 @@
+<div class="dialog">
+  <ng-container
+    [ngTemplateOutlet]="data && data.template || default"
+    [ngTemplateOutletContext]="{ $implicit: data && data.context }"
+  ></ng-container>
+  <div class="dialog__actions">
+    <button
+      tuiAutoFocus
+      class="dialog__action"
+      [size]="size"
+      tuiButton
+      type="submit"
+      (click)="submit($event)">
+      Да
+    </button>
+    <button
+      class="dialog__action"
+      appearance="secondary"
+      [size]="size"
+      tuiButton
+      type="button"
+      (click)="cancel($event)">
+      Нет
+    </button>
+  </div>
+</div>
+
+<ng-template #default>
+  <div class="dialog__content">
+    Вы уверены, что хотите удалить?
+  </div>
+</ng-template>

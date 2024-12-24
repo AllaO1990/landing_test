@@ -23,7 +23,9 @@
           {{ item.totalPrice | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__deposit">
-          {{ item.depositShare | tuiFormatNumber | async }}%
+          <ng-container *ngIf="item.depositShare !== null; else none">
+            {{ item.depositShare | tuiFormatNumber | async }}%
+          </ng-container>
         </div>
       </div>
     </lib-list>
@@ -210,7 +212,9 @@
       {{ totalEntry.totalPrice | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__item">
-      {{ totalEntry.depositShare | tuiFormatNumber | async }}%
+      <ng-container *ngIf="totalEntry.depositShare !== 0; else none">
+        {{ totalEntry.depositShare | tuiFormatNumber | async }}%
+      </ng-container>
     </div>
   </div>
 </ng-template>
@@ -254,4 +258,8 @@
 
 <ng-template #empty>
   <div class="empty">Загрузка...</div>
+</ng-template>
+
+<ng-template #none>
+  <div style="text-align: center; width: 100%">&mdash;</div>
 </ng-template>

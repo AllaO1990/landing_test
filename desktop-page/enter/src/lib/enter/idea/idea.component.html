@@ -1,159 +1,156 @@
-<div class="entry table" [formGroup]="formEntry">
-  <tui-loader class="loader" [overlay]="true" [showLoader]="listEntry === null">
-    <lib-list
-      *ngIf="listEntry && listEntry.length; else empty"
-      class="list"
-      [style.height.px]="listEntry.length > 2 ? 3 * itemHeight : listEntry.length * itemHeight + 28"
-      [list]="listEntry"
-      [header]="entryHeader"
-      [itemSize]="itemHeight">
-      <lib-list-item
-        class="row"
-        libItemLikeCheckbox
-        #libListItem=libItemLikeCheckbox
-        *libListItem="let item"
-        [formControlName]="item.id">
-        <div class="item">
-          <div class="item__value row__item row__first">
-            <lib-check [value]="libListItem.checked"></lib-check>
-          </div>
-          <div class="item__value row__item row__date">
-            {{ item.date | date: 'dd.MM.yy' }}
-          </div>
-          <div class="item__value row__item row__price">
-            {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
-          </div>
-          <div class="item__value row__item row__quantity">
-            {{ item.quantity | tuiFormatNumber | async }}
-          </div>
-          <div class="item__value row__item row__total">
-            {{ item.totalPrice | tuiFormatNumber: { precision: 0 } | async }}
-          </div>
-          <div class="item__value row__item row__deposit">
-            {{ item.depositShare | tuiFormatNumber | async }}%
-          </div>
+<div class="entry table" [formGroup]="formEntry" *ngIf="listEntry; else load">
+  <lib-list
+    *ngIf="listEntry.length; else load"
+    class="list"
+    [style.height.px]="listEntry.length > 2 ? 3 * itemHeight : listEntry.length * itemHeight + 28"
+    [list]="listEntry"
+    [header]="entryHeader"
+    [itemSize]="itemHeight">
+    <lib-list-item
+      class="row"
+      libItemLikeCheckbox
+      #libListItem=libItemLikeCheckbox
+      *libListItem="let item"
+      [formControlName]="item.id">
+      <div class="item">
+        <div class="item__value row__item row__first">
+          <lib-check [value]="libListItem.checked"></lib-check>
         </div>
-      </lib-list-item>
-    </lib-list>
-  </tui-loader>
+        <div class="item__value row__item row__date">
+          {{ item.date | date: 'dd.MM.yy' }}
+        </div>
+        <div class="item__value row__item row__price">
+          {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+        </div>
+        <div class="item__value row__item row__quantity">
+          {{ item.quantity | tuiFormatNumber | async }}
+        </div>
+        <div class="item__value row__item row__total">
+          {{ item.totalPrice | tuiFormatNumber: { precision: 0 } | async }}
+        </div>
+        <div class="item__value row__item row__deposit">
+          <ng-container *ngIf="item.depositShare !== null; else none">
+            {{ item.depositShare | tuiFormatNumber | async }}%
+          </ng-container>
+        </div>
+      </div>
+    </lib-list-item>
+  </lib-list>
 </div>
 
 <div class="space"></div>
 
 <div class="target table" [formGroup]="formTarget">
-  <tui-loader class="loader" [overlay]="true" [showLoader]="listTarget === null">
-    <lib-list
-      class="list"
-      *ngIf="listTarget && listTarget.length; else empty"
-      [style.height.px]="listTarget.length > 3 ? 3 * itemHeight : listTarget.length * itemHeight + 56"
-      [list]="listTarget"
-      [header]="targetHeader"
-      [footer]="targetFooter"
-      [itemSize]="itemHeight">
-      <lib-list-item
-        libItemLikeCheckbox
-        class="row"
-        #libListItem=libItemLikeCheckbox
-        *libListItem="let item"
-        [formControlName]="item.id">
-        <div class="item">
-          <div class="item__value row__item row__first">
-            <lib-check [value]="libListItem.checked"></lib-check>
-          </div>
-          <div class="item__value row__item row__date">
-            {{ item.date | date: 'dd.MM.yy' }}
-          </div>
-          <div class="item__value row__right row__item row__price">
-            {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
-          </div>
-          <div class="item__value row__right row__item row__profit">
-            {{ item.profitPercent | tuiFormatNumber | async }}%
-          </div>
-          <div class="item__value row__right row__item row__profit">
-            {{ item.profit | tuiFormatNumber | async }}
-          </div>
-          <div class="item__value row__right row__item row__deposit">
-            {{ item.depositShare | tuiFormatNumber | async }}%
-          </div>
-          <div class="item__value row__right row__item row__fix-half">
-            {{ item.amount | tuiFormatNumber | async }}
-          </div>
-          <div class="item__value row__right row__item row__fix-half">
-            {{ item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: { rounding: 'round' } | async }}%
-          </div>
-          <div class="row__space"></div>
-          <div class="item__value">
-            <button
-              appearance="icon"
-              iconStart="@tui.x"
-              tuiIconButton
-              type="button"
-              disabled
-              (click)="onRemove($event, item)"
-            ></button>
-          </div>
+  <lib-list
+    class="list"
+    *ngIf="listTarget !== null; else load"
+    [style.height.px]="listTarget.length > 3 ? 3 * itemHeight : listTarget.length * itemHeight + 56"
+    [list]="listTarget"
+    [header]="targetHeader"
+    [footer]="targetFooter"
+    [itemSize]="itemHeight">
+    <lib-list-item
+      libItemLikeCheckbox
+      class="row"
+      #libListItem=libItemLikeCheckbox
+      *libListItem="let item"
+      [formControlName]="item.id">
+      <div class="item">
+        <div class="item__value row__item row__first">
+          <lib-check [value]="libListItem.checked"></lib-check>
         </div>
-      </lib-list-item>
-    </lib-list>
+        <div class="item__value row__item row__date">
+          {{ item.date | date: 'dd.MM.yy' }}
+        </div>
+        <div class="item__value row__right row__item row__price">
+          {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+        </div>
+        <div class="item__value row__right row__item row__profit">
+          {{ item.profitPercent | tuiFormatNumber | async }}%
+        </div>
+        <div class="item__value row__right row__item row__profit">
+          {{ item.profit | tuiFormatNumber | async }}
+        </div>
+        <div class="item__value row__right row__item row__deposit">
+          {{ item.depositShare | tuiFormatNumber | async }}%
+        </div>
+        <div class="item__value row__right row__item row__fix-half">
+          {{ item.amount | tuiFormatNumber | async }}
+        </div>
+        <div class="item__value row__right row__item row__fix-half">
+          {{ item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: { rounding: 'round' } | async }}%
+        </div>
+        <div class="row__space"></div>
+        <div class="item__value">
+          <button
+            appearance="icon"
+            iconStart="@tui.x"
+            tuiIconButton
+            type="button"
+            disabled
+            (click)="onRemove($event, item)"
+          ></button>
+        </div>
+      </div>
+    </lib-list-item>
+  </lib-list>
 
-    <div class="action">
-      <button
-        class="button"
-        [disabled]="true"
-        tuiButton
-        type="button">
-        + Новая цель
-      </button>
-    </div>
-  </tui-loader>
+  <div class="action">
+    <button
+      class="button"
+      [disabled]="!edit"
+      tuiButton
+      (click)="addTarget($event)"
+      type="button">
+      + Новая цель
+    </button>
+  </div>
 </div>
 
 <div class="space"></div>
 
 <div class="stop table" [formGroup]="formStop">
-  <tui-loader class="loader" [overlay]="true" [showLoader]="listStop === null">
-    <lib-list
-      *ngIf="listStop && listStop.length; else empty"
-      class="list"
-      [style.height.px]="listStop.length > 2 ? 3 * itemHeight : listStop.length * itemHeight + 28"
-      [list]="listStop"
-      [header]="stopHeader"
-      [itemSize]="itemHeight">
-      <lib-list-item
-        class="row"
-        #libListItem=libItemLikeCheckbox
-        libItemLikeCheckbox
-        *libListItem="let item"
-        [formControlName]="item.id">
-        <div class="item">
-          <div class="item__value row__item row__first">
-            <lib-check [value]="libListItem.checked"></lib-check>
-          </div>
-          <div class="item__value row__item row__date">
-            {{ item.date | date: 'dd.MM.yy' }}
-          </div>
-          <div class="item__value row__item row__right row__price">
-            {{ item.price | tuiFormatNumber | async }}
-          </div>
-          <div class="item__value row__item row__right row__profit">
-            {{ item.lossPercent | tuiFormatNumber | async }}%
-          </div>
-          <div class="item__value row__item row__right row__profit">
-            {{ item.loss | tuiFormatNumber | async }}
-          </div>
-          <div class="item__value row__item row__right row__deposit">
-            {{ item.depositShare | tuiFormatNumber | async }}%
-          </div>
-          <div class="item__value row__item row__right row__fix-half">
-            {{ item.amount | tuiFormatNumber | async }}
-          </div>
-          <div class="item__value row__item row__right row__fix-half">
-            {{ item.amountPercent | tuiFormatNumber | async }}%
-          </div>
+  <lib-list
+    *ngIf="listStop !== null; else load"
+    class="list"
+    [style.height.px]="listStop.length > 2 ? 3 * itemHeight : listStop.length * itemHeight + 28"
+    [list]="listStop"
+    [header]="stopHeader"
+    [itemSize]="itemHeight">
+    <lib-list-item
+      class="row"
+      #libListItem=libItemLikeCheckbox
+      libItemLikeCheckbox
+      *libListItem="let item"
+      [formControlName]="item.id">
+      <div class="item">
+        <div class="item__value row__item row__first">
+          <lib-check [value]="libListItem.checked"></lib-check>
         </div>
-      </lib-list-item>
-    </lib-list>
-  </tui-loader>
+        <div class="item__value row__item row__date">
+          {{ item.date | date: 'dd.MM.yy' }}
+        </div>
+        <div class="item__value row__item row__right row__price">
+          {{ item.price | tuiFormatNumber | async }}
+        </div>
+        <div class="item__value row__item row__right row__profit">
+          {{ item.lossPercent | tuiFormatNumber | async }}%
+        </div>
+        <div class="item__value row__item row__right row__profit">
+          {{ item.loss | tuiFormatNumber | async }}
+        </div>
+        <div class="item__value row__item row__right row__deposit">
+          {{ item.depositShare | tuiFormatNumber | async }}%
+        </div>
+        <div class="item__value row__item row__right row__fix-half">
+          {{ item.amount | tuiFormatNumber | async }}
+        </div>
+        <div class="item__value row__item row__right row__fix-half">
+          {{ item.amountPercent | tuiFormatNumber | async }}%
+        </div>
+      </div>
+    </lib-list-item>
+  </lib-list>
 </div>
 
 <ng-template #entryHeader>
@@ -211,6 +208,18 @@
   </lib-list-header>
 </ng-template>
 
+<ng-template #noData let-data>
+  <ng-container [ngTemplateOutlet]="data === null ? load : empty"></ng-container>
+</ng-template>
+
 <ng-template #empty>
   <div class="empty">Загрузка...</div>
+</ng-template>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>
+
+<ng-template #none>
+  <div style="text-align: center; width: 100%">&mdash;</div>
 </ng-template>

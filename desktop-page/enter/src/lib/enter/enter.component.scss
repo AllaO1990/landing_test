@@ -282,7 +282,8 @@
     }
 
     &__space--first {
-      flex: 0;
+      flex: 0 0 auto;
+      width: var(--padding-2);
     }
 
     &__widget-list {

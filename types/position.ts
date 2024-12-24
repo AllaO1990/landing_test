@@ -10,13 +10,10 @@ export interface ResponsePosition {
   id: string;
   createdAt: string;
   updatedAt: string;
-  positionType: StockPosition;
   inPosition: boolean;
   inPositionQuantity: number;
-  inPositionPrice: number;
   inPositionDepositShare: number;
-  inPositionResult: number;
-  inPositionProfitPercent: number;
+  positionType: StockPosition;
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
@@ -25,6 +22,9 @@ export interface ResponsePosition {
   stop: StockPositionStop;
   strategy: StockPositionStrategy;
   author: string;
+  inPositionPrice: number;
+  inPositionResult: number;
+  inPositionProfitPercent: number;
   result: {
     profitPercent: number;
     profitPrice: number;
@@ -89,37 +89,6 @@ export class Position implements ResponsePosition {
   entryAveragePrice: number;
   fullPositionQuantity: number;
 
-  // get profitPercent(): number {
-  //   return this._profitPercent;
-  // }
-
-  // get profit(): number {
-  //   return this._profit;
-  // }
-  //
-  // get resultPercent(): number | null {
-  //   return this._resultPercent;
-  // }
-  //
-  // get resultPrice(): number | null {
-  //   return this._resultPrice;
-  // }
-
-  // set lastPrice(value: number) {
-  //   if (value !== this._lastPrice) {
-  //     this._profit = this._getProfit(value);
-  //     this._profitPercent = this._getProfitPercent(value);
-  //     this._resultPrice = this._getResultPrice(value);
-  //     this._resultPercent = this._getResultPercent(value);
-  //   }
-  //
-  //   this._lastPrice = value;
-  // }
-  //
-  // get lastPrice() {
-  //   return this._lastPrice;
-  // }
-
   constructor(data: ResponsePosition) {
     this.multiplier = data.positionType === 'short' ? -1 : 1;
 
@@ -166,6 +135,14 @@ export class Position implements ResponsePosition {
     return price / quantity;
   }
 
+  private _getCurrentTarget(targets: StockPositionTarget[]): StockPositionTarget | null {
+    return targets.find((target: StockPositionTarget) => target.stopDate === null) || null;
+  }
+
+  private _getFulPositionQuantity(targets: StockPositionTarget[]): number {
+    return targets.reduce((acc: number, item: StockPositionTarget) => (acc += item.amount), 0);
+  }
+
   //
   // private _getProfitPercent(lastPrice: number): number {
   //   return ((lastPrice - this.entryAveragePrice) / lastPrice) * this.multiplier;
@@ -174,10 +151,6 @@ export class Position implements ResponsePosition {
   // private _getProfit(lastPrice: number): number {
   //   return (lastPrice - this.entryAveragePrice) * this.inPositionQuantityValue * this.multiplier;
   // }
-
-  private _getCurrentTarget(targets: StockPositionTarget[]): StockPositionTarget | null {
-    return targets.find((target: StockPositionTarget) => target.stopDate === null) || null;
-  }
 
   // private _getResultPrice(lastPrice: number): number | null {
   //   if (!this.targets[0].stopDate) {
@@ -203,11 +176,6 @@ export class Position implements ResponsePosition {
   //
   //   return this._resultPrice / (this.entryAveragePrice * this.inPositionQuantityValue);
   // }
-  //
-  private _getFulPositionQuantity(targets: StockPositionTarget[]): number {
-    return targets.reduce((acc: number, item: StockPositionTarget) => (acc += item.amount), 0);
-  }
-
   //
   // private _getFullPositionPrice(targets: StockPositionEntry[]): number {
   //   return targets.reduce((acc: number, item: StockPositionEntry) => (acc += item.totalPrice), 0);

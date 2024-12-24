@@ -7,3 +7,8 @@ export interface Response<T> {
 export enum ResponseMessage {
   success = 'Success',
 }
+
+export interface DataList<T> {
+  total: number;
+  items: T[];
+}

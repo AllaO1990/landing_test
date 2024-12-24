@@ -1,45 +1,91 @@
 <div *ngIf="data" class="widget" [formGroup]="form">
-  <!--  <div class="widget__toolbar widget__padding">-->
-  <!--    <lib-enter-sidebar-instrument [data]="data.instrument">-->
-  <!--    </lib-enter-sidebar-instrument>-->
-  <!--  </div>-->
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
+      <div class="widget__portfolio widget__padding">
+        <lib-portfolio>
+        </lib-portfolio>
+        <!--        <div class="portfolio">-->
+        <!--          <label>-->
+        <!--            <span>{{ constants.portfolio }}</span>-->
+        <!--            <tui-select-->
+        <!--              class="portfolio__control"-->
+        <!--              *ngIf="portfolios$ | async as list"-->
+        <!--              [stringify]="stringifyPortfolio"-->
+        <!--              [tuiTextfieldSize]="size"-->
+        <!--              formControlName="portfolioId"-->
+        <!--              [tuiTextfieldLabelOutside]="true">-->
+        <!--              <tui-data-list-wrapper-->
+        <!--                *tuiDataList-->
+        <!--                size="s"-->
+        <!--                [items]="list"-->
+        <!--                [itemContent]="contentPortfolio">-->
+        <!--              </tui-data-list-wrapper>-->
+        <!--            </tui-select>-->
+        <!--          </label>-->
+        <!--          <button-->
+        <!--            class="portfolio__action"-->
+        <!--            [size]="size"-->
+        <!--            iconStart="@tui.plus"-->
+        <!--            tuiIconButton-->
+        <!--            appearance="secondary"-->
+        <!--            [disabled]="true"-->
+        <!--            type="button">-->
+        <!--            Добавить-->
+        <!--          </button>-->
+        <!--        </div>-->
+      </div>
       <div class="widget__valid-date widget__padding">
-        <lib-enter-sidebar-valid-date [formControl]="controlDate"></lib-enter-sidebar-valid-date>
+        <lib-enter-sidebar-valid-date formControlName="expirationDate">
+        </lib-enter-sidebar-valid-date>
       </div>
       <div class="widget__timing widget__padding">
-        <tui-filter
-          [formControl]="controlFilterTiming"
-          size="s"
-          class="item"
-          [disabledItemHandler]="disabledItemHandler"
-          [identityMatcher]="identityMatcher"
-          [content]="content"
-          [items]="timing"
-        ></tui-filter>
+        <div>
+          <label
+            *ngFor="let item of timing"
+            appearance=""
+            class="item"
+            tuiBlock="s">
+            <input
+              size="s"
+              formControlName="timing"
+              tuiBlock
+              type="radio"
+              [value]="item.id" />
+            {{ item.name }}
+          </label>
+        </div>
       </div>
       <div class="widget__implementation widget__padding">
-        <tui-filter
-          [formControl]="controlFilterStrategy"
-          size="s"
-          class="item"
-          [disabledItemHandler]="disabledItemHandler"
-          [identityMatcher]="identityMatcher"
-          [content]="content"
-          [items]="strategy"
-        ></tui-filter>
+        <div>
+          <label
+            *ngFor="let item of strategy"
+            class="item"
+            appearance=""
+            tuiBlock="s">
+            <input
+              size="s"
+              formControlName="strategyId"
+              tuiBlock
+              type="radio"
+              [value]="item.id" />
+            {{ item.name }}
+          </label>
+        </div>
       </div>
       <div class="widget__strategy widget__padding">
-        <tui-filter
-          [formControl]="controlFilterPositionType"
-          size="s"
+        <label
+          *ngFor="let item of positionType"
           class="item"
-          [disabledItemHandler]="disabledItemHandler"
-          [identityMatcher]="identityMatcher"
-          [content]="content"
-          [items]="positionType"
-        ></tui-filter>
+          appearance=""
+          tuiBlock="s">
+          <input
+            size="s"
+            formControlName="positionType"
+            tuiBlock
+            type="radio"
+            [value]="item.id" />
+          {{ item.name }}
+        </label>
       </div>
       <div class="widget__description description widget__padding">
         <div class="description__row" *ngIf="data.strategy">
@@ -49,9 +95,9 @@
           </div>
         </div>
         <div class="description__row">
-          <div class="description__label">% депозита</div>
+          <div class="description__label">% вероятность успеха</div>
           <div class="description__text">
-            {{ data.inPositionDepositShare * 100 | tuiFormatNumber | async }}%
+            {{ data.inPositionDepositShare  | tuiFormatNumber | async }}%
           </div>
         </div>
         <div class="description__row" *ngIf="data.instrument">
@@ -68,7 +114,7 @@
           {{ constants.comment_label }}
         </div>
         <div class="comment__area">
-          <tui-textarea [formControl]="controlTextArea" tuiTextfieldSize="s">
+          <tui-textarea formControlName="comment" tuiTextfieldSize="s">
             {{ constants.comment_area }}
           </tui-textarea>
         </div>
@@ -78,6 +124,6 @@
   </tui-scrollbar>
 </div>
 
-<ng-template #content let-item>
-  {{ item.name }}
+<ng-template #contentPortfolio let-item>
+  {{ item.portfolio }}
 </ng-template>

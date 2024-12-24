@@ -1,0 +1,28 @@
+<form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <tui-input
+    class="form__input"
+    tuiAutoFocus
+    formControlName="name"
+    [tuiTextfieldSize]="size"
+    [tuiTextfieldCleaner]="true">
+    <ng-content></ng-content>
+    <input tuiTextfieldLegacy />
+  </tui-input>
+  <button
+    class="form__action form__submit"
+    [size]="size"
+    iconStart="@tui.check"
+    tuiIconButton
+    [disabled]="form.invalid"
+    type="submit">
+  </button>
+  <button
+    class="form__action form__cancel"
+    [size]="size"
+    tuiIconButton
+    type="button"
+    iconStart="@tui.x"
+    appearance="secondary"
+    (click)="onCancel($event)">
+  </button>
+</form>

@@ -1,18 +1,23 @@
-import { TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TuiButton, TuiFormatNumberPipe, TuiGroup, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { Idea } from 'types/idea';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { InstrumentComponent } from '../instrument/instrument.component';
 import { ValidDateComponent } from './valid-date/valid-date.component';
-import { TuiFilter } from '@taiga-ui/kit';
+import { TuiBlock, TuiDataListWrapperComponent, TuiFilter } from '@taiga-ui/kit';
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
 import { SIDEBAR_CONSTANTS } from './sidebar.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { STOCK_TIMING_LIST } from 'constants/stock-timing';
-import { TuiBooleanHandler, TuiIdentityMatcher } from '@taiga-ui/cdk';
+import { TuiStringHandler } from '@taiga-ui/cdk';
 import { Position } from 'types/position';
+import { AccountFacade } from 'stores/facades/account.facade';
+import { Observable } from 'rxjs';
+import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
+import { tap } from 'rxjs/operators';
+import { PortfolioComponent } from '../portfolio';
 
 type Item = { id: string; name: string };
 
@@ -32,31 +37,68 @@ type Item = { id: string; name: string };
     TuiTextareaModule,
     TuiScrollbar,
     TuiFormatNumberPipe,
+    TuiGroup,
+    TuiBlock,
+    NgForOf,
+    TuiDataListWrapperComponent,
+    TuiSelectModule,
+    PortfolioComponent,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterSidebarComponent {
+  private readonly _accountStore: AccountFacade = inject(AccountFacade);
   private _data: Idea | Position | null = null;
+  private _edit = false;
 
-  public readonly strategy: Item[] = STOCK_STRATEGY_LIST;
+  readonly strategy: Item[] = STOCK_STRATEGY_LIST;
+  readonly timing: Item[] = STOCK_TIMING_LIST;
+  readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
+  readonly constants = SIDEBAR_CONSTANTS;
 
-  public readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
+  readonly brokers$: Observable<null | AccountBroker[]> = this._accountStore.brokers$;
+  readonly currencies$: Observable<null | AccountCurrency[]> = this._accountStore.currencies$;
+  readonly portfolios$: Observable<null | AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
+    tap((list: AccountPortfolio[] | null) => {
+      if (list !== null && this.controlPortfolio.value === null) {
+        this.controlPortfolio.patchValue(list[0], { emitEvent: false });
+      }
+    })
+  );
 
-  public readonly timing: Item[] = STOCK_TIMING_LIST;
+  readonly size = 's';
 
-  public readonly constants = SIDEBAR_CONSTANTS;
+  form: FormGroup = new FormGroup(
+    {
+      portfolioId: new FormControl({ value: null, disabled: true }, Validators.required),
+      parentId: new FormControl({ value: null, disabled: true }, Validators.required),
+      instrumentId: new FormControl({ value: null, disabled: true }, Validators.required),
+      expirationDate: new FormControl({ value: null, disabled: true }),
+      timing: new FormControl({ value: this.timing[1].id, disabled: true }),
+      strategyId: new FormControl({ value: null, disabled: true }),
+      positionType: new FormControl({ value: null, disabled: true }),
+      comment: new FormControl({ value: null, disabled: true }),
+    },
+    Validators.required
+  );
 
-  form: FormGroup = new FormGroup({
-    date: new FormControl({ value: null, disabled: true }),
-    timing: new FormControl({ value: null, disabled: true }),
-    strategy: new FormControl({ value: null, disabled: true }),
-    type: new FormControl({ value: null, disabled: true }),
-    area: new FormControl({ value: null, disabled: true }),
-  });
+  get controlPortfolio(): FormControl {
+    return this.form.get('portfolioId') as FormControl;
+  }
 
-  controlDate = new FormControl({ value: null, disabled: true });
+  get controlPositionType(): FormControl {
+    return this.form.get('positionType') as FormControl;
+  }
+
+  get controlStrategy(): FormControl {
+    return this.form.get('strategyId') as FormControl;
+  }
+
+  get controlTiming(): FormControl {
+    return this.form.get('timing') as FormControl;
+  }
 
   public controlFilterTiming: FormControl<Item[] | null> = new FormControl(null);
 
@@ -66,7 +108,14 @@ export class EnterSidebarComponent {
 
   public controlTextArea = new FormControl(null);
 
-  @Input() edit = false;
+  @Input() set edit(value: boolean) {
+    this._edit = value;
+    this.form[value ? 'enable' : 'disable']();
+  }
+
+  get edit(): boolean {
+    return this._edit;
+  }
 
   @Input()
   set data(value: Idea | Position | null) {
@@ -75,12 +124,10 @@ export class EnterSidebarComponent {
     if (value) {
       this.controlFilterTiming.disable();
       this.controlFilterTiming.patchValue([this.timing[1]]);
-      this.controlFilterStrategy.patchValue(
-        this.strategy.filter((item: { id: string }) => item.id === (value.strategy && value.strategy.type)) || null
-      );
-      this.controlFilterPositionType.patchValue(
-        this.positionType.filter((item: { id: string }) => item.id === value.positionType) || null
-      );
+      console.log(this.positionType.find((item: { id: string }) => item.id === value.positionType) || null);
+
+      this.controlStrategy.patchValue((value.strategy && value.strategy.type) || null);
+      this.controlPositionType.patchValue(value.positionType || null);
     }
   }
 
@@ -88,9 +135,5 @@ export class EnterSidebarComponent {
     return this._data;
   }
 
-  identityMatcher: TuiIdentityMatcher<{ id: string }> = (value: { id: string }, item: { id: string }): boolean => {
-    return value.id === item.id;
-  };
-
-  disabledItemHandler: TuiBooleanHandler<{ id: string }> = () => !this.edit;
+  readonly stringifyPortfolio: TuiStringHandler<AccountPortfolio> = (item: AccountPortfolio) => item.portfolio;
 }

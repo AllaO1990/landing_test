@@ -47,6 +47,8 @@ export class EnterActionComponent {
       this.listEntry = this._service.getActionEntry(value);
       this.totalEntry = this._service.getActionTotalEntry(this.listEntry);
 
+      console.log(this.totalEntry);
+
       this.listOut = this._service.getActionOut(value);
       this.totalOut = this._service.getActionTotalOut(this.listOut, value.entryAveragePrice, value.multiplier);
 

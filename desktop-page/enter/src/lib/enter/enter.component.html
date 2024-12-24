@@ -22,7 +22,7 @@
       ></button>
       <button
         *ngIf="isEdit"
-        class="action search"
+        class="search"
         tuiIconButton
         appearance="outline"
         [size]="size"
@@ -102,6 +102,7 @@
             <lib-enter-idea
               *ngIf="(data$ | async) as data; else load"
               [data]="$any(data)"
+              [edit]="isEdit"
               class="tui-zero-scrollbar">
             </lib-enter-idea>
           </tui-scrollbar>

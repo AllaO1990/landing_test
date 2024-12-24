@@ -5,6 +5,8 @@ export const STOCK_STRATEGY: { [key in StockStrategyEnums]: string } = {
   [StockStrategyEnums.ACTIVE_ZONE]: 'Активная зона',
   [StockStrategyEnums.SLIDING]: 'Скользящие',
   [StockStrategyEnums.USER]: 'Пользователь',
+  [StockStrategyEnums.ACTIVE_ZONE_BEARISH_ENGULFING]: 'АЗТ (Поглощение продавцами)',
+  [StockStrategyEnums.ACTIVE_ZONE_BULLISH_ENGULFING]: 'АЗТ (Поглощение покупателями)',
 };
 
 export const STOCK_STRATEGY_LIST: { id: StockStrategyEnums; name: string; disabled: boolean }[] = [
@@ -14,8 +16,13 @@ export const STOCK_STRATEGY_LIST: { id: StockStrategyEnums; name: string; disabl
     disabled: false,
   },
   {
-    id: StockStrategyEnums.ACTIVE_ZONE,
-    name: STOCK_STRATEGY[StockStrategyEnums.ACTIVE_ZONE],
+    id: StockStrategyEnums.ACTIVE_ZONE_BULLISH_ENGULFING,
+    name: STOCK_STRATEGY[StockStrategyEnums.ACTIVE_ZONE_BULLISH_ENGULFING],
+    disabled: false,
+  },
+  {
+    id: StockStrategyEnums.ACTIVE_ZONE_BEARISH_ENGULFING,
+    name: STOCK_STRATEGY[StockStrategyEnums.ACTIVE_ZONE_BEARISH_ENGULFING],
     disabled: false,
   },
   {

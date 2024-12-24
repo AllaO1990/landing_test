@@ -73,7 +73,9 @@
 </ng-template>
 
 <ng-template #content let-item>
-  {{ item.name }}
+  <div class="filter-content" [title]="item.name">
+    {{ item.name }}
+  </div>
 </ng-template>
 
 

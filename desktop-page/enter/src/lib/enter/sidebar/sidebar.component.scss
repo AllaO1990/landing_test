@@ -44,7 +44,7 @@
     border-bottom: 1px solid var(--main-bg-color);
   }
 
-  &__implementation, &__strategy, &__timing, &__description {
+  &__portfolio, &__broker, &__implementation, &__strategy, &__timing, &__description {
     padding: var(--padding-4) 0;
 
     border-bottom: 1px solid var(--main-bg-color);
@@ -76,6 +76,10 @@
     padding-left: var(--padding-4);
     padding-right: var(--padding-4);
   }
+}
+
+.item {
+  margin: 0 var(--padding-1) var(--padding-1) 0;
 }
 
 .action {
