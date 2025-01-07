@@ -1,0 +1,46 @@
+<form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <div class="form__header">
+    <h3>Добавить Стоп</h3>
+  </div>
+  <div class="form__form">
+    <tui-input-date
+      [tuiTextfieldCleaner]="true"
+      class="form__control"
+      formControlName="stopCandleDate"
+      tuiTextfieldSize="s">
+      Выбрать дату
+    </tui-input-date>
+    <tui-input-number
+      class="form__control"
+      tuiAutoFocus
+      [tuiNumberFormat]="{precision: 8}"
+      [tuiTextfieldSize]="size"
+      formControlName="price">
+      Стоп цена
+      <input
+        name="price"
+        autocomplete="off"
+        tuiTextfieldLegacy
+      />
+    </tui-input-number>
+  </div>
+  <div class="form__actions">
+    <button
+      class="form__action"
+      [size]="size"
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="onCancel($event)">
+      Отменить
+    </button>
+    <button
+      class="form__action"
+      [size]="size"
+      tuiButton
+      [disabled]="form.invalid"
+      type="submit">
+      Добавить
+    </button>
+  </div>
+</form>

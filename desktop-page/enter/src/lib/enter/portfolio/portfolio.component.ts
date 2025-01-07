@@ -9,7 +9,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import {
   ControlValueAccessor,
   FormControl,
@@ -26,7 +26,7 @@ import { AccountPortfolio } from 'types/account';
 import { FormInputEvent, InputWithActionsComponent } from 'ui-common/lib/input-with-actions';
 import { LoaderComponent } from '@ui/components/loader';
 import { AccountFacade } from 'stores/facades/account.facade';
-import { filter, Observable, take } from 'rxjs';
+import { filter, Observable, startWith, take } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -48,7 +48,6 @@ type FormEvent = 'create' | 'rename' | null;
     TuiSelectModule,
     TuiTextfieldControllerModule,
     InputWithActionsComponent,
-    JsonPipe,
     LoaderComponent,
   ],
   templateUrl: './portfolio.component.html',
@@ -87,7 +86,7 @@ export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
   readonly list$: Observable<null | AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
     tap((list: AccountPortfolio[] | null) => {
       if (list !== null && this.controlPortfolio.value === null) {
-        this.controlPortfolio.patchValue(list[0], { emitEvent: false });
+        this.controlPortfolio.patchValue(list[0], { emitEvent: true });
       }
     })
   );
@@ -114,13 +113,12 @@ export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
 
   setDisabledState(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
+    this.form[this.isDisabled ? 'disable' : 'enable']({ emitEvent: false });
   }
 
   ngAfterViewInit(): void {
-    this.form.enable({ emitEvent: false });
-
     this.form.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyed))
+      .pipe(takeUntilDestroyed(this._destroyed), startWith(this.form.value))
       .subscribe((result: { portfolio: AccountPortfolio }) => {
         this.onChange(result.portfolio);
       });

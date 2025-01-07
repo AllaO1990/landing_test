@@ -1,10 +1,10 @@
-<div *ngIf="data" class="widget" [formGroup]="form">
+<div *ngIf="value" class="widget" [formGroup]="form">
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
       <div class="widget__portfolio widget__padding portfolio">
         <lib-portfolio
           class="portfolio__select"
-          formControlName="portfolioId">
+          [formControl]="formControlPortfolio">
         </lib-portfolio>
         <!--        <div class="portfolio">-->
         <!--          <label>-->
@@ -14,7 +14,7 @@
           *ngIf="currencies$ | async as list"
           [stringify]="stringifyCurrency"
           [tuiTextfieldSize]="size"
-          formControlName="currencyId"
+          [formControl]="formControlCurrency"
           [tuiTextfieldLabelOutside]="true">
           <tui-data-list-wrapper
             *tuiDataList
@@ -66,10 +66,10 @@
             tuiBlock="s">
             <input
               size="s"
-              formControlName="strategyId"
+              [formControl]="formControlStrategy"
               tuiBlock
               type="radio"
-              [value]="item.id" />
+              [value]="item" />
             {{ item.name }}
           </label>
         </div>
@@ -90,21 +90,21 @@
         </label>
       </div>
       <div class="widget__description description widget__padding">
-        <div class="description__row" *ngIf="data.strategy">
+        <div class="description__row" *ngIf="value.strategy">
           <div class="description__label">Вероятность успеха</div>
           <div class="description__text">
-            {{ data.strategy.successProbability * 100 | tuiFormatNumber | async }}%
+            {{ value.strategy.successProbability * 100 | tuiFormatNumber | async }}%
           </div>
         </div>
         <div class="description__row">
           <div class="description__label">% вероятность успеха</div>
           <div class="description__text">
-            {{ data.inPositionDepositShare  | tuiFormatNumber | async }}%
+            {{ value.inPositionDepositShare  | tuiFormatNumber | async }}%
           </div>
         </div>
-        <div class="description__row" *ngIf="data.instrument">
+        <div class="description__row" *ngIf="value.instrument">
           <div class="description__label">Сектор экономики</div>
-          <div class="description__text">{{ data.instrument.sector }}</div>
+          <div class="description__text">{{ value.instrument.sector }}</div>
         </div>
         <div class="description__row">
           <div class="description__label">% сектора в вашем портфеле</div>

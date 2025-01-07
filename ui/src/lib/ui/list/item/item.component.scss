@@ -10,13 +10,9 @@
 
   user-select: none;
 
-  &:not(.disabled) {
-    cursor: pointer;
-  }
-
   &.checked {
-// TODO: night variables have been removed. Use tuiTheme="dark" on an element to switch colors to dark theme
-// TODO: night variables have been removed. Use tuiTheme="dark" on an element to switch colors to dark theme
+    // TODO: night variables have been removed. Use tuiTheme="dark" on an element to switch colors to dark theme
+    // TODO: night variables have been removed. Use tuiTheme="dark" on an element to switch colors to dark theme
     background-color: var(--tui-status-positive-pale-hover, rgba(3, 147, 34, 0.07));
   }
 }

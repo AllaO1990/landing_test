@@ -193,6 +193,12 @@
   padding: var(--padding-4);
 }
 
+.action {
+  tui-icon {
+    margin-right: var(--padding-2);
+  }
+}
+
 @media screen and (min-width: 768px) {
   .container {
     &__widget-list {
@@ -233,7 +239,7 @@
 
       gap: var(--padding-1);
 
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: .75fr 1fr;
       grid-template-columns: 1fr 0.2fr 0.2fr 1fr;
     }
 

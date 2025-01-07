@@ -7,20 +7,21 @@ export interface ResponsePositions {
 }
 
 export interface ResponsePosition {
-  id: string;
+  id: string | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string | null;
   inPosition: boolean;
   inPositionQuantity: number;
   inPositionDepositShare: number;
-  positionType: StockPosition;
+  positionType: StockPosition | null;
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
   entries: StockPositionEntry[];
   targets: StockPositionTarget[];
-  stop: StockPositionStop;
+  stop: StockPositionStop | null;
   strategy: StockPositionStrategy;
+  dividends: StockPositionDividend[];
   author: string;
   inPositionPrice: number;
   inPositionResult: number;
@@ -29,6 +30,7 @@ export interface ResponsePosition {
     profitPercent: number;
     profitPrice: number;
   };
+  subscribed: boolean;
 }
 
 export interface StockPositionStrategy {
@@ -37,32 +39,50 @@ export interface StockPositionStrategy {
 }
 
 export interface StockPositionStop {
-  depositShare: number;
-  lossPercent: number;
+  depositShare: number | null;
+  lossPercent: number | null;
+  loss: number | null;
   price: number;
   stopCandleDate: string | null;
+  amount: number | null;
+  amountPercent: number | null;
 }
 
 export interface StockPositionEntry {
   date: string | null;
-  depositShare: number;
+  depositShare: number | null;
   price: number;
   quantity: number;
   totalPrice: number;
+  broker: string | null;
 }
 
 export interface StockPositionTarget {
   price: number;
   amount: number;
-  profitPercent: number;
-  depositShare: number;
+  profit: number | null;
+  profitPercent: null | number;
+  depositShare: null | number;
+  totalPrice: number;
   reached: boolean;
   stopDate: null | string;
+  broker: string | null;
+}
+
+export interface StockPositionDividend {
+  price: number;
+  amount: number;
+  profit: number | null;
+  profitPercent: null | number;
+  depositShare: null | number;
+  totalPrice: number;
+  date: null | string;
+  broker: string | null;
 }
 
 export class Position implements ResponsePosition {
   readonly multiplier: number;
-  id: StockId;
+  id: StockId | null;
   author: string;
   createdAt: string;
   entries: StockPositionEntry[];
@@ -72,14 +92,16 @@ export class Position implements ResponsePosition {
   inPositionQuantityValue: number;
   instrument: StockInstrument;
   minPriceIncrement: number;
-  positionType: StockPosition;
+  positionType: StockPosition | null;
   priceIncrement: number;
-  stop: StockPositionStop;
+  stop: StockPositionStop | null;
   strategy: StockPositionStrategy;
   targets: StockPositionTarget[];
-  updatedAt: string;
+  updatedAt: string | null;
   currentTarget: StockPositionTarget | null;
   lastPrice: number;
+  subscribed: boolean = false;
+  dividends: StockPositionDividend[];
 
   inPositionPrice: number;
   inPositionProfitPercent: number;
@@ -92,7 +114,7 @@ export class Position implements ResponsePosition {
   constructor(data: ResponsePosition) {
     this.multiplier = data.positionType === 'short' ? -1 : 1;
 
-    this.id = data.id.toString();
+    this.id = data.id && data.id.toString();
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;
     this.positionType = data.positionType;
@@ -103,8 +125,13 @@ export class Position implements ResponsePosition {
     this.instrument = data.instrument;
     this.minPriceIncrement = data.minPriceIncrement;
     this.entries = data.entries;
-    this.targets = data.targets;
-    this.stop = data.stop;
+    this.targets = data.targets.map((item) => ({ ...item, totalPrice: item.price * item.amount }));
+    this.fullPositionQuantity = this._getFulPositionQuantity(data.targets);
+    this.stop = data.stop && {
+      ...data.stop,
+      amount: data.inPositionQuantity,
+      amountPercent: (data.inPositionQuantity / this.fullPositionQuantity) * 100,
+    };
     this.strategy = data.strategy;
     this.author = data.author;
     this.lastPrice = data.lastPrice;
@@ -112,11 +139,13 @@ export class Position implements ResponsePosition {
     this.inPositionResult = data.inPositionResult;
     this.inPositionProfitPercent = data.inPositionProfitPercent;
     this.result = data.result;
+    this.subscribed = data.subscribed;
+    this.dividends = data.dividends || [];
 
     // this.fullPositionQuantityValue = this._getFulPositionQuantity(data.targets);
     // this.fullPositionPrice = this._getFullPositionPrice(data.entries);
     this.entryAveragePrice = this._getAveragePrice(data.entries);
-    this.fullPositionQuantity = this._getFulPositionQuantity(data.targets);
+
     this.priceIncrement = getPriceIncrement(data.minPriceIncrement);
     this.currentTarget = this._getCurrentTarget(data.targets);
   }

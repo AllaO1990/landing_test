@@ -13,3 +13,9 @@ export interface AccountPortfolio {
   portfolio: string;
   portfolioId: number;
 }
+
+export interface AccountStrategies {
+  id: number;
+  key: string;
+  name: string;
+}

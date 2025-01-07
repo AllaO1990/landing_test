@@ -81,6 +81,7 @@ export class MainStore extends ComponentStore<any> {
     this.account.loadBrokers();
     this.account.loadCurrencies();
     this.account.loadPortfolios();
+    this.account.loadStrategies();
 
     this.idea.load(timerSource);
     this.position.load(timerSource);
@@ -230,11 +231,11 @@ export class MainStore extends ComponentStore<any> {
   onChangeIdea = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([
       source$.pipe(this._getIdFrom(EventSelected.IDEA)),
-      this._facade.ideaList.list$.pipe(filter((list: Idea[] | null): list is Idea[] => list !== null)),
+      this._facade.ideaList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
-      filter((combine: [StockEvent | null, Idea[]]): combine is [StockEvent, Idea[]] => combine[0] !== null),
-      tap(([event, list]: [StockEvent, Idea[]]) => {
-        const find = list.find((item: Idea) => item.id === event.id) || null;
+      filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
+      tap(([event, list]: [StockEvent, Position[]]) => {
+        const find = list.find((item: Position) => item.id === event.id) || null;
 
         this._updateSelected(find && find.instrument, null, find);
       })
@@ -261,7 +262,7 @@ export class MainStore extends ComponentStore<any> {
   private _updateSelected(
     instrument: StockInstrument | null = null,
     position: Position | null = null,
-    idea: Idea | null = null,
+    idea: Position | null = null,
     group: StockId | null = null
   ): void {
     this.selected.updateInstrument(instrument);

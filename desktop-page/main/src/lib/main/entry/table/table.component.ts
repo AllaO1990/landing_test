@@ -18,6 +18,7 @@ import { EntryHeaderItem } from '../entry.types';
 import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { SelectFacade } from 'stores/facades/select.facade';
+import { Position } from 'types/position';
 
 @Component({
   selector: 'vt-entry-table',
@@ -52,13 +53,13 @@ export class EntryTableComponent {
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
   public activeIdeaId$: Observable<StockId | null> = this._store.idea$.pipe(
-    map((result: Idea | null) => (result ? result.id : null)),
+    map((result: Position | null) => (result ? result.id : null)),
     distinctUntilChanged()
   );
 
-  @Input() data: Idea[] | null = null;
+  @Input() data: Position[] | null = null;
 
-  public trackById(index: number, item: Idea): number | string {
+  public trackById(index: number, item: Position): number | string | null {
     return item.id;
   }
 
@@ -66,7 +67,7 @@ export class EntryTableComponent {
     return index;
   }
 
-  public onDblclick(event: Event, item: Idea): void {
+  public onDblclick(event: Event, item: Position): void {
     event.preventDefault();
 
     this._queryParams.update({

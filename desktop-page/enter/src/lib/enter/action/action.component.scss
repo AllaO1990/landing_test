@@ -1,4 +1,4 @@
-:host {
+form {
   display: flex;
   flex-flow: column nowrap;
 
@@ -16,6 +16,7 @@
 
 .space {
   flex: 1 1;
+  min-height: 28px;
 }
 
 .header {
@@ -38,7 +39,9 @@
   background-color: var(--tui-background-base-alt, #F6F7FB);
 
   &__value {
-    margin: 0 var(--padding-2);
+    &:not(:first-child):not(:last-child) {
+      border-left: 1px solid var(--main-bg-color);
+    }
   }
 }
 
@@ -46,27 +49,51 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-
-  height: 28px;
 }
 
-.total, .header {
-  background-color: var(--block-bg-color);
+.total {
+  font-weight: 700;
 }
 
 .action {
-  padding: 0 var(--padding-2);
+  padding: var(--padding-2);
 }
 
 
 .row {
   &__item {
-    margin: 0 var(--padding-2);
+    padding: 0 var(--padding-2);
 
     overflow: hidden;
 
-    min-width: 60px;
+    min-width: 75px;
     max-width: 100px;
+  }
+
+  &__right {
+    text-align: right;
+  }
+
+  &__center {
+    text-align: center;
+  }
+
+  &__space {
+    flex: 1;
+  }
+
+  &__actions {
+    display: flex;
+
+    border-left: 1px solid var(--main-bg-color);
+
+    button {
+      margin-left: var(--padding-2);
+    }
+
+    [tuiIconButton][data-size=xs]:before {
+      font-size: .8rem;
+    }
   }
 }
 

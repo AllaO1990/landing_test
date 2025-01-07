@@ -19,7 +19,7 @@ import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Timeframe } from 'types/timeframe';
 import { Params } from '@angular/router';
-import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
+import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -217,6 +217,10 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<DataList<AccountPortfolio>>>('https://trade.gpn.dev/api/v1/account/portfolios', {
       params,
     });
+  }
+
+  getAccountStrategies(): Observable<Response<DataList<AccountStrategies>>> {
+    return this._http.get<Response<DataList<AccountStrategies>>>('https://trade.gpn.dev/api/v1/ideas/strategies');
   }
 
   createAccountPortfolio(portfolio: string): Observable<Response<AccountPortfolio>> {

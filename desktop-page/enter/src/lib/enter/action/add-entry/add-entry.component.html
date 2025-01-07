@@ -1,0 +1,67 @@
+<form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <div class="form__header">
+    <h3>Добавить Вход</h3>
+  </div>
+  <div class="form__form">
+    <tui-input-date
+      [tuiTextfieldCleaner]="true"
+      class="form__control"
+      formControlName="date"
+      tuiTextfieldSize="s">
+      Выбрать дату
+    </tui-input-date>
+    <tui-input-number
+      tuiAutoFocus
+      class="form__control"
+      [tuiTextfieldSize]="size"
+      [tuiNumberFormat]="{precision: 8}"
+      formControlName="price">
+      Цена
+      <input
+        autocomplete="off"
+        name="price"
+        tuiTextfieldLegacy
+      />
+    </tui-input-number>
+    <tui-input-number
+      class="form__control"
+      [tuiTextfieldSize]="size"
+      [tuiNumberFormat]="{precision: 8}"
+      formControlName="quantity">
+      Количество
+      <input
+        autocomplete="off"
+        name="amount"
+        tuiTextfieldLegacy
+      />
+    </tui-input-number>
+    <tui-select class="form__control" [valueContent]="broker" [tuiTextfieldSize]="size" formControlName="broker">
+      Брокер
+      <input autocomplete="off" tuiTextfieldLegacy />
+      <tui-data-list-wrapper *tuiDataList [itemContent]="broker" [items]="brokers$ | async" />
+    </tui-select>
+  </div>
+  <div class="form__actions">
+    <button
+      class="form__action"
+      [size]="size"
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="onCancel($event)">
+      Отменить
+    </button>
+    <button
+      class="form__action"
+      [size]="size"
+      [disabled]="form.invalid"
+      tuiButton
+      type="submit">
+      Добавить
+    </button>
+  </div>
+</form>
+
+<ng-template #broker let-item>
+  {{ item.broker }}
+</ng-template>

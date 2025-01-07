@@ -9,7 +9,6 @@ import { MAP_COLOR_CONSOLIDATION } from 'types/color';
 import { WithQueue } from '../core/with-queue.abstract';
 import { getJoinUniq } from 'utils/get-join-uniq';
 import { Position } from 'types/position';
-import { Idea } from 'types/idea';
 import * as Highcharts from 'highcharts/highstock';
 
 export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesState> {
@@ -33,14 +32,14 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
 
   readonly load = this.effect((stream$: Observable<null | any>) =>
     stream$.pipe(
-      switchMap((params: Position | Idea | null) =>
+      switchMap((params: Position | null) =>
         this._getConsolidationZones(params).pipe(tap((data) => this.updateZone(data)))
       )
     )
   );
 
-  private _getConsolidationZones(params: Position | Idea | null): Observable<any> {
-    if (params === null) {
+  private _getConsolidationZones(params: Position | null): Observable<any> {
+    if (params === null || params.id === null) {
       return of(null);
     }
 

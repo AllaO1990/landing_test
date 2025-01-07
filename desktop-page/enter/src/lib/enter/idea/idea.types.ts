@@ -1,5 +1,15 @@
 import { StockPositionEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 
+export interface EventIdeaSelected {
+  amount: number;
+  entry: number;
+  goals: {
+    amount: number;
+    goal: number;
+  }[];
+  stop: number;
+}
+
 export interface IdeaTotalTarget {
   profitPercent: number;
   profit: number;

@@ -1,8 +1,7 @@
 import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe, TuiGroup, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
-import { Idea } from 'types/idea';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { InstrumentComponent } from '../instrument/instrument.component';
 import { ValidDateComponent } from './valid-date/valid-date.component';
@@ -13,10 +12,22 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { Position } from 'types/position';
 import { AccountFacade } from 'stores/facades/account.facade';
-import { Observable } from 'rxjs';
-import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
-import { tap } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  startWith,
+  Subject,
+  switchMap,
+} from 'rxjs';
+import { AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { map } from 'rxjs/operators';
 import { PortfolioComponent } from '../portfolio';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StockInstrument } from 'types/stock';
 
 type Item = { id: string; name: string };
 type StrategyItem = { id: string[]; name: string };
@@ -48,46 +59,40 @@ type StrategyItem = { id: string[]; name: string };
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnterSidebarComponent {
+export class EnterSidebarComponent implements AfterViewInit {
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
-  private _data: Idea | Position | null = null;
-  private _edit = false;
+  private _data: Position | null = null;
 
   readonly strategy: StrategyItem[] = STOCK_STRATEGY_LIST;
   readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
   readonly constants = SIDEBAR_CONSTANTS;
 
-  readonly brokers$: Observable<null | AccountBroker[]> = this._accountStore.brokers$;
-  readonly currencies$: Observable<null | AccountCurrency[]> = this._accountStore.currencies$.pipe(
-    tap((list: AccountCurrency[] | null) => {
-      if (list !== null && this.controlCurrency.value === null) {
-        this.controlCurrency.patchValue(list[0], { emitEvent: false });
-      }
-    })
-  );
-  readonly portfolios$: Observable<null | AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
-    tap((list: AccountPortfolio[] | null) => {
-      if (list !== null && this.controlPortfolio.value === null) {
-        this.controlPortfolio.patchValue(list[0], { emitEvent: false });
-      }
-    })
-  );
+  readonly instrument$: Subject<null | StockInstrument> = new BehaviorSubject<null | StockInstrument>(null);
+  readonly strategies$: Observable<null | AccountStrategies[]> = this._accountStore.strategies$;
+  readonly currencies$: Observable<null | AccountCurrency[]> = this._accountStore.currencies$
+    .pipe
+    // takeUntilDestroyed(this._destroyRef),
+    // tap((list: AccountCurrency[] | null) => {
+    //   if (list !== null && this.formControlCurrency.value === null) {
+    //     this.formControlCurrency.patchValue(list[0], { emitEvent: true });
+    //   }
+    // })
+    ();
 
   readonly size = 's';
 
-  form: FormGroup = new FormGroup(
-    {
-      currencyId: new FormControl({ value: null, disabled: true }),
-      portfolioId: new FormControl({ value: null, disabled: true }, Validators.required),
-      parentId: new FormControl({ value: null, disabled: true }, Validators.required),
-      instrumentId: new FormControl({ value: null, disabled: true }, Validators.required),
-      expirationDate: new FormControl({ value: null, disabled: true }),
-      strategyId: new FormControl({ value: null, disabled: true }),
-      positionType: new FormControl({ value: null, disabled: true }),
-      comment: new FormControl({ value: null, disabled: true }),
-    },
-    Validators.required
-  );
+  readonly form: FormGroup = new FormGroup({
+    currencyId: new FormControl({ value: null, disabled: true }),
+    portfolioId: new FormControl({ value: null, disabled: true }, Validators.required),
+    parentId: new FormControl({ value: null, disabled: true }, Validators.required),
+    instrumentId: new FormControl({ value: null, disabled: true }, Validators.required),
+    expirationDate: new FormControl({ value: null, disabled: true }),
+    strategyId: new FormControl({ value: null, disabled: true }),
+    positionType: new FormControl({ value: 'long', disabled: true }),
+    comment: new FormControl({ value: '', disabled: true }),
+    watch: new FormControl(true),
+  });
 
   get controlPortfolio(): FormControl {
     return this.form.get('portfolioId') as FormControl;
@@ -105,40 +110,120 @@ export class EnterSidebarComponent {
     return this.form.get('currencyId') as FormControl;
   }
 
-  public controlFilterTiming: FormControl<Item[] | null> = new FormControl(null);
-
-  public controlFilterStrategy: FormControl<Item[] | null> = new FormControl(null);
-
-  public readonly controlFilterPositionType: FormControl<Item[] | null> = new FormControl(null);
-
-  public controlTextArea = new FormControl(null);
-
-  @Input() set edit(value: boolean) {
-    this._edit = value;
-    this.form[value ? 'enable' : 'disable']();
+  get controlInstrument(): FormControl {
+    return this.form.get('instrumentId') as FormControl;
   }
 
-  get edit(): boolean {
-    return this._edit;
+  get controlParent(): FormControl {
+    return this.form.get('parentId') as FormControl;
   }
+
+  readonly formControlPortfolio = new FormControl({ value: null, disabled: true }, Validators.required);
+  readonly formControlCurrency = new FormControl<AccountCurrency | null>(
+    {
+      value: null,
+      disabled: true,
+    },
+    Validators.required
+  );
+  readonly formControlStrategy = new FormControl<null | StrategyItem>(
+    {
+      value: null,
+      disabled: true,
+    },
+    Validators.required
+  );
 
   @Input()
-  set data(value: Idea | Position | null) {
-    this._data = value;
+  set data(value: { type: string; data: Position } | null) {
+    const action = value && value.type === 'instrument' ? 'enable' : 'disable';
 
-    if (value) {
-      this.controlFilterTiming.disable();
-      console.log(this.positionType.find((item: { id: string }) => item.id === value.positionType) || null);
+    this.form[action]();
+    this.formControlPortfolio[action]();
 
-      this.controlStrategy.patchValue((value.strategy && value.strategy.type) || null);
-      this.controlPositionType.patchValue(value.positionType || null);
+    if (value && value.data) {
+      this._data = value.data;
+      this.instrument$.next(value.data.instrument);
+      this.controlParent.patchValue(value.data.id ? +value.data.id : null);
+      this.controlPositionType.patchValue(value.data.positionType || null);
+      this.controlInstrument.patchValue(value.data.instrument.id);
+
+      const strategy =
+        this.strategy.find((item: { id: string[] }) => item.id.includes(value.data.strategy.type)) || null;
+
+      this.formControlStrategy.patchValue(strategy);
     }
   }
 
-  get data() {
+  @Output() selected: Observable<any> = this.form.valueChanges.pipe(debounceTime(100));
+
+  get value() {
     return this._data;
   }
 
-  readonly stringifyPortfolio: TuiStringHandler<AccountPortfolio> = (item: AccountPortfolio) => item.portfolio;
+  ngAfterViewInit(): void {
+    this._init();
+  }
+
   readonly stringifyCurrency: TuiStringHandler<AccountCurrency> = (item: AccountCurrency) => item.currencySymbol;
+
+  private _init(): void {
+    combineLatest([
+      this.currencies$.pipe(
+        filter((currencies: AccountCurrency[] | null): currencies is AccountCurrency[] => currencies !== null)
+      ),
+      this.instrument$.pipe(
+        filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null)
+      ),
+    ])
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe(([currencies, instrument]: [AccountCurrency[], StockInstrument]) => {
+        const currency = currencies.find((item: AccountCurrency) => item.currency === instrument.currency) || null;
+
+        if (!currencies && this.formControlCurrency.value === null) {
+          this.formControlCurrency.patchValue(currencies[0]);
+          return;
+        }
+
+        if (this.formControlCurrency.value === null) {
+          this.formControlCurrency.patchValue(currency);
+        }
+      });
+
+    this.formControlPortfolio.valueChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        startWith(this.formControlPortfolio.value),
+        filter((value: AccountPortfolio | null): value is AccountPortfolio => value !== null),
+        distinctUntilChanged((a, b) => a.portfolioId === b.portfolioId)
+      )
+      .subscribe((result: AccountPortfolio) => {
+        this.controlPortfolio.patchValue(result ? result.portfolioId : null);
+      });
+
+    this.formControlCurrency.valueChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        startWith(this.formControlCurrency.value),
+        filter((value: AccountCurrency | null): value is AccountCurrency => value !== null),
+        distinctUntilChanged((a, b) => a.currencyId === b.currencyId)
+      )
+      .subscribe((result: AccountCurrency) => {
+        this.controlCurrency.patchValue(result.currencyId);
+      });
+
+    this.strategies$
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        filter((value: AccountStrategies[] | null): value is AccountStrategies[] => value !== null),
+        switchMap((strategies: AccountStrategies[]) =>
+          this.formControlStrategy.valueChanges.pipe(
+            startWith(this.formControlStrategy.value),
+            filter((value: StrategyItem | null): value is StrategyItem => value !== null),
+            map((value: StrategyItem) => strategies.find((item: AccountStrategies) => item.key === value.id[0]) || null)
+          )
+        )
+      )
+      .subscribe((result: AccountStrategies | null) => this.controlStrategy.patchValue(result ? result.id : null));
+  }
 }

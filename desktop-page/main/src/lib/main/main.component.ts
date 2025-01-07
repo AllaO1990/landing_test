@@ -2,7 +2,6 @@ import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
-import { Idea } from 'types/idea';
 import { MainService } from './main.service';
 import { TuiBreakpointService } from '@taiga-ui/core';
 import { Position } from 'types/position';
@@ -63,8 +62,8 @@ export class MainComponent implements AfterViewInit {
 
   public readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
-  public readonly ideaList$: Observable<Idea[] | null> = this._idea.list$.pipe(
-    map((list: Idea[] | null) => list && this._service.sortIdeaList(list))
+  public readonly ideaList$: Observable<Position[] | null> = this._idea.list$.pipe(
+    map((list: Position[] | null) => list && this._service.sortIdeaList(list))
   );
 
   public readonly positionList$: Observable<Position[] | null> = this._position.list$;
