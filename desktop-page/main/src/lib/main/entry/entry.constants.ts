@@ -44,7 +44,7 @@ export const ENTRY_HEADER: EntryHeaderItem[] = [
   {
     name: 'stop',
     label: `Стоп <br> %/% депо`,
-    sorter: (a: ResponseIdea, b: ResponseIdea) => sortNumber(a.stop.price, b.stop.price),
+    sorter: (a: ResponseIdea, b: ResponseIdea) => sortNumber(a.stop.price || 0, b.stop.price || 0),
   },
   {
     name: 'deposit',

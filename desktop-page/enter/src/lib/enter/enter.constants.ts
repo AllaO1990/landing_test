@@ -43,7 +43,7 @@ export const MOBILE_LIST: {
     text: 'График',
   },
   {
-    icon: '@tui.target',
+    icon: '@tui.add-target',
     text: 'Идея',
   },
   {

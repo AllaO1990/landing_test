@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ENTRY_CONSTANTS } from './entry.constants';
-import { Idea } from 'types/idea';
 import { EntryEnums } from './entry.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
@@ -14,9 +13,10 @@ import { QUERY_PARAMS } from 'tokens/desktop';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockInstrument } from 'types/stock';
+import { Position } from 'types/position';
 
 interface FilterListItem {
-  id: string;
+  id: string[];
   name: string;
   disabled: boolean;
 }
@@ -28,7 +28,7 @@ interface FilterListItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryComponent {
-  private readonly _data$: Subject<Idea[] | null> = new BehaviorSubject<Idea[] | null>(null);
+  private readonly _data$: Subject<Position[] | null> = new BehaviorSubject<Position[] | null>(null);
   private readonly _store: SelectFacade = inject(SelectFacade);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
@@ -42,8 +42,8 @@ export class EntryComponent {
   public filterStrategy: FilterListItem[] = STOCK_STRATEGY_LIST;
   readonly size = 's';
 
-  public readonly data$: Observable<Idea[] | null> = this._data$.asObservable().pipe(
-    switchMap((data: Idea[] | null) =>
+  public readonly data$: Observable<Position[] | null> = this._data$.asObservable().pipe(
+    switchMap((data: Position[] | null) =>
       combineLatest([
         this.controlSearch.valueChanges.pipe(
           map((value: string) => value.trim().toLowerCase()),
@@ -62,23 +62,27 @@ export class EntryComponent {
   disabledItemHandler: TuiBooleanHandler<FilterListItem> = (item: FilterListItem) => item.disabled;
 
   @Input()
-  set data(value: Idea[] | null) {
-    this.filterStock = this._updateFilterList(MAIN_FILTER_STOCK, value, (item: Idea) => item.instrument.type);
-    this.filterStrategy = this._updateFilterList(STOCK_STRATEGY_LIST, value, (item: Idea) => item.strategy.type);
+  set data(value: Position[] | null) {
+    this.filterStock = this._updateFilterList(MAIN_FILTER_STOCK, value, (item: Position) => item.instrument.type);
+    this.filterStrategy = this._updateFilterList(STOCK_STRATEGY_LIST, value, (item: Position) => item.strategy.type);
 
     this._data$.next(value);
   }
 
-  private _updateFilterList(list: FilterListItem[], data: Idea[] | null, fn: (d: Idea) => string): FilterListItem[] {
-    const types: string[] = [...new Set((data || []).map((item: Idea) => fn(item)))];
+  private _updateFilterList(
+    list: FilterListItem[],
+    data: Position[] | null,
+    fn: (d: Position) => string
+  ): FilterListItem[] {
+    const types: string[] = [...new Set((data || []).map((item: Position) => fn(item)))];
 
     return list.map((item: FilterListItem) => ({
       ...item,
-      disabled: !types.includes(item.id),
+      disabled: !types.some((type: string) => item.id.includes(type)),
     }));
   }
 
-  private _searchData(data: Idea[] | null, search: string | null): Idea[] | null {
+  private _searchData(data: Position[] | null, search: string | null): Position[] | null {
     if (data === null) {
       return data;
     }
@@ -87,7 +91,7 @@ export class EntryComponent {
       return data;
     }
 
-    return data.filter((item: Idea) => {
+    return data.filter((item: Position) => {
       const concat = [item.instrument.ticker, item.instrument.name].map((item: string) => item.toLowerCase()).join('⁂');
 
       return concat.indexOf(search) !== -1;
@@ -95,18 +99,17 @@ export class EntryComponent {
   }
 
   private _filterData(
-    data: Idea[] | null,
+    data: Position[] | null,
     valueStock: FilterListItem[],
     valueStrategy: FilterListItem[]
-  ): Idea[] | null {
+  ): Position[] | null {
     if (data === null) {
       return data;
     }
-
     const mapStock = this._getObject(valueStock);
     const mapStrategy = this._getObject(valueStrategy);
 
-    return data.filter((item: Idea) => {
+    return data.filter((item: Position) => {
       return (
         (!valueStock.length || mapStock[item.instrument.type]) &&
         (!valueStrategy.length || mapStrategy[item.strategy.type])
@@ -118,7 +121,7 @@ export class EntryComponent {
     return list.reduce(
       (acc: { [key: string]: boolean }, item: FilterListItem) => ({
         ...acc,
-        [item.id]: true,
+        ...item.id.reduce((common, uid: string) => ({ ...common, [uid]: true }), {}),
       }),
       {}
     );

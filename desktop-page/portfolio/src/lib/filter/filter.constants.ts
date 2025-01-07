@@ -5,22 +5,22 @@ export const FILTER_CONSTANTS = {
 };
 
 export const PORTFOLIO_LIST = [
-  { name: 'Все', value: 'all' },
-  { name: 'Ребёнок 1', value: 'child' },
-  { name: 'Игральный', value: 'scalping' },
+  { name: 'Все', id: 'all' },
+  { name: 'Ребёнок 1', id: 'child' },
+  { name: 'Игральный', id: 'scalping' },
 ];
 
 export const BROKER_LIST = [
-  { name: 'Все', value: 'all' },
-  { name: 'Тинькофф', value: 'tinkoff' },
-  { name: 'Альфа', value: 'alfa' },
-  { name: 'ВТБ', value: 'vtb' },
+  { name: 'Все', id: 'all' },
+  { name: 'Тинькофф', id: 'tinkoff' },
+  { name: 'Альфа', id: 'alfa' },
+  { name: 'ВТБ', id: 'vtb' },
 ];
 
 export const CURRENCY_LIST = [
-  { name: '₽', value: 'RUB' },
-  { name: '$', value: 'USD' },
-  { name: '€', value: 'EUR' },
-  { name: '£', value: 'CHF' },
-  { name: '¥', value: 'JPY' },
+  { name: '₽', id: 'RUB' },
+  { name: '$', id: 'USD' },
+  { name: '€', id: 'EUR' },
+  { name: '£', id: 'CHF' },
+  { name: '¥', id: 'JPY' },
 ];

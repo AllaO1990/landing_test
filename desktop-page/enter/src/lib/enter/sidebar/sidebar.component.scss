@@ -44,10 +44,16 @@
     border-bottom: 1px solid var(--main-bg-color);
   }
 
-  &__implementation, &__strategy, &__timing, &__description {
+  &__portfolio, &__broker, &__implementation, &__strategy, &__timing, &__description {
     padding: var(--padding-4) 0;
 
     border-bottom: 1px solid var(--main-bg-color);
+  }
+
+  &__portfolio {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
   }
 
   &__comment {
@@ -76,6 +82,10 @@
     padding-left: var(--padding-4);
     padding-right: var(--padding-4);
   }
+}
+
+.item {
+  margin: 0 var(--padding-1) var(--padding-1) 0;
 }
 
 .action {
@@ -126,5 +136,17 @@
     font-size: 13px;
     font-weight: 400;
     line-height: 15px;
+  }
+}
+
+.portfolio {
+  &__select {
+    flex: 1;
+  }
+
+  &__currency {
+    width: 60px;
+
+    margin-left: var(--padding-4);
   }
 }

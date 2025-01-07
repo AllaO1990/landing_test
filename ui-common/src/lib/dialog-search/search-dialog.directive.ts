@@ -28,7 +28,7 @@ export class SearchDialogDirective {
 
     this._dialogService
       .open<StockInstrument | null>(this._loadComponent, {
-        appearance: 'search-dialog',
+        appearance: 'dialog-search',
       })
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((instrument: StockInstrument | null) => this.selected.emit(instrument));

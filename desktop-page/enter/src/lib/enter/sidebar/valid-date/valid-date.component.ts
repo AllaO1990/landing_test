@@ -60,13 +60,13 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.form[isDisabled ? 'disable' : 'enable']();
+    this.controlCheckbox[isDisabled ? 'disable' : 'enable']();
   }
 
   ngOnInit(): void {
     this.controlCheckbox.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlCheckbox.value), distinctUntilChanged())
-      .subscribe((result: boolean) => this.controlCalendar[result ? 'disable' : 'enable']());
+      .subscribe((result: boolean) => this.controlCalendar[result ? 'disable' : 'enable']({ emitEvent: false }));
 
     this.form.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.form.value))
@@ -76,7 +76,7 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
           return;
         }
 
-        this.onChange(result.calendar.toString());
+        this.onChange(result.calendar.toJSON());
       });
   }
 

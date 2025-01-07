@@ -1,0 +1,48 @@
+::ng-deep {
+  lib-dialog[appearance="dialog-remove"] {
+    margin: auto;
+    border: none;
+    border-radius: 0;
+  }
+}
+
+.dialog {
+  display: flex;
+  flex-flow: column nowrap;
+
+  width: 100vw;
+
+  font: var(--tui-font-text-m);
+  background-color: var(--block-bg-color);
+
+  &__content {
+    margin: var(--padding-2);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    margin: var(--padding-2);
+  }
+
+  &__action {
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .dialog {
+    width: 25vw;
+    max-width: 280px;
+
+    font: var(--tui-font-text-s);
+
+    &__title {
+      font: var(--tui-font-text-m);
+    }
+  }
+}

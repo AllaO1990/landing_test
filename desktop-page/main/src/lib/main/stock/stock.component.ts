@@ -30,8 +30,8 @@ import { LoaderComponent } from '@ui/components/loader';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { StockListComponent } from './list';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
-import { SearchDialogComponent } from 'ui-common/lib/search-dialog';
 import { StockEvent } from 'types/stock-event';
+import { SearchDialogComponent } from 'ui-common/lib/dialog-search';
 
 type IsRename = 'edit' | 'new' | false;
 
@@ -150,12 +150,12 @@ export class StockComponent implements AfterViewInit {
   async onAddInstrument(event: Event): Promise<void> {
     event.preventDefault();
 
-    this._loadComponent = await import('ui-common/lib/search-dialog')
+    this._loadComponent = await import('ui-common/lib/dialog-search')
       .then((m) => m.SearchDialogComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
     this.showDialog<StockInstrument | null, null>(this._loadComponent, {
-      appearance: 'search-dialog',
+      appearance: 'dialog-search',
       data: null,
     }).subscribe((instrument: StockInstrument | null) => {
       if (instrument !== null && this.controlGroup.value !== null) {

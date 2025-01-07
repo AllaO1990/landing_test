@@ -13,7 +13,7 @@ import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/li
 import { StockListFacade } from 'stores/facades/stock-list.facade';
 
 @Component({
-  selector: 'lib-search-dialog',
+  selector: 'lib-dialog-search',
   standalone: true,
   imports: [
     TuiInputModule,

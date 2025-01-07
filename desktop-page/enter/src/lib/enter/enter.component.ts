@@ -4,7 +4,17 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import { combineLatest, filter, Observable, of, shareReplay, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  take,
+} from 'rxjs';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
@@ -17,10 +27,12 @@ import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
-import { StockInstrument } from 'types/stock';
-import { SearchDialogDirective } from 'ui-common/lib/search-dialog';
+import { StockInstrument, StockPosition } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
+import { Position } from 'types/position';
+import { StockStrategyEnums } from 'types/stock-strategy';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -45,7 +57,6 @@ export interface TabItem {
     TuiTabs,
     TuiIcon,
     InstrumentComponent,
-    // ChartCandlestickComponent,
     LoaderComponent,
     ChartCandlestickComponent,
     SearchDialogDirective,
@@ -58,40 +69,49 @@ export class VtEnterComponent {
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  isEdit = false;
-
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
 
-  readonly data$: Observable<any> = this._select.event$.pipe(
+  readonly data$: Observable<{ type: string; data: Position | null }> = this._select.event$.pipe(
     filter((event: StockEvent | null): event is StockEvent => event !== null),
+    debounceTime(300),
+    distinctUntilChanged((a: StockEvent, b: StockEvent) => a.id === b.id),
     switchMap((event: StockEvent) => {
       if (event.type === EventSelected.POSITION) {
-        return this._select.position$;
+        return this._select.position$.pipe(
+          filter((position: Position | null): position is Position => position !== null),
+          map((data: Position) => ({ type: 'position', data }))
+        );
       }
 
       if (event.type === EventSelected.IDEA) {
-        return this._select.idea$;
+        return this._select.idea$.pipe(
+          filter((idea: Position | null): idea is Position => idea !== null),
+          map((data: Position) => ({ type: 'idea', data }))
+        );
       }
 
       if (event.type === EventSelected.STOCK_LIST) {
-        this.isEdit = true;
-
         return this._select.instrument$.pipe(
-          map((instrument: StockInstrument | null) => ({
-            instrument,
-            createdAt: new Date().toISOString(),
-            inPositionDepositShare: 0,
-          }))
+          filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
+          map((instrument: StockInstrument) => this._createDefaultPosition(instrument)),
+          map((data: Position) => ({ type: 'instrument', data }))
         );
       }
 
       return of(null);
     }),
-    tap((data: any) => (this.isDisabled = data === null)),
+    tap((data: any | null) => (this.isDisabled = data === null)),
+    take(1),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
+  readonly isShowSearch$: Observable<boolean> = this.data$.pipe(
+    map((data: { type: string; data: Position | null }) => data.type === 'instrument'),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   public readonly breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   public readonly orientation$: Observable<ScreenOrientation> = inject(TUI_WINDOW_SIZE).pipe(
     map(({ width, height }): ScreenOrientation => (width > height ? 'landscape' : 'portrait')),
@@ -115,7 +135,7 @@ export class VtEnterComponent {
   onSelect(event: StockInstrument | null): void {
     if (event !== null) {
       this._queryParams.update({
-        // type: EventSelected.STOCK_LIST,
+        type: EventSelected.STOCK_LIST,
         id: event.id,
         // dialog: 'visible',
       });
@@ -147,5 +167,41 @@ export class VtEnterComponent {
 
     this.activeItemIndex = 0;
     return null;
+  }
+
+  onSelectedSidebar(event: any): void {
+    console.log(event);
+  }
+
+  private _createDefaultPosition(instrument: StockInstrument): Position {
+    return new Position({
+      id: '',
+      instrument,
+      createdAt: new Date().toISOString(),
+      inPositionDepositShare: 0,
+      entries: [],
+      targets: [],
+      dividends: [],
+      stop: null,
+      updatedAt: null,
+      inPosition: false,
+      inPositionQuantity: 0,
+      positionType: StockPosition.LONG,
+      lastPrice: 0,
+      minPriceIncrement: 0,
+      strategy: {
+        successProbability: 0,
+        type: StockStrategyEnums.USER,
+      },
+      author: 'user',
+      inPositionPrice: 0,
+      inPositionResult: 0,
+      inPositionProfitPercent: 0,
+      result: {
+        profitPercent: 0,
+        profitPrice: 0,
+      },
+      subscribed: true,
+    });
   }
 }

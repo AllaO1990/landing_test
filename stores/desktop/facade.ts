@@ -11,8 +11,10 @@ import { StockPositionStore } from './plugins/stock-position.store';
 import { StockIdeaStore } from './plugins/stock-idea.store';
 import { StockListStore } from 'stores/plugins/stock-list.store';
 import { StockPriceStore } from 'stores/plugins/stock-price.store';
+import { AccountStore } from 'stores/plugins/account.store';
 
 export class FacadeStore {
+  readonly account = this._buildAccount();
   readonly stockList = this._buildStockList();
   readonly positionList = this._buildStockPosition();
   readonly ideaList = this._buildStockIdea();
@@ -27,6 +29,10 @@ export class FacadeStore {
   readonly atr = this._buildIndicatorAtr();
 
   constructor(private readonly _api: DesktopService) {}
+
+  private _buildAccount() {
+    return new AccountStore(this._api);
+  }
 
   private _buildIndicatorAtr() {
     return new IndicatorAtrStore(this._api);

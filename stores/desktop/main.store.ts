@@ -19,7 +19,7 @@ import { StockEvent } from 'types/stock-event';
 import { filter, map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { ComponentStore } from '@ngrx/component-store';
-import { StockId, StockInstrument, StockListItems } from 'types/stock';
+import { StockId, StockInstrument, StockListItems, StockPrice, WithLastPrice } from 'types/stock';
 import { Position } from 'types/position';
 import { Idea } from 'types/idea';
 import { DateRange } from 'types/date-range';
@@ -46,6 +46,7 @@ export class MainStore extends ComponentStore<any> {
 
   private readonly _facade = new FacadeStore(this.api);
 
+  readonly account = this._facade.account;
   readonly selected = new SelectStore();
   readonly stock = this._facade.stockList;
   readonly idea = this._facade.ideaList;
@@ -76,6 +77,11 @@ export class MainStore extends ComponentStore<any> {
 
     this.stock.loadList();
     this.stock.loadGroup();
+
+    this.account.loadBrokers();
+    this.account.loadCurrencies();
+    this.account.loadPortfolios();
+    this.account.loadStrategies();
 
     this.idea.load(timerSource);
     this.position.load(timerSource);
@@ -225,11 +231,12 @@ export class MainStore extends ComponentStore<any> {
   onChangeIdea = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([
       source$.pipe(this._getIdFrom(EventSelected.IDEA)),
-      this._facade.ideaList.list$.pipe(filter((list: Idea[] | null): list is Idea[] => list !== null)),
+      this._facade.ideaList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
-      filter((combine: [StockEvent | null, Idea[]]): combine is [StockEvent, Idea[]] => combine[0] !== null),
-      tap(([event, list]: [StockEvent, Idea[]]) => {
-        const find = list.find((item: Idea) => item.id === event.id) || null;
+      filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
+      tap(([event, list]: [StockEvent, Position[]]) => {
+        const find = list.find((item: Position) => item.id === event.id) || null;
+
         this._updateSelected(find && find.instrument, null, find);
       })
     )
@@ -250,10 +257,12 @@ export class MainStore extends ComponentStore<any> {
     )
   );
 
+  getPriceOfInstruments = (list: StockId[]): Observable<StockPrice<WithLastPrice>> => this.api.getActiveStock(list);
+
   private _updateSelected(
     instrument: StockInstrument | null = null,
     position: Position | null = null,
-    idea: Idea | null = null,
+    idea: Position | null = null,
     group: StockId | null = null
   ): void {
     this.selected.updateInstrument(instrument);

@@ -15,7 +15,7 @@ import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
 
 interface FilterListItem {
-  id: string;
+  id: string[];
   name: string;
   disabled: boolean;
 }
@@ -106,7 +106,7 @@ export class OutComponent {
 
     return list.map((item: FilterListItem) => ({
       ...item,
-      disabled: !types.includes(item.id),
+      disabled: !types.some((type) => item.id.includes(type)),
     }));
   }
 
@@ -150,7 +150,7 @@ export class OutComponent {
     return list.reduce(
       (acc: { [key: string]: boolean }, item: FilterListItem) => ({
         ...acc,
-        [item.id]: true,
+        ...item.id.reduce((common, uid: string) => ({ ...common, [uid]: true }), {}),
       }),
       {}
     );

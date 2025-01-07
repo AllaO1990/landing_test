@@ -14,7 +14,11 @@
     <ng-container
       *cdkVirtualFor="let item of list; template: template">
     </ng-container>
-    <ng-container *polymorpheusOutlet="footer as text">{{ text }}</ng-container>
+    <ng-container
+      *ngIf="header"
+      [ngTemplateOutlet]="footerTemplate"
+      [ngTemplateOutletContext]="{ viewport: viewport }">
+    </ng-container>
   </cdk-virtual-scroll-viewport>
 </tui-scrollbar>
 
@@ -31,5 +35,13 @@
     class="sticky"
     [style.top.px]="-viewport['_renderedContentOffset']">
     <ng-container *polymorpheusOutlet="header as text">{{ text }}</ng-container>
+  </div>
+</ng-template>
+
+<ng-template #footerTemplate let-viewport="viewport">
+  <div
+    class="sticky"
+    [style.bottom.px]="0">
+    <ng-container *polymorpheusOutlet="footer as text">{{ text }}</ng-container>
   </div>
 </ng-template>

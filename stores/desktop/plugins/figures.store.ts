@@ -46,7 +46,7 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
   });
 
   private _getFigures(data: Position | Idea | null): Observable<any> {
-    if (data === null) {
+    if (data === null || data.id === null) {
       return of(null);
     }
 

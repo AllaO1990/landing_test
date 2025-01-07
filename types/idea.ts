@@ -1,5 +1,5 @@
 import { StockId, StockInstrument, StockPosition } from './stock';
-import { StockPositionEntry, StockPositionStop, StockPositionTarget } from './position';
+import { StockPositionEntry, StockPositionStop, StockPositionStrategy, StockPositionTarget } from './position';
 
 export interface ResponseListIdea {
   items: ResponseIdea[];
@@ -7,12 +7,12 @@ export interface ResponseListIdea {
 }
 
 export interface ResponseIdea {
+  id: StockId;
+  createdAt: string;
   updatedAt: string;
   inPosition: boolean;
   inPositionQuantity: number;
   inPositionDepositShare: number;
-  id: StockId;
-  createdAt: string;
   positionType: StockPosition | string;
   instrument: StockInstrument;
   lastPrice: number;
@@ -20,11 +20,15 @@ export interface ResponseIdea {
   entries: StockPositionEntry[];
   targets: StockPositionTarget[];
   stop: StockPositionStop;
-  strategy: {
-    successProbability: number;
-    type: string;
-  };
+  strategy: StockPositionStrategy;
   author: string;
+  inPositionPrice: number;
+  inPositionResult: number;
+  inPositionProfitPercent: number;
+  result: {
+    profitPercent: number;
+    profitPrice: number;
+  };
 }
 
 export enum IdeaAuthor {

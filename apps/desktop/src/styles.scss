@@ -110,3 +110,9 @@ tui-root {
     transform: rotateY(360deg);
   }
 }
+
+lib-dialog[appearance="dialog-block"] {
+  margin: auto;
+  border: none;
+  border-radius: 0;
+}

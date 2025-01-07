@@ -7,8 +7,8 @@ import { QueryParams } from 'utils/query-params';
 import { EventSelected } from 'types/events';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { SelectFacade } from 'stores/facades/select.facade';
-import { SearchDialogDirective } from 'ui-common/lib/search-dialog';
 import { LoaderComponent } from '@ui/components/loader';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 
 @Component({
   selector: 'lib-toolbar-search',

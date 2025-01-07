@@ -1,0 +1,81 @@
+<div class="portfolio" [formGroup]="form" *ngIf="(list$ | async) as list; else load">
+  <div class="portfolio__container" *ngIf="!isAdd; else add">
+    <tui-select
+      class="portfolio__control"
+      [stringify]="stringify"
+      [tuiTextfieldSize]="size"
+      formControlName="portfolio"
+      [tuiTextfieldLabelOutside]="true">
+      <tui-data-list-wrapper
+        *tuiDataList
+        [size]="size"
+        [items]="list"
+        [itemContent]="content">
+      </tui-data-list-wrapper>
+    </tui-select>
+    <button
+      class="portfolio__action"
+      [size]="size"
+      [disabled]="isDisabled"
+      iconStart="@tui.plus"
+      tuiIconButton
+      appearance="secondary"
+      type="button"
+      (click)="onAdd($event)">
+    </button>
+  </div>
+</div>
+
+<ng-template #add>
+  <lib-input-with-actions
+    [size]="size"
+    [stringify]="stringify"
+    [value]="controlAdd.value"
+    (formEvent)="onFormEvent($event)">
+    Название портфеля
+  </lib-input-with-actions>
+</ng-template>
+
+<ng-template #content let-item>
+  <div class="item">
+    <div class="item__text">
+      {{ item.portfolio }}
+    </div>
+    <div class="item__space"></div>
+    <div class="item__actions">
+      <button
+        class="item__edit"
+        [size]="size"
+        iconStart="@tui.pencil"
+        tuiIconButton
+        appearance="icon"
+        type="button"
+        (click)="onEdit($event, item)">
+      </button>
+      <button
+        class="item__remove"
+        [size]="size"
+        iconStart="@tui.trash-2"
+        tuiIconButton
+        appearance="icon"
+        type="button"
+        (click)="onRemove($event, item)">
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>
+
+<ng-template #templateDelete let-data>
+  <div class="dialog">
+    <div class="dialog__title">
+      <h3>Удалить портфель: {{ data.name }}?</h3>
+    </div>
+    <div class="dialog__content">
+      Все транзакции связанные с портфелем "{{ data.name }}" будут удалены.
+    </div>
+  </div>
+</ng-template>

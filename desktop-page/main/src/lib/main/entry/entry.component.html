@@ -19,7 +19,6 @@
         type="button"
         [size]="size"
         appearance="secondary"
-        disabled
         class="entry__add-idea"
         (click)="onOpenDialog($event)">
         {{ constants.add_idea }}
@@ -84,5 +83,7 @@
 </ng-template>
 
 <ng-template #content let-item>
-  {{ item.name }}
+  <div class="filter-content" [title]="item.name">
+    {{ item.name }}
+  </div>
 </ng-template>

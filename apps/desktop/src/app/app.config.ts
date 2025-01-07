@@ -12,6 +12,8 @@ import { QueryParams } from 'utils/query-params';
 import { environment } from '../environments/environment';
 import { routes } from './app-routing.module';
 import { httpInterceptors } from './core/interceptors';
+import { TUI_LANGUAGE, TUI_RUSSIAN_LANGUAGE } from '@taiga-ui/i18n';
+import { of } from 'rxjs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -62,6 +64,10 @@ export const appConfig: ApplicationConfig = {
         desktopLarger: 1440,
         desktopLargest: 1920,
       },
+    },
+    {
+      provide: TUI_LANGUAGE,
+      useValue: of(TUI_RUSSIAN_LANGUAGE),
     },
     GlobalDateRangeService,
     NG_EVENT_PLUGINS,

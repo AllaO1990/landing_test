@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Position, StockPositionEntry, StockPositionTarget } from 'types/position';
+import { Position, StockPositionDividend, StockPositionEntry, StockPositionTarget } from 'types/position';
 import {
   ActionEntry,
   ActionOut,
@@ -11,6 +11,82 @@ import {
 
 @Injectable()
 export class ActionService {
+  private readonly _defaultTotalEntry: StockPositionEntry = {
+    date: null,
+    depositShare: null,
+    price: 0,
+    quantity: 0,
+    totalPrice: 0,
+    broker: null,
+  };
+
+  private readonly _defaultTotalOut: StockPositionTarget = {
+    price: 0,
+    amount: 0,
+    profit: 0,
+    profitPercent: 0,
+    totalPrice: 0,
+    depositShare: null,
+    reached: false,
+    stopDate: null,
+    broker: null,
+  };
+
+  private readonly _defaultTotalRemainder: StockPositionTarget = {
+    price: 0,
+    amount: 0,
+    profit: 0,
+    profitPercent: 0,
+    totalPrice: 0,
+    depositShare: null,
+    reached: false,
+    stopDate: null,
+    broker: null,
+  };
+
+  private readonly _defaultTotalDividend: StockPositionDividend = {
+    price: 0,
+    amount: 0,
+    profit: 0,
+    profitPercent: 0,
+    totalPrice: 0,
+    depositShare: null,
+    date: null,
+    broker: null,
+  };
+
+  getTotalEntry(list: StockPositionEntry[] | null): StockPositionEntry {
+    if (list === null) {
+      return this._defaultTotalEntry;
+    }
+
+    return list.reduce((acc: StockPositionEntry, item: StockPositionEntry, index: number) => {
+      return acc;
+    }, this._defaultTotalEntry);
+  }
+
+  getTotalOut(list: StockPositionTarget[] | null): StockPositionTarget {
+    if (list === null) {
+      return this._defaultTotalOut;
+    }
+
+    return list.reduce((acc: StockPositionTarget, item: StockPositionTarget, index: number) => {
+      return acc;
+    }, this._defaultTotalOut);
+  }
+
+  getTotalRemainder(): StockPositionTarget {
+    return this._defaultTotalRemainder;
+  }
+
+  getTotalDividend(): StockPositionDividend {
+    return this._defaultTotalDividend;
+  }
+
+  getTotalResult(): StockPositionTarget {
+    return this._defaultTotalOut;
+  }
+
   getActionEntry(position: Position): ActionEntry[] {
     return position.entries.map((item: StockPositionEntry, index: number) => ({
       id: index.toString(),
@@ -27,7 +103,7 @@ export class ActionService {
       (acc: ActionTotalEntry, item: ActionEntry) => {
         acc.price = 0;
         acc.totalPrice += item.totalPrice;
-        acc.depositShare += item.depositShare;
+        acc.depositShare += item.depositShare || 0;
         acc.quantity += item.quantity;
 
         return acc;
@@ -67,7 +143,7 @@ export class ActionService {
           totalPrice: acc.totalPrice + item.totalPrice,
           profit: acc.profit + item.profit,
           profitPercent: 0,
-          depositShare: acc.depositShare + item.depositShare,
+          depositShare: acc.depositShare + (item.depositShare || 0),
         };
       },
       {
@@ -98,7 +174,7 @@ export class ActionService {
           quantity: acc.quantity + item.amount,
           totalPrice: acc.totalPrice + item.amount * position.entryAveragePrice,
           totalProfit: acc.totalProfit + item.amount * position.lastPrice,
-          depositShare: acc.depositShare + item.depositShare,
+          depositShare: acc.depositShare + (item.depositShare || 0),
         };
       },
       {
