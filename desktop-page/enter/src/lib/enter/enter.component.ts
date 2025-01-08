@@ -32,6 +32,9 @@ import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { Position } from 'types/position';
 import { StockStrategyEnums } from 'types/stock-strategy';
+import { PositionFacade } from 'stores/facades/position.facade';
+import _default from 'chart.js/dist/plugins/plugin.title';
+import { IdeaFacade } from 'stores/facades/idea.facade';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -66,6 +69,8 @@ export interface TabItem {
 })
 export class VtEnterComponent {
   private readonly _select: SelectFacade = inject(SelectFacade);
+  private readonly _position: PositionFacade = inject(PositionFacade);
+  private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
@@ -78,14 +83,14 @@ export class VtEnterComponent {
     distinctUntilChanged((a: StockEvent, b: StockEvent) => a.id === b.id),
     switchMap((event: StockEvent) => {
       if (event.type === EventSelected.POSITION) {
-        return this._select.position$.pipe(
+        return this._position.selectItem(event.id).pipe(
           filter((position: Position | null): position is Position => position !== null),
           map((data: Position) => ({ type: 'position', data }))
         );
       }
 
       if (event.type === EventSelected.IDEA) {
-        return this._select.idea$.pipe(
+        return this._idea.selectItem(event.id).pipe(
           filter((idea: Position | null): idea is Position => idea !== null),
           map((data: Position) => ({ type: 'idea', data }))
         );

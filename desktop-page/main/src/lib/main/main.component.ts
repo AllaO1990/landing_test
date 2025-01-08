@@ -19,6 +19,8 @@ import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
 import { Params } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
+import { StockId } from 'types/stock';
+import { EventSelected } from 'types/events';
 
 @Component({
   selector: 'lib-main',
@@ -57,6 +59,10 @@ export class MainComponent implements AfterViewInit {
   );
   private _component: PolymorpheusComponent<VtEnterComponent> | null = null;
 
+  get queryId(): StockId | null {
+    return this._queryParams.value()['id'] || null;
+  }
+
   readonly tabMobileList = MAIN_TAB_MOBILE_LIST;
   readonly tabTabletList = MAIN_TAB_TABLET_LIST;
 
@@ -84,6 +90,13 @@ export class MainComponent implements AfterViewInit {
   );
 
   ngAfterViewInit() {
+    if (!this.queryId) {
+      this._queryParams.update({
+        type: EventSelected.STOCK_LIST,
+        id: '72187db2-44d8-4b2e-8b43-c41fd30c4a39',
+      });
+    }
+
     this.onOpenDialog();
   }
 

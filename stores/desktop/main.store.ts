@@ -19,12 +19,12 @@ import { StockEvent } from 'types/stock-event';
 import { filter, map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { ComponentStore } from '@ngrx/component-store';
-import { StockId, StockInstrument, StockListItems, StockPrice, WithLastPrice } from 'types/stock';
+import { StockId, StockInstrument, StockListItems, StockPrice, StockTransaction, WithLastPrice } from 'types/stock';
 import { Position } from 'types/position';
-import { Idea } from 'types/idea';
 import { DateRange } from 'types/date-range';
 import { Timeframe } from 'types/timeframe';
 import { GLOBAL_DATE_RANGE } from 'tokens/desktop';
+import { PortfolioPosition } from 'types/portfolio';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -91,6 +91,7 @@ export class MainStore extends ComponentStore<any> {
     this.onChangePosition(this.selected.event$);
     this.onChangeIdea(this.selected.event$);
     this.onChangeWatch(this.selected.event$);
+    this.onChangeTransaction(this.selected.event$);
 
     this.candles.loadCandles(
       timerWithIndex(
@@ -149,8 +150,8 @@ export class MainStore extends ComponentStore<any> {
       )
     );
     this.consolidationZonesIdea.load(
-      merge(this.selected.idea$, this.selected.position$).pipe(
-        filter((instrument: null | Position | Idea): instrument is Position | Idea => instrument !== null)
+      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(
+        filter((instrument: null | StockTransaction): instrument is StockTransaction => instrument !== null)
       )
     );
     this.consolidationZonesWatch.load(
@@ -161,8 +162,8 @@ export class MainStore extends ComponentStore<any> {
       )
     );
     this.figures.load(
-      merge(this.selected.idea$, this.selected.position$).pipe(
-        filter((instrument: null | Position | Idea): instrument is Position | Idea => instrument !== null)
+      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(
+        filter((instrument: null | StockTransaction): instrument is StockTransaction => instrument !== null)
       )
     );
     this.atr.load(
@@ -211,7 +212,7 @@ export class MainStore extends ComponentStore<any> {
       tap(([event, list]: [StockEvent, StockListItems]) => {
         const find = list.find((item: StockInstrument) => item.id === event.id) || null;
 
-        this._updateSelected(find, null, null, event.group);
+        this._updateSelected(find, null, null, null, event.group);
       })
     )
   );
@@ -224,7 +225,12 @@ export class MainStore extends ComponentStore<any> {
       filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Position[]]) => {
         const find = list.find((item: Position) => item.id === event.id) || null;
-        this._updateSelected(find && find.instrument, find);
+
+        if (find) {
+          this._updateSelected(find.instrument, { ideaId: find.id, instrumentId: find.instrument.id });
+        } else {
+          this._updateSelected();
+        }
       })
     )
   );
@@ -238,7 +244,11 @@ export class MainStore extends ComponentStore<any> {
       tap(([event, list]: [StockEvent, Position[]]) => {
         const find = list.find((item: Position) => item.id === event.id) || null;
 
-        this._updateSelected(find && find.instrument, null, find);
+        if (find) {
+          this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
+        } else {
+          this._updateSelected();
+        }
       })
     )
   );
@@ -253,7 +263,30 @@ export class MainStore extends ComponentStore<any> {
       ),
       tap(([event, list]: [StockEvent, StockListItems]) => {
         const find = list.find((item: StockInstrument) => item.id === event.id) || null;
-        this._updateSelected(find, null, null, event.group);
+        this._updateSelected(find, null, null, null, event.group);
+      })
+    )
+  );
+
+  onChangeTransaction = this.effect((source$: Observable<StockEvent | null>) =>
+    combineLatest([
+      source$.pipe(this._getIdFrom(EventSelected.TRANSACTION)),
+      this.portfolio.list$.pipe(
+        filter((list: PortfolioPosition[] | null): list is PortfolioPosition[] => list !== null)
+      ),
+    ]).pipe(
+      filter(
+        (combine: [StockEvent | null, PortfolioPosition[]]): combine is [StockEvent, PortfolioPosition[]] =>
+          combine[0] !== null
+      ),
+      tap(([event, list]: [StockEvent, PortfolioPosition[]]) => {
+        const find = list.find((item: PortfolioPosition) => item.ideaId === event.id) || null;
+
+        if (find) {
+          this._updateSelected(find.instrument, null, null, { ideaId: find.ideaId, instrumentId: find.instrument.id });
+        } else {
+          this._updateSelected();
+        }
       })
     )
   );
@@ -262,13 +295,15 @@ export class MainStore extends ComponentStore<any> {
 
   private _updateSelected(
     instrument: StockInstrument | null = null,
-    position: Position | null = null,
-    idea: Position | null = null,
+    position: StockTransaction | null = null,
+    idea: StockTransaction | null = null,
+    transaction: StockTransaction | null = null,
     group: StockId | null = null
   ): void {
     this.selected.updateInstrument(instrument);
     this.selected.updatePosition(position);
     this.selected.updateIdea(idea);
+    this.selected.updateTransaction(transaction);
     this.selected.updateGroup(group);
   }
 

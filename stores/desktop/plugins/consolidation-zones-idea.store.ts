@@ -8,8 +8,8 @@ import { getPointsActiveZone } from 'utils/transform-consolidation-zones';
 import { MAP_COLOR_CONSOLIDATION } from 'types/color';
 import { WithQueue } from '../core/with-queue.abstract';
 import { getJoinUniq } from 'utils/get-join-uniq';
-import { Position } from 'types/position';
 import * as Highcharts from 'highcharts/highstock';
+import { StockTransaction } from 'types/stock';
 
 export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesState> {
   private _colorConsolidation = MAP_COLOR_CONSOLIDATION;
@@ -30,27 +30,27 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
     zones,
   }));
 
-  readonly load = this.effect((stream$: Observable<null | any>) =>
+  readonly load = this.effect((stream$: Observable<null | StockTransaction>) =>
     stream$.pipe(
-      switchMap((params: Position | null) =>
+      switchMap((params: StockTransaction | null) =>
         this._getConsolidationZones(params).pipe(tap((data) => this.updateZone(data)))
       )
     )
   );
 
-  private _getConsolidationZones(params: Position | null): Observable<any> {
-    if (params === null || params.id === null) {
+  private _getConsolidationZones(params: StockTransaction | null): Observable<any> {
+    if (params === null || params.ideaId === null) {
       return of(null);
     }
 
-    const uniqKey = getJoinUniq(params.id, params.instrument.id);
+    const uniqKey = getJoinUniq(params.ideaId, params.instrumentId);
     const value = this.queue.getValue(uniqKey);
 
     if (value) {
       return of(value);
     }
 
-    return this._api.getIdeaConsolidationZone(params.id).pipe(
+    return this._api.getIdeaConsolidationZone(params.ideaId).pipe(
       filter(
         (response: Response<ActiveZone | null> | null): response is Response<ActiveZone | null> => response !== null
       ),
@@ -58,8 +58,8 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
       map((response: Response<ActiveZone>) => this._getResponseData(response.data)),
       map((data: Highcharts.AnnotationsOptions) => ({
         data: [data],
-        instrument: params.instrument.id,
-        parent: params.id,
+        instrument: params.instrumentId,
+        parent: params.ideaId,
       })),
       tap((value: ConsolidationZonesShape) => this.queue.setValue(uniqKey, value))
     );

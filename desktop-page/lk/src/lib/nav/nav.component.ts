@@ -4,9 +4,8 @@ import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { Params, RouterModule } from '@angular/router';
 import { AuthService } from '@core/auth';
-import { map, Observable, of, switchMap } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { IsDisabledStatePipe } from '@ui/pipes/is-disabled-state.pipe';
-import { StockEvent } from 'types/stock-event';
 import { SelectFacade } from 'stores/facades/select.facade';
 
 interface NavItem {
@@ -46,20 +45,9 @@ export class NavComponent {
 
   readonly size = 's';
   readonly links$: Observable<NavList> = of([
-    { name: 'Терминал', path: '/lk/main-v2', icon: '@tui.trello', disabled: false },
-    { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase-business', disabled: false },
-  ]).pipe(
-    switchMap((list) =>
-      this._select.event$.pipe(
-        map((event: StockEvent | null) =>
-          list.map((item, index: number) => ({
-            ...item,
-            params: index === 0 ? event : null,
-          }))
-        )
-      )
-    )
-  );
+    { name: 'Терминал', path: '/lk/main-v2', icon: '@tui.trello', disabled: false, params: null },
+    { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase-business', disabled: false, params: null },
+  ]);
 
   isDropdownOpen = false;
 
