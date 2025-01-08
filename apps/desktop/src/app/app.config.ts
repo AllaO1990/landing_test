@@ -52,7 +52,7 @@ export const appConfig: ApplicationConfig = {
     },
     tuiNumberFormatProvider({
       decimalSeparator: '.',
-      precision: 2,
+      precision: Infinity,
       decimalMode: 'not-zero',
     }),
     {

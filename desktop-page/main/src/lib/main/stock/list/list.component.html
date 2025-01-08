@@ -40,24 +40,13 @@
             {{ item.ticker }}
 
             <tui-hint
-              *tuiHint
               class="hint"
-              [@.disabled]="true"
-            >
-              You can expose the bubble component with
-              <code>*tuiHint</code>
-              directive to customize it
+              *tuiHint
+              [@.disabled]="true">
+              <ng-container
+                [ngTemplateOutlet]="ticker"
+                [ngTemplateOutletContext]="{ $implicit: item}"></ng-container>
             </tui-hint>
-
-            <!--            <tui-hint-->
-            <!--              class="hint"-->
-            <!--              *tuiHint-->
-            <!--              [@.disabled]="true">-->
-            <!--              sdfsdfsdf-->
-            <!--              &lt;!&ndash;              <ng-container&ndash;&gt;-->
-            <!--              &lt;!&ndash;                [ngTemplateOutlet]="ticker"&ndash;&gt;-->
-            <!--              &lt;!&ndash;                [ngTemplateOutletContext]="{ $implicit: item}"></ng-container>&ndash;&gt;-->
-            <!--            </tui-hint>-->
           </div>
           <div
             class="stock-item__price stock-item__last"

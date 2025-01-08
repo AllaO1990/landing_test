@@ -189,43 +189,44 @@ table .td {
   }
 }
 
-//
-//.hint {
-//  color: var(--color-g-10);
-//  background-color: var(--block-bg-color);
-//
-//  box-shadow: var(--tui-shadow-small);
-//}
-//
-//.ticker {
-//  display: flex;
-//  align-items: center;
-//
-//  &__content {
-//    display: flex;
-//    flex-flow: column;
-//
-//    max-width: 150px;
-//  }
-//
-//  &__row {
-//    display: flex;
-//    align-items: center;
-//  }
-//
-//  &__img {
-//    width: 24px;
-//    height: 24px;
-//    margin-right: var(--padding-2);
-//    border-radius: 50%;
-//    overflow: hidden;
-//
-//    img {
-//      width: 100%;
-//      object-fit: contain;
-//    }
-//  }
-//}
+
+.hint {
+  color: var(--color-g-10);
+  background-color: var(--block-bg-color);
+
+  box-shadow: var(--tui-shadow-small);
+}
+
+.ticker {
+  display: flex;
+  align-items: center;
+
+  &__content {
+    display: flex;
+    flex-flow: column;
+
+    max-width: 150px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+  }
+
+  &__img {
+    width: 24px;
+    height: 24px;
+    margin-right: var(--padding-2);
+    border-radius: 50%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+  }
+}
+
 //
 //thead th {
 //  color: var(--tui-text-primary);

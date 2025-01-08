@@ -14,13 +14,14 @@ import {
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { LoaderComponent } from '@ui/components/loader';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { BehaviorSubject, Observable, of, shareReplay, startWith, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, shareReplay, startWith, Subject, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { AddEntryComponent } from './add-entry/add-entry.component';
 import { AddTargetComponent } from './add-target/add-target.component';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 
 @Component({
   selector: 'lib-enter-action',
@@ -39,6 +40,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     TuiLoader,
     LoaderComponent,
     ReactiveFormsModule,
+    GetBrokerPipe,
   ],
   templateUrl: './action.component.html',
   styleUrl: './action.component.scss',
@@ -57,6 +59,7 @@ export class EnterActionComponent {
 
   readonly itemHeight = 28;
   priceIncrement = 0;
+  multiplier = 1;
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
@@ -98,6 +101,8 @@ export class EnterActionComponent {
   set data(value: { type: string; data: Position | null } | null) {
     if (value && value.data) {
       this._data = value;
+
+      this.multiplier = value.data.multiplier;
 
       this.isEditEntry$.next(value.type !== 'position');
 
@@ -152,11 +157,17 @@ export class EnterActionComponent {
     targets: this.addTarget,
   };
 
-  totalEntry$: Observable<StockPositionEntry> = of(null).pipe(
+  totalEntry$: Observable<StockPositionEntry> = this.formArrayEntries.valueChanges.pipe(
+    startWith(this.formArrayEntries.value),
     map((list: StockPositionEntry[] | null) => this._service.getTotalEntry(list))
   );
-  totalOut$: Observable<StockPositionTarget> = of(null).pipe(
-    map((list: StockPositionTarget[] | null) => this._service.getTotalOut(list))
+  totalOut$: Observable<StockPositionTarget> = this.totalEntry$.pipe(
+    switchMap((totalEntry: StockPositionEntry) =>
+      this.formArrayTargets.valueChanges.pipe(
+        startWith(this.formArrayTargets.value),
+        map((list: StockPositionTarget[] | null) => this._service.getTotalOut(list, totalEntry, this.multiplier))
+      )
+    )
   );
   totalDividend$: Observable<StockPositionDividend> = of(null).pipe(map(() => this._service.getTotalDividend()));
   totalRemainder$: Observable<StockPositionTarget> = of(null).pipe(map(() => this._service.getTotalRemainder()));
@@ -172,7 +183,7 @@ export class EnterActionComponent {
     this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, data).subscribe(
       (res: object | null) => {
         if (res) {
-          // this._updateData(this.formArrayEntries, res, control);
+          this._updateData(this.formArrayEntries, res, control);
         }
       }
     );
@@ -188,7 +199,7 @@ export class EnterActionComponent {
     this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, data).subscribe(
       (result: object | null) => {
         if (result) {
-          // this._updateData(this.formArrayTargets, result, control);
+          this._updateData(this.formArrayTargets, result, control);
         }
       }
     );
@@ -229,5 +240,13 @@ export class EnterActionComponent {
         data,
       })
       .pipe(takeUntilDestroyed(this._destroyed));
+  }
+
+  private _updateData(formArray: FormArray, data: object | null = null, control: number | null = null): void {
+    if (control === null) {
+      formArray.setControl(formArray.length, new FormControl(data));
+    } else {
+      formArray.at(control).patchValue(data);
+    }
   }
 }

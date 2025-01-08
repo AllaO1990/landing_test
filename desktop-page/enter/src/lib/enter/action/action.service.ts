@@ -61,17 +61,43 @@ export class ActionService {
     }
 
     return list.reduce((acc: StockPositionEntry, item: StockPositionEntry, index: number) => {
-      return acc;
+      const value: StockPositionEntry = {
+        ...acc,
+        quantity: acc.quantity + item.quantity,
+        depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
+        totalPrice: acc.totalPrice + item.price * item.quantity,
+      };
+
+      if (list.length - 1 === index) {
+        value.price = value.totalPrice / value.quantity;
+
+        return value;
+      }
+
+      return value;
     }, this._defaultTotalEntry);
   }
 
-  getTotalOut(list: StockPositionTarget[] | null): StockPositionTarget {
+  getTotalOut(list: StockPositionTarget[] | null, total: StockPositionEntry, multiplier: number): StockPositionTarget {
     if (list === null) {
       return this._defaultTotalOut;
     }
 
-    return list.reduce((acc: StockPositionTarget, item: StockPositionTarget, index: number) => {
-      return acc;
+    return list.reduce((acc: StockPositionTarget, item: StockPositionTarget, index: number): StockPositionTarget => {
+      const value: StockPositionTarget = {
+        ...acc,
+        price: acc.price + item.price * item.amount,
+        amount: acc.amount + item.amount,
+        depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
+      };
+
+      if (list.length - 1 === index) {
+        value.profit = (value.price - total.price * total.quantity) * multiplier;
+        value.profitPercent = (value.profit / (total.price * total.quantity)) * 100;
+        value.price = value.price / value.amount;
+      }
+
+      return value;
     }, this._defaultTotalOut);
   }
 

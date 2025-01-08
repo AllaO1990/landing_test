@@ -43,7 +43,7 @@ import { TuiDataListWrapper } from '@taiga-ui/kit';
 export class AddEntryComponent extends AddForm implements OnInit {
   private readonly _defaultBroker: AccountBroker = {
     broker: 'Не выбран',
-    brokerId: -1
+    brokerId: -1,
   };
   private readonly _service: AccountFacade = inject(AccountFacade);
 
@@ -51,23 +51,22 @@ export class AddEntryComponent extends AddForm implements OnInit {
     map((list: null | AccountBroker[]) => list && [this._defaultBroker, ...list])
   );
 
+  form: FormGroup = new FormGroup({
+    date: new FormControl({ value: null, disabled: true }),
+    price: new FormControl({ value: null, disabled: true }, Validators.required),
+    quantity: new FormControl({ value: null, disabled: true }, Validators.required),
+    broker: new FormControl({ value: null, disabled: true }),
+  });
 
   ngOnInit(): void {
-    this.form = new FormGroup({
-      date: new FormControl({ value: null, disabled: true }),
-      price: new FormControl({ value: null, disabled: true }, Validators.required),
-      quantity: new FormControl({ value: null, disabled: true }, Validators.required),
-      broker: new FormControl({ value: null, disabled: true })
-    });
-
     if (this.context.data) {
       const { date, price, quantity, broker } = this.context.data as StockPositionEntry;
 
       this.form.patchValue({
-        price,
-        quantity,
+        price: price || null,
+        quantity: quantity || null,
         date: date && TuiDay.jsonParse(date.split('T')[0]),
-        broker
+        broker: broker || null,
       });
     }
   }
@@ -85,7 +84,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
         quantity,
         totalPrice: price * quantity,
         depositShare: null,
-        broker: broker === -1 ? null : broker.brokerId
+        broker: broker && broker.brokerId,
       });
     }
   }

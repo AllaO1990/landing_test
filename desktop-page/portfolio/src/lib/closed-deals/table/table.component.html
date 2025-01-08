@@ -1,11 +1,13 @@
 <cdk-virtual-scroll-viewport
   #viewport
   tuiScrollable
+  *ngIf="(data$ | async) as data; else load"
   class="viewport tui-zero-scrollbar"
   [itemSize]="32">
   <table
     class="table"
     tuiTable
+    size="s"
     [columns]="columns">
     <thead>
     <tr tuiThGroup>
@@ -14,7 +16,7 @@
           *tuiHead="item.name"
           tuiTh
           class="th th--{{item.name}}"
-          [sticky]="false"
+          [sticky]="true"
           [sorter]="item.sorter"
           [style.top.px]="-viewport['_renderedContentOffset']">
           <span [innerHTML]="item.text"></span>
@@ -25,7 +27,8 @@
     <tbody tuiTbody>
     <tr
       class=""
-      *cdkVirtualFor="let item of data || [] | tuiTableSort;trackBy: trackById"
+      *cdkVirtualFor="let item of data | tuiTableSort; trackBy: trackById"
+      (click)="onClick($event, item)"
       tuiTr>
       <td
         class="td"
@@ -33,105 +36,136 @@
         tuiTd>
         <div class="date">
           <div class="date__open">
-            {{ item.createdAt | date: 'dd.MM.yy' }}
+            <ng-container *ngIf="item.entry && item.entry.date; else none">
+              {{ item.entry.date | date: 'dd.MM.yy' }}
+            </ng-container>
           </div>
           <div class="date__close">
-            {{ item.closeAt ? (item.closeAt | date: 'dd.MM.yy') : 'In stock' }}
+            <ng-container *ngIf="item.out && item.out.date; else none">
+              {{ item.out.date | date: 'dd.MM.yy' }}
+            </ng-container>
           </div>
         </div>
       </td>
 
       <td
-        class="td"
+        class="td td--center"
         *tuiCell="'positionType'"
         tuiTd>
-        {{ item.positionType | getNamePositionType }}
+        <ng-container *ngTemplateOutlet="item.positionType === 'long' ? buy : sell">
+        </ng-container>
       </td>
 
       <td
         class="td"
         *tuiCell="'ticker'"
+        tuiHint
+        tuiHintDirection="right"
         tuiTd>
         <div class="ticker">
-          <div class="ticker__instrument">{{ item.instrument.ticker }}</div>
-          <div class="ticker__exchange">{{ item.instrument.realExchange }}</div>
-          <div class="ticker__name">{{ item.instrument.name }}</div>
+          <span class="ticker__instrument ellipsis">{{ item.instrument.ticker }}</span>
+
+          <tui-hint
+            class="hint"
+            *tuiHint
+            [@.disabled]="true">
+            <ng-container
+              [ngTemplateOutlet]="ticker"
+              [ngTemplateOutletContext]="{ $implicit: item.instrument}"></ng-container>
+          </tui-hint>
         </div>
       </td>
 
       <td
-        class="td"
-        *tuiCell="'lastPrice'"
+        class="td td--number"
+        *tuiCell="'entry'"
         tuiTd>
-        {{ item.lastPrice | tuiFormatNumber }}
+        {{ item.entry.price | tuiFormatNumber | async }}
       </td>
 
       <td
-        class="td"
-        *tuiCell="'costInPosition'"
+        class="td td--number"
+        *tuiCell="'entryPosition'"
         tuiTd>
         <div class="cost">
           <div class="cost__quantity">
-            {{ item.inPositionQuantity | tuiFormatNumber }}
+            {{ item.entry.amount | tuiFormatNumber | async }}
           </div>
-          <div class="cost__price">
-            {{ item.inPositionPrice | tuiFormatNumber }}
+          <div class="cost__price substring">
+            {{ item.entry.totalPrice | tuiFormatNumber | async }}
           </div>
         </div>
       </td>
 
       <td
-        class="td"
-        *tuiCell="'resultPrice'"
+        class="td td--number"
+        *tuiCell="'out'"
         tuiTd>
-        ⚠️{{ item.lastPrice | tuiFormatNumber }}
+        <ng-container *ngIf="item.out && item.out.price; else none">
+          {{ item.out.price | tuiFormatNumber | async }}
+        </ng-container>
       </td>
 
       <td
-        class="td"
-        *tuiCell="'costOutPosition'"
+        class="td td--number"
+        *tuiCell="'outPosition'"
         tuiTd>
         <div class="cost">
           <div class="cost__quantity">
-            ⚠️{{ item.inPositionQuantity | tuiFormatNumber }}
+            <ng-container *ngIf="item.out && item.out.amount; else none">
+              {{ item.out.amount | tuiFormatNumber | async }}
+            </ng-container>
           </div>
-          <div class="cost__price">
-            ⚠️{{ item.inPositionPrice | tuiFormatNumber }}
+          <div class="cost__price substring">
+            <ng-container *ngIf="item.out && item.out.totalPrice; else none">
+              {{ item.out.totalPrice | tuiFormatNumber | async }}
+            </ng-container>
           </div>
         </div>
       </td>
 
       <td
-        class="td"
+        class="td td--number"
         *tuiCell="'dividend'"
         tuiTd>
-        ⚠️{{ item.dividend | tuiFormatNumber }}
+        <div class="dividend">
+          <div class="dividend__quantity">
+            <ng-container *ngIf="item.dividend; else none">
+              {{ item.dividend | tuiFormatNumber | async }}
+            </ng-container>
+          </div>
+          <div class="dividend__price substring">
+            <ng-container *ngIf="item.dividendPct; else none">
+              {{ item.dividendPct | tuiFormatNumber | async }}
+            </ng-container>
+          </div>
+        </div>
       </td>
 
       <td
-        class="td"
+        class="td td--number"
         *tuiCell="'profitRealized'"
         tuiTd>
         <div class="profit-realized">
           <div class="profit-realized__percentage">
-            {{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+            {{ item.fixedResultPct | tuiFormatNumber | async }}%
           </div>
-          <div class="profit-realized__price">
-            {{ item.result.profitPrice | tuiFormatNumber }}
+          <div class="profit-realized__price substring">
+            {{ item.fixedResult | tuiFormatNumber | async }}
           </div>
         </div>
       </td>
 
       <td
-        class="td"
+        class="td td--number"
         *tuiCell="'remainderInPosition'"
         tuiTd>
         <div class="remainder">
           <div class="remainder__percentage">
-            ⚠️{{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+            {{ item.inPositionResultPct | tuiFormatNumber | async }}%
           </div>
-          <div class="remainder__price">
-            ⚠️{{ item.result.profitPrice | tuiFormatNumber }}
+          <div class="remainder__price substring">
+            {{ item.inPositionResult | tuiFormatNumber | async }}
           </div>
         </div>
       </td>
@@ -154,28 +188,34 @@
         class="td td--number"
         *tuiCell="'result'"
         tuiTd>
-        <div class="remainder">
-          <div class="remainder__percentage">
-            ⚠️{{ item.result.profitPercent * 100 | tuiFormatNumber }}%
+        <div class="result">
+          <div class="result__percentage">
+            {{ item.resultPct | tuiFormatNumber | async }}%
           </div>
-          <div class="remainder__price">
-            ⚠️{{ item.result.profitPrice | tuiFormatNumber }}
+          <div class="result__price substring">
+            {{ item.result | tuiFormatNumber | async }}
           </div>
         </div>
       </td>
 
       <td
-        class="td"
+        class="td td--number"
         *tuiCell="'deposit'"
         tuiTd>
-        {{ item.inPositionDepositShare | tuiFormatNumber }}%
+        {{ item.depositSharePct | tuiFormatNumber | async }}%
       </td>
 
       <td
         class="td"
         *tuiCell="'strategy'"
+        [tuiHint]="item.strategyKey | getStrategyName"
+        tuiHintAppearance="dark"
         tuiTd>
-        {{ item.strategy.type | getStrategyName }}
+        <div class="ticker">
+        <span class="ellipsis">
+         {{ item.strategyKey | getStrategyName }}
+        </span>
+        </div>
       </td>
 
       <td
@@ -188,21 +228,27 @@
       </td>
 
       <td
-        class="td"
+        class="td td--center"
         *tuiCell="'comment'"
         tuiTd>
         <ng-container *ngIf="item.comment; else none">
-          <tui-icon  icon="@tui.message-square"></tui-icon>
+          <tui-icon
+            class="comment"
+            size="xs"
+            icon="@tui.message-square"
+            [tuiHint]="item.comment"
+            tuiHintAppearance="dark">
+          </tui-icon>
         </ng-container>
       </td>
 
       <td
-        class="td"
+        class="td td--center"
         *tuiCell="'author'"
         tuiTd>
         <img
           class="idea__icon"
-          *ngIf="item.author === 'bot'; else none"
+          *ngIf="item.author === 'bot'; else user"
           src="/assets/icons/vanya.svg"
           alt="Идея"
         />
@@ -212,4 +258,44 @@
   </table>
 </cdk-virtual-scroll-viewport>
 
+<ng-template #buy>
+  <span class="buy">▲</span>
+</ng-template>
+
+<ng-template #sell>
+  <span class="sell">▼</span>
+</ng-template>
+
 <ng-template #none>&mdash;</ng-template>
+
+<ng-template #user>
+  <tui-icon
+    class="comment"
+    size="xs"
+    icon="@tui.user">
+  </tui-icon>
+</ng-template>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>
+
+<ng-template #ticker let-data>
+  <div class="ticker">
+    <div class="ticker__img">
+      <img
+        src="/assets/tickers-v2/{{ data.ticker }}.{{ data.type === 'crypto' ? 'svg' : 'png' }}"
+        [attr.alt]="data.name"
+      />
+    </div>
+    <div class="ticker__content">
+      <div class="ticker__row">
+        {{ data.ticker }}
+        <span class="substring" style="margin-left: 8px">{{ data.realExchange }}</span>
+      </div>
+      <div class="ticker__row">
+        <div class="substring">{{ data.name }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>

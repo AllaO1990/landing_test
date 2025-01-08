@@ -60,6 +60,7 @@ export class MainStore extends ComponentStore<any> {
   readonly consolidationZonesWatch = this._facade.consolidationZonesWatch;
   readonly figures = this._facade.figures;
   readonly atr = this._facade.atr;
+  readonly portfolio = this._facade.portfolio;
 
   constructor(private readonly api: DesktopService) {
     super();

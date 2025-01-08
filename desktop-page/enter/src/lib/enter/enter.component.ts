@@ -13,7 +13,6 @@ import {
   of,
   shareReplay,
   switchMap,
-  take,
 } from 'rxjs';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
@@ -103,7 +102,8 @@ export class VtEnterComponent {
       return of(null);
     }),
     tap((data: any | null) => (this.isDisabled = data === null)),
-    take(1),
+    // take(1),
+    distinctUntilChanged((a, b) => a.id !== b.id),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly isShowSearch$: Observable<boolean> = this.data$.pipe(

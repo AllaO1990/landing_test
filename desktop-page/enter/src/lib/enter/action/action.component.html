@@ -28,9 +28,11 @@
             </ng-container>
           </div>
           <div class="item__value row__item row__center row__deposit">
-            <ng-container *ngIf="item.broker; else none">
-              {{ item.broker }}
-            </ng-container>
+            <span
+              *ngIf="item.broker && (item.broker | getBroker | async) as broker; else none"
+              [title]="broker">
+              {{ broker }}
+            </span>
           </div>
           <div class="row__space"></div>
           <div class="item__value row__actions">
@@ -91,18 +93,26 @@
             {{ item.totalPrice | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__item row__right row__profit">
-            {{ item.profit | tuiFormatNumber | async }}
+            <ng-container *ngIf="item.profit !== null; else none">
+              {{ item.profit | tuiFormatNumber | async }}
+            </ng-container>
           </div>
           <div class="item__value row__item row__right row__profit">
-            {{ item.profitPercent | tuiFormatNumber | async }}%
+            <ng-container *ngIf="item.profitPercent !== null; else none">
+              {{ item.profitPercent | tuiFormatNumber | async }}%
+            </ng-container>
           </div>
           <div class="item__value row__item row__right row__deposit">
-            {{ item.depositShare | tuiFormatNumber | async }}%
+            <ng-container *ngIf="item.depositShare !== null; else none">
+              {{ item.depositShare | tuiFormatNumber | async }}%
+            </ng-container>
           </div>
           <div class="item__value row__item row__center row__broker">
-            <ng-container *ngIf="item.broker; else none">
-              {{ item.broker }}
-            </ng-container>
+            <span
+              *ngIf="item.broker && (item.broker | getBroker | async) as broker; else none"
+              [title]="broker">
+              {{ broker }}
+            </span>
           </div>
           <div class="row__space"></div>
           <div class="item__value row__actions">
