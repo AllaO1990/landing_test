@@ -20,6 +20,7 @@ import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Timeframe } from 'types/timeframe';
 import { Params } from '@angular/router';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { PortfolioPosition } from 'types/portfolio';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -239,5 +240,21 @@ export class DesktopApiService extends DesktopService {
     return this._http.delete<Response<AccountPortfolio>>('https://trade.gpn.dev/api/v1/account/portfolio', {
       body: { portfolioId },
     });
+  }
+
+  getPortfolio(params: Params): Observable<PortfolioPosition[] | null> {
+    return this._http
+      .post<Response<DataList<PortfolioPosition>>>('https://trade.gpn.dev/api/v1/ideas/portfolio', params)
+      .pipe(
+        map((result: Response<DataList<PortfolioPosition>>) => {
+          console.log(result.data.items);
+
+          return result.data.items;
+        }),
+        catchError((err: Error) => {
+          console.error(err);
+          return of(null);
+        })
+      );
   }
 }

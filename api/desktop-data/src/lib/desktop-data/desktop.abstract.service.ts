@@ -17,6 +17,7 @@ import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Params } from '@angular/router';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { PortfolioPosition } from 'types/portfolio';
 
 export abstract class DesktopService {
   public abstract getIdeaList(): Observable<Position[]>;
@@ -82,4 +83,6 @@ export abstract class DesktopService {
   abstract editAccountPortfolio(portfolio: AccountPortfolio): Observable<Response<AccountPortfolio>>;
 
   abstract deleteAccountPortfolio(id: number): Observable<Response<AccountPortfolio>>;
+
+  abstract getPortfolio(params: Params): Observable<PortfolioPosition[] | null>;
 }

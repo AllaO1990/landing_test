@@ -18,24 +18,24 @@ export const WRAPPER_TABLE_HEADER = [
     sorter: (a: TableDataItem, b: TableDataItem) => sortText(b.instrument.ticker, a.instrument.ticker),
   },
   {
-    name: 'lastPrice',
+    name: 'entry',
     text: 'Цена уч.',
-    sorter: (a: TableDataItem, b: TableDataItem) => b.lastPrice - a.lastPrice,
+    sorter: (a: TableDataItem, b: TableDataItem) => b.entry.price - a.entry.price,
   },
   {
-    name: 'costInPosition',
+    name: 'entryPosition',
     text: 'К-во вход <br> Стоим. уч.',
-    sorter: (a: TableDataItem, b: TableDataItem) => b.inPositionPrice - a.inPositionPrice,
+    sorter: (a: TableDataItem, b: TableDataItem) => b.entry.amount - a.entry.amount,
   },
   {
-    name: 'resultPrice',
+    name: 'out',
     text: 'Цена вых.',
-    sorter: (a: TableDataItem, b: TableDataItem) => b.lastPrice - a.lastPrice,
+    sorter: (a: TableDataItem, b: TableDataItem) => b.out?.price - a.out?.price,
   },
   {
-    name: 'costOutPosition',
+    name: 'outPosition',
     text: 'К-во выход <br> Стоим. вых.',
-    sorter: (a: TableDataItem, b: TableDataItem) => b.lastPrice - a.lastPrice,
+    sorter: (a: TableDataItem, b: TableDataItem) => b.out?.amount - a.out?.amount,
   },
   {
     name: 'dividend',
@@ -79,7 +79,7 @@ export const WRAPPER_TABLE_HEADER = [
   },
   {
     name: 'comment',
-    text: 'Комментарий',
+    text: 'Коммент.',
     sorter: (a: TableDataItem, b: TableDataItem) => sortText(b.comment, a.comment),
   },
   {

@@ -140,6 +140,7 @@ export class EnterSidebarComponent implements AfterViewInit {
 
     this.form[action]();
     this.formControlPortfolio[action]();
+    this.formControlStrategy[action]();
 
     if (value && value.data) {
       this._data = value.data;
@@ -185,9 +186,7 @@ export class EnterSidebarComponent implements AfterViewInit {
           return;
         }
 
-        if (this.formControlCurrency.value === null) {
-          this.formControlCurrency.patchValue(currency);
-        }
+        this.formControlCurrency.patchValue(currency);
       });
 
     this.formControlPortfolio.valueChanges

@@ -177,8 +177,6 @@ export class ChartCandlestickComponent implements OnInit {
       .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlZone.value))
       .subscribe((result: IndicatorListItem<Timeframe>[] | null) => {
         this._store.updateSelectedConsolidationZones(this._getValue(result));
-        // this._store.updateSelectedConsolidationZonesIdea(this._getValue(result));
-        // this._store.updateConsolidationZoneSelected(this._getValue(result));
       });
 
     this._store.updateSelectedAtr(this.controlAtr.value);

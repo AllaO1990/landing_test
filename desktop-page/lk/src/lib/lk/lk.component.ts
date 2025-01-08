@@ -36,6 +36,7 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
 import { ChartFacade } from 'stores/facades/chart.facade';
 import { MainStore } from 'stores/main.store';
 import { AccountFacade } from 'stores/facades/account.facade';
+import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 
 @Component({
   selector: 'lib-lk',
@@ -55,6 +56,7 @@ import { AccountFacade } from 'stores/facades/account.facade';
     StockListFacade,
     ChartFacade,
     AccountFacade,
+    PortfolioFacade,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

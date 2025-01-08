@@ -68,8 +68,7 @@
         <td *tuiCell="'ticker'"
             tuiTd
             tuiHint
-            [tuiHintContext]="item.instrument"
-            [tuiHintDirection]="'right'">
+            tuiHintDirection="right">
           <div class="td__row">
               <span class="ellipsis">
                 {{ item.instrument.ticker }}
@@ -78,11 +77,11 @@
 
           <tui-hint
             class="hint"
-            *tuiHint="let data"
+            *tuiHint
             [@.disabled]="true">
             <ng-container
               [ngTemplateOutlet]="ticker"
-              [ngTemplateOutletContext]="{ $implicit: data.context}"></ng-container>
+              [ngTemplateOutletContext]="{ $implicit: item.instrument}"></ng-container>
           </tui-hint>
         </td>
 

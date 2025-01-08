@@ -1,6 +1,8 @@
 :host {
   display: block;
   height: 100%;
+
+  --tui-height-s: 31px;
 }
 
 .viewport {
@@ -9,9 +11,11 @@
 }
 
 table.table {
-  thead {
+  width: 100%;
+  table-layout: fixed;
+
+  thead th {
     color: var(--tui-text-primary);
-    background: var(--tui-background-neutral-1-pressed);
   }
 
   tr {
@@ -20,7 +24,6 @@ table.table {
 
   th {
     padding: 0 var(--padding-2);
-    background: inherit;
   }
 
   td {
@@ -34,6 +37,10 @@ table.table {
     &--number {
       text-align: right;
     }
+
+    &--center {
+      text-align: center;
+    }
   }
 
   ::ng-deep {
@@ -46,7 +53,141 @@ table.table {
 }
 
 .ticker {
-  height: 32px;
   overflow: hidden;
 }
 
+.buy {
+  font-size: 8px;
+  color: var(--color-g);
+}
+
+.sell {
+  font-size: 8px;
+  color: var(--color-r);
+}
+
+.ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  overflow: hidden;
+}
+
+.hint {
+  color: var(--color-g-10);
+  background-color: var(--block-bg-color);
+
+  box-shadow: var(--tui-shadow-small);
+}
+
+.ticker {
+  display: flex;
+  align-items: center;
+
+  &__content {
+    display: flex;
+    flex-flow: column;
+
+    max-width: 150px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+  }
+
+  &__img {
+    width: 24px;
+    height: 24px;
+    margin-right: var(--padding-2);
+    border-radius: 50%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+  }
+}
+
+.substring {
+  font-size: 0.8em;
+  line-height: 1;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  overflow: hidden;
+}
+
+.th {
+  &--date {
+    width: 80px;
+  }
+
+  &--positionType {
+    width: 50px;
+    padding: 0 4px !important;
+  }
+
+  &--ticker {
+    width: 60px;
+  }
+
+  &--entry {
+    width: 90px;
+  }
+
+  &--entryPosition {
+    width: 90px;
+  }
+
+  &--out {
+    width: 90px;
+  }
+
+  &--outPosition {
+    width: 90px;
+  }
+
+  &--dividend {
+    width: 90px;
+  }
+
+  &--profitRealized {
+    width: 90px;
+  }
+
+  &--remainderInPosition {
+    width: 85px;
+  }
+
+  &--result {
+    width: 80px;
+  }
+
+  &--deposit {
+    width: 60px;
+  }
+
+  &--strategy {
+    width: 70px;
+  }
+
+  &--broker {
+    width: 70px;
+  }
+
+  &--comment {
+    width: 70px;
+  }
+
+  &--author {
+    width: 70px;
+  }
+}
+
+.comment {
+  font-size: 14px;
+  color: var(--tui-text-tertiary);
+}

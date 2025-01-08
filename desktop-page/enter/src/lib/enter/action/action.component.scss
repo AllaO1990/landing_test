@@ -95,6 +95,10 @@ form {
       font-size: .8rem;
     }
   }
+
+  &__broker {
+    white-space: nowrap;
+  }
 }
 
 .entry {

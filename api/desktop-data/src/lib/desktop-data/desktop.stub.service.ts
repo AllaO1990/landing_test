@@ -16,6 +16,7 @@ import { Position } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { Params } from '@angular/router';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { PortfolioPosition } from 'types/portfolio';
 
 @Injectable()
 export class DesktopStubService extends DesktopService {
@@ -134,6 +135,10 @@ export class DesktopStubService extends DesktopService {
   }
 
   deleteAccountPortfolio(portfolioId: number): Observable<Response<AccountPortfolio>> {
+    return of();
+  }
+
+  getPortfolio(params: Params): Observable<PortfolioPosition[] | null> {
     return of();
   }
 }
