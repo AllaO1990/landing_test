@@ -66,10 +66,6 @@ export class LkComponent implements OnInit {
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
 
-  get queryId(): StockId | null {
-    return this._queryParams.value()['id'] || null;
-  }
-
   ngOnInit(): void {
     const stream$ = this._queryParams.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
@@ -86,13 +82,6 @@ export class LkComponent implements OnInit {
           group,
         })
       );
-
-    if (!this.queryId) {
-      this._queryParams.update({
-        type: EventSelected.STOCK_LIST,
-        id: '72187db2-44d8-4b2e-8b43-c41fd30c4a39',
-      });
-    }
 
     this._globalDateRangeService.setRange({
       from: new Date(new Date(new Date().getFullYear() - 1, 0, 1, 12).setUTCHours(0, 0, 0, 0)).toISOString(),

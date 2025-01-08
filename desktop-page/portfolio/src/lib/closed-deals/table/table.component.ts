@@ -1,15 +1,15 @@
 import { TuiTable } from '@taiga-ui/addon-table';
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { WRAPPER_TABLE_HEADER } from './table.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { INPUT_DATA } from '../constants';
-import { StockId } from 'types/stock';
+import { StockId, StockTransaction } from 'types/stock';
 import { GetPositionTypePipe } from '@ui/pipes/get-posiotion-type.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
-import { Observable, tap } from 'rxjs';
+import { combineLatest, filter, Observable, shareReplay, take } from 'rxjs';
 import { PortfolioPosition } from 'types/portfolio';
 import { LoaderComponent } from '@ui/components/loader';
 import { PolymorpheusTemplate } from '@taiga-ui/polymorpheus';
@@ -17,6 +17,9 @@ import { TuiLet } from '@taiga-ui/cdk';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { EventSelected } from 'types/events';
+import { ColorPriceDirective } from '@ui/components/price';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'lib-wrapper-table',
@@ -42,12 +45,14 @@ import { EventSelected } from 'types/events';
     JsonPipe,
     PolymorpheusTemplate,
     TuiLet,
+    ColorPriceDirective,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WrapperTableComponent implements OnInit {
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _service: PortfolioFacade = inject(PortfolioFacade);
 
@@ -62,7 +67,7 @@ export class WrapperTableComponent implements OnInit {
     'dividend',
     'profitRealized',
     'remainderInPosition',
-    // 'profitNotRealized',
+    'profitNotRealized',
     'result',
     'deposit',
     'strategy',
@@ -73,15 +78,14 @@ export class WrapperTableComponent implements OnInit {
 
   readonly header = WRAPPER_TABLE_HEADER;
 
+  public activeIdeaId$: Observable<StockId | null> = this._service.select$.pipe(
+    map((result: StockTransaction | null) => (result ? result.ideaId : null)),
+    distinctUntilChanged(),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+
   data$: Observable<PortfolioPosition[] | null> = this._service.list$.pipe(
-    tap(
-      (list: PortfolioPosition[] | null) =>
-        list &&
-        this._queryParams.update({
-          type: EventSelected.POSITION,
-          id: list[0].ideaId,
-        })
-    )
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
 
   data = INPUT_DATA;
@@ -98,6 +102,34 @@ export class WrapperTableComponent implements OnInit {
       portfolioId: 4,
       to: end,
     });
+
+    combineLatest([
+      this.data$.pipe(filter((list: PortfolioPosition[] | null): list is PortfolioPosition[] => list !== null)),
+      this.activeIdeaId$,
+    ])
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        take(1),
+        map(([list, id]: [PortfolioPosition[], StockId | null]) => ({ id, list }))
+      )
+      .subscribe(({ id, list }: { id: StockId | null; list: PortfolioPosition[] }) => {
+        if (this._queryParams.value()['type'] !== EventSelected.TRANSACTION) {
+          if (id !== null) {
+            this._queryParams.update({
+              type: EventSelected.TRANSACTION,
+              id,
+            });
+            return;
+          }
+
+          if (list[0]) {
+            this._queryParams.update({
+              type: EventSelected.TRANSACTION,
+              id: list[0].ideaId,
+            });
+          }
+        }
+      });
   }
 
   trackByIndex(index: number): number {
@@ -112,7 +144,7 @@ export class WrapperTableComponent implements OnInit {
     event.preventDefault();
 
     this._queryParams.update({
-      type: EventSelected.POSITION,
+      type: EventSelected.TRANSACTION,
       id: item.ideaId,
     });
   }

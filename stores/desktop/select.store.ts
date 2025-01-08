@@ -1,15 +1,15 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable, shareReplay } from 'rxjs';
-import { StockId, StockInstrument } from 'types/stock';
-import { Position } from 'types/position';
+import { StockId, StockInstrument, StockTransaction } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
 
 export interface SelectState {
   event: null | StockEvent;
   instrument: null | StockInstrument;
   group: null | StockId;
-  position: null | Position;
-  idea: null | Position;
+  position: null | StockTransaction;
+  transaction: null | StockTransaction;
+  idea: null | StockTransaction;
   list: null | StockId[];
 }
 
@@ -17,13 +17,15 @@ export class SelectStore extends ComponentStore<SelectState> {
   readonly instrument$: Observable<null | StockInstrument> = this.select((state: SelectState) => state.instrument).pipe(
     shareReplay({ refCount: true, bufferSize: 1 })
   );
-  readonly group$: Observable<null | StockId> = this.select((state: SelectState) => state.group);
-  readonly position$: Observable<null | Position> = this.select((state: SelectState) => state.position).pipe(
+  readonly position$: Observable<null | StockTransaction> = this.select((state: SelectState) => state.position).pipe(
     shareReplay({ refCount: true, bufferSize: 1 })
   );
-  readonly idea$: Observable<null | Position> = this.select((state: SelectState) => state.idea).pipe(
+  readonly idea$: Observable<null | StockTransaction> = this.select((state: SelectState) => state.idea).pipe(
     shareReplay({ refCount: true, bufferSize: 1 })
   );
+  readonly transaction$: Observable<null | StockTransaction> = this.select(
+    (state: SelectState) => state.transaction
+  ).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
   readonly list$: Observable<null | StockId[]> = this.select((state: SelectState) => state.list).pipe(
     shareReplay({ refCount: true, bufferSize: 1 })
   );
@@ -33,6 +35,7 @@ export class SelectStore extends ComponentStore<SelectState> {
 
   constructor() {
     super({
+      transaction: null,
       instrument: null,
       position: null,
       idea: null,
@@ -52,14 +55,19 @@ export class SelectStore extends ComponentStore<SelectState> {
     group,
   }));
 
-  updatePosition = this.updater((state: SelectState, position: null | Position) => ({
+  updatePosition = this.updater((state: SelectState, position: null | StockTransaction) => ({
     ...state,
     position,
   }));
 
-  updateIdea = this.updater((state: SelectState, idea: null | Position) => ({
+  updateIdea = this.updater((state: SelectState, idea: null | StockTransaction) => ({
     ...state,
     idea,
+  }));
+
+  updateTransaction = this.updater((state: SelectState, transaction: null | StockTransaction) => ({
+    ...state,
+    transaction,
   }));
 
   updateEvent = this.updater((state: SelectState, event: null | StockEvent) => ({

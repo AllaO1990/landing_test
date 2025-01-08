@@ -7,9 +7,8 @@ import { Response } from 'types/response';
 import * as Highcharts from 'highcharts/highstock';
 import { ConsolidationZonesShape, ConsolidationZonesState } from 'types/consolidation-zones';
 import { AnnotationsShapesOptions } from 'highcharts';
-import { Position } from 'types/position';
-import { Idea } from 'types/idea';
 import { getJoinUniq } from 'utils/get-join-uniq';
+import { StockTransaction } from 'types/stock';
 
 export class FiguresStore extends WithQueue<ConsolidationZonesState> {
   private readonly _commonAxisValues = { xAxis: 0, yAxis: 0 };
@@ -31,9 +30,9 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
     return { ...state, zones };
   });
 
-  readonly load = this.effect((stream$: Observable<Position | Idea | null>) => {
+  readonly load = this.effect((stream$: Observable<StockTransaction | null>) => {
     return stream$.pipe(
-      switchMap((id: Position | Idea | null) => this._getFigures(id)),
+      switchMap((id: StockTransaction | null) => this._getFigures(id)),
       // map((data: ConsolidationZones) => {
       //   return transformActiveConsolidationZones(data?.data);
       // }),
@@ -45,19 +44,19 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
     );
   });
 
-  private _getFigures(data: Position | Idea | null): Observable<any> {
-    if (data === null || data.id === null) {
+  private _getFigures(data: StockTransaction | null): Observable<any> {
+    if (data === null || data.ideaId === null) {
       return of(null);
     }
 
-    const key = getJoinUniq(data.id, data.instrument.id);
+    const key = getJoinUniq(data.ideaId, data.instrumentId);
     const value = this.queue.getValue(key);
 
     if (value) {
       return of(value);
     }
 
-    return this._api.getChartFigures(data.id, this._from.toISOString(), this._to.toISOString()).pipe(
+    return this._api.getChartFigures(data.ideaId, this._from.toISOString(), this._to.toISOString()).pipe(
       filter(
         (response: Response<FigureIdea | null> | null): response is Response<FigureIdea | null> => response !== null
       ),
@@ -65,8 +64,8 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
       map((response: Response<FigureIdea>) => this._getResponseData(response.data)),
       map((response: Highcharts.AnnotationsOptions) => ({
         data: [response],
-        instrument: data.instrument.id,
-        parent: data.id,
+        instrument: data.instrumentId,
+        parent: data.ideaId,
       })),
       tap((res: ConsolidationZonesShape) => this.queue.setValue(key, res))
     );

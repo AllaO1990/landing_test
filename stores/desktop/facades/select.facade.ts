@@ -1,9 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { MainStore } from 'stores/main.store';
 import { Observable } from 'rxjs';
-import { StockId, StockInstrument } from 'types/stock';
+import { StockId, StockInstrument, StockTransaction } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
-import { Position } from 'types/position';
 
 @Injectable()
 export class SelectFacade {
@@ -11,9 +10,9 @@ export class SelectFacade {
   private readonly _select = this._store.selected;
 
   readonly instrument$: Observable<null | StockInstrument> = this._select.instrument$;
-  readonly position$: Observable<null | Position> = this._select.position$;
-  readonly idea$: Observable<null | Position> = this._select.idea$;
-  // readonly group$: Observable<null | StockId> = this._select.group$;
+  readonly position$: Observable<null | StockTransaction> = this._select.position$;
+  readonly idea$: Observable<null | StockTransaction> = this._select.idea$;
+  readonly transaction$: Observable<null | StockTransaction> = this._select.transaction$;
   readonly list$: Observable<null | StockId[]> = this._select.list$;
   readonly event$: Observable<null | StockEvent> = this._select.event$;
 

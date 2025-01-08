@@ -9,7 +9,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { EventSelected } from 'types/events';
 import { Idea } from 'types/idea';
-import { StockId } from 'types/stock';
+import { StockId, StockTransaction } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
 import { getColor, getRGBA } from 'utils/get-color';
 import { QueryParams } from 'utils/query-params';
@@ -53,7 +53,7 @@ export class EntryTableComponent {
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
   public activeIdeaId$: Observable<StockId | null> = this._store.idea$.pipe(
-    map((result: Position | null) => (result ? result.id : null)),
+    map((result: StockTransaction | null) => (result ? result.ideaId : null)),
     distinctUntilChanged()
   );
 

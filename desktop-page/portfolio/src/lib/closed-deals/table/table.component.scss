@@ -20,6 +20,9 @@ table.table {
 
   tr {
     height: 32px;
+
+    cursor: pointer;
+    transition: background-color 0.25s ease-in-out;
   }
 
   th {
@@ -28,9 +31,24 @@ table.table {
 
   td {
     padding: 0 var(--padding-2);
+    background-color: inherit;
 
     font-size: 11px;
     line-height: 14px;
+  }
+
+  .tr {
+    background-color: var(--color-g-1);
+
+    &:hover {
+      background-color: rgba(0, 102, 255, 0.1) !important;
+
+      transition: none;
+    }
+  }
+
+  .tr--active {
+    background-color: rgba(0, 102, 255, 0.1) !important;
   }
 
   .td {
@@ -40,6 +58,10 @@ table.table {
 
     &--center {
       text-align: center;
+    }
+
+    &--green {
+      background-color: rgba(97, 185, 120, 0.1);
     }
   }
 
@@ -156,6 +178,11 @@ table.table {
 
   &--profitRealized {
     width: 90px;
+    background-color: #eef8f1;
+  }
+
+  &--profitNotRealized {
+    width: 80px;
   }
 
   &--remainderInPosition {

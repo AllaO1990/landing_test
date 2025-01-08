@@ -247,9 +247,7 @@ export class DesktopApiService extends DesktopService {
       .post<Response<DataList<PortfolioPosition>>>('https://trade.gpn.dev/api/v1/ideas/portfolio', params)
       .pipe(
         map((result: Response<DataList<PortfolioPosition>>) => {
-          console.log(result.data.items);
-
-          return result.data.items;
+          return result.data.items.map((item) => ({ ...item, ideaId: item.ideaId.toString() }));
         }),
         catchError((err: Error) => {
           console.error(err);

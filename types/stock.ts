@@ -15,9 +15,10 @@ export enum StockPosition {
   SHORT = 'short',
 }
 
-export enum StockCurrency {
-  USDT = 'usdt',
-}
+export type StockTransaction = {
+  ideaId: StockId;
+  instrumentId: StockId;
+};
 
 export type StockId = string;
 

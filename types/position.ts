@@ -82,7 +82,7 @@ export interface StockPositionDividend {
 
 export class Position implements ResponsePosition {
   readonly multiplier: number;
-  id: StockId | null;
+  id: StockId;
   author: string;
   createdAt: string;
   entries: StockPositionEntry[];
@@ -114,7 +114,7 @@ export class Position implements ResponsePosition {
   constructor(data: ResponsePosition) {
     this.multiplier = data.positionType === 'short' ? -1 : 1;
 
-    this.id = data.id && data.id.toString();
+    this.id = (data.id && data.id.toString()) || '';
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;
     this.positionType = data.positionType;
@@ -171,42 +171,4 @@ export class Position implements ResponsePosition {
   private _getFulPositionQuantity(targets: StockPositionTarget[]): number {
     return targets.reduce((acc: number, item: StockPositionTarget) => (acc += item.amount), 0);
   }
-
-  //
-  // private _getProfitPercent(lastPrice: number): number {
-  //   return ((lastPrice - this.entryAveragePrice) / lastPrice) * this.multiplier;
-  // }
-  //
-  // private _getProfit(lastPrice: number): number {
-  //   return (lastPrice - this.entryAveragePrice) * this.inPositionQuantityValue * this.multiplier;
-  // }
-
-  // private _getResultPrice(lastPrice: number): number | null {
-  //   if (!this.targets[0].stopDate) {
-  //     return null;
-  //   }
-  //
-  //   return (
-  //     this.targets.reduce((acc: number, item: StockPositionTarget) => {
-  //       if (item.stopDate) {
-  //         acc += (item.price - this.entryAveragePrice) * item.amount;
-  //       } else {
-  //         acc += (lastPrice - this.entryAveragePrice) * item.amount;
-  //       }
-  //       return acc;
-  //     }, 0) * this.multiplier
-  //   );
-  // }
-  //
-  // private _getResultPercent(lastPrice: number): number | null {
-  //   if (!this._resultPrice) {
-  //     return null;
-  //   }
-  //
-  //   return this._resultPrice / (this.entryAveragePrice * this.inPositionQuantityValue);
-  // }
-  //
-  // private _getFullPositionPrice(targets: StockPositionEntry[]): number {
-  //   return targets.reduce((acc: number, item: StockPositionEntry) => (acc += item.totalPrice), 0);
-  // }
 }
