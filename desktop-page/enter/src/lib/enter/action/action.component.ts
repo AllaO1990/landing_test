@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, Input } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { TuiButton, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
-import { Position, StockPositionDividend, StockPositionEntry, StockPositionTarget } from 'types/position';
+import { Position, StockPositionDividend, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { ActionService } from './action.service';
 import {
   ActionEntry,
@@ -65,7 +65,7 @@ export class EnterActionComponent {
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
 
   readonly form: FormGroup = new FormGroup({
-    entries: new FormArray<FormControl<StockPositionEntry>>([]),
+    entries: new FormArray<FormControl<StockPositionIdeaEntry>>([]),
     targets: new FormArray<FormControl<StockPositionTarget>>([]),
     dividends: new FormArray<FormControl<StockPositionTarget>>([]),
   });
@@ -82,17 +82,17 @@ export class EnterActionComponent {
     return this.form.get('dividends') as FormArray;
   }
 
-  entriesList$: Observable<StockPositionEntry[]> = this.formArrayEntries.valueChanges.pipe(
+  entriesList$: Observable<StockPositionIdeaEntry[]> = this.formArrayEntries.valueChanges.pipe(
     startWith(this.formArrayEntries.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  targetsList$: Observable<StockPositionEntry[]> = this.formArrayTargets.valueChanges.pipe(
+  targetsList$: Observable<StockPositionIdeaEntry[]> = this.formArrayTargets.valueChanges.pipe(
     startWith(this.formArrayTargets.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  dividendsList$: Observable<StockPositionEntry[]> = this.formArrayDividends.valueChanges.pipe(
+  dividendsList$: Observable<StockPositionIdeaEntry[]> = this.formArrayDividends.valueChanges.pipe(
     startWith(this.formArrayDividends.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
@@ -112,8 +112,8 @@ export class EnterActionComponent {
 
       Promise.resolve().then(() => {
         (value.data as Position).entries
-          .filter((item: StockPositionEntry) => item.date)
-          .forEach((item: StockPositionEntry, index: number) => {
+          .filter((item: StockPositionIdeaEntry) => item.date)
+          .forEach((item: StockPositionIdeaEntry, index: number) => {
             this.formArrayEntries.setControl(index, new FormControl(item));
           });
 
@@ -157,12 +157,12 @@ export class EnterActionComponent {
     targets: this.addTarget,
   };
 
-  totalEntry$: Observable<StockPositionEntry> = this.formArrayEntries.valueChanges.pipe(
+  totalEntry$: Observable<StockPositionIdeaEntry> = this.formArrayEntries.valueChanges.pipe(
     startWith(this.formArrayEntries.value),
-    map((list: StockPositionEntry[] | null) => this._service.getTotalEntry(list))
+    map((list: StockPositionIdeaEntry[] | null) => this._service.getTotalEntry(list))
   );
   totalOut$: Observable<StockPositionTarget> = this.totalEntry$.pipe(
-    switchMap((totalEntry: StockPositionEntry) =>
+    switchMap((totalEntry: StockPositionIdeaEntry) =>
       this.formArrayTargets.valueChanges.pipe(
         startWith(this.formArrayTargets.value),
         map((list: StockPositionTarget[] | null) => this._service.getTotalOut(list, totalEntry, this.multiplier))

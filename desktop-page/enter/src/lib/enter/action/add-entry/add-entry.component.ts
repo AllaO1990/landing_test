@@ -11,7 +11,7 @@ import {
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
 import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
-import { StockPositionEntry } from 'types/position';
+import { StockPositionIdeaEntry } from 'types/position';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { map, Observable } from 'rxjs';
 import { AccountBroker } from 'types/account';
@@ -60,7 +60,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
 
   ngOnInit(): void {
     if (this.context.data) {
-      const { date, price, quantity, broker } = this.context.data as StockPositionEntry;
+      const { date, price, quantity, broker } = this.context.data as StockPositionIdeaEntry;
 
       this.form.patchValue({
         price: price || null,

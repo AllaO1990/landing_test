@@ -1,6 +1,6 @@
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
-import { Observable, shareReplay, startWith, switchMap } from 'rxjs';
+import { debounceTime, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { MainService } from './main.service';
 import { TuiBreakpointService } from '@taiga-ui/core';
@@ -55,6 +55,7 @@ export class MainComponent implements AfterViewInit {
     startWith(this._queryParams.value()),
     distinctUntilChanged((a: Params, b: Params) => a['dialog'] === b['dialog']),
     filter((params: Params) => params['dialog'] === 'visible'),
+    debounceTime(100),
     shareReplay({ refCount: false, bufferSize: 1 })
   );
   private _component: PolymorpheusComponent<VtEnterComponent> | null = null;

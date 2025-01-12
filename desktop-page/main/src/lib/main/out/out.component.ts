@@ -13,10 +13,18 @@ import { TuiBlock, TuiFilter } from '@taiga-ui/kit';
 import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
+import { searchPosition } from '../common/utils/search-position';
+import { AccountStrategies } from 'types/account';
 
-interface FilterListItem {
-  id: string[];
+interface StockInstrumentWithMap {
+  id: string;
   name: string;
+  map: string[];
+  disabled: boolean;
+}
+
+interface AccountStrategiesWithMap extends AccountStrategies {
+  map: string[];
   disabled: boolean;
 }
 
@@ -45,12 +53,32 @@ export class OutComponent {
   private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly _data$: Subject<Position[] | null> = new BehaviorSubject<Position[] | null>(null);
   public readonly constants: { [key in OutEnums]: string } = OUT_CONSTANTS;
-  public filterStock: FilterListItem[] = MAIN_FILTER_STOCK;
-  public filterStrategy: FilterListItem[] = STOCK_STRATEGY_LIST;
+
+  readonly instrumentType = (d: Position) => d.instrument.type;
+  readonly mainFilterId = (d: StockInstrumentWithMap) => d.id;
+  readonly strategyType = (d: Position) => d.strategy.type;
+  readonly stockStrategyKey = (d: AccountStrategiesWithMap) => d.key;
+
+  public filterStock: StockInstrumentWithMap[] = this._updateFilterList(
+    MAIN_FILTER_STOCK,
+    null,
+    this.instrumentType,
+    this.mainFilterId
+  );
+  public filterStrategy: AccountStrategiesWithMap[] = this._updateFilterList(
+    STOCK_STRATEGY_LIST,
+    null,
+    this.strategyType,
+    this.stockStrategyKey
+  );
 
   public readonly controlSearch: FormControl<string> = new FormControl('', { nonNullable: true });
-  public readonly controlFilterStock: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
-  public readonly controlFilterStrategy: FormControl<FilterListItem[]> = new FormControl([], { nonNullable: true });
+  public readonly controlFilterStock: FormControl<StockInstrumentWithMap[]> = new FormControl([], {
+    nonNullable: true,
+  });
+  public readonly controlFilterStrategy: FormControl<AccountStrategiesWithMap[]> = new FormControl([], {
+    nonNullable: true,
+  });
   readonly size = 's';
 
   public readonly data$: Observable<Position[] | null> = this._data$.asObservable().pipe(
@@ -63,8 +91,8 @@ export class OutComponent {
         this.controlFilterStock.valueChanges.pipe(startWith(this.controlFilterStock.value)),
         this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
       ]).pipe(
-        map(([search, stock, strategy]: [string, FilterListItem[], FilterListItem[]]) =>
-          this._filterData(this._searchData(data, search), stock, strategy)
+        map(([search, stock, strategy]: [string, StockInstrumentWithMap[], AccountStrategiesWithMap[]]) =>
+          this._filterData(searchPosition(data, search), stock, strategy)
         )
       )
     )
@@ -72,12 +100,12 @@ export class OutComponent {
 
   public openMore = false;
 
-  disabledItemHandler: TuiBooleanHandler<FilterListItem> = (item: FilterListItem) => item.disabled;
+  disabledItemHandler: TuiBooleanHandler<{ disabled: boolean }> = (item: { disabled: boolean }) => item.disabled;
 
   @Input()
   set data(value: Position[] | null) {
-    this.filterStock = this._updateFilterList(this.filterStock, value, (item: Position) => item.instrument.type);
-    this.filterStrategy = this._updateFilterList(this.filterStrategy, value, (item: Position) => item.strategy.type);
+    this.filterStock = this._updateFilterList(MAIN_FILTER_STOCK, value, this.instrumentType, this.mainFilterId);
+    this.filterStrategy = this._updateFilterList(STOCK_STRATEGY_LIST, value, this.strategyType, this.stockStrategyKey);
 
     this._data$.next(value);
     this._cdr.markForCheck();
@@ -97,44 +125,33 @@ export class OutComponent {
     this.openMore = active && this.openMore;
   }
 
-  private _updateFilterList(
-    list: FilterListItem[],
+  private _updateFilterList<T>(
+    list: any[],
     data: Position[] | null,
-    fn: (d: Position) => string
-  ): FilterListItem[] {
-    const types: string[] = [...new Set((data || []).map((item: Position) => fn(item)))];
+    fnType: (d: Position) => string,
+    fnKey: (d: T) => string
+  ): T[] {
+    const types: string[] = [...new Set((data || []).map((item: Position) => fnType(item)))];
 
-    return list.map((item: FilterListItem) => ({
-      ...item,
-      disabled: !types.some((type) => item.id.includes(type)),
-    }));
-  }
+    return list.map((item: T) => {
+      const map: string[] = types.filter((type: string) => type.indexOf(fnKey(item)) !== -1);
 
-  private _searchData(data: Position[] | null, search: string | null): Position[] | null {
-    if (data === null) {
-      return data;
-    }
-
-    if (!search) {
-      return data;
-    }
-
-    return data.filter((item: Position) => {
-      const concat = [item.instrument.ticker, item.instrument.name].map((item: string) => item.toLowerCase()).join('⁂');
-
-      return concat.indexOf(search) !== -1;
+      return {
+        ...item,
+        map: [...map, fnKey(item)],
+        disabled: !map.length,
+      };
     });
   }
 
   private _filterData(
     data: Position[] | null,
-    valueStock: FilterListItem[],
-    valueStrategy: FilterListItem[]
+    valueStock: StockInstrumentWithMap[],
+    valueStrategy: AccountStrategiesWithMap[]
   ): Position[] | null {
     if (data === null) {
       return data;
     }
-
     const mapStock = this._getObject(valueStock);
     const mapStrategy = this._getObject(valueStrategy);
 
@@ -146,11 +163,11 @@ export class OutComponent {
     });
   }
 
-  private _getObject(list: FilterListItem[]): { [key: string]: boolean } {
+  private _getObject(list: { map: string[] }[]): { [key: string]: boolean } {
     return list.reduce(
-      (acc: { [key: string]: boolean }, item: FilterListItem) => ({
+      (acc: { [key: string]: boolean }, item: { map: string[] }) => ({
         ...acc,
-        ...item.id.reduce((common, uid: string) => ({ ...common, [uid]: true }), {}),
+        ...item.map.reduce((common, uid: string) => ({ ...common, [uid]: true }), {}),
       }),
       {}
     );

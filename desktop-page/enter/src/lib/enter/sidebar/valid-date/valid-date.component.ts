@@ -76,7 +76,7 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
           return;
         }
 
-        this.onChange(result.calendar.toJSON());
+        this.onChange(result.calendar.toLocalNativeDate().toISOString());
       });
   }
 

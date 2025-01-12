@@ -141,4 +141,12 @@ export class DesktopStubService extends DesktopService {
   getPortfolio(params: Params): Observable<PortfolioPosition[] | null> {
     return of();
   }
+
+  getIdea(id: StockId): Observable<Response<any>> {
+    return of();
+  }
+
+  override createIdea(body: object): Observable<any> {
+    return of();
+  }
 }

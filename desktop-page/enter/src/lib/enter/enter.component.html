@@ -2,57 +2,58 @@
   class="container container--{{breakpoint$ | async}} container--{{orientation$ | async}}">
   <div class="container__toolbar">
     <div class="container__actions">
-      <button
-        class="action"
-        tuiIconButton
-        appearance="outline"
-        [size]="size"
-        [disabled]="isDisabled"
-        type="button"
-        iconStart="@tui.trash"
-      ></button>
-      <button
-        class="action save"
-        tuiIconButton
-        appearance="outline"
-        [size]="size"
-        [disabled]="isDisabled"
-        type="button"
-        iconStart="@tui.save"
-      ></button>
-      <button
-        class="action bell"
-        tuiIconButton
-        appearance="primary"
-        [size]="size"
-        [disabled]="isDisabled"
-        type="button"
-        iconStart="@tui.bell-dot"
-      ></button>
-      <button
-        *ngIf="isShowSearch$ | async"
-        class="search"
-        tuiIconButton
-        appearance="outline"
-        [size]="size"
-        [disabled]="isDisabled"
-        type="button"
-        searchDialog
-        #dialog=SearchDialog
-        (click)="dialog.onSearch($event)"
-        (selected)="onSelect($event)"
-        iconStart="@tui.search"
-      ></button>
-      <div class="container__space container__space--first"></div>
-      <lib-enter-sidebar-instrument
-        *ngIf="(data$ | async) as result; else load"
-        [data]="result.data && result.data.instrument">
-      </lib-enter-sidebar-instrument>
-      <div class="container__space"></div>
-      <div class="date-start" *ngIf="(data$ | async) as result; else load">
-        Идея от
-        <span>{{ result.data && (result.data.createdAt | date : 'dd.MM.yyyy') }}</span>
-      </div>
+      <ng-container *ngIf="(data$ | async) as result; else load">
+        <button
+          class="action"
+          tuiIconButton
+          appearance="outline"
+          [size]="size"
+          [disabled]="isDisabled"
+          type="button"
+          iconStart="@tui.trash"
+        ></button>
+        <button
+          class="action save"
+          tuiIconButton
+          appearance="outline"
+          [size]="size"
+          [disabled]="isDisabled"
+          type="button"
+          iconStart="@tui.save"
+        ></button>
+        <button
+          class="action bell"
+          tuiIconButton
+          appearance="primary"
+          [size]="size"
+          [disabled]="isDisabled"
+          type="button"
+          iconStart="@tui.bell-dot"
+        ></button>
+        <button
+          *ngIf="isShowSearch$ | async"
+          class="search"
+          tuiIconButton
+          appearance="outline"
+          [size]="size"
+          [disabled]="isDisabled"
+          type="button"
+          searchDialog
+          #dialog=SearchDialog
+          (click)="dialog.onSearch($event)"
+          (selected)="onSearch($event)"
+          iconStart="@tui.search"
+        ></button>
+        <div class="container__space container__space--first"></div>
+        <lib-enter-sidebar-instrument
+          [data]="result.idea.instrument">
+        </lib-enter-sidebar-instrument>
+        <div class="container__space"></div>
+        <div class="date-start" *ngIf="result.idea.createdAt">
+          Идея от
+          <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
+        </div>
+      </ng-container>
       <button
         appearance="icon"
         iconStart="@tui.x"
@@ -67,11 +68,7 @@
     [style.margin-left.%]="activeItemIndex * -100"
     class="container__widget-list">
     <div class="container__sidebar container__widget">
-      <lib-enter-sidebar
-        *ngIf="(data$ | async) as data; else load"
-        [data]="$any(data)"
-        (selected)="onSelectedSidebar($event)">
-      </lib-enter-sidebar>
+      <lib-enter-sidebar [formGroup]="form"></lib-enter-sidebar>
     </div>
     <div class="container__submit container__widget">
       <div class="submit">
@@ -118,11 +115,7 @@
         </div>
         <div class="widget__content">
           <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-idea
-              *ngIf="(data$ | async) as data; else load"
-              [data]="$any(data)"
-              class="tui-zero-scrollbar">
-            </lib-enter-idea>
+            <lib-enter-idea [formControl]="controlIdea" class="tui-zero-scrollbar"></lib-enter-idea>
           </tui-scrollbar>
         </div>
       </div>
@@ -135,10 +128,8 @@
           </div>
         </div>
         <div class="widget__content">
-          <tui-scrollbar class="scrollbar" [hidden]="true" *ngIf="(data$ | async) as data; else load">
-            <lib-enter-action
-              [data]="$any(data)"
-              class="tui-zero-scrollbar"></lib-enter-action>
+          <tui-scrollbar class="scrollbar" [hidden]="true">
+            <lib-enter-action class="tui-zero-scrollbar"></lib-enter-action>
           </tui-scrollbar>
         </div>
       </div>
@@ -166,5 +157,5 @@
 </div>
 
 <ng-template #load>
-  <ui-loader></ui-loader>
+  <ui-loader style="width: 100%;"></ui-loader>
 </ng-template>

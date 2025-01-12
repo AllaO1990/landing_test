@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { StockPositionEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 
 @Injectable()
 export class IdeaService {
-  private readonly _totalDefaultEntry: StockPositionEntry = {
+  private readonly _totalDefaultEntry: StockPositionIdeaEntry = {
     date: null,
     depositShare: null,
     price: 0,
@@ -35,32 +35,35 @@ export class IdeaService {
     amountPercent: 0,
   };
 
-  getTotalEntry(list: StockPositionEntry[] | null): StockPositionEntry {
+  getTotalEntry(list: StockPositionIdeaEntry[] | null): StockPositionIdeaEntry {
     if (list === null) {
       return this._totalDefaultEntry;
     }
 
-    return list.reduce((acc: StockPositionEntry, item: StockPositionEntry, index: number): StockPositionEntry => {
-      const value = {
-        ...acc,
-        quantity: acc.quantity + item.quantity,
-        depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
-        totalPrice: acc.totalPrice + item.price * item.quantity,
-      };
+    return list.reduce(
+      (acc: StockPositionIdeaEntry, item: StockPositionIdeaEntry, index: number): StockPositionIdeaEntry => {
+        const value = {
+          ...acc,
+          quantity: acc.quantity + item.quantity,
+          depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
+          totalPrice: acc.totalPrice + item.price * item.quantity,
+        };
 
-      if (list.length - 1 === index) {
-        value.price = value.totalPrice / value.quantity;
+        if (list.length - 1 === index) {
+          value.price = value.totalPrice / value.quantity;
+
+          return value;
+        }
 
         return value;
-      }
-
-      return value;
-    }, this._totalDefaultEntry);
+      },
+      this._totalDefaultEntry
+    );
   }
 
   getTotalTarget(
     list: StockPositionTarget[] | null,
-    total: StockPositionEntry,
+    total: StockPositionIdeaEntry,
     multiplier: number
   ): StockPositionTarget {
     if (list === null) {
@@ -87,7 +90,7 @@ export class IdeaService {
 
   getTotalStop(
     list: StockPositionStop[] | null,
-    total: StockPositionEntry,
+    total: StockPositionIdeaEntry,
     targets: StockPositionTarget[] | null,
     multiplier: number
   ): StockPositionStop {

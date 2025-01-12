@@ -28,7 +28,7 @@
           </div>
           <div class="item__value row__item row__right row__deposit">
             <ng-container *ngIf="item.depositShare !== null; else none">
-              {{ item.depositShare | tuiFormatNumber | async }}%
+              {{ item.depositShare * 100 | tuiFormatNumber: { precision: 2 } | async }}%
             </ng-container>
           </div>
           <div class="row__space"></div>
@@ -54,8 +54,9 @@
       </lib-list-item>
     </lib-list>
 
-    <div class="action" *ngIf="(isEditEntry$ | async) && formArrayEntries.value.length === 0">
+    <div class="action">
       <button
+        *ngIf="formArrayEntries.value.length === 0"
         class="button"
         tuiButton
         (click)="addEntry($event)"
@@ -86,7 +87,7 @@
             {{ item.stopDate | date: 'dd.MM.yy' }}
           </div>
           <div class="item__value row__right row__item row__price">
-            {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+            {{ item.price | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__right row__item row__profit">
             <ng-container *ngIf="item.profitPercent !== null; else none">
@@ -100,14 +101,16 @@
           </div>
           <div class="item__value row__right row__item row__deposit">
             <ng-container *ngIf="item.depositShare !== null; else none">
-              {{ item.depositShare | tuiFormatNumber | async }}%
+              {{ item.depositShare * 100 | tuiFormatNumber: { precision: 2 } | async }}%
             </ng-container>
           </div>
           <div class="item__value row__right row__item row__fix-half">
             {{ item.amount | tuiFormatNumber | async }}
           </div>
           <div class="item__value row__right row__item row__fix-half">
-            {{ item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: { rounding: 'round' } | async }}%
+            <ng-container *ngIf="inPositionQuantityValue !== 0; else none">
+              {{ item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: { rounding: 'round' } | async }}%
+            </ng-container>
           </div>
           <div class="row__space"></div>
           <div class="item__value row__actions">
@@ -132,7 +135,7 @@
       </lib-list-item>
     </lib-list>
 
-    <div class="action" *ngIf="isEditTarget$ | async">
+    <div class="action">
       <button
         class="button"
         [disabled]="formArrayEntries.value.length === 0"
@@ -169,7 +172,7 @@
           </div>
           <div class="item__value row__item row__right row__profit">
             <ng-container *ngIf="item.lossPercent !== null; else none">
-              {{ item.lossPercent | tuiFormatNumber | async }}%
+              {{ item.lossPercent | tuiFormatNumber: { precision: 2 } | async }}%
             </ng-container>
           </div>
           <div class="item__value row__item row__right row__profit">
@@ -179,7 +182,7 @@
           </div>
           <div class="item__value row__item row__right row__deposit">
             <ng-container *ngIf="item.depositShare !== null; else none">
-              {{ item.depositShare | tuiFormatNumber | async }}%
+              {{ item.depositShare * 100 | tuiFormatNumber: { precision: 2 } | async }}%
             </ng-container>
           </div>
           <div class="item__value row__item row__right row__fix-half">
@@ -189,7 +192,7 @@
           </div>
           <div class="item__value row__item row__right row__fix-half">
             <ng-container *ngIf="item.amountPercent !== null; else none">
-              {{ item.amountPercent | tuiFormatNumber | async }}%
+              {{ item.amountPercent | tuiFormatNumber: { precision: 2 } | async }}%
             </ng-container>
           </div>
           <div class="row__space"></div>
@@ -215,11 +218,12 @@
       </lib-list-item>
     </lib-list>
 
-    <div class="action" *ngIf="(isEditStop$ | async) && formArrayStop.value.length === 0">
+    <div class="action">
       <button
+        *ngIf="formArrayStop.value.length === 0"
         class="button"
-        [disabled]="formArrayEntries.value.length === 0"
         tuiButton
+        [disabled]="formArrayEntries.value.length === 0"
         (click)="addStop($event)"
         type="button">
         + {{ formArrayStop.value.length ? 'Изменить стоп' : 'Добавить стоп' }}
@@ -244,17 +248,17 @@
     <div class="total__item row__item row__first">Всего</div>
     <div class="total__item row__item"></div>
     <div class="total__item row__right row__item">
-      {{ total.price | tuiFormatNumber | async }}
+      {{ total.price | tuiFormatNumber: { precision: priceIncrement } | async }}
     </div>
     <div class="total__item row__right row__item">
       {{ total.quantity | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__right row__item">
-      {{ total.totalPrice | tuiFormatNumber: { precision: 0 } | async }}
+      {{ total.totalPrice | tuiFormatNumber: { precision: priceIncrement } | async }}
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.depositShare !== null; else none">
-        {{ total.depositShare | tuiFormatNumber | async }}%
+        {{ total.depositShare * 100 | tuiFormatNumber: { precision: 2 } | async }}%
       </ng-container>
     </div>
   </lib-list-header>
@@ -277,21 +281,21 @@
     <div class="total__item row__item row__first">Всего</div>
     <div class="total__item row__item"></div>
     <div class="total__item row__right row__item">
-      {{ total.price | tuiFormatNumber | async }}
+      {{ total.price | tuiFormatNumber: { precision: priceIncrement } | async }}
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.profitPercent !== null; else none">
-        {{ total.profitPercent | tuiFormatNumber | async }}%
+        {{ total.profitPercent | tuiFormatNumber: { precision: 2 } | async }}%
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.profit !== null; else none">
-        {{ total.profit | tuiFormatNumber | async }}
+        {{ total.profit | tuiFormatNumber: { precision: priceIncrement } | async }}
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.depositShare !== null; else none">
-        {{ total.depositShare | tuiFormatNumber | async }}%
+        {{ total.depositShare * 100 | tuiFormatNumber: { precision: 2 } | async }}%
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
@@ -317,21 +321,21 @@
     <div class="total__item row__item row__first">Всего</div>
     <div class="total__item row__item"></div>
     <div class="total__item row__right row__item">
-      {{ total.price | tuiFormatNumber | async }}
+      {{ total.price | tuiFormatNumber: { precision: priceIncrement } | async }}
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.lossPercent !== null; else none">
-        {{ total.lossPercent | tuiFormatNumber | async }}%
+        {{ total.lossPercent | tuiFormatNumber: { precision: 2 } | async }}%
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.loss !== null; else none">
-        {{ total.loss | tuiFormatNumber | async }}
+        {{ total.loss | tuiFormatNumber: { precision: priceIncrement } | async }}
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.depositShare !== null; else none">
-        {{ total.depositShare | tuiFormatNumber | async }}%
+        {{ total.depositShare | tuiFormatNumber: { precision: 2 } | async }}%
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
@@ -341,7 +345,7 @@
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.amountPercent !== null; else none">
-        {{ total.amountPercent | tuiFormatNumber | async }}%
+        {{ total.amountPercent | tuiFormatNumber: { precision: 2 } | async }}%
       </ng-container>
     </div>
   </lib-list-header>

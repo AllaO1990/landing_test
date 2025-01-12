@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ActiveZone, FigureIdea } from 'types/chart';
-import { Position, ResponsePosition, ResponsePositions } from 'types/position';
+import { Position, ResponsePosition, ResponsePositions, StockPosition } from 'types/position';
 import { DataList, Response, ResponseMessage } from 'types/response';
 import {
   Stock,
@@ -254,5 +254,19 @@ export class DesktopApiService extends DesktopService {
           return of(null);
         })
       );
+  }
+
+  getIdea(id: StockId): Observable<StockPosition | null> {
+    return this._http.get<Response<StockPosition>>(`https://trade.gpn.dev/api/v1/ideas/${id}`).pipe(
+      map((response: Response<StockPosition>): StockPosition => response.data),
+      catchError((err: Error) => {
+        console.error(err);
+        return of(null);
+      })
+    );
+  }
+
+  createIdea(body: object): Observable<any> {
+    return this._http.post<Observable<any>>(`https://trade.gpn.dev/api/v1/ideas/create`, { body });
   }
 }

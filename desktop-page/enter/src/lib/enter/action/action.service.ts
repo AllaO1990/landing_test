@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Position, StockPositionDividend, StockPositionEntry, StockPositionTarget } from 'types/position';
+import { Position, StockPositionDividend, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import {
   ActionEntry,
   ActionOut,
@@ -11,7 +11,7 @@ import {
 
 @Injectable()
 export class ActionService {
-  private readonly _defaultTotalEntry: StockPositionEntry = {
+  private readonly _defaultTotalEntry: StockPositionIdeaEntry = {
     date: null,
     depositShare: null,
     price: 0,
@@ -55,13 +55,13 @@ export class ActionService {
     broker: null,
   };
 
-  getTotalEntry(list: StockPositionEntry[] | null): StockPositionEntry {
+  getTotalEntry(list: StockPositionIdeaEntry[] | null): StockPositionIdeaEntry {
     if (list === null) {
       return this._defaultTotalEntry;
     }
 
-    return list.reduce((acc: StockPositionEntry, item: StockPositionEntry, index: number) => {
-      const value: StockPositionEntry = {
+    return list.reduce((acc: StockPositionIdeaEntry, item: StockPositionIdeaEntry, index: number) => {
+      const value: StockPositionIdeaEntry = {
         ...acc,
         quantity: acc.quantity + item.quantity,
         depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
@@ -78,7 +78,11 @@ export class ActionService {
     }, this._defaultTotalEntry);
   }
 
-  getTotalOut(list: StockPositionTarget[] | null, total: StockPositionEntry, multiplier: number): StockPositionTarget {
+  getTotalOut(
+    list: StockPositionTarget[] | null,
+    total: StockPositionIdeaEntry,
+    multiplier: number
+  ): StockPositionTarget {
     if (list === null) {
       return this._defaultTotalOut;
     }
@@ -114,7 +118,7 @@ export class ActionService {
   }
 
   getActionEntry(position: Position): ActionEntry[] {
-    return position.entries.map((item: StockPositionEntry, index: number) => ({
+    return position.entries.map((item: StockPositionIdeaEntry, index: number) => ({
       id: index.toString(),
       ...item,
     }));

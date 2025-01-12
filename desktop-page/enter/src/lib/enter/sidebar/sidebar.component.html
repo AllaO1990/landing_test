@@ -1,14 +1,25 @@
-<div *ngIf="value" class="widget" [formGroup]="form">
+<div class="widget" [formGroup]="form">
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
       <div class="widget__portfolio widget__padding portfolio">
-        <lib-portfolio
+        <!--        <lib-portfolio-->
+        <!--          class="portfolio__select"-->
+        <!--          [formControl]="formControlPortfolio">-->
+        <!--        </lib-portfolio>-->
+        <tui-select
           class="portfolio__select"
-          [formControl]="formControlPortfolio">
-        </lib-portfolio>
-        <!--        <div class="portfolio">-->
-        <!--          <label>-->
-        <!--            <span>{{ constants.portfolio }}</span>-->
+          *ngIf="portfolio$ | async as list"
+          [stringify]="stringifyPortfolio"
+          [tuiTextfieldSize]="size"
+          [formControl]="formControlPortfolio"
+          [tuiTextfieldLabelOutside]="true">
+          <tui-data-list-wrapper
+            *tuiDataList
+            [size]="size"
+            [items]="list"
+            [itemContent]="contentPortfolio">
+          </tui-data-list-wrapper>
+        </tui-select>
         <tui-select
           class="portfolio__currency"
           *ngIf="currencies$ | async as list"
@@ -18,52 +29,23 @@
           [tuiTextfieldLabelOutside]="true">
           <tui-data-list-wrapper
             *tuiDataList
-            size="s"
+            [size]="size"
             [items]="list"
             [itemContent]="contentCurrency">
           </tui-data-list-wrapper>
         </tui-select>
-        <!--          </label>-->
-        <!--          <button-->
-        <!--            class="portfolio__action"-->
-        <!--            [size]="size"-->
-        <!--            iconStart="@tui.plus"-->
-        <!--            tuiIconButton-->
-        <!--            appearance="secondary"-->
-        <!--            [disabled]="true"-->
-        <!--            type="button">-->
-        <!--            Добавить-->
-        <!--          </button>-->
-        <!--        </div>-->
       </div>
       <div class="widget__valid-date widget__padding">
         <lib-enter-sidebar-valid-date formControlName="expirationDate">
         </lib-enter-sidebar-valid-date>
       </div>
-      <!--      <div class="widget__timing widget__padding">-->
-      <!--        <div>-->
-      <!--          <label-->
-      <!--            *ngFor="let item of timing"-->
-      <!--            appearance=""-->
-      <!--            class="item"-->
-      <!--            tuiBlock="s">-->
-      <!--            <input-->
-      <!--              size="s"-->
-      <!--              formControlName="timing"-->
-      <!--              tuiBlock-->
-      <!--              type="radio"-->
-      <!--              [value]="item.id" />-->
-      <!--            {{ item.name }}-->
-      <!--          </label>-->
-      <!--        </div>-->
-      <!--      </div>-->
       <div class="widget__implementation widget__padding">
         <div>
           <label
             *ngFor="let item of strategy"
             class="item"
             appearance=""
-            tuiBlock="s">
+            [tuiBlock]="size">
             <input
               size="s"
               [formControl]="formControlStrategy"
@@ -79,7 +61,7 @@
           *ngFor="let item of positionType"
           class="item"
           appearance=""
-          tuiBlock="s">
+          [tuiBlock]="size">
           <input
             size="s"
             formControlName="positionType"
@@ -90,26 +72,26 @@
         </label>
       </div>
       <div class="widget__description description widget__padding">
-        <div class="description__row" *ngIf="value.strategy">
-          <div class="description__label">Вероятность успеха</div>
-          <div class="description__text">
-            {{ value.strategy.successProbability * 100 | tuiFormatNumber | async }}%
-          </div>
-        </div>
-        <div class="description__row">
-          <div class="description__label">% вероятность успеха</div>
-          <div class="description__text">
-            {{ value.inPositionDepositShare  | tuiFormatNumber | async }}%
-          </div>
-        </div>
-        <div class="description__row" *ngIf="value.instrument">
+        <!--        <div class="description__row">-->
+        <!--          <div class="description__label">Вероятность успеха</div>-->
+        <!--          <div class="description__text">-->
+        <!--            &lt;!&ndash;            {{ value.strategy.successProbability * 100 | tuiFormatNumber | async }}%&ndash;&gt;-->
+        <!--          </div>-->
+        <!--        </div>-->
+        <!--        <div class="description__row">-->
+        <!--          <div class="description__label">% вероятность успеха</div>-->
+        <!--          <div class="description__text">-->
+        <!--            &lt;!&ndash;            {{ value.inPositionDepositShare  | tuiFormatNumber | async }}%&ndash;&gt;-->
+        <!--          </div>-->
+        <!--        </div>-->
+        <div class="description__row" *ngIf="(idea$ | async) as data">
           <div class="description__label">Сектор экономики</div>
-          <div class="description__text">{{ value.instrument.sector }}</div>
+          <div class="description__text">{{ data.idea.instrument.sector }}</div>
         </div>
-        <div class="description__row">
-          <div class="description__label">% сектора в вашем портфеле</div>
-          <div class="description__text">&mdash;</div>
-        </div>
+        <!--        <div class="description__row">-->
+        <!--          <div class="description__label">% сектора в вашем портфеле</div>-->
+        <!--          <div class="description__text">&mdash;</div>-->
+        <!--        </div>-->
       </div>
       <div class="widget__comment comment widget__padding">
         <div class="comment__label">
@@ -126,10 +108,10 @@
   </tui-scrollbar>
 </div>
 
-<ng-template #contentPortfolio let-item>
-  {{ item.portfolio }}
-</ng-template>
-
 <ng-template #contentCurrency let-item>
   {{ item.currencySymbol }}
+</ng-template>
+
+<ng-template #contentPortfolio let-item>
+  {{ item.portfolio }}
 </ng-template>

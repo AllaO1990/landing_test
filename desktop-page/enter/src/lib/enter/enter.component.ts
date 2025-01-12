@@ -1,23 +1,14 @@
 import { TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  Observable,
-  of,
-  shareReplay,
-  switchMap,
-} from 'rxjs';
+import { combineLatest, distinctUntilChanged, filter, Observable, shareReplay, startWith } from 'rxjs';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
@@ -26,15 +17,14 @@ import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
-import { StockInstrument, StockPosition } from 'types/stock';
+import { StockId, StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
-import { Position } from 'types/position';
-import { StockStrategyEnums } from 'types/stock-strategy';
-import { PositionFacade } from 'stores/facades/position.facade';
-import _default from 'chart.js/dist/plugins/plugin.title';
+import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -62,58 +52,101 @@ export interface TabItem {
     LoaderComponent,
     ChartCandlestickComponent,
     SearchDialogDirective,
+    ReactiveFormsModule,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VtEnterComponent {
+export class VtEnterComponent implements AfterViewInit {
+  ngAfterViewInit(): void {
+    this._idea.loadIdea(this._ideaId$);
+
+    this.controlSidebar.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((res) => console.log('controlSidebar', res));
+
+    this.controlIdea.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((res) => console.log('controlIdea', res));
+
+    this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => console.log('form', res));
+
+    // this._idea.idea$
+    //   .pipe(
+    //     takeUntilDestroyed(this._destroyRef),
+    //     filter((idea: StockPosition | null): idea is StockPosition => idea !== null)
+    //   )
+    //   .subscribe((result: StockPosition) => {
+    //     console.log('idea$', result);
+    //     const entries = result.idea.entries.length ? result.idea.entries[0] : null;
+    //     const targets = result.idea.targets.length ? result.idea.targets : [];
+    //
+    //     this.controlIdea.patchValue({
+    //       amount: entries && entries.quantity,
+    //       entry: entries && entries.price,
+    //       goals: targets.map((item) => ({ goal: item.price, amount: item.amount })),
+    //       stop: result.idea.stop ? result.idea.stop.price : null,
+    //     });
+    //   });
+  }
+
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _select: SelectFacade = inject(SelectFacade);
-  private readonly _position: PositionFacade = inject(PositionFacade);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+
+  private readonly _ideaId$: Observable<StockId | null> = this._select.event$.pipe(
+    takeUntilDestroyed(this._destroyRef),
+    filter((event: StockEvent | null): event is StockEvent => event !== null),
+    map((event: StockEvent) => {
+      if (event.type === EventSelected.IDEA || event.type === EventSelected.POSITION) {
+        return event.id;
+      }
+
+      return null;
+    }),
+    distinctUntilChanged()
+  );
 
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
 
-  readonly data$: Observable<{ type: string; data: Position | null }> = this._select.event$.pipe(
-    filter((event: StockEvent | null): event is StockEvent => event !== null),
-    debounceTime(300),
-    distinctUntilChanged((a: StockEvent, b: StockEvent) => a.id === b.id),
-    switchMap((event: StockEvent) => {
-      if (event.type === EventSelected.POSITION) {
-        return this._position.selectItem(event.id).pipe(
-          filter((position: Position | null): position is Position => position !== null),
-          map((data: Position) => ({ type: 'position', data }))
-        );
-      }
-
-      if (event.type === EventSelected.IDEA) {
-        return this._idea.selectItem(event.id).pipe(
-          filter((idea: Position | null): idea is Position => idea !== null),
-          map((data: Position) => ({ type: 'idea', data }))
-        );
-      }
-
-      if (event.type === EventSelected.STOCK_LIST) {
-        return this._select.instrument$.pipe(
-          filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
-          map((instrument: StockInstrument) => this._createDefaultPosition(instrument)),
-          map((data: Position) => ({ type: 'instrument', data }))
-        );
-      }
-
-      return of(null);
+  readonly form: FormGroup = new FormGroup({
+    actions: new FormGroup({}),
+    idea: new FormGroup({
+      amount: new FormControl(null),
+      entry: new FormControl(null),
+      goals: new FormArray([]),
+      stop: new FormControl(null),
+      currencyId: new FormControl(null),
+      portfolioId: new FormControl(null),
+      expirationDate: new FormControl(null),
+      strategyId: new FormControl(null),
+      positionType: new FormControl(null),
+      comment: new FormControl(''),
     }),
-    tap((data: any | null) => (this.isDisabled = data === null)),
-    // take(1),
-    distinctUntilChanged((a, b) => a.id !== b.id),
-    shareReplay({ refCount: true, bufferSize: 1 })
+  });
+
+  readonly controlSidebar: FormControl = new FormControl();
+
+  readonly controlIdea: FormControl = new FormControl({
+    amount: null,
+    entry: null,
+    goals: [],
+    stop: null,
+  });
+
+  readonly data$: Observable<StockPosition | null> = this._idea.idea$.pipe(
+    shareReplay({ bufferSize: 1, refCount: true })
   );
+
   readonly isShowSearch$: Observable<boolean> = this.data$.pipe(
-    map((data: { type: string; data: Position | null }) => data.type === 'instrument'),
+    filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
+    map((data: StockPosition) => data.idea.id === -1),
     distinctUntilChanged(),
+    startWith(false),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -128,7 +161,7 @@ export class VtEnterComponent {
   );
 
   readonly size = 's';
-  isDisabled = true;
+  isDisabled = false;
   activeItemIndex = 0;
 
   onClose(event: Event): void {
@@ -137,12 +170,11 @@ export class VtEnterComponent {
     this.context.$implicit.complete();
   }
 
-  onSelect(event: StockInstrument | null): void {
+  onSearch(event: StockInstrument | null): void {
     if (event !== null) {
       this._queryParams.update({
         type: EventSelected.STOCK_LIST,
         id: event.id,
-        // dialog: 'visible',
       });
     }
   }
@@ -172,41 +204,5 @@ export class VtEnterComponent {
 
     this.activeItemIndex = 0;
     return null;
-  }
-
-  onSelectedSidebar(event: any): void {
-    console.log(event);
-  }
-
-  private _createDefaultPosition(instrument: StockInstrument): Position {
-    return new Position({
-      id: '',
-      instrument,
-      createdAt: new Date().toISOString(),
-      inPositionDepositShare: 0,
-      entries: [],
-      targets: [],
-      dividends: [],
-      stop: null,
-      updatedAt: null,
-      inPosition: false,
-      inPositionQuantity: 0,
-      positionType: StockPosition.LONG,
-      lastPrice: 0,
-      minPriceIncrement: 0,
-      strategy: {
-        successProbability: 0,
-        type: StockStrategyEnums.USER,
-      },
-      author: 'user',
-      inPositionPrice: 0,
-      inPositionResult: 0,
-      inPositionProfitPercent: 0,
-      result: {
-        profitPercent: 0,
-        profitPrice: 0,
-      },
-      subscribed: true,
-    });
   }
 }

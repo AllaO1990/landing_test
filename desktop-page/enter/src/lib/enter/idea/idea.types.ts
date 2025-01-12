@@ -1,4 +1,4 @@
-import { StockPositionEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 
 export interface EventIdeaSelected {
   amount: number;
@@ -17,7 +17,7 @@ export interface IdeaTotalTarget {
   amount: number;
 }
 
-export interface IdeaEntry extends StockPositionEntry {
+export interface IdeaEntry extends StockPositionIdeaEntry {
   id: number;
 }
 

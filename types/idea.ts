@@ -1,5 +1,5 @@
-import { StockId, StockInstrument, StockPosition } from './stock';
-import { StockPositionEntry, StockPositionStop, StockPositionStrategy, StockPositionTarget } from './position';
+import { StockId, StockInstrument, StockPositionDirection } from './stock';
+import { StockPositionIdeaEntry, StockPositionStop, StockPositionStrategy, StockPositionTarget } from './position';
 
 export interface ResponseListIdea {
   items: ResponseIdea[];
@@ -13,11 +13,11 @@ export interface ResponseIdea {
   inPosition: boolean;
   inPositionQuantity: number;
   inPositionDepositShare: number;
-  positionType: StockPosition | string;
+  positionType: StockPositionDirection | string;
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
-  entries: StockPositionEntry[];
+  entries: StockPositionIdeaEntry[];
   targets: StockPositionTarget[];
   stop: StockPositionStop;
   strategy: StockPositionStrategy;

@@ -13,19 +13,8 @@ import { Params, RouterOutlet } from '@angular/router';
 // } from 'stores/desktop';
 import { DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
-import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  Observable,
-  shareReplay,
-  startWith,
-} from 'rxjs';
+import { shareReplay } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { StockId } from 'types/stock';
-import { EventSelected } from 'types/events';
 import { NavComponent } from '../nav';
 import { LogoComponent } from '@ui/components/logo';
 import { DesktopService } from '@desktop-data/desktop-data';
@@ -67,33 +56,26 @@ export class LkComponent implements OnInit {
   private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
 
   ngOnInit(): void {
-    const stream$ = this._queryParams.pipe(shareReplay({ bufferSize: 1, refCount: true }));
-
-    combineLatest([
-      this._getParamsKey<EventSelected>('type', stream$),
-      this._getParamsKey<StockId>('id', stream$),
-      this._getParamsKey<StockId>('group', stream$).pipe(startWith('')),
-    ])
-      .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(300))
-      .subscribe(([type, id, group]: [EventSelected, StockId, StockId | undefined]) =>
-        this._select.updateEvent({
-          type,
-          id,
-          group,
+    this._queryParams
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        shareReplay({
+          bufferSize: 1,
+          refCount: true,
         })
-      );
+      )
+      .subscribe((event: Params) => {
+        const { type, id, group } = event;
+        this._select.updateEvent({
+          type: type || null,
+          id: id || null,
+          group: group || null,
+        });
+      });
 
     this._globalDateRangeService.setRange({
       from: new Date(new Date(new Date().getFullYear() - 1, 0, 1, 12).setUTCHours(0, 0, 0, 0)).toISOString(),
       to: new Date(new Date().setUTCHours(23, 59, 59, 0)).toISOString(),
     });
-  }
-
-  private _getParamsKey<T>(key: string, stream$: Observable<Params>): Observable<T> {
-    return stream$.pipe(
-      filter((params: Params) => !!params[key]),
-      map((params: Params) => params[key]),
-      distinctUntilChanged()
-    );
   }
 }
