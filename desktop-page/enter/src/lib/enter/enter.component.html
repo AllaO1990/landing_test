@@ -8,7 +8,8 @@
           tuiIconButton
           appearance="outline"
           [size]="size"
-          [disabled]="isDisabled"
+          [disabled]="isDisabled || (isShowSearch$ | async)"
+          (click)="onDelete($event)"
           type="button"
           iconStart="@tui.trash"
         ></button>

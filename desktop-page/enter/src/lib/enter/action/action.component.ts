@@ -111,54 +111,6 @@ export class EnterActionComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  // @Input()
-  // set data(value: { type: string; data: Position | null } | null) {
-  //   if (value && value.data) {
-  //     this._data = value;
-  //
-  //     this.multiplier = value.data.multiplier;
-  //
-  //     this.isEditEntry$.next(value.type !== 'position');
-  //
-  //     this.formArrayEntries.clear();
-  //     this.formArrayTargets.clear();
-  //     this.formArrayDividends.clear();
-  //
-  //     Promise.resolve().then(() => {
-  //       (value.data as Position).entries
-  //         .filter((item: StockPositionIdeaEntry) => item.date)
-  //         .forEach((item: StockPositionIdeaEntry, index: number) => {
-  //           this.formArrayEntries.setControl(index, new FormControl(item));
-  //         });
-  //
-  //       (value.data as Position).targets
-  //         .filter((item: StockPositionTarget) => item.stopDate)
-  //         .forEach((item: StockPositionTarget, index: number) => {
-  //           this.formArrayTargets.setControl(index, new FormControl(item));
-  //         });
-  //
-  //       (value.data as Position).dividends.forEach((item: StockPositionDividend, index: number) => {
-  //         this.formArrayDividends.setControl(index, new FormControl(item));
-  //       });
-  //     });
-  //
-  //     this.priceIncrement = value.data.priceIncrement;
-  //
-  //     this.listEntry = this._service.getActionEntry(value.data);
-  //     this.totalEntry = this._service.getActionTotalEntry(this.listEntry);
-  //
-  //     this.listOut = this._service.getActionOut(value.data);
-  //     this.totalOut = this._service.getActionTotalOut(
-  //       this.listOut,
-  //       value.data.entryAveragePrice,
-  //       value.data.multiplier
-  //     );
-  //
-  //     this.remainder = this._service.getRemainder(value.data);
-  //     this.result = this._service.getResult(this.totalOut, this.remainder, value.data);
-  //   }
-  // }
-
   listEntry: ActionEntry[] | null = null;
   totalEntry: ActionTotalEntry | null = null;
   listOut: ActionOut[] | null = null;
@@ -258,14 +210,6 @@ export class EnterActionComponent implements AfterViewInit {
     );
   }
 
-  // addCommonTarget(event: Event): void {
-  //   if (this._data && this._data.data) {
-  //     const find = this._data.data.targets.find((item: StockPositionTarget) => !item.stopDate) || null;
-  //
-  //     this.addTarget(event, find);
-  //   }
-  // }
-
   onRemove(event: Event, index: number, formName: string): void {
     event.preventDefault();
 
@@ -317,6 +261,6 @@ export class EnterActionComponent implements AfterViewInit {
   }
 
   private _setValues(data: StockPosition): void {
-    console.log(data);
+    // console.log(data);
   }
 }
