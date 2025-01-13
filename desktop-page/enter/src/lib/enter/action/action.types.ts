@@ -1,6 +1,6 @@
-import { StockPositionEntry, StockPositionTarget } from 'types/position';
+import { StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 
-export interface ActionEntry extends StockPositionEntry {
+export interface ActionEntry extends StockPositionIdeaEntry {
   id: string;
 }
 

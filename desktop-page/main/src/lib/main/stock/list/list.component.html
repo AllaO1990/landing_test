@@ -61,7 +61,7 @@
           <div
             class="stock-item__percent stock-item__change-percent"
             *ngIf="item.changePercent !== null; else skeleton">
-            {{ item.changePercent | tuiFormatNumber | async }}%
+            {{ item.changePercent | tuiFormatNumber: { precision: 2 } | async }}%
           </div>
           <div
             *ngIf="list.type.action | stockItemRemove"

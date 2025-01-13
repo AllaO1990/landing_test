@@ -10,7 +10,7 @@ export enum StockDirection {
   SELL = 'sell',
 }
 
-export enum StockPosition {
+export enum StockPositionDirection {
   LONG = 'long',
   SHORT = 'short',
 }
@@ -36,6 +36,8 @@ export interface StockInstrument {
   inSub: boolean;
   sector: string;
   currency: string;
+  currencySymbol: string;
+  minPriceIncrement: number;
 }
 
 export interface StockListItemPrice {

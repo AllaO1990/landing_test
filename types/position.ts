@@ -1,4 +1,4 @@
-import { StockId, StockInstrument, StockPosition } from './stock';
+import { StockId, StockInstrument, StockPositionDirection } from './stock';
 import { getPriceIncrement } from '../utils/get-price-increment';
 
 export interface ResponsePositions {
@@ -13,11 +13,11 @@ export interface ResponsePosition {
   inPosition: boolean;
   inPositionQuantity: number;
   inPositionDepositShare: number;
-  positionType: StockPosition | null;
+  positionType: StockPositionDirection | null;
   instrument: StockInstrument;
   lastPrice: number;
   minPriceIncrement: number;
-  entries: StockPositionEntry[];
+  entries: StockPositionIdeaEntry[];
   targets: StockPositionTarget[];
   stop: StockPositionStop | null;
   strategy: StockPositionStrategy;
@@ -33,9 +33,50 @@ export interface ResponsePosition {
   subscribed: boolean;
 }
 
+export interface StockPosition {
+  actions: {
+    entries: StockPositionActionEntry[];
+    outs: StockPositionActionTarget[];
+    position: {
+      amount: number;
+      price: number;
+      profit: number;
+      profitPercent: number;
+      totalPrice: number;
+    } | null;
+  };
+  idea: {
+    author: string;
+    createdAt: string | null;
+    entries: StockPositionIdeaEntry[];
+    id: number;
+    inPosition: boolean;
+    inPositionDepositShare: number;
+    inPositionPrice: number;
+    inPositionProfitPercent: number;
+    inPositionQuantity: number;
+    inPositionResult: number;
+    instrument: StockInstrument;
+    lastPrice: number;
+    portfolioId: null | number;
+    minPriceIncrement: number;
+    positionType: string;
+    result: {
+      profitPercent: number;
+      profitPrice: number;
+    };
+    stop: null | StockPositionStop;
+    strategy: null | StockPositionStrategy;
+    subscribed: boolean;
+    targets: StockPositionTarget[];
+    updatedAt: null | string;
+  };
+}
+
 export interface StockPositionStrategy {
   successProbability: number;
   type: string;
+  name: string;
 }
 
 export interface StockPositionStop {
@@ -48,13 +89,21 @@ export interface StockPositionStop {
   amountPercent: number | null;
 }
 
-export interface StockPositionEntry {
+export interface StockPositionIdeaEntry {
   date: string | null;
   depositShare: number | null;
   price: number;
   quantity: number;
   totalPrice: number;
   broker: string | null;
+}
+
+export interface StockPositionActionEntry {
+  date: string | null;
+  price: number;
+  amount: number;
+  brokerId: number;
+  totalPrice: number;
 }
 
 export interface StockPositionTarget {
@@ -67,6 +116,16 @@ export interface StockPositionTarget {
   reached: boolean;
   stopDate: null | string;
   broker: string | null;
+}
+
+export interface StockPositionActionTarget {
+  price: number;
+  amount: number;
+  profit: number | null;
+  profitPercent: null | number;
+  totalPrice: number;
+  brokerId: number | null;
+  date: string | null;
 }
 
 export interface StockPositionDividend {
@@ -85,14 +144,14 @@ export class Position implements ResponsePosition {
   id: StockId;
   author: string;
   createdAt: string;
-  entries: StockPositionEntry[];
+  entries: StockPositionIdeaEntry[];
   inPosition: boolean;
   inPositionDepositShare: number;
   inPositionQuantity: number;
   inPositionQuantityValue: number;
   instrument: StockInstrument;
   minPriceIncrement: number;
-  positionType: StockPosition | null;
+  positionType: StockPositionDirection | null;
   priceIncrement: number;
   stop: StockPositionStop | null;
   strategy: StockPositionStrategy;
@@ -150,9 +209,9 @@ export class Position implements ResponsePosition {
     this.currentTarget = this._getCurrentTarget(data.targets);
   }
 
-  private _getAveragePrice(data: StockPositionEntry[]): number {
+  private _getAveragePrice(data: StockPositionIdeaEntry[]): number {
     const { price, quantity } = data.reduce(
-      (acc: { price: number; quantity: number }, item: StockPositionEntry) => {
+      (acc: { price: number; quantity: number }, item: StockPositionIdeaEntry) => {
         acc.price += item.price * item.quantity;
         acc.quantity += item.quantity;
 

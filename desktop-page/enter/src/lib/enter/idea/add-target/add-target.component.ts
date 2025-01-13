@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiInputDateModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { AddForm } from '../add';
-import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'lib-add-target-add',
@@ -14,9 +15,10 @@ import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
     TuiTextfieldControllerModule,
     TuiTextfieldOptionsDirective,
     TuiButton,
-    TuiInputDateModule,
     TuiNumberFormat,
     TuiAutoFocus,
+    TuiInputDateTimeModule,
+    NgIf,
   ],
   templateUrl: './add-target.component.html',
   styleUrls: ['../add.scss', './add-target.component.scss'],
@@ -25,20 +27,27 @@ import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
 export class AddTargetComponent extends AddForm implements OnInit {
   ngOnInit(): void {
     this.form = new FormGroup({
-      stopDate: new FormControl({ value: null, disabled: true }),
+      stopDate: new FormControl({ value: [null, null], disabled: true }),
       price: new FormControl({ value: null, disabled: true }, Validators.required),
       amount: new FormControl({ value: null, disabled: true }, Validators.required),
     });
 
     if (this.context.data) {
-      const { amount, price, stopDate } = this.context.data;
+      const { amount, price, stopDate, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         amount,
         price,
-        stopDate: stopDate && TuiDay.jsonParse(stopDate.split('T')[0]),
+        stopDate: this.getTuiDates(stopDate || null),
       });
+
+      this.minPriceIncrement = minPriceIncrement;
+      this.precision = this.getPrecision(minPriceIncrement);
     }
+
+    const controlDate = this.form.get('stopDate') as FormControl;
+
+    controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
 
   onSubmit(event: SubmitEvent): void {
@@ -49,7 +58,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
       this.context.completeWith({
         amount,
         price,
-        stopDate: stopDate && stopDate.toJSON(),
+        stopDate: this.getISOString(stopDate[0], stopDate[1]),
       });
     }
   }

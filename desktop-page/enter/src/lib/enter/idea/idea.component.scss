@@ -12,7 +12,6 @@ form {
 
 .space {
   flex: 1 1;
-  min-height: 28px;
 }
 
 .item {
@@ -54,7 +53,8 @@ form {
 }
 
 .action {
-  padding: var(--padding-2);
+  height: 32px;
+  margin: var(--padding-2);
 }
 
 .button {
@@ -80,6 +80,7 @@ form {
     display: flex;
 
     border-left: 1px solid var(--main-bg-color);
+    margin-right: var(--padding-4);
 
     button {
       margin-left: var(--padding-2);

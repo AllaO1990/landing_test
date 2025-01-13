@@ -3,7 +3,6 @@ import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
-import { VtEnterComponent } from 'desktop-page/enter';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { QUERY_PARAMS } from 'tokens/desktop';
@@ -32,7 +31,6 @@ import { Position } from 'types/position';
     TuiLoader,
     TuiScrollbar,
     TuiTable,
-    VtEnterComponent,
     DatePassedPipe,
     GetStrategyNamePipe,
     TuiHint,

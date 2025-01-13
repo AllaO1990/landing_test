@@ -2,15 +2,15 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddForm } from '../add';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import {
-  TuiInputDateModule,
-  TuiInputDateTimeModule,
-  TuiInputNumberModule,
-  TuiTextfieldControllerModule,
-} from '@taiga-ui/legacy';
-import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
-import { StockPositionEntry } from 'types/position';
+  TuiButton,
+  TuiHintDirective,
+  TuiHintOptionsDirective,
+  TuiNumberFormat,
+  TuiTextfieldOptionsDirective,
+} from '@taiga-ui/core';
+import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
 
 @Component({
   selector: 'lib-add-entry',
@@ -23,9 +23,10 @@ import { StockPositionEntry } from 'types/position';
     TuiInputNumberModule,
     TuiTextfieldControllerModule,
     TuiTextfieldOptionsDirective,
-    TuiInputDateModule,
     TuiNumberFormat,
     TuiAutoFocus,
+    TuiHintOptionsDirective,
+    TuiHintDirective,
   ],
   templateUrl: './add-entry.component.html',
   styleUrls: ['../add.scss', './add-entry.component.scss'],
@@ -34,20 +35,27 @@ import { StockPositionEntry } from 'types/position';
 export class AddEntryComponent extends AddForm implements OnInit {
   ngOnInit(): void {
     this.form = new FormGroup({
-      // date: new FormControl({ value: null, disabled: true }),
+      date: new FormControl({ value: [null, null], disabled: true }),
       price: new FormControl({ value: null, disabled: true }, Validators.required),
       quantity: new FormControl({ value: null, disabled: true }, Validators.required),
     });
 
     if (this.context.data) {
-      const { date, price, quantity } = this.context.data as StockPositionEntry;
+      const { date, price, quantity, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         price,
         quantity,
-        date: date && TuiDay.jsonParse(date.split('T')[0]),
+        date: this.getTuiDates(date || null),
       });
+
+      this.minPriceIncrement = minPriceIncrement;
+      this.precision = this.getPrecision(minPriceIncrement);
     }
+
+    const controlDate = this.form.get('date') as FormControl;
+
+    controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
 
   onSubmit(event: SubmitEvent): void {
@@ -58,7 +66,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
 
       this.context.completeWith({
         ...this.context.data,
-        date: date && date.toJSON(),
+        date: this.getISOString(date[0], date[1]),
         price,
         quantity,
         totalPrice: price * quantity,

@@ -1,17 +1,17 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  EventEmitter,
   inject,
   Injector,
   Input,
-  Output,
+  NgZone,
 } from '@angular/core';
-import { AsyncPipe, DatePipe, JsonPipe, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DatePipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Position, StockPositionEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 import { IdeaService } from './idea.service';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { CheckComponent } from '@ui/components/check';
@@ -26,16 +26,26 @@ import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
+  defer,
+  distinctUntilChanged,
   filter,
   Observable,
   shareReplay,
   startWith,
   Subject,
   switchMap,
+  take,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs/operators';
-import { EventIdeaSelected } from './idea.types';
+import { IdeaFacade } from 'stores/facades/idea.facade';
+import { getPriceIncrement } from 'utils/get-price-increment';
+import { getNumberPrecision } from 'utils/get-number-precision';
+
+type Goal = {
+  amount: number;
+  goal: number;
+};
 
 @Component({
   selector: 'lib-enter-idea',
@@ -57,24 +67,19 @@ import { EventIdeaSelected } from './idea.types';
     ItemLikeCheckboxDirective,
     LoaderComponent,
     NgTemplateOutlet,
-    JsonPipe,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
   providers: [IdeaService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnterIdeaComponent {
+export class EnterIdeaComponent implements AfterViewInit {
   private readonly _injector: Injector = inject(Injector);
-  private readonly _destroyed: DestroyRef = inject(DestroyRef);
+  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _service: IdeaService = inject(IdeaService);
-  private readonly _defaultSelectedValue: EventIdeaSelected = {
-    amount: 0,
-    entry: 0,
-    goals: [],
-    stop: 0,
-  };
+  private readonly _ideaFacade: IdeaFacade = inject(IdeaFacade);
+  private readonly _ngZone: NgZone = inject(NgZone);
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
@@ -85,174 +90,171 @@ export class EnterIdeaComponent {
   readonly isEditStop$: Subject<boolean> = new BehaviorSubject(false);
 
   readonly itemHeight = 28;
-  priceIncrement = 2;
+  minPriceIncrement = 0.01;
+  priceIncrement = getPriceIncrement(this.minPriceIncrement);
   multiplier = 1;
   isCanEdit = false;
   inPositionQuantityValue = 0;
-  // entryAveragePrice = 0;
+
   private readonly _mapForm = {
     entries: this.addEntry,
     targets: this.addTarget,
     stop: this.addStop,
   };
 
-  readonly form: FormGroup = new FormGroup({
-    entries: new FormArray<FormControl<StockPositionEntry>>([]),
+  @Input() set formGroup(value: FormGroup) {
+    this.form = value.get('idea') as FormGroup;
+  }
+
+  form!: FormGroup;
+
+  multiplier$: Observable<number> = defer(() => {
+    if (this.form) {
+      const positionType = this.form.get('positionType');
+
+      if (positionType) {
+        return positionType.valueChanges.pipe(
+          distinctUntilChanged(),
+          startWith(positionType.value),
+          map((result: string) => (result === 'short' ? -1 : 1)),
+          tap((multiplier: number) => (this.multiplier = multiplier))
+        );
+      }
+    }
+
+    return this._ngZone.onStable.asObservable().pipe(
+      take(1),
+      switchMap((_) => this.multiplier$)
+    );
+  });
+
+  readonly controlFormArray: FormGroup = new FormGroup({
+    entries: new FormArray<FormControl<StockPositionIdeaEntry>>([]),
     targets: new FormArray<FormControl<StockPositionTarget>>([]),
     stop: new FormArray<FormControl<StockPositionStop>>([]),
   });
 
   get formArrayEntries(): FormArray {
-    return this.form.get('entries') as FormArray;
+    return this.controlFormArray.get('entries') as FormArray;
   }
 
   get formArrayTargets(): FormArray {
-    return this.form.get('targets') as FormArray;
+    return this.controlFormArray.get('targets') as FormArray;
   }
 
   get formArrayStop(): FormArray {
-    return this.form.get('stop') as FormArray;
+    return this.controlFormArray.get('stop') as FormArray;
   }
 
-  entriesList$: Observable<StockPositionEntry[]> = this.formArrayEntries.valueChanges.pipe(
+  entriesList$: Observable<StockPositionIdeaEntry[]> = this.formArrayEntries.valueChanges.pipe(
     startWith(this.formArrayEntries.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-
-  average$: Observable<{ price: number; quantity: number }> = this.entriesList$.pipe(
-    filter((list: StockPositionEntry[]) => list.length > 0),
-    map((list: StockPositionEntry[]) => this._getSum(list)),
-    map(({ sumPrice, sumQuantity }: { sumPrice: number; sumQuantity: number }) => ({
-      price: sumPrice / sumQuantity,
-      quantity: sumQuantity,
-    })),
-    tap((data) => console.log(data)),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-  targetsList$: Observable<StockPositionTarget[] | null> = this.isEditTarget$.asObservable().pipe(
-    switchMap((status: boolean) => {
-      if (status) {
-        return this.formArrayTargets.valueChanges.pipe(
-          startWith(this.formArrayTargets.value)
-          // map((res: { price: number; quantity: number; date: string | null }[]) =>
-          //   this._service.updateListTarget(average, res)
-          // )
-        );
-
-        // return this.average$.pipe(
-        //   switchMap((average: { price: number; quantity: number }) =>
-        //     this.formArrayTargets.valueChanges.pipe(
-        //       startWith(this.formArrayTargets.value),
-        //       map((res: { price: number; quantity: number; date: string | null }[]) =>
-        //         this._service.updateListTarget(average, res)
-        //       )
-        //     )
-        //   )
-        // );
-      }
-
-      return this.formArrayTargets.valueChanges;
-    }),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
-  stopList$: Observable<StockPositionStop[] | null> = this.isEditStop$.asObservable().pipe(
-    switchMap((status: boolean) => {
-      if (status) {
-        return this.formArrayStop.valueChanges.pipe(
-          startWith(this.formArrayStop.value)
-          // map((res: { price: number; date: string | null }[]) => this._service.updateListStop(average, res))
-        );
-        // return this.average$.pipe(
-        //   tap((data) => console.log(data)),
-        //   switchMap((average: { price: number; quantity: number }) =>
-        //     this.formArrayStop.valueChanges.pipe(
-        //       startWith(this.formArrayStop.value),
-        //       map((res: { price: number; date: string | null }[]) => this._service.updateListStop(average, res))
-        //     )
-        //   )
-        // );
-      }
-
-      return this.formArrayStop.valueChanges;
-    }),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
-
-  @Input()
-  set data(value: { type: string; data: Position } | null) {
-    if (value && value.data) {
-      console.log('idea', value);
-
-      this.isCanEdit = value.type !== 'position';
-
-      this.isEditEntry$.next(this.isCanEdit);
-      this.isEditTarget$.next(this.isCanEdit);
-      this.isEditStop$.next(this.isCanEdit);
-
-      this.multiplier = value.data.multiplier;
-      this.inPositionQuantityValue = value.data.inPositionQuantityValue;
-
-      this.formArrayEntries.clear();
-      this.formArrayTargets.clear();
-      this.formArrayStop.clear();
-
-      Promise.resolve().then(() => {
-        value.data.entries.forEach((item: StockPositionEntry, index: number) => {
-          this.formArrayEntries.setControl(index, new FormControl(item));
-        });
-
-        value.data.targets.forEach((item: StockPositionTarget, index: number) => {
-          this.formArrayTargets.setControl(index, new FormControl(item));
-        });
-
-        if (value.data.stop) {
-          this.formArrayStop.setControl(0, new FormControl(value.data.stop));
-        }
-      });
-
-      // this.priceIncrement = value.priceIncrement;
-      // this.inPositionQuantityValue = value.inPositionQuantityValue;
-      // this.entryAveragePrice = value.entryAveragePrice;
-      //
-      // this.listEntry = this._service.getIdeaEntries(value);
-      // this.listTarget = this._service.getIdeaTargets(value);
-      // this.listStop = this._service.getIdeaStops(value);
-      //
-      // // this.totalTarget = this._service.getTotalTarget(this.listTarget, value.inPositionPrice);
-      // console.log(value, this.totalTarget);
-      //
-      // this.formEntry = new FormGroup(this._service.getControlFromList(this.listEntry));
-      // this.formTarget = new FormGroup(this._service.getControlFromList(this.listTarget));
-      // // this.formStop = new FormGroup(this._service.getControlFromList(this.listStop));
-    }
-  }
-
-  @Output()
-  selected: EventEmitter<EventIdeaSelected> = new EventEmitter<EventIdeaSelected>();
-
-  totalEntry$: Observable<StockPositionEntry> = this.entriesList$.pipe(
+  totalEntry$: Observable<StockPositionIdeaEntry> = this.entriesList$.pipe(
     startWith(this.formArrayEntries.value),
-    map((list: StockPositionEntry[] | null) => this._service.getTotalEntry(list))
+    map((list: StockPositionIdeaEntry[] | null) => this._service.getTotalEntry(list))
+  );
+  targetsList$: Observable<StockPositionTarget[] | null> = this.formArrayTargets.valueChanges.pipe(
+    startWith(this.formArrayTargets.value),
+    shareReplay({ bufferSize: 1, refCount: false })
   );
   totalTarget$: Observable<StockPositionTarget> = this.totalEntry$.pipe(
-    switchMap((total: StockPositionEntry) =>
+    switchMap((total: StockPositionIdeaEntry) =>
       this.targetsList$.pipe(
-        startWith(this.formArrayTargets.value),
         map((list: StockPositionTarget[] | null) => this._service.getTotalTarget(list, total, this.multiplier))
       )
     )
   );
+  addTarget$: Observable<boolean> = this.totalEntry$.pipe(
+    map((total: StockPositionIdeaEntry) => total.quantity),
+    distinctUntilChanged(),
+    switchMap((quantity: number) =>
+      this.targetsList$.pipe(map((list: StockPositionTarget[] | null) => this._service.getCanAddTarget(list, quantity)))
+    )
+  );
+  stopList$: Observable<StockPositionStop[] | null> = this.formArrayStop.valueChanges.pipe(
+    startWith(this.formArrayStop.value),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
   totalStop$: Observable<StockPositionStop> = combineLatest([this.totalEntry$, this.targetsList$, this.stopList$]).pipe(
     debounceTime(100),
-    map(([total, targets, list]: [StockPositionEntry, StockPositionTarget[] | null, StockPositionStop[] | null]) =>
+    map(([total, targets, list]: [StockPositionIdeaEntry, StockPositionTarget[] | null, StockPositionStop[] | null]) =>
       this._service.getTotalStop(list, total, targets, this.multiplier)
     )
   );
 
+  ngAfterViewInit(): void {
+    this._ideaFacade.idea$
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        filter((idea: StockPosition | null): idea is StockPosition => idea !== null)
+      )
+      .subscribe((idea: StockPosition) => {
+        // console.log(idea);
+        this._setValues(idea);
+      });
+
+    this.formArrayEntries.valueChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        map(([value]: StockPositionIdeaEntry[]) => ({
+          amount: value ? value.quantity : null,
+          entry: value ? value.price : null,
+        }))
+      )
+      .subscribe((value: { amount: null | number; entry: number | null }) =>
+        this.form.patchValue({
+          ...value,
+        })
+      );
+
+    this.formArrayTargets.valueChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        map((list: StockPositionTarget[]) =>
+          list.map((item: StockPositionTarget) => ({
+            amount: item.amount,
+            goal: item.price,
+          }))
+        )
+      )
+      .subscribe(
+        (goals: Goal[]) => {
+          const formArray = this.form.get('goals') as FormArray;
+
+          formArray.clear({ emitEvent: false });
+          goals.forEach((goal: Goal, index: number) => {
+            formArray.setControl(index, new FormControl(), { emitEvent: false });
+          });
+
+          this.form.patchValue({
+            goals,
+          });
+        }
+
+        // this.control.patchValue({
+        //   ...this.control.value,
+        //   goals,
+        // })
+      );
+
+    this.formArrayStop.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(
+      ([value]: StockPositionStop[]) =>
+        this.form.patchValue({
+          // ...this.form.value,
+          stop: value ? value.price : null,
+        })
+      // this.control.patchValue({
+      //   ...this.control.value,
+      //   stop: value ? value.price : null,
+      // })
+    );
+  }
+
   onRemove(event: Event, index: number, formName: string): void {
     event.preventDefault();
 
-    const formArray = this.form.get(formName);
+    const formArray = this.controlFormArray.get(formName);
 
     if (formArray !== null) {
       (formArray as FormArray).removeAt(index);
@@ -262,7 +264,7 @@ export class EnterIdeaComponent {
   onEdit(event: Event, index: number, formName: 'stop' | 'entries' | 'targets'): void {
     event.preventDefault();
 
-    const formArray = this.form.get(formName);
+    const formArray = this.controlFormArray.get(formName);
 
     if (formArray !== null) {
       this._mapForm[formName].bind(this)(event, (formArray as FormArray).at(index).value, index);
@@ -276,13 +278,14 @@ export class EnterIdeaComponent {
       .then((m) => m.AddEntryComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, data).subscribe(
-      (res: object | null) => {
-        if (res) {
-          this._updateData(this.formArrayEntries, res, control);
-        }
+    this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((res: object | null) => {
+      if (res) {
+        this._updateData(this.formArrayEntries, res, control);
       }
-    );
+    });
   }
 
   async addTarget(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
@@ -292,29 +295,80 @@ export class EnterIdeaComponent {
       .then((m) => m.AddTargetComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, data).subscribe(
-      (result: object | null) => {
-        if (result) {
-          this._updateData(this.formArrayTargets, result, control);
+    this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((result: { amount: number; price: number; stopDate: string | null } | null) => {
+      if (result) {
+        const entries: StockPositionIdeaEntry | null = this.formArrayEntries.value[0];
+        let profit = null;
+        let profitPercent = null;
+
+        if (entries) {
+          profit = getNumberPrecision(
+            (result.price * result.amount - entries.price * result.amount) * this.multiplier,
+            this.priceIncrement
+          );
+          profitPercent = getNumberPrecision(
+            ((result.price - entries.price) / entries.price) * 100 * this.multiplier,
+            2
+          );
         }
+
+        const value: StockPositionTarget = {
+          price: result.price,
+          amount: result.amount,
+          profit: profit,
+          profitPercent: profitPercent,
+          depositShare: null,
+          totalPrice: result.price * result.amount,
+          reached: false,
+          stopDate: result.stopDate,
+          broker: null,
+        };
+
+        this._updateData(this.formArrayTargets, value, control);
       }
-    );
+    });
   }
 
-  async addStop(event: Event, data: any = null): Promise<void> {
+  async addStop(event: Event, data: any = null, control: number | null = null): Promise<void> {
     event.preventDefault();
 
     this._dialogStopComponent = await import('./add-stop/add-stop.component')
       .then((m) => m.AddStopComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogStopComponent as PolymorpheusComponent<AddStopComponent>, data).subscribe(
-      (result: object | null) => {
-        if (result) {
-          this._updateData(this.formArrayStop, result, 0);
+    this._openDialog(this._dialogStopComponent as PolymorpheusComponent<AddStopComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((result: { price: number; stopCandleDate: string | null } | null) => {
+      if (result) {
+        const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
+        const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
+        let loss = null;
+        let lossPercent = null;
+        let amount = 0;
+
+        if (entries) {
+          amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
+
+          lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
+          loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
         }
+
+        const value: StockPositionStop = {
+          depositShare: null,
+          lossPercent: lossPercent,
+          loss: loss,
+          price: result.price,
+          stopCandleDate: result.stopCandleDate,
+          amount: amount,
+          amountPercent: 100,
+        };
+        this._updateData(this.formArrayStop, value, control);
       }
-    );
+    });
   }
 
   private _openDialog(c: PolymorpheusComponent<any>, data: any = null): Observable<any> {
@@ -323,7 +377,7 @@ export class EnterIdeaComponent {
         appearance: 'dialog-block',
         data,
       })
-      .pipe(takeUntilDestroyed(this._destroyed));
+      .pipe(takeUntilDestroyed(this._destroyRef));
   }
 
   private _updateData(formArray: FormArray, data: object | null = null, control: number | null = null): void {
@@ -334,18 +388,64 @@ export class EnterIdeaComponent {
     }
   }
 
-  private _getSum(list: StockPositionEntry[]) {
-    return list.reduce(
-      (acc, item: StockPositionEntry) => {
-        return {
-          sumPrice: acc.sumPrice + item.price * item.quantity,
-          sumQuantity: acc.sumQuantity + item.quantity,
-        };
-      },
-      {
-        sumPrice: 0,
-        sumQuantity: 0,
-      }
-    );
+  private _setValues(value: StockPosition): void {
+    this.minPriceIncrement = value.idea.instrument.minPriceIncrement;
+    this.priceIncrement = getPriceIncrement(this.minPriceIncrement);
+
+    const entries = value.idea.entries[0];
+
+    this.formArrayEntries.clear();
+    if (entries) {
+      this.formArrayEntries.setControl(
+        0,
+        new FormControl<StockPositionIdeaEntry>({
+          date: entries.date || null,
+          depositShare: entries.depositShare || null,
+          broker: null,
+          price: entries.price,
+          quantity: entries.quantity,
+          totalPrice: entries.totalPrice,
+        })
+      );
+    }
+
+    const targets = value.idea.targets;
+
+    this.formArrayTargets.clear();
+    if (targets.length) {
+      targets.forEach((item: StockPositionTarget, index: number) => {
+        this.formArrayTargets.setControl(
+          index,
+          new FormControl({
+            price: item.price,
+            amount: item.amount,
+            profit: item.profit || null,
+            profitPercent: item.profitPercent || null,
+            depositShare: item.depositShare || null,
+            totalPrice: item.price * item.amount,
+            reached: false,
+            stopDate: item.stopDate || null,
+            broker: null,
+          })
+        );
+      });
+    }
+
+    const stop = value.idea.stop;
+    this.formArrayStop.clear();
+    if (stop) {
+      this.formArrayStop.setControl(
+        0,
+        new FormControl<StockPositionStop>({
+          depositShare: stop.depositShare || null,
+          lossPercent: stop.lossPercent || null,
+          loss: stop.loss || null,
+          price: stop.price,
+          stopCandleDate: stop.stopCandleDate || null,
+          amount: stop.amount || null,
+          amountPercent: stop.amountPercent || null,
+        })
+      );
+    }
   }
 }
