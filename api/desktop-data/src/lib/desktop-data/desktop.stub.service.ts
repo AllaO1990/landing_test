@@ -146,7 +146,15 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  override createIdea(body: object): Observable<any> {
+  deleteIdea(id: StockId): Observable<number> {
+    return of();
+  }
+
+  createIdea(body: object): Observable<any> {
+    return of();
+  }
+
+  editIdea(id: StockId, body: object): Observable<any> {
     return of();
   }
 }

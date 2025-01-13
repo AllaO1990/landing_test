@@ -3,15 +3,27 @@
     <h3> Добавить цель</h3>
   </div>
   <div class="form__form">
-    <tui-input-date [tuiTextfieldCleaner]="true" class="form__control" formControlName="stopDate" tuiTextfieldSize="s">
+    <tui-input-date-time
+      [tuiTextfieldCleaner]="true"
+      class="form__control"
+      formControlName="stopDate"
+      tuiTextfieldSize="s">
       Выбрать дату
-    </tui-input-date>
-    <tui-input-number class="form__control" tuiAutoFocus [tuiTextfieldSize]="size" [tuiNumberFormat]="{precision: 8}"
+    </tui-input-date-time>
+    <tui-input-number
+      class="form__control"
+      tuiAutoFocus
+      [tuiTextfieldCustomContent]="priceIncrement"
+      [tuiTextfieldSize]="size"
+      [tuiNumberFormat]="{precision: precision}"
       formControlName="price">
       Цена
       <input name="price" autocomplete="off" tuiTextfieldLegacy />
     </tui-input-number>
-    <tui-input-number class="form__control" [tuiTextfieldSize]="size" [tuiNumberFormat]="{precision: 8}"
+    <tui-input-number
+      class="form__control"
+      [tuiTextfieldSize]="size"
+      [tuiNumberFormat]="{precision: precision}"
       formControlName="amount">
       Количество
       <input name="quantity" autocomplete="off" tuiTextfieldLegacy />
@@ -24,7 +36,7 @@
   </div>
   <div class="form__actions">
     <button class="form__action" [size]="size" tuiButton appearance="secondary" type="button"
-      (click)="onCancel($event)">
+            (click)="onCancel($event)">
       Отменить
     </button>
     <button class="form__action" [size]="size" tuiButton [disabled]="form.invalid" type="submit">
@@ -35,4 +47,10 @@
 
 <ng-template #broker let-item>
   {{ item.broker }}
+</ng-template>
+
+<ng-template #priceIncrement>
+  <span class="form__increment" *ngIf="minPriceIncrement !== null">
+    Шаг цены: {{ getNumberFromE(minPriceIncrement) }}
+  </span>
 </ng-template>

@@ -25,6 +25,9 @@ export class IdeaFacade {
   readonly select$: Observable<null | StockTransaction> = this._store.selected.idea$;
 
   readonly loadIdea = this._store.idea.loadIdea;
+  readonly createIdea = this._store.idea.create;
+  readonly editIdea = this._store.idea.edit;
+  readonly deleteIdea = this._store.idea.delete;
 
   selectItem(id: StockId): Observable<Position | null> {
     if (id === null) {
@@ -52,7 +55,7 @@ const DEFAULT_IDEA = {
     author: 'user',
     createdAt: null,
     entries: [],
-    id: -1,
+    id: null,
     inPosition: false,
     inPositionDepositShare: 0,
     inPositionPrice: 0,

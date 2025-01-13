@@ -2,15 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddForm } from '../add';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import {
-  TuiButton,
-  TuiHintDirective,
-  TuiHintOptionsDirective,
-  TuiNumberFormat,
-  TuiTextfieldOptionsDirective,
-} from '@taiga-ui/core';
+import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { getNumberFromE } from 'utils/get-number-from-e';
 
 @Component({
   selector: 'lib-add-entry',
@@ -25,8 +20,6 @@ import { TuiAutoFocus } from '@taiga-ui/cdk';
     TuiTextfieldOptionsDirective,
     TuiNumberFormat,
     TuiAutoFocus,
-    TuiHintOptionsDirective,
-    TuiHintDirective,
   ],
   templateUrl: './add-entry.component.html',
   styleUrls: ['../add.scss', './add-entry.component.scss'],
@@ -74,4 +67,6 @@ export class AddEntryComponent extends AddForm implements OnInit {
       });
     }
   }
+
+  protected readonly getNumberFromE = getNumberFromE;
 }

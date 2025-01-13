@@ -17,7 +17,8 @@
           tuiIconButton
           appearance="outline"
           [size]="size"
-          [disabled]="isDisabled"
+          [disabled]="isDisabled || form.invalid"
+          (click)="onSubmit($event)"
           type="button"
           iconStart="@tui.save"
         ></button>
@@ -129,7 +130,7 @@
         </div>
         <div class="widget__content">
           <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-action class="tui-zero-scrollbar"></lib-enter-action>
+            <lib-enter-action [formGroup]="form" class="tui-zero-scrollbar"></lib-enter-action>
           </tui-scrollbar>
         </div>
       </div>

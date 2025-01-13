@@ -23,7 +23,7 @@ import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ScreenOrientation = 'landscape' | 'portrait';
@@ -59,12 +59,6 @@ export interface TabItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VtEnterComponent implements AfterViewInit {
-  ngAfterViewInit(): void {
-    this._idea.loadIdea(this._ideaId$);
-
-    this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => console.log('form', res));
-  }
-
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
@@ -84,18 +78,23 @@ export class VtEnterComponent implements AfterViewInit {
   });
 
   readonly form: FormGroup = new FormGroup({
-    actions: new FormGroup({}),
+    actions: new FormGroup({
+      entries: new FormArray([]),
+      outs: new FormArray([]),
+    }),
     idea: new FormGroup({
-      amount: new FormControl(null),
-      entry: new FormControl(null),
-      goals: new FormArray([]),
-      stop: new FormControl(null),
-      currencyId: new FormControl(null),
-      portfolioId: new FormControl(null),
+      amount: new FormControl(null, Validators.required),
+      entry: new FormControl(null, Validators.required),
+      goals: new FormArray([], Validators.required),
+      stop: new FormControl(null, Validators.required),
+      instrumentId: new FormControl(null, Validators.required),
+      portfolioId: new FormControl(null, Validators.required),
       expirationDate: new FormControl(null),
-      strategyId: new FormControl(null),
-      positionType: new FormControl(null),
+      strategyId: new FormControl(null, Validators.required),
+      positionType: new FormControl(null, Validators.required),
       comment: new FormControl(''),
+      parentId: new FormControl(null),
+      watch: new FormControl(true, Validators.required),
     }),
   });
 
@@ -125,6 +124,12 @@ export class VtEnterComponent implements AfterViewInit {
   isDisabled = false;
   activeItemIndex = 0;
 
+  ngAfterViewInit(): void {
+    this._idea.loadIdea(this._ideaId$);
+
+    // this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => console.log('form', res));
+  }
+
   onClose(event: Event): void {
     event.preventDefault();
 
@@ -142,6 +147,18 @@ export class VtEnterComponent implements AfterViewInit {
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.form.value.idea.parentId === null) {
+      this._idea.createIdea(this.form.value);
+    } else {
+      // this._idea.editIdea({ id: this.form.value.idea.parentId, body: this.form.value });
+    }
+
+    console.log(this.form.value);
   }
 
   private _condition(screen: TuiBreakpointMediaKey | null, orientation: ScreenOrientation): TabItem[] | null {

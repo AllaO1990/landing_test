@@ -49,7 +49,7 @@ export interface StockPosition {
     author: string;
     createdAt: string | null;
     entries: StockPositionIdeaEntry[];
-    id: number;
+    id: number | null;
     inPosition: boolean;
     inPositionDepositShare: number;
     inPositionPrice: number;
@@ -95,7 +95,7 @@ export interface StockPositionIdeaEntry {
   price: number;
   quantity: number;
   totalPrice: number;
-  broker: string | null;
+  broker: number | null;
 }
 
 export interface StockPositionActionEntry {
@@ -115,7 +115,7 @@ export interface StockPositionTarget {
   totalPrice: number;
   reached: boolean;
   stopDate: null | string;
-  broker: string | null;
+  broker: number | null;
 }
 
 export interface StockPositionActionTarget {

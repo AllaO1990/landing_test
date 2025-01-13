@@ -19,14 +19,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 
 type Item = { id: string; name: string };
-type FormControlValue = {
-  currencyId: null | string;
-  portfolioId: null | string;
-  expirationDate: null | string;
-  strategyId: null | string;
-  positionType: null | string;
-  comment: null | string;
-};
 
 @Component({
   selector: 'lib-enter-sidebar',
@@ -156,7 +148,8 @@ export class EnterSidebarComponent implements AfterViewInit {
             ...this.form.value,
             positionType: position.idea.positionType,
             strategyId: strategy ? strategy.id : strategyDefault.id,
-            currencyId: currency.currencyId,
+            instrumentId: position.idea.instrument.id,
+            parentId: position.idea.id,
             portfolioId: portfolio.portfolioId,
           });
 

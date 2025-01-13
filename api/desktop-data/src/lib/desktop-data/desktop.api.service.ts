@@ -266,7 +266,21 @@ export class DesktopApiService extends DesktopService {
     );
   }
 
-  createIdea(body: object): Observable<any> {
-    return this._http.post<Observable<any>>(`https://trade.gpn.dev/api/v1/ideas/create`, { body });
+  deleteIdea(id: StockId): Observable<number | null> {
+    return this._http.delete<Response<number>>(`https://trade.gpn.dev/api/v1/ideas/${id}`).pipe(
+      map((response: Response<number>): number => response.data),
+      catchError((err: Error) => {
+        console.error(err);
+        return of(null);
+      })
+    );
+  }
+
+  createIdea(body: object): Observable<Response<{ id: number }>> {
+    return this._http.post<Response<{ id: number }>>(`https://trade.gpn.dev/api/v1/ideas/create`, body);
+  }
+
+  editIdea(id: StockId, body: object): Observable<Response<{ id: number }>> {
+    return this._http.patch<Response<{ id: number }>>(`https://trade.gpn.dev/api/v1/ideas/${id}`, body);
   }
 }
