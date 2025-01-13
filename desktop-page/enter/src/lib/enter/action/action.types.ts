@@ -17,7 +17,7 @@ export interface ActionOut extends StockPositionTarget {
   quantity: number;
   totalPrice: number;
   profit: number;
-  broker: string | null;
+  broker: number | null;
 }
 
 export interface ActionTotalOut {

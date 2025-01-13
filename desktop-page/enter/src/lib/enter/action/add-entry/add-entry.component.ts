@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { AddForm } from '../add';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import {
   TuiInputDateModule,
@@ -10,12 +18,15 @@ import {
   TuiSelectModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
-import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
-import { StockPositionIdeaEntry } from 'types/position';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { map, Observable } from 'rxjs';
 import { AccountBroker } from 'types/account';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
+import { getNumberFromE } from 'utils/get-number-from-e';
+
+const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
+  control.value.every(Boolean) ? null : { incompleteDateTime: true };
 
 @Component({
   selector: 'lib-add-entry',
@@ -52,23 +63,30 @@ export class AddEntryComponent extends AddForm implements OnInit {
   );
 
   form: FormGroup = new FormGroup({
-    date: new FormControl({ value: null, disabled: true }),
+    date: new FormControl({ value: [null, null], disabled: true }, completeDateTimeValidator),
     price: new FormControl({ value: null, disabled: true }, Validators.required),
     quantity: new FormControl({ value: null, disabled: true }, Validators.required),
-    broker: new FormControl({ value: null, disabled: true }),
+    broker: new FormControl({ value: null, disabled: true }, Validators.required),
   });
 
   ngOnInit(): void {
     if (this.context.data) {
-      const { date, price, quantity, broker } = this.context.data as StockPositionIdeaEntry;
+      const { date, price, quantity, broker, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         price: price || null,
         quantity: quantity || null,
-        date: date && TuiDay.jsonParse(date.split('T')[0]),
+        date: this.getTuiDates(date || null),
         broker: broker || null,
       });
+
+      this.minPriceIncrement = minPriceIncrement;
+      this.precision = this.getPrecision(minPriceIncrement);
     }
+
+    const controlDate = this.form.get('date') as FormControl;
+
+    controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
 
   onSubmit(event: SubmitEvent): void {
@@ -79,7 +97,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
 
       this.context.completeWith({
         ...this.context.data,
-        date: date && date.toJSON(),
+        date: this.getISOString(date[0], date[1]),
         price,
         quantity,
         totalPrice: price * quantity,
@@ -88,4 +106,6 @@ export class AddEntryComponent extends AddForm implements OnInit {
       });
     }
   }
+
+  protected readonly getNumberFromE = getNumberFromE;
 }

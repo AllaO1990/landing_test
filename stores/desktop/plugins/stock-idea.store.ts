@@ -4,6 +4,7 @@ import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { StockIdeaState } from 'types/stock-idea-state';
 import { StockId } from 'types/stock';
 import { Position, StockPosition } from 'types/position';
+import { Response } from 'types/response';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   readonly list$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.list);
@@ -66,11 +67,47 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly create = this.effect((stream$: Observable<object>) =>
     stream$.pipe(
-      switchMap((body: object) => this._api.createIdea(body).pipe(tap(() => this.load(of(null))))),
+      switchMap((body: object) =>
+        this._api.createIdea(body).pipe(
+          tap((response: Response<{ id: number }>) => {
+            this.load(of(response.data.id));
+            console.log(response);
+          })
+        )
+      ),
       catchError((err: Error) => {
         console.error(err);
         return of(null);
       })
+    )
+  );
+
+  readonly edit = this.effect((stream$: Observable<{ id: StockId; body: object }>) =>
+    stream$.pipe(
+      switchMap((data: { id: StockId; body: object }) =>
+        this._api.editIdea(data.id, data.body).pipe(
+          tap((response: Response<{ id: number }>) => {
+            this.load(of(response.data.id));
+            console.log(response);
+          })
+        )
+      ),
+      catchError((err: Error) => {
+        console.error(err);
+        return of(null);
+      })
+    )
+  );
+
+  readonly delete = this.effect((stream$: Observable<StockId>) =>
+    stream$.pipe(
+      switchMap((id: StockId) =>
+        this._api.deleteIdea(id).pipe(
+          tap((response: number | null) => {
+            console.log(response);
+          })
+        )
+      )
     )
   );
 }

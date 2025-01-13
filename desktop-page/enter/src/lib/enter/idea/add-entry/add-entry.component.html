@@ -60,6 +60,6 @@
 
 <ng-template #priceIncrement>
   <span class="form__increment" *ngIf="minPriceIncrement !== null">
-    Шаг цены: {{ minPriceIncrement }}
+    Шаг цены: {{ getNumberFromE(minPriceIncrement) }}
   </span>
 </ng-template>

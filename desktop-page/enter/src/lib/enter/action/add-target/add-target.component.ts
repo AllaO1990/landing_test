@@ -1,21 +1,33 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import {
   TuiInputDateModule,
+  TuiInputDateTimeModule,
   TuiInputNumberModule,
   TuiSelectModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
 import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { AddForm } from '../add';
-import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
-import { filter, Observable, take } from 'rxjs';
+import { TuiAutoFocus, TuiDay, TuiTime } from '@taiga-ui/cdk';
+import { Observable } from 'rxjs';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { AccountBroker } from 'types/account';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockPositionTarget } from 'types/position';
+import { getNumberFromE } from 'utils/get-number-from-e';
+
+const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
+  control.value.every(Boolean) ? null : { incompleteDateTime: true };
 
 @Component({
   selector: 'lib-add-target-add',
@@ -33,49 +45,49 @@ import { StockPositionTarget } from 'types/position';
     TuiSelectModule,
     TuiDataList,
     TuiDataListWrapper,
+    TuiInputDateTimeModule,
+    NgIf,
   ],
   templateUrl: './add-target.component.html',
   styleUrls: ['../add.scss', './add-target.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTargetComponent extends AddForm implements OnInit {
-  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _service: AccountFacade = inject(AccountFacade);
 
   readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$;
 
   form: FormGroup = new FormGroup({
-    stopDate: new FormControl<null | TuiDay>({ value: null, disabled: true }),
+    stopDate: new FormControl<[TuiDay | null, TuiTime | null]>(
+      {
+        value: [null, null],
+        disabled: true,
+      },
+      completeDateTimeValidator
+    ),
     price: new FormControl<null | number>({ value: null, disabled: true }, Validators.required),
     amount: new FormControl<null | number>({ value: null, disabled: true }, Validators.required),
-    broker: new FormControl<null | AccountBroker>({ value: null, disabled: true }),
+    broker: new FormControl<null | AccountBroker>({ value: null, disabled: true }, Validators.required),
   });
-
-  get controlBroker(): FormControl {
-    return this.form.get('broker') as FormControl;
-  }
 
   ngOnInit(): void {
     if (this.context.data) {
-      const { amount, price, stopDate, broker } = this.context.data;
+      const { amount, price, stopDate, broker, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         amount: amount || null,
         price: price || null,
-        stopDate: stopDate ? TuiDay.jsonParse(stopDate.split('T')[0]) : TuiDay.fromLocalNativeDate(new Date()),
+        stopDate: this.getTuiDates(stopDate || null),
         broker: broker || null,
       });
+
+      this.minPriceIncrement = minPriceIncrement;
+      this.precision = this.getPrecision(minPriceIncrement);
     }
 
-    this.brokers$
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        filter((list: null | AccountBroker[]): list is AccountBroker[] => list !== null),
-        take(1)
-      )
-      .subscribe(
-        (list: AccountBroker[]) => this.controlBroker.value === null && this.controlBroker.patchValue(list[0])
-      );
+    const controlDate = this.form.get('stopDate') as FormControl;
+
+    controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
 
   onSubmit(event: SubmitEvent): void {
@@ -87,7 +99,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
       this.context.completeWith({
         amount,
         price,
-        stopDate: stopDate && stopDate.toJSON(),
+        stopDate: this.getISOString(stopDate[0], stopDate[1]),
         broker: broker && broker.brokerId,
         reached: false,
         totalPrice: amount * price,
@@ -97,4 +109,6 @@ export class AddTargetComponent extends AddForm implements OnInit {
       } as StockPositionTarget);
     }
   }
+
+  protected readonly getNumberFromE = getNumberFromE;
 }

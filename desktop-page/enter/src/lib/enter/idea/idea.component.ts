@@ -190,7 +190,6 @@ export class EnterIdeaComponent implements AfterViewInit {
         filter((idea: StockPosition | null): idea is StockPosition => idea !== null)
       )
       .subscribe((idea: StockPosition) => {
-        // console.log(idea);
         this._setValues(idea);
       });
 
@@ -218,10 +217,10 @@ export class EnterIdeaComponent implements AfterViewInit {
           }))
         )
       )
-      .subscribe(
-        (goals: Goal[]) => {
-          const formArray = this.form.get('goals') as FormArray;
+      .subscribe((goals: Goal[]) => {
+        const formArray = this.form.get('goals') as FormArray;
 
+        if (formArray) {
           formArray.clear({ emitEvent: false });
           goals.forEach((goal: Goal, index: number) => {
             formArray.setControl(index, new FormControl(), { emitEvent: false });
@@ -231,24 +230,15 @@ export class EnterIdeaComponent implements AfterViewInit {
             goals,
           });
         }
+      });
 
-        // this.control.patchValue({
-        //   ...this.control.value,
-        //   goals,
-        // })
-      );
-
-    this.formArrayStop.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(
-      ([value]: StockPositionStop[]) =>
+    this.formArrayStop.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe(([value]: StockPositionStop[]) =>
         this.form.patchValue({
-          // ...this.form.value,
           stop: value ? value.price : null,
         })
-      // this.control.patchValue({
-      //   ...this.control.value,
-      //   stop: value ? value.price : null,
-      // })
-    );
+      );
   }
 
   onRemove(event: Event, index: number, formName: string): void {
