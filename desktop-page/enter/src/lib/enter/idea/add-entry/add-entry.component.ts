@@ -2,10 +2,15 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddForm } from '../add';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
+import {
+  TuiButton,
+  TuiHintDirective,
+  TuiHintOptionsDirective,
+  TuiNumberFormat,
+  TuiTextfieldOptionsDirective,
+} from '@taiga-ui/core';
 import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
-import { StockPositionIdeaEntry } from 'types/position';
 
 @Component({
   selector: 'lib-add-entry',
@@ -20,6 +25,8 @@ import { StockPositionIdeaEntry } from 'types/position';
     TuiTextfieldOptionsDirective,
     TuiNumberFormat,
     TuiAutoFocus,
+    TuiHintOptionsDirective,
+    TuiHintDirective,
   ],
   templateUrl: './add-entry.component.html',
   styleUrls: ['../add.scss', './add-entry.component.scss'],
@@ -34,14 +41,21 @@ export class AddEntryComponent extends AddForm implements OnInit {
     });
 
     if (this.context.data) {
-      const { date, price, quantity } = this.context.data as StockPositionIdeaEntry;
+      const { date, price, quantity, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         price,
         quantity,
-        date: this.getTuiDates(date || new Date().toISOString()),
+        date: this.getTuiDates(date || null),
       });
+
+      this.minPriceIncrement = minPriceIncrement;
+      this.precision = this.getPrecision(minPriceIncrement);
     }
+
+    const controlDate = this.form.get('date') as FormControl;
+
+    controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
 
   onSubmit(event: SubmitEvent): void {

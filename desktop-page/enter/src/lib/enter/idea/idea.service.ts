@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 
 @Injectable()
@@ -70,6 +69,12 @@ export class IdeaService {
       return this._totalDefaultTarget;
     }
 
+    // const amount = list.reduce((acc: number, item: StockPositionTarget) => (acc += item.stopDate ? 0 : item.amount), 0);
+    //
+    // if (amount !== total.quantity) {
+    //   return this._totalDefaultTarget;
+    // }
+
     return list.reduce((acc: StockPositionTarget, item: StockPositionTarget, index: number): StockPositionTarget => {
       const value: StockPositionTarget = {
         ...acc,
@@ -117,6 +122,7 @@ export class IdeaService {
         amount: (acc.amount || 0) + valueAmount,
         amountPercent: (acc.amountPercent || 0) + (item.amountPercent || 100),
         price: acc.price + item.price * valueAmount,
+        depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
       };
 
       if (list.length - 1 === index) {
@@ -131,92 +137,13 @@ export class IdeaService {
     }, this._totalDefaultStop);
   }
 
-  getControlFromList(list: { id: number | string; date: string | null }[]): {
-    [key: string]: FormControl<boolean>;
-  } {
-    return list.reduce(
-      (
-        acc: { [key: string]: FormControl<boolean> },
-        item: {
-          id: number | string;
-          date: string | null;
-        }
-      ) => {
-        acc[item.id] = new FormControl<boolean>(
-          { value: !!item.date, disabled: true },
-          {
-            nonNullable: true,
-          }
-        );
-
-        return acc;
-      },
-      {}
-    );
-  }
-
-  updateListTarget(
-    average: { price: number; quantity: number },
-    list:
-      | {
-          price: number;
-          quantity: number;
-          date: string | null;
-        }[]
-      | null
-  ): StockPositionTarget[] | null {
-    console.log(average, list);
-
-    if (list === null) {
-      return null;
+  getCanAddTarget(list: StockPositionTarget[] | null, quantity: number): boolean {
+    if (list === null || list.length === 0) {
+      return true;
     }
 
-    return list.map((item: { price: number; quantity: number; date: string | null }) => {
-      const profit = (item.price - average.price) * item.quantity;
-      const profitPercent = (profit / (average.price * item.quantity)) * 100;
+    const amount = list.reduce((acc: number, item: StockPositionTarget) => (acc += item.stopDate ? 0 : item.amount), 0);
 
-      return {
-        price: item.price,
-        amount: item.quantity,
-        profit: profit,
-        profitPercent: profitPercent,
-        totalPrice: 0,
-        depositShare: null,
-        reached: !!item.date,
-        stopDate: item.date,
-        broker: null,
-      };
-    });
-  }
-
-  updateListStop(
-    average: { price: number; quantity: number },
-    list:
-      | {
-          price: number;
-          date: string | null;
-        }[]
-      | null
-  ): StockPositionStop[] | null {
-    console.log(average, list);
-
-    if (list === null) {
-      return null;
-    }
-
-    return list.map((item: { price: number; date: string | null }) => {
-      const loss = (item.price - average.price) * average.quantity;
-      const lossPercent = (loss / (average.price * average.quantity)) * 100;
-
-      return {
-        price: item.price,
-        loss: loss,
-        lossPercent: lossPercent,
-        depositShare: null,
-        stopCandleDate: item.date,
-        amount: average.quantity,
-        amountPercent: 100,
-      };
-    });
+    return amount !== quantity;
   }
 }

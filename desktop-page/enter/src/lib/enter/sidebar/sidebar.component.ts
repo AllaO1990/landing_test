@@ -1,21 +1,6 @@
 import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  Input,
-} from '@angular/core';
-import {
-  ControlValueAccessor,
-  FormControl,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Input } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe, TuiGroup, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { InstrumentComponent } from '../instrument/instrument.component';
@@ -68,16 +53,9 @@ type FormControlValue = {
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => EnterSidebarComponent),
-      multi: true,
-    },
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnterSidebarComponent implements ControlValueAccessor, AfterViewInit {
+export class EnterSidebarComponent implements AfterViewInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
@@ -104,8 +82,6 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   form!: FormGroup;
 
   @Input() set formGroup(value: FormGroup) {
-    console.log(value);
-
     this.form = value.get('idea') as FormGroup;
 
     this.formControlPortfolio.enable();
@@ -113,18 +89,6 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   }
 
   readonly size = 's';
-  isDisabled = true;
-  onChange = (_: any) => {};
-  onTouched = () => {};
-
-  // readonly form: FormGroup = new FormGroup({
-  //   currencyId: new FormControl({ value: null, disabled: true }),
-  //   portfolioId: new FormControl({ value: null, disabled: true }, Validators.required),
-  //   expirationDate: new FormControl({ value: null, disabled: true }),
-  //   strategyId: new FormControl({ value: null, disabled: true }, Validators.required),
-  //   positionType: new FormControl({ value: null, disabled: true }, Validators.required),
-  //   comment: new FormControl({ value: '', disabled: true }),
-  // });
 
   get controlPortfolio(): FormControl {
     return this.form.get('portfolioId') as FormControl;
@@ -164,39 +128,10 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     this._init();
   }
 
-  writeValue(obj: FormControlValue): void {
-    console.log(obj);
-
-    if (obj !== null) {
-      this.form.patchValue(obj);
-    }
-  }
-
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.isDisabled = isDisabled;
-
-    const action = isDisabled ? 'disable' : 'enable';
-    this.form[action]();
-    this.formControlPortfolio[action]();
-    this.formControlStrategy[action]();
-  }
-
   readonly stringifyCurrency: TuiStringHandler<AccountCurrency> = (item: AccountCurrency) => item.currencySymbol;
   readonly stringifyPortfolio: TuiStringHandler<AccountPortfolio> = (item: AccountPortfolio) => item.portfolio;
 
   private _init(): void {
-    this.form.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
-      .subscribe((value) => this.onChange(value));
-
     combineLatest([this.currencies$, this.strategies$, this.portfolio$, this.idea$])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
       .subscribe(

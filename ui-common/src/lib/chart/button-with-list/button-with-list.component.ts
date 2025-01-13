@@ -16,7 +16,15 @@ import { TuiBadge, TuiBadgedContent, TuiBadgedContentComponent } from '@taiga-ui
 import { TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
-import { ControlValueAccessor, FormControl, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormArray,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { map, take } from 'rxjs/operators';
 import { defer, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -94,6 +102,10 @@ export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit 
   appearance: 'primary' | 'secondary' = 'secondary';
 
   control: FormControl<T[] | null> = new FormControl(null);
+
+  formGroup: FormGroup = new FormGroup({
+    control: new FormArray([]),
+  });
 
   readonly length$: Observable<number> = defer(() => {
     if (this.badge) {

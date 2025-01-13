@@ -37,6 +37,7 @@ export interface StockInstrument {
   sector: string;
   currency: string;
   currencySymbol: string;
+  minPriceIncrement: number;
 }
 
 export interface StockListItemPrice {

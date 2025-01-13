@@ -62,33 +62,7 @@ export class VtEnterComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
-    this.controlSidebar.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((res) => console.log('controlSidebar', res));
-
-    this.controlIdea.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((res) => console.log('controlIdea', res));
-
     this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => console.log('form', res));
-
-    // this._idea.idea$
-    //   .pipe(
-    //     takeUntilDestroyed(this._destroyRef),
-    //     filter((idea: StockPosition | null): idea is StockPosition => idea !== null)
-    //   )
-    //   .subscribe((result: StockPosition) => {
-    //     console.log('idea$', result);
-    //     const entries = result.idea.entries.length ? result.idea.entries[0] : null;
-    //     const targets = result.idea.targets.length ? result.idea.targets : [];
-    //
-    //     this.controlIdea.patchValue({
-    //       amount: entries && entries.quantity,
-    //       entry: entries && entries.price,
-    //       goals: targets.map((item) => ({ goal: item.price, amount: item.amount })),
-    //       stop: result.idea.stop ? result.idea.stop.price : null,
-    //     });
-    //   });
   }
 
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
@@ -99,13 +73,9 @@ export class VtEnterComponent implements AfterViewInit {
   private readonly _ideaId$: Observable<StockId | null> = this._select.event$.pipe(
     takeUntilDestroyed(this._destroyRef),
     filter((event: StockEvent | null): event is StockEvent => event !== null),
-    map((event: StockEvent) => {
-      if (event.type === EventSelected.IDEA || event.type === EventSelected.POSITION) {
-        return event.id;
-      }
-
-      return null;
-    }),
+    map((event: StockEvent) =>
+      event.type === EventSelected.IDEA || event.type === EventSelected.POSITION ? event.id : null
+    ),
     distinctUntilChanged()
   );
 
@@ -127,15 +97,6 @@ export class VtEnterComponent implements AfterViewInit {
       positionType: new FormControl(null),
       comment: new FormControl(''),
     }),
-  });
-
-  readonly controlSidebar: FormControl = new FormControl();
-
-  readonly controlIdea: FormControl = new FormControl({
-    amount: null,
-    entry: null,
-    goals: [],
-    stop: null,
   });
 
   readonly data$: Observable<StockPosition | null> = this._idea.idea$.pipe(

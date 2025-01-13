@@ -36,10 +36,10 @@
 </div>
 
 <ng-template #content>
-  <tui-data-list size="s">
+  <tui-data-list size="s" [formGroup]="formGroup">
     <tui-opt-group
       tuiMultiSelectGroup
-      [formControl]="control">
+      formArrayName="control">
       <button
         *ngFor="let item of list"
         tuiOption

@@ -13,7 +13,8 @@
     <tui-input-number
       class="form__control"
       tuiAutoFocus
-      [tuiNumberFormat]="{precision: 8}"
+      [tuiTextfieldCustomContent]="priceIncrement"
+      [tuiNumberFormat]="{precision: precision}"
       [tuiTextfieldSize]="size"
       formControlName="price">
       Стоп цена
@@ -44,3 +45,9 @@
     </button>
   </div>
 </form>
+
+<ng-template #priceIncrement>
+  <span class="form__increment" *ngIf="minPriceIncrement !== null">
+    Шаг цены: {{ minPriceIncrement }}
+  </span>
+</ng-template>

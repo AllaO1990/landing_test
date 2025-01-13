@@ -3,21 +3,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  forwardRef,
   inject,
   Injector,
+  Input,
+  NgZone,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiLoader } from '@taiga-ui/core';
-import {
-  ControlValueAccessor,
-  FormArray,
-  FormControl,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 import { IdeaService } from './idea.service';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
@@ -33,24 +26,21 @@ import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
+  defer,
+  distinctUntilChanged,
   filter,
   Observable,
   shareReplay,
   startWith,
   Subject,
   switchMap,
+  take,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { getPriceIncrement } from 'utils/get-price-increment';
-
-type FormControlValue = {
-  amount: null | number;
-  entry: null | number;
-  goals: Goal[];
-  stop: null | number;
-};
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 type Goal = {
   amount: number;
@@ -80,22 +70,16 @@ type Goal = {
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
-  providers: [
-    IdeaService,
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => EnterIdeaComponent),
-      multi: true,
-    },
-  ],
+  providers: [IdeaService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
+export class EnterIdeaComponent implements AfterViewInit {
   private readonly _injector: Injector = inject(Injector);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _service: IdeaService = inject(IdeaService);
   private readonly _ideaFacade: IdeaFacade = inject(IdeaFacade);
+  private readonly _ngZone: NgZone = inject(NgZone);
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
@@ -106,14 +90,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   readonly isEditStop$: Subject<boolean> = new BehaviorSubject(false);
 
   readonly itemHeight = 28;
-  priceIncrement = 2;
+  minPriceIncrement = 0.01;
+  priceIncrement = getPriceIncrement(this.minPriceIncrement);
   multiplier = 1;
   isCanEdit = false;
   inPositionQuantityValue = 0;
-
-  onChange = (_: any) => {};
-  onTouched = () => {};
-  isDisabled = true;
 
   private readonly _mapForm = {
     entries: this.addEntry,
@@ -121,32 +102,48 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     stop: this.addStop,
   };
 
-  readonly control: FormControl = new FormControl(
-    {
-      amount: null,
-      entry: null,
-      goals: [],
-      stop: null,
-    },
-    Validators.required
-  );
+  @Input() set formGroup(value: FormGroup) {
+    this.form = value.get('idea') as FormGroup;
+  }
 
-  readonly form: FormGroup = new FormGroup({
+  form!: FormGroup;
+
+  multiplier$: Observable<number> = defer(() => {
+    if (this.form) {
+      const positionType = this.form.get('positionType');
+
+      if (positionType) {
+        return positionType.valueChanges.pipe(
+          distinctUntilChanged(),
+          startWith(positionType.value),
+          map((result: string) => (result === 'short' ? -1 : 1)),
+          tap((multiplier: number) => (this.multiplier = multiplier))
+        );
+      }
+    }
+
+    return this._ngZone.onStable.asObservable().pipe(
+      take(1),
+      switchMap((_) => this.multiplier$)
+    );
+  });
+
+  readonly controlFormArray: FormGroup = new FormGroup({
     entries: new FormArray<FormControl<StockPositionIdeaEntry>>([]),
     targets: new FormArray<FormControl<StockPositionTarget>>([]),
     stop: new FormArray<FormControl<StockPositionStop>>([]),
   });
 
   get formArrayEntries(): FormArray {
-    return this.form.get('entries') as FormArray;
+    return this.controlFormArray.get('entries') as FormArray;
   }
 
   get formArrayTargets(): FormArray {
-    return this.form.get('targets') as FormArray;
+    return this.controlFormArray.get('targets') as FormArray;
   }
 
   get formArrayStop(): FormArray {
-    return this.form.get('stop') as FormArray;
+    return this.controlFormArray.get('stop') as FormArray;
   }
 
   entriesList$: Observable<StockPositionIdeaEntry[]> = this.formArrayEntries.valueChanges.pipe(
@@ -161,17 +158,23 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     startWith(this.formArrayTargets.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-  stopList$: Observable<StockPositionStop[] | null> = this.formArrayStop.valueChanges.pipe(
-    startWith(this.formArrayStop.value),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
   totalTarget$: Observable<StockPositionTarget> = this.totalEntry$.pipe(
     switchMap((total: StockPositionIdeaEntry) =>
       this.targetsList$.pipe(
-        startWith(this.formArrayTargets.value),
         map((list: StockPositionTarget[] | null) => this._service.getTotalTarget(list, total, this.multiplier))
       )
     )
+  );
+  addTarget$: Observable<boolean> = this.totalEntry$.pipe(
+    map((total: StockPositionIdeaEntry) => total.quantity),
+    distinctUntilChanged(),
+    switchMap((quantity: number) =>
+      this.targetsList$.pipe(map((list: StockPositionTarget[] | null) => this._service.getCanAddTarget(list, quantity)))
+    )
+  );
+  stopList$: Observable<StockPositionStop[] | null> = this.formArrayStop.valueChanges.pipe(
+    startWith(this.formArrayStop.value),
+    shareReplay({ bufferSize: 1, refCount: false })
   );
   totalStop$: Observable<StockPositionStop> = combineLatest([this.totalEntry$, this.targetsList$, this.stopList$]).pipe(
     debounceTime(100),
@@ -181,17 +184,13 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   );
 
   ngAfterViewInit(): void {
-    this.control.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((value: FormControlValue) => this.onChange(value));
-
     this._ideaFacade.idea$
       .pipe(
         takeUntilDestroyed(this._destroyRef),
         filter((idea: StockPosition | null): idea is StockPosition => idea !== null)
       )
       .subscribe((idea: StockPosition) => {
-        console.log(idea);
+        // console.log(idea);
         this._setValues(idea);
       });
 
@@ -204,8 +203,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
         }))
       )
       .subscribe((value: { amount: null | number; entry: number | null }) =>
-        this.control.patchValue({
-          ...this.control.value,
+        this.form.patchValue({
           ...value,
         })
       );
@@ -220,43 +218,43 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
           }))
         )
       )
-      .subscribe((goals: Goal[]) =>
-        this.control.patchValue({
-          ...this.control.value,
-          goals,
-        })
+      .subscribe(
+        (goals: Goal[]) => {
+          const formArray = this.form.get('goals') as FormArray;
+
+          formArray.clear({ emitEvent: false });
+          goals.forEach((goal: Goal, index: number) => {
+            formArray.setControl(index, new FormControl(), { emitEvent: false });
+          });
+
+          this.form.patchValue({
+            goals,
+          });
+        }
+
+        // this.control.patchValue({
+        //   ...this.control.value,
+        //   goals,
+        // })
       );
 
-    this.formArrayStop.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe(([value]: StockPositionStop[]) =>
-        this.control.patchValue({
-          ...this.control.value,
+    this.formArrayStop.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(
+      ([value]: StockPositionStop[]) =>
+        this.form.patchValue({
+          // ...this.form.value,
           stop: value ? value.price : null,
         })
-      );
-  }
-
-  writeValue(obj: FormControlValue): void {
-    console.log(obj);
-  }
-
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.isDisabled = isDisabled;
+      // this.control.patchValue({
+      //   ...this.control.value,
+      //   stop: value ? value.price : null,
+      // })
+    );
   }
 
   onRemove(event: Event, index: number, formName: string): void {
     event.preventDefault();
 
-    const formArray = this.form.get(formName);
+    const formArray = this.controlFormArray.get(formName);
 
     if (formArray !== null) {
       (formArray as FormArray).removeAt(index);
@@ -266,7 +264,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   onEdit(event: Event, index: number, formName: 'stop' | 'entries' | 'targets'): void {
     event.preventDefault();
 
-    const formArray = this.form.get(formName);
+    const formArray = this.controlFormArray.get(formName);
 
     if (formArray !== null) {
       this._mapForm[formName].bind(this)(event, (formArray as FormArray).at(index).value, index);
@@ -280,13 +278,14 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       .then((m) => m.AddEntryComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, data).subscribe(
-      (res: object | null) => {
-        if (res) {
-          this._updateData(this.formArrayEntries, res, control);
-        }
+    this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((res: object | null) => {
+      if (res) {
+        this._updateData(this.formArrayEntries, res, control);
       }
-    );
+    });
   }
 
   async addTarget(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
@@ -296,40 +295,41 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       .then((m) => m.AddTargetComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, data).subscribe(
-      (result: { amount: number; price: number; stopDate: string | null } | null) => {
-        if (result) {
-          const entries: StockPositionIdeaEntry | null = this.formArrayEntries.value[0];
-          let profit = null;
-          let profitPercent = null;
+    this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((result: { amount: number; price: number; stopDate: string | null } | null) => {
+      if (result) {
+        const entries: StockPositionIdeaEntry | null = this.formArrayEntries.value[0];
+        let profit = null;
+        let profitPercent = null;
 
-          if (entries) {
-            profit = this._setPrecision(
-              (result.price * result.amount - entries.price * result.amount) * this.multiplier,
-              this.priceIncrement
-            );
-            profitPercent = this._setPrecision(
-              ((result.price - entries.price) / entries.price) * 100 * this.multiplier,
-              2
-            );
-          }
-
-          const value: StockPositionTarget = {
-            price: result.price,
-            amount: result.amount,
-            profit: profit,
-            profitPercent: profitPercent,
-            depositShare: null,
-            totalPrice: result.price * result.amount,
-            reached: false,
-            stopDate: result.stopDate,
-            broker: null,
-          };
-
-          this._updateData(this.formArrayTargets, value, control);
+        if (entries) {
+          profit = getNumberPrecision(
+            (result.price * result.amount - entries.price * result.amount) * this.multiplier,
+            this.priceIncrement
+          );
+          profitPercent = getNumberPrecision(
+            ((result.price - entries.price) / entries.price) * 100 * this.multiplier,
+            2
+          );
         }
+
+        const value: StockPositionTarget = {
+          price: result.price,
+          amount: result.amount,
+          profit: profit,
+          profitPercent: profitPercent,
+          depositShare: null,
+          totalPrice: result.price * result.amount,
+          reached: false,
+          stopDate: result.stopDate,
+          broker: null,
+        };
+
+        this._updateData(this.formArrayTargets, value, control);
       }
-    );
+    });
   }
 
   async addStop(event: Event, data: any = null, control: number | null = null): Promise<void> {
@@ -339,38 +339,36 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       .then((m) => m.AddStopComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogStopComponent as PolymorpheusComponent<AddStopComponent>, data).subscribe(
-      (result: { price: number; stopCandleDate: string | null } | null) => {
-        if (result) {
-          const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
-          const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
-          let loss = null;
-          let lossPercent = null;
-          let amount = 0;
+    this._openDialog(this._dialogStopComponent as PolymorpheusComponent<AddStopComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((result: { price: number; stopCandleDate: string | null } | null) => {
+      if (result) {
+        const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
+        const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
+        let loss = null;
+        let lossPercent = null;
+        let amount = 0;
 
-          if (entries) {
-            amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
+        if (entries) {
+          amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
 
-            lossPercent = this._setPrecision(
-              ((result.price - entries.price) / entries.price) * 100 * this.multiplier,
-              2
-            );
-            loss = this._setPrecision((result.price - entries.price) * amount, this.priceIncrement);
-          }
-
-          const value: StockPositionStop = {
-            depositShare: null,
-            lossPercent: lossPercent,
-            loss: loss,
-            price: result.price,
-            stopCandleDate: result.stopCandleDate,
-            amount: amount,
-            amountPercent: 100,
-          };
-          this._updateData(this.formArrayStop, value, control);
+          lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
+          loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
         }
+
+        const value: StockPositionStop = {
+          depositShare: null,
+          lossPercent: lossPercent,
+          loss: loss,
+          price: result.price,
+          stopCandleDate: result.stopCandleDate,
+          amount: amount,
+          amountPercent: 100,
+        };
+        this._updateData(this.formArrayStop, value, control);
       }
-    );
+    });
   }
 
   private _openDialog(c: PolymorpheusComponent<any>, data: any = null): Observable<any> {
@@ -391,8 +389,8 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   private _setValues(value: StockPosition): void {
-    this.priceIncrement = getPriceIncrement(value.idea.minPriceIncrement);
-    this.multiplier = value.idea.positionType === 'short' ? -1 : 1;
+    this.minPriceIncrement = value.idea.instrument.minPriceIncrement;
+    this.priceIncrement = getPriceIncrement(this.minPriceIncrement);
 
     const entries = value.idea.entries[0];
 
@@ -449,11 +447,5 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
         })
       );
     }
-  }
-
-  private _setPrecision(number: number, precision: number): number {
-    const d = Math.pow(10, precision);
-
-    return +(Math.round(number * d) / d).toFixed(precision);
   }
 }

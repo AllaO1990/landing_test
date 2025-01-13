@@ -4,6 +4,7 @@ import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerMod
 import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { AddForm } from '../add';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'lib-add-target-add',
@@ -17,6 +18,7 @@ import { TuiAutoFocus } from '@taiga-ui/cdk';
     TuiNumberFormat,
     TuiAutoFocus,
     TuiInputDateTimeModule,
+    NgIf,
   ],
   templateUrl: './add-target.component.html',
   styleUrls: ['../add.scss', './add-target.component.scss'],
@@ -31,14 +33,21 @@ export class AddTargetComponent extends AddForm implements OnInit {
     });
 
     if (this.context.data) {
-      const { amount, price, stopDate } = this.context.data;
+      const { amount, price, stopDate, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         amount,
         price,
-        stopDate: this.getTuiDates(stopDate),
+        stopDate: this.getTuiDates(stopDate || null),
       });
+
+      this.minPriceIncrement = minPriceIncrement;
+      this.precision = this.getPrecision(minPriceIncrement);
     }
+
+    const controlDate = this.form.get('stopDate') as FormControl;
+
+    controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
 
   onSubmit(event: SubmitEvent): void {

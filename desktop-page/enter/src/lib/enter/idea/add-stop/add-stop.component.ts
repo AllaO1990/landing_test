@@ -32,13 +32,20 @@ export class AddStopComponent extends AddForm implements OnInit {
     });
 
     if (this.context.data) {
-      const { price, stopCandleDate } = this.context.data;
+      const { price, stopCandleDate, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         price,
-        stopCandleDate: this.getTuiDates(stopCandleDate),
+        stopCandleDate: this.getTuiDates(stopCandleDate || null),
       });
+
+      this.minPriceIncrement = minPriceIncrement;
+      this.precision = this.getPrecision(minPriceIncrement);
     }
+
+    const controlDate = this.form.get('stopCandleDate') as FormControl;
+
+    controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
 
   onSubmit(event: SubmitEvent): void {
