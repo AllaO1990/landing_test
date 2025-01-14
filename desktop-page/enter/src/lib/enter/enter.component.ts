@@ -8,7 +8,7 @@ import { combineLatest, distinctUntilChanged, filter, Observable, shareReplay, s
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
@@ -77,6 +77,10 @@ export class VtEnterComponent implements AfterViewInit {
     optional: true,
   });
 
+  ideaId: number | null = null;
+  ideaAuthor: string | null = null;
+  ideaParentId: number | null = null;
+
   readonly form: FormGroup = new FormGroup({
     actions: new FormGroup({
       entries: new FormArray([]),
@@ -98,13 +102,19 @@ export class VtEnterComponent implements AfterViewInit {
     }),
   });
 
-  readonly data$: Observable<StockPosition | null> = this._idea.idea$.pipe(
+  readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
+    filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
+    tap((data: StockPosition) => {
+      console.log('isShowSearch$', data);
+      this.ideaId = data.idea.id;
+      this.ideaParentId = (data.idea as any).parentId || null;
+      this.ideaAuthor = data.idea.author;
+    }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly isShowSearch$: Observable<boolean> = this.data$.pipe(
-    filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
-    map((data: StockPosition) => data.idea.id === -1),
+    map((data: StockPosition) => data.idea.id === null),
     distinctUntilChanged(),
     startWith(false),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -149,16 +159,24 @@ export class VtEnterComponent implements AfterViewInit {
     return index;
   }
 
-  onSubmit(event: Event): void {
+  onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
 
-    if (this.form.value.idea.parentId === null) {
+    if (ideaId === null) {
       this._idea.createIdea(this.form.value);
     } else {
-      // this._idea.editIdea({ id: this.form.value.idea.parentId, body: this.form.value });
+      this._idea.editIdea({ id: ideaId.toString(), body: this.form.value });
     }
 
     console.log(this.form.value);
+  }
+
+  onDelete(event: Event, ideaId: number | null): void {
+    event.preventDefault();
+
+    if (ideaId !== null) {
+      this._idea.deleteIdea(ideaId.toString());
+    }
   }
 
   private _condition(screen: TuiBreakpointMediaKey | null, orientation: ScreenOrientation): TabItem[] | null {

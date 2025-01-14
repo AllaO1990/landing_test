@@ -17,11 +17,11 @@ import {
 } from '@taiga-ui/legacy';
 import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { AddForm } from '../add';
-import { TuiAutoFocus, TuiDay, TuiTime } from '@taiga-ui/cdk';
+import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler, TuiTime } from '@taiga-ui/cdk';
 import { Observable } from 'rxjs';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { AccountBroker } from 'types/account';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { StockPositionTarget } from 'types/position';
 import { getNumberFromE } from 'utils/get-number-from-e';
@@ -47,6 +47,7 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
     TuiDataListWrapper,
     TuiInputDateTimeModule,
     NgIf,
+    NgForOf,
   ],
   templateUrl: './add-target.component.html',
   styleUrls: ['../add.scss', './add-target.component.scss'],
@@ -100,7 +101,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
         amount,
         price,
         stopDate: this.getISOString(stopDate[0], stopDate[1]),
-        broker: broker && broker.brokerId,
+        broker: broker || null,
         reached: false,
         totalPrice: amount * price,
         depositShare: null,
@@ -111,4 +112,11 @@ export class AddTargetComponent extends AddForm implements OnInit {
   }
 
   protected readonly getNumberFromE = getNumberFromE;
+
+  @tuiPure
+  protected stringify(items: readonly AccountBroker[]): TuiStringHandler<TuiContext<number>> {
+    const map = new Map(items.map(({ broker, brokerId }) => [brokerId, broker] as [number, string]));
+
+    return ({ $implicit }: TuiContext<number>) => map.get($implicit) || '';
+  }
 }

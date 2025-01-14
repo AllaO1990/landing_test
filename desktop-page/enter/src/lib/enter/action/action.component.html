@@ -55,7 +55,7 @@
     </lib-list>
     <div class="action">
       <button
-        *ngIf="formArrayEntries.value.length === 0"
+        *ngIf="(canAdd$ | async) && formArrayEntries.value.length === 0"
         class="button"
         [disabled]="false"
         (click)="addEntry($event)"
@@ -136,8 +136,9 @@
     <div
       class="action">
       <button
+        *ngIf="canAdd$ | async"
         class="button"
-        [disabled]="false"
+        [disabled]="formArrayEntries.value.length === 0"
         tuiButton
         (click)="addTarget($event)"
         type="button">
@@ -219,9 +220,11 @@
           </ng-container>
         </div>
         <div class="item__value row__item row__right row__deposit">
-          <ng-container *ngIf="item.broker; else none">
-            {{ item.broker }}
-          </ng-container>
+          <span
+            *ngIf="item.broker && (item.broker | getBroker | async) as broker; else none"
+            [title]="broker">
+            {{ broker }}
+          </span>
         </div>
         <div class="row__space"></div>
         <div class="item__value row__actions">

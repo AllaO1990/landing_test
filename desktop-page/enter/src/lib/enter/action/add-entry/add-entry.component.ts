@@ -18,9 +18,9 @@ import {
   TuiSelectModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
-import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { AccountFacade } from 'stores/facades/account.facade';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AccountBroker } from 'types/account';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { getNumberFromE } from 'utils/get-number-from-e';
@@ -52,15 +52,9 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddEntryComponent extends AddForm implements OnInit {
-  private readonly _defaultBroker: AccountBroker = {
-    broker: 'Не выбран',
-    brokerId: -1,
-  };
   private readonly _service: AccountFacade = inject(AccountFacade);
 
-  readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$.pipe(
-    map((list: null | AccountBroker[]) => list && [this._defaultBroker, ...list])
-  );
+  readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$;
 
   form: FormGroup = new FormGroup({
     date: new FormControl({ value: [null, null], disabled: true }, completeDateTimeValidator),
@@ -87,6 +81,8 @@ export class AddEntryComponent extends AddForm implements OnInit {
     const controlDate = this.form.get('date') as FormControl;
 
     controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
+
+    this.form.valueChanges.subscribe((res) => console.log(res));
   }
 
   onSubmit(event: SubmitEvent): void {
@@ -102,10 +98,17 @@ export class AddEntryComponent extends AddForm implements OnInit {
         quantity,
         totalPrice: price * quantity,
         depositShare: null,
-        broker: broker && broker.brokerId,
+        broker: broker || null,
       });
     }
   }
 
   protected readonly getNumberFromE = getNumberFromE;
+
+  @tuiPure
+  protected stringify(items: readonly AccountBroker[]): TuiStringHandler<TuiContext<number>> {
+    const map = new Map(items.map(({ broker, brokerId }) => [brokerId, broker] as [number, string]));
+
+    return ({ $implicit }: TuiContext<number>) => map.get($implicit) || '';
+  }
 }

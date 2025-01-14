@@ -1,7 +1,14 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, Input } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { TuiButton, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
-import { StockPosition, StockPositionDividend, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
+import {
+  StockPosition,
+  StockPositionActionEntry,
+  StockPositionActionTarget,
+  StockPositionDividend,
+  StockPositionIdeaEntry,
+  StockPositionTarget,
+} from 'types/position';
 import { ActionService } from './action.service';
 import {
   ActionEntry,
@@ -14,7 +21,7 @@ import {
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { LoaderComponent } from '@ui/components/loader';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { BehaviorSubject, filter, Observable, of, shareReplay, startWith, Subject, switchMap } from 'rxjs';
+import { filter, Observable, of, shareReplay, startWith, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { AddEntryComponent } from './add-entry/add-entry.component';
@@ -23,6 +30,9 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 import { IdeaFacade } from 'stores/facades/idea.facade';
+import { getPriceIncrement } from 'utils/get-price-increment';
+import { AccountBroker } from 'types/account';
+import { AccountFacade } from 'stores/facades/account.facade';
 
 type ActionItem = {
   amount: number;
@@ -58,17 +68,27 @@ type ActionItem = {
 export class EnterActionComponent implements AfterViewInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _ideaFacade: IdeaFacade = inject(IdeaFacade);
+  private readonly _accountStore: AccountFacade = inject(AccountFacade);
   private readonly _service: ActionService = inject(ActionService);
   private readonly _injector: Injector = inject(Injector);
   private readonly _dialogService: DialogService = inject(DIALOG);
 
   // private _data: { type: string; data: Position | null } | null = null;
 
-  readonly isEditEntry$: Subject<boolean> = new BehaviorSubject(false);
+  readonly canAdd$: Observable<boolean> = this._ideaFacade.idea$.pipe(
+    filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
+    map((idea: StockPosition) => idea.idea.id !== null)
+  );
+
+  readonly broker$: Observable<AccountBroker[]> = this._accountStore.brokers$.pipe(
+    filter((list: null | AccountBroker[]): list is AccountBroker[] => list !== null)
+  );
 
   readonly itemHeight = 28;
-  priceIncrement = 0;
+  minPriceIncrement = 1e-8;
+  priceIncrement = getPriceIncrement(this.minPriceIncrement);
   multiplier = 1;
+  brokers: AccountBroker[] = [];
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
@@ -76,13 +96,12 @@ export class EnterActionComponent implements AfterViewInit {
   form!: FormGroup;
 
   @Input() set formGroup(value: FormGroup) {
-    console.log(value);
     this.form = value.get('actions') as FormGroup;
   }
 
   readonly controlFormArray: FormGroup = new FormGroup({
-    entries: new FormArray<FormControl<StockPositionIdeaEntry>>([]),
-    outs: new FormArray<FormControl<StockPositionTarget>>([]),
+    entries: new FormArray<FormControl<StockPositionActionEntry>>([]),
+    outs: new FormArray<FormControl<StockPositionActionTarget>>([]),
     dividends: new FormArray<FormControl<StockPositionTarget>>([]),
   });
 
@@ -110,54 +129,6 @@ export class EnterActionComponent implements AfterViewInit {
     startWith(this.formArrayDividends.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-
-  // @Input()
-  // set data(value: { type: string; data: Position | null } | null) {
-  //   if (value && value.data) {
-  //     this._data = value;
-  //
-  //     this.multiplier = value.data.multiplier;
-  //
-  //     this.isEditEntry$.next(value.type !== 'position');
-  //
-  //     this.formArrayEntries.clear();
-  //     this.formArrayTargets.clear();
-  //     this.formArrayDividends.clear();
-  //
-  //     Promise.resolve().then(() => {
-  //       (value.data as Position).entries
-  //         .filter((item: StockPositionIdeaEntry) => item.date)
-  //         .forEach((item: StockPositionIdeaEntry, index: number) => {
-  //           this.formArrayEntries.setControl(index, new FormControl(item));
-  //         });
-  //
-  //       (value.data as Position).targets
-  //         .filter((item: StockPositionTarget) => item.stopDate)
-  //         .forEach((item: StockPositionTarget, index: number) => {
-  //           this.formArrayTargets.setControl(index, new FormControl(item));
-  //         });
-  //
-  //       (value.data as Position).dividends.forEach((item: StockPositionDividend, index: number) => {
-  //         this.formArrayDividends.setControl(index, new FormControl(item));
-  //       });
-  //     });
-  //
-  //     this.priceIncrement = value.data.priceIncrement;
-  //
-  //     this.listEntry = this._service.getActionEntry(value.data);
-  //     this.totalEntry = this._service.getActionTotalEntry(this.listEntry);
-  //
-  //     this.listOut = this._service.getActionOut(value.data);
-  //     this.totalOut = this._service.getActionTotalOut(
-  //       this.listOut,
-  //       value.data.entryAveragePrice,
-  //       value.data.multiplier
-  //     );
-  //
-  //     this.remainder = this._service.getRemainder(value.data);
-  //     this.result = this._service.getResult(this.totalOut, this.remainder, value.data);
-  //   }
-  // }
 
   listEntry: ActionEntry[] | null = null;
   totalEntry: ActionTotalEntry | null = null;
@@ -198,11 +169,11 @@ export class EnterActionComponent implements AfterViewInit {
     this.formArrayEntries.valueChanges
       .pipe(
         takeUntilDestroyed(this._destroyRef),
-        map((list: StockPositionIdeaEntry[]) =>
+        map((list: StockPositionActionEntry[]) =>
           list.map(
-            (item: StockPositionIdeaEntry): ActionItem => ({
-              amount: item.quantity,
-              brokerId: item.broker as number,
+            (item: StockPositionActionEntry): ActionItem => ({
+              amount: item.amount,
+              brokerId: item.brokerId,
               date: item.date as string,
               price: item.price,
             })
@@ -229,17 +200,20 @@ export class EnterActionComponent implements AfterViewInit {
   async addEntry(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
     event.preventDefault();
 
+    console.log(data);
+
     this._dialogEntryComponent = await import('./add-entry/add-entry.component')
       .then((m) => m.AddEntryComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, data).subscribe(
-      (res: object | null) => {
-        if (res) {
-          this._updateData(this.formArrayEntries, res, control);
-        }
+    this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((res: object | null) => {
+      if (res) {
+        this._updateData(this.formArrayEntries, res, control);
       }
-    );
+    });
   }
 
   async addTarget(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
@@ -249,22 +223,15 @@ export class EnterActionComponent implements AfterViewInit {
       .then((m) => m.AddTargetComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, data).subscribe(
-      (result: object | null) => {
-        if (result) {
-          this._updateData(this.formArrayTargets, result, control);
-        }
+    this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, {
+      ...data,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((result: object | null) => {
+      if (result) {
+        this._updateData(this.formArrayTargets, result, control);
       }
-    );
+    });
   }
-
-  // addCommonTarget(event: Event): void {
-  //   if (this._data && this._data.data) {
-  //     const find = this._data.data.targets.find((item: StockPositionTarget) => !item.stopDate) || null;
-  //
-  //     this.addTarget(event, find);
-  //   }
-  // }
 
   onRemove(event: Event, index: number, formName: string): void {
     event.preventDefault();
@@ -317,6 +284,23 @@ export class EnterActionComponent implements AfterViewInit {
   }
 
   private _setValues(data: StockPosition): void {
-    console.log(data);
+    this.minPriceIncrement = data.idea.instrument.minPriceIncrement;
+
+    const entries: StockPositionActionEntry = data.actions.entries[0];
+
+    this.formArrayEntries.clear();
+    if (entries) {
+      this.formArrayEntries.setControl(
+        0,
+        new FormControl({
+          date: entries.date || null,
+          depositShare: null,
+          broker: entries.brokerId,
+          price: entries.price,
+          quantity: entries.amount,
+          totalPrice: entries.totalPrice,
+        })
+      );
+    }
   }
 }

@@ -8,7 +8,8 @@
           tuiIconButton
           appearance="outline"
           [size]="size"
-          [disabled]="isDisabled"
+          [disabled]="isDisabled || (isShowSearch$ | async)"
+          (click)="onDelete($event, result.idea.id)"
           type="button"
           iconStart="@tui.trash"
         ></button>
@@ -18,7 +19,7 @@
           appearance="outline"
           [size]="size"
           [disabled]="isDisabled || form.invalid"
-          (click)="onSubmit($event)"
+          (click)="onSubmit($event, result.idea.id)"
           type="button"
           iconStart="@tui.save"
         ></button>
@@ -72,7 +73,7 @@
       <lib-enter-sidebar [formGroup]="form"></lib-enter-sidebar>
     </div>
     <div class="container__submit container__widget">
-      <div class="submit">
+      <div class="submit" *ngIf="(data$ | async) as result; else load">
         <button
           class="action subscribe"
           appearance="secondary"
@@ -87,6 +88,7 @@
           appearance="primary"
           tuiButton
           type="button"
+          (click)="onSubmit($event, result.idea.id)"
           [size]="size">
           <tui-icon icon="@tui.save"></tui-icon>
           Сохранить
@@ -96,6 +98,7 @@
           appearance="flat"
           tuiButton
           [size]="size"
+          (click)="onDelete($event, result.idea.id)"
           type="button">
           <tui-icon icon="@tui.trash"></tui-icon>
           Удалить идею

@@ -34,12 +34,16 @@ export interface IdeaParams {
   id: string;
   isActive: boolean;
   positionType: string;
-  priceInPlan: number;
-  priceIn: number;
-  priceInDate: Date;
+  priceInPlan: number | null;
+  priceInCandleDate: string;
+  priceIn: number | null;
+  priceInDate: Date | null;
   stop: number;
-  stopDate: Date;
+  stopDate: Date | null;
+  stopCandleDate: string | null;
   targets: Target[];
+  entryPrice: number | null;
+  entryDate: string | null;
 }
 
 export interface Target {
