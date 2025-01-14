@@ -23,7 +23,7 @@ import { AccountFacade } from 'stores/facades/account.facade';
 import { AccountBroker } from 'types/account';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
-import { StockPositionTarget } from 'types/position';
+import { StockPositionActionTarget } from 'types/position';
 import { getNumberFromE } from 'utils/get-number-from-e';
 
 const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
@@ -57,9 +57,11 @@ export class AddTargetComponent extends AddForm implements OnInit {
   private readonly _service: AccountFacade = inject(AccountFacade);
 
   readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$;
+  readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
+  readonly maxDate = TuiDay.fromLocalNativeDate(this.today);
 
   form: FormGroup = new FormGroup({
-    stopDate: new FormControl<[TuiDay | null, TuiTime | null]>(
+    date: new FormControl<[TuiDay | null, TuiTime | null]>(
       {
         value: [null, null],
         disabled: true,
@@ -68,25 +70,25 @@ export class AddTargetComponent extends AddForm implements OnInit {
     ),
     price: new FormControl<null | number>({ value: null, disabled: true }, Validators.required),
     amount: new FormControl<null | number>({ value: null, disabled: true }, Validators.required),
-    broker: new FormControl<null | AccountBroker>({ value: null, disabled: true }, Validators.required),
+    brokerId: new FormControl<null | AccountBroker>({ value: null, disabled: true }, Validators.required),
   });
 
   ngOnInit(): void {
     if (this.context.data) {
-      const { amount, price, stopDate, broker, minPriceIncrement } = this.context.data;
+      const { amount, price, stopDate, brokerId, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         amount: amount || null,
         price: price || null,
         stopDate: this.getTuiDates(stopDate || null),
-        broker: broker || null,
+        brokerId: brokerId || null,
       });
 
       this.minPriceIncrement = minPriceIncrement;
       this.precision = this.getPrecision(minPriceIncrement);
     }
 
-    const controlDate = this.form.get('stopDate') as FormControl;
+    const controlDate = this.form.get('date') as FormControl;
 
     controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
   }
@@ -95,19 +97,19 @@ export class AddTargetComponent extends AddForm implements OnInit {
     event.preventDefault();
 
     if (this.context) {
-      const { amount, price, stopDate, broker } = this.form.value;
+      const { amount, price, date, brokerId } = this.form.value;
 
       this.context.completeWith({
         amount,
         price,
-        stopDate: this.getISOString(stopDate[0], stopDate[1]),
-        broker: broker || null,
+        date: this.getISOString(date[0], date[1]),
+        brokerId: brokerId || null,
         reached: false,
         totalPrice: amount * price,
         depositShare: null,
         profit: null,
         profitPercent: null,
-      } as StockPositionTarget);
+      } as StockPositionActionTarget);
     }
   }
 

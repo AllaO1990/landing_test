@@ -18,12 +18,13 @@ import {
   TuiSelectModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
-import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { Observable } from 'rxjs';
 import { AccountBroker } from 'types/account';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { getNumberFromE } from 'utils/get-number-from-e';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
   control.value.every(Boolean) ? null : { incompleteDateTime: true };
@@ -55,23 +56,25 @@ export class AddEntryComponent extends AddForm implements OnInit {
   private readonly _service: AccountFacade = inject(AccountFacade);
 
   readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$;
+  readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
+  readonly maxDate = TuiDay.fromLocalNativeDate(new Date(this.today.setDate(this.today.getDate() + 1)));
 
   form: FormGroup = new FormGroup({
     date: new FormControl({ value: [null, null], disabled: true }, completeDateTimeValidator),
     price: new FormControl({ value: null, disabled: true }, Validators.required),
-    quantity: new FormControl({ value: null, disabled: true }, Validators.required),
-    broker: new FormControl({ value: null, disabled: true }, Validators.required),
+    amount: new FormControl({ value: null, disabled: true }, Validators.required),
+    brokerId: new FormControl({ value: null, disabled: true }, Validators.required),
   });
 
   ngOnInit(): void {
     if (this.context.data) {
-      const { date, price, quantity, broker, minPriceIncrement } = this.context.data;
+      const { date, price, amount, brokerId, minPriceIncrement } = this.context.data;
 
       this.form.patchValue({
         price: price || null,
-        quantity: quantity || null,
+        amount: amount || null,
         date: this.getTuiDates(date || null),
-        broker: broker || null,
+        brokerId: brokerId || null,
       });
 
       this.minPriceIncrement = minPriceIncrement;
@@ -89,16 +92,16 @@ export class AddEntryComponent extends AddForm implements OnInit {
     event.preventDefault();
 
     if (this.context) {
-      const { date, price, quantity, broker } = this.form.value;
+      const { date, price, amount, brokerId } = this.form.value;
 
       this.context.completeWith({
         ...this.context.data,
         date: this.getISOString(date[0], date[1]),
         price,
-        quantity,
-        totalPrice: price * quantity,
+        amount,
+        totalPrice: getNumberPrecision(price * amount, this.precision),
         depositShare: null,
-        broker: broker || null,
+        broker: brokerId || null,
       });
     }
   }

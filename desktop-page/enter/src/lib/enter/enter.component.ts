@@ -137,7 +137,7 @@ export class VtEnterComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
-    // this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => console.log('form', res));
+    this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => console.log('form', res));
   }
 
   onClose(event: Event): void {

@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Position, StockPositionDividend, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
+import {
+  Position,
+  StockPositionActionEntry,
+  StockPositionActionTarget,
+  StockPositionDividend,
+  StockPositionIdeaEntry,
+  StockPositionTarget,
+} from 'types/position';
 import {
   ActionEntry,
   ActionOut,
@@ -11,25 +18,24 @@ import {
 
 @Injectable()
 export class ActionService {
-  private readonly _defaultTotalEntry: StockPositionIdeaEntry = {
+  private readonly _defaultTotalEntry: StockPositionActionEntry = {
     date: null,
-    depositShare: null,
     price: 0,
-    quantity: 0,
+    amount: 0,
+    depositShare: null,
     totalPrice: 0,
-    broker: null,
+    brokerId: null,
   };
 
-  private readonly _defaultTotalOut: StockPositionTarget = {
+  private readonly _defaultTotalOut: StockPositionActionTarget = {
     price: 0,
     amount: 0,
     profit: 0,
+    date: null,
     profitPercent: 0,
     totalPrice: 0,
     depositShare: null,
-    reached: false,
-    stopDate: null,
-    broker: null,
+    brokerId: null,
   };
 
   private readonly _defaultTotalRemainder: StockPositionTarget = {
@@ -55,21 +61,21 @@ export class ActionService {
     broker: null,
   };
 
-  getTotalEntry(list: StockPositionIdeaEntry[] | null): StockPositionIdeaEntry {
+  getTotalEntry(list: StockPositionActionEntry[] | null): StockPositionActionEntry {
     if (list === null) {
       return this._defaultTotalEntry;
     }
 
-    return list.reduce((acc: StockPositionIdeaEntry, item: StockPositionIdeaEntry, index: number) => {
-      const value: StockPositionIdeaEntry = {
+    return list.reduce((acc: StockPositionActionEntry, item: StockPositionActionEntry, index: number) => {
+      const value: StockPositionActionEntry = {
         ...acc,
-        quantity: acc.quantity + item.quantity,
+        amount: acc.amount + item.amount,
+        totalPrice: acc.totalPrice + item.price * item.amount,
         depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
-        totalPrice: acc.totalPrice + item.price * item.quantity,
       };
 
       if (list.length - 1 === index) {
-        value.price = value.totalPrice / value.quantity;
+        value.price = value.totalPrice / value.amount;
 
         return value;
       }
@@ -79,30 +85,34 @@ export class ActionService {
   }
 
   getTotalOut(
-    list: StockPositionTarget[] | null,
-    total: StockPositionIdeaEntry,
+    list: StockPositionActionTarget[] | null,
+    total: StockPositionActionEntry,
     multiplier: number
-  ): StockPositionTarget {
+  ): StockPositionActionTarget {
     if (list === null) {
       return this._defaultTotalOut;
     }
 
-    return list.reduce((acc: StockPositionTarget, item: StockPositionTarget, index: number): StockPositionTarget => {
-      const value: StockPositionTarget = {
-        ...acc,
-        price: acc.price + item.price * item.amount,
-        amount: acc.amount + item.amount,
-        depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
-      };
+    return list.reduce(
+      (acc: StockPositionActionTarget, item: StockPositionActionTarget, index: number): StockPositionActionTarget => {
+        const value: StockPositionActionTarget = {
+          ...acc,
+          price: acc.price + item.price * item.amount,
+          amount: acc.amount + item.amount,
+          depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
+        };
 
-      if (list.length - 1 === index) {
-        value.profit = (value.price - total.price * total.quantity) * multiplier;
-        value.profitPercent = (value.profit / (total.price * total.quantity)) * 100;
-        value.price = value.price / value.amount;
-      }
+        if (list.length - 1 === index) {
+          value.totalPrice = value.price;
+          value.profit = (value.price - total.price * value.amount) * multiplier;
+          value.profitPercent = (value.profit / (total.price * value.amount)) * 100;
+          value.price = value.price / value.amount;
+        }
 
-      return value;
-    }, this._defaultTotalOut);
+        return value;
+      },
+      this._defaultTotalOut
+    );
   }
 
   getTotalRemainder(): StockPositionTarget {
@@ -113,7 +123,7 @@ export class ActionService {
     return this._defaultTotalDividend;
   }
 
-  getTotalResult(): StockPositionTarget {
+  getTotalResult(): StockPositionActionTarget {
     return this._defaultTotalOut;
   }
 

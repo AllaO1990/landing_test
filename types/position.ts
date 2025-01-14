@@ -103,7 +103,8 @@ export interface StockPositionActionEntry {
   date: string | null;
   price: number;
   amount: number;
-  brokerId: number;
+  brokerId: number | null;
+  depositShare: number | null;
   totalPrice: number;
 }
 
@@ -126,6 +127,7 @@ export interface StockPositionActionTarget {
   profitPercent: null | number;
   totalPrice: number;
   brokerId: number | null;
+  depositShare: null | number;
   date: string | null;
 }
 

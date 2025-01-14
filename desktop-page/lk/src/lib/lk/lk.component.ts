@@ -74,7 +74,7 @@ export class LkComponent implements OnInit {
       });
 
     this._globalDateRangeService.setRange({
-      from: new Date(new Date(new Date().getFullYear() - 1, 0, 1, 12).setUTCHours(0, 0, 0, 0)).toISOString(),
+      from: new Date(new Date(new Date().getFullYear() - 2, 0, 1, 12).setUTCHours(0, 0, 0, 0)).toISOString(),
       to: new Date(new Date().setUTCHours(23, 59, 59, 0)).toISOString(),
     });
   }
