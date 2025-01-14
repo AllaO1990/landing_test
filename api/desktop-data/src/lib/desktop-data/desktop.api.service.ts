@@ -144,7 +144,7 @@ export class DesktopApiService extends DesktopService {
 
     const from: string =
       selected.index === 0
-        ? new Date(new Date(lastYear - 1, 0, 1, 23).setUTCHours(0, 0, 0, 0)).toISOString()
+        ? new Date(new Date(lastYear - 2, 0, 1, 23).setUTCHours(0, 0, 0, 0)).toISOString()
         : new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString();
 
     return this._http

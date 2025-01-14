@@ -159,23 +159,23 @@ export class VtEnterComponent implements AfterViewInit {
     return index;
   }
 
-  onSubmit(event: Event): void {
+  onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
 
-    if (this.form.value.idea.parentId === null) {
+    if (ideaId === null) {
       this._idea.createIdea(this.form.value);
     } else {
-      // this._idea.editIdea({ id: this.form.value.idea.parentId, body: this.form.value });
+      this._idea.editIdea({ id: ideaId.toString(), body: this.form.value });
     }
 
     console.log(this.form.value);
   }
 
-  onDelete(event: Event): void {
+  onDelete(event: Event, ideaId: number | null): void {
     event.preventDefault();
 
-    if (this.ideaId !== null) {
-      this._idea.deleteIdea(this.ideaId.toString());
+    if (ideaId !== null) {
+      this._idea.deleteIdea(ideaId.toString());
     }
   }
 

@@ -1,5 +1,6 @@
 import { StockId, StockInstrument, StockPositionDirection } from './stock';
 import { getPriceIncrement } from '../utils/get-price-increment';
+import { AccountBroker } from './account';
 
 export interface ResponsePositions {
   items: ResponsePosition[];
@@ -95,7 +96,7 @@ export interface StockPositionIdeaEntry {
   price: number;
   quantity: number;
   totalPrice: number;
-  broker: number | null;
+  broker: AccountBroker | null;
 }
 
 export interface StockPositionActionEntry {

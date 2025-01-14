@@ -92,9 +92,9 @@ export class EnterIdeaComponent implements AfterViewInit {
   readonly itemHeight = 28;
   minPriceIncrement = 0.01;
   priceIncrement = getPriceIncrement(this.minPriceIncrement);
-  multiplier = 1;
   isCanEdit = false;
   inPositionQuantityValue = 0;
+  multiplier = 1;
 
   private readonly _mapForm = {
     entries: this.addEntry,
@@ -117,7 +117,8 @@ export class EnterIdeaComponent implements AfterViewInit {
           distinctUntilChanged(),
           startWith(positionType.value),
           map((result: string) => (result === 'short' ? -1 : 1)),
-          tap((multiplier: number) => (this.multiplier = multiplier))
+          tap((multiplier: number) => (this.multiplier = multiplier)),
+          shareReplay({ bufferSize: 1, refCount: true })
         );
       }
     }
@@ -160,8 +161,10 @@ export class EnterIdeaComponent implements AfterViewInit {
   );
   totalTarget$: Observable<StockPositionTarget> = this.totalEntry$.pipe(
     switchMap((total: StockPositionIdeaEntry) =>
-      this.targetsList$.pipe(
-        map((list: StockPositionTarget[] | null) => this._service.getTotalTarget(list, total, this.multiplier))
+      combineLatest([this.multiplier$, this.targetsList$]).pipe(
+        map(([multiplier, list]: [number, StockPositionTarget[] | null]) =>
+          this._service.getTotalTarget(list, total, multiplier)
+        )
       )
     )
   );
@@ -176,10 +179,20 @@ export class EnterIdeaComponent implements AfterViewInit {
     startWith(this.formArrayStop.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-  totalStop$: Observable<StockPositionStop> = combineLatest([this.totalEntry$, this.targetsList$, this.stopList$]).pipe(
+  totalStop$: Observable<StockPositionStop> = combineLatest([
+    this.totalEntry$,
+    this.targetsList$,
+    this.stopList$,
+    this.multiplier$,
+  ]).pipe(
     debounceTime(100),
-    map(([total, targets, list]: [StockPositionIdeaEntry, StockPositionTarget[] | null, StockPositionStop[] | null]) =>
-      this._service.getTotalStop(list, total, targets, this.multiplier)
+    map(
+      ([total, targets, list, multiplier]: [
+        StockPositionIdeaEntry,
+        StockPositionTarget[] | null,
+        StockPositionStop[] | null,
+        number
+      ]) => this._service.getTotalStop(list, total, targets, multiplier)
     )
   );
 

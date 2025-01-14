@@ -106,9 +106,11 @@ export class ChartCandlestickComponent implements OnInit {
         return null;
       }
 
+      const str = `1 ATR: ${value.data.atr} (${value.data.atrPct}%)`;
+
       return {
         ...value,
-        data: `1 ATR: ${value.data.atr}`,
+        data: str,
       };
     }),
     shareReplay({ bufferSize: 1, refCount: true })

@@ -6,7 +6,7 @@ import { FigureIdea } from 'types/chart';
 import { Response } from 'types/response';
 import * as Highcharts from 'highcharts/highstock';
 import { ConsolidationZonesShape, ConsolidationZonesState } from 'types/consolidation-zones';
-import { AnnotationsShapesOptions } from 'highcharts';
+import { AnnotationShapePointOptions, AnnotationsShapesOptions } from 'highcharts';
 import { getJoinUniq } from 'utils/get-join-uniq';
 import { StockTransaction } from 'types/stock';
 
@@ -73,51 +73,80 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
 
   private _getResponseData(data: FigureIdea): Highcharts.AnnotationsOptions {
     const shapes: AnnotationsShapesOptions[] = [];
+    const today = new Date().setUTCHours(12, 0, 0, 0);
+    const endDate = new Date(today).setFullYear(new Date(today).getFullYear() + 5);
 
-    if (data.ideaParams.priceInDate && data.ideaParams.priceIn) {
-      shapes.push({
-        type: 'path',
-        fill: 'rgba(0,0,0,0)',
-        stroke: 'rgba(64, 224, 208, 1)',
-        strokeWidth: 1.5,
-        ry: Math.PI,
-        points: [
-          { x: new Date(data.ideaParams.priceInDate).valueOf(), y: data.ideaParams.priceIn, ...this._commonAxisValues },
-          { x: new Date().setFullYear(2029).valueOf(), y: data.ideaParams.priceIn, ...this._commonAxisValues },
-        ],
-      });
+    let pointsPriceIn: Array<AnnotationShapePointOptions> = [];
+
+    if (data.ideaParams.priceInPlan) {
+      pointsPriceIn = [
+        {
+          x: new Date(data.ideaParams.priceInCandleDate || today).valueOf(),
+          y: data.ideaParams.priceInPlan,
+          ...this._commonAxisValues,
+        },
+        { x: endDate, y: data.ideaParams.priceInPlan, ...this._commonAxisValues },
+      ];
     }
 
-    if (data.ideaParams.stopDate && data.ideaParams.stop) {
-      shapes.push({
-        type: 'path',
-        fill: 'rgba(0,0,0,0)',
-        stroke: 'rgba(255,0,0,1)',
-        strokeWidth: 1.5,
-        dashStyle: 'Dash',
-        ry: Math.PI,
-        points: [
-          { x: new Date(data.ideaParams.stopDate).valueOf(), y: data.ideaParams.stop, ...this._commonAxisValues },
-          { x: new Date().setFullYear(2029).valueOf(), y: data.ideaParams.stop, ...this._commonAxisValues },
-        ],
-      });
+    if (data.ideaParams.entryPrice && data.ideaParams.entryDate) {
+      pointsPriceIn = [
+        { x: new Date(data.ideaParams.entryDate).valueOf(), y: data.ideaParams.entryPrice, ...this._commonAxisValues },
+        { x: endDate, y: data.ideaParams.entryPrice, ...this._commonAxisValues },
+      ];
     }
+
+    shapes.push({
+      type: 'path',
+      fill: 'rgba(0,0,0,0)',
+      stroke: 'rgba(64, 224, 208, 1)',
+      strokeWidth: 1.5,
+      ry: Math.PI,
+      dashStyle: data.ideaParams.entryDate ? 'Solid' : 'Dash',
+      points: pointsPriceIn,
+    });
+
+    let pointsStop: Array<AnnotationShapePointOptions> = [
+      {
+        x: new Date(data.ideaParams.stopCandleDate || today).valueOf(),
+        y: data.ideaParams.stop,
+        ...this._commonAxisValues,
+      },
+      { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
+    ];
+
+    if (data.ideaParams.stopDate) {
+      pointsStop = [
+        { x: new Date(data.ideaParams.stopDate).valueOf(), y: data.ideaParams.stop, ...this._commonAxisValues },
+        { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
+      ];
+    }
+
+    shapes.push({
+      type: 'path',
+      fill: 'rgba(0,0,0,0)',
+      stroke: 'rgba(255,0,0,1)',
+      strokeWidth: 1.5,
+      dashStyle: data.ideaParams.stopDate ? 'Solid' : 'Dash',
+      ry: Math.PI,
+      points: pointsStop,
+    });
 
     if (data.ideaParams.targets) {
       const currentDate = new Date().valueOf();
 
       const targets: AnnotationsShapesOptions[] = data.ideaParams.targets.map((item) => {
-        const startDate = item.date !== null ? new Date(item.date).valueOf() : currentDate;
+        const startDate = item.date !== null ? new Date(item.date).valueOf() : today;
         return {
           type: 'path',
           fill: 'rgba(0,0,0,0)',
           stroke: 'rgba(0, 255, 0, 1)',
           strokeWidth: 1.5,
           ry: Math.PI,
-          dashStyle: 'Dash',
+          dashStyle: item.date ? 'Solid' : 'Dash',
           points: [
             { x: startDate, y: item.value, ...this._commonAxisValues },
-            { x: new Date().setFullYear(2029).valueOf(), y: item.value, ...this._commonAxisValues },
+            { x: endDate, y: item.value, ...this._commonAxisValues },
           ],
         };
       });
