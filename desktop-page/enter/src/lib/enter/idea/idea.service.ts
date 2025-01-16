@@ -69,6 +69,10 @@ export class IdeaService {
       return this._totalDefaultTarget;
     }
 
+    if (total.price === 0) {
+      return this._totalDefaultTarget;
+    }
+
     // const amount = list.reduce((acc: number, item: StockPositionTarget) => (acc += item.stopDate ? 0 : item.amount), 0);
     //
     // if (amount !== total.quantity) {
@@ -100,6 +104,10 @@ export class IdeaService {
     multiplier: number
   ): StockPositionStop {
     if (list === null) {
+      return this._totalDefaultStop;
+    }
+
+    if (total.price === 0) {
       return this._totalDefaultStop;
     }
 

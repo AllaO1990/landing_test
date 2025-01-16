@@ -23,7 +23,7 @@ import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ScreenOrientation = 'landscape' | 'portrait';
@@ -81,31 +81,35 @@ export class VtEnterComponent implements AfterViewInit {
   ideaAuthor: string | null = null;
   ideaParentId: number | null = null;
 
-  readonly form: FormGroup = new FormGroup({
-    actions: new FormGroup({
-      entries: new FormArray([]),
-      outs: new FormArray([]),
-    }),
-    idea: new FormGroup({
-      amount: new FormControl(null, Validators.required),
-      entry: new FormControl(null, Validators.required),
-      goals: new FormArray([], Validators.required),
-      stop: new FormControl(null, Validators.required),
-      instrumentId: new FormControl(null, Validators.required),
-      portfolioId: new FormControl(null, Validators.required),
-      expirationDate: new FormControl(null),
-      strategyId: new FormControl(null, Validators.required),
-      positionType: new FormControl(null, Validators.required),
-      comment: new FormControl(''),
-      parentId: new FormControl(null),
-      watch: new FormControl(true, Validators.required),
-    }),
-  });
+  // readonly form: FormGroup = new FormGroup({
+  //   actions: new FormControl({ entries: [], outs: [] }),
+  //   // actions: new FormGroup({
+  //   //   entries: new FormArray([]),
+  //   //   outs: new FormArray([]),
+  //   // }),
+  //   idea: new FormGroup({
+  //     amount: new FormControl(null, Validators.required),
+  //     entry: new FormControl(null, Validators.required),
+  //     goals: new FormArray([], Validators.required),
+  //     stop: new FormControl(null, Validators.required),
+  //     instrumentId: new FormControl(null, Validators.required),
+  //     portfolioId: new FormControl(null, Validators.required),
+  //     expirationDate: new FormControl(null),
+  //     strategyId: new FormControl(null, Validators.required),
+  //     positionType: new FormControl(null, Validators.required),
+  //     comment: new FormControl(''),
+  //     parentId: new FormControl(null),
+  //     watch: new FormControl(true, Validators.required),
+  //   }),
+  // });
+
+  form: FormControl = new FormControl();
+  value: any = null;
 
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
     tap((data: StockPosition) => {
-      console.log('isShowSearch$', data);
+      // console.log('isShowSearch$', data);
       this.ideaId = data.idea.id;
       this.ideaParentId = (data.idea as any).parentId || null;
       this.ideaAuthor = data.idea.author;
@@ -137,7 +141,92 @@ export class VtEnterComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
-    this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res) => console.log('form', res));
+    this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
+      let entries: unknown[] = [];
+      let stop: unknown[] = [];
+      const targets = result.idea.targets.map((item) => ({
+        price: item.price,
+        amount: item.amount,
+        profit: item.profit || null,
+        profitPercent: item.profitPercent || null,
+        depositShare: item.depositShare || null,
+        totalPrice: item.price * item.amount,
+        reached: false,
+        stopDate: item.stopDate || null,
+        broker: null,
+      }));
+      const entryElement = result.idea.entries[0];
+      const stopElement = result.idea.stop;
+
+      if (entryElement) {
+        entries = [
+          {
+            date: entryElement.date || null,
+            depositShare: entryElement.depositShare || null,
+            broker: null,
+            price: entryElement.price,
+            quantity: entryElement.quantity,
+            totalPrice: entryElement.totalPrice,
+          },
+        ];
+      }
+
+      if (stopElement) {
+        stop = [
+          {
+            depositShare: stopElement.depositShare || null,
+            lossPercent: stopElement.lossPercent || null,
+            loss: stopElement.loss || null,
+            price: stopElement.price,
+            stopCandleDate: stopElement.stopCandleDate || null,
+            amount: stopElement.amount || result.idea.inPositionQuantity || null,
+            amountPercent: stopElement.amountPercent || 100,
+          },
+        ];
+      }
+
+      this.form.patchValue({
+        actions: result.actions,
+        idea: {
+          entries,
+          targets,
+          stop,
+        },
+        settings: {
+          positionType: result.idea.positionType,
+          strategyId: 4,
+          expirationDate: null,
+          instrumentId: result.idea.instrument.id,
+          parentId: result.idea.parentId,
+          portfolioId: result.idea.portfolioId,
+          comment: '',
+        },
+        minPriceIncrement: result.idea.instrument.minPriceIncrement,
+        positionType: result.idea.positionType,
+      });
+    });
+
+    this.form.valueChanges.pipe(startWith(this.form.value), takeUntilDestroyed(this._destroyRef)).subscribe((res) => {
+      if (res) {
+        this.value = {
+          actions: res.actions,
+          idea: {
+            ...res.settings,
+            goals: res.idea.targets.map((item: any) => ({
+              amount: item.amount,
+              goal: item.price,
+            })),
+            amount: res.idea.entries[0] ? res.idea.entries[0].quantity : null,
+            entry: res.idea.entries[0] ? res.idea.entries[0].price : null,
+            stop: res.idea.stop[0] ? res.idea.stop[0].price : null,
+            watch: true,
+          },
+        };
+      } else {
+        this.value = null;
+      }
+      // console.log('form', res, this.form.pristine, this.value);
+    });
   }
 
   onClose(event: Event): void {
@@ -165,10 +254,10 @@ export class VtEnterComponent implements AfterViewInit {
     if (ideaId === null) {
       this._idea.createIdea(this.form.value);
     } else {
-      this._idea.editIdea({ id: ideaId.toString(), body: this.form.value });
+      this._idea.editIdea({ id: ideaId.toString(), body: this.value });
     }
 
-    console.log(this.form.value);
+    console.log(this.value);
   }
 
   onDelete(event: Event, ideaId: number | null): void {

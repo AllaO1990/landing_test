@@ -75,12 +75,12 @@ export class AddTargetComponent extends AddForm implements OnInit {
 
   ngOnInit(): void {
     if (this.context.data) {
-      const { amount, price, stopDate, brokerId, minPriceIncrement } = this.context.data;
+      const { amount, price, date, brokerId, minPriceIncrement } = this.context.data;
 
-      this.form.patchValue({
+      this.form.setValue({
         amount: amount || null,
         price: price || null,
-        stopDate: this.getTuiDates(stopDate || null),
+        date: this.getTuiDates(date || null),
         brokerId: brokerId || null,
       });
 

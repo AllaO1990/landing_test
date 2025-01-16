@@ -57,7 +57,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
 
   readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$;
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
-  readonly maxDate = TuiDay.fromLocalNativeDate(new Date(this.today.setDate(this.today.getDate() + 1)));
+  readonly maxDate = TuiDay.fromLocalNativeDate(this.today);
 
   form: FormGroup = new FormGroup({
     date: new FormControl({ value: [null, null], disabled: true }, completeDateTimeValidator),
@@ -84,8 +84,6 @@ export class AddEntryComponent extends AddForm implements OnInit {
     const controlDate = this.form.get('date') as FormControl;
 
     controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
-
-    this.form.valueChanges.subscribe((res) => console.log(res));
   }
 
   onSubmit(event: SubmitEvent): void {
@@ -101,7 +99,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
         amount,
         totalPrice: getNumberPrecision(price * amount, this.precision),
         depositShare: null,
-        broker: brokerId || null,
+        brokerId: brokerId || null,
       });
     }
   }

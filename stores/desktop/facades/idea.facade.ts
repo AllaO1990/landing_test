@@ -71,6 +71,7 @@ const DEFAULT_IDEA = {
       profitPercent: 0,
       profitPrice: 0,
     },
+    parentId: null,
     stop: null,
     strategy: null,
     subscribed: true,

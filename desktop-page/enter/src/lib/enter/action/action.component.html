@@ -12,17 +12,17 @@
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
         <div class="item__value row__item row__right row__price">
-          {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+          {{ item.price | tuiFormatNumber: { precision: priceIncrement, decimalMode: 'always' } | async }}
         </div>
         <div class="item__value row__item row__right row__quantity">
           {{ item.amount | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__total">
-          {{ item.totalPrice | tuiFormatNumber | async }}
+          {{ item.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
         </div>
         <div class="item__value row__item row__right row__deposit">
           <ng-container *ngIf="item.depositShare !== null; else none">
-            {{ item.depositShare | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%
+            {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
           </ng-container>
         </div>
         <div class="item__value row__item row__broker row__center row__deposit">
@@ -81,27 +81,27 @@
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
         <div class="item__value row__item row__right row__price">
-          {{ item.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+          {{ item.price | tuiFormatNumber: { precision: priceIncrement, decimalMode: 'always' } | async }}
         </div>
         <div class="item__value row__item row__right row__quantity">
           {{ item.amount | tuiFormatNumber | async }}
         </div>
         <div class="item__value row__item row__right row__total">
-          {{ item.totalPrice | tuiFormatNumber | async }}
+          {{ item.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
         </div>
         <div class="item__value row__item row__right row__profit">
           <ng-container *ngIf="item.profit !== null; else none">
-            {{ item.profit | tuiFormatNumber | async }}
+            {{ item.profit | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
           </ng-container>
         </div>
         <div class="item__value row__item row__right row__profit">
           <ng-container *ngIf="item.profitPercent !== null; else none">
-            {{ item.profitPercent | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%
+            {{ item.profitPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
           </ng-container>
         </div>
         <div class="item__value row__item row__right row__deposit">
           <ng-container *ngIf="item.depositShare !== null; else none">
-            {{ item.depositShare | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%
+            {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
           </ng-container>
         </div>
         <div class="item__value row__item row__center row__broker">
@@ -163,27 +163,27 @@
       <lib-list-header class="total balance__row">
         <div class="total__item row__item">Всего</div>
         <div class="total__item row__right row__item">
-          {{ remainder.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+          {{ remainder.price | tuiFormatNumber: { precision: priceIncrement, decimalMode: 'always' } | async }}
         </div>
         <div class="total__item row__right row__item">
           {{ remainder.amount | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__right row__item">
-          {{ remainder.totalPrice | tuiFormatNumber | async }}
+          {{ remainder.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
         </div>
         <div class="total__item row__right row__item">
           <ng-container *ngIf="remainder.profit !== null; else none">
-            {{ remainder.profit | tuiFormatNumber | async }}
+            {{ remainder.profit | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
           </ng-container>
         </div>
         <div class="total__item row__right row__item">
           <ng-container *ngIf="remainder.profitPercent !== null; else none">
-            {{ remainder.profitPercent | tuiFormatNumber | async }}%
+            {{ remainder.profitPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
           </ng-container>
         </div>
         <div class="total__item row__right row__item">
           <ng-container *ngIf="remainder.depositShare !== null; else none">
-            {{ remainder.depositShare | tuiFormatNumber | async }}%
+            {{ remainder.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
           </ng-container>
         </div>
       </lib-list-header>
@@ -249,7 +249,7 @@
     </lib-list>
     <div class="action">
       <button
-        *ngIf="listEntry"
+        *ngIf="false"
         class="button"
         [disabled]="true"
         tuiButton
@@ -275,27 +275,27 @@
       <lib-list-header class="total">
         <div class="total__item row__item">Всего</div>
         <div class="total__item row__right row__item">
-          {{ result.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+          {{ result.price | tuiFormatNumber: { precision: priceIncrement, decimalMode: 'always' } | async }}
         </div>
         <div class="total__item row__right row__item">
           {{ result.amount | tuiFormatNumber | async }}
         </div>
         <div class="total__item row__right row__item">
-          {{ result.totalPrice | tuiFormatNumber | async }}
+          {{ result.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
         </div>
         <div class="total__item row__right row__item">
           <ng-container *ngIf="result.profit !== null; else none">
-            {{ result.profit | tuiFormatNumber | async }}
+            {{ result.profit | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
           </ng-container>
         </div>
         <div class="total__item row__right row__item">
           <ng-container *ngIf="result.profitPercent !== null; else none">
-            {{ result.profitPercent | tuiFormatNumber | async }}%
+            {{ result.profitPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
           </ng-container>
         </div>
         <div class="total__item row__right row__item">
           <ng-container *ngIf="result.depositShare !== null; else none">
-            {{ result.depositShare | tuiFormatNumber | async }}%
+            {{ result.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
           </ng-container>
         </div>
       </lib-list-header>
@@ -318,17 +318,17 @@
   <lib-list-header class="total" *ngIf="(totalEntry$ | async) as totalEntry; else load">
     <div class="total__item row__item">Всего</div>
     <div class="total__item row__right row__item">
-      {{ totalEntry.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+      {{ totalEntry.price | tuiFormatNumber: { precision: priceIncrement, decimalMode: 'always' } | async }}
     </div>
     <div class="total__item row__right row__item">
       {{ totalEntry.amount | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__right row__item">
-      {{ totalEntry.totalPrice | tuiFormatNumber | async }}
+      {{ totalEntry.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="totalEntry.depositShare !== null; else none">
-        {{ totalEntry.depositShare | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%
+        {{ totalEntry.depositShare | tuiFormatNumber: { precision: 21, decimalMode: 'always' } | async }}%
       </ng-container>
     </div>
   </lib-list-header>
@@ -351,27 +351,27 @@
   <lib-list-header class="total" style="position: sticky; bottom: 0" *ngIf="(totalOut$ | async) as totalOut; else load">
     <div class="total__item row__item">Всего</div>
     <div class="total__item row__right row__item">
-      {{ totalOut.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+      {{ totalOut.price | tuiFormatNumber: { precision: priceIncrement, decimalMode: 'always' } | async }}
     </div>
     <div class="total__item row__right row__item">
       {{ totalOut.amount | tuiFormatNumber | async }}
     </div>
     <div class="total__item row__right row__item">
-      {{ totalOut.totalPrice | tuiFormatNumber | async }}
+      {{ totalOut.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="totalOut.profit !== null; else none">
-        {{ totalOut.profit | tuiFormatNumber | async }}
+        {{ totalOut.profit | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="totalOut.profitPercent !== null; else none">
-        {{ totalOut.profitPercent | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%
+        {{ totalOut.profitPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="totalOut.depositShare !== null; else none">
-        {{ totalOut.depositShare | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%
+        {{ totalOut.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
       </ng-container>
     </div>
   </lib-list-header>
@@ -393,10 +393,14 @@
   <lib-list-header class="total" *ngIf="(totalDividend$ | async) as totalDividend; else load">
     <div class="total__item row__item">Всего</div>
     <div class="total__item row__right row__item">
-      {{ totalDividend.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+      <ng-container *ngIf="totalDividend.price !== 0; else none">
+        {{ totalDividend.price | tuiFormatNumber: { precision: priceIncrement } | async }}
+      </ng-container>
     </div>
     <div class="total__item row__right row__item">
-      {{ totalDividend.amount | tuiFormatNumber | async }}
+      <ng-container *ngIf="totalDividend.amount !== 0; else none">
+        {{ totalDividend.amount | tuiFormatNumber | async }}
+      </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="totalDividend.profit !== null; else none">

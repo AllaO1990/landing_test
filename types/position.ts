@@ -69,6 +69,7 @@ export interface StockPosition {
     stop: null | StockPositionStop;
     strategy: null | StockPositionStrategy;
     subscribed: boolean;
+    parentId: number | null;
     targets: StockPositionTarget[];
     updatedAt: null | string;
   };
