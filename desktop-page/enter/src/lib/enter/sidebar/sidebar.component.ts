@@ -1,6 +1,13 @@
 import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Input } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormControl,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe, TuiGroup, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { InstrumentComponent } from '../instrument/instrument.component';
@@ -17,6 +24,7 @@ import { AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/acco
 import { PortfolioComponent } from '../portfolio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
+import { tap } from 'rxjs/operators';
 
 type Item = { id: string; name: string };
 
@@ -45,9 +53,16 @@ type Item = { id: string; name: string };
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => EnterSidebarComponent),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnterSidebarComponent implements AfterViewInit {
+export class EnterSidebarComponent implements ControlValueAccessor, AfterViewInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
@@ -71,14 +86,26 @@ export class EnterSidebarComponent implements AfterViewInit {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
-  form!: FormGroup;
+  isDisabled = false;
+  value: any = null;
 
-  @Input() set formGroup(value: FormGroup) {
-    this.form = value.get('idea') as FormGroup;
-
-    this.formControlPortfolio.enable();
-    this.formControlStrategy.enable();
-  }
+  onChange = (_: any) => {};
+  onTouched = () => {};
+  // form!: FormGroup;
+  //
+  // @Input() set formGroup(value: FormGroup) {
+  //   this.form = value.get('idea') as FormGroup;
+  //
+  //   this.formControlPortfolio.enable();
+  //   this.formControlStrategy.enable();
+  // }
+  form = new FormGroup({
+    positionType: new FormControl<unknown>(null),
+    expirationDate: new FormControl<unknown>(null),
+    strategyId: new FormControl<unknown>(null),
+    portfolioId: new FormControl<unknown>(null),
+    comment: new FormControl(''),
+  });
 
   readonly size = 's';
 
@@ -90,34 +117,58 @@ export class EnterSidebarComponent implements AfterViewInit {
     return this.form.get('strategyId') as FormControl;
   }
 
-  get controlCurrency(): FormControl {
-    return this.form.get('currencyId') as FormControl;
+  get controlPositionType(): FormControl {
+    return this.form.get('positionType') as FormControl;
   }
 
   readonly formControlPortfolio: FormControl<AccountPortfolio | null> = new FormControl<AccountPortfolio | null>(
-    {
-      value: null,
-      disabled: true,
-    },
+    null,
     Validators.required
   );
   readonly formControlCurrency: FormControl<AccountCurrency | null> = new FormControl<AccountCurrency | null>(
-    {
-      value: null,
-      disabled: true,
-    },
+    { value: null, disabled: true },
     Validators.required
   );
   readonly formControlStrategy: FormControl<null | AccountStrategies> = new FormControl<null | AccountStrategies>(
-    {
-      value: null,
-      disabled: true,
-    },
+    null,
     Validators.required
   );
 
   ngAfterViewInit(): void {
     this._init();
+  }
+
+  writeValue(obj: any): void {
+    this.value = obj;
+
+    if (obj === null) {
+      // this.form.reset({ positionType: 'long', strategyId: 4, portfolioId: null, expirationDate: null, comment: '' });
+    } else {
+      // settings: {
+      //   positionType: result.idea.positionType,
+      //     strategyId: 4,
+      //     instrumentId: result.idea.instrument.id,
+      //     parentId: result.idea.parentId,
+      //     portfolioId: result.idea.portfolioId,
+      // },
+      this.controlPortfolio.patchValue(obj.settings.portfolioId, { onlySelf: true });
+      this.controlStrategy.patchValue(obj.settings.strategyId, { onlySelf: true });
+      // this._updateFormArray('entries', obj.idea.entries, true);
+      // this._updateFormArray('targets', obj.idea.targets, true);
+      // this._updateFormArray('stop', obj.idea.stop, true);
+    }
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
   }
 
   readonly stringifyCurrency: TuiStringHandler<AccountCurrency> = (item: AccountCurrency) => item.currencySymbol;
@@ -144,20 +195,26 @@ export class EnterSidebarComponent implements AfterViewInit {
           const strategy = this._getIdeaStrategy(strategies, position);
           const strategyDefault = this._getControlStrategy(strategy);
 
-          this.form.patchValue({
-            ...this.form.value,
-            positionType: position.idea.positionType,
-            strategyId: strategy ? strategy.id : strategyDefault.id,
-            instrumentId: position.idea.instrument.id,
-            parentId: position.idea.id,
-            portfolioId: portfolio.portfolioId,
-          });
+          if (this.controlStrategy.value === null) {
+            this.controlStrategy.patchValue(strategy ? strategy.id : strategyDefault.id, { onlySelf: true });
+          }
+          this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
+          if (this.controlPortfolio.value === null) {
+            this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: true });
+          }
 
-          this.formControlStrategy.patchValue(strategyDefault, { emitEvent: false });
-          this.formControlPortfolio.patchValue(portfolio, { emitEvent: false });
-          this.formControlCurrency.patchValue(currency, { emitEvent: false });
+          this.formControlStrategy.patchValue(strategyDefault, { emitEvent: false, onlySelf: true });
+          this.formControlPortfolio.patchValue(portfolio, { emitEvent: false, onlySelf: true });
+          this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
         }
       );
+
+    this.form.valueChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        tap((data) => console.log(data))
+      )
+      .subscribe((res) => this.onChange({ ...(this.value || {}), settings: res }));
 
     this.formControlPortfolio.valueChanges
       .pipe(
@@ -170,19 +227,21 @@ export class EnterSidebarComponent implements AfterViewInit {
         this.controlPortfolio.patchValue(result ? result.portfolioId : null);
       });
 
-    this.formControlCurrency.valueChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        startWith(this.formControlCurrency.value),
-        filter((value: AccountCurrency | null): value is AccountCurrency => value !== null),
-        distinctUntilChanged((a, b) => a.currencyId === b.currencyId)
-      )
-      .subscribe((result: AccountCurrency) => {
-        this.controlCurrency.patchValue(result.currencyId);
-      });
+    // this.formControlCurrency.valueChanges
+    //   .pipe(
+    //     takeUntilDestroyed(this._destroyRef),
+    //     startWith(this.formControlCurrency.value),
+    //     filter((value: AccountCurrency | null): value is AccountCurrency => value !== null),
+    //     distinctUntilChanged((a, b) => a.currencyId === b.currencyId)
+    //   )
+    //   .subscribe((result: AccountCurrency) => {
+    //     if (this.controlCurrency) {
+    //       this.controlCurrency.patchValue(result.currencyId);
+    //     }
+    //   });
 
     this.formControlStrategy.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.formControlStrategy.value))
+      .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((result: AccountStrategies | null) => this.controlStrategy.patchValue(result ? result.id : null));
   }
 

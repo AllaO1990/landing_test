@@ -5,6 +5,7 @@
   <div class="form__form">
     <tui-input-date-time
       [tuiTextfieldCleaner]="true"
+      [max]="maxDate"
       class="form__control"
       formControlName="date"
       tuiTextfieldSize="s">
@@ -28,7 +29,7 @@
       class="form__control"
       [tuiTextfieldSize]="size"
       [tuiNumberFormat]="{precision: precision}"
-      formControlName="quantity">
+      formControlName="amount">
       Количество
       <input
         autocomplete="off"
@@ -41,7 +42,7 @@
       class="form__control"
       [valueContent]="stringify(items)"
       [tuiTextfieldSize]="size"
-      formControlName="broker">
+      formControlName="brokerId">
       Брокер
       <input autocomplete="off" tuiTextfieldLegacy />
       <ng-template tuiDataList>
