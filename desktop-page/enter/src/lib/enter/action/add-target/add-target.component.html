@@ -1,6 +1,6 @@
 <form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
   <div class="form__header">
-    <h3> Добавить цель</h3>
+    <h3>Добавить выход</h3>
   </div>
   <div class="form__form">
     <tui-input-date-time
@@ -61,7 +61,7 @@
       Отменить
     </button>
     <button class="form__action" [size]="size" tuiButton [disabled]="form.invalid" type="submit">
-      Добавить
+      Сохранить
     </button>
   </div>
 </form>
