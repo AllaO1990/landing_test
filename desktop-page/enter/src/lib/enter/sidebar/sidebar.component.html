@@ -2,24 +2,24 @@
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
       <div class="widget__portfolio widget__padding portfolio">
-        <!--        <lib-portfolio-->
-        <!--          class="portfolio__select"-->
-        <!--          [formControl]="formControlPortfolio">-->
-        <!--        </lib-portfolio>-->
-        <tui-select
+        <lib-portfolio
           class="portfolio__select"
-          *ngIf="portfolio$ | async as list"
-          [stringify]="stringifyPortfolio"
-          [tuiTextfieldSize]="size"
-          [formControl]="formControlPortfolio"
-          [tuiTextfieldLabelOutside]="true">
-          <tui-data-list-wrapper
-            *tuiDataList
-            [size]="size"
-            [items]="list"
-            [itemContent]="contentPortfolio">
-          </tui-data-list-wrapper>
-        </tui-select>
+          [formControl]="formControlPortfolio">
+        </lib-portfolio>
+        <!--        <tui-select-->
+        <!--          class="portfolio__select"-->
+        <!--          *ngIf="portfolio$ | async as list"-->
+        <!--          [stringify]="stringifyPortfolio"-->
+        <!--          [tuiTextfieldSize]="size"-->
+        <!--          [formControl]="formControlPortfolio"-->
+        <!--          [tuiTextfieldLabelOutside]="true">-->
+        <!--          <tui-data-list-wrapper-->
+        <!--            *tuiDataList-->
+        <!--            [size]="size"-->
+        <!--            [items]="list"-->
+        <!--            [itemContent]="contentPortfolio">-->
+        <!--          </tui-data-list-wrapper>-->
+        <!--        </tui-select>-->
         <tui-select
           class="portfolio__currency"
           *ngIf="currencies$ | async as list"

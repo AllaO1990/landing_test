@@ -212,7 +212,7 @@ export class VtEnterComponent implements AfterViewInit {
           actions: res.actions,
           idea: {
             ...res.settings,
-            goals: res.idea.targets.map((item: any) => ({
+            goals: (res.idea.targets || []).map((item: any) => ({
               amount: item.amount,
               goal: item.price,
             })),
