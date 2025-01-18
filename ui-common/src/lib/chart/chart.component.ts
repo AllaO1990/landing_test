@@ -24,8 +24,8 @@ import { StockEvent } from 'types/stock-event';
 import { ChartFacade } from 'stores/facades/chart.facade';
 import { ConsolidationZonesShape } from 'types/consolidation-zones';
 import { SelectFacade } from 'stores/facades/select.facade';
-import { EventSelected } from 'types/events';
 import * as Highcharts from 'highcharts/highstock';
+import { EventSelected } from 'types/events';
 
 interface IndicatorListItem<T = string> {
   name: string;
@@ -119,7 +119,7 @@ export class ChartCandlestickComponent implements OnInit {
   readonly zoneIdea$: Observable<null | ConsolidationZonesShape> = this._select.event$.pipe(
     filter((event: null | StockEvent): event is StockEvent => event !== null),
     switchMap((event: StockEvent) => {
-      if (event.type !== EventSelected.IDEA && event.type !== EventSelected.POSITION) {
+      if (event.type === EventSelected.STOCK_LIST || event.type === EventSelected.WATCH_LIST) {
         return of(null);
       }
 
