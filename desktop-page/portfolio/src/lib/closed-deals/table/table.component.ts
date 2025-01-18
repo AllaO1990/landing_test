@@ -1,15 +1,33 @@
 import { TuiTable } from '@taiga-ui/addon-table';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { WRAPPER_TABLE_HEADER } from './table.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
-import { INPUT_DATA } from '../constants';
+import {
+  TuiFormatNumberPipe,
+  TuiHint,
+  TuiIcon,
+  TuiScrollable,
+  TuiScrollbar,
+  TuiTextfieldOptionsDirective,
+} from '@taiga-ui/core';
 import { StockId, StockTransaction } from 'types/stock';
 import { GetPositionTypePipe } from '@ui/pipes/get-posiotion-type.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
-import { combineLatest, filter, Observable, shareReplay, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  Observable,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import { PortfolioPosition } from 'types/portfolio';
 import { LoaderComponent } from '@ui/components/loader';
 import { PolymorpheusTemplate } from '@taiga-ui/polymorpheus';
@@ -20,6 +38,9 @@ import { EventSelected } from 'types/events';
 import { ColorPriceDirective } from '@ui/components/price';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TuiPagination } from '@taiga-ui/kit';
+import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'lib-wrapper-table',
@@ -42,10 +63,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     LoaderComponent,
     NgTemplateOutlet,
     TuiHint,
-    JsonPipe,
     PolymorpheusTemplate,
     TuiLet,
     ColorPriceDirective,
+    TuiPagination,
+    TuiTextfieldOptionsDirective,
+    TuiSelectModule,
+    ReactiveFormsModule,
+    TuiTextfieldControllerModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -56,6 +81,7 @@ export class WrapperTableComponent implements OnInit {
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _service: PortfolioFacade = inject(PortfolioFacade);
 
+  readonly size = 's';
   readonly columns = [
     'date',
     'positionType',
@@ -75,8 +101,11 @@ export class WrapperTableComponent implements OnInit {
     'comment',
     'author',
   ];
-
+  readonly listLimit: number[] = [10, 50, 100];
+  readonly controlLimit: FormControl = new FormControl<number>(100);
   readonly header = WRAPPER_TABLE_HEADER;
+
+  isData: boolean | null = null;
 
   public activeIdeaId$: Observable<StockId | null> = this._service.select$.pipe(
     map((result: StockTransaction | null) => (result ? result.ideaId : null)),
@@ -84,24 +113,64 @@ export class WrapperTableComponent implements OnInit {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
+  index$: Subject<number> = new BehaviorSubject(0);
+  isLoad$: Subject<boolean> = new BehaviorSubject(false);
+
   data$: Observable<PortfolioPosition[] | null> = this._service.list$.pipe(
+    tap((data: PortfolioPosition[] | null) => {
+      this.isData = data && !!data.length;
+
+      this.isLoad$.next(false);
+    }),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
-  data = INPUT_DATA;
+  limit$: Observable<number> = this.controlLimit.valueChanges.pipe(
+    startWith(this.controlLimit.value),
+    filter((limit: number | null): limit is number => limit !== null)
+  );
+
+  length$: Observable<number> = this._service.total$.pipe(
+    filter((value: number | null): value is number => value !== null),
+    switchMap((total: number) =>
+      combineLatest([this.limit$, this.index$.asObservable()]).pipe(
+        map(([limit, index]: [number, number]) => {
+          const length = Math.ceil(total / limit);
+
+          if (length < index) {
+            this.index$.next(0);
+          }
+
+          return length;
+        })
+      )
+    ),
+    distinctUntilChanged(),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   ngOnInit(): void {
     const today = new Date().setUTCHours(12, 0, 0, 0);
     const start = new Date(new Date(today).setDate(-365 + new Date(today).getDate())).toISOString();
     const end = new Date(today).toISOString();
 
-    this._service.load({
-      brokerId: 1,
-      currencyId: 1,
-      from: start,
-      portfolioId: 4,
-      to: end,
-    });
+    combineLatest([this.index$.asObservable(), this.limit$])
+      .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(500))
+      .subscribe(([index, limit]: [number, number]) => {
+        if (this.isData !== null) {
+          this.isLoad$.next(true);
+        }
+
+        this._service.load({
+          brokerId: 1,
+          currencyId: 1,
+          from: start,
+          portfolioId: 4,
+          to: end,
+          limit: limit,
+          page: index,
+        });
+      });
 
     combineLatest([
       this.data$.pipe(filter((list: PortfolioPosition[] | null): list is PortfolioPosition[] => list !== null)),
@@ -147,5 +216,9 @@ export class WrapperTableComponent implements OnInit {
       type: EventSelected.TRANSACTION,
       id: item.ideaId,
     });
+  }
+
+  goToPage(index: number): void {
+    this.index$.next(index);
   }
 }

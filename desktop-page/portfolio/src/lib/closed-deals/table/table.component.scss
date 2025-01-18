@@ -1,8 +1,41 @@
 :host {
-  display: block;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
   height: 100%;
 
   --tui-height-s: 31px;
+}
+
+.container {
+  flex: 1 1 auto;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  padding: var(--padding-2);
+
+  &__pagination {
+    flex: 1;
+  }
+
+  &__select {
+    display: flex;
+    align-items: center;
+
+    flex: 0;
+
+    .ellipsis {
+      margin-right: var(--padding-2);
+      color: var(--tui-text-tertiary);
+    }
+
+    tui-select {
+      min-width: 100px;
+    }
+  }
 }
 
 .viewport {
@@ -217,4 +250,32 @@ table.table {
 .comment {
   font-size: 14px;
   color: var(--tui-text-tertiary);
+}
+
+.load {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+
+  width: 100%;
+  height: 100%;
+
+  ui-loader {
+    position: relative;
+    z-index: 1;
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: .5;
+    background: var(--block-bg-color);
+  }
 }

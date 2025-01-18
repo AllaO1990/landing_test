@@ -138,7 +138,7 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  getPortfolio(params: Params): Observable<PortfolioPosition[] | null> {
+  getPortfolio(params: Params): Observable<DataList<PortfolioPosition> | null> {
     return of();
   }
 

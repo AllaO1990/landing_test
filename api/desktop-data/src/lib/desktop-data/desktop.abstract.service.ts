@@ -92,5 +92,5 @@ export abstract class DesktopService {
 
   abstract deleteAccountPortfolio(id: number): Observable<Response<AccountPortfolio>>;
 
-  abstract getPortfolio(params: Params): Observable<PortfolioPosition[] | null>;
+  abstract getPortfolio(params: Params): Observable<DataList<PortfolioPosition> | null>;
 }
