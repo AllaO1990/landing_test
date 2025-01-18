@@ -4,17 +4,21 @@ import { Observable, switchMap, tap } from 'rxjs';
 import { Params } from '@angular/router';
 import { PortfolioPosition } from 'types/portfolio';
 import { StockId } from 'types/stock';
+import { DataList } from 'types/response';
 
 export interface PortfolioState {
   list: null | PortfolioPosition[];
+  total: null | number;
 }
 
 export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly list$: Observable<PortfolioPosition[] | null> = this.select((state: PortfolioState) => state.list);
+  readonly total$: Observable<number | null> = this.select((state: PortfolioState) => state.total);
 
   constructor(private readonly _api: DesktopService) {
     super({
       list: null,
+      total: null,
     });
   }
 
@@ -22,6 +26,13 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
     (state: PortfolioState, list: PortfolioPosition[] | null): PortfolioState => ({
       ...state,
       list,
+    })
+  );
+
+  updateTotal = this.updater(
+    (state: PortfolioState, total: number | null): PortfolioState => ({
+      ...state,
+      total,
     })
   );
 
@@ -38,7 +49,12 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly load = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>
-        this._api.getPortfolio(params).pipe(tap((result: PortfolioPosition[] | null) => this.updateList(result)))
+        this._api.getPortfolio(params).pipe(
+          tap((result: DataList<PortfolioPosition> | null) => {
+            this.updateList(result ? result.items : null);
+            this.updateTotal(result ? result.total : null);
+          })
+        )
       )
     )
   );

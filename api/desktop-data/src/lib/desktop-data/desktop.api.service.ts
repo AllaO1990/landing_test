@@ -242,12 +242,15 @@ export class DesktopApiService extends DesktopService {
     });
   }
 
-  getPortfolio(params: Params): Observable<PortfolioPosition[] | null> {
+  getPortfolio(params: Params): Observable<DataList<PortfolioPosition> | null> {
     return this._http
       .post<Response<DataList<PortfolioPosition>>>('https://trade.gpn.dev/api/v1/ideas/portfolio', params)
       .pipe(
         map((result: Response<DataList<PortfolioPosition>>) => {
-          return result.data.items.map((item) => ({ ...item, ideaId: item.ideaId.toString() }));
+          return {
+            total: result.data.total,
+            items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId.toString() })),
+          };
         }),
         catchError((err: Error) => {
           console.error(err);
