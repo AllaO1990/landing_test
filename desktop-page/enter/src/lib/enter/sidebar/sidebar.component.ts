@@ -24,9 +24,18 @@ import { AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/acco
 import { PortfolioComponent } from '../portfolio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { tap } from 'rxjs/operators';
 
 type Item = { id: string; name: string };
+
+interface FormValue {
+  positionType: null | string;
+  expirationDate: null | string;
+  strategyId: null | number;
+  portfolioId: null | number;
+  comment: string;
+  instrumentId: null | number;
+  parentId: null | number;
+}
 
 @Component({
   selector: 'lib-enter-sidebar',
@@ -80,7 +89,6 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   readonly portfolio$: Observable<AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
     filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null)
   );
-
   readonly idea$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((position: StockPosition | null): position is StockPosition => position !== null),
     shareReplay({ refCount: true, bufferSize: 1 })
@@ -99,12 +107,14 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   //   this.formControlPortfolio.enable();
   //   this.formControlStrategy.enable();
   // }
-  form = new FormGroup({
-    positionType: new FormControl<unknown>(null),
-    expirationDate: new FormControl<unknown>(null),
-    strategyId: new FormControl<unknown>(null),
-    portfolioId: new FormControl<unknown>(null),
-    comment: new FormControl(''),
+  form: FormGroup = new FormGroup({
+    positionType: new FormControl<null | string>(null),
+    expirationDate: new FormControl<null | string>(null),
+    strategyId: new FormControl<null | number>(null),
+    portfolioId: new FormControl<null | number>(null),
+    comment: new FormControl<string>(''),
+    instrumentId: new FormControl<null | number>(null),
+    parentId: new FormControl<null | number>(null),
   });
 
   readonly size = 's';
@@ -139,23 +149,23 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   }
 
   writeValue(obj: any): void {
-    this.value = obj;
+    console.log('sidebar writeValue', obj);
 
     if (obj === null) {
-      // this.form.reset({ positionType: 'long', strategyId: 4, portfolioId: null, expirationDate: null, comment: '' });
+      this.form.reset({
+        positionType: 'long',
+        strategyId: 4,
+        instrumentId: null,
+        portfolioId: null,
+        parentId: null,
+        expirationDate: null,
+        comment: '',
+      });
     } else {
-      // settings: {
-      //   positionType: result.idea.positionType,
-      //     strategyId: 4,
-      //     instrumentId: result.idea.instrument.id,
-      //     parentId: result.idea.parentId,
-      //     portfolioId: result.idea.portfolioId,
-      // },
-      this.controlPortfolio.patchValue(obj.settings.portfolioId, { onlySelf: true });
-      this.controlStrategy.patchValue(obj.settings.strategyId, { onlySelf: true });
-      // this._updateFormArray('entries', obj.idea.entries, true);
-      // this._updateFormArray('targets', obj.idea.targets, true);
-      // this._updateFormArray('stop', obj.idea.stop, true);
+      this.form.patchValue(obj);
+
+      this.controlPortfolio.patchValue(obj.portfolioId, { onlySelf: true });
+      this.controlStrategy.patchValue(obj.strategyId, { onlySelf: true });
     }
   }
 
@@ -211,10 +221,10 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
 
     this.form.valueChanges
       .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        tap((data) => console.log(data))
+        takeUntilDestroyed(this._destroyRef)
+        // tap((data) => console.log(data))
       )
-      .subscribe((res) => this.onChange({ ...(this.value || {}), settings: res }));
+      .subscribe((res: FormValue) => this.onChange(res));
 
     this.formControlPortfolio.valueChanges
       .pipe(

@@ -100,7 +100,6 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
 
-  readonly controlPositionType = new FormControl('long');
   readonly controlMinPriceIncrement = new FormControl(1e-8);
 
   readonly controlFormArray: FormGroup = new FormGroup({
@@ -137,12 +136,12 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     outs: this.addTarget,
   };
 
-  multiplier$: Observable<number> = this.controlPositionType.valueChanges.pipe(
-    startWith(this.controlPositionType.value),
-    filter((value: string | null): value is string => value !== null),
-    map((type: string): number => (type === 'short' ? -1 : 1)),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
+  // multiplier$: Observable<number> = this.controlPositionType.valueChanges.pipe(
+  //   startWith(this.controlPositionType.value),
+  //   filter((value: string | null): value is string => value !== null),
+  //   map((type: string): number => (type === 'short' ? -1 : 1)),
+  //   shareReplay({ bufferSize: 1, refCount: false })
+  // );
   priceIncrement$: Observable<number> = this.controlMinPriceIncrement.valueChanges.pipe(
     startWith(this.controlMinPriceIncrement.value),
     filter((value: number | null): value is number => value !== null),
@@ -153,14 +152,10 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     map((list: StockPositionActionEntry[] | null) => this._service.getTotalEntry(list)),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-  totalOut$: Observable<StockPositionActionTarget> = combineLatest([
-    this.totalEntry$,
-    this.targetsList$,
-    this.multiplier$,
-  ]).pipe(
+  totalOut$: Observable<StockPositionActionTarget> = combineLatest([this.totalEntry$, this.targetsList$]).pipe(
     debounceTime(100),
-    map(([total, target, multiplier]: [StockPositionActionEntry, StockPositionActionTarget[], number]) =>
-      this._service.getTotalOut(target, total, multiplier)
+    map(([total, target]: [StockPositionActionEntry, StockPositionActionTarget[]]) =>
+      this._service.getTotalOut(target, total, 1)
     ),
     shareReplay({ bufferSize: 1, refCount: false })
   );
@@ -237,7 +232,6 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
         true
       );
 
-      this.controlPositionType.patchValue(obj.positionType);
       this.controlMinPriceIncrement.patchValue(obj.minPriceIncrement);
     }
   }

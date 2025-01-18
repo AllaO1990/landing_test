@@ -6,15 +6,26 @@ import { map } from 'rxjs/operators';
 import { WithQueue } from '../core/with-queue.abstract';
 import { getJoinUniq } from 'utils/get-join-uniq';
 
+export interface IndicatorAtr {
+  date: string;
+  atr: number;
+  atrPct: number;
+  atr15: number;
+  atr15Pct: number;
+}
+
 export interface IndicatorAtrState {
   selected: null | boolean;
-  value: null | { data: any; instrument: StockId };
+  value: null | { data: IndicatorAtr; instrument: StockId };
 }
 
 export class IndicatorAtrStore extends WithQueue<IndicatorAtrState> {
   readonly selected$: Observable<null | any> = this.select((state: IndicatorAtrState) => state.selected);
 
-  readonly value$: Observable<null | any> = this.select((state: IndicatorAtrState) => state.value);
+  readonly value$: Observable<null | {
+    data: IndicatorAtr;
+    instrument: StockId;
+  }> = this.select((state: IndicatorAtrState) => state.value);
 
   constructor(private readonly _api: DesktopService) {
     super({
@@ -29,7 +40,7 @@ export class IndicatorAtrStore extends WithQueue<IndicatorAtrState> {
     (
       state: IndicatorAtrState,
       value: null | {
-        data: any;
+        data: IndicatorAtr;
         instrument: StockId;
       }
     ) => ({ ...state, value })
@@ -50,22 +61,25 @@ export class IndicatorAtrStore extends WithQueue<IndicatorAtrState> {
       )
   );
 
-  private _getIndicator(data: { id: StockId; interval: number; date: string } | null): Observable<any> {
+  private _getIndicator(data: { id: StockId; interval: number; date: string } | null): Observable<{
+    data: IndicatorAtr;
+    instrument: StockId;
+  } | null> {
     if (data === null) {
       return of(null);
     }
 
     const uniqKey = getJoinUniq(data.id, data.interval, data.date);
-    const value = this.queue.getValue(uniqKey);
+    const value: { data: IndicatorAtr; instrument: StockId } | undefined = this.queue.getValue(uniqKey);
 
     if (value) {
       return of(value);
     }
 
     return this._api.getIndicatorAtr(data.id, data.interval, data.date).pipe(
-      map((value: Response<any>) => value.data),
-      map((value: any) => ({ data: value, instrument: data.id })),
-      tap((value: any) => this.queue.setValue(uniqKey, value))
+      map((value: Response<IndicatorAtr>) => value.data),
+      map((value: IndicatorAtr) => ({ data: value, instrument: data.id })),
+      tap((value: { data: IndicatorAtr; instrument: StockId }) => this.queue.setValue(uniqKey, value))
     );
   }
 }

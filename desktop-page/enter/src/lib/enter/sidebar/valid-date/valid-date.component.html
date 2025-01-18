@@ -3,15 +3,16 @@
   <div class="valid-date__row">
     <div class="valid-date__calendar">
       <tui-input-date
+        [min]="minDay"
         formControlName="calendar"
         tuiTextfieldSize="s">
         {{ constants.calendar }}
       </tui-input-date>
     </div>
     <div class="valid-date__checkbox">
-     <label tuiLabel> <input tuiCheckbox type="checkbox"
-        formControlName="checkbox"
-        size="s">
+      <label tuiLabel> <input tuiCheckbox type="checkbox"
+                              formControlName="checkbox"
+                              size="s">
         {{ constants.checkbox }}
       </label>
     </div>

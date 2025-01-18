@@ -21,9 +21,9 @@ import { StockId, StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
-import { StockPosition } from 'types/position';
+import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ScreenOrientation = 'landscape' | 'portrait';
@@ -102,8 +102,35 @@ export class VtEnterComponent implements AfterViewInit {
   //     watch: new FormControl(true, Validators.required),
   //   }),
   // });
+  readonly form: FormGroup = new FormGroup({
+    actions: new FormControl({ entries: [], outs: [] }),
+    idea: new FormControl({ entries: [], targets: [], stop: [] }),
+    sidebar: new FormControl({
+      instrumentId: null,
+      portfolioId: null,
+      expirationDate: null,
+      strategyId: null,
+      positionType: null,
+      comment: '',
+      parentId: null,
+    }),
+    watch: new FormControl(true),
+    minPriceIncrement: new FormControl(null),
+  });
 
-  form: FormControl = new FormControl();
+  get controlActions(): FormControl {
+    return this.form.get('actions') as FormControl;
+  }
+
+  get controlIdea(): FormControl {
+    return this.form.get('idea') as FormControl;
+  }
+
+  get controlSidebar(): FormControl {
+    return this.form.get('sidebar') as FormControl;
+  }
+
+  // form: FormControl = new FormControl();
   value: any = null;
 
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
@@ -142,48 +169,9 @@ export class VtEnterComponent implements AfterViewInit {
     this._idea.loadIdea(this._ideaId$);
 
     this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
-      let entries: unknown[] = [];
-      let stop: unknown[] = [];
-      const targets = result.idea.targets.map((item) => ({
-        price: item.price,
-        amount: item.amount,
-        profit: item.profit || null,
-        profitPercent: item.profitPercent || null,
-        depositShare: item.depositShare || null,
-        totalPrice: item.price * item.amount,
-        reached: false,
-        stopDate: item.stopDate || null,
-        broker: null,
-      }));
-      const entryElement = result.idea.entries[0];
-      const stopElement = result.idea.stop;
-
-      if (entryElement) {
-        entries = [
-          {
-            date: entryElement.date || null,
-            depositShare: entryElement.depositShare || null,
-            broker: null,
-            price: entryElement.price,
-            quantity: entryElement.quantity,
-            totalPrice: entryElement.totalPrice,
-          },
-        ];
-      }
-
-      if (stopElement) {
-        stop = [
-          {
-            depositShare: stopElement.depositShare || null,
-            lossPercent: stopElement.lossPercent || null,
-            loss: stopElement.loss || null,
-            price: stopElement.price,
-            stopCandleDate: stopElement.stopCandleDate || null,
-            amount: stopElement.amount || result.idea.inPositionQuantity || null,
-            amountPercent: stopElement.amountPercent || 100,
-          },
-        ];
-      }
+      const targets = this._getIdeaEntries(result.idea.targets);
+      const entries = this._getIdeaTargets(result.idea.entries);
+      const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
 
       this.form.patchValue({
         actions: result.actions,
@@ -192,9 +180,9 @@ export class VtEnterComponent implements AfterViewInit {
           targets,
           stop,
         },
-        settings: {
-          positionType: result.idea.positionType,
+        sidebar: {
           strategyId: 4,
+          positionType: result.idea.positionType,
           expirationDate: null,
           instrumentId: result.idea.instrument.id,
           parentId: result.idea.parentId,
@@ -202,7 +190,6 @@ export class VtEnterComponent implements AfterViewInit {
           comment: '',
         },
         minPriceIncrement: result.idea.instrument.minPriceIncrement,
-        positionType: result.idea.positionType,
       });
     });
 
@@ -212,10 +199,12 @@ export class VtEnterComponent implements AfterViewInit {
           actions: res.actions,
           idea: {
             ...res.settings,
-            goals: (res.idea.targets || []).map((item: any) => ({
-              amount: item.amount,
-              goal: item.price,
-            })),
+            goals:
+              res &&
+              (res.idea.targets || []).map((item: any) => ({
+                amount: item.amount,
+                goal: item.price,
+              })),
             amount: res.idea.entries[0] ? res.idea.entries[0].quantity : null,
             entry: res.idea.entries[0] ? res.idea.entries[0].price : null,
             stop: res.idea.stop[0] ? res.idea.stop[0].price : null,
@@ -225,7 +214,7 @@ export class VtEnterComponent implements AfterViewInit {
       } else {
         this.value = null;
       }
-      // console.log('form', res, this.form.pristine, this.value);
+      console.log('form', res, this.form.pristine, this.value);
     });
   }
 
@@ -289,5 +278,42 @@ export class VtEnterComponent implements AfterViewInit {
 
     this.activeItemIndex = 0;
     return null;
+  }
+
+  private _getIdeaEntries(list: any[]): StockPositionIdeaEntry[] {
+    return list.map((item) => ({
+      date: item.date || null,
+      depositShare: item.depositShare || null,
+      broker: null,
+      price: item.price,
+      quantity: item.quantity,
+      totalPrice: item.totalPrice,
+    }));
+  }
+
+  private _getIdeaTargets(list: any[]): StockPositionTarget[] {
+    return list.map((item) => ({
+      price: item.price,
+      amount: item.amount,
+      profit: item.profit || null,
+      profitPercent: item.profitPercent || null,
+      depositShare: item.depositShare || null,
+      totalPrice: item.price * item.amount,
+      reached: false,
+      stopDate: item.stopDate || null,
+      broker: null,
+    }));
+  }
+
+  private _getIdeStop(list: any[]): StockPositionStop[] {
+    return list.map((item) => ({
+      depositShare: item.depositShare || null,
+      lossPercent: item.lossPercent || null,
+      loss: item.loss || null,
+      price: item.price,
+      stopCandleDate: item.stopCandleDate || null,
+      amount: item.amount || null,
+      amountPercent: item.amountPercent || 100,
+    }));
   }
 }

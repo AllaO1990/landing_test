@@ -1,4 +1,4 @@
-export class Queue<K = string, T = unknown> {
+export class Queue<K = string, T = any> {
   private _limit: number = 3;
   private _direction: K[] = [];
   private _setQueue: Map<K, T> = new Map();

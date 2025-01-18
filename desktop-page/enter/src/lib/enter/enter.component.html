@@ -70,7 +70,7 @@
     [style.margin-left.%]="activeItemIndex * -100"
     class="container__widget-list">
     <div class="container__sidebar container__widget">
-      <lib-enter-sidebar [formControl]="form"></lib-enter-sidebar>
+      <lib-enter-sidebar [formGroup]="form" [formControl]="controlSidebar"></lib-enter-sidebar>
     </div>
     <div class="container__submit container__widget">
       <div class="submit" *ngIf="(data$ | async) as result; else load">
@@ -119,7 +119,7 @@
         </div>
         <div class="widget__content">
           <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-idea [formControl]="form" class="tui-zero-scrollbar"></lib-enter-idea>
+            <lib-enter-idea [formGroup]="form" [formControl]="controlIdea" class="tui-zero-scrollbar"></lib-enter-idea>
           </tui-scrollbar>
         </div>
       </div>
@@ -133,7 +133,8 @@
         </div>
         <div class="widget__content">
           <tui-scrollbar class="scrollbar" [hidden]="true">
-            <lib-enter-action [formControl]="form" class="tui-zero-scrollbar"></lib-enter-action>
+            <lib-enter-action [formGroup]="form" [formControl]="controlActions"
+                              class="tui-zero-scrollbar"></lib-enter-action>
           </tui-scrollbar>
         </div>
       </div>
