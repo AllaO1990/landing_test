@@ -106,31 +106,39 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
       points: pointsPriceIn,
     });
 
-    let pointsStop: Array<AnnotationShapePointOptions> = [
-      {
-        x: new Date(data.ideaParams.stopCandleDate || today).valueOf(),
-        y: data.ideaParams.stop,
-        ...this._commonAxisValues,
-      },
-      { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
-    ];
-
-    if (data.ideaParams.stopDate) {
-      pointsStop = [
-        { x: new Date(data.ideaParams.stopDate).valueOf(), y: data.ideaParams.stop, ...this._commonAxisValues },
-        { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
-      ];
+    if (data.ideaParams.stopCandleDate) {
+      shapes.push({
+        type: 'path',
+        fill: 'rgba(0,0,0,0)',
+        stroke: 'rgba(255,0,0,1)',
+        strokeWidth: 2,
+        dashStyle: 'Dash',
+        ry: Math.PI,
+        points: [
+          {
+            x: new Date(data.ideaParams.stopCandleDate || today).valueOf(),
+            y: data.ideaParams.stop,
+            ...this._commonAxisValues,
+          },
+          { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
+        ],
+      });
     }
 
-    shapes.push({
-      type: 'path',
-      fill: 'rgba(0,0,0,0)',
-      stroke: 'rgba(255,0,0,1)',
-      strokeWidth: 1.5,
-      dashStyle: data.ideaParams.stopDate ? 'Solid' : 'Dash',
-      ry: Math.PI,
-      points: pointsStop,
-    });
+    if (data.ideaParams.stopDate) {
+      shapes.push({
+        type: 'path',
+        fill: 'rgba(0,0,0,0)',
+        stroke: 'rgba(255,0,0,1)',
+        strokeWidth: 1.5,
+        dashStyle: 'Solid',
+        ry: Math.PI,
+        points: [
+          { x: new Date(data.ideaParams.stopDate).valueOf(), y: data.ideaParams.stop, ...this._commonAxisValues },
+          { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
+        ],
+      });
+    }
 
     if (data.ideaParams.targets) {
       const currentDate = new Date().valueOf();
