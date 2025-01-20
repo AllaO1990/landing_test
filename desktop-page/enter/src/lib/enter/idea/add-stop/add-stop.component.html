@@ -13,6 +13,8 @@
     <tui-input-number
       class="form__control"
       tuiAutoFocus
+      [min]="minPrice"
+      [max]="maxPrice"
       [tuiTextfieldCustomContent]="priceIncrement"
       [tuiNumberFormat]="{precision: precision}"
       [tuiTextfieldSize]="size"

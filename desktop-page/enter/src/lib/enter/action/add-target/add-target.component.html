@@ -4,6 +4,7 @@
   </div>
   <div class="form__form">
     <tui-input-date-time
+      tuiAutoFocus
       [max]="maxDate"
       [tuiTextfieldCleaner]="true"
       class="form__control"
@@ -13,7 +14,6 @@
     </tui-input-date-time>
     <tui-input-number
       class="form__control"
-      tuiAutoFocus
       [tuiTextfieldCustomContent]="priceIncrement"
       [tuiTextfieldSize]="size"
       [tuiNumberFormat]="{precision: precision}"

@@ -26,7 +26,10 @@ import { distinctUntilChanged, startWith } from 'rxjs';
 export class ValidDateComponent implements ControlValueAccessor, OnInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
 
-  public readonly constants = VALID_DATE_CONSTANTS;
+  readonly constants = VALID_DATE_CONSTANTS;
+  readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
+  readonly tomorrow = new Date(this.today.setDate(this.today.getDate() + 1));
+  readonly minDay = TuiDay.fromLocalNativeDate(this.tomorrow);
 
   value: string | null = null;
 
@@ -81,12 +84,12 @@ export class ValidDateComponent implements ControlValueAccessor, OnInit {
   }
 
   private _getTuiDay(value: string | null): TuiDay {
-    let date: Date = new Date();
+    let date: Date = this.tomorrow;
 
     if (value !== null) {
       date = new Date(value);
     }
 
-    return new TuiDay(date.getFullYear(), date.getMonth(), date.getDate());
+    return TuiDay.fromLocalNativeDate(date);
   }
 }

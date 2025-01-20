@@ -4,11 +4,13 @@ import { Observable, of, shareReplay, switchMap } from 'rxjs';
 import { StockId, StockInstrument, StockTransaction } from 'types/stock';
 import { Position, StockPosition } from 'types/position';
 import { filter, map } from 'rxjs/operators';
+import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 
 @Injectable()
 export class IdeaFacade {
   private readonly _store: MainStore = inject(MainStore);
 
+  readonly atr$: Observable<null | { data: IndicatorAtr; instrument: StockId }> = this._store.atr.value$;
   readonly list$: Observable<Position[] | null> = this._store.idea.list$;
   readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
     switchMap((idea: StockPosition | null) => {

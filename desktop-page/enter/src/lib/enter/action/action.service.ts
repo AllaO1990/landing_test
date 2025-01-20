@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  StockPosition,
   StockPositionActionEntry,
   StockPositionActionTarget,
   StockPositionDividend,
@@ -53,7 +52,7 @@ export class ActionService {
     broker: null,
   };
 
-  getTotalEntry(list: StockPositionActionEntry[] | null): StockPositionActionEntry {
+  getTotalEntry(list: StockPositionActionEntry[] | null, priceIncrement = 8): StockPositionActionEntry {
     if (list === null) {
       return this._defaultTotalEntry;
     }
@@ -67,7 +66,7 @@ export class ActionService {
       };
 
       if (list.length - 1 === index) {
-        value.price = value.totalPrice / value.amount;
+        value.price = getNumberPrecision(value.totalPrice / value.amount, priceIncrement);
 
         return value;
       }
@@ -79,7 +78,8 @@ export class ActionService {
   getTotalOut(
     list: StockPositionActionTarget[] | null,
     total: StockPositionActionEntry,
-    multiplier: number
+    multiplier: number,
+    priceIncrement = 8
   ): StockPositionActionTarget {
     if (list === null) {
       return this._defaultTotalOut;
@@ -100,9 +100,9 @@ export class ActionService {
 
         if (list.length - 1 === index) {
           value.totalPrice = value.price;
-          value.profit = (value.price - total.price * value.amount) * multiplier;
-          value.profitPercent = (value.profit / (total.price * value.amount)) * 100;
-          value.price = value.price / value.amount;
+          value.profit = getNumberPrecision((value.price - total.price * value.amount) * multiplier, priceIncrement);
+          value.profitPercent = getNumberPrecision((value.profit / (total.price * value.amount)) * 100, priceIncrement);
+          value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
         }
 
         return value;
@@ -114,19 +114,20 @@ export class ActionService {
   getTotalRemainder(
     entry: StockPositionActionEntry,
     target: StockPositionActionTarget,
-    idea: StockPosition
+    lastPrice: number,
+    priceIncrement = 8
   ): StockPositionTarget {
-    if (entry.price === 0 || target.price === 0 || idea.idea.lastPrice === 0) {
+    if (entry.price === 0 || target.price === 0 || lastPrice === 0) {
       return this._defaultTotalRemainder;
     }
 
     const amount = entry.amount - target.amount;
-    const profit = idea.idea.lastPrice * amount - entry.price * amount;
+    const profit = getNumberPrecision(lastPrice * amount - entry.price * amount, priceIncrement);
 
     return {
-      price: idea.idea.lastPrice,
+      price: lastPrice,
       amount: amount,
-      totalPrice: idea.idea.lastPrice * amount,
+      totalPrice: getNumberPrecision(lastPrice * amount, priceIncrement),
       profit: profit,
       profitPercent: getNumberPrecision((profit / entry.price) * amount * 100, 2),
       depositShare: null,
@@ -144,19 +145,21 @@ export class ActionService {
     entry: StockPositionActionEntry,
     target: StockPositionActionTarget,
     remainder: StockPositionTarget,
-    idea: StockPosition
+    lastPrice: number,
+    multiplier: number,
+    priceIncrement = 8
   ): StockPositionActionTarget {
-    if (entry.price === 0 || target.price === 0 || idea.idea.lastPrice === 0) {
+    if (entry.price === 0 || target.price === 0 || lastPrice === 0) {
       return this._defaultTotalOut;
     }
 
-    const totalPrice = target.totalPrice + remainder.totalPrice;
+    const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice, priceIncrement);
 
     return {
       price: target.price,
       amount: entry.amount,
       totalPrice: totalPrice,
-      profit: totalPrice - entry.totalPrice,
+      profit: getNumberPrecision((totalPrice - entry.totalPrice) * multiplier, priceIncrement),
       profitPercent: getNumberPrecision(((totalPrice - entry.totalPrice) / entry.totalPrice) * 100, 2),
       date: null,
       depositShare: null,
