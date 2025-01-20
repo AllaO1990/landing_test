@@ -103,7 +103,7 @@ export class VtEnterComponent implements AfterViewInit {
   //   }),
   // });
   readonly form: FormGroup = new FormGroup({
-    actions: new FormControl({ entries: [], outs: [] }),
+    actions: new FormControl({ entries: [], outs: [], position: null }),
     idea: new FormControl({ entries: [], targets: [], stop: [] }),
     sidebar: new FormControl({
       instrumentId: null,
@@ -130,13 +130,11 @@ export class VtEnterComponent implements AfterViewInit {
     return this.form.get('sidebar') as FormControl;
   }
 
-  // form: FormControl = new FormControl();
   value: any = null;
 
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
     tap((data: StockPosition) => {
-      // console.log('isShowSearch$', data);
       this.ideaId = data.idea.id;
       this.ideaParentId = (data.idea as any).parentId || null;
       this.ideaAuthor = data.idea.author;
@@ -169,9 +167,11 @@ export class VtEnterComponent implements AfterViewInit {
     this._idea.loadIdea(this._ideaId$);
 
     this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
-      const targets = this._getIdeaEntries(result.idea.targets);
-      const entries = this._getIdeaTargets(result.idea.entries);
+      const targets = this._getIdeaTargets(result.idea.targets);
+      const entries = this._getIdeaEntries(result.idea.entries);
       const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
+
+      // console.log('this.data$', result);
 
       this.form.patchValue({
         actions: result.actions,
@@ -196,15 +196,32 @@ export class VtEnterComponent implements AfterViewInit {
     this.form.valueChanges.pipe(startWith(this.form.value), takeUntilDestroyed(this._destroyRef)).subscribe((res) => {
       if (res) {
         this.value = {
-          actions: res.actions,
+          actions: {
+            entries: res.actions.entries.map((item: any) => ({
+              amount: item.amount,
+              brokerId: item.brokerId,
+              date: item.date,
+              price: item.price,
+            })),
+            outs: res.actions.outs.map((item: any) => ({
+              amount: item.amount,
+              brokerId: item.brokerId,
+              date: item.date,
+              price: item.price,
+            })),
+          },
           idea: {
-            ...res.settings,
             goals:
               res &&
               (res.idea.targets || []).map((item: any) => ({
                 amount: item.amount,
                 goal: item.price,
               })),
+            instrumentId: res.sidebar.instrumentId,
+            parentId: res.sidebar.parentId,
+            portfolioId: res.sidebar.portfolioId,
+            positionType: res.sidebar.positionType,
+            strategyId: res.sidebar.strategyId,
             amount: res.idea.entries[0] ? res.idea.entries[0].quantity : null,
             entry: res.idea.entries[0] ? res.idea.entries[0].price : null,
             stop: res.idea.stop[0] ? res.idea.stop[0].price : null,
@@ -214,7 +231,8 @@ export class VtEnterComponent implements AfterViewInit {
       } else {
         this.value = null;
       }
-      console.log('form', res, this.form.pristine, this.value);
+
+      // console.log('form', this.value);
     });
   }
 
@@ -241,7 +259,7 @@ export class VtEnterComponent implements AfterViewInit {
     event.preventDefault();
 
     if (ideaId === null) {
-      this._idea.createIdea(this.form.value);
+      this._idea.createIdea(this.value);
     } else {
       this._idea.editIdea({ id: ideaId.toString(), body: this.value });
     }

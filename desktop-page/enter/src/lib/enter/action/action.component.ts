@@ -6,6 +6,8 @@ import {
   forwardRef,
   inject,
   Injector,
+  Input,
+  NgZone,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { TuiButton, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
@@ -20,6 +22,7 @@ import { ActionService } from './action.service';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { LoaderComponent } from '@ui/components/loader';
 import {
+  AbstractControl,
   ControlValueAccessor,
   FormArray,
   FormControl,
@@ -27,7 +30,20 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { combineLatest, debounceTime, filter, Observable, shareReplay, startWith } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  defer,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  ReplaySubject,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+  take,
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { AddEntryComponent } from './add-entry/add-entry.component';
@@ -82,6 +98,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   private readonly _service: ActionService = inject(ActionService);
   private readonly _injector: Injector = inject(Injector);
   private readonly _dialogService: DialogService = inject(DIALOG);
+  private readonly _ngZone: NgZone = inject(NgZone);
 
   readonly canAdd$: Observable<boolean> = this._ideaFacade.idea$.pipe(
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
@@ -97,10 +114,14 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   onChange = (_: any) => {};
   onTouched = () => {};
 
+  @Input({ required: true }) formGroup!: FormGroup;
+
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
 
-  readonly controlMinPriceIncrement = new FormControl(1e-8);
+  private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
+  private readonly _formGroupValueChanges$: Subject<any> = new ReplaySubject(1);
+  readonly formGroupValueChanges$: Observable<any> = this._formGroupValueChanges$.asObservable();
 
   readonly controlFormArray: FormGroup = new FormGroup({
     entries: new FormArray<FormControl<StockPositionActionEntry>>([]),
@@ -120,15 +141,22 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     return this.controlFormArray.get('dividends') as FormArray;
   }
 
-  entriesList$: Observable<StockPositionActionEntry[]> = this.formArrayEntries.valueChanges.pipe(
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
-  targetsList$: Observable<StockPositionActionTarget[]> = this.formArrayTargets.valueChanges.pipe(
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
-  dividendsList$: Observable<StockPositionTarget[]> = this.formArrayDividends.valueChanges.pipe(
-    startWith(this.formArrayDividends.value),
-    shareReplay({ bufferSize: 1, refCount: false })
+  entriesList$: Observable<StockPositionActionEntry[]> = this._createStream<StockPositionActionEntry[]>(
+    this.formArrayEntries
+  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  targetsList$: Observable<StockPositionActionTarget[]> = this._createStream<StockPositionActionTarget[]>(
+    this.formArrayTargets
+  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  dividendsList$: Observable<StockPositionTarget[]> = this._createStream<StockPositionTarget[]>(
+    this.formArrayDividends
+  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  position$: Observable<any> = this._controlValue$.asObservable().pipe(
+    filter((value: any | null): value is any => value !== null),
+    map((value) => value.position && value.position.price),
+    shareReplay({
+      bufferSize: 1,
+      refCount: true,
+    })
   );
 
   private readonly _mapForm = {
@@ -136,26 +164,40 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     outs: this.addTarget,
   };
 
-  // multiplier$: Observable<number> = this.controlPositionType.valueChanges.pipe(
-  //   startWith(this.controlPositionType.value),
-  //   filter((value: string | null): value is string => value !== null),
-  //   map((type: string): number => (type === 'short' ? -1 : 1)),
-  //   shareReplay({ bufferSize: 1, refCount: false })
-  // );
-  priceIncrement$: Observable<number> = this.controlMinPriceIncrement.valueChanges.pipe(
-    startWith(this.controlMinPriceIncrement.value),
+  multiplier$: Observable<number> = this.formGroupValueChanges$.pipe(
+    map((data: { sidebar: { positionType: string } }) => data.sidebar && data.sidebar.positionType),
+    distinctUntilChanged(),
+    map((type: string): number => (type === 'short' ? -1 : 1)),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
+  minPriceIncrement$: Observable<number> = this.formGroupValueChanges$.pipe(
+    map((data: { minPriceIncrement: number }) => data.minPriceIncrement),
     filter((value: number | null): value is number => value !== null),
-    map((value: number) => getPriceIncrement(value)),
+    distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-  totalEntry$: Observable<StockPositionActionEntry> = this.entriesList$.pipe(
-    map((list: StockPositionActionEntry[] | null) => this._service.getTotalEntry(list)),
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
-  totalOut$: Observable<StockPositionActionTarget> = combineLatest([this.totalEntry$, this.targetsList$]).pipe(
+  priceIncrement$: Observable<number> = this.minPriceIncrement$.pipe(map((value: number) => getPriceIncrement(value)));
+  totalEntry$: Observable<StockPositionActionEntry> = combineLatest([this.entriesList$, this.priceIncrement$]).pipe(
     debounceTime(100),
-    map(([total, target]: [StockPositionActionEntry, StockPositionActionTarget[]]) =>
-      this._service.getTotalOut(target, total, 1)
+    map(([list, priceIncrement]: [StockPositionActionEntry[] | null, number]) =>
+      this._service.getTotalEntry(list, priceIncrement)
+    ),
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
+  totalOut$: Observable<StockPositionActionTarget> = combineLatest([
+    this.totalEntry$,
+    this.targetsList$,
+    this.multiplier$,
+    this.priceIncrement$,
+  ]).pipe(
+    debounceTime(100),
+    map(
+      ([total, target, multiplier, priceIncrement]: [
+        StockPositionActionEntry,
+        StockPositionActionTarget[],
+        number,
+        number
+      ]) => this._service.getTotalOut(target, total, multiplier, priceIncrement)
     ),
     shareReplay({ bufferSize: 1, refCount: false })
   );
@@ -166,74 +208,83 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   totalRemainder$: Observable<StockPositionTarget> = combineLatest([
     this.totalEntry$,
     this.totalOut$,
-    this._ideaFacade.idea$,
+    this.position$,
+    this.priceIncrement$,
   ]).pipe(
     debounceTime(100),
-    map(([totalEntry, totalOut, idea]: [StockPositionActionEntry, StockPositionActionTarget, StockPosition]) =>
-      this._service.getTotalRemainder(totalEntry, totalOut, idea)
+    map(
+      ([totalEntry, totalOut, lastPrice, priceIncrement]: [
+        StockPositionActionEntry,
+        StockPositionActionTarget,
+        number,
+        number
+      ]) => this._service.getTotalRemainder(totalEntry, totalOut, lastPrice, priceIncrement)
     )
   );
   totalResult$: Observable<StockPositionActionTarget> = combineLatest([
     this.totalEntry$,
     this.totalOut$,
     this.totalRemainder$,
-    this._ideaFacade.idea$,
+    this._ideaFacade.idea$.pipe(map((data: StockPosition) => data.idea.lastPrice)),
+    this.multiplier$,
+    this.priceIncrement$,
   ]).pipe(
     debounceTime(100),
     map(
-      ([totalEntry, totalOut, totalRemainder, idea]: [
+      ([totalEntry, totalOut, totalRemainder, lastPrice, multiplier, priceIncrement]: [
         StockPositionActionEntry,
         StockPositionActionTarget,
         StockPositionTarget,
-        StockPosition
-      ]) => this._service.getTotalResult(totalEntry, totalOut, totalRemainder, idea)
+        number,
+        number,
+        number
+      ]) => this._service.getTotalResult(totalEntry, totalOut, totalRemainder, lastPrice, multiplier, priceIncrement)
     )
   );
 
   ngAfterViewInit(): void {
-    this.controlMinPriceIncrement.valueChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        startWith(this.controlMinPriceIncrement.value),
-        filter((value: number | null): value is number => value !== null),
-        shareReplay({ bufferSize: 1, refCount: false })
-      )
-      .subscribe((result: number) => {
-        this.minPriceIncrement = result;
-        this.priceIncrement = getPriceIncrement(result);
+    const source$: Observable<any> = this._createStream<any>(this.formGroup).pipe(
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    source$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result) => this._formGroupValueChanges$.next(result));
+
+    this._controlValue$
+      .asObservable()
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((result) => {
+        if (result === null) {
+          this.controlFormArray.reset({ entries: [], outs: [], dividends: [] });
+        } else {
+          this._updateFormArray(
+            'entries',
+            (result.entries || []).map((item: any) => ({ ...item, depositShare: null })),
+            true
+          );
+          this._updateFormArray(
+            'outs',
+            (result.outs || []).map((item: any) => ({ ...item, depositShare: null })),
+            true
+          );
+        }
+
+        Promise.resolve().then(() => {
+          this.formGroup.markAsPristine();
+        });
       });
 
+    this.minPriceIncrement$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: number) => {
+      this.minPriceIncrement = result;
+      this.priceIncrement = getPriceIncrement(result);
+    });
+
     this.controlFormArray.valueChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        map((value: any) => ({
-          entries: this._convertData(value.entries),
-          outs: this._convertData(value.outs),
-        })),
-        debounceTime(100)
-      )
-      .subscribe((value: any) => this.onChange({ ...(this.value || {}), actions: value }));
+      .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
+      .subscribe((value: any) => this.onChange(value));
   }
 
   writeValue(obj: any): void {
-    this.value = obj;
-
-    if (obj === null) {
-      this.controlFormArray.reset({ entries: [], outs: [], dividends: [] });
-    } else {
-      this._updateFormArray(
-        'entries',
-        (obj.actions.entries || []).map((item: any) => ({ ...item, depositShare: null })),
-        true
-      );
-      this._updateFormArray(
-        'outs',
-        (obj.actions.outs || []).map((item: any) => ({ ...item, depositShare: null })),
-        true
-      );
-
-      this.controlMinPriceIncrement.patchValue(obj.minPriceIncrement);
-    }
+    this._controlValue$.next(obj);
   }
 
   registerOnChange(fn: any): void {
@@ -332,19 +383,18 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     }
   }
 
-  private _convertData(
-    list: {
-      amount: number;
-      brokerId: number;
-      date: string;
-      price: number;
-    }[]
-  ): ActionItem[] {
-    return list.map((item) => ({
-      amount: item.amount,
-      brokerId: item.brokerId,
-      date: item.date,
-      price: item.price,
-    }));
+  private _createStream<T>(control: AbstractControl): Observable<T> {
+    const stream$: Observable<T> = defer(() => {
+      if (control && control.valueChanges) {
+        return control.valueChanges.pipe(startWith(control.value));
+      }
+
+      return this._ngZone.onStable.asObservable().pipe(
+        take(1),
+        switchMap((_) => stream$)
+      );
+    });
+
+    return stream$;
   }
 }

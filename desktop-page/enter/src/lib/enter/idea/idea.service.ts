@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 @Injectable()
 export class IdeaService {
@@ -34,7 +35,7 @@ export class IdeaService {
     amountPercent: 0,
   };
 
-  getTotalEntry(list: StockPositionIdeaEntry[] | null): StockPositionIdeaEntry {
+  getTotalEntry(list: StockPositionIdeaEntry[] | null, priceIncrement = 8): StockPositionIdeaEntry {
     if (list === null) {
       return this._totalDefaultEntry;
     }
@@ -49,7 +50,7 @@ export class IdeaService {
         };
 
         if (list.length - 1 === index) {
-          value.price = value.totalPrice / value.quantity;
+          value.price = getNumberPrecision(value.totalPrice / value.quantity, priceIncrement);
 
           return value;
         }
@@ -63,7 +64,8 @@ export class IdeaService {
   getTotalTarget(
     list: StockPositionTarget[] | null,
     total: StockPositionIdeaEntry,
-    multiplier: number
+    multiplier: number,
+    priceIncrement = 8
   ): StockPositionTarget {
     if (list === null) {
       return this._totalDefaultTarget;
@@ -88,9 +90,9 @@ export class IdeaService {
       };
 
       if (list.length - 1 === index) {
-        value.profit = (value.price - total.price * total.quantity) * multiplier;
-        value.profitPercent = (value.profit / (total.price * total.quantity)) * 100;
-        value.price = value.price / value.amount;
+        value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
+        value.profitPercent = getNumberPrecision(((value.price - total.price) / total.price) * 100, priceIncrement);
+        value.profit = getNumberPrecision((value.price - total.price) * value.amount * multiplier, priceIncrement);
       }
 
       return value;
@@ -101,7 +103,8 @@ export class IdeaService {
     list: StockPositionStop[] | null,
     total: StockPositionIdeaEntry,
     targets: StockPositionTarget[] | null,
-    multiplier: number
+    multiplier: number,
+    priceIncrement = 8
   ): StockPositionStop {
     if (list === null) {
       return this._totalDefaultStop;
@@ -134,11 +137,15 @@ export class IdeaService {
       };
 
       if (list.length - 1 === index) {
-        value.loss =
-          (value.price - (total.price * value.amount - (totalTargetComplete.profit || 0) * multiplier)) * multiplier;
-        value.lossPercent =
-          (value.loss / (total.price * value.amount - (totalTargetComplete.profit || 0) * multiplier)) * 100;
-        value.price = value.price / value.amount;
+        value.loss = getNumberPrecision(
+          (value.price - (total.price * value.amount - (totalTargetComplete.profit || 0) * multiplier)) * multiplier,
+          priceIncrement
+        );
+        value.lossPercent = getNumberPrecision(
+          (value.loss / (total.price * value.amount - (totalTargetComplete.profit || 0) * multiplier)) * 100,
+          priceIncrement
+        );
+        value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
       }
 
       return value;

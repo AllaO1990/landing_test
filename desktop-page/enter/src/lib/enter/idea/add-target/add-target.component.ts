@@ -25,6 +25,10 @@ import { NgIf } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTargetComponent extends AddForm implements OnInit {
+  minPrice = 0;
+  maxPrice = null;
+  maxAmount = null;
+
   ngOnInit(): void {
     this.form = new FormGroup({
       stopDate: new FormControl({ value: [null, null], disabled: true }),
@@ -33,7 +37,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
     });
 
     if (this.context.data) {
-      const { amount, price, stopDate, minPriceIncrement } = this.context.data;
+      const { amount, price, stopDate, minPriceIncrement, minPrice, maxPrice, maxAmount } = this.context.data;
 
       this.form.patchValue({
         amount,
@@ -41,6 +45,11 @@ export class AddTargetComponent extends AddForm implements OnInit {
         stopDate: this.getTuiDates(stopDate || null),
       });
 
+      console.log(this.context.data);
+
+      this.maxAmount = maxAmount || null;
+      this.minPrice = minPrice || 0;
+      this.maxPrice = maxPrice || null;
       this.minPriceIncrement = minPriceIncrement;
       this.precision = this.getPrecision(minPriceIncrement);
     }

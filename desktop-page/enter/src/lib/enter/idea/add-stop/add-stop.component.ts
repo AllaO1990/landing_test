@@ -25,6 +25,9 @@ import { TuiAutoFocus } from '@taiga-ui/cdk';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddStopComponent extends AddForm implements OnInit {
+  minPrice = 0;
+  maxPrice = null;
+
   ngOnInit() {
     this.form = new FormGroup({
       stopCandleDate: new FormControl({ value: [null, null], disabled: true }),
@@ -32,13 +35,15 @@ export class AddStopComponent extends AddForm implements OnInit {
     });
 
     if (this.context.data) {
-      const { price, stopCandleDate, minPriceIncrement } = this.context.data;
+      const { price, stopCandleDate, minPriceIncrement, minPrice, maxPrice } = this.context.data;
 
       this.form.patchValue({
         price,
         stopCandleDate: this.getTuiDates(stopCandleDate || null),
       });
 
+      this.minPrice = minPrice || 0;
+      this.maxPrice = maxPrice || null;
       this.minPriceIncrement = minPriceIncrement;
       this.precision = this.getPrecision(minPriceIncrement);
     }

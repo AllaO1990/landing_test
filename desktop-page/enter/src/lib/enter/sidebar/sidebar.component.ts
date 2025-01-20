@@ -1,5 +1,13 @@
 import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  forwardRef,
+  inject,
+  Input,
+} from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
@@ -19,7 +27,17 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { StockPosition } from 'types/position';
 import { AccountFacade } from 'stores/facades/account.facade';
-import { combineLatest, debounceTime, distinctUntilChanged, filter, Observable, shareReplay, startWith } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  ReplaySubject,
+  shareReplay,
+  startWith,
+  Subject,
+} from 'rxjs';
 import { AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 import { PortfolioComponent } from '../portfolio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -80,6 +98,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
   readonly constants = SIDEBAR_CONSTANTS;
 
+  private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
+
   readonly strategies$: Observable<AccountStrategies[]> = this._accountStore.strategies$.pipe(
     filter((value: AccountStrategies[] | null): value is AccountStrategies[] => value !== null)
   );
@@ -99,14 +119,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
 
   onChange = (_: any) => {};
   onTouched = () => {};
-  // form!: FormGroup;
-  //
-  // @Input() set formGroup(value: FormGroup) {
-  //   this.form = value.get('idea') as FormGroup;
-  //
-  //   this.formControlPortfolio.enable();
-  //   this.formControlStrategy.enable();
-  // }
+
   form: FormGroup = new FormGroup({
     positionType: new FormControl<null | string>(null),
     expirationDate: new FormControl<null | string>(null),
@@ -144,29 +157,14 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     Validators.required
   );
 
+  @Input({ required: true }) formGroup!: FormGroup;
+
   ngAfterViewInit(): void {
     this._init();
   }
 
   writeValue(obj: any): void {
-    console.log('sidebar writeValue', obj);
-
-    if (obj === null) {
-      this.form.reset({
-        positionType: 'long',
-        strategyId: 4,
-        instrumentId: null,
-        portfolioId: null,
-        parentId: null,
-        expirationDate: null,
-        comment: '',
-      });
-    } else {
-      this.form.patchValue(obj);
-
-      this.controlPortfolio.patchValue(obj.portfolioId, { onlySelf: true });
-      this.controlStrategy.patchValue(obj.strategyId, { onlySelf: true });
-    }
+    this._controlValue$.next(obj);
   }
 
   registerOnChange(fn: any): void {
@@ -182,9 +180,34 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   }
 
   readonly stringifyCurrency: TuiStringHandler<AccountCurrency> = (item: AccountCurrency) => item.currencySymbol;
-  readonly stringifyPortfolio: TuiStringHandler<AccountPortfolio> = (item: AccountPortfolio) => item.portfolio;
 
   private _init(): void {
+    this._controlValue$
+      .asObservable()
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((result) => {
+        if (result === null) {
+          this.form.reset({
+            positionType: 'long',
+            strategyId: 4,
+            instrumentId: null,
+            portfolioId: null,
+            parentId: null,
+            expirationDate: null,
+            comment: '',
+          });
+        } else {
+          this.form.patchValue(result);
+
+          this.controlPortfolio.patchValue(result.portfolioId, { onlySelf: true });
+          this.controlStrategy.patchValue(result.strategyId, { onlySelf: true });
+        }
+
+        Promise.resolve().then(() => {
+          this.formGroup.markAsPristine();
+        });
+      });
+
     combineLatest([this.currencies$, this.strategies$, this.portfolio$, this.idea$])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
       .subscribe(
@@ -219,12 +242,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
         }
       );
 
-    this.form.valueChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef)
-        // tap((data) => console.log(data))
-      )
-      .subscribe((res: FormValue) => this.onChange(res));
+    this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res: FormValue) => this.onChange(res));
 
     this.formControlPortfolio.valueChanges
       .pipe(
@@ -236,19 +254,6 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
       .subscribe((result: AccountPortfolio) => {
         this.controlPortfolio.patchValue(result ? result.portfolioId : null);
       });
-
-    // this.formControlCurrency.valueChanges
-    //   .pipe(
-    //     takeUntilDestroyed(this._destroyRef),
-    //     startWith(this.formControlCurrency.value),
-    //     filter((value: AccountCurrency | null): value is AccountCurrency => value !== null),
-    //     distinctUntilChanged((a, b) => a.currencyId === b.currencyId)
-    //   )
-    //   .subscribe((result: AccountCurrency) => {
-    //     if (this.controlCurrency) {
-    //       this.controlCurrency.patchValue(result.currencyId);
-    //     }
-    //   });
 
     this.formControlStrategy.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef))
