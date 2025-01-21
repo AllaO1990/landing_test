@@ -25,14 +25,32 @@
   </div>
 </ng-template>
 
+<ng-template #portfolio let-item>
+  <div class="item">
+    {{ item.portfolio }}
+  </div>
+</ng-template>
+
+<ng-template #broker let-item>
+  <div class="item">
+    {{ item.broker }}
+  </div>
+</ng-template>
+
+<ng-template #currency let-item>
+  <div class="item">
+    {{ item.currencySymbol }}
+  </div>
+</ng-template>
+
 <ng-template #form>
   <div class="filter__list list" [formGroup]="formGroup">
     <div class="filter__item portfolio">
       <label>
         <span>{{ constants.portfolio }}</span>
         <tui-select
-          *ngIf="portfolio$ | async as list"
-          [stringify]="stringify"
+          *ngIf="portfolios$ | async as list"
+          [valueContent]="portfolio"
           [tuiTextfieldSize]="size"
           formControlName="portfolio"
           [tuiTextfieldLabelOutside]="true">
@@ -40,7 +58,7 @@
             *tuiDataList
             size="s"
             [items]="list"
-            [itemContent]="item">
+            [itemContent]="portfolio">
           </tui-data-list-wrapper>
         </tui-select>
       </label>
@@ -50,7 +68,7 @@
         <span>{{ constants.broker }}</span>
         <tui-select
           *ngIf="broker$ | async as list"
-          [stringify]="stringify"
+          [valueContent]="broker"
           [tuiTextfieldSize]="size"
           formControlName="broker">
           {{ constants.broker }}
@@ -58,7 +76,7 @@
             *tuiDataList
             size="s"
             [items]="list"
-            [itemContent]="item">
+            [itemContent]="broker">
           </tui-data-list-wrapper>
         </tui-select>
       </label>
@@ -68,7 +86,7 @@
         <span>{{ constants.currency }}</span>
         <tui-select
           *ngIf="currency$ | async as list"
-          [stringify]="stringify"
+          [valueContent]="currency"
           [tuiTextfieldSize]="size"
           formControlName="currency"
           [tuiTextfieldLabelOutside]="true">
@@ -76,7 +94,7 @@
             *tuiDataList
             size="s"
             [items]="list"
-            [itemContent]="item">
+            [itemContent]="currency">
           </tui-data-list-wrapper>
         </tui-select>
       </label>
