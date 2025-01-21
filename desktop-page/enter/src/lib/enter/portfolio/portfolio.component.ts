@@ -155,7 +155,7 @@ export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
       })
       .pipe(takeUntilDestroyed(this._destroyed))
       .subscribe((result: boolean) => {
-        if (result) {
+        if (result && item.portfolioId !== null) {
           this._accountStore.deletePortfolio(item.portfolioId);
         }
       });

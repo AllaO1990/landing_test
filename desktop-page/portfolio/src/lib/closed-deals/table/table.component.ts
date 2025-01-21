@@ -41,6 +41,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiPagination } from '@taiga-ui/kit';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 
 @Component({
   selector: 'lib-wrapper-table',
@@ -125,6 +126,19 @@ export class WrapperTableComponent implements OnInit {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
+  portfolio$: Observable<AccountPortfolio> = this._service.portfolio$.pipe(
+    filter((list: null | AccountPortfolio): list is AccountPortfolio => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  broker$: Observable<AccountBroker> = this._service.broker$.pipe(
+    filter((list: null | AccountBroker): list is AccountBroker => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  currency$: Observable<AccountCurrency> = this._service.currency$.pipe(
+    filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   limit$: Observable<number> = this.controlLimit.valueChanges.pipe(
     startWith(this.controlLimit.value),
     filter((limit: number | null): limit is number => limit !== null)
@@ -154,23 +168,31 @@ export class WrapperTableComponent implements OnInit {
     const start = new Date(new Date(today).setDate(-365 + new Date(today).getDate())).toISOString();
     const end = new Date(today).toISOString();
 
-    combineLatest([this.index$.asObservable(), this.limit$])
+    combineLatest([this.portfolio$, this.broker$, this.currency$, this.index$.asObservable(), this.limit$])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(500))
-      .subscribe(([index, limit]: [number, number]) => {
-        if (this.isData !== null) {
-          this.isLoad$.next(true);
-        }
+      .subscribe(
+        ([portfolio, broker, currency, index, limit]: [
+          AccountPortfolio,
+          AccountBroker,
+          AccountCurrency,
+          number,
+          number
+        ]) => {
+          if (this.isData !== null) {
+            this.isLoad$.next(true);
+          }
 
-        this._service.load({
-          brokerId: 1,
-          currencyId: 1,
-          from: start,
-          portfolioId: 4,
-          to: end,
-          limit: limit,
-          page: index,
-        });
-      });
+          this._service.load({
+            brokerId: broker.brokerId,
+            currencyId: currency.currencyId,
+            from: start,
+            portfolioId: portfolio.portfolioId,
+            to: end,
+            limit: limit,
+            page: index + 1,
+          });
+        }
+      );
 
     combineLatest([
       this.data$.pipe(filter((list: PortfolioPosition[] | null): list is PortfolioPosition[] => list !== null)),

@@ -1,17 +1,17 @@
 export interface AccountBroker {
   broker: string;
-  brokerId: number;
+  brokerId: number | null;
 }
 
 export interface AccountCurrency {
   currency: string;
-  currencyId: number;
+  currencyId: number | null;
   currencySymbol: string;
 }
 
 export interface AccountPortfolio {
   portfolio: string;
-  portfolioId: number;
+  portfolioId: number | null;
 }
 
 export interface AccountStrategies {
