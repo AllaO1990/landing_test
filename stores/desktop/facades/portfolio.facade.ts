@@ -15,6 +15,7 @@ export class PortfolioFacade {
   readonly portfolio$: Observable<null | AccountPortfolio> = this._store.portfolio.portfolio$;
   readonly broker$: Observable<AccountBroker | null> = this._store.portfolio.broker$;
   readonly currency$: Observable<null | AccountCurrency> = this._store.portfolio.currency$;
+  readonly range: Observable<null | any> = this._store.portfolio.range$;
 
   readonly load = this._store.portfolio.load;
   readonly updatePortfolio = this._store.portfolio.updatePortfolio;

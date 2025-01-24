@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  inline-size: max-content;
+}
+
+.range {
+  flex: 1;
+  min-width: 100px;
+}
+
+.chevron {
+  flex: 0 0 auto;
+}

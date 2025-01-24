@@ -68,7 +68,11 @@ export class VtEnterComponent implements AfterViewInit {
     takeUntilDestroyed(this._destroyRef),
     filter((event: StockEvent | null): event is StockEvent => event !== null),
     map((event: StockEvent) =>
-      event.type === EventSelected.IDEA || event.type === EventSelected.POSITION ? event.id : null
+      event.type === EventSelected.IDEA ||
+      event.type === EventSelected.POSITION ||
+      event.type === EventSelected.TRANSACTION
+        ? event.id
+        : null
     ),
     distinctUntilChanged()
   );
@@ -81,27 +85,6 @@ export class VtEnterComponent implements AfterViewInit {
   ideaAuthor: string | null = null;
   ideaParentId: number | null = null;
 
-  // readonly form: FormGroup = new FormGroup({
-  //   actions: new FormControl({ entries: [], outs: [] }),
-  //   // actions: new FormGroup({
-  //   //   entries: new FormArray([]),
-  //   //   outs: new FormArray([]),
-  //   // }),
-  //   idea: new FormGroup({
-  //     amount: new FormControl(null, Validators.required),
-  //     entry: new FormControl(null, Validators.required),
-  //     goals: new FormArray([], Validators.required),
-  //     stop: new FormControl(null, Validators.required),
-  //     instrumentId: new FormControl(null, Validators.required),
-  //     portfolioId: new FormControl(null, Validators.required),
-  //     expirationDate: new FormControl(null),
-  //     strategyId: new FormControl(null, Validators.required),
-  //     positionType: new FormControl(null, Validators.required),
-  //     comment: new FormControl(''),
-  //     parentId: new FormControl(null),
-  //     watch: new FormControl(true, Validators.required),
-  //   }),
-  // });
   readonly form: FormGroup = new FormGroup({
     actions: new FormControl({ entries: [], outs: [], position: null }),
     idea: new FormControl({ entries: [], targets: [], stop: [] }),

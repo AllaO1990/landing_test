@@ -1,0 +1,50 @@
+<div tuiGroup class="range-with-list">
+  <tui-input-date-range
+    class="range"
+    [formControl]="controlRange"
+    [tuiTextfieldCleaner]="true"
+    [tuiTextfieldSize]="size"
+    [tuiTextfieldLabelOutside]="true">
+    Выберете период
+    <input
+      placeholder="Период"
+      tuiTextfieldLegacy />
+  </tui-input-date-range>
+  <button
+    *ngIf="items.length !== 0"
+    class="chevron"
+    tuiChevron
+    tuiIconButton
+    appearance="outline"
+    type="button"
+    [disabled]="isDisabled"
+    [tuiDropdown]="content"
+    tuiDropdownDirection="bottom"
+    tuiDropdownAlign="right"
+    [tuiDropdownMaxHeight]="500"
+    [(tuiDropdownOpen)]="isOpenRangeList">
+    Open
+  </button>
+</div>
+
+<ng-template #content>
+  <tui-data-list [size]="size">
+    <tui-opt-group>
+      <button
+        *ngFor="let item of items;"
+        tuiOption
+        type="button"
+        (click)="onSelect($event, item)"
+        [value]="item">
+        <div
+          *polymorpheusOutlet="(itemContent || itemTemplate) as text; context: {$implicit: item }"
+          [textContent]="text"
+        ></div>
+      </button>
+    </tui-opt-group>
+  </tui-data-list>
+</ng-template>
+
+<ng-template #itemTemplate let-item>
+  {{ item }}
+</ng-template>

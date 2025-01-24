@@ -1,31 +1,34 @@
-import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  DestroyRef,
-  inject,
-} from '@angular/core';
+  TuiInputDateRangeModule,
+  TuiSelectModule,
+  TuiTextfieldControllerModule,
+  TuiUnfinishedValidator,
+} from '@taiga-ui/legacy';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { AsyncPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiDataListWrapper } from '@taiga-ui/kit';
-import { TuiStringHandler } from '@taiga-ui/cdk';
-import { TuiBreakpointService, TuiButton, TuiDropdown } from '@taiga-ui/core';
+import {
+  TuiCalendarRange,
+  TuiCheckbox,
+  TuiChevron,
+  TuiDataListDropdownManager,
+  TuiDataListWrapper,
+} from '@taiga-ui/kit';
+import { TuiDay, TuiDayRange, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiBreakpointService, TuiButton, TuiDropdown, TuiGroup, TuiIcon } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { filter, Observable, tap } from 'rxjs';
+import { filter, Observable, startWith, tap } from 'rxjs';
 import { FILTER_CONSTANTS } from './filter.constants';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RangeWithListComponent } from 'ui-common/lib/range-with-list/range-with-list.component';
 
 interface SelectListItem {
   name: string;
   id: string;
 }
-
-type SelectList = SelectListItem[];
 
 @Component({
   selector: 'portfolio-filter',
@@ -41,6 +44,16 @@ type SelectList = SelectListItem[];
     NgTemplateOutlet,
     TuiButton,
     TuiDropdown,
+    TuiChevron,
+    TuiCheckbox,
+    TuiInputDateRangeModule,
+    TuiDataListDropdownManager,
+    TuiDropdown,
+    TuiUnfinishedValidator,
+    TuiCalendarRange,
+    TuiIcon,
+    TuiGroup,
+    RangeWithListComponent,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
@@ -50,7 +63,6 @@ export class FilterComponent implements AfterViewInit {
   private readonly _accountFacade: AccountFacade = inject(AccountFacade);
   private readonly _portfolioFacade: PortfolioFacade = inject(PortfolioFacade);
 
-  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
   readonly isMobile$: Observable<boolean> = this._breakpoint$.pipe(
@@ -59,11 +71,49 @@ export class FilterComponent implements AfterViewInit {
   );
   readonly constants = FILTER_CONSTANTS;
   readonly size = 's';
+  readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
+  readonly rangeList: { text: string; range: TuiDayRange }[] = [
+    {
+      text: '7',
+      range: new TuiDayRange(TuiDay.fromLocalNativeDate(this._getStartDate(7)), TuiDay.fromLocalNativeDate(this.today)),
+    },
+    {
+      text: '30',
+      range: new TuiDayRange(
+        TuiDay.fromLocalNativeDate(this._getStartDate(30)),
+        TuiDay.fromLocalNativeDate(this.today)
+      ),
+    },
+    {
+      text: '90',
+      range: new TuiDayRange(
+        TuiDay.fromLocalNativeDate(this._getStartDate(90)),
+        TuiDay.fromLocalNativeDate(this.today)
+      ),
+    },
+    {
+      text: '365',
+      range: new TuiDayRange(
+        TuiDay.fromLocalNativeDate(this._getStartDate(365)),
+        TuiDay.fromLocalNativeDate(this.today)
+      ),
+    },
+    {
+      text: 'С Начала года',
+      range: new TuiDayRange(
+        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this.today.getFullYear(), 0, 1))),
+        TuiDay.fromLocalNativeDate(this.today)
+      ),
+    },
+  ];
+  label = false;
 
   readonly formGroup: FormGroup = new FormGroup({
     portfolio: new FormControl({ value: null, disabled: false }, Validators.required),
     broker: new FormControl({ value: null, disabled: false }, Validators.required),
     currency: new FormControl({ value: null, disabled: false }, Validators.required),
+    toCurrency: new FormControl({ value: null, disabled: false }, Validators.required),
+    range: new FormControl({ value: this.rangeList[3].range, disabled: false }, Validators.required),
   });
 
   get controlPortfolio() {
@@ -76,6 +126,14 @@ export class FilterComponent implements AfterViewInit {
 
   get controlCurrency() {
     return this.formGroup.get('currency') as FormControl;
+  }
+
+  get controlToCurrency() {
+    return this.formGroup.get('toCurrency') as FormControl;
+  }
+
+  get controlRange() {
+    return this.formGroup.get('range') as FormControl;
   }
 
   readonly portfolios$: Observable<AccountPortfolio[]> = this._accountFacade.portfolios$.pipe(
@@ -102,8 +160,14 @@ export class FilterComponent implements AfterViewInit {
     filter((list: AccountCurrency[] | null): list is AccountCurrency[] => list !== null),
     map((list: AccountCurrency[]) => [{ currency: 'Все', currencySymbol: 'Все', currencyId: null }, ...list]),
     tap((list: null | AccountCurrency[]) => {
-      if (list !== null && list.length > 0 && this.controlCurrency.value === null) {
-        this.controlCurrency.patchValue(list[0]);
+      if (list !== null && list.length > 0) {
+        if (this.controlCurrency.value === null) {
+          this.controlCurrency.patchValue(list[0]);
+        }
+
+        if (this.controlToCurrency.value === null) {
+          this.controlToCurrency.patchValue(list[0]);
+        }
       }
     })
   );
@@ -111,8 +175,23 @@ export class FilterComponent implements AfterViewInit {
   readonly stringify: TuiStringHandler<SelectListItem> = (item: SelectListItem) => item.name;
 
   open = false;
+  isOpenRangeList = false;
 
   ngAfterViewInit(): void {
+    this.controlRange.valueChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        startWith(this.controlRange.value),
+        map(
+          (value: null | TuiDayRange) =>
+            value && {
+              from: value.from.toLocalNativeDate().toISOString(),
+              to: value.to.toLocalNativeDate().toISOString(),
+            }
+        )
+      )
+      .subscribe((value: null | { from: string; to: string }) => this._portfolioFacade.updateRange(value));
+
     this.controlPortfolio.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((value) => this._portfolioFacade.updatePortfolio(value));
@@ -162,5 +241,17 @@ export class FilterComponent implements AfterViewInit {
     event.preventDefault();
 
     this.open = false;
+  }
+
+  onClick(event: Event): void {
+    event.stopPropagation();
+    console.log(event);
+  }
+
+  selectRangeHandler = (item: { text: string; range: TuiDayRange }) => item.range;
+
+  private _getStartDate(start: number): Date {
+    const date = new Date(this.today);
+    return new Date(date.setDate(date.getDate() - start));
   }
 }
