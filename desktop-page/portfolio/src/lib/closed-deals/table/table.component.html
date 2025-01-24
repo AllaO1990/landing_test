@@ -31,6 +31,7 @@
         [class.tr--active]="(activeIdeaId$ | async) === item.ideaId"
         *cdkVirtualFor="let item of data | tuiTableSort; trackBy: trackById"
         (click)="onClick($event, item)"
+        (dblclick)="onDblclick($event, item)"
         tuiTr>
         <td
           class="td"

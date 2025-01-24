@@ -1,7 +1,7 @@
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
-import { debounceTime, Observable, shareReplay, startWith, switchMap } from 'rxjs';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { MainService } from './main.service';
 import { TuiBreakpointService } from '@taiga-ui/core';
 import { Position } from 'types/position';
@@ -15,10 +15,6 @@ import { EntryModule } from './entry/entry.module';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
-import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
-import { Params } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { StockId } from 'types/stock';
 import { EventSelected } from 'types/events';
 
@@ -47,18 +43,6 @@ export class MainComponent implements AfterViewInit {
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _position: PositionFacade = inject(PositionFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _injector: Injector = inject(Injector);
-  private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
-  private readonly _query$: Observable<Params> = this._queryParams.pipe(
-    takeUntilDestroyed(this._destroyRef),
-    startWith(this._queryParams.value()),
-    distinctUntilChanged((a: Params, b: Params) => a['dialog'] === b['dialog']),
-    filter((params: Params) => params['dialog'] === 'visible'),
-    debounceTime(100),
-    shareReplay({ refCount: false, bufferSize: 1 })
-  );
-  private _component: PolymorpheusComponent<VtEnterComponent> | null = null;
 
   get queryId(): StockId | null {
     return this._queryParams.value()['id'] || null;
@@ -97,15 +81,5 @@ export class MainComponent implements AfterViewInit {
         id: '72187db2-44d8-4b2e-8b43-c41fd30c4a39',
       });
     }
-
-    this.onOpenDialog();
-  }
-
-  async onOpenDialog() {
-    this._component = await import('desktop-page/enter')
-      .then((m) => m.VtEnterComponent)
-      .then((c) => new PolymorpheusComponent(c, this._injector));
-
-    this._query$.pipe(switchMap(() => this._dialogEnterService.open(this._component))).subscribe();
   }
 }

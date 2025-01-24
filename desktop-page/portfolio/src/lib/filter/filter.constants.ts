@@ -2,6 +2,8 @@ export const FILTER_CONSTANTS = {
   portfolio: 'Портфель',
   broker: 'Брокер',
   currency: 'Валюта',
+  range: 'Период',
+  toCurrency: 'Привести к',
 };
 
 export const PORTFOLIO_LIST = [

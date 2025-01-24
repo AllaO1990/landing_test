@@ -99,6 +99,37 @@
         </tui-select>
       </label>
     </div>
+    <div class="filter__item range">
+      <label>
+        <span>{{ constants.range }}</span>
+        <lib-range-with-list
+          style="width: 100%;"
+          formControlName="range"
+          [items]="rangeList"
+          [itemContent]="itemRange"
+          [selectHandler]="selectRangeHandler"
+        ></lib-range-with-list>
+      </label>
+    </div>
+    <div class="filter__space"></div>
+    <div class="filter__item to-currency">
+      <label>
+        <span>{{ constants.toCurrency }}</span>
+        <tui-select
+          *ngIf="currency$ | async as list"
+          [valueContent]="currency"
+          [tuiTextfieldSize]="size"
+          formControlName="toCurrency"
+          [tuiTextfieldLabelOutside]="true">
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="currency">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </label>
+    </div>
   </div>
 </ng-template>
 
@@ -116,4 +147,8 @@
     </div>
     <ng-container [ngTemplateOutlet]="form"></ng-container>
   </div>
+</ng-template>
+
+<ng-template #itemRange let-item>
+  {{ item.text }}
 </ng-template>

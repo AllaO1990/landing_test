@@ -23,6 +23,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly portfolio$: Observable<null | AccountPortfolio> = this.select((state: PortfolioState) => state.portfolio);
   readonly broker$: Observable<AccountBroker | null> = this.select((state: PortfolioState) => state.broker);
   readonly currency$: Observable<null | AccountCurrency> = this.select((state: PortfolioState) => state.currency);
+  readonly range$: Observable<null | any> = this.select((state: PortfolioState) => state.range);
 
   constructor(private readonly _api: DesktopService) {
     super({

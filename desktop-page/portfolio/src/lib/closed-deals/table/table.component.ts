@@ -138,6 +138,10 @@ export class WrapperTableComponent implements OnInit {
     filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  range$: Observable<any> = this._service.range.pipe(
+    filter((list: null | any): list is any => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   limit$: Observable<number> = this.controlLimit.valueChanges.pipe(
     startWith(this.controlLimit.value),
@@ -168,13 +172,14 @@ export class WrapperTableComponent implements OnInit {
     const start = new Date(new Date(today).setDate(-365 + new Date(today).getDate())).toISOString();
     const end = new Date(today).toISOString();
 
-    combineLatest([this.portfolio$, this.broker$, this.currency$, this.index$.asObservable(), this.limit$])
+    combineLatest([this.portfolio$, this.broker$, this.currency$, this.range$, this.index$.asObservable(), this.limit$])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(500))
       .subscribe(
-        ([portfolio, broker, currency, index, limit]: [
+        ([portfolio, broker, currency, range, index, limit]: [
           AccountPortfolio,
           AccountBroker,
           AccountCurrency,
+          any,
           number,
           number
         ]) => {
@@ -185,9 +190,9 @@ export class WrapperTableComponent implements OnInit {
           this._service.load({
             brokerId: broker.brokerId,
             currencyId: currency.currencyId,
-            from: start,
+            from: range.from,
             portfolioId: portfolio.portfolioId,
-            to: end,
+            to: range.to,
             limit: limit,
             page: index + 1,
           });
@@ -237,6 +242,16 @@ export class WrapperTableComponent implements OnInit {
     this._queryParams.update({
       type: EventSelected.TRANSACTION,
       id: item.ideaId,
+    });
+  }
+
+  onDblclick(event: Event, item: PortfolioPosition) {
+    event.preventDefault();
+
+    this._queryParams.update({
+      type: EventSelected.TRANSACTION,
+      id: item.ideaId,
+      dialog: 'visible',
     });
   }
 
