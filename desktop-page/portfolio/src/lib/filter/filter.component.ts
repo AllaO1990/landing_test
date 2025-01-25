@@ -94,7 +94,7 @@ export class FilterComponent implements AfterViewInit {
     {
       text: '365',
       range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(365)),
+        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this._getStartDate(365).getFullYear(), 0, 1))),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },
@@ -175,7 +175,6 @@ export class FilterComponent implements AfterViewInit {
   readonly stringify: TuiStringHandler<SelectListItem> = (item: SelectListItem) => item.name;
 
   open = false;
-  isOpenRangeList = false;
 
   ngAfterViewInit(): void {
     this.controlRange.valueChanges
@@ -193,48 +192,16 @@ export class FilterComponent implements AfterViewInit {
       .subscribe((value: null | { from: string; to: string }) => this._portfolioFacade.updateRange(value));
 
     this.controlPortfolio.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlPortfolio.value))
       .subscribe((value) => this._portfolioFacade.updatePortfolio(value));
 
     this.controlBroker.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlBroker.value))
       .subscribe((value) => this._portfolioFacade.updateBroker(value));
 
     this.controlCurrency.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlCurrency.value))
       .subscribe((value) => this._portfolioFacade.updateCurrency(value));
-
-    // timer(0)
-    //   .pipe(
-    //     takeUntilDestroyed(this._destroyRef),
-    //     switchMap((_) => of(PORTFOLIO_LIST)),
-    //     tap((list) => {
-    //       this.controlPortfolio.enable({ emitEvent: false });
-    //       this.controlPortfolio.patchValue(list[0]);
-    //       this._cdr.markForCheck();
-    //     })
-    //   )
-    //   .subscribe((res: SelectList) => this.portfolio$.next(res));
-    // timer(1300)
-    //   .pipe(
-    //     takeUntilDestroyed(this._destroyRef),
-    //     switchMap((_) => of(BROKER_LIST)),
-    //     tap((list) => {
-    //       this.controlBroker.enable({ emitEvent: false });
-    //       this.controlBroker.patchValue(list[0]);
-    //     })
-    //   )
-    //   .subscribe((res: SelectList) => this.broker$.next(res));
-    // timer(900)
-    //   .pipe(
-    //     takeUntilDestroyed(this._destroyRef),
-    //     switchMap((_) => of(CURRENCY_LIST)),
-    //     tap((list) => {
-    //       this.controlCurrency.enable({ emitEvent: false });
-    //       this.controlCurrency.patchValue(list[0]);
-    //     })
-    //   )
-    //   .subscribe((res: SelectList) => this.currency$.next(res));
   }
 
   onClose(event: Event): void {

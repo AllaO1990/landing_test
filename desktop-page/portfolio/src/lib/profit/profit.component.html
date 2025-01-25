@@ -12,19 +12,19 @@
           </dd>
         </dl>
       </div>
-      <div class="profit__form control">
-        <div class="control__label">
-          Период:
-        </div>
-        <div class="control__range">
-          <tui-input-date-range
-            class="b-form"
-            tuiTextfieldSize="s"
-            [tuiTextfieldLabelOutside]="true"
-            formControlName="range">
-          </tui-input-date-range>
-        </div>
-      </div>
+      <!--      <div class="profit__form control">-->
+      <!--        <div class="control__label">-->
+      <!--          Период:-->
+      <!--        </div>-->
+      <!--        <div class="control__range">-->
+      <!--          <tui-input-date-range-->
+      <!--            class="b-form"-->
+      <!--            tuiTextfieldSize="s"-->
+      <!--            [tuiTextfieldLabelOutside]="true"-->
+      <!--            formControlName="range">-->
+      <!--          </tui-input-date-range>-->
+      <!--        </div>-->
+      <!--      </div>-->
       <div class="profit__deposit deposit">
         <dl class="deposit__row" *ngFor="let key of list; trackBy: trackByIndex">
           <dt class="deposit__title deposit__cell">
@@ -37,24 +37,24 @@
       </div>
     </div>
     <div class="profit__space"></div>
-    <div class="profit__actions">
-      <div
-        tuiGroup
-        [collapsed]="true"
-        class="profit__controls">
-        <label
-          *ngFor="let item of list$ | async"
-          appearance=""
-          tuiBlock="s">
-          <input
-            tuiBlock
-            formControlName="list"
-            [value]="item"
-            type="radio">
-          <span>{{ item.name }}</span>
-        </label>
-      </div>
-    </div>
+    <!--    <div class="profit__actions">-->
+    <!--      <div-->
+    <!--        tuiGroup-->
+    <!--        [collapsed]="true"-->
+    <!--        class="profit__controls">-->
+    <!--        <label-->
+    <!--          *ngFor="let item of list$ | async"-->
+    <!--          appearance=""-->
+    <!--          tuiBlock="s">-->
+    <!--          <input-->
+    <!--            tuiBlock-->
+    <!--            formControlName="list"-->
+    <!--            [value]="item"-->
+    <!--            type="radio">-->
+    <!--          <span>{{ item.name }}</span>-->
+    <!--        </label>-->
+    <!--      </div>-->
+    <!--    </div>-->
     <div class="profit__chart">
       <!-- TODO: (Taiga UI migration) labels positioning on x axes were updated. Add empty string to axisXLabels array. See https://taiga-ui.dev/charts/axes -->
       <tui-axes
