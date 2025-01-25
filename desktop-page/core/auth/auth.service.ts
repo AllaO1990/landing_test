@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, EMPTY } from 'rxjs';
 import { VtLocalStorageService } from '../storage';
+import { DESKTOP_ENVIRONMENT } from '../../../tokens/desktop';
 
 interface UserData {
   data: { access_token: string; token_type: string };
@@ -21,21 +22,21 @@ interface UserSignUpData {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly _http: HttpClient = inject(HttpClient);
+  private readonly _environment = inject(DESKTOP_ENVIRONMENT);
 
-  // isLoggedIn = false;
+  get host() {
+    return this._environment.host;
+  }
 
   constructor(private _router: Router, private _storage: VtLocalStorageService) {}
 
   getKey(email: string) {
-    // this.isLoggedIn = true;
-    // this._router.navigate(['lk']);
-
     this._http
-      .post<UserSignUpData>('https://trade.gpn.dev/api/v1/auth/sign-up', { email })
+      .post<UserSignUpData>(`${this.host}/api/v1/auth/sign-up`, { email })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
-          return this._http.post<UserData>('https://trade.gpn.dev/api/v1/auth/sign-in', { email });
+          return this._http.post<UserData>(`${this.host}/api/v1/auth/sign-in`, { email });
         })
       )
       .subscribe((data) => {
@@ -50,7 +51,7 @@ export class AuthService {
 
   login(email: string, password: string) {
     this._http
-      .post<UserData>('https://trade.gpn.dev/api/v1/auth/token', { username: email, password: +password })
+      .post<UserData>(`${this.host}/api/v1/auth/token`, { username: email, password: +password })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
