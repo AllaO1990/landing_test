@@ -21,13 +21,19 @@ import { Timeframe } from 'types/timeframe';
 import { Params } from '@angular/router';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
+import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
+  private readonly _environment = inject(DESKTOP_ENVIRONMENT);
+
+  get host() {
+    return this._environment.host;
+  }
 
   public getIdeaList(): Observable<Position[]> {
-    return this._http.get<Response<ResponsePositions>>(`https://trade.gpn.dev/api/v1/ideas`).pipe(
+    return this._http.get<Response<ResponsePositions>>(`${this.host}/api/v1/ideas`).pipe(
       filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
       map((response: Response<ResponsePositions>) => {
         if (response.data.items === null) {
@@ -40,7 +46,7 @@ export class DesktopApiService extends DesktopService {
 
   public getChartFigures(ideaId: string, from: string, to: string): Observable<Response<FigureIdea | null> | null> {
     return this._http
-      .get<Response<FigureIdea | null>>('https://trade.gpn.dev/api/v1/chart-figures', {
+      .get<Response<FigureIdea | null>>(`${this.host}/api/v1/chart-figures`, {
         params: { ideaId, from, to },
         // params: { ideaId, from: new Date(new Date().setFullYear(2014)).toISOString(), to: new Date().toISOString() },
       })
@@ -53,48 +59,41 @@ export class DesktopApiService extends DesktopService {
   }
 
   public getStockList(): Observable<Response<Stock>> {
-    return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/instruments?sub=true`);
+    return this._http.get<Response<Stock>>(`${this.host}/api/v1/instruments?sub=true`);
   }
 
   getInstrumentsLists(): Observable<Response<{ items: StockLists }>> {
-    return this._http.get<Response<{ items: StockLists }>>(`https://trade.gpn.dev/api/v1/instruments-lists`);
+    return this._http.get<Response<{ items: StockLists }>>(`${this.host}/api/v1/instruments-lists`);
   }
 
   getInstrumentsListItems(id: StockId): Observable<Response<Stock>> {
-    return this._http.get<Response<any>>(`https://trade.gpn.dev/api/v1/instruments-list-items`, { params: { id } });
+    return this._http.get<Response<any>>(`${this.host}/api/v1/instruments-list-items`, { params: { id } });
   }
 
   addInstrumentsListItems(value: StockLinkListInstrument): Observable<Response<StockLinkListInstrument>> {
-    return this._http.post<Response<StockLinkListInstrument>>(
-      `https://trade.gpn.dev/api/v1/instruments-list-items/add`,
-      { ...value }
-    );
+    return this._http.post<Response<StockLinkListInstrument>>(`${this.host}/api/v1/instruments-list-items/add`, {
+      ...value,
+    });
   }
 
   deleteInstrumentsListsItems(value: StockLinkListInstrument): Observable<Response<StockLinkListInstrument>> {
-    return this._http.delete<Response<StockLinkListInstrument>>(
-      'https://trade.gpn.dev/api/v1/instruments-list-items/delete',
-      {
-        body: { ...value },
-      }
-    );
+    return this._http.delete<Response<StockLinkListInstrument>>(`${this.host}/api/v1/instruments-list-items/delete`, {
+      body: { ...value },
+    });
   }
 
   getWatchInstrumentsListItems(): Observable<Response<Stock>> {
-    return this._http.get<Response<Stock>>(`https://trade.gpn.dev/api/v1/watch-instruments-list-items`);
+    return this._http.get<Response<Stock>>(`${this.host}/api/v1/watch-instruments-list-items`);
   }
 
   createInstrumentsListItems(name: string): Observable<Response<StockInstrumentList>> {
-    return this._http.post<Response<StockInstrumentList>>(`https://trade.gpn.dev/api/v1/instruments-lists/create`, {
+    return this._http.post<Response<StockInstrumentList>>(`${this.host}/api/v1/instruments-lists/create`, {
       name,
     });
   }
 
   createDefaultInstrumentsListItems(): Observable<Response<{ items: StockLists }>> {
-    return this._http.post<Response<{ items: StockLists }>>(
-      `https://trade.gpn.dev/api/v1/instruments-lists/create-default`,
-      {}
-    );
+    return this._http.post<Response<{ items: StockLists }>>(`${this.host}/api/v1/instruments-lists/create-default`, {});
   }
 
   deleteInstrumentsLists(id: string): Observable<Response<{ id: string }>> {
@@ -102,21 +101,18 @@ export class DesktopApiService extends DesktopService {
       Response<{
         id: string;
       }>
-    >('https://trade.gpn.dev/api/v1/instruments-lists/delete', {
+    >(`${this.host}/api/v1/instruments-lists/delete`, {
       body: { id },
     });
   }
 
   editInstrumentsListItems(value: StockInstrumentList): Observable<Response<StockInstrumentList>> {
-    return this._http.patch<Response<StockInstrumentList>>(
-      `https://trade.gpn.dev/api/v1/instruments-lists/edit`,
-      value
-    );
+    return this._http.patch<Response<StockInstrumentList>>(`${this.host}/api/v1/instruments-lists/edit`, value);
   }
 
   public getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>> {
     return this._http
-      .post<Response<StockPrice<WithLastPrice>>>(`https://trade.gpn.dev/api/v1/instruments/last-close-price/by-ids`, {
+      .post<Response<StockPrice<WithLastPrice>>>(`${this.host}/api/v1/instruments/last-close-price/by-ids`, {
         ids: [...new Set(list)],
       })
       .pipe(
@@ -128,7 +124,7 @@ export class DesktopApiService extends DesktopService {
   }
 
   getPositionList(): Observable<Position[]> {
-    return this._http.get<Response<ResponsePositions>>(`https://trade.gpn.dev/api/v1/ideas/positions`).pipe(
+    return this._http.get<Response<ResponsePositions>>(`${this.host}/api/v1/ideas/positions`).pipe(
       filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
       map((response: Response<ResponsePositions>) => {
         if (response.data.items === null) {
@@ -148,7 +144,7 @@ export class DesktopApiService extends DesktopService {
         : new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString();
 
     return this._http
-      .get<Response<any>>(`https://trade.gpn.dev/api/v1/candles`, {
+      .get<Response<any>>(`${this.host}/api/v1/candles`, {
         params: {
           id: selected?.source,
           interval: Timeframe.CANDLE_INTERVAL_DAY,
@@ -164,7 +160,7 @@ export class DesktopApiService extends DesktopService {
 
   getIdeaConsolidationZone(id: StockId): Observable<Response<ActiveZone | null> | null> {
     return this._http
-      .get<Response<ActiveZone | null> | null>(`https://trade.gpn.dev/api/v1/chart/idea-consolidation-zone`, {
+      .get<Response<ActiveZone | null> | null>(`${this.host}/api/v1/chart/idea-consolidation-zone`, {
         params: { ideaId: id },
       })
       .pipe(
@@ -176,91 +172,87 @@ export class DesktopApiService extends DesktopService {
   }
 
   getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone> | null> {
-    return this._http
-      .get<any>(`https://trade.gpn.dev/api/v1/chart/watchlist-consolidation-zone`, { params: { id } })
-      .pipe(
-        catchError((error: Error) => {
-          console.log(error);
-          return of(null);
-        })
-      );
+    return this._http.get<any>(`${this.host}/api/v1/chart/watchlist-consolidation-zone`, { params: { id } }).pipe(
+      catchError((error: Error) => {
+        console.log(error);
+        return of(null);
+      })
+    );
   }
 
   getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>> {
-    return this._http.get<Response<any>>('https://trade.gpn.dev/api/v1/chart/atr', { params: { id, interval, date } });
+    return this._http.get<Response<any>>(`${this.host}/api/v1/chart/atr`, { params: { id, interval, date } });
   }
 
   getIndicatorEma(params: IndicatorEmaParams): Observable<Response<any>> {
-    return this._http.post<Response<any>>('https://trade.gpn.dev/api/v1/chart/ema', params);
+    return this._http.post<Response<any>>(`${this.host}/api/v1/chart/ema`, params);
   }
 
   getIndicatorSma(params: IndicatorSmaParams): Observable<Response<any>> {
-    return this._http.post<Response<any>>('https://trade.gpn.dev/api/v1/chart/sma', params);
+    return this._http.post<Response<any>>(`${this.host}/api/v1/chart/sma`, params);
   }
 
   getConsolidationZones(params: { id: string; interval: number; from: string; to: string }): Observable<Response<any>> {
-    return this._http.get<Response<any>>('https://trade.gpn.dev/api/v1/chart/consolidation-zones', { params });
+    return this._http.get<Response<any>>(`${this.host}/api/v1/chart/consolidation-zones`, { params });
   }
 
   getAccountBrokers(params: Params): Observable<Response<DataList<AccountBroker>>> {
-    return this._http.get<Response<DataList<AccountBroker>>>('https://trade.gpn.dev/api/v1/account/brokers', {
+    return this._http.get<Response<DataList<AccountBroker>>>(`${this.host}/api/v1/account/brokers`, {
       params,
     });
   }
 
   getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>> {
-    return this._http.get<Response<DataList<AccountCurrency>>>('https://trade.gpn.dev/api/v1/account/currencies', {
+    return this._http.get<Response<DataList<AccountCurrency>>>(`${this.host}/api/v1/account/currencies`, {
       params,
     });
   }
 
   getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>> {
-    return this._http.get<Response<DataList<AccountPortfolio>>>('https://trade.gpn.dev/api/v1/account/portfolios', {
+    return this._http.get<Response<DataList<AccountPortfolio>>>(`${this.host}/api/v1/account/portfolios`, {
       params,
     });
   }
 
   getAccountStrategies(): Observable<Response<DataList<AccountStrategies>>> {
-    return this._http.get<Response<DataList<AccountStrategies>>>('https://trade.gpn.dev/api/v1/ideas/strategies');
+    return this._http.get<Response<DataList<AccountStrategies>>>(`${this.host}/api/v1/ideas/strategies`);
   }
 
   createAccountPortfolio(portfolio: string): Observable<Response<AccountPortfolio>> {
-    return this._http.post<Response<AccountPortfolio>>('https://trade.gpn.dev/api/v1/account/portfolio', {
+    return this._http.post<Response<AccountPortfolio>>(`${this.host}/api/v1/account/portfolio`, {
       portfolio,
     });
   }
 
   editAccountPortfolio(portfolio: AccountPortfolio): Observable<Response<AccountPortfolio>> {
-    return this._http.patch<Response<AccountPortfolio>>('https://trade.gpn.dev/api/v1/account/portfolio', {
+    return this._http.patch<Response<AccountPortfolio>>(`${this.host}/api/v1/account/portfolio`, {
       ...portfolio,
     });
   }
 
   deleteAccountPortfolio(portfolioId: number): Observable<Response<AccountPortfolio>> {
-    return this._http.delete<Response<AccountPortfolio>>('https://trade.gpn.dev/api/v1/account/portfolio', {
+    return this._http.delete<Response<AccountPortfolio>>(`${this.host}/api/v1/account/portfolio`, {
       body: { portfolioId },
     });
   }
 
   getPortfolio(params: Params): Observable<DataList<PortfolioPosition> | null> {
-    return this._http
-      .post<Response<DataList<PortfolioPosition>>>('https://trade.gpn.dev/api/v1/ideas/portfolio', params)
-      .pipe(
-        map((result: Response<DataList<PortfolioPosition>>) => {
-          return {
-            total: result.data.total,
-            items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId.toString() })),
-          };
-        }),
-        catchError((err: Error) => {
-          console.error(err);
-          return of(null);
-        })
-      );
+    return this._http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/api/v1/ideas/portfolio`, params).pipe(
+      map((result: Response<DataList<PortfolioPosition>>) => {
+        return {
+          total: result.data.total,
+          items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId.toString() })),
+        };
+      }),
+      catchError((err: Error) => {
+        console.error(err);
+        return of(null);
+      })
+    );
   }
 
   getIdea(id: StockId): Observable<StockPosition | null> {
-    return this._http.get<Response<StockPosition>>(`https://trade.gpn.dev/api/v1/ideas/${id}`).pipe(
+    return this._http.get<Response<StockPosition>>(`${this.host}/api/v1/ideas/${id}`).pipe(
       map((response: Response<StockPosition>): StockPosition => response.data),
       catchError((err: Error) => {
         console.error(err);
@@ -270,7 +262,7 @@ export class DesktopApiService extends DesktopService {
   }
 
   deleteIdea(id: StockId): Observable<number | null> {
-    return this._http.delete<Response<number>>(`https://trade.gpn.dev/api/v1/ideas/${id}`).pipe(
+    return this._http.delete<Response<number>>(`${this.host}/api/v1/ideas/${id}`).pipe(
       map((response: Response<number>): number => response.data),
       catchError((err: Error) => {
         console.error(err);
@@ -280,10 +272,10 @@ export class DesktopApiService extends DesktopService {
   }
 
   createIdea(body: object): Observable<Response<{ id: number }>> {
-    return this._http.post<Response<{ id: number }>>(`https://trade.gpn.dev/api/v1/ideas/create`, body);
+    return this._http.post<Response<{ id: number }>>(`${this.host}/api/v1/ideas/create`, body);
   }
 
   editIdea(id: StockId, body: object): Observable<Response<{ id: number }>> {
-    return this._http.patch<Response<{ id: number }>>(`https://trade.gpn.dev/api/v1/ideas/${id}`, body);
+    return this._http.patch<Response<{ id: number }>>(`${this.host}/api/v1/ideas/${id}`, body);
   }
 }
