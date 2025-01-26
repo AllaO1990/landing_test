@@ -5,25 +5,16 @@
       [tuiDropdown]="dialog"
       [(tuiDropdownOpen)]="open">
       <button
-        class="filter__action"
-        tuiButton
+        tuiIconButton
         type="button"
-        appearance="icon"
+        appearance="outline"
+        [tuiAppearanceMode]="open ? 'checked' : ''"
         iconEnd="@tui.filter"
-        size="m">
-        <span class="filter__text">
-          {{ controlPortfolio.value ? controlPortfolio.value.name : '' }}
-        </span>
+        [size]="size">
       </button>
     </div>
   </ng-container>
 </div>
-
-<ng-template #item let-item>
-  <div class="item">
-    {{ item.name }}
-  </div>
-</ng-template>
 
 <ng-template #portfolio let-item>
   <div class="item">
@@ -103,7 +94,6 @@
       <label>
         <span>{{ constants.range }}</span>
         <lib-range-with-list
-          style="width: 100%;"
           formControlName="range"
           [items]="rangeList"
           [itemContent]="itemRange"

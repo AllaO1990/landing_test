@@ -279,3 +279,17 @@ table.table {
     background: var(--block-bg-color);
   }
 }
+
+.amount-on-page {
+  &__text {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .amount-on-page {
+    &__text {
+      display: inline-flex;
+    }
+  }
+}

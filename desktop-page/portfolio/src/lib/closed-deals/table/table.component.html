@@ -265,14 +265,16 @@
   <div class="actions__pagination">
     <tui-pagination
       size="m"
+      [sidePadding]="1"
+      [activePadding]="1"
       [index]="(index$ | async) || 0"
       [length]="length"
       (indexChange)="goToPage($event)"
     />
   </div>
-  <div class="actions__select">
-    <span class="ellipsis">
-      Количество строк:
+  <div class="actions__select amount-on-page">
+    <span class="ellipsis amount-on-page__text">
+      Кол-во строк:
     </span>
     <tui-select
       [tuiTextfieldSize]="size"

@@ -13,10 +13,10 @@ import {
   TuiDataListDropdownManager,
   TuiDataListWrapper,
 } from '@taiga-ui/kit';
-import { TuiDay, TuiDayRange, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiDropdown, TuiGroup, TuiIcon } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { filter, Observable, startWith, tap } from 'rxjs';
+import { filter, Observable, shareReplay, startWith, tap } from 'rxjs';
 import { FILTER_CONSTANTS } from './filter.constants';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
@@ -75,26 +75,29 @@ export class FilterComponent implements AfterViewInit {
   readonly rangeList: { text: string; range: TuiDayRange }[] = [
     {
       text: '7',
-      range: new TuiDayRange(TuiDay.fromLocalNativeDate(this._getStartDate(7)), TuiDay.fromLocalNativeDate(this.today)),
+      range: new TuiDayRange(
+        TuiDay.fromLocalNativeDate(this._getStartDate(-7)),
+        TuiDay.fromLocalNativeDate(this.today)
+      ),
     },
     {
       text: '30',
       range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(30)),
+        TuiDay.fromLocalNativeDate(this._getStartDate(-30)),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },
     {
       text: '90',
       range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(90)),
+        TuiDay.fromLocalNativeDate(this._getStartDate(-90)),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },
     {
       text: '365',
       range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this._getStartDate(365).getFullYear(), 0, 1))),
+        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this._getStartDate(-365).getFullYear(), 0, 1))),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },
@@ -143,7 +146,8 @@ export class FilterComponent implements AfterViewInit {
       if (list !== null && list.length > 0 && this.controlPortfolio.value === null) {
         this.controlPortfolio.patchValue(list[0]);
       }
-    })
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly broker$: Observable<null | AccountBroker[]> = this._accountFacade.brokers$.pipe(
@@ -153,7 +157,8 @@ export class FilterComponent implements AfterViewInit {
       if (list !== null && list.length > 0 && this.controlBroker.value === null) {
         this.controlBroker.patchValue(list[0]);
       }
-    })
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly currency$: Observable<null | AccountCurrency[]> = this._accountFacade.currencies$.pipe(
@@ -169,14 +174,17 @@ export class FilterComponent implements AfterViewInit {
           this.controlToCurrency.patchValue(list[0]);
         }
       }
-    })
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
-
-  readonly stringify: TuiStringHandler<SelectListItem> = (item: SelectListItem) => item.name;
 
   open = false;
 
   ngAfterViewInit(): void {
+    this.portfolios$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+    this.broker$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+    this.currency$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+
     this.controlRange.valueChanges
       .pipe(
         takeUntilDestroyed(this._destroyRef),
@@ -210,15 +218,10 @@ export class FilterComponent implements AfterViewInit {
     this.open = false;
   }
 
-  onClick(event: Event): void {
-    event.stopPropagation();
-    console.log(event);
-  }
-
   selectRangeHandler = (item: { text: string; range: TuiDayRange }) => item.range;
 
   private _getStartDate(start: number): Date {
     const date = new Date(this.today);
-    return new Date(date.setDate(date.getDate() - start));
+    return new Date(date.setDate(date.getDate() + start));
   }
 }
