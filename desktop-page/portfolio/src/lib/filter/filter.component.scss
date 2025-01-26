@@ -23,7 +23,7 @@ label {
     text-overflow: ellipsis;
   }
 
-  tui-select {
+  tui-select, lib-range-with-list {
     flex: 1;
   }
 }
@@ -38,9 +38,6 @@ label {
   }
 
   &__action {
-    --tui-padding: var(--padding-2);
-    width: 5rem;
-    padding: 0;
   }
 
   &__text {
@@ -111,6 +108,10 @@ label {
       }
 
       max-width: 220px;
+    }
+
+    &__item.range {
+      max-width: 280px;
     }
   }
 }
