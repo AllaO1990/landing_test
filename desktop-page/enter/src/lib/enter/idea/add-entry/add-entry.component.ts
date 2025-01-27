@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddForm } from '../add';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
 import { getNumberFromE } from 'utils/get-number-from-e';
@@ -20,6 +20,7 @@ import { getNumberFromE } from 'utils/get-number-from-e';
     TuiTextfieldOptionsDirective,
     TuiNumberFormat,
     TuiAutoFocus,
+    TuiFormatNumberPipe,
   ],
   templateUrl: './add-entry.component.html',
   styleUrls: ['../add.scss', './add-entry.component.scss'],

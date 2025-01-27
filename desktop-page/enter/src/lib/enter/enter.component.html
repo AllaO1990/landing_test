@@ -8,7 +8,7 @@
           tuiIconButton
           appearance="outline"
           [size]="size"
-          [disabled]="isDisabled || (isShowSearch$ | async)"
+          [disabled]="(isShowSearch$ | async)"
           (click)="onDelete($event, result.idea.id)"
           type="button"
           iconStart="@tui.trash"
@@ -16,9 +16,9 @@
         <button
           class="action save"
           tuiIconButton
-          appearance="outline"
+          [appearance]="form.pristine || (isDisabled$ | async) ? 'outline' : 'primary'"
           [size]="size"
-          [disabled]="isDisabled || form.invalid || form.pristine"
+          [disabled]="form.pristine || (isDisabled$ | async)"
           (click)="onSubmit($event, result.idea.id)"
           type="button"
           iconStart="@tui.save"
@@ -28,7 +28,7 @@
           tuiIconButton
           appearance="primary"
           [size]="size"
-          [disabled]="isDisabled"
+          [disabled]="false"
           type="button"
           iconStart="@tui.bell-dot"
         ></button>
@@ -38,7 +38,7 @@
           tuiIconButton
           appearance="outline"
           [size]="size"
-          [disabled]="isDisabled"
+          [disabled]="false"
           type="button"
           searchDialog
           #dialog=SearchDialog
@@ -89,9 +89,10 @@
         </button>
         <button
           class="action save"
-          appearance="primary"
+          [appearance]="form.pristine || (isDisabled$ | async)  ? 'secondary' : 'primary'"
           tuiButton
           type="button"
+          [disabled]="form.pristine || (isDisabled$ | async)"
           (click)="onSubmit($event, result.idea.id)"
           [size]="size">
           <tui-icon icon="@tui.save"></tui-icon>

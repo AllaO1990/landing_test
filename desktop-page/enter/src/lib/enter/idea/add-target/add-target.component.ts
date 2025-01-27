@@ -5,6 +5,7 @@ import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga
 import { AddForm } from '../add';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
 import { NgIf } from '@angular/common';
+import { getNumberFromE } from 'utils/get-number-from-e';
 
 @Component({
   selector: 'lib-add-target-add',
@@ -45,8 +46,6 @@ export class AddTargetComponent extends AddForm implements OnInit {
         stopDate: this.getTuiDates(stopDate || null),
       });
 
-      console.log(this.context.data);
-
       this.maxAmount = maxAmount || null;
       this.minPrice = minPrice || 0;
       this.maxPrice = maxPrice || null;
@@ -71,4 +70,6 @@ export class AddTargetComponent extends AddForm implements OnInit {
       });
     }
   }
+
+  protected readonly getNumberFromE = getNumberFromE;
 }

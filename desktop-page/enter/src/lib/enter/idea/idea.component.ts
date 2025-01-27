@@ -117,6 +117,14 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   isDisabled = false;
   value: any = null;
 
+  get maxAmount() {
+    if (this.formArrayEntries && this.formArrayEntries.value.length > 0) {
+      return this.formArrayEntries.value[0].quantity;
+    }
+
+    return 0;
+  }
+
   onChange = (_: any) => {};
   onTouched = () => {};
 
@@ -292,7 +300,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
               let amount = getNumberPrecision(quantityEntry * pct, priceIncrement === 8 ? priceIncrement : 0);
 
               if (index === array.length - 1) {
-                amount = quantityEntry - quantity;
+                amount = getNumberPrecision(quantityEntry - quantity, priceIncrement);
               }
 
               quantity += amount;
@@ -403,7 +411,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     const currentPrice = this.formArrayEntries.value[0].price;
     let minPrice = null;
     let maxPrice = null;
-    let maxAmount = this.formArrayEntries.value[0].quantity;
+    const maxAmount = this.formArrayEntries.value[0].quantity;
 
     if (this.multiplier === 1) {
       minPrice = currentPrice;
@@ -417,10 +425,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       } else {
         maxPrice = this.formArrayTargets.value[this.formArrayTargets.value.length - 1].price;
       }
-      maxAmount = this.formArrayTargets.value.reduce(
-        (acc: number, item: StockPositionTarget) => (acc = acc - item.amount),
-        maxAmount
-      );
+      // maxAmount = this.formArrayTargets.value.reduce(
+      //   (acc: number, item: StockPositionTarget) => (acc = acc - item.amount),
+      //   maxAmount
+      // );
     }
 
     this._dialogTargetComponent = await import('./add-target/add-target.component')

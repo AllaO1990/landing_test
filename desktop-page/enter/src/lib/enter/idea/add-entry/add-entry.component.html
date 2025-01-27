@@ -5,6 +5,7 @@
   <div class="form__form">
     <tui-input-date-time
       [tuiTextfieldCleaner]="true"
+      [max]="maxDay"
       class="form__control"
       formControlName="date"
       tuiTextfieldSize="s">
@@ -28,7 +29,7 @@
     <tui-input-number
       class="form__control"
       [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: precision}"
+      [tuiNumberFormat]="{precision: precisionAmount}"
       formControlName="quantity">
       Количество
       <input
