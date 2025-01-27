@@ -12,9 +12,15 @@ export class AddForm implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, { optional: true });
   readonly size = 's';
+  readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
+  readonly maxDay = TuiDay.fromLocalNativeDate(this.today);
   minPriceIncrement = 1e-8;
   precision = this.getPrecision(this.minPriceIncrement);
   form!: FormGroup;
+
+  get precisionAmount() {
+    return this.precision === 8 ? 4 : 0;
+  }
 
   ngAfterViewInit(): void {
     this.form.enable({ emitEvent: false });

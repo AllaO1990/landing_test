@@ -5,6 +5,7 @@ import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga
 import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { AddForm } from '../add';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { getNumberFromE } from 'utils/get-number-from-e';
 
 @Component({
   selector: 'lib-add-stop',
@@ -65,4 +66,6 @@ export class AddStopComponent extends AddForm implements OnInit {
       });
     }
   }
+
+  protected readonly getNumberFromE = getNumberFromE;
 }

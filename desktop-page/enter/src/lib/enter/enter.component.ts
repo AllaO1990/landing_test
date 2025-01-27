@@ -2,9 +2,18 @@ import { TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
-import { TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiAlertService, TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import { combineLatest, distinctUntilChanged, filter, Observable, shareReplay, startWith } from 'rxjs';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  filter,
+  merge,
+  Observable,
+  shareReplay,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
@@ -23,7 +32,14 @@ import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+} from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ScreenOrientation = 'landscape' | 'portrait';
@@ -31,6 +47,39 @@ type ScreenOrientation = 'landscape' | 'portrait';
 export interface TabItem {
   text: string;
   icon: string;
+}
+
+function maxAmount(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const entries = control.value.entries;
+    const targets = control.value.targets;
+
+    if (!entries) {
+      return null;
+    }
+
+    if (entries.length === 0 || entries[0] === null) {
+      return null;
+    }
+
+    if (targets && targets.length === 0) {
+      return null;
+    }
+
+    const targetsAmount = targets
+      .filter((item: any) => item !== null)
+      .reduce(
+        (
+          acc: number,
+          item: {
+            amount: number;
+          }
+        ) => (acc += item.amount),
+        0
+      );
+
+    return entries[0].quantity !== targetsAmount ? { maxAmount: true } : null;
+  };
 }
 
 @Component({
@@ -63,6 +112,7 @@ export class VtEnterComponent implements AfterViewInit {
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+  readonly #alerts: TuiAlertService = inject(TuiAlertService);
 
   private readonly _ideaId$: Observable<StockId | null> = this._select.event$.pipe(
     takeUntilDestroyed(this._destroyRef),
@@ -87,7 +137,7 @@ export class VtEnterComponent implements AfterViewInit {
 
   readonly form: FormGroup = new FormGroup({
     actions: new FormControl({ entries: [], outs: [], position: null }),
-    idea: new FormControl({ entries: [], targets: [], stop: [] }),
+    idea: new FormControl({ entries: [], targets: [], stop: [] }, maxAmount()),
     sidebar: new FormControl({
       instrumentId: null,
       portfolioId: null,
@@ -143,18 +193,35 @@ export class VtEnterComponent implements AfterViewInit {
   );
 
   readonly size = 's';
-  isDisabled = false;
+  isDisabled$: Observable<boolean> = merge(this.form.statusChanges).pipe(
+    map((_) => this.form.invalid || this.form.pristine),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
   activeItemIndex = 0;
 
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
+    this.controlIdea.statusChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        map((_) => this.controlIdea.errors),
+        filter((value: ValidationErrors | null): value is ValidationErrors => value !== null),
+        filter((value: ValidationErrors) => value['maxAmount']),
+        switchMap((_) => {
+          return this.#alerts.open('Количество во входе не соответсвтует колучеству в целях', {
+            appearance: 'negative',
+            autoClose: 3000,
+          });
+        })
+      )
+      .subscribe();
+
     this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
       const targets = this._getIdeaTargets(result.idea.targets);
       const entries = this._getIdeaEntries(result.idea.entries);
       const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
-
-      // console.log('this.data$', result);
 
       this.form.patchValue({
         actions: result.actions,

@@ -192,8 +192,8 @@ export class FilterComponent implements AfterViewInit {
         map(
           (value: null | TuiDayRange) =>
             value && {
-              from: value.from.toLocalNativeDate().toISOString(),
-              to: value.to.toLocalNativeDate().toISOString(),
+              from: value.from.toUtcNativeDate().toISOString(),
+              to: new Date(value.to.toUtcNativeDate().setUTCHours(23, 59, 59)).toISOString(),
             }
         )
       )

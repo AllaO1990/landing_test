@@ -15,6 +15,10 @@ export abstract class AddForm implements AfterViewInit {
   minPriceIncrement = 1e-8;
   precision = this.getPrecision(this.minPriceIncrement);
 
+  get precisionAmount() {
+    return this.precision === 8 ? 4 : 0;
+  }
+
   abstract form: FormGroup;
 
   ngAfterViewInit(): void {

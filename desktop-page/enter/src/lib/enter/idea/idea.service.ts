@@ -85,13 +85,16 @@ export class IdeaService {
       const value: StockPositionTarget = {
         ...acc,
         price: acc.price + item.price * item.amount,
-        amount: acc.amount + item.amount,
+        amount: getNumberPrecision(acc.amount + item.amount, priceIncrement),
         depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
       };
 
       if (list.length - 1 === index) {
         value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
-        value.profitPercent = getNumberPrecision(((value.price - total.price) / total.price) * 100, priceIncrement);
+        value.profitPercent = getNumberPrecision(
+          ((value.price - total.price) / total.price) * 100 * multiplier,
+          priceIncrement
+        );
         value.profit = getNumberPrecision((value.price - total.price) * value.amount * multiplier, priceIncrement);
       }
 

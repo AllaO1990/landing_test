@@ -5,6 +5,7 @@
   <div class="form__form">
     <tui-input-date-time
       [tuiTextfieldCleaner]="true"
+      [max]="maxDay"
       class="form__control"
       formControlName="stopDate"
       tuiTextfieldSize="s">
@@ -31,7 +32,7 @@
       [min]="0"
       [max]="maxAmount"
       [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: precision}"
+      [tuiNumberFormat]="{precision: precisionAmount}"
       formControlName="amount">
       Количество
       <input
@@ -64,6 +65,6 @@
 
 <ng-template #priceIncrement>
   <span class="form__increment" *ngIf="minPriceIncrement !== null">
-    Шаг цены: {{ minPriceIncrement }}
+    Шаг цены: {{ getNumberFromE(minPriceIncrement) }}
   </span>
 </ng-template>
