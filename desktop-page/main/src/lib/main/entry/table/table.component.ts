@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { EventSelected } from 'types/events';
-import { Idea } from 'types/idea';
 import { StockId, StockTransaction } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
 import { getColor, getRGBA } from 'utils/get-color';
@@ -18,6 +17,7 @@ import { DatePassedPipe } from '../../common/pipe/date-passed.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { Position } from 'types/position';
+import { ColorToPositionPipe } from './color.pipe';
 
 @Component({
   selector: 'vt-entry-table',
@@ -35,6 +35,7 @@ import { Position } from 'types/position';
     GetStrategyNamePipe,
     TuiHint,
     TuiScrollable,
+    ColorToPositionPipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -75,8 +76,10 @@ export class EntryTableComponent {
     });
   }
 
-  public onClick(event: Event, item: Idea): void {
+  public onClick(event: Event, item: Position): void {
     event.preventDefault();
+
+    console.log(item);
 
     this._queryParams.update({
       type: EventSelected.IDEA,

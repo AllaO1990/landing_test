@@ -163,7 +163,9 @@ export class VtEnterComponent implements AfterViewInit {
     return this.form.get('sidebar') as FormControl;
   }
 
-  value: any = null;
+  get controlWatch(): FormControl {
+    return this.form.get('watch') as FormControl;
+  }
 
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
@@ -242,48 +244,10 @@ export class VtEnterComponent implements AfterViewInit {
         minPriceIncrement: result.idea.instrument.minPriceIncrement,
       });
     });
+  }
 
-    this.form.valueChanges.pipe(startWith(this.form.value), takeUntilDestroyed(this._destroyRef)).subscribe((res) => {
-      if (res) {
-        this.value = {
-          actions: {
-            entries: res.actions.entries.map((item: any) => ({
-              amount: item.amount,
-              brokerId: item.brokerId,
-              date: item.date,
-              price: item.price,
-            })),
-            outs: res.actions.outs.map((item: any) => ({
-              amount: item.amount,
-              brokerId: item.brokerId,
-              date: item.date,
-              price: item.price,
-            })),
-          },
-          idea: {
-            goals:
-              res &&
-              (res.idea.targets || []).map((item: any) => ({
-                amount: item.amount,
-                goal: item.price,
-              })),
-            instrumentId: res.sidebar.instrumentId,
-            parentId: res.sidebar.parentId,
-            portfolioId: res.sidebar.portfolioId,
-            positionType: res.sidebar.positionType,
-            strategyId: res.sidebar.strategyId,
-            amount: res.idea.entries[0] ? res.idea.entries[0].quantity : null,
-            entry: res.idea.entries[0] ? res.idea.entries[0].price : null,
-            stop: res.idea.stop[0] ? res.idea.stop[0].price : null,
-            watch: true,
-          },
-        };
-      } else {
-        this.value = null;
-      }
-
-      // console.log('form', this.value);
-    });
+  trackByIndex(index: number): number {
+    return index;
   }
 
   onClose(event: Event): void {
@@ -301,20 +265,24 @@ export class VtEnterComponent implements AfterViewInit {
     }
   }
 
-  trackByIndex(index: number): number {
-    return index;
+  onSubscribe(event: Event, ideaId: number | null): void {
+    event.preventDefault();
+
+    if (ideaId === null) {
+      this.controlWatch.patchValue(!this.controlWatch.value);
+    } else {
+      console.log(ideaId);
+    }
   }
 
   onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
 
     if (ideaId === null) {
-      this._idea.createIdea(this.value);
+      this._idea.createIdea(this._getValueToSubmit(this.form.value));
     } else {
-      this._idea.editIdea({ id: ideaId.toString(), body: this.value });
+      this._idea.editIdea({ id: ideaId.toString(), body: this._getValueToSubmit(this.form.value) });
     }
-
-    console.log(this.value);
   }
 
   onDelete(event: Event, ideaId: number | null): void {
@@ -346,6 +314,46 @@ export class VtEnterComponent implements AfterViewInit {
 
     this.activeItemIndex = 0;
     return null;
+  }
+
+  private _getValueToSubmit(value: any | null): any {
+    if (value === null) {
+      return null;
+    }
+
+    return {
+      actions: {
+        entries: value.actions.entries.map((item: any) => ({
+          amount: item.amount,
+          brokerId: item.brokerId,
+          date: item.date,
+          price: item.price,
+        })),
+        outs: value.actions.outs.map((item: any) => ({
+          amount: item.amount,
+          brokerId: item.brokerId,
+          date: item.date,
+          price: item.price,
+        })),
+      },
+      idea: {
+        goals:
+          value &&
+          (value.idea.targets || []).map((item: any) => ({
+            amount: item.amount,
+            goal: item.price,
+          })),
+        instrumentId: value.sidebar.instrumentId,
+        parentId: value.sidebar.parentId,
+        portfolioId: value.sidebar.portfolioId,
+        positionType: value.sidebar.positionType,
+        strategyId: value.sidebar.strategyId,
+        amount: value.idea.entries[0] ? value.idea.entries[0].quantity : null,
+        entry: value.idea.entries[0] ? value.idea.entries[0].price : null,
+        stop: value.idea.stop[0] ? value.idea.stop[0].price : null,
+        watch: value.watch || true,
+      },
+    };
   }
 
   private _getIdeaEntries(list: any[]): StockPositionIdeaEntry[] {

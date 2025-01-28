@@ -22,12 +22,13 @@
         </tr>
         </thead>
         <tbody tuiTbody>
+        <!--          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100)"-->
         <tr
           (dblclick)="onDblclick($event, item)"
           (click)="onClick($event, item)"
           class="entry-table__table-tr"
           [class.entry-table__table-tr--active]="(activeIdeaId$ | async) === item.id"
-          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100)"
+          [style.background-color]="item | colorToPosition"
           *cdkVirtualFor="
               let item of data || [] | tuiTableSort;
               trackBy: trackById
