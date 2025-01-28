@@ -26,45 +26,6 @@ export const HIGHCHARTS_OPTIONS: Highcharts.Options = {
   accessibility: {
     enabled: false,
   },
-  rangeSelector: {
-    inputEnabled: false,
-    allButtonsEnabled: true,
-    buttons: [
-      {
-        type: 'year',
-        count: 2,
-        text: 'День',
-        preserveDataGrouping: true,
-        dataGrouping: {
-          forced: true,
-          units: [['day', [1]]],
-        },
-      },
-      {
-        type: 'year',
-        count: 2,
-        text: 'Неделя',
-        preserveDataGrouping: true,
-        dataGrouping: {
-          forced: true,
-          units: [['week', [1]]],
-        },
-      },
-      {
-        type: 'all',
-        text: 'Месяц',
-        preserveDataGrouping: true,
-        dataGrouping: {
-          forced: true,
-          units: [['month', [1]]],
-        },
-      },
-    ],
-    buttonTheme: {
-      width: 60,
-    },
-    selected: 0,
-  },
   navigator: {
     enabled: false,
   },

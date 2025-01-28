@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 
 import * as Highcharts from 'highcharts/highstock';
 import HC_exporting from 'highcharts/modules/exporting';
@@ -152,6 +160,51 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         pinchType: 'x',
       },
     },
+    rangeSelector: {
+      inputEnabled: false,
+      allButtonsEnabled: true,
+      buttons: [
+        {
+          type: 'year',
+          count: 2,
+          text: 'День',
+          events: {
+            click: (event: Event) => {
+              console.log(event);
+              this.eventEmit.emit({ type: 'buttonDay', event });
+            },
+          },
+          preserveDataGrouping: true,
+          dataGrouping: {
+            forced: true,
+            units: [['day', [1]]],
+          },
+        },
+        {
+          type: 'year',
+          count: 2,
+          text: 'Неделя',
+          preserveDataGrouping: true,
+          dataGrouping: {
+            forced: true,
+            units: [['week', [1]]],
+          },
+        },
+        {
+          type: 'all',
+          text: 'Месяц',
+          preserveDataGrouping: true,
+          dataGrouping: {
+            forced: true,
+            units: [['month', [1]]],
+          },
+        },
+      ],
+      buttonTheme: {
+        width: 60,
+      },
+      selected: 0,
+    },
     plotOptions: {
       candlestick: {
         navigatorOptions: {
@@ -254,6 +307,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   set text(value: { data: any; instrument: string } | null) {
     this._text$.next(value);
   }
+
+  @Output() eventEmit: EventEmitter<{ type: string; event: Event }> = new EventEmitter();
 
   constructor() {
     Highcharts.setOptions({

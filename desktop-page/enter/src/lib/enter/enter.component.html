@@ -83,9 +83,10 @@
           appearance="secondary"
           tuiButton
           type="button"
+          (click)="onSubscribe($event, result.idea.id)"
           [size]="size">
-          <tui-icon icon="@tui.bell-dot"></tui-icon>
-          Подписаться
+          <tui-icon [icon]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'"></tui-icon>
+          {{ controlWatch.value ? 'Отслеживать' : 'Не отслеживать' }}
         </button>
         <button
           class="action save"
