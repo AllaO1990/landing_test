@@ -91,10 +91,7 @@ export class IdeaService {
 
       if (list.length - 1 === index) {
         value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
-        value.profitPercent = getNumberPrecision(
-          ((value.price - total.price) / total.price) * 100 * multiplier,
-          priceIncrement
-        );
+        value.profitPercent = getNumberPrecision(((value.price - total.price) / total.price) * 100 * multiplier, 2);
         value.profit = getNumberPrecision((value.price - total.price) * value.amount * multiplier, priceIncrement);
       }
 
@@ -146,7 +143,7 @@ export class IdeaService {
         );
         value.lossPercent = getNumberPrecision(
           (value.loss / (total.price * value.amount - (totalTargetComplete.profit || 0) * multiplier)) * 100,
-          priceIncrement
+          2
         );
         value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
       }

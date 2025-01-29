@@ -4,6 +4,8 @@
   </div>
   <div class="form__form">
     <tui-input-date-time
+      [min]="minDay"
+      [max]="maxDay"
       [tuiTextfieldCleaner]="true"
       class="form__control"
       formControlName="stopCandleDate"
