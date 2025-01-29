@@ -157,4 +157,12 @@ export class DesktopStubService extends DesktopService {
   editIdea(id: StockId, body: object): Observable<any> {
     return of();
   }
+
+  setSubscribe(ideaId: number): Observable<Response<{ subscribed: boolean }>> {
+    return of();
+  }
+
+  setUnsubscribe(ideaId: number): Observable<Response<{ subscribed: boolean }>> {
+    return of();
+  }
 }

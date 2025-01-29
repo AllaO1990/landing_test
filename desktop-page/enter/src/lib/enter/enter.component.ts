@@ -1,4 +1,4 @@
-import { TuiTabs } from '@taiga-ui/kit';
+import { TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
@@ -41,6 +41,7 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EnterIdeaSubscribeDirective } from './enter.directive';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -102,6 +103,8 @@ function maxAmount(): ValidatorFn {
     ChartCandlestickComponent,
     SearchDialogDirective,
     ReactiveFormsModule,
+    EnterIdeaSubscribeDirective,
+    TuiButtonLoading,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',
@@ -265,14 +268,14 @@ export class VtEnterComponent implements AfterViewInit {
     }
   }
 
-  onSubscribe(event: Event, ideaId: number | null): void {
-    event.preventDefault();
+  onSubscribe(event: boolean | null): void {
+    console.log(event);
 
-    if (ideaId === null) {
-      this.controlWatch.patchValue(!this.controlWatch.value);
-    } else {
-      console.log(ideaId);
-    }
+    this.controlWatch.patchValue(event);
+    // if (ideaId === null) {
+    // } else {
+    //   console.log(ideaId);
+    // }
   }
 
   onSubmit(event: Event, ideaId: number | null): void {

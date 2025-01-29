@@ -27,10 +27,15 @@
           class="action bell"
           tuiIconButton
           appearance="primary"
+          libEnterSubscribe
+          [loading]="controlWatch.value === null"
+          [isSubscribe]="controlWatch.value"
+          (isSubscribeChanged)="onSubscribe($event)"
+          [ideaId]="result.idea.id"
           [size]="size"
-          [disabled]="false"
+          [disabled]="controlWatch.value === null"
           type="button"
-          iconStart="@tui.bell-dot"
+          [iconStart]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'"
         ></button>
         <button
           *ngIf="isShowSearch$ | async"
@@ -83,7 +88,12 @@
           appearance="secondary"
           tuiButton
           type="button"
-          (click)="onSubscribe($event, result.idea.id)"
+          libEnterSubscribe
+          [loading]="controlWatch.value === null"
+          [isSubscribe]="controlWatch.value"
+          (isSubscribeChanged)="onSubscribe($event)"
+          [ideaId]="result.idea.id"
+          [disabled]="controlWatch.value === null"
           [size]="size">
           <tui-icon [icon]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'"></tui-icon>
           {{ controlWatch.value ? 'Отслеживать' : 'Не отслеживать' }}

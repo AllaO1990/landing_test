@@ -278,4 +278,20 @@ export class DesktopApiService extends DesktopService {
   editIdea(id: StockId, body: object): Observable<Response<{ id: number }>> {
     return this._http.patch<Response<{ id: number }>>(`${this.host}/api/v1/ideas/${id}`, body);
   }
+
+  setSubscribe(ideaId: number): Observable<Response<{ subscribed: boolean }>> {
+    return this._http.post<
+      Response<{
+        subscribed: boolean;
+      }>
+    >(`${this.host}/api/v1/ideas/${ideaId}/subscribe`, { ideaId });
+  }
+
+  setUnsubscribe(ideaId: number): Observable<Response<{ subscribed: boolean }>> {
+    return this._http.post<
+      Response<{
+        subscribed: boolean;
+      }>
+    >(`${this.host}/api/v1/ideas/${ideaId}/unsubscribe`, { ideaId });
+  }
 }

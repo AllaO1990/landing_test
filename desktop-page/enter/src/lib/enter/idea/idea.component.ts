@@ -412,6 +412,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     let minPrice = null;
     let maxPrice = null;
     const maxAmount = this.formArrayEntries.value[0].quantity;
+    const minDay = this.formArrayEntries.value[0].date;
 
     if (this.multiplier === 1) {
       minPrice = currentPrice;
@@ -419,11 +420,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       maxPrice = currentPrice;
     }
 
-    if (this.formArrayTargets.value.length !== 0) {
+    if (this.formArrayTargets.value.length !== 0 && control !== null && control !== 0) {
       if (this.multiplier === 1) {
-        minPrice = this.formArrayTargets.value[this.formArrayTargets.value.length - 1].price;
+        minPrice = this.formArrayTargets.value[control - 1].price;
       } else {
-        maxPrice = this.formArrayTargets.value[this.formArrayTargets.value.length - 1].price;
+        maxPrice = this.formArrayTargets.value[control - 1].price;
       }
       // maxAmount = this.formArrayTargets.value.reduce(
       //   (acc: number, item: StockPositionTarget) => (acc = acc - item.amount),
@@ -441,6 +442,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       minPrice,
       maxPrice,
       maxAmount,
+      minDay,
     }).subscribe((result: { amount: number; price: number; stopDate: string | null } | null) => {
       if (result) {
         const entries: StockPositionIdeaEntry | null = this.formArrayEntries.value[0];
@@ -481,6 +483,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     const currentPrice = this.formArrayEntries.value[0].price;
     let minPrice = null;
     let maxPrice = null;
+    const minDay = this.formArrayEntries.value[0].date;
 
     if (this.multiplier === -1) {
       minPrice = currentPrice;
@@ -506,6 +509,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       minPriceIncrement: this.minPriceIncrement,
       minPrice,
       maxPrice,
+      minDay,
     }).subscribe((result: { price: number; stopCandleDate: string | null } | null) => {
       if (result) {
         const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];

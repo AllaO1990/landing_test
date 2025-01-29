@@ -3,9 +3,10 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TuiInputDateTimeModule, TuiInputNumberModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiButton, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { AddForm } from '../add';
-import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { TuiAutoFocus, TuiDay } from '@taiga-ui/cdk';
 import { NgIf } from '@angular/common';
 import { getNumberFromE } from 'utils/get-number-from-e';
+import { TuiTime } from '@taiga-ui/cdk/date-time';
 
 @Component({
   selector: 'lib-add-target-add',
@@ -29,6 +30,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
   minPrice = 0;
   maxPrice = null;
   maxAmount = null;
+  minDay: [TuiDay | null, TuiTime | null] = [null, null];
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -38,7 +40,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
     });
 
     if (this.context.data) {
-      const { amount, price, stopDate, minPriceIncrement, minPrice, maxPrice, maxAmount } = this.context.data;
+      const { amount, price, stopDate, minPriceIncrement, minPrice, maxPrice, maxAmount, minDay } = this.context.data;
 
       this.form.patchValue({
         amount,
@@ -46,6 +48,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
         stopDate: this.getTuiDates(stopDate || null),
       });
 
+      this.minDay = this._getDateTime(minDay);
       this.maxAmount = maxAmount || null;
       this.minPrice = minPrice || 0;
       this.maxPrice = maxPrice || null;
@@ -72,4 +75,14 @@ export class AddTargetComponent extends AddForm implements OnInit {
   }
 
   protected readonly getNumberFromE = getNumberFromE;
+
+  private _getDateTime(value: string | null): [TuiDay | null, TuiTime | null] {
+    if (value === null) {
+      return [null, null];
+    }
+
+    const date = new Date(value);
+
+    return [TuiDay.fromLocalNativeDate(date), TuiTime.fromLocalNativeDate(date)];
+  }
 }
