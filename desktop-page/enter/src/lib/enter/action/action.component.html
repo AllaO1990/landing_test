@@ -150,7 +150,7 @@
   <div class="space"></div>
 
   <div class="balance">
-    <tui-scrollbar *ngIf="(totalRemainder$ | async) as remainder; else load">
+    <tui-scrollbar *ngIf="(totalRemainder$ | async) as remainder; else load" [hidden]="true">
       <lib-list-header class="header balance__header">
         <div class="header__item row__item">Остаток</div>
         <div class="header__item row__item">Цена</div>
@@ -262,7 +262,7 @@
   <div class="space"></div>
 
   <div class="result">
-    <tui-scrollbar *ngIf="(totalResult$ | async) as result; else load">
+    <tui-scrollbar *ngIf="(totalResult$ | async) as result; else load" [hidden]="true">
       <lib-list-header class="header">
         <div class="header__item row__item">Результат</div>
         <div class="header__item row__item">Цена</div>

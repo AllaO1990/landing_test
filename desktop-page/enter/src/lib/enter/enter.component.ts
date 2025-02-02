@@ -2,18 +2,9 @@ import { TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
-import { TuiAlertService, TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiIcon, TuiNotification, TuiScrollbar } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import {
-  combineLatest,
-  distinctUntilChanged,
-  filter,
-  merge,
-  Observable,
-  shareReplay,
-  startWith,
-  switchMap,
-} from 'rxjs';
+import { combineLatest, distinctUntilChanged, filter, merge, Observable, shareReplay, startWith } from 'rxjs';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
@@ -105,6 +96,7 @@ function maxAmount(): ValidatorFn {
     ReactiveFormsModule,
     EnterIdeaSubscribeDirective,
     TuiButtonLoading,
+    TuiNotification,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',
@@ -115,7 +107,6 @@ export class VtEnterComponent implements AfterViewInit {
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  readonly #alerts: TuiAlertService = inject(TuiAlertService);
 
   private readonly _ideaId$: Observable<StockId | null> = this._select.event$.pipe(
     takeUntilDestroyed(this._destroyRef),
@@ -170,6 +161,14 @@ export class VtEnterComponent implements AfterViewInit {
     return this.form.get('watch') as FormControl;
   }
 
+  readonly maxAmount$: Observable<boolean> = this.controlIdea.statusChanges.pipe(
+    takeUntilDestroyed(this._destroyRef),
+    map((_) => this.controlIdea.errors),
+    filter((value: ValidationErrors | null): value is ValidationErrors => value !== null),
+    filter((value: ValidationErrors) => value['maxAmount']),
+    map((value: any) => !!value)
+  );
+
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
     tap((data: StockPosition) => {
@@ -207,21 +206,6 @@ export class VtEnterComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
-
-    this.controlIdea.statusChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        map((_) => this.controlIdea.errors),
-        filter((value: ValidationErrors | null): value is ValidationErrors => value !== null),
-        filter((value: ValidationErrors) => value['maxAmount']),
-        switchMap((_) => {
-          return this.#alerts.open('Количество во входе не соответсвтует колучеству в целях', {
-            appearance: 'negative',
-            autoClose: 3000,
-          });
-        })
-      )
-      .subscribe();
 
     this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
       const targets = this._getIdeaTargets(result.idea.targets);
@@ -269,13 +253,7 @@ export class VtEnterComponent implements AfterViewInit {
   }
 
   onSubscribe(event: boolean | null): void {
-    console.log(event);
-
     this.controlWatch.patchValue(event);
-    // if (ideaId === null) {
-    // } else {
-    //   console.log(ideaId);
-    // }
   }
 
   onSubmit(event: Event, ideaId: number | null): void {
