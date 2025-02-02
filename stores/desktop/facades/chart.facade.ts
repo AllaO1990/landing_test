@@ -22,4 +22,5 @@ export class ChartFacade {
   readonly updateSelectedEma = this._store.ema.updateSelected;
   readonly updateSelectedConsolidationZones = this._store.consolidationZones.updateSelected;
   readonly updateSelectedAtr = this._store.atr.updateSelected;
+  readonly updateInterval = this._store.interval.updateInterval;
 }

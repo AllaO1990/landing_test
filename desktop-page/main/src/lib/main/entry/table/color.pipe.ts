@@ -4,7 +4,7 @@ import { scaleLinear } from 'd3-scale';
 import { HSLColor, RGBColor } from 'd3-color';
 import { Position } from 'types/position';
 
-const getColor = scaleLinear<string, string, never>([0, 1], ['#039322', '#EEF1F9']);
+const getColor = scaleLinear<string, string, never>([0, 0.5], ['#039322', '#EEF1F9']);
 
 @Pipe({
   name: 'colorToPosition',
@@ -19,7 +19,7 @@ export class ColorToPositionPipe implements PipeTransform {
     }
 
     const value = Math.abs(((item.lastPrice - entries[0].price) / entries[0].price) * 100);
-    
+
     return getRGBA(getColor(value), 0.1);
   }
 }

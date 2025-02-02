@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
@@ -58,6 +58,12 @@ export class ChartCandlestickComponent implements OnInit {
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _destroy$: DestroyRef = inject(DestroyRef);
 
+  private mapInterval: { [key: string]: Timeframe } = {
+    buttonDay: Timeframe.CANDLE_INTERVAL_DAY,
+    buttonWeek: Timeframe.CANDLE_INTERVAL_WEEK,
+    buttonMonth: Timeframe.CANDLE_INTERVAL_MONTH,
+  };
+
   toggleLegend = false;
   toggleActions = true;
 
@@ -72,7 +78,7 @@ export class ChartCandlestickComponent implements OnInit {
   valueZone: IndicatorListItem<Timeframe>[] | null = null;
   artIcon = CHART_ATR_ICON;
 
-  @Input() event: null | StockEvent = null;
+  // @Input() event: null | StockEvent = null;
 
   readonly size = 's';
   readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[0], this.emaList[5]]);
@@ -102,7 +108,7 @@ export class ChartCandlestickComponent implements OnInit {
 
   readonly text$: Observable<{ data: any; instrument: string } | null> = this._store.atr$.pipe(
     map((value: { data: any; instrument: string } | null) => {
-      if (!value) {
+      if (!value || !value.data) {
         return null;
       }
 
@@ -299,5 +305,11 @@ export class ChartCandlestickComponent implements OnInit {
     }
 
     return { ...zones, data };
+  }
+
+  onEvent(event: { type: string; event: Event }): void {
+    if (this.mapInterval[event.type]) {
+      this._store.updateInterval(this.mapInterval[event.type]);
+    }
   }
 }

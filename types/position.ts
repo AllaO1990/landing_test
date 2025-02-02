@@ -172,6 +172,7 @@ export class Position implements ResponsePosition {
   result: { profitPercent: number; profitPrice: number };
 
   entryAveragePrice: number;
+  priceToTarget: number | null = null;
   fullPositionQuantity: number;
 
   constructor(data: ResponsePosition) {
@@ -205,6 +206,8 @@ export class Position implements ResponsePosition {
     this.subscribed = data.subscribed;
     this.dividends = data.dividends || [];
 
+    this.priceToTarget = this._getPriceToTarget(data.lastPrice, data.entries);
+
     // this.fullPositionQuantityValue = this._getFulPositionQuantity(data.targets);
     // this.fullPositionPrice = this._getFullPositionPrice(data.entries);
     this.entryAveragePrice = this._getAveragePrice(data.entries);
@@ -233,5 +236,13 @@ export class Position implements ResponsePosition {
 
   private _getFulPositionQuantity(targets: StockPositionTarget[]): number {
     return targets.reduce((acc: number, item: StockPositionTarget) => (acc += item.amount), 0);
+  }
+
+  private _getPriceToTarget(price: number, entries: StockPositionIdeaEntry[]): number | null {
+    if (entries.length === 0 || entries[0] === null) {
+      return null;
+    }
+
+    return Math.abs(((price - entries[0].price) / entries[0].price) * 100);
   }
 }
