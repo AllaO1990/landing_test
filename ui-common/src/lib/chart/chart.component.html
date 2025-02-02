@@ -5,6 +5,7 @@
   <div class="column">
     <div class="charts">
       <vt-chart
+        (event)="onEvent($event)"
         [data]="data"
         [indicators]="indicators$ | async"
         [zones]="zone$ | async"

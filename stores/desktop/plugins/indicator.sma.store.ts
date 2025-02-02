@@ -1,5 +1,5 @@
 import { DesktopService } from '@desktop-data/desktop-data';
-import { Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { Response } from 'types/response';
 import { IndicatorSmaParams, IndicatorSmaState } from 'types/indicator-sma';
 import { map } from 'rxjs/operators';
@@ -27,7 +27,16 @@ export class IndicatorSmaStore extends WithQueue<IndicatorSmaState> {
   readonly load = this.effect((stream$: Observable<IndicatorSmaParams | null>) =>
     stream$.pipe(
       switchMap((data: IndicatorSmaParams | null) =>
-        this._getIndicator(data).pipe(tap((series) => this.updateSeries(series)))
+        this._getIndicator(data).pipe(
+          tap((series) => this.updateSeries(series)),
+          catchError((err) => {
+            return of({
+              data: null,
+              message: err.message,
+              success: false,
+            });
+          })
+        )
       )
     )
   );

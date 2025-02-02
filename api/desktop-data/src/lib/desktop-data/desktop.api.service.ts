@@ -181,7 +181,15 @@ export class DesktopApiService extends DesktopService {
   }
 
   getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>> {
-    return this._http.get<Response<any>>(`${this.host}/api/v1/chart/atr`, { params: { id, interval, date } });
+    return this._http.get<Response<any>>(`${this.host}/api/v1/chart/atr`, { params: { id, interval, date } }).pipe(
+      catchError((err) => {
+        return of({
+          data: null,
+          message: err.message,
+          success: false,
+        });
+      })
+    );
   }
 
   getIndicatorEma(params: IndicatorEmaParams): Observable<Response<any>> {

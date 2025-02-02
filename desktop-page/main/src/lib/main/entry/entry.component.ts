@@ -66,6 +66,7 @@ export class EntryComponent {
   readonly size = 's';
 
   public readonly data$: Observable<Position[] | null> = this._data$.asObservable().pipe(
+    map((list: Position[] | null) => list && list.sort((a, b) => (a.priceToTarget || 0) - (b.priceToTarget || 0))),
     switchMap((data: Position[] | null) =>
       combineLatest([
         this.controlSearch.valueChanges.pipe(

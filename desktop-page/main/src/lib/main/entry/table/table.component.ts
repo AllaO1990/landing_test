@@ -79,8 +79,6 @@ export class EntryTableComponent {
   public onClick(event: Event, item: Position): void {
     event.preventDefault();
 
-    console.log(item);
-
     this._queryParams.update({
       type: EventSelected.IDEA,
       id: item.id,

@@ -25,6 +25,7 @@ import { DateRange } from 'types/date-range';
 import { Timeframe } from 'types/timeframe';
 import { GLOBAL_DATE_RANGE } from 'tokens/desktop';
 import { PortfolioPosition } from 'types/portfolio';
+import { IntervalStore } from 'stores/plugins/interval.store';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -47,6 +48,7 @@ export class MainStore extends ComponentStore<any> {
   private readonly _facade = new FacadeStore(this.api);
 
   readonly account = this._facade.account;
+  readonly interval = new IntervalStore();
   readonly selected = new SelectStore();
   readonly stock = this._facade.stockList;
   readonly idea = this._facade.ideaList;
@@ -70,6 +72,10 @@ export class MainStore extends ComponentStore<any> {
 
   private _init(): void {
     const timerSource = timer(0, TIMER_INTERVAL).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+
+    const interval$: Observable<Timeframe> = this.interval.interval$.pipe(
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
     const instrumentTrust$: Observable<StockInstrument> = this.selected.instrument$.pipe(
       filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
@@ -105,12 +111,13 @@ export class MainStore extends ComponentStore<any> {
         instrumentTrust$.pipe(map((instrument: StockInstrument) => instrument.id)),
         this.ema.selected$.pipe(filter((selected: null | any): selected is any => selected !== null)),
         this._range$,
+        interval$,
       ]).pipe(
-        map(([id, types, period]: [string, string[], DateRange]) => ({
+        map(([id, types, period, interval]: [string, string[], DateRange, Timeframe]) => ({
           id,
           types,
           period,
-          interval: Timeframe.CANDLE_INTERVAL_DAY,
+          interval,
         }))
       )
     );
@@ -119,12 +126,13 @@ export class MainStore extends ComponentStore<any> {
         instrumentTrust$.pipe(map((instrument: StockInstrument) => instrument.id)),
         this.sma.selected$.pipe(filter((selected: null | any): selected is any => selected !== null)),
         this._range$,
+        interval$,
       ]).pipe(
-        map(([id, types, period]: [string, string[], DateRange]) => ({
+        map(([id, types, period, interval]: [string, string[], DateRange, Timeframe]) => ({
           id,
           types,
           period,
-          interval: Timeframe.CANDLE_INTERVAL_DAY,
+          interval,
         }))
       )
     );
@@ -174,15 +182,16 @@ export class MainStore extends ComponentStore<any> {
           distinctUntilChanged()
         ),
         this.atr.selected$.pipe(distinctUntilChanged()),
+        interval$,
       ]).pipe(
-        map(([id, selected]: [string, boolean]) => {
+        map(([id, selected, interval]: [string, boolean, Timeframe]) => {
           if (!selected) {
             return null;
           }
 
           return {
             id,
-            interval: Timeframe.CANDLE_INTERVAL_DAY,
+            interval,
             date: this._today.toISOString(),
           };
         })

@@ -170,8 +170,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
           text: 'День',
           events: {
             click: (event: Event) => {
-              console.log(event);
-              this.eventEmit.emit({ type: 'buttonDay', event });
+              this.event.emit({ type: 'buttonDay', event });
             },
           },
           preserveDataGrouping: true,
@@ -184,6 +183,11 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
           type: 'year',
           count: 2,
           text: 'Неделя',
+          events: {
+            click: (event: Event) => {
+              this.event.emit({ type: 'buttonWeek', event });
+            },
+          },
           preserveDataGrouping: true,
           dataGrouping: {
             forced: true,
@@ -193,6 +197,11 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         {
           type: 'all',
           text: 'Месяц',
+          events: {
+            click: (event: Event) => {
+              this.event.emit({ type: 'buttonMonth', event });
+            },
+          },
           preserveDataGrouping: true,
           dataGrouping: {
             forced: true,
@@ -308,7 +317,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     this._text$.next(value);
   }
 
-  @Output() eventEmit: EventEmitter<{ type: string; event: Event }> = new EventEmitter();
+  @Output() event: EventEmitter<{ type: string; event: Event }> = new EventEmitter();
 
   constructor() {
     Highcharts.setOptions({
