@@ -177,6 +177,12 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
 
   setDisabledState(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
+
+    const action = isDisabled ? 'disable' : 'enable';
+
+    this.form[action]();
+    this.formControlPortfolio[action]();
+    this.formControlStrategy[action]();
   }
 
   readonly stringifyCurrency: TuiStringHandler<AccountCurrency> = (item: AccountCurrency) => item.currencySymbol;
@@ -184,7 +190,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   private _init(): void {
     this._controlValue$
       .asObservable()
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(debounceTime(100), takeUntilDestroyed(this._destroyRef))
       .subscribe((result) => {
         if (result === null) {
           this.form.reset({
@@ -197,15 +203,26 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
             comment: '',
           });
         } else {
-          this.form.patchValue(result);
+          const params: { [key: string]: any } = {};
 
-          this.controlPortfolio.patchValue(result.portfolioId, { onlySelf: true });
-          this.controlStrategy.patchValue(result.strategyId, { onlySelf: true });
+          if (result.portfolioId !== null) {
+            this.controlPortfolio.patchValue(result.portfolioId, { onlySelf: true });
+          } else {
+            params['portfolioId'] = this.controlPortfolio.value;
+          }
+
+          if (result.strategyId !== null) {
+            this.controlStrategy.patchValue(result.strategyId, { onlySelf: true });
+          } else {
+            params['strategyId'] = this.controlStrategy.value;
+          }
+
+          this.form.patchValue({ ...result, ...params });
         }
 
-        Promise.resolve().then(() => {
+        setTimeout(() => {
           this.formGroup.markAsPristine();
-        });
+        }, 100);
       });
 
     combineLatest([this.currencies$, this.strategies$, this.portfolio$, this.idea$])

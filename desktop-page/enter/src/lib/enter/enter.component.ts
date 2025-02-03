@@ -1,8 +1,16 @@
-import { TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
+import { TUI_CONFIRM, TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
-import { TuiAlertService, TuiBreakpointService, TuiButton, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import {
+  TuiBreakpointService,
+  TuiButton,
+  TuiDialogService,
+  TuiHintDirective,
+  TuiIcon,
+  TuiNotification,
+  TuiScrollbar,
+} from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import {
   combineLatest,
@@ -12,12 +20,14 @@ import {
   Observable,
   shareReplay,
   startWith,
+  Subject,
   switchMap,
+  timer,
 } from 'rxjs';
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
@@ -42,6 +52,7 @@ import {
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EnterIdeaSubscribeDirective } from './enter.directive';
+import { triggerHeightAnimations } from '@ui/animations/height.animations';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -105,17 +116,21 @@ function maxAmount(): ValidatorFn {
     ReactiveFormsModule,
     EnterIdeaSubscribeDirective,
     TuiButtonLoading,
+    TuiNotification,
+    TuiHintDirective,
   ],
   templateUrl: './enter.component.html',
   styleUrl: './enter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [triggerHeightAnimations],
 })
 export class VtEnterComponent implements AfterViewInit {
+  private readonly _dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
-  readonly #alerts: TuiAlertService = inject(TuiAlertService);
+  private readonly _isShowCopyNotify$: Subject<void> = new Subject<void>();
 
   private readonly _ideaId$: Observable<StockId | null> = this._select.event$.pipe(
     takeUntilDestroyed(this._destroyRef),
@@ -133,10 +148,6 @@ export class VtEnterComponent implements AfterViewInit {
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
-
-  ideaId: number | null = null;
-  ideaAuthor: string | null = null;
-  ideaParentId: number | null = null;
 
   readonly form: FormGroup = new FormGroup({
     actions: new FormControl({ entries: [], outs: [], position: null }),
@@ -170,18 +181,39 @@ export class VtEnterComponent implements AfterViewInit {
     return this.form.get('watch') as FormControl;
   }
 
+  readonly maxAmount$: Observable<boolean> = this.controlIdea.statusChanges.pipe(
+    takeUntilDestroyed(this._destroyRef),
+    map((_) => this.controlIdea.errors),
+    filter((value: ValidationErrors | null): value is ValidationErrors => value !== null),
+    filter((value: ValidationErrors) => value['maxAmount']),
+    map((value: any) => !!value)
+  );
+
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
-    tap((data: StockPosition) => {
-      this.ideaId = data.idea.id;
-      this.ideaParentId = (data.idea as any).parentId || null;
-      this.ideaAuthor = data.idea.author;
-    }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly isShowSearch$: Observable<boolean> = this.data$.pipe(
     map((data: StockPosition) => data.idea.id === null),
+    distinctUntilChanged(),
+    startWith(false),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly isShowCopyNotify$: Observable<boolean> = this._isShowCopyNotify$.pipe(
+    switchMap(() =>
+      timer(3000).pipe(
+        map((_) => false),
+        startWith(true)
+      )
+    ),
+    startWith(false),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly isCanCopy$: Observable<boolean> = this.data$.pipe(
+    map((data: StockPosition) => data.idea.author === 'bot'),
     distinctUntilChanged(),
     startWith(false),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -208,25 +240,11 @@ export class VtEnterComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
-    this.controlIdea.statusChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        map((_) => this.controlIdea.errors),
-        filter((value: ValidationErrors | null): value is ValidationErrors => value !== null),
-        filter((value: ValidationErrors) => value['maxAmount']),
-        switchMap((_) => {
-          return this.#alerts.open('Количество во входе не соответсвтует колучеству в целях', {
-            appearance: 'negative',
-            autoClose: 3000,
-          });
-        })
-      )
-      .subscribe();
-
     this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
       const targets = this._getIdeaTargets(result.idea.targets);
       const entries = this._getIdeaEntries(result.idea.entries);
       const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
+      const action = result.idea.author === 'bot' ? 'disable' : 'enable';
 
       this.form.patchValue({
         actions: result.actions,
@@ -246,6 +264,10 @@ export class VtEnterComponent implements AfterViewInit {
         },
         minPriceIncrement: result.idea.instrument.minPriceIncrement,
       });
+
+      this.controlIdea[action]();
+      this.controlActions[action]();
+      this.controlSidebar[action]();
     });
   }
 
@@ -269,13 +291,7 @@ export class VtEnterComponent implements AfterViewInit {
   }
 
   onSubscribe(event: boolean | null): void {
-    console.log(event);
-
     this.controlWatch.patchValue(event);
-    // if (ideaId === null) {
-    // } else {
-    //   console.log(ideaId);
-    // }
   }
 
   onSubmit(event: Event, ideaId: number | null): void {
@@ -292,7 +308,22 @@ export class VtEnterComponent implements AfterViewInit {
     event.preventDefault();
 
     if (ideaId !== null) {
-      this._idea.deleteIdea(ideaId.toString());
+      this._dialogDefaultService
+        .open<boolean>(TUI_CONFIRM, {
+          appearance: 'dialog-confirm',
+          size: 'auto',
+          closeable: false,
+          data: {
+            content: '<p class="tui-text_h6">Удалить идею безвозвратно?</h2>',
+            yes: 'Да',
+            no: 'Нет',
+          },
+        })
+        .subscribe((result: boolean) => {
+          if (result) {
+            this._idea.deleteIdea(ideaId.toString());
+          }
+        });
     }
   }
 
@@ -394,5 +425,16 @@ export class VtEnterComponent implements AfterViewInit {
       amount: item.amount || null,
       amountPercent: item.amountPercent || 100,
     }));
+  }
+
+  onCopy(event: Event): void {
+    event.preventDefault();
+
+    this._idea.updateIdeaUser();
+    this._isShowCopyNotify$.next();
+
+    setTimeout(() => {
+      this.form.markAsDirty();
+    }, 500);
   }
 }

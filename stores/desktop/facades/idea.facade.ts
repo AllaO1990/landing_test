@@ -30,6 +30,7 @@ export class IdeaFacade {
   readonly createIdea = this._store.idea.create;
   readonly editIdea = this._store.idea.edit;
   readonly deleteIdea = this._store.idea.delete;
+  readonly updateIdeaUser = this._store.idea.updateIdeaUser;
 
   selectItem(id: StockId): Observable<Position | null> {
     if (id === null) {

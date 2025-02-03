@@ -32,7 +32,7 @@
             </ng-container>
           </div>
           <div class="row__space"></div>
-          <div class="item__value row__actions">
+          <div class="item__value row__actions" *ngIf="!isDisabled">
             <button
               appearance="icon"
               iconStart="@tui.pencil"
@@ -56,7 +56,7 @@
 
     <div class="action">
       <button
-        *ngIf="formArrayEntries.value.length === 0"
+        *ngIf="formArrayEntries.value.length === 0 && !isDisabled"
         class="button"
         tuiButton
         (click)="addEntry($event)"
@@ -118,7 +118,7 @@
             </ng-container>
           </div>
           <div class="row__space"></div>
-          <div class="item__value row__actions">
+          <div class="item__value row__actions" *ngIf="!isDisabled">
             <button
               appearance="icon"
               iconStart="@tui.pencil"
@@ -144,7 +144,7 @@
       <button
         *ngIf="addTarget$ | async"
         class="button"
-        [disabled]="formArrayEntries.value.length === 0"
+        [disabled]="formArrayEntries.value.length === 0 && !isDisabled"
         tuiButton
         (click)="addTarget($event)"
         type="button">
@@ -202,7 +202,7 @@
             </ng-container>
           </div>
           <div class="row__space"></div>
-          <div class="item__value row__actions">
+          <div class="item__value row__actions" *ngIf="!isDisabled">
             <button
               appearance="icon"
               iconStart="@tui.pencil"
@@ -224,7 +224,7 @@
       </lib-list-item>
     </lib-list>
 
-    <div class="action" *ngIf="formArrayStop.value.length === 0">
+    <div class="action" *ngIf="formArrayStop.value.length === 0 && !isDisabled">
       <button
         class="button"
         tuiButton

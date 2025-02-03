@@ -33,7 +33,7 @@
             </span>
         </div>
         <div class="row__space"></div>
-        <div class="item__value row__actions">
+        <div class="item__value row__actions" *ngIf="!isDisabled">
           <button
             appearance="icon"
             iconStart="@tui.pencil"
@@ -55,7 +55,7 @@
     </lib-list>
     <div class="action">
       <button
-        *ngIf="(canAdd$ | async)"
+        *ngIf="(canAdd$ | async) && !isDisabled"
         class="button"
         [disabled]="false"
         (click)="addEntry($event)"
@@ -112,7 +112,7 @@
             </span>
         </div>
         <div class="row__space"></div>
-        <div class="item__value row__actions">
+        <div class="item__value row__actions" *ngIf="!isDisabled">
           <button
             appearance="icon"
             iconStart="@tui.pencil"
@@ -136,7 +136,7 @@
     <div
       class="action">
       <button
-        *ngIf="canAdd$ | async"
+        *ngIf="(canAdd$ | async) && !isDisabled"
         class="button"
         [disabled]="formArrayEntries.value.length === 0"
         tuiButton
@@ -150,7 +150,7 @@
   <div class="space"></div>
 
   <div class="balance">
-    <tui-scrollbar *ngIf="(totalRemainder$ | async) as remainder; else load">
+    <tui-scrollbar *ngIf="(totalRemainder$ | async) as remainder; else load" [hidden]="true">
       <lib-list-header class="header balance__header">
         <div class="header__item row__item">Остаток</div>
         <div class="header__item row__item">Цена</div>
@@ -262,7 +262,7 @@
   <div class="space"></div>
 
   <div class="result">
-    <tui-scrollbar *ngIf="(totalResult$ | async) as result; else load">
+    <tui-scrollbar *ngIf="(totalResult$ | async) as result; else load" [hidden]="true">
       <lib-list-header class="header">
         <div class="header__item row__item">Результат</div>
         <div class="header__item row__item">Цена</div>

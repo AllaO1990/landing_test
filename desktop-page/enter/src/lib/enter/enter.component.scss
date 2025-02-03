@@ -163,6 +163,7 @@
 }
 
 .header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,6 +175,11 @@
   line-height: 16px;
 
   font-weight: 700;
+
+  &__action {
+    position: absolute;
+    right: var(--padding-1);
+  }
 }
 
 .scrollbar {

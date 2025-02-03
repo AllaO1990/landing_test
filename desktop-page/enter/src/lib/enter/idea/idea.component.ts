@@ -11,7 +11,7 @@ import {
   NgZone,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, JsonPipe, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiLoader } from '@taiga-ui/core';
+import { TuiButton, TuiDialogService, TuiFormatNumberPipe, TuiIcon, TuiLoader } from '@taiga-ui/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -54,6 +54,7 @@ import { getNumberPrecision } from 'utils/get-number-precision';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { StockId } from 'types/stock';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
+import { TUI_CONFIRM } from '@taiga-ui/kit';
 
 @Component({
   selector: 'lib-enter-idea',
@@ -92,6 +93,7 @@ import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   private readonly _injector: Injector = inject(Injector);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly _dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _service: IdeaService = inject(IdeaService);
   private readonly _ideaFacade: IdeaFacade = inject(IdeaFacade);
@@ -175,7 +177,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   priceIncrement$: Observable<number> = this.minPriceIncrement$.pipe(map((value: number) => getPriceIncrement(value)));
   entriesList$: Observable<StockPositionIdeaEntry[]> = this._createStream<StockPositionIdeaEntry[]>(
     this.formArrayEntries
-  ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+  ).pipe(startWith(this.formArrayEntries.value), shareReplay({ bufferSize: 1, refCount: false }));
   totalEntry$: Observable<StockPositionIdeaEntry> = combineLatest([this.entriesList$, this.priceIncrement$]).pipe(
     debounceTime(100),
     map(([list, priceIncrement]: [StockPositionIdeaEntry[] | null, number]) =>
@@ -184,7 +186,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   );
   targetsList$: Observable<StockPositionTarget[] | null> = this._createStream<StockPositionTarget[]>(
     this.formArrayTargets
-  ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+  ).pipe(startWith(this.formArrayTargets.value), shareReplay({ bufferSize: 1, refCount: false }));
   totalTarget$: Observable<StockPositionTarget> = this.totalEntry$.pipe(
     switchMap((total: StockPositionIdeaEntry) =>
       combineLatest([this.multiplier$, this.targetsList$, this.priceIncrement$]).pipe(
@@ -203,6 +205,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     )
   );
   stopList$: Observable<StockPositionStop[] | null> = this._createStream<StockPositionStop[]>(this.formArrayStop).pipe(
+    startWith(this.formArrayStop.value),
     shareReplay({ bufferSize: 1, refCount: false })
   );
   totalStop$: Observable<StockPositionStop> = combineLatest([
@@ -226,16 +229,18 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
   ngAfterViewInit(): void {
     const source$: Observable<any> = this._createStream<any>(this.formGroup).pipe(
+      debounceTime(0),
+      map(() => this.formGroup.getRawValue()),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    source$
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((result: any) => this._formGroupValueChanges$.next(result));
+    source$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: any) => {
+      this._formGroupValueChanges$.next(result);
+    });
 
     this._controlValue
       .asObservable()
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(debounceTime(100), takeUntilDestroyed(this._destroyRef))
       .subscribe((result) => {
         if (result === null) {
           this.controlFormArray.reset({ entries: [], targets: [], stop: [] });
@@ -245,9 +250,9 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
           this._updateFormArray('stop', result.stop);
         }
 
-        Promise.resolve().then(() => {
+        setTimeout(() => {
           this.formGroup.markAsPristine();
-        });
+        }, 100);
       });
 
     this.minPriceIncrement$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: number) => {
@@ -341,6 +346,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
             this._updateFormArray('stop', data, true);
           }
+
+          Promise.resolve().then(() => {
+            this.formGroup.markAsPristine();
+          });
         }
       });
 
@@ -374,7 +383,22 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     const formArray = this.controlFormArray.get(formName);
 
     if (formArray !== null) {
-      (formArray as FormArray).removeAt(index);
+      this._dialogDefaultService
+        .open<boolean>(TUI_CONFIRM, {
+          appearance: 'dialog-confirm',
+          closeable: false,
+          size: 'auto',
+          data: {
+            content: '<p class="tui-text_h6">Удалить строку?</p>',
+            yes: 'Да',
+            no: 'Нет',
+          },
+        })
+        .subscribe((result: boolean) => {
+          if (result) {
+            (formArray as FormArray).removeAt(index);
+          }
+        });
     }
   }
 
@@ -571,7 +595,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   private _createStream<T>(control: AbstractControl): Observable<T> {
     const stream$: Observable<T> = defer(() => {
       if (control && control.valueChanges) {
-        return control.valueChanges.pipe(startWith(control.value));
+        return control.valueChanges;
       }
 
       return this._ngZone.onStable.asObservable().pipe(

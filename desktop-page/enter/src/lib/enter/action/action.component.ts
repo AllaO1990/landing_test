@@ -54,13 +54,6 @@ import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { getPriceIncrement } from 'utils/get-price-increment';
 
-type ActionItem = {
-  amount: number;
-  brokerId: number | null;
-  date: string;
-  price: number;
-};
-
 @Component({
   selector: 'lib-enter-action',
   standalone: true,
@@ -251,7 +244,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
     this._controlValue$
       .asObservable()
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(debounceTime(100), takeUntilDestroyed(this._destroyRef))
       .subscribe((result) => {
         if (result === null) {
           this.controlFormArray.reset({ entries: [], outs: [], dividends: [] });
@@ -268,9 +261,9 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
           );
         }
 
-        Promise.resolve().then(() => {
+        setTimeout(() => {
           this.formGroup.markAsPristine();
-        });
+        }, 100);
       });
 
     this.minPriceIncrement$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: number) => {

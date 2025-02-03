@@ -113,7 +113,7 @@ export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
 
   setDisabledState(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
-    this.form[this.isDisabled ? 'disable' : 'enable']({ emitEvent: false });
+    this.controlPortfolio[this.isDisabled ? 'disable' : 'enable']({ emitEvent: true });
   }
 
   ngAfterViewInit(): void {

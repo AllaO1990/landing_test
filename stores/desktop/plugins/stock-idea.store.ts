@@ -3,7 +3,7 @@ import { ComponentStore } from '@ngrx/component-store';
 import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { StockIdeaState } from 'types/stock-idea-state';
 import { StockId } from 'types/stock';
-import { Position, StockPosition } from 'types/position';
+import { Position, StockPosition, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { Response } from 'types/response';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
@@ -31,6 +31,37 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       idea,
     })
   );
+
+  updateIdeaUser = () => {
+    this.setState((state: StockIdeaState): StockIdeaState => {
+      const data = state.idea;
+
+      if (data === null) {
+        return state;
+      }
+
+      const { actions, idea } = data;
+
+      return {
+        ...state,
+        idea: {
+          actions: {
+            ...actions,
+            entries: [],
+            outs: [],
+          },
+          idea: {
+            ...idea,
+            author: 'user',
+            id: null,
+            parentId: idea.id,
+            entries: idea.entries.map((item: StockPositionIdeaEntry) => ({ ...item, date: null })),
+            targets: idea.targets.map((item: StockPositionTarget) => ({ ...item, stopDate: null })),
+          },
+        },
+      };
+    });
+  };
 
   selectItem(id: StockId): Observable<Position | null> {
     return this.select((state: StockIdeaState) => {

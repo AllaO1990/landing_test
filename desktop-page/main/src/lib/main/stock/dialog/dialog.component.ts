@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { TuiButton, TuiDialogContext } from '@taiga-ui/core';
 import { StockGroup } from 'types/stock';
-import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { TuiAutoFocus, tuiPure } from '@taiga-ui/cdk';
 
 type Context = TuiDialogContext<boolean, StockGroup>;
 
@@ -18,6 +18,7 @@ export class DialogComponent {
   readonly size = 's';
   readonly context: Context = inject(POLYMORPHEUS_CONTEXT) as Context;
 
+  @tuiPure
   get data() {
     return this.context.data;
   }
