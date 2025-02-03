@@ -55,7 +55,7 @@ jobs:
           target: /home/mantyz/projects/vanya-frontend-builds
       # Runs a single command using the runners shell
       - name: Run docker build
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}

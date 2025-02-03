@@ -128,12 +128,28 @@
     </div>
     <div class="container__idea container__widget">
       <div class="widget">
-        <tui-notification appearance="negative" *ngIf="maxAmount$ | async">
-          Количество во входе не соответсвтует колучеству в целях
+        <tui-notification appearance="negative" *ngIf="maxAmount$ | async" @heightAnimations>
+          Количество в целях не должно превышать количество входа в идее
+        </tui-notification>
+        <tui-notification appearance="positive" *ngIf="isShowCopyNotify$ | async" @heightAnimations>
+          Идея бота скопирована
         </tui-notification>
         <div class="widget__header">
           <div class="header">
             Идея
+            <button
+              *ngIf="isCanCopy$ | async"
+              class="header__action"
+              tuiButton
+              appearance="flat"
+              tuiHint="Скопируйте идею для создания новой с возможностью редактирования"
+              tuiHintAppearance="dark"
+              size="xs"
+              type="button"
+              (click)="onCopy($event)"
+              iconStart="@tui.copy">
+              Скопировать идею
+            </button>
           </div>
         </div>
         <div class="widget__content">

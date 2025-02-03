@@ -116,3 +116,12 @@ lib-dialog[appearance="dialog-block"] {
   border: none;
   border-radius: 0;
 }
+
+lib-dialog[appearance="dialog-confirm"] {
+  background-color: var(--block-bg-color);
+  padding: var(--padding-4);
+}
+
+tui-dialog[data-appearance="dialog-confirm"] {
+  border-radius: 0;
+}
