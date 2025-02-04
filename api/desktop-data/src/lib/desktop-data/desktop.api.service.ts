@@ -260,23 +260,15 @@ export class DesktopApiService extends DesktopService {
   }
 
   getIdea(id: StockId): Observable<StockPosition | null> {
-    return this._http.get<Response<StockPosition>>(`${this.host}/api/v1/ideas/${id}`).pipe(
-      map((response: Response<StockPosition>): StockPosition => response.data),
-      catchError((err: Error) => {
-        console.error(err);
-        return of(null);
-      })
-    );
+    return this._http
+      .get<Response<StockPosition>>(`${this.host}/api/v1/ideas/${id}`)
+      .pipe(map((response: Response<StockPosition>): StockPosition => response.data));
   }
 
   deleteIdea(id: StockId): Observable<number | null> {
-    return this._http.delete<Response<number>>(`${this.host}/api/v1/ideas/${id}`).pipe(
-      map((response: Response<number>): number => response.data),
-      catchError((err: Error) => {
-        console.error(err);
-        return of(null);
-      })
-    );
+    return this._http
+      .delete<Response<number>>(`${this.host}/api/v1/ideas/${id}`)
+      .pipe(map((response: Response<number>): number => response.data));
   }
 
   createIdea(body: object): Observable<Response<{ id: number }>> {

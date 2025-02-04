@@ -13,6 +13,7 @@ import { StockListStore } from 'stores/plugins/stock-list.store';
 import { StockPriceStore } from 'stores/plugins/stock-price.store';
 import { AccountStore } from 'stores/plugins/account.store';
 import { PortfolioStore } from 'stores/plugins/portfolio.store';
+import { QueryParams } from 'utils/query-params';
 
 export class FacadeStore {
   readonly account = this._buildAccount();
@@ -30,7 +31,7 @@ export class FacadeStore {
   readonly atr = this._buildIndicatorAtr();
   readonly portfolio = this._buildPortfolio();
 
-  constructor(private readonly _api: DesktopService) {}
+  constructor(private readonly _api: DesktopService, private readonly _queryParams: QueryParams) {}
 
   private _buildAccount() {
     return new AccountStore(this._api);
@@ -73,7 +74,7 @@ export class FacadeStore {
   }
 
   private _buildStockIdea() {
-    return new StockIdeaStore(this._api);
+    return new StockIdeaStore(this._api, this._queryParams);
   }
 
   private _buildStockList() {

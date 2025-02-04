@@ -27,7 +27,7 @@ import {
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
@@ -190,6 +190,7 @@ export class VtEnterComponent implements AfterViewInit {
   );
 
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
+    tap((data) => console.log(data)),
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );

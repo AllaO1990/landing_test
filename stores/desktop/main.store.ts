@@ -23,9 +23,10 @@ import { StockId, StockInstrument, StockListItems, StockPrice, StockTransaction,
 import { Position } from 'types/position';
 import { DateRange } from 'types/date-range';
 import { Timeframe } from 'types/timeframe';
-import { GLOBAL_DATE_RANGE } from 'tokens/desktop';
+import { GLOBAL_DATE_RANGE, QUERY_PARAMS } from 'tokens/desktop';
 import { PortfolioPosition } from 'types/portfolio';
 import { IntervalStore } from 'stores/plugins/interval.store';
+import { QueryParams } from 'utils/query-params';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -44,8 +45,9 @@ export class MainStore extends ComponentStore<any> {
   private readonly _today = new Date(new Date().setUTCHours(0, 0, 0, 0));
   private readonly _range$: Observable<DateRange> = inject(GLOBAL_DATE_RANGE);
   private _destroyed$ = new Subject<void>();
+  private _queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  private readonly _facade = new FacadeStore(this.api);
+  private readonly _facade = new FacadeStore(this.api, this._queryParams);
 
   readonly account = this._facade.account;
   readonly interval = new IntervalStore();
@@ -239,6 +241,7 @@ export class MainStore extends ComponentStore<any> {
         if (find) {
           this._updateSelected(find.instrument, { ideaId: find.id, instrumentId: find.instrument.id });
         } else {
+          this._queryParams.update({}, '');
           this._updateSelected();
         }
       })
@@ -257,6 +260,7 @@ export class MainStore extends ComponentStore<any> {
         if (find) {
           this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
         } else {
+          this._queryParams.update({}, '');
           this._updateSelected();
         }
       })
@@ -295,6 +299,7 @@ export class MainStore extends ComponentStore<any> {
         if (find) {
           this._updateSelected(find.instrument, null, null, { ideaId: find.ideaId, instrumentId: find.instrument.id });
         } else {
+          this._queryParams.update({}, '');
           this._updateSelected();
         }
       })

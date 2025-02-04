@@ -22,7 +22,7 @@ import { PortfolioPosition } from 'types/portfolio';
 export abstract class DesktopService {
   public abstract getIdeaList(): Observable<Position[]>;
 
-  abstract getIdea(id: StockId): Observable<any>;
+  abstract getIdea(id: number | string): Observable<any>;
 
   abstract createIdea(body: object): Observable<any>;
 
