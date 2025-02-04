@@ -20,7 +20,7 @@ export class QueryParams<T = any> extends Observable<T> {
     return this._activatedRoute.snapshot.queryParams;
   }
 
-  update(params: Params, handling: QueryParamsHandling | null = 'merge'): Promise<boolean> {
+  update(params: Params | null, handling: QueryParamsHandling | null = 'merge'): Promise<boolean> {
     return this._router.navigate([], {
       queryParams: params,
       queryParamsHandling: handling,

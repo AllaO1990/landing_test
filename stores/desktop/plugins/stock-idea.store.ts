@@ -5,13 +5,14 @@ import { StockIdeaState } from 'types/stock-idea-state';
 import { StockId } from 'types/stock';
 import { Position, StockPosition, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { Response } from 'types/response';
+import { QueryParams } from 'utils/query-params';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   readonly list$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.list);
 
   readonly idea$: Observable<StockPosition | null> = this.select((state: StockIdeaState) => state.idea);
 
-  constructor(private readonly _api: DesktopService) {
+  constructor(private readonly _api: DesktopService, private readonly _queryParams: QueryParams) {
     super({
       list: null,
       idea: null,
@@ -83,14 +84,19 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     )
   );
 
-  readonly loadIdea = this.effect((stream$: Observable<StockId | null>) =>
+  readonly loadIdea = this.effect((stream$: Observable<number | string | null>) =>
     stream$.pipe(
-      switchMap((value: StockId | null) => {
+      switchMap((value: number | string | null) => {
         if (value === null) {
           return of(null);
         }
 
-        return this._api.getIdea(value);
+        return this._api.getIdea(value).pipe(
+          catchError((err) => {
+            this._queryParams.update(null, '');
+            return of(null);
+          })
+        );
       }),
       tap((result: StockPosition | null) => this.updateIdea(result))
     )
@@ -101,7 +107,8 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       switchMap((body: object) =>
         this._api.createIdea(body).pipe(
           tap((response: Response<{ id: number }>) => {
-            this.load(of(response.data.id));
+            this.load(response.data.id);
+            this.loadIdea(response.data.id);
             console.log(response);
           })
         )

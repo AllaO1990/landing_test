@@ -1,7 +1,7 @@
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { combineLatest, debounceTime, Observable, startWith, switchMap } from 'rxjs';
+import { filter, map, take } from 'rxjs/operators';
 import { MainService } from './main.service';
 import { TuiBreakpointService } from '@taiga-ui/core';
 import { Position } from 'types/position';
@@ -15,8 +15,11 @@ import { EntryModule } from './entry/entry.module';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
-import { StockId } from 'types/stock';
+import { StockGroupList, StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Params } from '@angular/router';
+import { StockListFacade } from 'stores/facades/stock-list.facade';
 
 @Component({
   selector: 'lib-main',
@@ -39,14 +42,36 @@ import { EventSelected } from 'types/events';
 export class MainComponent implements AfterViewInit {
   activeItemIndex = 0;
 
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #stockList: StockListFacade = inject(StockListFacade);
   private readonly _service: MainService = inject(MainService);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _position: PositionFacade = inject(PositionFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  get queryId(): StockId | null {
-    return this._queryParams.value()['id'] || null;
-  }
+  readonly #updateQuery$: Observable<[Position[], Position[], StockInstrument]> = this._queryParams.pipe(
+    takeUntilDestroyed(this.#destroyRef),
+    startWith(this._queryParams.value()),
+    filter((params: Params) => !params['id']),
+    switchMap(() =>
+      combineLatest([
+        this.positionList$.pipe(filter((list): list is Position[] => list !== null)),
+        this.ideaList$.pipe(filter((list): list is Position[] => list !== null)),
+        this.#stockList.group$.pipe(
+          filter((group): group is StockGroupList[] => group !== null),
+          map((group) => {
+            const watch = group.find((item: StockGroupList) => item.type.event === EventSelected.WATCH_LIST) || null;
+
+            if (watch === null) {
+              return group[0].items[0];
+            }
+
+            return watch.items[0];
+          })
+        ),
+      ]).pipe(debounceTime(100), take(1))
+    )
+  );
 
   readonly tabMobileList = MAIN_TAB_MOBILE_LIST;
   readonly tabTabletList = MAIN_TAB_TABLET_LIST;
@@ -75,11 +100,27 @@ export class MainComponent implements AfterViewInit {
   );
 
   ngAfterViewInit() {
-    if (!this.queryId) {
+    this.#updateQuery$.subscribe(([position, idea, instrument]: [Position[], Position[], StockInstrument]) => {
+      if (position.length !== 0) {
+        this._queryParams.update({
+          type: EventSelected.POSITION,
+          id: position[0].id,
+        });
+        return;
+      }
+
+      if (idea.length !== 0) {
+        this._queryParams.update({
+          type: EventSelected.IDEA,
+          id: idea[0].id,
+        });
+        return;
+      }
+
       this._queryParams.update({
         type: EventSelected.STOCK_LIST,
-        id: '72187db2-44d8-4b2e-8b43-c41fd30c4a39',
+        id: instrument.id,
       });
-    }
+    });
   }
 }
