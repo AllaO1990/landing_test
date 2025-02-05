@@ -184,9 +184,8 @@ export class VtEnterComponent implements AfterViewInit {
   readonly maxAmount$: Observable<boolean> = this.controlIdea.statusChanges.pipe(
     takeUntilDestroyed(this._destroyRef),
     map((_) => this.controlIdea.errors),
-    filter((value: ValidationErrors | null): value is ValidationErrors => value !== null),
-    filter((value: ValidationErrors) => value['maxAmount']),
-    map((value: any) => !!value)
+    map((value: ValidationErrors | null) => Boolean(value && value['maxAmount'])),
+    distinctUntilChanged()
   );
 
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
@@ -267,7 +266,7 @@ export class VtEnterComponent implements AfterViewInit {
       });
 
       this.controlIdea[action]();
-      this.controlActions[action]();
+      // this.controlActions[action]();
       this.controlSidebar[action]();
     });
   }

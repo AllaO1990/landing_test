@@ -173,9 +173,7 @@ export class MainStore extends ComponentStore<any> {
       )
     );
     this.figures.load(
-      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(
-        filter((instrument: null | StockTransaction): instrument is StockTransaction => instrument !== null)
-      )
+      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(distinctUntilChanged())
     );
     this.atr.load(
       combineLatest([

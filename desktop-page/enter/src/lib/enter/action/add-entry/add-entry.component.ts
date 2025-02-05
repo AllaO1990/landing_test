@@ -73,7 +73,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
       this.form.patchValue({
         price: price || null,
         amount: amount || null,
-        date: this.getTuiDates(date || null),
+        date: this.getTuiDates(date || new Date().toISOString()),
         brokerId: brokerId || null,
       });
 
