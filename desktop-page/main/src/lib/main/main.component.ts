@@ -7,7 +7,6 @@ import { TuiBreakpointService } from '@taiga-ui/core';
 import { Position } from 'types/position';
 import { MAIN_TAB_MOBILE_LIST, MAIN_TAB_TABLET_LIST } from './main.constants';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { PositionFacade } from 'stores/facades/position.facade';
 import { TabsComponent } from 'ui-common/lib/tabs';
 import { OutComponent } from './out/out.component';
 import { StockComponent } from './stock/stock.component';
@@ -46,7 +45,6 @@ export class MainComponent implements AfterViewInit {
   readonly #stockList: StockListFacade = inject(StockListFacade);
   private readonly _service: MainService = inject(MainService);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
-  private readonly _position: PositionFacade = inject(PositionFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
   readonly #updateQuery$: Observable<[Position[], Position[], StockInstrument]> = this._queryParams.pipe(
@@ -78,11 +76,11 @@ export class MainComponent implements AfterViewInit {
 
   public readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
-  public readonly ideaList$: Observable<Position[] | null> = this._idea.list$.pipe(
+  public readonly ideaList$: Observable<Position[] | null> = this._idea.ideas$.pipe(
     map((list: Position[] | null) => list && this._service.sortIdeaList(list))
   );
 
-  public readonly positionList$: Observable<Position[] | null> = this._position.list$;
+  public readonly positionList$: Observable<Position[] | null> = this._idea.positions$;
 
   readonly tabs$: Observable<{ text: string; icon: string }[] | null> = this.breakpoint$.pipe(
     map((screen: string | null): { text: string; icon: string }[] | null => {

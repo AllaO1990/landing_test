@@ -61,7 +61,7 @@ export class ActionService {
       const value: StockPositionActionEntry = {
         ...acc,
         amount: acc.amount + item.amount,
-        totalPrice: acc.totalPrice + item.price * item.amount,
+        totalPrice: getNumberPrecision(acc.totalPrice + item.price * item.amount, 2),
         depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
       };
 
@@ -117,11 +117,9 @@ export class ActionService {
     lastPrice: number,
     priceIncrement = 8
   ): StockPositionTarget {
-    if (entry.price === 0 || target.price === 0 || lastPrice === 0) {
+    if (entry.price === 0 || lastPrice === 0) {
       return this._defaultTotalRemainder;
     }
-
-    console.log(entry, target, lastPrice, priceIncrement);
 
     const amount = entry.amount - target.amount;
     const profit = getNumberPrecision(lastPrice * amount - entry.price * amount, priceIncrement);
@@ -131,7 +129,7 @@ export class ActionService {
       amount: amount,
       totalPrice: getNumberPrecision(lastPrice * amount, priceIncrement),
       profit: profit,
-      profitPercent: getNumberPrecision((profit / entry.price) * amount * 100, 2),
+      profitPercent: getNumberPrecision((profit / (entry.price * amount)) * 100, 2),
       depositShare: null,
       reached: false,
       stopDate: null,

@@ -114,7 +114,9 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
   private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
   private readonly _formGroupValueChanges$: Subject<any> = new ReplaySubject(1);
-  readonly formGroupValueChanges$: Observable<any> = this._formGroupValueChanges$.asObservable();
+  readonly formGroupValueChanges$: Observable<any> = this._formGroupValueChanges$
+    .asObservable()
+    .pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
   readonly controlFormArray: FormGroup = new FormGroup({
     entries: new FormArray<FormControl<StockPositionActionEntry>>([]),
@@ -136,16 +138,16 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
   entriesList$: Observable<StockPositionActionEntry[]> = this._createStream<StockPositionActionEntry[]>(
     this.formArrayEntries
-  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  ).pipe(startWith(this.formArrayEntries.value), shareReplay({ bufferSize: 1, refCount: true }));
   targetsList$: Observable<StockPositionActionTarget[]> = this._createStream<StockPositionActionTarget[]>(
     this.formArrayTargets
-  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  ).pipe(startWith(this.formArrayTargets.value), shareReplay({ bufferSize: 1, refCount: true }));
   dividendsList$: Observable<StockPositionTarget[]> = this._createStream<StockPositionTarget[]>(
     this.formArrayDividends
-  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
-  position$: Observable<any> = this._controlValue$.asObservable().pipe(
+  ).pipe(startWith(this.formArrayDividends.value), shareReplay({ bufferSize: 1, refCount: true }));
+  position$: Observable<any> = this.formGroupValueChanges$.pipe(
     filter((value: any | null): value is any => value !== null),
-    map((value) => (value.position && value.position.price) || 0),
+    map((value) => value.lastPrice || 0),
     shareReplay({
       bufferSize: 1,
       refCount: true,
@@ -237,10 +239,14 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
   ngAfterViewInit(): void {
     const source$: Observable<any> = this._createStream<any>(this.formGroup).pipe(
+      startWith(this.formGroup.getRawValue()),
+      map(() => this.formGroup.getRawValue()),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    source$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result) => this._formGroupValueChanges$.next(result));
+    source$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result) => {
+      this._formGroupValueChanges$.next(result);
+    });
 
     this._controlValue$
       .asObservable()
@@ -292,8 +298,10 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     this.isDisabled = isDisabled;
   }
 
-  async addEntry(event: Event, data: object | null = null, index: number | null = null): Promise<void> {
+  async addEntry(event: Event, data: any | null = null, index: number | null = null): Promise<void> {
     event.preventDefault();
+
+    const entry = this.formGroup.getRawValue() && this.formGroup.getRawValue().idea.entries[0];
 
     this._dialogEntryComponent = await import('./add-entry/add-entry.component')
       .then((m) => m.AddEntryComponent)
@@ -301,6 +309,8 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
     this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, {
       ...data,
+      price: (data && data.price) || entry.price,
+      amount: (data && data.amount) || entry.quantity,
       minPriceIncrement: this.minPriceIncrement,
     }).subscribe((res: object | null) => {
       if (res) {
@@ -312,6 +322,21 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   async addTarget(event: Event, data: any | null = null, control: number | null = null): Promise<void> {
     event.preventDefault();
 
+    const value = this.formGroup.getRawValue();
+    const target = {
+      amount: null,
+      price: null,
+    };
+
+    if (value) {
+      const current = value.idea.targets[this.formArrayTargets.value.length];
+
+      if (current) {
+        target.price = current.price;
+        target.amount = current.amount;
+      }
+    }
+
     const brokerId = this.formArrayEntries.value[0] && this.formArrayEntries.value[0].brokerId;
 
     this._dialogTargetComponent = await import('./add-target/add-target.component')
@@ -320,6 +345,8 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
     this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, {
       ...data,
+      amount: (data && data.amount) || target.amount,
+      price: (data && data.price) || target.price,
       brokerId: (data && data['brokerId']) || brokerId,
       minPriceIncrement: this.minPriceIncrement,
     }).subscribe((result: object | null) => {
@@ -382,7 +409,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   private _createStream<T>(control: AbstractControl): Observable<T> {
     const stream$: Observable<T> = defer(() => {
       if (control && control.valueChanges) {
-        return control.valueChanges.pipe(startWith(control.value));
+        return control.valueChanges;
       }
 
       return this._ngZone.onStable.asObservable().pipe(

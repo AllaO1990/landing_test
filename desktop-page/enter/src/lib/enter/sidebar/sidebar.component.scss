@@ -52,8 +52,7 @@
 
   &__portfolio {
     display: flex;
-    flex-flow: row wrap;
-    align-items: center;
+    flex-flow: column wrap;
   }
 
   &__comment {
@@ -140,6 +139,17 @@
 }
 
 .portfolio {
+  &__label {
+    font-weight: 300;
+    margin-bottom: var(--padding-2);
+  }
+
+  &__actions {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+  }
+
   &__select {
     flex: 1;
   }

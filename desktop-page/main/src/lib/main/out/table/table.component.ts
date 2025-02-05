@@ -17,7 +17,7 @@ import { StockId, StockTransaction } from 'types/stock';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
 import { LoaderComponent } from '@ui/components/loader';
-import { PositionFacade } from 'stores/facades/position.facade';
+import { SelectFacade } from 'stores/facades/select.facade';
 
 @Component({
   selector: 'vt-out-table',
@@ -48,13 +48,13 @@ import { PositionFacade } from 'stores/facades/position.facade';
 export class OutTableComponent {
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
-  private readonly _store: PositionFacade = inject(PositionFacade);
+  private readonly _store: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
   public readonly header: OutHeaderItem[] = OUT_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
-  public activeIdeaId$: Observable<StockId | null> = this._store.select$.pipe(
+  public activeIdeaId$: Observable<StockId | null> = this._store.position$.pipe(
     map((result: StockTransaction | null) => (result ? result.ideaId : null)),
     distinctUntilChanged(),
     shareReplay({ refCount: true, bufferSize: 1 })

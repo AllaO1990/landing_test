@@ -27,7 +27,7 @@ import {
 import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
@@ -163,6 +163,7 @@ export class VtEnterComponent implements AfterViewInit {
     }),
     watch: new FormControl(true),
     minPriceIncrement: new FormControl(null),
+    lastPrice: new FormControl(null),
   });
 
   get controlActions(): FormControl {
@@ -189,7 +190,6 @@ export class VtEnterComponent implements AfterViewInit {
   );
 
   readonly data$: Observable<StockPosition> = this._idea.idea$.pipe(
-    tap((data) => console.log(data)),
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -236,11 +236,13 @@ export class VtEnterComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
   activeItemIndex = 0;
+  isPending = false;
 
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
     this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
+      this.isPending = false;
       const targets = this._getIdeaTargets(result.idea.targets);
       const entries = this._getIdeaEntries(result.idea.entries);
       const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
@@ -262,6 +264,7 @@ export class VtEnterComponent implements AfterViewInit {
           portfolioId: result.idea.portfolioId,
           comment: '',
         },
+        lastPrice: result.idea.lastPrice,
         minPriceIncrement: result.idea.instrument.minPriceIncrement,
       });
 
@@ -296,11 +299,12 @@ export class VtEnterComponent implements AfterViewInit {
 
   onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
+    this.isPending = true;
 
     if (ideaId === null) {
-      this._idea.createIdea(this._getValueToSubmit(this.form.value));
+      this._idea.createIdea(this._getValueToSubmit(this.form.getRawValue()));
     } else {
-      this._idea.editIdea({ id: ideaId.toString(), body: this._getValueToSubmit(this.form.value) });
+      this._idea.editIdea({ id: ideaId.toString(), body: this._getValueToSubmit(this.form.getRawValue()) });
     }
   }
 
@@ -354,6 +358,8 @@ export class VtEnterComponent implements AfterViewInit {
     if (value === null) {
       return null;
     }
+
+    console.log(value);
 
     return {
       actions: {

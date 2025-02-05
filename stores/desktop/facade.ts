@@ -7,7 +7,6 @@ import { ConsolidationZonesWatchlistStore } from './plugins/consolidation-zones-
 import { ConsolidationZonesIdeaStore } from './plugins/consolidation-zones-idea.store';
 import { CandlesStore } from './plugins/candles.store';
 import { FiguresStore } from './plugins/figures.store';
-import { StockPositionStore } from './plugins/stock-position.store';
 import { StockIdeaStore } from './plugins/stock-idea.store';
 import { StockListStore } from 'stores/plugins/stock-list.store';
 import { StockPriceStore } from 'stores/plugins/stock-price.store';
@@ -18,8 +17,7 @@ import { QueryParams } from 'utils/query-params';
 export class FacadeStore {
   readonly account = this._buildAccount();
   readonly stockList = this._buildStockList();
-  readonly positionList = this._buildStockPosition();
-  readonly ideaList = this._buildStockIdea();
+  readonly idea = this._buildStockIdea();
   readonly priceList = this._buildStockPrice();
   readonly candles = this._buildCandles();
   readonly sma = this._buildIndicatorSma();
@@ -67,10 +65,6 @@ export class FacadeStore {
 
   private _buildFigures() {
     return new FiguresStore(this._api);
-  }
-
-  private _buildStockPosition() {
-    return new StockPositionStore(this._api);
   }
 
   private _buildStockIdea() {

@@ -6,24 +6,33 @@ import { StockId } from 'types/stock';
 import { Position, StockPosition, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { Response } from 'types/response';
 import { QueryParams } from 'utils/query-params';
+import { filter, take } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
-  readonly list$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.list);
-
+  readonly ideas$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.ideas);
+  readonly positions$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.positions);
   readonly idea$: Observable<StockPosition | null> = this.select((state: StockIdeaState) => state.idea);
 
   constructor(private readonly _api: DesktopService, private readonly _queryParams: QueryParams) {
     super({
-      list: null,
+      ideas: null,
       idea: null,
+      positions: null,
     });
   }
 
-  updateList = this.updater(
-    (state: StockIdeaState, list: Position[] | null): StockIdeaState => ({
+  updateIdeas = this.updater(
+    (state: StockIdeaState, ideas: Position[] | null): StockIdeaState => ({
       ...state,
-      list,
+      ideas,
+    })
+  );
+
+  updatePositions = this.updater(
+    (state: StockIdeaState, positions: Position[] | null): StockIdeaState => ({
+      ...state,
+      positions,
     })
   );
 
@@ -65,19 +74,39 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     });
   };
 
-  selectItem(id: StockId): Observable<Position | null> {
+  selectIdea(id: StockId): Observable<Position | null> {
     return this.select((state: StockIdeaState) => {
-      if (!state.list) {
+      if (!state.ideas) {
         return null;
       }
 
-      return state.list.find((item: Position) => item.id === id) || null;
+      return state.ideas.find((item: Position) => item.id === id) || null;
     });
   }
 
-  readonly load = this.effect((stream$: Observable<unknown>) =>
+  selectFromAll(id: StockId): Observable<Position | null> {
+    return this.select((state: StockIdeaState) => {
+      if (!state.ideas && !state.positions) {
+        return null;
+      }
+
+      return [...(state.ideas || []), ...(state.positions || [])].find((idea: Position) => idea.id === id) || null;
+    });
+  }
+
+  readonly loadIdeas = this.effect((stream$: Observable<unknown>) =>
     stream$.pipe(
-      switchMap((_) => this._api.getIdeaList().pipe(tap((result: Position[]) => this.updateList(result)))),
+      switchMap((_) => this._api.getIdeaList().pipe(tap((result: Position[]) => this.updateIdeas(result)))),
+      catchError((err: Error) => {
+        console.error(err);
+        return of(null);
+      })
+    )
+  );
+
+  readonly loadPositions = this.effect((stream$: Observable<unknown>) =>
+    stream$.pipe(
+      switchMap((_) => this._api.getPositionList().pipe(tap((result: Position[]) => this.updatePositions(result)))),
       catchError((err: Error) => {
         console.error(err);
         return of(null);
@@ -92,12 +121,9 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           return of(null);
         }
 
-        return this._api.getIdea(value).pipe(
-          catchError((err) => {
-            this._queryParams.update(null, '');
-            return of(null);
-          })
-        );
+        return this._api
+          .getIdea(value)
+          .pipe(catchError((err) => of(null).pipe(tap(() => this._queryParams.update(null, '')))));
       }),
       tap((result: StockPosition | null) => this.updateIdea(result))
     )
@@ -108,12 +134,20 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       switchMap((body: object) =>
         this._api.createIdea(body).pipe(
           tap((response: Response<{ id: number }>) => {
-            this.load(of(null));
-            this._queryParams.update({
-              type: EventSelected.IDEA,
-              id: response.data.id,
-              // dialog: 'visible',
-            });
+            this.loadIdeas(of(null));
+
+            this.selectIdea(response.data.id.toString())
+              .pipe(
+                filter((position: Position | null): position is Position => position !== null),
+                take(1)
+              )
+              .subscribe(() => {
+                this._queryParams.update({
+                  type: EventSelected.IDEA,
+                  id: response.data.id,
+                  dialog: 'visible',
+                });
+              });
           })
         )
       ),
@@ -126,11 +160,23 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly edit = this.effect((stream$: Observable<{ id: StockId; body: object }>) =>
     stream$.pipe(
-      switchMap((data: { id: StockId; body: object }) =>
+      switchMap((data: { id: StockId; body: any }) =>
         this._api.editIdea(data.id, data.body).pipe(
           tap((response: Response<{ id: number }>) => {
-            this.load(of(null));
-            console.log(response);
+            this.loadIdeas(of(null));
+            this.loadPositions(of(null));
+
+            this.selectFromAll(response.data.id.toString())
+              .pipe(
+                filter((position: Position | null): position is Position => position !== null),
+                take(1)
+              )
+              .subscribe(() => {
+                this._queryParams.update({
+                  type: data.body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,
+                  id: response.data.id,
+                });
+              });
           })
         )
       ),
@@ -146,8 +192,8 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       switchMap((id: StockId) =>
         this._api.deleteIdea(id).pipe(
           tap((response: number | null) => {
-            console.log(response);
-            this.load(of(null));
+            this.loadIdeas(of(null));
+            this.loadPositions(of(null));
             this._queryParams.update({}, '');
           })
         )

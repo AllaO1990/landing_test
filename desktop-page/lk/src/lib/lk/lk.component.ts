@@ -19,7 +19,6 @@ import { NavComponent } from '../nav';
 import { LogoComponent } from '@ui/components/logo';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { SelectFacade } from 'stores/facades/select.facade';
-import { PositionFacade } from 'stores/facades/position.facade';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
 import { ChartFacade } from 'stores/facades/chart.facade';
@@ -43,7 +42,6 @@ import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
       deps: [DESKTOP_API],
     },
     SelectFacade,
-    PositionFacade,
     IdeaFacade,
     StockListFacade,
     ChartFacade,

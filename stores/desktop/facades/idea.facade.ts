@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { MainStore } from '../main.store';
 import { Observable, of, shareReplay, switchMap } from 'rxjs';
-import { StockId, StockInstrument, StockTransaction } from 'types/stock';
+import { StockId, StockInstrument } from 'types/stock';
 import { Position, StockPosition } from 'types/position';
 import { filter, map } from 'rxjs/operators';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
@@ -11,7 +11,8 @@ export class IdeaFacade {
   private readonly _store: MainStore = inject(MainStore);
 
   readonly atr$: Observable<null | { data: IndicatorAtr; instrument: StockId }> = this._store.atr.value$;
-  readonly list$: Observable<Position[] | null> = this._store.idea.list$;
+  readonly positions$: Observable<Position[] | null> = this._store.idea.positions$;
+  readonly ideas$: Observable<Position[] | null> = this._store.idea.ideas$;
   readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
     switchMap((idea: StockPosition | null) => {
       if (idea === null) {
@@ -24,21 +25,12 @@ export class IdeaFacade {
     }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-  readonly select$: Observable<null | StockTransaction> = this._store.selected.idea$;
 
   readonly loadIdea = this._store.idea.loadIdea;
   readonly createIdea = this._store.idea.create;
   readonly editIdea = this._store.idea.edit;
   readonly deleteIdea = this._store.idea.delete;
   readonly updateIdeaUser = this._store.idea.updateIdeaUser;
-
-  selectItem(id: StockId): Observable<Position | null> {
-    if (id === null) {
-      return of(null);
-    }
-
-    return this._store.idea.selectItem(id);
-  }
 
   private _getIdea(instrument: StockInstrument): StockPosition {
     return {
