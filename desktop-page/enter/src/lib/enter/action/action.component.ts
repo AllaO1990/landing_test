@@ -145,7 +145,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
   position$: Observable<any> = this._controlValue$.asObservable().pipe(
     filter((value: any | null): value is any => value !== null),
-    map((value) => value.position && value.position.price),
+    map((value) => (value.position && value.position.price) || 0),
     shareReplay({
       bufferSize: 1,
       refCount: true,
@@ -309,8 +309,10 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     });
   }
 
-  async addTarget(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
+  async addTarget(event: Event, data: any | null = null, control: number | null = null): Promise<void> {
     event.preventDefault();
+
+    const brokerId = this.formArrayEntries.value[0] && this.formArrayEntries.value[0].brokerId;
 
     this._dialogTargetComponent = await import('./add-target/add-target.component')
       .then((m) => m.AddTargetComponent)
@@ -318,6 +320,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
     this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, {
       ...data,
+      brokerId: (data && data['brokerId']) || brokerId,
       minPriceIncrement: this.minPriceIncrement,
     }).subscribe((result: object | null) => {
       if (result) {

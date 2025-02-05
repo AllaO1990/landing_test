@@ -80,7 +80,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
       this.form.setValue({
         amount: amount || null,
         price: price || null,
-        date: this.getTuiDates(date || null),
+        date: this.getTuiDates(date || new Date().toISOString()),
         brokerId: brokerId || null,
       });
 

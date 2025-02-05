@@ -33,9 +33,6 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
   readonly load = this.effect((stream$: Observable<StockTransaction | null>) => {
     return stream$.pipe(
       switchMap((id: StockTransaction | null) => this._getFigures(id)),
-      // map((data: ConsolidationZones) => {
-      //   return transformActiveConsolidationZones(data?.data);
-      // }),
       tap((zones) => this.updateFigures(zones)),
       catchError((err: Error) => {
         console.error(err);

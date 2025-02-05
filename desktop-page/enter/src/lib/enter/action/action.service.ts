@@ -121,6 +121,8 @@ export class ActionService {
       return this._defaultTotalRemainder;
     }
 
+    console.log(entry, target, lastPrice, priceIncrement);
+
     const amount = entry.amount - target.amount;
     const profit = getNumberPrecision(lastPrice * amount - entry.price * amount, priceIncrement);
 

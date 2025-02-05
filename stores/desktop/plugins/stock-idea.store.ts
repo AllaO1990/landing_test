@@ -6,6 +6,7 @@ import { StockId } from 'types/stock';
 import { Position, StockPosition, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { Response } from 'types/response';
 import { QueryParams } from 'utils/query-params';
+import { EventSelected } from 'types/events';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   readonly list$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.list);
@@ -107,9 +108,12 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       switchMap((body: object) =>
         this._api.createIdea(body).pipe(
           tap((response: Response<{ id: number }>) => {
-            this.load(response.data.id);
-            this.loadIdea(response.data.id);
-            console.log(response);
+            this.load(of(null));
+            this._queryParams.update({
+              type: EventSelected.IDEA,
+              id: response.data.id,
+              // dialog: 'visible',
+            });
           })
         )
       ),
@@ -125,7 +129,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       switchMap((data: { id: StockId; body: object }) =>
         this._api.editIdea(data.id, data.body).pipe(
           tap((response: Response<{ id: number }>) => {
-            this.load(of(response.data.id));
+            this.load(of(null));
             console.log(response);
           })
         )
@@ -143,6 +147,8 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
         this._api.deleteIdea(id).pipe(
           tap((response: number | null) => {
             console.log(response);
+            this.load(of(null));
+            this._queryParams.update({}, '');
           })
         )
       )
