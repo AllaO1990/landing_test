@@ -26,7 +26,7 @@ export abstract class DesktopService {
 
   abstract createIdea(body: object): Observable<any>;
 
-  abstract editIdea(id: StockId, body: object): Observable<any>;
+  abstract editIdea(id: StockId, body: object): Observable<Response<any>>;
 
   abstract deleteIdea(id: StockId): Observable<number | null>;
 

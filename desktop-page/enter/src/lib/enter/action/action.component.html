@@ -55,7 +55,6 @@
     </lib-list>
     <div class="action">
       <button
-        *ngIf="(canAdd$ | async) && !isDisabled"
         class="button"
         [disabled]="false"
         (click)="addEntry($event)"
@@ -136,7 +135,6 @@
     <div
       class="action">
       <button
-        *ngIf="(canAdd$ | async) && !isDisabled"
         class="button"
         [disabled]="formArrayEntries.value.length === 0"
         tuiButton

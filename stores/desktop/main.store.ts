@@ -53,8 +53,7 @@ export class MainStore extends ComponentStore<any> {
   readonly interval = new IntervalStore();
   readonly selected = new SelectStore();
   readonly stock = this._facade.stockList;
-  readonly idea = this._facade.ideaList;
-  readonly position = this._facade.positionList;
+  readonly idea = this._facade.idea;
   readonly price = this._facade.priceList;
   readonly candles = this._facade.candles;
   readonly sma = this._facade.sma;
@@ -92,8 +91,8 @@ export class MainStore extends ComponentStore<any> {
     this.account.loadPortfolios();
     this.account.loadStrategies();
 
-    this.idea.load(timerSource);
-    this.position.load(timerSource);
+    this.idea.loadIdeas(timerSource);
+    this.idea.loadPositions(timerSource);
 
     this.onChangeInstrument(this.selected.event$);
     this.onChangePosition(this.selected.event$);
@@ -230,7 +229,7 @@ export class MainStore extends ComponentStore<any> {
   onChangePosition = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([
       source$.pipe(this._getIdFrom(EventSelected.POSITION)),
-      this._facade.positionList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+      this._facade.idea.positions$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
       filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Position[]]) => {
@@ -249,7 +248,7 @@ export class MainStore extends ComponentStore<any> {
   onChangeIdea = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([
       source$.pipe(this._getIdFrom(EventSelected.IDEA)),
-      this._facade.ideaList.list$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+      this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
       filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Position[]]) => {
