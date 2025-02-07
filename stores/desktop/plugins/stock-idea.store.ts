@@ -166,6 +166,10 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             this.loadIdeas(of(null));
             this.loadPositions(of(null));
 
+            if (+response.data.id === +data.id) {
+              this.loadIdea(data.id);
+            }
+
             this.selectFromAll(response.data.id.toString())
               .pipe(
                 filter((position: Position | null): position is Position => position !== null),

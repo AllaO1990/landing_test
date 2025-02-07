@@ -48,6 +48,7 @@
             tuiIconButton
             size="xs"
             type="button"
+            [disabled]="formArrayTargets.value.length !== 0"
             (click)="onRemove($event, index, 'entries')"
           ></button>
         </div>
