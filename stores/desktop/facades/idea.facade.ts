@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { MainStore } from '../main.store';
 import { Observable, of, shareReplay, switchMap } from 'rxjs';
-import { StockId, StockInstrument } from 'types/stock';
+import { StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { Position, StockPosition } from 'types/position';
 import { filter, map } from 'rxjs/operators';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
@@ -18,7 +18,19 @@ export class IdeaFacade {
       if (idea === null) {
         return this._store.selected.instrument$.pipe(
           filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
-          map((instrument: StockInstrument) => this._getIdea(instrument))
+          switchMap((instrument: StockInstrument) =>
+            this._store.getPriceOfInstruments([instrument.id]).pipe(
+              map((price: StockPrice<WithLastPrice>) => {
+                let lastPrice = 0;
+
+                if (price && price[instrument.id]) {
+                  lastPrice = price[instrument.id]!.last;
+                }
+
+                return this._getIdea(instrument, lastPrice);
+              })
+            )
+          )
         );
       }
       return of(idea);
@@ -32,10 +44,10 @@ export class IdeaFacade {
   readonly deleteIdea = this._store.idea.delete;
   readonly updateIdeaUser = this._store.idea.updateIdeaUser;
 
-  private _getIdea(instrument: StockInstrument): StockPosition {
+  private _getIdea(instrument: StockInstrument, lastPrice = 0): StockPosition {
     return {
       ...DEFAULT_IDEA,
-      idea: { ...DEFAULT_IDEA.idea, instrument },
+      idea: { ...DEFAULT_IDEA.idea, instrument, lastPrice },
     };
   }
 }

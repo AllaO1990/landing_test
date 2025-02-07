@@ -205,17 +205,17 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
         } else {
           const params: { [key: string]: any } = {};
 
-          if (result.portfolioId !== null) {
-            this.controlPortfolio.patchValue(result.portfolioId, { onlySelf: true });
-          } else {
-            params['portfolioId'] = this.controlPortfolio.value;
-          }
-
-          if (result.strategyId !== null) {
-            this.controlStrategy.patchValue(result.strategyId, { onlySelf: true });
-          } else {
-            params['strategyId'] = this.controlStrategy.value;
-          }
+          // if (result.portfolioId !== null) {
+          //   this.controlPortfolio.patchValue(result.portfolioId, { onlySelf: true });
+          // } else {
+          params['portfolioId'] = this.controlPortfolio.value;
+          // }
+          //
+          // if (result.strategyId !== null) {
+          //   this.controlStrategy.patchValue(result.strategyId, { onlySelf: true });
+          // } else {
+          params['strategyId'] = this.controlStrategy.value;
+          // }
 
           this.form.patchValue({ ...result, ...params });
         }
@@ -242,18 +242,25 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
             currencies.find((item: AccountCurrency) => item.currency === position.idea.instrument.currency) ||
             currencies[0];
 
+          let value = this._getControlStrategyUser();
           const strategy = this._getIdeaStrategy(strategies, position);
           const strategyDefault = this._getControlStrategy(strategy);
 
+          if (strategy) {
+            value = strategy;
+          } else if (strategyDefault) {
+            value = strategyDefault;
+          }
+
           if (this.controlStrategy.value === null) {
-            this.controlStrategy.patchValue(strategy ? strategy.id : strategyDefault.id, { onlySelf: true });
+            this.controlStrategy.patchValue(value.id);
           }
           this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
           if (this.controlPortfolio.value === null) {
             this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: true });
           }
 
-          this.formControlStrategy.patchValue(strategyDefault, { emitEvent: false, onlySelf: true });
+          this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
           this.formControlPortfolio.patchValue(portfolio, { emitEvent: false, onlySelf: true });
           this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
         }
@@ -274,17 +281,21 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
 
     this.formControlStrategy.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((result: AccountStrategies | null) => this.controlStrategy.patchValue(result ? result.id : null));
+      .subscribe((result: AccountStrategies | null) => {
+        this.controlStrategy.patchValue(result ? result.id : null);
+      });
   }
 
-  private _getControlStrategy(strategy: AccountStrategies | null): AccountStrategies {
-    const user = this.strategy.find((item: AccountStrategies) => item.key === 'user') || this.strategy[0];
+  private _getControlStrategyUser(): AccountStrategies {
+    return this.strategy.find((item: AccountStrategies) => item.key === 'user') || this.strategy[0];
+  }
 
+  private _getControlStrategy(strategy: AccountStrategies | null): AccountStrategies | null {
     if (strategy === null) {
-      return user;
+      return null;
     }
 
-    return this.strategy.find((item: AccountStrategies) => strategy.key.indexOf(item.key) !== -1) || user;
+    return this.strategy.find((item: AccountStrategies) => strategy.key.indexOf(item.key) !== -1) || null;
   }
 
   private _getIdeaStrategy(list: AccountStrategies[], position: StockPosition): AccountStrategies | null {

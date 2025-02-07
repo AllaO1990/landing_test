@@ -149,14 +149,14 @@ export class ActionService {
     multiplier: number,
     priceIncrement = 8
   ): StockPositionActionTarget {
-    if (entry.price === 0 || target.price === 0 || lastPrice === 0) {
+    if (entry.price === 0 || lastPrice === 0) {
       return this._defaultTotalOut;
     }
 
     const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice, priceIncrement);
 
     return {
-      price: target.price,
+      price: target.price || lastPrice,
       amount: entry.amount,
       totalPrice: totalPrice,
       profit: getNumberPrecision((totalPrice - entry.totalPrice) * multiplier, priceIncrement),

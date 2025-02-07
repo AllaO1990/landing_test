@@ -3,6 +3,7 @@ import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import {
+  TuiAlertService,
   TuiBreakpointService,
   TuiButton,
   TuiDialogService,
@@ -18,6 +19,7 @@ import {
   filter,
   merge,
   Observable,
+  pairwise,
   shareReplay,
   startWith,
   Subject,
@@ -129,6 +131,7 @@ export class VtEnterComponent implements AfterViewInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
+  private readonly _alerts = inject(TuiAlertService);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _isShowCopyNotify$: Subject<void> = new Subject<void>();
 
@@ -241,37 +244,46 @@ export class VtEnterComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
-    this.data$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((result: StockPosition) => {
-      this.isPending = false;
-      const targets = this._getIdeaTargets(result.idea.targets);
-      const entries = this._getIdeaEntries(result.idea.entries);
-      const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
-      const action = result.idea.author === 'bot' ? 'disable' : 'enable';
+    this.data$
+      .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
+      .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
+        this.isPending = false;
 
-      this.form.patchValue({
-        actions: result.actions,
-        idea: {
-          entries,
-          targets,
-          stop,
-        },
-        sidebar: {
-          strategyId: 4,
-          positionType: result.idea.positionType,
-          expirationDate: null,
-          instrumentId: result.idea.instrument.id,
-          parentId: result.idea.parentId,
-          portfolioId: result.idea.portfolioId,
-          comment: '',
-        },
-        lastPrice: result.idea.lastPrice,
-        minPriceIncrement: result.idea.instrument.minPriceIncrement,
+        if (last !== null && result !== null) {
+          this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
+        }
+
+        if (result) {
+          const targets = this._getIdeaTargets(result.idea.targets);
+          const entries = this._getIdeaEntries(result.idea.entries);
+          const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
+          const action = result.idea.author === 'bot' ? 'disable' : 'enable';
+
+          this.form.patchValue({
+            actions: result.actions,
+            idea: {
+              entries,
+              targets,
+              stop,
+            },
+            sidebar: {
+              strategyId: null,
+              positionType: result.idea.positionType,
+              expirationDate: null,
+              instrumentId: result.idea.instrument.id,
+              parentId: result.idea.parentId,
+              portfolioId: result.idea.portfolioId,
+              comment: '',
+            },
+            lastPrice: result.idea.lastPrice,
+            minPriceIncrement: result.idea.instrument.minPriceIncrement,
+          });
+
+          this.controlIdea[action]();
+          // this.controlActions[action]();
+          this.controlSidebar[action]();
+        }
       });
-
-      this.controlIdea[action]();
-      // this.controlActions[action]();
-      this.controlSidebar[action]();
-    });
   }
 
   trackByIndex(index: number): number {
@@ -281,7 +293,28 @@ export class VtEnterComponent implements AfterViewInit {
   onClose(event: Event): void {
     event.preventDefault();
 
-    this.context.$implicit.complete();
+    if (this.form.pristine) {
+      this.context.$implicit.complete();
+
+      return;
+    }
+
+    this._dialogDefaultService
+      .open<boolean>(TUI_CONFIRM, {
+        appearance: 'dialog-confirm',
+        size: 'auto',
+        closeable: false,
+        data: {
+          content: '<p class="tui-text_h6">Данные не сохранены.<br/> Хотите закрыть?</h2>',
+          yes: 'Да',
+          no: 'Нет',
+        },
+      })
+      .subscribe((result: boolean) => {
+        if (result) {
+          this.context.$implicit.complete();
+        }
+      });
   }
 
   onSearch(event: StockInstrument | null): void {
@@ -358,8 +391,6 @@ export class VtEnterComponent implements AfterViewInit {
     if (value === null) {
       return null;
     }
-
-    console.log(value);
 
     return {
       actions: {

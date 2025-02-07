@@ -3,6 +3,7 @@ import { SelectStore } from './select.store';
 import { DesktopService } from '@desktop-data/desktop-data';
 import {
   combineLatest,
+  debounceTime,
   distinctUntilChanged,
   merge,
   Observable,
@@ -172,7 +173,10 @@ export class MainStore extends ComponentStore<any> {
       )
     );
     this.figures.load(
-      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(distinctUntilChanged())
+      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(
+        debounceTime(0),
+        distinctUntilChanged((a, b) => a?.ideaId === b?.ideaId)
+      )
     );
     this.atr.load(
       combineLatest([

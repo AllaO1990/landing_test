@@ -301,7 +301,20 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   async addEntry(event: Event, data: any | null = null, index: number | null = null): Promise<void> {
     event.preventDefault();
 
-    const entry = this.formGroup.getRawValue() && this.formGroup.getRawValue().idea.entries[0];
+    const value = this.formGroup.getRawValue();
+    const entry = {
+      price: null,
+      quantity: null,
+    };
+
+    if (value) {
+      const current = this.formGroup.getRawValue().idea.entries[0];
+
+      if (current) {
+        entry.price = current.price;
+        entry.quantity = current.quantity;
+      }
+    }
 
     this._dialogEntryComponent = await import('./add-entry/add-entry.component')
       .then((m) => m.AddEntryComponent)
