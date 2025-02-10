@@ -84,6 +84,16 @@ export class MainStore extends ComponentStore<any> {
       shareReplay({ refCount: true, bufferSize: 1 })
     );
 
+    const eventWithoutDialog$ = this.selected.event$.pipe(
+      filter((value: null | StockEvent) => {
+        if (value === null) {
+          return false;
+        }
+        return !value['dialog'];
+      }),
+      shareReplay({ refCount: true, bufferSize: 1 })
+    );
+
     this.stock.loadList();
     this.stock.loadGroup();
 
@@ -95,15 +105,18 @@ export class MainStore extends ComponentStore<any> {
     this.idea.loadIdeas(timerSource);
     this.idea.loadPositions(timerSource);
 
-    this.onChangeInstrument(this.selected.event$);
-    this.onChangePosition(this.selected.event$);
-    this.onChangeIdea(this.selected.event$);
-    this.onChangeWatch(this.selected.event$);
-    this.onChangeTransaction(this.selected.event$);
+    this.onChangeInstrument(eventWithoutDialog$);
+    this.onChangePosition(eventWithoutDialog$);
+    this.onChangeIdea(eventWithoutDialog$);
+    this.onChangeWatch(eventWithoutDialog$);
+    this.onChangeTransaction(eventWithoutDialog$);
 
     this.candles.loadCandles(
       timerWithIndex(
-        instrumentTrust$.pipe(distinctUntilChanged((a: StockInstrument, b: StockInstrument) => a.id === b.id)),
+        instrumentTrust$.pipe(
+          distinctUntilChanged((a: StockInstrument, b: StockInstrument) => a.id === b.id),
+          debounceTime(0)
+        ),
         TIMER_INTERVAL
       )
     );
@@ -146,6 +159,7 @@ export class MainStore extends ComponentStore<any> {
         ),
         this._range$,
       ]).pipe(
+        debounceTime(0),
         map(([id, zones, range]: [string, number[] | null, DateRange]) => {
           if (zones === null || zones.length === 0) {
             return null;
@@ -173,8 +187,15 @@ export class MainStore extends ComponentStore<any> {
       )
     );
     this.figures.load(
-      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(
+      combineLatest([this.selected.idea$, this.selected.position$, this.selected.transaction$]).pipe(
         debounceTime(0),
+        map(
+          ([idea, position, transaction]: [
+            null | StockTransaction,
+            null | StockTransaction,
+            null | StockTransaction
+          ]) => idea || position || transaction || null
+        ),
         distinctUntilChanged((a, b) => a?.ideaId === b?.ideaId)
       )
     );

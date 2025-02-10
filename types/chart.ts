@@ -44,6 +44,14 @@ export interface IdeaParams {
   targets: Target[];
   entryPrice: number | null;
   entryDate: string | null;
+  actions: Action[];
+}
+
+export interface Action {
+  amount: number;
+  date: string;
+  price: number;
+  type: string;
 }
 
 export interface Target {

@@ -105,4 +105,6 @@ export const CHART_SMA_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" heig
 
 export const CHART_ATR_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 7px Tahoma">ATR</text></svg>'`;
 
+export const CHART_IDEA_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 7px Tahoma">Идея</text></svg>'`;
+
 export const CHART_ZONE_ICON = `'data:image/svg+xml,<svg viewBox="0 0 16 16" height="100%" width="100%" xmlns="http://www.w3.org/2000/svg"><text text-anchor="middle" x="50%" y="10px" fill="currentColor" style="font: 7px Tahoma">ZONE</text></svg>'`;
