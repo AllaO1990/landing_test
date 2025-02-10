@@ -10,7 +10,7 @@ import {
   NgZone,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
-import { TuiButton, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiScrollbar } from '@taiga-ui/core';
 import {
   StockPosition,
   StockPositionActionEntry,
@@ -19,7 +19,7 @@ import {
   StockPositionTarget,
 } from 'types/position';
 import { ActionService } from './action.service';
-import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { LoaderComponent } from '@ui/components/loader';
 import {
   AbstractControl,
@@ -60,7 +60,6 @@ import { getPriceIncrement } from 'utils/get-price-increment';
   imports: [
     NgIf,
     AsyncPipe,
-    ItemComponent,
     DatePipe,
     HeaderComponent,
     TuiButton,
@@ -68,10 +67,10 @@ import { getPriceIncrement } from 'utils/get-price-increment';
     TuiScrollbar,
     ListComponent,
     ItemDirective,
-    TuiLoader,
     LoaderComponent,
     ReactiveFormsModule,
     GetBrokerPipe,
+    TuiHint,
   ],
   templateUrl: './action.component.html',
   styleUrl: './action.component.scss',

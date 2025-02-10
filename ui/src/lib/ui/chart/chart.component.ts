@@ -61,10 +61,12 @@ let CHART_INCREMENT = 2;
 })
 export class ChartComponent implements AfterViewInit, OnDestroy {
   private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
-  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch', 'lines'];
+  private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch'];
+  private readonly _figuresName: string[] = ['lines'];
   private readonly _instrument$: Subject<any> = new BehaviorSubject(null);
   private readonly _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
   private readonly _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
+  private readonly _figure$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
   private readonly _chart$: Subject<Highcharts.Chart | null> = new BehaviorSubject<Highcharts.Chart | null>(null);
   private readonly _text$: Subject<{ data: any; instrument: string } | null> = new ReplaySubject(1);
 
@@ -313,6 +315,11 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   }
 
   @Input()
+  set figure(value: Zones | null) {
+    this._figure$.next(value);
+  }
+
+  @Input()
   set text(value: { data: any; instrument: string } | null) {
     this._text$.next(value);
   }
@@ -400,7 +407,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
 
     chartWithInstrumentId$
       .pipe(
-        tap(({ chart }: { chart: Highcharts.Chart; id: string }) => this._removeZones([], chart)),
+        tap(({ chart }: { chart: Highcharts.Chart; id: string }) => this._removeZones([], chart, this._zonesName)),
         switchMap(({ chart, id }: { chart: Highcharts.Chart; id: string }) =>
           this._zone$.asObservable().pipe(
             map((zones: Zones | null) => {
@@ -414,7 +421,27 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         )
       )
       .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
-        this._removeZones(zones, chart);
+        this._removeZones(zones, chart, this._zonesName);
+        this._addZones(zones, chart);
+      });
+
+    chartWithInstrumentId$
+      .pipe(
+        tap(({ chart }: { chart: Highcharts.Chart; id: string }) => this._removeZones([], chart, this._figuresName)),
+        switchMap(({ chart, id }: { chart: Highcharts.Chart; id: string }) =>
+          this._figure$.asObservable().pipe(
+            map((zones: Zones | null) => {
+              if (zones === null) {
+                return { chart, zones: [] };
+              }
+
+              return { chart, zones: zones.instrument === id ? zones.data : [] };
+            })
+          )
+        )
+      )
+      .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
+        this._removeZones(zones, chart, this._figuresName);
         this._addZones(zones, chart);
       });
 
@@ -463,10 +490,10 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     chart.redraw(false);
   }
 
-  private _removeZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
+  private _removeZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart, list: string[] = []): void {
     const ids: string[] = zones.map((zone: Highcharts.AnnotationsOptions) => zone.id as string);
 
-    this._zonesName
+    list
       .filter((id: string) => !ids.includes(id))
       .forEach((id: string) => {
         chart.removeAnnotation(id);

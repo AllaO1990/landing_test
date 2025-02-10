@@ -9,6 +9,7 @@
         [data]="data"
         [indicators]="indicators$ | async"
         [zones]="zone$ | async"
+        [figure]="figures$ | async"
         [text]="text$ | async"
       ></vt-chart>
     </div>
@@ -61,6 +62,16 @@
         [iconStart]="artIcon"
         [size]="size"
         (click)="onToggleAtr($event)">
+      </button>
+
+      <button
+        class="action"
+        [appearance]="controlTarget.value ? 'primary' : 'secondary'"
+        tuiButton
+        type="button"
+        [iconStart]="ideaIcon"
+        [size]="size"
+        (click)="onToggleTarget($event)">
       </button>
 
       <div class="space"></div>

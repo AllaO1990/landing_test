@@ -7,13 +7,14 @@ import {
   CHART_ATR_ICON,
   CHART_EMA_ICON,
   CHART_EMA_LIST,
+  CHART_IDEA_ICON,
   CHART_SMA_ICON,
   CHART_SMA_LIST,
   CHART_ZONE_ICON,
   CHART_ZONE_LIST,
 } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiButton, TuiIcon, TuiLoader } from '@taiga-ui/core';
+import { TuiButton } from '@taiga-ui/core';
 import { filter, map } from 'rxjs/operators';
 import { LegendComponent } from './legend';
 import { Timeframe } from 'types/timeframe';
@@ -42,10 +43,8 @@ interface IndicatorListItem<T = string> {
     ChartComponent,
     ButtonWithListComponent,
     ReactiveFormsModule,
-    TuiLoader,
     NgIf,
     TuiButton,
-    TuiIcon,
     LegendComponent,
     LoaderComponent,
   ],
@@ -77,6 +76,7 @@ export class ChartCandlestickComponent implements OnInit {
   zoneList: IndicatorListItem<Timeframe>[] = CHART_ZONE_LIST;
   valueZone: IndicatorListItem<Timeframe>[] | null = null;
   artIcon = CHART_ATR_ICON;
+  ideaIcon = CHART_IDEA_ICON;
 
   // @Input() event: null | StockEvent = null;
 
@@ -84,6 +84,7 @@ export class ChartCandlestickComponent implements OnInit {
   readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[0], this.emaList[5]]);
   readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[5]]);
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
+  readonly controlTarget: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
   readonly controlZone: FormControl<IndicatorListItem<Timeframe>[] | null> = new FormControl([this.zoneList[0]]);
 
   readonly selected$: Observable<StockInstrument | null> = this._store.selected$;
@@ -137,9 +138,23 @@ export class ChartCandlestickComponent implements OnInit {
     this._store.zones$,
     this.zoneIdea$,
     this._store.zonesWatch$,
-    this._store.figure$,
   ]).pipe(
     map((list) => this._concatZones(list)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly figures$: Observable<ConsolidationZonesShape | null> = combineLatest([
+    this._store.figure$.pipe(
+      switchMap((figure: ConsolidationZonesShape | null) =>
+        this.controlTarget.valueChanges.pipe(
+          startWith(this.controlTarget.value),
+          map((value: boolean) => (value ? figure : null))
+        )
+      )
+    ),
+    this._store.figureUser$,
+  ]).pipe(
+    map((list) => this._concatFigures(list)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -197,6 +212,15 @@ export class ChartCandlestickComponent implements OnInit {
 
     this.controlAtr.patchValue(value);
     this._store.updateSelectedAtr(value);
+  }
+
+  onToggleTarget(event: Event): void {
+    event.preventDefault();
+
+    const value = !this.controlTarget.value;
+
+    this.controlTarget.patchValue(value);
+    // this._store.updateFigure(value);
   }
 
   onOpenedEma(event: boolean): void {
@@ -272,8 +296,7 @@ export class ChartCandlestickComponent implements OnInit {
     // this._store.updateConsolidationZoneSelected(this._getValue(this.controlZone.value) as number[]);
   }
 
-  private _concatZones([zones, zonesIdea, zonesWatch, figure]: [
-    ConsolidationZonesShape | null,
+  private _concatZones([zones, zonesIdea, zonesWatch]: [
     ConsolidationZonesShape | null,
     ConsolidationZonesShape | null,
     ConsolidationZonesShape | null
@@ -298,13 +321,28 @@ export class ChartCandlestickComponent implements OnInit {
       }
     }
 
-    if (figure !== null) {
-      if (zones.instrument === figure.instrument) {
-        data = [...data, ...figure.data];
+    return { ...zones, data };
+  }
+
+  private _concatFigures([bot, user]: [
+    ConsolidationZonesShape | null,
+    ConsolidationZonesShape | null
+  ]): ConsolidationZonesShape | null {
+    if (bot === null) {
+      return null;
+    }
+
+    let data: Highcharts.AnnotationsOptions[] = [];
+
+    data = bot.data;
+
+    if (user !== null) {
+      if (bot.instrument === bot.instrument) {
+        data = [...data, ...user.data];
       }
     }
 
-    return { ...zones, data };
+    return { ...bot, data };
   }
 
   onEvent(event: { type: string; event: Event }): void {

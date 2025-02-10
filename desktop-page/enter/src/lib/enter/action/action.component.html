@@ -33,13 +33,18 @@
             </span>
         </div>
         <div class="row__space"></div>
-        <div class="item__value row__actions" *ngIf="!isDisabled">
+        <div
+          class="item__value row__actions"
+          tuiHintAppearance="dark"
+          [tuiHint]="formArrayTargets.value.length !== 0 ? 'Прежде чем редактировать Вход, необходимо удалить все Выходы' : null"
+          *ngIf="!isDisabled">
           <button
             appearance="icon"
             iconStart="@tui.pencil"
             tuiIconButton
             size="xs"
             type="button"
+            [disabled]="formArrayTargets.value.length !== 0"
             (click)="onEdit($event, index, 'entries')"
           ></button>
           <button

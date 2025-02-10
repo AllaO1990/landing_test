@@ -78,11 +78,12 @@ export class LkComponent implements OnInit {
         })
       )
       .subscribe((event: Params) => {
-        const { type, id, group } = event;
+        const { type, id, group, dialog } = event;
         this._select.updateEvent({
           type: type || null,
           id: id || null,
           group: group || null,
+          dialog: dialog || null,
         });
       });
 

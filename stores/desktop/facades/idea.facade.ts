@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { MainStore } from '../main.store';
-import { Observable, of, shareReplay, switchMap } from 'rxjs';
+import { Observable, of, switchMap, tap } from 'rxjs';
 import { StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { Position, StockPosition } from 'types/position';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, shareReplay } from 'rxjs/operators';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 
 @Injectable()
@@ -35,6 +35,7 @@ export class IdeaFacade {
       }
       return of(idea);
     }),
+    tap((idea: StockPosition) => this._store.selected.updateInstrument(idea.idea.instrument)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 

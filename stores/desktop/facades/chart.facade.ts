@@ -16,6 +16,7 @@ export class ChartFacade {
   readonly zonesIdea$: Observable<null | ConsolidationZonesShape> = this._store.consolidationZonesIdea.zones$;
   readonly zonesWatch$: Observable<null | ConsolidationZonesShape> = this._store.consolidationZonesWatch.zones$;
   readonly figure$ = this._store.figures.zones$;
+  readonly figureUser$ = this._store.figures.zonesUser$;
   readonly atr$ = this._store.atr.value$;
 
   readonly updateSelectedSma = this._store.sma.updateSelected;
@@ -23,4 +24,5 @@ export class ChartFacade {
   readonly updateSelectedConsolidationZones = this._store.consolidationZones.updateSelected;
   readonly updateSelectedAtr = this._store.atr.updateSelected;
   readonly updateInterval = this._store.interval.updateInterval;
+  readonly updateFigure = this._store.figures.updateFigures;
 }

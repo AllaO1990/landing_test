@@ -2,7 +2,7 @@ import { WithQueue } from '../core/with-queue.abstract';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { catchError, EMPTY, Observable, of, switchMap, tap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { FigureIdea } from 'types/chart';
+import { Action, FigureIdea } from 'types/chart';
 import { Response } from 'types/response';
 import * as Highcharts from 'highcharts/highstock';
 import { ConsolidationZonesShape, ConsolidationZonesState } from 'types/consolidation-zones';
@@ -10,30 +10,38 @@ import { AnnotationShapePointOptions, AnnotationsShapesOptions } from 'highchart
 import { getJoinUniq } from 'utils/get-join-uniq';
 import { StockTransaction } from 'types/stock';
 
-export class FiguresStore extends WithQueue<ConsolidationZonesState> {
+type FigureState = ConsolidationZonesState & { zonesUser: null | ConsolidationZonesShape };
+
+export class FiguresStore extends WithQueue<FigureState> {
   private readonly _commonAxisValues = { xAxis: 0, yAxis: 0 };
   private readonly _from: Date = new Date(new Date(2014, 0, 1, 12).setUTCHours(0, 0, 0, 0));
   private readonly _to: Date = new Date(new Date().setUTCHours(23, 59, 59, 0));
 
-  readonly zones$: Observable<ConsolidationZonesShape | null> = this.select(
-    (state: ConsolidationZonesState) => state.zones
+  readonly zones$: Observable<ConsolidationZonesShape | null> = this.select((state: FigureState) => state.zones);
+
+  readonly zonesUser$: Observable<ConsolidationZonesShape | null> = this.select(
+    (state: FigureState) => state.zonesUser
   );
 
   constructor(private readonly _api: DesktopService) {
     super({
       selected: null,
       zones: null,
+      zonesUser: null,
     });
   }
 
-  updateFigures = this.updater((state: ConsolidationZonesState, zones: any) => {
+  updateFigures = this.updater((state: FigureState, zones: any) => {
     return { ...state, zones };
+  });
+
+  updateFiguresUser = this.updater((state: FigureState, zonesUser: any) => {
+    return { ...state, zonesUser };
   });
 
   readonly load = this.effect((stream$: Observable<StockTransaction | null>) => {
     return stream$.pipe(
       switchMap((id: StockTransaction | null) => this._getFigures(id)),
-      tap((zones) => this.updateFigures(zones)),
       catchError((err: Error) => {
         console.error(err);
         return EMPTY;
@@ -59,26 +67,50 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
       ),
       filter((response: Response<FigureIdea | null>): response is Response<FigureIdea> => response.data !== null),
       map((response: Response<FigureIdea>) => this._getResponseData(response.data)),
-      map((response: Highcharts.AnnotationsOptions) => ({
-        data: [response],
-        instrument: data.instrumentId,
-        parent: data.ideaId,
-      })),
-      tap((res: ConsolidationZonesShape) => this.queue.setValue(key, res))
+      tap((response: Highcharts.AnnotationsOptions[]) => {
+        const idea = {
+          data: [response[0]],
+          instrument: data.instrumentId,
+          parent: data.ideaId,
+        };
+
+        this.queue.setValue(key, idea);
+        this.updateFigures(idea);
+        this.updateFiguresUser({
+          data: [response[1]],
+          instrument: data.instrumentId,
+          parent: data.ideaId,
+        });
+      })
     );
   }
 
-  private _getResponseData(data: FigureIdea): Highcharts.AnnotationsOptions {
+  private _getResponseData(data: FigureIdea): Highcharts.AnnotationsOptions[] {
     const shapes: AnnotationsShapesOptions[] = [];
     const today = new Date().setUTCHours(12, 0, 0, 0);
     const endDate = new Date(today).setFullYear(new Date(today).getFullYear() + 5);
+
+    const shapesUser: AnnotationsShapesOptions[] = data.ideaParams.actions.map((item: Action) => {
+      return {
+        type: 'path',
+        fill: 'rgba(0,0,0,0)',
+        stroke: item.type === 'out' ? 'rgba(0, 255, 0, 1)' : 'rgba(64, 224, 208, 1)',
+        strokeWidth: 1.5,
+        ry: Math.PI,
+        dashStyle: 'Solid',
+        points: [
+          { x: new Date(item.date).setUTCHours(0, 0, 0, 0), y: item.price, ...this._commonAxisValues },
+          { x: endDate, y: item.price, ...this._commonAxisValues },
+        ],
+      };
+    });
 
     let pointsPriceIn: Array<AnnotationShapePointOptions> = [];
 
     if (data.ideaParams.priceInPlan) {
       pointsPriceIn = [
         {
-          x: new Date(data.ideaParams.priceInCandleDate || today).valueOf(),
+          x: new Date(data.ideaParams.priceInCandleDate || today).setUTCHours(0, 0, 0, 0),
           y: data.ideaParams.priceInPlan,
           ...this._commonAxisValues,
         },
@@ -88,7 +120,11 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
 
     if (data.ideaParams.entryPrice && data.ideaParams.entryDate) {
       pointsPriceIn = [
-        { x: new Date(data.ideaParams.entryDate).valueOf(), y: data.ideaParams.entryPrice, ...this._commonAxisValues },
+        {
+          x: new Date(data.ideaParams.entryDate).setUTCHours(0, 0, 0, 0),
+          y: data.ideaParams.entryPrice,
+          ...this._commonAxisValues,
+        },
         { x: endDate, y: data.ideaParams.entryPrice, ...this._commonAxisValues },
       ];
     }
@@ -113,7 +149,7 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
         ry: Math.PI,
         points: [
           {
-            x: new Date(data.ideaParams.stopCandleDate || today).valueOf(),
+            x: new Date(data.ideaParams.stopCandleDate || today).setUTCHours(0, 0, 0, 0),
             y: data.ideaParams.stop,
             ...this._commonAxisValues,
           },
@@ -131,7 +167,11 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
         dashStyle: 'Solid',
         ry: Math.PI,
         points: [
-          { x: new Date(data.ideaParams.stopDate).valueOf(), y: data.ideaParams.stop, ...this._commonAxisValues },
+          {
+            x: new Date(data.ideaParams.stopDate).setUTCHours(0, 0, 0, 0),
+            y: data.ideaParams.stop,
+            ...this._commonAxisValues,
+          },
           { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
         ],
       });
@@ -141,7 +181,7 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
       const currentDate = new Date().valueOf();
 
       const targets: AnnotationsShapesOptions[] = data.ideaParams.targets.map((item) => {
-        const startDate = item.date !== null ? new Date(item.date).valueOf() : today;
+        const startDate = item.date !== null ? new Date(item.date).setUTCHours(0, 0, 0, 0) : today;
         return {
           type: 'path',
           fill: 'rgba(0,0,0,0)',
@@ -159,11 +199,19 @@ export class FiguresStore extends WithQueue<ConsolidationZonesState> {
       shapes.push(...targets);
     }
 
-    return {
-      shapes: shapes,
-      draggable: '',
-      zIndex: 20,
-      id: `lines`,
-    };
+    return [
+      {
+        shapes: shapes,
+        draggable: '',
+        zIndex: 20,
+        id: `lines`,
+      },
+      {
+        shapes: shapesUser,
+        draggable: '',
+        zIndex: 20,
+        id: `lines-user`,
+      },
+    ];
   }
 }
