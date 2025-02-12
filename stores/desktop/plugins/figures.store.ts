@@ -31,17 +31,37 @@ export class FiguresStore extends WithQueue<FigureState> {
     });
   }
 
-  updateFigures = this.updater((state: FigureState, zones: any) => {
+  updateFigures = this.updater((state: FigureState, zones: ConsolidationZonesShape | null) => {
     return { ...state, zones };
   });
 
-  updateFiguresUser = this.updater((state: FigureState, zonesUser: any) => {
+  updateFiguresUser = this.updater((state: FigureState, zonesUser: ConsolidationZonesShape | null) => {
     return { ...state, zonesUser };
   });
 
   readonly load = this.effect((stream$: Observable<StockTransaction | null>) => {
     return stream$.pipe(
       switchMap((id: StockTransaction | null) => this._getFigures(id)),
+      tap((response: ConsolidationZonesShape | null) => {
+        if (response === null) {
+          this.updateFigures(null);
+          this.updateFiguresUser(null);
+
+          return;
+        }
+
+        const [bot, user] = response.data;
+
+        this.updateFigures({
+          ...response,
+          data: [bot],
+        });
+
+        this.updateFiguresUser({
+          ...response,
+          data: [user],
+        });
+      }),
       catchError((err: Error) => {
         console.error(err);
         return EMPTY;
@@ -49,7 +69,7 @@ export class FiguresStore extends WithQueue<FigureState> {
     );
   });
 
-  private _getFigures(data: StockTransaction | null): Observable<any> {
+  private _getFigures(data: StockTransaction | null): Observable<ConsolidationZonesShape | null> {
     if (data === null || data.ideaId === null) {
       return of(null);
     }
@@ -67,21 +87,12 @@ export class FiguresStore extends WithQueue<FigureState> {
       ),
       filter((response: Response<FigureIdea | null>): response is Response<FigureIdea> => response.data !== null),
       map((response: Response<FigureIdea>) => this._getResponseData(response.data)),
-      tap((response: Highcharts.AnnotationsOptions[]) => {
-        const idea = {
-          data: [response[0]],
-          instrument: data.instrumentId,
-          parent: data.ideaId,
-        };
-
-        this.queue.setValue(key, idea);
-        this.updateFigures(idea);
-        this.updateFiguresUser({
-          data: [response[1]],
-          instrument: data.instrumentId,
-          parent: data.ideaId,
-        });
-      })
+      map((response: Highcharts.AnnotationsOptions[]) => ({
+        data: response,
+        instrument: data.instrumentId,
+        parent: data.ideaId,
+      })),
+      tap((data: ConsolidationZonesShape) => this.queue.setValue(key, data))
     );
   }
 
@@ -139,43 +150,22 @@ export class FiguresStore extends WithQueue<FigureState> {
       points: pointsPriceIn,
     });
 
-    if (data.ideaParams.stopCandleDate) {
-      shapes.push({
-        type: 'path',
-        fill: 'rgba(0,0,0,0)',
-        stroke: 'rgba(255,0,0,1)',
-        strokeWidth: 2,
-        dashStyle: 'Dash',
-        ry: Math.PI,
-        points: [
-          {
-            x: new Date(data.ideaParams.stopCandleDate || today).setUTCHours(0, 0, 0, 0),
-            y: data.ideaParams.stop,
-            ...this._commonAxisValues,
-          },
-          { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
-        ],
-      });
-    }
-
-    if (data.ideaParams.stopDate) {
-      shapes.push({
-        type: 'path',
-        fill: 'rgba(0,0,0,0)',
-        stroke: 'rgba(255,0,0,1)',
-        strokeWidth: 1.5,
-        dashStyle: 'Solid',
-        ry: Math.PI,
-        points: [
-          {
-            x: new Date(data.ideaParams.stopDate).setUTCHours(0, 0, 0, 0),
-            y: data.ideaParams.stop,
-            ...this._commonAxisValues,
-          },
-          { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
-        ],
-      });
-    }
+    shapes.push({
+      type: 'path',
+      fill: 'rgba(0,0,0,0)',
+      stroke: 'rgba(255,0,0,1)',
+      strokeWidth: 2,
+      dashStyle: 'Dash',
+      ry: Math.PI,
+      points: [
+        {
+          x: new Date(data.ideaParams.stopCandleDate || today).setUTCHours(0, 0, 0, 0),
+          y: data.ideaParams.stop,
+          ...this._commonAxisValues,
+        },
+        { x: endDate, y: data.ideaParams.stop, ...this._commonAxisValues },
+      ],
+    });
 
     if (data.ideaParams.targets) {
       const currentDate = new Date().valueOf();
@@ -204,7 +194,7 @@ export class FiguresStore extends WithQueue<FigureState> {
         shapes: shapes,
         draggable: '',
         zIndex: 20,
-        id: `lines`,
+        id: `lines-idea`,
       },
       {
         shapes: shapesUser,

@@ -46,6 +46,12 @@ export interface StockPosition {
       totalPrice: number;
     } | null;
   };
+  dividends: {
+    amount: number;
+    brokerId: number;
+    date: string;
+    size: number;
+  }[];
   idea: {
     author: string;
     createdAt: string | null;
@@ -133,14 +139,13 @@ export interface StockPositionActionTarget {
 }
 
 export interface StockPositionDividend {
-  price: number;
+  size: number;
   amount: number;
   profit: number | null;
-  profitPercent: null | number;
+  profitPct: null | number;
   depositShare: null | number;
-  totalPrice: number;
   date: null | string;
-  broker: string | null;
+  brokerId: number | null;
 }
 
 export class Position implements ResponsePosition {

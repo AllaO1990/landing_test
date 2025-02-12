@@ -61,6 +61,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             entries: [],
             outs: [],
           },
+          dividends: [],
           idea: {
             ...idea,
             author: 'user',

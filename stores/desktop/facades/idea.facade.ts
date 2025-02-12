@@ -59,6 +59,7 @@ const DEFAULT_IDEA = {
     outs: [],
     position: null,
   },
+  dividends: [],
   idea: {
     author: 'user',
     createdAt: null,

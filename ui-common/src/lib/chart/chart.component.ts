@@ -1,6 +1,15 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { combineLatest, debounceTime, Observable, of, shareReplay, startWith, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { ButtonWithListComponent } from './button-with-list';
 import {
@@ -139,7 +148,9 @@ export class ChartCandlestickComponent implements OnInit {
     this.zoneIdea$,
     this._store.zonesWatch$,
   ]).pipe(
+    debounceTime(0),
     map((list) => this._concatZones(list)),
+    distinctUntilChanged((a, b) => a?.instrument === b?.instrument),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -328,21 +339,19 @@ export class ChartCandlestickComponent implements OnInit {
     ConsolidationZonesShape | null,
     ConsolidationZonesShape | null
   ]): ConsolidationZonesShape | null {
-    if (bot === null) {
-      return null;
-    }
-
-    let data: Highcharts.AnnotationsOptions[] = [];
-
-    data = bot.data;
-
-    if (user !== null) {
-      if (bot.instrument === bot.instrument) {
-        data = [...data, ...user.data];
+    if (bot !== null && user !== null) {
+      if (bot.instrument === user.instrument) {
+        return { ...bot, data: [...bot.data, ...user.data] };
       }
+
+      return user;
     }
 
-    return { ...bot, data };
+    if (bot !== null) {
+      return bot;
+    }
+
+    return user;
   }
 
   onEvent(event: { type: string; event: Event }): void {
