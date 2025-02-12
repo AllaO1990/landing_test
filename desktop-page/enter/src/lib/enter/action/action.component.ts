@@ -53,6 +53,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { getPriceIncrement } from 'utils/get-price-increment';
+import { AddDividendComponent } from './add-dividend/add-dividend.component';
+
+type DialogType = 'entries' | 'outs' | 'dividends';
 
 @Component({
   selector: 'lib-enter-action',
@@ -110,6 +113,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
+  private _dialogDividendComponent: PolymorpheusComponent<AddDividendComponent> | null = null;
 
   private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
   private readonly _formGroupValueChanges$: Subject<any> = new ReplaySubject(1);
@@ -120,7 +124,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   readonly controlFormArray: FormGroup = new FormGroup({
     entries: new FormArray<FormControl<StockPositionActionEntry>>([]),
     outs: new FormArray<FormControl<StockPositionActionTarget>>([]),
-    dividends: new FormArray<FormControl<StockPositionTarget>>([]),
+    dividends: new FormArray<FormControl<StockPositionDividend>>([]),
   });
 
   get formArrayEntries(): FormArray {
@@ -141,7 +145,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   targetsList$: Observable<StockPositionActionTarget[]> = this._createStream<StockPositionActionTarget[]>(
     this.formArrayTargets
   ).pipe(startWith(this.formArrayTargets.value), shareReplay({ bufferSize: 1, refCount: true }));
-  dividendsList$: Observable<StockPositionTarget[]> = this._createStream<StockPositionTarget[]>(
+  dividendsList$: Observable<StockPositionDividend[]> = this._createStream<StockPositionDividend[]>(
     this.formArrayDividends
   ).pipe(startWith(this.formArrayDividends.value), shareReplay({ bufferSize: 1, refCount: true }));
   position$: Observable<any> = this.formGroupValueChanges$.pipe(
@@ -153,9 +157,10 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     })
   );
 
-  private readonly _mapForm = {
+  private readonly _mapForm: Partial<{ [key in DialogType]: any }> = {
     entries: this.addEntry,
     outs: this.addTarget,
+    dividends: this.addDividend,
   };
 
   multiplier$: Observable<number> = this.formGroupValueChanges$.pipe(
@@ -195,9 +200,15 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     ),
     shareReplay({ bufferSize: 1, refCount: false })
   );
-  totalDividend$: Observable<StockPositionDividend> = this.formArrayDividends.valueChanges.pipe(
-    startWith(this.formArrayDividends.value),
-    map(() => this._service.getTotalDividend())
+  totalDividend$: Observable<StockPositionDividend> = combineLatest([
+    this.totalEntry$,
+    this.dividendsList$,
+    this.priceIncrement$,
+  ]).pipe(
+    debounceTime(100),
+    map(([entry, dividend, priceIncrement]: [StockPositionActionEntry, StockPositionDividend[], number]) =>
+      this._service.getTotalDividend(entry, dividend, priceIncrement)
+    )
   );
   totalRemainder$: Observable<StockPositionTarget> = combineLatest([
     this.totalEntry$,
@@ -235,6 +246,11 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
       ]) => this._service.getTotalResult(totalEntry, totalOut, totalRemainder, lastPrice, multiplier, priceIncrement)
     )
   );
+  isDisableDividends$: Observable<boolean> = combineLatest([this.totalEntry$, this.totalDividend$]).pipe(
+    debounceTime(0),
+    map(([entry, dividend]: [StockPositionActionEntry, StockPositionDividend]) => entry.amount === dividend.amount),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   ngAfterViewInit(): void {
     const source$: Observable<any> = this._createStream<any>(this.formGroup).pipe(
@@ -262,6 +278,14 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
           this._updateFormArray(
             'outs',
             (result.outs || []).map((item: any) => ({ ...item, depositShare: null })),
+            true
+          );
+          this._updateFormArray(
+            'dividends',
+            (result.dividends || []).map((item: any) => ({
+              ...item,
+              depositShare: null,
+            })),
             true
           );
         }
@@ -368,7 +392,26 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     });
   }
 
-  onRemove(event: Event, index: number, formName: 'entries' | 'outs'): void {
+  async addDividend(event: Event, data: any | null = null, controlIndex: number | null = null): Promise<void> {
+    event.preventDefault();
+
+    this._dialogDividendComponent = await import('./add-dividend/add-dividend.component')
+      .then((m) => m.AddDividendComponent)
+      .then((c) => new PolymorpheusComponent(c, this._injector));
+
+    this._openDialog(this._dialogDividendComponent as PolymorpheusComponent<AddDividendComponent>, {
+      ...data,
+      entry: this.formArrayEntries.value,
+      dividend: this.formArrayDividends.value,
+      minPriceIncrement: this.minPriceIncrement,
+    }).subscribe((result: object | null) => {
+      if (result) {
+        this._updateDataFromDialog(this.formArrayDividends, result, controlIndex);
+      }
+    });
+  }
+
+  onRemove(event: Event, index: number, formName: DialogType): void {
     event.preventDefault();
 
     const formArray = this.controlFormArray.get(formName);
@@ -378,7 +421,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     }
   }
 
-  onEdit(event: Event, index: number, formName: 'entries' | 'outs'): void {
+  onEdit(event: Event, index: number, formName: DialogType): void {
     event.preventDefault();
 
     const formArray = this.controlFormArray.get(formName);
@@ -405,7 +448,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     }
   }
 
-  private _updateFormArray<T>(formArrayName: 'entries' | 'outs', data: T[], onlySelf = false): void {
+  private _updateFormArray<T>(formArrayName: DialogType, data: T[], onlySelf = false): void {
     const formArray: FormArray = this.controlFormArray.get(formArrayName) as FormArray;
 
     if (formArray) {

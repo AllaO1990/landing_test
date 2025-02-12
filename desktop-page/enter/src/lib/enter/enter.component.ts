@@ -153,7 +153,7 @@ export class VtEnterComponent implements AfterViewInit {
   });
 
   readonly form: FormGroup = new FormGroup({
-    actions: new FormControl({ entries: [], outs: [], position: null }),
+    actions: new FormControl({ entries: [], dividends: [], outs: [], position: null }),
     idea: new FormControl({ entries: [], targets: [], stop: [] }, maxAmount()),
     sidebar: new FormControl({
       instrumentId: null,
@@ -259,10 +259,14 @@ export class VtEnterComponent implements AfterViewInit {
           const targets = this._getIdeaTargets(result.idea.targets);
           const entries = this._getIdeaEntries(result.idea.entries);
           const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
-          const action = result.idea.author === 'bot' ? 'disable' : 'enable';
+          let action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
+
+          if (result.actions.entries.length !== 0) {
+            action = 'disable';
+          }
 
           this.form.patchValue({
-            actions: result.actions,
+            actions: { ...result.actions, dividends: result.dividends },
             idea: {
               entries,
               targets,
@@ -409,6 +413,12 @@ export class VtEnterComponent implements AfterViewInit {
           price: item.price,
         })),
       },
+      dividends: value.actions.dividends.map((item: any) => ({
+        amount: item.amount,
+        brokerId: item.brokerId,
+        date: item.date,
+        size: item.size,
+      })),
       idea: {
         goals:
           value &&

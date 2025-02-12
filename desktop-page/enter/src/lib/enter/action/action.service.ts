@@ -42,14 +42,13 @@ export class ActionService {
   };
 
   private readonly _defaultTotalDividend: StockPositionDividend = {
-    price: 0,
+    size: 0,
     amount: 0,
     profit: null,
-    profitPercent: null,
-    totalPrice: 0,
+    profitPct: null,
     depositShare: null,
     date: null,
-    broker: null,
+    brokerId: null,
   };
 
   getTotalEntry(list: StockPositionActionEntry[] | null, priceIncrement = 8): StockPositionActionEntry {
@@ -137,8 +136,31 @@ export class ActionService {
     };
   }
 
-  getTotalDividend(): StockPositionDividend {
-    return this._defaultTotalDividend;
+  getTotalDividend(
+    entry: StockPositionActionEntry,
+    list: StockPositionDividend[],
+    priceIncrement = 8
+  ): StockPositionDividend {
+    if (list.length === 0) {
+      return this._defaultTotalDividend;
+    }
+
+    return list.reduce((acc: StockPositionDividend, item: StockPositionDividend, index: number) => {
+      const value: StockPositionDividend = {
+        ...acc,
+        size: acc.size + item.size * item.amount,
+        amount: acc.amount + item.amount,
+        depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
+      };
+
+      if (list.length - 1 === index) {
+        value.profit = value.size;
+        value.profitPct = getNumberPrecision((value.profit / entry.totalPrice) * 100, 2);
+        value.size = getNumberPrecision(value.size / value.amount, priceIncrement);
+      }
+
+      return value;
+    }, this._defaultTotalDividend);
   }
 
   getTotalResult(

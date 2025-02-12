@@ -62,7 +62,7 @@ let CHART_INCREMENT = 2;
 export class ChartComponent implements AfterViewInit, OnDestroy {
   private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
   private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-idea', 'zones-watch'];
-  private readonly _figuresName: string[] = ['lines'];
+  private readonly _figuresName: string[] = ['lines-idea', 'lines-user'];
   private readonly _instrument$: Subject<any> = new BehaviorSubject(null);
   private readonly _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
   private readonly _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);
@@ -357,7 +357,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
           filter((instrument: any | null): instrument is any => instrument !== null),
           map((instrument) => ({ chart, id: instrument.id }))
         )
-      )
+      ),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     chart$
