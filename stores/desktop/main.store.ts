@@ -105,7 +105,7 @@ export class MainStore extends ComponentStore<any> {
     this.idea.loadIdeas(timerSource);
     this.idea.loadPositions(timerSource);
 
-    this.onChangeInstrument(eventWithoutDialog$);
+    this.onChangeInstrument(this.selected.event$);
     this.onChangePosition(eventWithoutDialog$);
     this.onChangeIdea(eventWithoutDialog$);
     this.onChangeWatch(eventWithoutDialog$);

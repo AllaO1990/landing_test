@@ -3,16 +3,32 @@ import { inject } from '@angular/core';
 
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '@core/auth';
+import { TuiAlertService } from '@taiga-ui/core';
+import { Router } from '@angular/router';
 
 export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   // const _snackbar = inject(MatSnackBar);
+  const _alerts: TuiAlertService = inject(TuiAlertService);
+  const _statusList = [400];
 
   const _authService = inject(AuthService);
+  const _router: Router = inject(Router);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse, data: any) => {
+      if (_statusList.find((status: number) => status === error.status)) {
+        _alerts
+          .open(error.error.message, {
+            label: `Error ${error.status}`,
+            appearance: 'negative',
+            autoClose: 5000,
+          })
+          .subscribe();
+      }
+
       if (error.status === 401) {
         _authService.logout();
+        _router.navigate(['/login']);
         // window.location.href = '/login';
       }
 

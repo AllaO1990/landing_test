@@ -3,16 +3,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '
 import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { WRAPPER_TABLE_HEADER } from './table.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import {
-  TuiFormatNumberPipe,
-  TuiHint,
-  TuiIcon,
-  TuiScrollable,
-  TuiScrollbar,
-  TuiTextfieldOptionsDirective,
-} from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollable, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { StockId, StockTransaction } from 'types/stock';
-import { GetPositionTypePipe } from '@ui/pipes/get-posiotion-type.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import {
@@ -30,8 +22,6 @@ import {
 } from 'rxjs';
 import { PortfolioPosition } from 'types/portfolio';
 import { LoaderComponent } from '@ui/components/loader';
-import { PolymorpheusTemplate } from '@taiga-ui/polymorpheus';
-import { TuiLet } from '@taiga-ui/cdk';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { EventSelected } from 'types/events';
@@ -42,6 +32,7 @@ import { TuiPagination } from '@taiga-ui/kit';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
+import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 
 @Component({
   selector: 'lib-wrapper-table',
@@ -51,11 +42,9 @@ import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account'
     NgForOf,
     CdkFixedSizeVirtualScroll,
     CdkVirtualScrollViewport,
-    TuiScrollbar,
     AsyncPipe,
     CdkVirtualForOf,
     DatePipe,
-    GetPositionTypePipe,
     TuiFormatNumberPipe,
     GetStrategyNamePipe,
     NgIf,
@@ -64,14 +53,13 @@ import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account'
     LoaderComponent,
     NgTemplateOutlet,
     TuiHint,
-    PolymorpheusTemplate,
-    TuiLet,
     ColorPriceDirective,
     TuiPagination,
     TuiTextfieldOptionsDirective,
     TuiSelectModule,
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
+    GetBrokerPipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',

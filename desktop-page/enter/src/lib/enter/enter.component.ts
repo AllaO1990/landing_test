@@ -250,7 +250,7 @@ export class VtEnterComponent implements AfterViewInit {
         this.isPending = false;
 
         if (last !== null && result !== null) {
-          if (last.idea.id === result.idea.id) {
+          if (last.idea.id === result.idea.id && last.idea.instrument.id === result.idea.instrument.id) {
             this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
           }
         }
