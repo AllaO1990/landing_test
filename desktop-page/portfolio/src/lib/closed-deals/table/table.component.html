@@ -211,12 +211,12 @@
         <td
           class="td"
           *tuiCell="'strategy'"
-          [tuiHint]="item.strategyKey | getStrategyName"
+          [tuiHint]="item.strategy.type | getStrategyName | async"
           tuiHintAppearance="dark"
           tuiTd>
           <div class="ticker">
         <span class="ellipsis">
-         {{ item.strategyKey | getStrategyName }}
+         {{ item.strategy.type | getStrategyName | async }}
         </span>
           </div>
         </td>
@@ -225,9 +225,11 @@
           class="td"
           *tuiCell="'broker'"
           tuiTd>
-          <ng-container *ngIf="item.broker; else none">
-            {{ item.broker }}
-          </ng-container>
+          <div class="ticker">
+           <span class="ellipsis" *ngIf="item.brokers && item.brokers.length; else none">
+              {{ item.brokers[0].brokerId | getBrokerName | async }}
+           </span>
+          </div>
         </td>
 
         <td

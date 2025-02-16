@@ -1,28 +1,38 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { Observable, switchMap, tap } from 'rxjs';
+import { Observable, shareReplay, switchMap, tap } from 'rxjs';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { DataList, Response } from 'types/response';
 
 export interface AccountState {
   brokers: null | AccountBroker[];
+  brokersMap: Map<number | null, AccountBroker>;
   currencies: null | AccountCurrency[];
   portfolios: null | AccountPortfolio[];
   strategies: null | AccountStrategies[];
+  strategiesMap: Map<string, AccountStrategies>;
 }
 
 export class AccountStore extends ComponentStore<AccountState> {
   readonly brokers$: Observable<null | AccountBroker[]> = this.select((state: AccountState) => state.brokers);
+  readonly brokersMap$: Observable<Map<number | null, AccountBroker>> = this.select(
+    (state: AccountState) => state.brokersMap
+  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
   readonly currencies$: Observable<null | AccountCurrency[]> = this.select((state: AccountState) => state.currencies);
   readonly portfolios$: Observable<null | AccountPortfolio[]> = this.select((state: AccountState) => state.portfolios);
   readonly strategies$: Observable<null | AccountStrategies[]> = this.select((state: AccountState) => state.strategies);
+  readonly strategiesMap$: Observable<Map<string, AccountStrategies>> = this.select(
+    (state: AccountState) => state.strategiesMap
+  ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   constructor(private readonly _api: DesktopService) {
     super({
       brokers: null,
+      brokersMap: new Map(),
       currencies: null,
       portfolios: null,
       strategies: null,
+      strategiesMap: new Map(),
     });
   }
 
@@ -32,6 +42,21 @@ export class AccountStore extends ComponentStore<AccountState> {
       brokers,
     })
   );
+
+  readonly updateBrokersMap = this.updater((state: AccountState, brokers: null | AccountBroker[]): AccountState => {
+    const map = new Map<number | null, AccountBroker>();
+
+    if (brokers !== null) {
+      brokers.forEach((item: AccountBroker) => {
+        map.set(item.brokerId, item);
+      });
+    }
+
+    return {
+      ...state,
+      brokersMap: map,
+    };
+  });
 
   readonly updateCurrencies = this.updater(
     (state: AccountState, currencies: null | AccountCurrency[]): AccountState => ({
@@ -52,6 +77,23 @@ export class AccountStore extends ComponentStore<AccountState> {
       ...state,
       strategies,
     })
+  );
+
+  readonly updateStrategiesMap = this.updater(
+    (state: AccountState, strategiesMap: null | AccountStrategies[]): AccountState => {
+      const map = new Map<string, AccountStrategies>();
+
+      if (strategiesMap !== null) {
+        strategiesMap.forEach((item: AccountStrategies) => {
+          map.set(item.key, item);
+        });
+      }
+
+      return {
+        ...state,
+        strategiesMap: map,
+      };
+    }
   );
 
   readonly addPortfolio = this.updater((state: AccountState, portfolio: AccountPortfolio): AccountState => {
@@ -89,9 +131,12 @@ export class AccountStore extends ComponentStore<AccountState> {
   readonly loadBrokers = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
       switchMap(() =>
-        this._api
-          .getAccountBrokers({})
-          .pipe(tap((response: Response<DataList<AccountBroker>>) => this.updateBrokers(response.data.items)))
+        this._api.getAccountBrokers({}).pipe(
+          tap((response: Response<DataList<AccountBroker>>) => {
+            this.updateBrokers(response.data.items);
+            this.updateBrokersMap(response.data.items);
+          })
+        )
       )
     )
   );
@@ -119,9 +164,12 @@ export class AccountStore extends ComponentStore<AccountState> {
   readonly loadStrategies = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
       switchMap(() =>
-        this._api
-          .getAccountStrategies()
-          .pipe(tap((response: Response<DataList<AccountStrategies>>) => this.updateStrategies(response.data.items)))
+        this._api.getAccountStrategies().pipe(
+          tap((response: Response<DataList<AccountStrategies>>) => {
+            this.updateStrategies(response.data.items);
+            this.updateStrategiesMap(response.data.items);
+          })
+        )
       )
     )
   );

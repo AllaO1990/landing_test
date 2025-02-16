@@ -27,7 +27,7 @@
         </div>
         <div class="item__value row__item row__broker row__center row__deposit">
             <span
-              *ngIf="item.brokerId && (item.brokerId | getBroker | async) as broker; else none"
+              *ngIf="item.brokerId && (item.brokerId | getBrokerName | async) as broker; else none"
               [title]="broker">
               {{ broker }}
             </span>
@@ -111,7 +111,7 @@
         </div>
         <div class="item__value row__item row__center row__broker">
             <span
-              *ngIf="item.brokerId && (item.brokerId | getBroker | async) as broker; else none"
+              *ngIf="item.brokerId && (item.brokerId | getBrokerName | async) as broker; else none"
               [title]="broker">
               {{ broker }}
             </span>
@@ -232,7 +232,7 @@
         </div>
         <div class="item__value row__item row__right row__broker">
           <span
-            *ngIf="item.brokerId && (item.brokerId | getBroker | async) as broker; else none"
+            *ngIf="item.brokerId && (item.brokerId | getBrokerName | async) as broker; else none"
             [title]="broker">
             {{ broker }}
           </span>
