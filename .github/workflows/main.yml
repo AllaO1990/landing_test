@@ -67,5 +67,5 @@ jobs:
             docker stop vanya-web
             docker rm vanya-web
             docker run --restart always --name vanya-web -d -p 8082:80 vanya-web-image:latest
-            docker system prune -f
+            # docker system prune -f
             curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.VANYA_TECH_CHAT_ID}}", "text": "WEB-интерфейс обновлен", "disable_notification": true}' https://api.telegram.org/bot${{ secrets.VANYA_CI_CD_BOT_TOKEN }}/sendMessage
