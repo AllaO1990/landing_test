@@ -150,7 +150,7 @@ export class FiguresStore extends WithQueue<FigureState> {
       points: pointsPriceIn,
     });
 
-    shapes.push({
+    shapesUser.push({
       type: 'path',
       fill: 'rgba(0,0,0,0)',
       stroke: 'rgba(255,0,0,1)',
