@@ -167,22 +167,27 @@ export class ActionService {
     entry: StockPositionActionEntry,
     target: StockPositionActionTarget,
     remainder: StockPositionTarget,
+    dividend: StockPositionDividend,
     lastPrice: number,
     multiplier: number,
     priceIncrement = 8
   ): StockPositionActionTarget {
-    if (entry.price === 0 || lastPrice === 0) {
+    if ((entry.price === 0 && dividend.size) || lastPrice === 0) {
       return this._defaultTotalOut;
     }
 
     const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice, priceIncrement);
+    const profit = getNumberPrecision(
+      (totalPrice - entry.totalPrice) * multiplier + (dividend.profit || 0),
+      priceIncrement
+    );
 
     return {
       price: target.price || lastPrice,
-      amount: entry.amount,
+      amount: entry.amount + dividend.amount,
       totalPrice: totalPrice,
-      profit: getNumberPrecision((totalPrice - entry.totalPrice) * multiplier, priceIncrement),
-      profitPercent: getNumberPrecision(((totalPrice - entry.totalPrice) / entry.totalPrice) * multiplier * 100, 2),
+      profit: profit,
+      profitPercent: getNumberPrecision((profit / entry.totalPrice) * 100, 2),
       date: null,
       depositShare: null,
       brokerId: null,
