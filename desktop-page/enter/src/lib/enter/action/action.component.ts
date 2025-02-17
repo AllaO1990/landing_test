@@ -230,20 +230,31 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     this.totalEntry$,
     this.totalOut$,
     this.totalRemainder$,
+    this.totalDividend$,
     this._ideaFacade.idea$.pipe(map((data: StockPosition) => data.idea.lastPrice)),
     this.multiplier$,
     this.priceIncrement$,
   ]).pipe(
     debounceTime(100),
     map(
-      ([totalEntry, totalOut, totalRemainder, lastPrice, multiplier, priceIncrement]: [
+      ([totalEntry, totalOut, totalRemainder, totalDividend, lastPrice, multiplier, priceIncrement]: [
         StockPositionActionEntry,
         StockPositionActionTarget,
         StockPositionTarget,
+        StockPositionDividend,
         number,
         number,
         number
-      ]) => this._service.getTotalResult(totalEntry, totalOut, totalRemainder, lastPrice, multiplier, priceIncrement)
+      ]) =>
+        this._service.getTotalResult(
+          totalEntry,
+          totalOut,
+          totalRemainder,
+          totalDividend,
+          lastPrice,
+          multiplier,
+          priceIncrement
+        )
     )
   );
   isDisableDividends$: Observable<boolean> = combineLatest([this.totalEntry$, this.totalDividend$]).pipe(
