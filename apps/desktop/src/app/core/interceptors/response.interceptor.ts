@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   // const _snackbar = inject(MatSnackBar);
   const _alerts: TuiAlertService = inject(TuiAlertService);
-  const _statusList = [400];
+  const _statusList = [400, 404];
 
   const _authService = inject(AuthService);
   const _router: Router = inject(Router);
@@ -18,7 +18,7 @@ export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
     catchError((error: HttpErrorResponse, data: any) => {
       if (_statusList.find((status: number) => status === error.status)) {
         _alerts
-          .open(error.error.message, {
+          .open(`<p><strong>${error.error.message}</strong></p> ${error.url}`, {
             label: `Error ${error.status}`,
             appearance: 'negative',
             autoClose: 5000,

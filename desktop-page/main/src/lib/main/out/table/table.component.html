@@ -30,6 +30,7 @@
         (click)="onClick($event, item)"
         *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
         [class.out__table-tr--active]="(activeIdeaId$ | async) === item.id"
+        [style.background-color]="item | colorOutToPosition"
         tuiTr
       >
         <!--          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100 || 50)"-->

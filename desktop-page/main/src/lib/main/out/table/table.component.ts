@@ -18,6 +18,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
+import { ColorOutToPositionPipe } from './color.pipe';
 
 @Component({
   selector: 'vt-out-table',
@@ -40,6 +41,7 @@ import { SelectFacade } from 'stores/facades/select.facade';
     CdkVirtualForOf,
     CdkFixedSizeVirtualScroll,
     CdkVirtualScrollViewport,
+    ColorOutToPositionPipe,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
