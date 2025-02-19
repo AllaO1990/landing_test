@@ -150,7 +150,7 @@ export class ChartCandlestickComponent implements OnInit {
   ]).pipe(
     debounceTime(0),
     map((list) => this._concatZones(list)),
-    distinctUntilChanged((a, b) => a?.instrument === b?.instrument),
+    distinctUntilChanged((a, b) => a?.instrument === b?.instrument && a?.data.length === b?.data.length),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
