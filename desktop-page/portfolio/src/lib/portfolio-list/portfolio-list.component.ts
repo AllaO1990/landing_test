@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TuiButton, TuiFormatNumberPipe, TuiLoader } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe } from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
@@ -12,7 +12,7 @@ type PortfolioInfo = {
 @Component({
   selector: 'portfolio-list',
   standalone: true,
-  imports: [TuiButton, NgIf, NgForOf, AsyncPipe, TuiLoader, TuiFormatNumberPipe, LoaderComponent],
+  imports: [TuiButton, NgForOf, LoaderComponent, AsyncPipe, TuiFormatNumberPipe, NgIf],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +28,7 @@ export class PortfolioListComponent {
     PortfolioInfoEnum.IN_TRANSACTIONS,
     PortfolioInfoEnum.FREE_MONEY,
   ];
+  listFirst: PortfolioInfoEnum[] = [PortfolioInfoEnum.DEPOSITED];
   readonly constants = PORTFOLIO_LIST_CONSTANTS;
 
   @Input() data: PortfolioInfo | null = null;

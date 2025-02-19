@@ -3,6 +3,7 @@ import { Observable, shareReplay, switchMap, tap } from 'rxjs';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { DataList, Response } from 'types/response';
+import { sortText } from 'utils/sort-text';
 
 export interface AccountState {
   brokers: null | AccountBroker[];
@@ -133,7 +134,7 @@ export class AccountStore extends ComponentStore<AccountState> {
       switchMap(() =>
         this._api.getAccountBrokers({}).pipe(
           tap((response: Response<DataList<AccountBroker>>) => {
-            this.updateBrokers(response.data.items);
+            this.updateBrokers(response.data.items.sort((a, b) => sortText(a.broker, b.broker)));
             this.updateBrokersMap(response.data.items);
           })
         )
