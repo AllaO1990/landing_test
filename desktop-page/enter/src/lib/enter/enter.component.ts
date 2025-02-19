@@ -256,7 +256,11 @@ export class VtEnterComponent implements AfterViewInit {
         }
 
         if (result) {
-          const targets = this._getIdeaTargets(result.idea.targets);
+          const targets = this._getIdeaTargets(
+            result.idea.targets,
+            result.actions.outs,
+            result.idea.positionType === 'long' ? 1 : -1
+          );
           const entries = this._getIdeaEntries(result.idea.entries);
           const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
           let action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
@@ -450,18 +454,39 @@ export class VtEnterComponent implements AfterViewInit {
     }));
   }
 
-  private _getIdeaTargets(list: any[]): StockPositionTarget[] {
-    return list.map((item) => ({
-      price: item.price,
-      amount: item.amount,
-      profit: item.profit || null,
-      profitPercent: item.profitPercent || null,
-      depositShare: item.depositShare || null,
-      totalPrice: item.price * item.amount,
-      reached: false,
-      stopDate: item.stopDate || null,
-      broker: null,
-    }));
+  private _getDiffPct(currentPrice: number, lastPrice: number): number {
+    return Math.abs(((lastPrice - currentPrice) / currentPrice) * 100);
+  }
+
+  private _getIdeaTargets(list: any[], outs: any[] = [], direction: 1 | -1 = 1): StockPositionTarget[] {
+    return list.map((item) => {
+      let stopDate = item.stopDate;
+
+      if (stopDate === null) {
+        const findIndex = outs.findIndex((out) => {
+          if (direction === 1) {
+            return out.price * 1.005 >= item.price;
+          }
+          return out.price * 0.995 <= item.price;
+        });
+
+        if (findIndex !== -1) {
+          stopDate = outs[findIndex].date;
+        }
+      }
+
+      return {
+        price: item.price,
+        amount: item.amount,
+        profit: item.profit || null,
+        profitPercent: item.profitPercent || null,
+        depositShare: item.depositShare || null,
+        totalPrice: item.price * item.amount,
+        reached: false,
+        stopDate: stopDate || null,
+        broker: null,
+      };
+    });
   }
 
   private _getIdeStop(list: any[]): StockPositionStop[] {

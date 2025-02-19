@@ -172,7 +172,7 @@ export class ActionService {
     multiplier: number,
     priceIncrement = 8
   ): StockPositionActionTarget {
-    if ((entry.price === 0 && dividend.size) || lastPrice === 0) {
+    if ((entry.price === 0 && dividend.size === 0) || lastPrice === 0) {
       return this._defaultTotalOut;
     }
 

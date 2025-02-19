@@ -10,8 +10,8 @@ import {
   Input,
   NgZone,
 } from '@angular/core';
-import { AsyncPipe, DatePipe, JsonPipe, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiButton, TuiDialogService, TuiFormatNumberPipe, TuiIcon, TuiLoader } from '@taiga-ui/core';
+import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
+import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -21,11 +21,10 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 import { IdeaService } from './idea.service';
 import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { CheckComponent } from '@ui/components/check';
-import { ItemLikeCheckboxDirective } from '@ui/components/list/item/item-like-checkbox.directive';
 import { LoaderComponent } from '@ui/components/loader';
 import { AddTargetComponent } from './add-target/add-target.component';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -55,6 +54,7 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { StockId } from 'types/stock';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 import { TUI_CONFIRM } from '@taiga-ui/kit';
+import { ColorForPricePipe } from '../color.pipe';
 
 @Component({
   selector: 'lib-enter-idea',
@@ -68,15 +68,11 @@ import { TUI_CONFIRM } from '@taiga-ui/kit';
     DatePipe,
     ReactiveFormsModule,
     NgIf,
-    TuiIcon,
+    ColorForPricePipe,
     CheckComponent,
     TuiFormatNumberPipe,
     ListComponent,
-    TuiLoader,
-    ItemLikeCheckboxDirective,
     LoaderComponent,
-    NgTemplateOutlet,
-    JsonPipe,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
@@ -225,6 +221,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
         number
       ]) => this._service.getTotalStop(list, total, targets, multiplier, priceIncrement)
     )
+  );
+  lastPrice$: Observable<number> = this._ideaFacade.idea$.pipe(
+    map((value: StockPosition) => value.idea.lastPrice),
+    shareReplay({ bufferSize: 1, refCount: false })
   );
 
   ngAfterViewInit(): void {

@@ -79,6 +79,7 @@
       [itemSize]="itemHeight">
       <lib-list-item
         class="row"
+        [style.background-color]="!!item.stopDate ? null : item.price | colorForPrice: (lastPrice$ | async)"
         *libListItem="let item; let index = index">
         <div class="item">
           <div class="item__value row__item row__first">
