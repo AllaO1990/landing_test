@@ -79,7 +79,7 @@
       [itemSize]="itemHeight">
       <lib-list-item
         class="row"
-        [style.background-color]="!!item.stopDate ? null : item.price | colorForPrice: (lastPrice$ | async)"
+        [style.background-color]="!!item.stopDate ? null : list | colorForPriceEntry: index :  'price' : (multiplier$ | async) : (lastPrice$ | async)"
         *libListItem="let item; let index = index">
         <div class="item">
           <div class="item__value row__item row__first">
@@ -167,6 +167,7 @@
       [itemSize]="itemHeight">
       <lib-list-item
         class="row"
+        [style.background-color]="item.amount === null || item.amount === 0 ? null : item.price | colorForPriceStop: (lastPrice$ | async) : (multiplier$ | async)"
         *libListItem="let item">
         <div class="item">
           <div class="item__value row__item row__first">

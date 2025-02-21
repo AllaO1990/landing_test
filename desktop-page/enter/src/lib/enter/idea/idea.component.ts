@@ -10,7 +10,7 @@ import {
   Input,
   NgZone,
 } from '@angular/core';
-import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, JsonPipe, NgIf } from '@angular/common';
 import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import {
   AbstractControl,
@@ -54,7 +54,7 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { StockId } from 'types/stock';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 import { TUI_CONFIRM } from '@taiga-ui/kit';
-import { ColorForPricePipe } from '../color.pipe';
+import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
 
 @Component({
   selector: 'lib-enter-idea',
@@ -68,11 +68,13 @@ import { ColorForPricePipe } from '../color.pipe';
     DatePipe,
     ReactiveFormsModule,
     NgIf,
-    ColorForPricePipe,
+    ColorForPriceEntryPipe,
+    ColorForPriceStopPipe,
     CheckComponent,
     TuiFormatNumberPipe,
     ListComponent,
     LoaderComponent,
+    JsonPipe,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
