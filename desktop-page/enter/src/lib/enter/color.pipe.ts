@@ -6,19 +6,25 @@ import { getRGBA } from 'utils/get-color';
 const getColor = scaleLinear<string, string, never>([0, 0.5, 1], ['#039322', '#EEF1F9', '#FF103B']);
 
 @Pipe({
-  name: 'colorForPrice',
+  name: 'colorForPriceEntry',
   standalone: true,
 })
-export class ColorForPricePipe implements PipeTransform {
+export class ColorForPriceEntryPipe implements PipeTransform {
   defaultGreenColor = getRGBA(getColor(0), 0.1);
-  defaultRedColor = getRGBA(getColor(1), 0.1);
 
   transform(
-    currentPrice: number | null,
+    list: any[],
+    index: number,
+    key: string,
+    multiplier: number | null,
     lastPrice: number | null = null,
-    stopPrice: number | null = null
+    precision = 0.005
   ): RGBColor | HSLColor | null {
-    if (currentPrice === null) {
+    if (list.length === 0) {
+      return null;
+    }
+
+    if (multiplier === null) {
       return null;
     }
 
@@ -26,18 +32,51 @@ export class ColorForPricePipe implements PipeTransform {
       return null;
     }
 
-    if (lastPrice * 0.995 >= currentPrice) {
-      return this.defaultGreenColor;
+    let flag = false;
+
+    if (multiplier === 1) {
+      flag = lastPrice * (1 + precision) >= list[index][key];
+    } else {
+      flag = lastPrice * (1 - precision) <= list[index][key];
     }
 
+    return flag ? this.defaultGreenColor : null;
+  }
+}
+
+@Pipe({
+  name: 'colorForPriceStop',
+  standalone: true,
+})
+export class ColorForPriceStopPipe implements PipeTransform {
+  defaultRedColor = getRGBA(getColor(1), 0.1);
+
+  transform(
+    stopPrice: number | null,
+    lastPrice: number | null = null,
+    multiplier: number | null,
+    precision = 0.005
+  ): RGBColor | HSLColor | null {
     if (stopPrice === null) {
       return null;
     }
 
-    return this._getPrice(stopPrice, lastPrice) <= 0.5 ? this.defaultRedColor : null;
-  }
+    if (lastPrice === null) {
+      return null;
+    }
 
-  private _getPrice(currentPrice: number, lastPrice: number): number {
-    return Math.abs(((lastPrice - currentPrice) / currentPrice) * 100);
+    if (multiplier === null) {
+      return null;
+    }
+
+    let flag = false;
+
+    if (multiplier === 1) {
+      flag = lastPrice * (1 - precision) <= stopPrice;
+    } else {
+      flag = lastPrice * (1 + precision) >= stopPrice;
+    }
+
+    return flag ? this.defaultRedColor : null;
   }
 }
