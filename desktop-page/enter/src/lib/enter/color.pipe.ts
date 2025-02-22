@@ -32,15 +32,27 @@ export class ColorForPriceEntryPipe implements PipeTransform {
       return null;
     }
 
-    let flag = false;
+    const price = this._getPrice(lastPrice, precision, multiplier);
+    const currentTarget = this._comparePrice(price, list[index][key], multiplier);
 
-    if (multiplier === 1) {
-      flag = lastPrice * (1 + precision) >= list[index][key];
-    } else {
-      flag = lastPrice * (1 - precision) <= list[index][key];
+    if (list[index + 1]) {
+      const nextTarget = this._comparePrice(price, list[index + 1][key], multiplier * -1);
+
+      return currentTarget && nextTarget ? this.defaultGreenColor : null;
     }
 
-    return flag ? this.defaultGreenColor : null;
+    return currentTarget ? this.defaultGreenColor : null;
+  }
+
+  _getPrice(price: number, precision: number, multiplier: number): number {
+    return price * (1 + precision * multiplier);
+  }
+
+  _comparePrice(lastPrice: number, targetPrice: number, multiplier: number): boolean {
+    if (multiplier === 1) {
+      return lastPrice >= targetPrice;
+    }
+    return lastPrice <= targetPrice;
   }
 }
 
@@ -69,14 +81,19 @@ export class ColorForPriceStopPipe implements PipeTransform {
       return null;
     }
 
-    let flag = false;
+    const price = this._getPrice(lastPrice, precision, multiplier);
 
+    return this._comparePrice(price, stopPrice, multiplier) ? this.defaultRedColor : null;
+  }
+
+  _getPrice(price: number, precision: number, multiplier: number): number {
+    return price * (1 - precision * multiplier);
+  }
+
+  _comparePrice(lastPrice: number, targetPrice: number, multiplier: number): boolean {
     if (multiplier === 1) {
-      flag = lastPrice * (1 - precision) <= stopPrice;
-    } else {
-      flag = lastPrice * (1 + precision) >= stopPrice;
+      return lastPrice <= targetPrice;
     }
-
-    return flag ? this.defaultRedColor : null;
+    return lastPrice >= targetPrice;
   }
 }
