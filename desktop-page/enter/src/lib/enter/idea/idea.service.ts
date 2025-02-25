@@ -126,6 +126,10 @@ export class IdeaService {
 
     const amount = totalTargetComplete.amount ? total.quantity - totalTargetComplete.amount : total.quantity;
 
+    if (amount === 0) {
+      return this._totalDefaultStop;
+    }
+
     return list.reduce((acc: StockPositionStop, item: StockPositionStop, index: number) => {
       const valueAmount = item.amount || amount;
       const value = {

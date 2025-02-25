@@ -1,0 +1,87 @@
+<form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <div class="form__header" *ngIf="label">
+    <h3>Внести средства</h3>
+  </div>
+  <div class="form__form">
+    <div class="form__control form__row">
+      <tui-input-number
+        class="form__cell form__cell--amount"
+        tuiAutoFocus
+        [tuiTextfieldSize]="size"
+        [tuiNumberFormat]="{precision: 2}"
+        formControlName="amount">
+        Сумма
+        <input
+          autocomplete="off"
+          name="amount"
+          tuiTextfieldLegacy
+        />
+      </tui-input-number>
+      <tui-select
+        *ngIf="(currencies$ | async) as items"
+        class="form__cell form__cell--currency"
+        [valueContent]="stringifyCurrency(items)"
+        [tuiTextfieldSize]="size"
+        formControlName="currencyId">
+        Валюта
+        <input autocomplete="off" tuiTextfieldLegacy />
+        <ng-template tuiDataList>
+          <tui-data-list>
+            <button
+              *ngFor="let item of items"
+              tuiOption
+              type="button"
+              [value]="item.currencyId">
+              {{ item.currencySymbol }}
+            </button>
+          </tui-data-list>
+        </ng-template>
+      </tui-select>
+    </div>
+    <lib-control-portfolio
+      class="form__control"
+      formControlName="portfolio">
+      Портфель
+    </lib-control-portfolio>
+    <tui-select
+      *ngIf="(brokers$ | async) as items"
+      class="form__control"
+      [valueContent]="stringifyBroker(items)"
+      [tuiTextfieldSize]="size"
+      formControlName="brokerId">
+      Брокер
+      <input autocomplete="off" tuiTextfieldLegacy />
+      <ng-template tuiDataList>
+        <tui-data-list>
+          <button
+            *ngFor="let item of items"
+            tuiOption
+            type="button"
+            [value]="item.brokerId">
+            {{ item.broker }}
+          </button>
+        </tui-data-list>
+      </ng-template>
+    </tui-select>
+  </div>
+  <div class="form__actions">
+    <button
+      class="form__action"
+      [size]="size"
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="onCancel($event)">
+      Отменить
+    </button>
+    <button
+      class="form__action"
+      [size]="size"
+      [disabled]="form.invalid"
+      tuiButton
+      type="submit">
+      Сохранить
+    </button>
+  </div>
+</form>
+

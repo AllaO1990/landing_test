@@ -1,9 +1,14 @@
 export enum PortfolioInfoEnum {
   DEPOSIT = 'deposit',
-  DEPOSITED = 'deposited',
+  EXPENSE = 'expence',
+  INCOME = 'income',
   WITHDRAWN = 'withdrawn',
-  COMMISSIONS = 'commissions',
+  COMISSION = 'comission',
   PROFIT = 'profit',
-  IN_TRANSACTIONS = 'inTransactions',
-  FREE_MONEY = 'freeMoney',
+  IN_POSITION = 'inPosition',
+  SPARE = 'spare',
+  TOTAL_COUNT = 'totalCount',
+  SUCCESS_COUNT = 'successCount',
+  UNSUCCESS_COUNT = 'unsuccessCount',
+  TURNOVER = 'turnover',
 }

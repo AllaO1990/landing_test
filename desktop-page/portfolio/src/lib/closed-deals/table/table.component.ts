@@ -126,7 +126,7 @@ export class WrapperTableComponent implements OnInit {
     filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-  range$: Observable<any> = this._service.range.pipe(
+  range$: Observable<any> = this._service.range$.pipe(
     filter((list: null | any): list is any => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -156,9 +156,9 @@ export class WrapperTableComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    const today = new Date().setUTCHours(12, 0, 0, 0);
-    const start = new Date(new Date(today).setDate(-365 + new Date(today).getDate())).toISOString();
-    const end = new Date(today).toISOString();
+    // const today = new Date().setUTCHours(12, 0, 0, 0);
+    // const start = new Date(new Date(today).setDate(-365 + new Date(today).getDate())).toISOString();
+    // const end = new Date(today).toISOString();
 
     combineLatest([this.portfolio$, this.broker$, this.currency$, this.range$, this.index$.asObservable(), this.limit$])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(500))

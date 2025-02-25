@@ -16,7 +16,7 @@ import { Position } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Params } from '@angular/router';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { AccountBalance, AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
 
 export abstract class DesktopService {
@@ -81,6 +81,8 @@ export abstract class DesktopService {
   abstract getAccountBrokers(params: Params): Observable<Response<DataList<AccountBroker>>>;
 
   abstract getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>>;
+
+  abstract getAccountBalance(params: Params): Observable<Response<AccountBalance>>;
 
   abstract getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>>;
 

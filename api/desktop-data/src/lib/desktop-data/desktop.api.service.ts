@@ -19,7 +19,7 @@ import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Timeframe } from 'types/timeframe';
 import { Params } from '@angular/router';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { AccountBalance, AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 
@@ -208,6 +208,10 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<DataList<AccountBroker>>>(`${this.host}/api/v1/account/brokers`, {
       params,
     });
+  }
+
+  getAccountBalance(params: Params): Observable<Response<AccountBalance>> {
+    return this._http.post<Response<AccountBalance>>(`${this.host}/api/v1/account/balance`, params);
   }
 
   getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>> {

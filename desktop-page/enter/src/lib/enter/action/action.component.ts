@@ -100,6 +100,11 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     map((idea: StockPosition) => idea.idea.id !== null)
   );
 
+  readonly lastPrice$: Observable<number> = this._ideaFacade.idea$.pipe(
+    map((data: StockPosition) => data.idea.lastPrice),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   readonly itemHeight = 28;
   minPriceIncrement = 1e-8;
   priceIncrement = 8;
@@ -231,7 +236,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     this.totalOut$,
     this.totalRemainder$,
     this.totalDividend$,
-    this._ideaFacade.idea$.pipe(map((data: StockPosition) => data.idea.lastPrice)),
+    this.lastPrice$,
     this.multiplier$,
     this.priceIncrement$,
   ]).pipe(

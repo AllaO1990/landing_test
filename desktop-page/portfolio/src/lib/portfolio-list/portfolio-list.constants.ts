@@ -1,9 +1,11 @@
 export const PORTFOLIO_LIST_CONSTANTS = {
   deposit: 'Депозит',
-  deposited: 'Внесено',
+  expence: 'Расходы',
+  income: 'Внесено',
   withdrawn: 'Выведено',
-  commissions: 'Комиссии',
+  comission: 'Комиссии',
   profit: 'Прибыль',
-  inTransactions: 'В сделках',
-  freeMoney: 'Свободно',
+  inPosition: 'В сделках',
+  spare: 'Свободно',
+  turnover: 'Оборот',
 };

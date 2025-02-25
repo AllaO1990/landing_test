@@ -1,7 +1,10 @@
 :host {
+  display: flex;
 }
 
 .portfolio {
+  width: 100%;
+
   &__container {
     display: inline-flex;
     flex-flow: row nowrap;

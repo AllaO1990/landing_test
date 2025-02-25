@@ -26,7 +26,7 @@ export class ColorOutToPositionPipe implements PipeTransform {
     }
 
     if (item.stop) {
-      const stopPrice = Math.abs(((item.lastPrice - item.stop.price) / item.currentTarget.price) * 100);
+      const stopPrice = Math.abs(((item.lastPrice - item.stop.price) / item.stop.price) * 100);
 
       return stopPrice <= 0.5 ? this.defaultRedColor : null;
     }

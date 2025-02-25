@@ -32,15 +32,27 @@
   }
 
   &__info {
-    flex: 3 3;
+    position: relative;
+    flex: 3;
 
     .card:not(:last-child) {
       margin-bottom: var(--padding-2);
     }
+
+    .loader {
+      position: absolute;
+      z-index: 10;
+    }
+
+    .loader ~ .card {
+      filter: blur(2px);
+    }
   }
 
   &__description {
-    flex: 4 4;
+    flex: 5;
+
+    margin-left: var(--padding-2);
   }
 
   &__actions {
@@ -48,22 +60,20 @@
     flex-flow: row wrap;
 
     align-items: center;
-
-    margin: var(--padding-2);
   }
 
   &__action {
-    margin-bottom: var(--padding-2);
 
-    &:not(:last-child) {
-      margin-right: var(--padding-2);
-    }
   }
 }
 
 .card {
   padding: var(--padding-2);
   border-radius: var(--border-radius);
+
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 400;
 
   &--default {
     background-color: var(--tui-background-neutral-1);
@@ -78,9 +88,13 @@
   }
 
   &__title {
-    font-size: 10px;
-    line-height: 12px;
-    font-weight: 400;
+    &-value {
+      margin: var(--padding-1) 0;
+
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+    }
   }
 
   &__list {
@@ -89,6 +103,12 @@
 
   &__row {
     display: flex;
+    justify-content: space-between;
+    margin: 0;
+
+    &:not(:first-child) {
+      margin-top: var(--padding-1);
+    }
   }
 
   &__name {
@@ -97,6 +117,24 @@
 
   &__description {
     font-weight: 500;
+  }
+}
+
+.button {
+  &--in {
+    width: calc(50% - var(--padding-1));
+
+    margin-right: var(--padding-2);
+  }
+
+  &--out {
+    width: calc(50% - var(--padding-1));
+  }
+
+  &--commission {
+    width: 100%;
+
+    margin-top: var(--padding-2);
   }
 }
 

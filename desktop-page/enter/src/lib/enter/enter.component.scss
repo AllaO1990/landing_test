@@ -203,6 +203,10 @@
   tui-icon {
     margin-right: var(--padding-2);
   }
+
+  &__text {
+    width: 80px;
+  }
 }
 
 @media screen and (min-width: 768px) {
