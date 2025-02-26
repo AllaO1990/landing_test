@@ -1,6 +1,9 @@
 :host {
-  display: block;
-  inline-size: max-content;
+  display: flex;
+}
+
+.range-with-list {
+  width: 100%;
 }
 
 .range {

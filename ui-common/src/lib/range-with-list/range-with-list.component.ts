@@ -15,7 +15,7 @@ import { NgForOf, NgIf } from '@angular/common';
 import { TuiChevron } from '@taiga-ui/kit';
 import { PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { TuiHandler } from '@taiga-ui/cdk/types/handler';
-import { TuiDayRange } from '@taiga-ui/cdk';
+import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -62,6 +62,8 @@ export class RangeWithListComponent<T> implements ControlValueAccessor, AfterVie
   @Input() selectHandler: TuiHandler<T, any> = (d: T) => d;
 
   @Input() items: T[] = [];
+
+  @Input() max: TuiDay | null = null;
 
   ngAfterViewInit(): void {
     this.controlRange.valueChanges

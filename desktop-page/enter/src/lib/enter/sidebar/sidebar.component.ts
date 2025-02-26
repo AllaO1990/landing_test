@@ -94,13 +94,16 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
 
   readonly strategies$: Observable<AccountStrategies[]> = this._accountStore.strategies$.pipe(
-    filter((value: AccountStrategies[] | null): value is AccountStrategies[] => value !== null)
+    filter((value: AccountStrategies[] | null): value is AccountStrategies[] => value !== null),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly currencies$: Observable<AccountCurrency[]> = this._accountStore.currencies$.pipe(
-    filter((currencies: AccountCurrency[] | null): currencies is AccountCurrency[] => currencies !== null)
+    filter((currencies: AccountCurrency[] | null): currencies is AccountCurrency[] => currencies !== null),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly portfolio$: Observable<AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
-    filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null)
+    filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly idea$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((position: StockPosition | null): position is StockPosition => position !== null),

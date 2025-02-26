@@ -6,9 +6,9 @@
     <div class="portfolio__info">
       <ui-loader class="loader" *ngIf="isLoadInfo$ | async"></ui-loader>
       <div class="card card--default">
-        <div class="card__title">{{ constants[depositKey] }}</div>
-        <div class="card__title-value">{{ data[depositKey] | tuiFormatNumber | async }} {{ data.currencySymbol }}</div>
-        <div class="card__list">
+        <div class="card__title">{{ constants['deposit'] }}</div>
+        <div class="card__title-value">{{ data.deposit | tuiFormatNumber | async }} {{ data.currencySymbol }}</div>
+        <div class="card__list card-text--secondary">
           <dl class="card__row" *ngFor="let key of listFirst">
             <dt class="card__cell card__name">
               {{ constants[key] }}
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="card card--default">
-        <div class="card__list">
+        <div class="card__list card-text--secondary">
           <dl class="card__row" *ngFor="let key of listSecond">
             <dt class="card__cell card__name">
               {{ constants[key] }}
@@ -33,11 +33,48 @@
       </div>
       <div
         class="card"
-        [class.card--success]="data[profitKey] > 0"
-        [class.card--warning]="data[profitKey] < 0"
-        [class.card--default]="data[profitKey] === 0">
-        <div class="card__title">Общая прибыль</div>
-        <div class="card__title-value">{{ data[profitKey] | tuiFormatNumber | async }} {{ data.currencySymbol }}</div>
+        [class.card--success]="data.profit > 0"
+        [class.card--warning]="data.profit < 0"
+        [class.card--default]="data.profit === 0">
+        <div class="card__title">{{ constants['profit'] }}</div>
+        <div class="card__title-value">{{ data.profit | tuiFormatNumber | async }} {{ data.currencySymbol }}</div>
+        <div class="card__list">
+          <dl class="card__row">
+            <dt class="card__cell card__name">
+              {{ constants['fixedProfit'] }}
+            </dt>
+            <dd class="card__cell card__description">
+              {{ data.fixedProfit | tuiFormatNumber | async }}
+            </dd>
+          </dl>
+          <dl class="card__row">
+            <dt class="card__cell card__name card-text--secondary">Сделок</dt>
+            <dd class="card__cell card__description">
+              <span class="long">{{ data.fixedSuccessCount }}</span>
+              /
+              <span class="short">{{ data.fixedUnsuccessCount }}</span>
+            </dd>
+          </dl>
+        </div>
+        <hr />
+        <div class="card__list">
+          <dl class="card__row">
+            <dt class="card__cell card__name">
+              {{ constants['inPositionProfit'] }}
+            </dt>
+            <dd class="card__cell card__description">
+              {{ data.inPositionProfit | tuiFormatNumber | async }}
+            </dd>
+          </dl>
+          <dl class="card__row">
+            <dt class="card__cell card__name card-text--secondary">Сделок</dt>
+            <dd class="card__cell card__description">
+              <span class="long">{{ data.inPositionSuccessCount }}</span>
+              /
+              <span class="short">{{ data.inPositionUnsuccessCount }}</span>
+            </dd>
+          </dl>
+        </div>
       </div>
       <!--      <div-->
       <!--        class="card"-->
@@ -50,6 +87,7 @@
         <button
           class="portfolio__action button button--in"
           tuiButton
+          [disabled]="true"
           appearance="secondary"
           iconStart="@tui.circle-arrow-down"
           [size]="size"
@@ -59,6 +97,7 @@
         <button
           class="portfolio__action button button--out"
           tuiButton
+          [disabled]="true"
           appearance="secondary"
           iconStart="@tui.circle-arrow-up"
           [size]="size"
@@ -67,12 +106,13 @@
         </button>
         <button
           class="portfolio__action button button--commission"
-          [disabled]="true"
           tuiButton
+          [disabled]="true"
           appearance="secondary"
           iconStart="@tui.circle-percent"
           [size]="size"
-          type="button">Внести комиссии
+          (click)="openDialogCommission($event)"
+          type="button">Комиссии
         </button>
       </div>
     </div>

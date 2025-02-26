@@ -19,9 +19,17 @@ import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Timeframe } from 'types/timeframe';
 import { Params } from '@angular/router';
-import { AccountBalance, AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import {
+  AccountBalance,
+  AccountBroker,
+  AccountCurrency,
+  AccountDeposit,
+  AccountPortfolio,
+  AccountStrategies,
+} from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
+import { Commission } from 'types/commission';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
@@ -214,6 +222,10 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<AccountBalance>>(`${this.host}/api/v1/account/balance`, params);
   }
 
+  setAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
+    return this._http.post<Response<AccountDeposit>>(`${this.host}/api/v1/account/deposit`, params);
+  }
+
   getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>> {
     return this._http.get<Response<DataList<AccountCurrency>>>(`${this.host}/api/v1/account/currencies`, {
       params,
@@ -297,5 +309,9 @@ export class DesktopApiService extends DesktopService {
         subscribed: boolean;
       }>
     >(`${this.host}/api/v1/ideas/${ideaId}/unsubscribe`, { ideaId });
+  }
+
+  getCommission(params: Params): Observable<Response<Commission>> {
+    return this._http.post<Response<AccountBalance>>(`${this.host}/api/v1/comission/portfolio`, params);
   }
 }

@@ -16,6 +16,10 @@
   display: flex;
   flex-flow: column nowrap;
 
+  hr {
+    margin: var(--padding-1) 0;
+  }
+
   &__title {
     flex: 0;
 
@@ -97,8 +101,10 @@
     }
   }
 
-  &__list {
-    color: var(--tui-text-secondary);
+  &-text {
+    &--secondary {
+      color: var(--tui-text-secondary);
+    }
   }
 
   &__row {

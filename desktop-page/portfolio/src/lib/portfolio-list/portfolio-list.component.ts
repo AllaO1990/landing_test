@@ -18,13 +18,14 @@ import {
   tap,
   timer,
 } from 'rxjs';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountRange } from 'types/account';
+import { AccountBalance, AccountBroker, AccountCurrency, AccountPortfolio, AccountRange } from 'types/account';
 import { map } from 'rxjs/operators';
 import { Params } from '@angular/router';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { DepositComponent } from './deposit/deposit.component';
+import { CommissionComponent } from './commission/commission.component';
 
 @Component({
   selector: 'portfolio-list',
@@ -42,6 +43,7 @@ export class PortfolioListComponent implements AfterViewInit {
   readonly #isLoadInfo$: Subject<boolean> = new BehaviorSubject<boolean>(false);
 
   #dialogDepositComponent: PolymorpheusComponent<DepositComponent> | null = null;
+  #dialogCommissionComponent: PolymorpheusComponent<CommissionComponent> | null = null;
 
   readonly portfolio$: Observable<AccountPortfolio> = this._service.portfolio$.pipe(
     filter((list: null | AccountPortfolio): list is AccountPortfolio => list !== null),
@@ -60,14 +62,14 @@ export class PortfolioListComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly data$: Observable<any> = this._service.balance$.pipe(tap(() => this.#isLoadInfo$.next(false)));
+  readonly data$: Observable<null | AccountBalance> = this._service.balance$.pipe(
+    tap(() => this.#isLoadInfo$.next(false))
+  );
 
   readonly size = 's';
-  readonly depositKey: PortfolioInfoEnum = PortfolioInfoEnum.DEPOSIT;
-  readonly profitKey: PortfolioInfoEnum = PortfolioInfoEnum.PROFIT;
   readonly listFirst: PortfolioInfoEnum[] = [
     PortfolioInfoEnum.INCOME,
-    PortfolioInfoEnum.EXPENSE,
+    PortfolioInfoEnum.EXPENCE,
     PortfolioInfoEnum.COMISSION,
   ];
   readonly listSecond: PortfolioInfoEnum[] = [PortfolioInfoEnum.IN_POSITION, PortfolioInfoEnum.SPARE];
@@ -139,6 +141,22 @@ export class PortfolioListComponent implements AfterViewInit {
       this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
       {},
       'Вывести средства'
+    ).subscribe((res) => console.log(res));
+  }
+
+  async openDialogCommission(event: Event): Promise<void> {
+    event.preventDefault();
+
+    if (!this.#dialogCommissionComponent) {
+      this.#dialogCommissionComponent = await import('./commission/commission.component')
+        .then((m) => m.CommissionComponent)
+        .then((c) => new PolymorpheusComponent(c, this.#injector));
+    }
+
+    this._openDialog(
+      this.#dialogCommissionComponent as PolymorpheusComponent<CommissionComponent>,
+      {},
+      'Вывести комиссию'
     ).subscribe((res) => console.log(res));
   }
 }

@@ -8,6 +8,7 @@
         <div class="portfolio__actions">
           <lib-control-portfolio
             class="portfolio__select"
+            [items]="portfolio$ | async"
             [formControl]="formControlPortfolio">
           </lib-control-portfolio>
           <!--        <tui-select-->

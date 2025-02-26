@@ -27,7 +27,7 @@ import { AccountPortfolio } from 'types/account';
 import { InputWithActionsComponent } from '../input-with-actions/input-with-actions.component';
 import { LoaderComponent } from '@ui/components/loader';
 import { AccountFacade } from 'stores/facades/account.facade';
-import { filter, Observable, startWith, take } from 'rxjs';
+import { BehaviorSubject, filter, Observable, startWith, Subject, take } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -68,6 +68,7 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
   private readonly _destroyed: DestroyRef = inject(DestroyRef);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
   private readonly _dialog: DialogService = inject(DIALOG);
+  readonly #list$: Subject<AccountPortfolio[] | null> = new BehaviorSubject<AccountPortfolio[] | null>(null);
 
   private _dialogApproveComponent: PolymorpheusComponent<DialogApproveComponent> | null = null;
 
@@ -76,6 +77,11 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
   @ViewChild('templateDelete', { static: true }) templateDelete!: TemplateRef<any>;
 
   @Input() autoSelected = false;
+
+  @Input()
+  set items(value: AccountPortfolio[] | null) {
+    this.#list$.next(value);
+  }
 
   isDisabled = false;
   isAdd: FormEvent = null;
@@ -87,7 +93,7 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
     add: new FormControl({ value: null, disabled: true }),
   });
 
-  readonly list$: Observable<null | AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
+  readonly list$: Observable<null | AccountPortfolio[]> = this.#list$.asObservable().pipe(
     tap((list: AccountPortfolio[] | null) => {
       if (list !== null && this.controlPortfolio.value === null && this.autoSelected) {
         this.controlPortfolio.patchValue(list[0], { emitEvent: true });
