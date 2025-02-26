@@ -6,6 +6,7 @@ import {
   forwardRef,
   inject,
   Injector,
+  Input,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -23,20 +24,21 @@ import { TuiDataListWrapperComponent } from '@taiga-ui/kit';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { AccountPortfolio } from 'types/account';
-import { FormInputEvent, InputWithActionsComponent } from 'ui-common/lib/input-with-actions';
+import { InputWithActionsComponent } from '../input-with-actions/input-with-actions.component';
 import { LoaderComponent } from '@ui/components/loader';
 import { AccountFacade } from 'stores/facades/account.facade';
-import { filter, Observable, startWith, take } from 'rxjs';
+import { BehaviorSubject, filter, Observable, startWith, Subject, take } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
-import { DialogApproveComponent } from 'ui-common/lib/dialog-approve';
+import { DialogApproveComponent } from '../dialog-approve';
 import { DIALOG, DialogService } from '@ui/components/dialog';
+import { FormInputEvent } from '../input-with-actions';
 
 type FormEvent = 'create' | 'rename' | null;
 
 @Component({
-  selector: 'lib-portfolio',
+  selector: 'lib-control-portfolio',
   standalone: true,
   imports: [
     AsyncPipe,
@@ -50,22 +52,23 @@ type FormEvent = 'create' | 'rename' | null;
     InputWithActionsComponent,
     LoaderComponent,
   ],
-  templateUrl: './portfolio.component.html',
-  styleUrl: './portfolio.component.scss',
+  templateUrl: './control-portfolio.component.html',
+  styleUrl: './control-portfolio.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => PortfolioComponent),
+      useExisting: forwardRef(() => ControlPortfolioComponent),
       multi: true,
     },
   ],
 })
-export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
+export class ControlPortfolioComponent implements ControlValueAccessor, AfterViewInit {
   private readonly _injector: Injector = inject(Injector);
   private readonly _destroyed: DestroyRef = inject(DestroyRef);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
   private readonly _dialog: DialogService = inject(DIALOG);
+  readonly #list$: Subject<AccountPortfolio[] | null> = new BehaviorSubject<AccountPortfolio[] | null>(null);
 
   private _dialogApproveComponent: PolymorpheusComponent<DialogApproveComponent> | null = null;
 
@@ -73,19 +76,26 @@ export class PortfolioComponent implements ControlValueAccessor, AfterViewInit {
 
   @ViewChild('templateDelete', { static: true }) templateDelete!: TemplateRef<any>;
 
+  @Input() autoSelected = false;
+
+  @Input()
+  set items(value: AccountPortfolio[] | null) {
+    this.#list$.next(value);
+  }
+
   isDisabled = false;
   isAdd: FormEvent = null;
   onChange = (_: any) => {};
   onTouched = () => {};
 
   readonly form: FormGroup = new FormGroup({
-    portfolio: new FormControl({ value: null, disabled: true }),
+    portfolio: new FormControl({ value: null, disabled: false }),
     add: new FormControl({ value: null, disabled: true }),
   });
 
-  readonly list$: Observable<null | AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
+  readonly list$: Observable<null | AccountPortfolio[]> = this.#list$.asObservable().pipe(
     tap((list: AccountPortfolio[] | null) => {
-      if (list !== null && this.controlPortfolio.value === null) {
+      if (list !== null && this.controlPortfolio.value === null && this.autoSelected) {
         this.controlPortfolio.patchValue(list[0], { emitEvent: true });
       }
     })

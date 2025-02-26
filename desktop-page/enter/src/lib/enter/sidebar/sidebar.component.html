@@ -6,10 +6,11 @@
           Портфель
         </div>
         <div class="portfolio__actions">
-          <lib-portfolio
+          <lib-control-portfolio
             class="portfolio__select"
+            [items]="portfolio$ | async"
             [formControl]="formControlPortfolio">
-          </lib-portfolio>
+          </lib-control-portfolio>
           <!--        <tui-select-->
           <!--          class="portfolio__select"-->
           <!--          *ngIf="portfolio$ | async as list"-->

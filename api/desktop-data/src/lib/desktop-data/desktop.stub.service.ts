@@ -15,8 +15,16 @@ import { DesktopService } from './desktop.abstract.service';
 import { Position } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { Params } from '@angular/router';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import {
+  AccountBalance,
+  AccountBroker,
+  AccountCurrency,
+  AccountDeposit,
+  AccountPortfolio,
+  AccountStrategies,
+} from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
+import { Commission } from 'types/commission';
 
 @Injectable()
 export class DesktopStubService extends DesktopService {
@@ -111,6 +119,18 @@ export class DesktopStubService extends DesktopService {
   }
 
   getAccountBrokers(params: Params): Observable<Response<DataList<AccountBroker>>> {
+    return of();
+  }
+
+  getAccountBalance(params: Params): Observable<Response<AccountBalance>> {
+    return of();
+  }
+
+  setAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
+    return of();
+  }
+
+  getCommission(params: Params): Observable<Response<Commission>> {
     return of();
   }
 

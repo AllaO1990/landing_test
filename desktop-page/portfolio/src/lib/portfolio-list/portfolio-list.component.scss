@@ -16,10 +16,47 @@
   display: flex;
   flex-flow: column nowrap;
 
+  hr {
+    margin: var(--padding-1) 0;
+  }
+
   &__title {
     flex: 0;
 
     padding: 0 var(--padding-2);
+  }
+
+  &__container {
+    flex: 1;
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    margin: 0 var(--padding-2);
+  }
+
+  &__info {
+    position: relative;
+    flex: 3;
+
+    .card:not(:last-child) {
+      margin-bottom: var(--padding-2);
+    }
+
+    .loader {
+      position: absolute;
+      z-index: 10;
+    }
+
+    .loader ~ .card {
+      filter: blur(2px);
+    }
+  }
+
+  &__description {
+    flex: 5;
+
+    margin-left: var(--padding-2);
   }
 
   &__actions {
@@ -27,58 +64,83 @@
     flex-flow: row wrap;
 
     align-items: center;
-
-    margin: var(--padding-2);
   }
 
   &__action {
-    margin-bottom: var(--padding-2);
-
-    &:not(:last-child) {
-      margin-right: var(--padding-2);
-    }
-  }
-
-  &__deposit {
 
   }
 }
 
-.deposit {
-  display: flex;
-  flex-flow: column nowrap;
+.card {
+  padding: var(--padding-2);
+  border-radius: var(--border-radius);
 
-  height: 100%;
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 400;
 
-  &__row {
-    display: flex;
-    flex-flow: row nowrap;
-
-    align-items: center;
-
-    height: 32px;
-    padding: 0;
-    margin: 0;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid var(--main-bg-color)
-    }
+  &--default {
+    background-color: var(--tui-background-neutral-1);
   }
 
-  &__cell {
-    padding: 0 var(--padding-2);
+  &--success {
+    background-color: var(--tui-status-positive-pale);
+  }
+
+  &--warning {
+    background-color: var(--tui-status-negative-pale);
   }
 
   &__title {
-    flex: 0 0 auto;
-    width: 40%;
+    &-value {
+      margin: var(--padding-1) 0;
+
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+    }
+  }
+
+  &-text {
+    &--secondary {
+      color: var(--tui-text-secondary);
+    }
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+
+    &:not(:first-child) {
+      margin-top: var(--padding-1);
+    }
+  }
+
+  &__name {
+
   }
 
   &__description {
-    flex: 1;
+    font-weight: 500;
+  }
+}
 
-    margin: 0;
-    text-align: right;
+.button {
+  &--in {
+    width: calc(50% - var(--padding-1));
+
+    margin-right: var(--padding-2);
+  }
+
+  &--out {
+    width: calc(50% - var(--padding-1));
+  }
+
+  &--commission {
+    width: 100%;
+
+    margin-top: var(--padding-2);
   }
 }
 

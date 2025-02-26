@@ -1,0 +1,12 @@
+.form {
+  &__cell {
+    &--amount {
+      flex: 2;
+      margin-right: var(--padding-2);
+    }
+
+    &--currency {
+      flex: 1
+    }
+  }
+}

@@ -2,39 +2,129 @@
   <div class="portfolio__title">
     <h3>Портфель</h3>
   </div>
-  <div class="portfolio__actions">
-    <button
-      class="portfolio__action button"
-      [disabled]="true"
-      tuiIconButton
-      iconStart="@tui.circle-arrow-down"
-      [size]="size"
-      type="button">
-    </button>
+  <div class="portfolio__container" *ngIf="(data$ | async) as data; else load">
+    <div class="portfolio__info">
+      <ui-loader class="loader" *ngIf="isLoadInfo$ | async"></ui-loader>
+      <div class="card card--default">
+        <div class="card__title">{{ constants['deposit'] }}</div>
+        <div class="card__title-value">{{ data.deposit | tuiFormatNumber | async }} {{ data.currencySymbol }}</div>
+        <div class="card__list card-text--secondary">
+          <dl class="card__row" *ngFor="let key of listFirst">
+            <dt class="card__cell card__name">
+              {{ constants[key] }}
+            </dt>
+            <dd class="card__cell card__description">
+              {{ data[key] | tuiFormatNumber | async }}
+            </dd>
+          </dl>
+        </div>
+      </div>
+      <div class="card card--default">
+        <div class="card__list card-text--secondary">
+          <dl class="card__row" *ngFor="let key of listSecond">
+            <dt class="card__cell card__name">
+              {{ constants[key] }}
+            </dt>
+            <dd class="card__cell card__description">
+              {{ data[key] | tuiFormatNumber | async }}
+            </dd>
+          </dl>
+        </div>
+      </div>
+      <div
+        class="card"
+        [class.card--success]="data.profit > 0"
+        [class.card--warning]="data.profit < 0"
+        [class.card--default]="data.profit === 0">
+        <div class="card__title">{{ constants['profit'] }}</div>
+        <div class="card__title-value">{{ data.profit | tuiFormatNumber | async }} {{ data.currencySymbol }}</div>
+        <div class="card__list">
+          <dl class="card__row">
+            <dt class="card__cell card__name">
+              {{ constants['fixedProfit'] }}
+            </dt>
+            <dd class="card__cell card__description">
+              {{ data.fixedProfit | tuiFormatNumber | async }}
+            </dd>
+          </dl>
+          <dl class="card__row">
+            <dt class="card__cell card__name card-text--secondary">Сделок</dt>
+            <dd class="card__cell card__description">
+              <span class="long">{{ data.fixedSuccessCount }}</span>
+              /
+              <span class="short">{{ data.fixedUnsuccessCount }}</span>
+            </dd>
+          </dl>
+        </div>
+        <hr />
+        <div class="card__list">
+          <dl class="card__row">
+            <dt class="card__cell card__name">
+              {{ constants['inPositionProfit'] }}
+            </dt>
+            <dd class="card__cell card__description">
+              {{ data.inPositionProfit | tuiFormatNumber | async }}
+            </dd>
+          </dl>
+          <dl class="card__row">
+            <dt class="card__cell card__name card-text--secondary">Сделок</dt>
+            <dd class="card__cell card__description">
+              <span class="long">{{ data.inPositionSuccessCount }}</span>
+              /
+              <span class="short">{{ data.inPositionUnsuccessCount }}</span>
+            </dd>
+          </dl>
+        </div>
+      </div>
+      <!--      <div-->
+      <!--        class="card"-->
+      <!--        [class.card&#45;&#45;success]="data[profitKey] > 0"-->
+      <!--        [class.card&#45;&#45;warning]="data[profitKey] < 0"-->
+      <!--        [class.card&#45;&#45;default]="data[profitKey] === 0"></div>-->
+    </div>
+    <div class="portfolio__description">
+      <div class="portfolio__actions">
+        <button
+          class="portfolio__action button button--in"
+          tuiButton
+          [disabled]="true"
+          appearance="secondary"
+          iconStart="@tui.circle-arrow-down"
+          [size]="size"
+          (click)="openDialogDeposit($event)"
+          type="button">Внести
+        </button>
+        <button
+          class="portfolio__action button button--out"
+          tuiButton
+          [disabled]="true"
+          appearance="secondary"
+          iconStart="@tui.circle-arrow-up"
+          [size]="size"
+          (click)="openDialogExpense($event)"
+          type="button">Вывести
+        </button>
+        <button
+          class="portfolio__action button button--commission"
+          tuiButton
+          [disabled]="true"
+          appearance="secondary"
+          iconStart="@tui.circle-percent"
+          [size]="size"
+          (click)="openDialogCommission($event)"
+          type="button">Комиссии
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <button
-      class="portfolio__action button"
-      [disabled]="true"
-      tuiIconButton
-      iconStart="@tui.circle-arrow-up"
-      [size]="size"
-      type="button">
-    </button>
-    <button
-      class="portfolio__action button"
-      [disabled]="true"
-      tuiIconButton
-      iconStart="@tui.percent"
-      [size]="size"
-      type="button">
-    </button>
-  </div>
-  <div class="portfolio__deposit deposit" *ngIf="data; else load">
-    <dl class="deposit__row" *ngFor="let key of list">
-      <dt class="deposit__title deposit__cell">{{ constants[key] }}</dt>
-      <dd class="deposit__description deposit__cell">{{ data[key] | tuiFormatNumber | async }}</dd>
-    </dl>
-  </div>
+
+  <!--  <div class="portfolio__deposit deposit" *ngIf="data; else load">-->
+  <!--    <dl class="deposit__row" *ngFor="let key of list">-->
+  <!--      <dt class="deposit__title deposit__cell">{{ constants[key] }}</dt>-->
+  <!--      <dd class="deposit__description deposit__cell">{{ data[key] | tuiFormatNumber | async }}</dd>-->
+  <!--    </dl>-->
+  <!--  </div>-->
 </div>
 
 <ng-template #load>

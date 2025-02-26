@@ -16,11 +16,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { TuiButton, TuiFormatNumberPipe, TuiGroup, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiScrollbar } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { InstrumentComponent } from '../instrument/instrument.component';
 import { ValidDateComponent } from './valid-date/valid-date.component';
-import { TuiBlock, TuiDataListWrapperComponent, TuiFilter } from '@taiga-ui/kit';
+import { TuiBlock, TuiDataListWrapperComponent } from '@taiga-ui/kit';
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
 import { SIDEBAR_CONSTANTS } from './sidebar.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
@@ -39,7 +38,7 @@ import {
   Subject,
 } from 'rxjs';
 import { AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
-import { PortfolioComponent } from '../portfolio';
+import { ControlPortfolioComponent } from '../../../../../../ui-common/src/lib/portfolio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 
@@ -62,21 +61,15 @@ interface FormValue {
     NgIf,
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
-    InstrumentComponent,
     ValidDateComponent,
     AsyncPipe,
-    TuiFilter,
-    TuiButton,
-    TuiIcon,
     TuiTextareaModule,
     TuiScrollbar,
-    TuiFormatNumberPipe,
-    TuiGroup,
     TuiBlock,
     NgForOf,
     TuiDataListWrapperComponent,
     TuiSelectModule,
-    PortfolioComponent,
+    ControlPortfolioComponent,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
@@ -101,13 +94,16 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
 
   readonly strategies$: Observable<AccountStrategies[]> = this._accountStore.strategies$.pipe(
-    filter((value: AccountStrategies[] | null): value is AccountStrategies[] => value !== null)
+    filter((value: AccountStrategies[] | null): value is AccountStrategies[] => value !== null),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly currencies$: Observable<AccountCurrency[]> = this._accountStore.currencies$.pipe(
-    filter((currencies: AccountCurrency[] | null): currencies is AccountCurrency[] => currencies !== null)
+    filter((currencies: AccountCurrency[] | null): currencies is AccountCurrency[] => currencies !== null),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly portfolio$: Observable<AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
-    filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null)
+    filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly idea$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((position: StockPosition | null): position is StockPosition => position !== null),

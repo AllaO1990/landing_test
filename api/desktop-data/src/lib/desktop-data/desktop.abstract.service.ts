@@ -16,8 +16,16 @@ import { Position } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Params } from '@angular/router';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import {
+  AccountBalance,
+  AccountBroker,
+  AccountCurrency,
+  AccountDeposit,
+  AccountPortfolio,
+  AccountStrategies,
+} from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
+import { Commission } from 'types/commission';
 
 export abstract class DesktopService {
   public abstract getIdeaList(): Observable<Position[]>;
@@ -82,6 +90,10 @@ export abstract class DesktopService {
 
   abstract getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>>;
 
+  abstract getAccountBalance(params: Params): Observable<Response<AccountBalance>>;
+
+  abstract setAccountDeposit(params: Params): Observable<Response<AccountDeposit>>;
+
   abstract getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>>;
 
   abstract getAccountStrategies(): Observable<Response<DataList<AccountStrategies>>>;
@@ -97,4 +109,6 @@ export abstract class DesktopService {
   abstract setSubscribe(id: number): Observable<Response<{ subscribed: boolean }>>;
 
   abstract setUnsubscribe(id: number): Observable<Response<{ subscribed: boolean }>>;
+
+  abstract getCommission(params: Params): Observable<Response<Commission>>;
 }

@@ -1,9 +1,13 @@
-export const PORTFOLIO_LIST_CONSTANTS = {
+export const PORTFOLIO_LIST_CONSTANTS: { [key: string]: string } = {
   deposit: 'Депозит',
-  deposited: 'Внесено',
+  expence: 'Расходы',
+  income: 'Внесено',
   withdrawn: 'Выведено',
-  commissions: 'Комиссии',
-  profit: 'Прибыль',
-  inTransactions: 'В сделках',
-  freeMoney: 'Свободно',
+  comission: 'Комиссии',
+  profit: 'Общая прибыль',
+  inPosition: 'В сделках',
+  spare: 'Свободно',
+  turnover: 'Оборот',
+  fixedProfit: 'Реализованная',
+  inPositionProfit: 'Нереализованная',
 };
