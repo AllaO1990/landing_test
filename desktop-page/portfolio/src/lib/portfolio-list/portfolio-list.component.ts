@@ -26,6 +26,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { DepositComponent } from './deposit/deposit.component';
 import { CommissionComponent } from './commission/commission.component';
+import { WithdrawalComponent } from './withdrawal/withdrawal.component';
 
 @Component({
   selector: 'portfolio-list',
@@ -43,6 +44,7 @@ export class PortfolioListComponent implements AfterViewInit {
   readonly #isLoadInfo$: Subject<boolean> = new BehaviorSubject<boolean>(false);
 
   #dialogDepositComponent: PolymorpheusComponent<DepositComponent> | null = null;
+  #dialogWithdrawalComponent: PolymorpheusComponent<WithdrawalComponent> | null = null;
   #dialogCommissionComponent: PolymorpheusComponent<CommissionComponent> | null = null;
 
   readonly portfolio$: Observable<AccountPortfolio> = this._service.portfolio$.pipe(
@@ -123,7 +125,7 @@ export class PortfolioListComponent implements AfterViewInit {
 
     this._openDialog(
       this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
-      {},
+      { max: null },
       'Внести средства'
     ).subscribe((res) => console.log(res));
   }
@@ -131,15 +133,15 @@ export class PortfolioListComponent implements AfterViewInit {
   async openDialogExpense(event: Event): Promise<void> {
     event.preventDefault();
 
-    if (!this.#dialogDepositComponent) {
-      this.#dialogDepositComponent = await import('./deposit/deposit.component')
-        .then((m) => m.DepositComponent)
+    if (!this.#dialogWithdrawalComponent) {
+      this.#dialogWithdrawalComponent = await import('./withdrawal/withdrawal.component')
+        .then((m) => m.WithdrawalComponent)
         .then((c) => new PolymorpheusComponent(c, this.#injector));
     }
 
     this._openDialog(
-      this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
-      {},
+      this.#dialogWithdrawalComponent as PolymorpheusComponent<WithdrawalComponent>,
+      { max: true },
       'Вывести средства'
     ).subscribe((res) => console.log(res));
   }
@@ -156,7 +158,7 @@ export class PortfolioListComponent implements AfterViewInit {
     this._openDialog(
       this.#dialogCommissionComponent as PolymorpheusComponent<CommissionComponent>,
       {},
-      'Вывести комиссию'
+      'Комиссии'
     ).subscribe((res) => console.log(res));
   }
 }

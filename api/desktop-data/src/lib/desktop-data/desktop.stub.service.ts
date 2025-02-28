@@ -126,7 +126,11 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  setAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
+  addToAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
+    return of();
+  }
+
+  subToAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
     return of();
   }
 
@@ -183,6 +187,14 @@ export class DesktopStubService extends DesktopService {
   }
 
   setUnsubscribe(ideaId: number): Observable<Response<{ subscribed: boolean }>> {
+    return of();
+  }
+
+  addCommission(params: Params): Observable<Response<any>> {
+    return of();
+  }
+
+  getBalancePortfolioBrokerCurrency(params: Params): Observable<Response<any>> {
     return of();
   }
 }

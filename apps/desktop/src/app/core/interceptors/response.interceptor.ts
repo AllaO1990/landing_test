@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   // const _snackbar = inject(MatSnackBar);
   const _alerts: TuiAlertService = inject(TuiAlertService);
-  const _statusList = [400, 404];
+  const _statusList = [400, 404, 500];
 
   const _authService = inject(AuthService);
   const _router: Router = inject(Router);

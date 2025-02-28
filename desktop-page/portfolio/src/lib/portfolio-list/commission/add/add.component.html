@@ -1,6 +1,6 @@
 <form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
-  <div class="form__header">
-    <h3>Внести средства</h3>
+  <div class="form__header" *ngIf="label">
+    <h3>{{ label }}</h3>
   </div>
   <div class="form__form">
     <lib-control-portfolio
@@ -29,49 +29,50 @@
         </tui-data-list>
       </ng-template>
     </tui-select>
-    <div class="form__control form__row">
-      <div class="form__value">
-        <ui-loader *ngIf="isLoadValue$ | async"></ui-loader>
-        <span *ngIf="(value$ | async) as value; else empty">
-          {{ value['balance'] | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-        </span>
-      </div>
-      <tui-select
-        *ngIf="(currencies$ | async) as items"
-        class="form__cell form__cell--currency"
-        [valueContent]="stringifyCurrency(items)"
-        [tuiTextfieldSize]="size"
-        formControlName="currencyId">
-        Валюта
-        <input autocomplete="off" tuiTextfieldLegacy />
-        <ng-template tuiDataList>
-          <tui-data-list>
-            <button
-              *ngFor="let item of items"
-              tuiOption
-              type="button"
-              [value]="item.currencyId">
-              {{ item.currencySymbol }}
-            </button>
-          </tui-data-list>
-        </ng-template>
-      </tui-select>
-    </div>
     <tui-input-number
-      class="form__cell form__cell--amount"
+      class="form__control"
       tuiAutoFocus
       [tuiTextfieldSize]="size"
       [tuiNumberFormat]="{precision: 2}"
-      formControlName="amount">
-      Сумма
+      formControlName="size">
+      Цена
       <input
         autocomplete="off"
-        name="amount"
+        name="size"
         tuiTextfieldLegacy
       />
     </tui-input-number>
+    <tui-select
+      *ngIf="(currencies$ | async) as items"
+      class="form__control"
+      [valueContent]="stringifyCurrency(items)"
+      [tuiTextfieldSize]="size"
+      formControlName="currencyId">
+      Валюта
+      <input autocomplete="off" tuiTextfieldLegacy />
+      <ng-template tuiDataList>
+        <tui-data-list>
+          <button
+            *ngFor="let item of items"
+            tuiOption
+            type="button"
+            [value]="item.currencyId">
+            {{ item.currencySymbol }}
+          </button>
+        </tui-data-list>
+      </ng-template>
+    </tui-select>
+    <tui-input-date-time
+      [tuiTextfieldCleaner]="true"
+      [max]="maxDate"
+      class="form__control"
+      formControlName="date"
+      tuiTextfieldSize="s">
+      Выбрать дату
+    </tui-input-date-time>
   </div>
   <div class="form__actions">
+    <div class="space"></div>
     <button
       class="form__action"
       [size]="size"
@@ -79,21 +80,19 @@
       appearance="secondary"
       type="button"
       (click)="onCancel($event)">
-      Закрыть
+      Отменить
     </button>
-    <div class="space"></div>
     <button
       class="form__action"
       [size]="size"
       [disabled]="form.invalid"
       tuiButton
       type="submit">
-      Пополнить
+      Сохранить
     </button>
   </div>
 </form>
 
-<ng-template #empty>
-  <span>&mdash;.&mdash;&mdash;</span>
+<ng-template #itemRange let-item>
+  {{ item.text }}
 </ng-template>
-

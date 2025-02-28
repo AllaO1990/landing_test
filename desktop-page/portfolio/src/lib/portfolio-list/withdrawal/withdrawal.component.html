@@ -1,6 +1,6 @@
 <form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
   <div class="form__header">
-    <h3>Внести средства</h3>
+    <h3>Вывести средства</h3>
   </div>
   <div class="form__form">
     <lib-control-portfolio
@@ -60,6 +60,7 @@
     <tui-input-number
       class="form__cell form__cell--amount"
       tuiAutoFocus
+      [max]="balance$ | async"
       [tuiTextfieldSize]="size"
       [tuiNumberFormat]="{precision: 2}"
       formControlName="amount">
@@ -88,7 +89,7 @@
       [disabled]="form.invalid"
       tuiButton
       type="submit">
-      Пополнить
+      Вывести
     </button>
   </div>
 </form>
