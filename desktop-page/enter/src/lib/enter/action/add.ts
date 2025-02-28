@@ -6,6 +6,7 @@ import { filter, Observable, pairwise, pipe, startWith, UnaryFunction } from 'rx
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs/operators';
 import { getPriceIncrement } from 'utils/get-price-increment';
+import { getTuiDayTime } from 'utils/get-tui-day-time';
 
 @Directive()
 export abstract class AddForm implements AfterViewInit {
@@ -42,13 +43,7 @@ export abstract class AddForm implements AfterViewInit {
   }
 
   getTuiDates(date: string | null): [TuiDay, TuiTime] | [null, null] {
-    if (date === null) {
-      return [null, null];
-    }
-
-    const d = new Date(date);
-
-    return [TuiDay.fromLocalNativeDate(d), TuiTime.fromLocalNativeDate(d)];
+    return getTuiDayTime(date);
   }
 
   updateControlDate(

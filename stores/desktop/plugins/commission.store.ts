@@ -2,26 +2,36 @@ import { ComponentStore } from '@ngrx/component-store';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { Observable, switchMap, tap } from 'rxjs';
 import { Params } from '@angular/router';
-import { Commission } from 'types/commission';
+import { Commission, CommissionItem } from 'types/commission';
 import { Response } from 'types/response';
 
 export interface CommissionState {
-  list: null | any;
+  list: null | CommissionItem[];
+  total: null | number;
 }
 
 export class CommissionStore extends ComponentStore<CommissionState> {
-  list$: Observable<any[]> = this.select((state) => state.list);
+  list$: Observable<CommissionItem[] | null> = this.select((state) => state.list);
+  total$: Observable<number | null> = this.select((state) => state.total);
 
   constructor(private readonly _api: DesktopService) {
     super({
+      total: null,
       list: null,
     });
   }
 
   readonly updateList = this.updater(
-    (state: CommissionState, list: null | any): CommissionState => ({
+    (state: CommissionState, list: null | CommissionItem[]): CommissionState => ({
       ...state,
       list,
+    })
+  );
+
+  readonly updateTotal = this.updater(
+    (state: CommissionState, total: null | number): CommissionState => ({
+      ...state,
+      total,
     })
   );
 
@@ -29,7 +39,12 @@ export class CommissionStore extends ComponentStore<CommissionState> {
     stream$.pipe(
       tap((data) => console.log(data)),
       switchMap((params: Params) => this._api.getCommission(params)),
-      tap((response: Response<Commission>) => this.updateList(response.data))
+      tap((response: Response<Commission>) => this.updateList(response.data.comissionItemitems)),
+      tap((response: Response<Commission>) => this.updateTotal(response.data.total))
     )
   );
+
+  addCommission(params: Params) {
+    return this._api.addCommission(params);
+  }
 }

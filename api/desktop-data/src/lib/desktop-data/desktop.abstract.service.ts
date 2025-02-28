@@ -92,7 +92,11 @@ export abstract class DesktopService {
 
   abstract getAccountBalance(params: Params): Observable<Response<AccountBalance>>;
 
-  abstract setAccountDeposit(params: Params): Observable<Response<AccountDeposit>>;
+  abstract getBalancePortfolioBrokerCurrency(params: Params): Observable<Response<any>>;
+
+  abstract addToAccountDeposit(params: Params): Observable<Response<AccountDeposit>>;
+
+  abstract subToAccountDeposit(params: Params): Observable<Response<AccountDeposit>>;
 
   abstract getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>>;
 
@@ -111,4 +115,6 @@ export abstract class DesktopService {
   abstract setUnsubscribe(id: number): Observable<Response<{ subscribed: boolean }>>;
 
   abstract getCommission(params: Params): Observable<Response<Commission>>;
+
+  abstract addCommission(params: Params): Observable<Response<any>>;
 }

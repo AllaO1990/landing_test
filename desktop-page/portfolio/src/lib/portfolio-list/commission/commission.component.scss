@@ -1,0 +1,106 @@
+.form {
+  max-width: 600px;
+
+  &__filter {
+    display: flex;
+    flex-flow: column;
+
+    width: 100%;
+  }
+
+  &__list {
+    min-height: 250px;
+    width: 40vw;
+    margin: var(--padding-4) 0;
+  }
+
+  &__row {
+    &:not(:last-child) {
+      margin-bottom: var(--padding-2);
+    }
+  }
+
+  &__control {
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+
+    &--portfolio {
+      flex: 1;
+    }
+
+    &--broker {
+      flex: 1;
+    }
+
+    &--currency {
+      flex: 1;
+    }
+
+    &--range {
+      flex: 1;
+    }
+  }
+}
+
+.item {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 300;
+
+  height: 28px;
+
+  background-color: var(--tui-background-base-alt, #F6F7FB);
+
+  &__value {
+    min-width: 75px;
+    max-width: 120px;
+
+    &:not(:first-child):not(:last-child) {
+      border-left: 1px solid var(--main-bg-color);
+    }
+  }
+}
+
+.row {
+  &__item {
+    padding: 0 var(--padding-2);
+
+    overflow: hidden;
+
+    flex: 0 0 calc(100% / 5 - var(--padding-4));
+  }
+
+  &__right {
+    text-align: right;
+  }
+
+  &__center {
+    text-align: center;
+  }
+
+  &__actions {
+    display: flex;
+
+    border-left: 1px solid var(--main-bg-color);
+    margin-right: var(--padding-4);
+
+    button {
+      margin-left: var(--padding-2);
+    }
+
+    [tuiIconButton][data-size=xs]:before {
+      font-size: .8rem;
+    }
+  }
+
+  &__broker {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}

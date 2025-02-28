@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LoaderComponent } from '@ui/components/loader';
 import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
-import { TuiButton, TuiDataListComponent, TuiFormatNumberPipe, TuiNumberFormat } from '@taiga-ui/core';
-import { TuiInputNumberModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
+import { TuiButton, TuiFormatNumberPipe, TuiNumberFormat } from '@taiga-ui/core';
+import { DesktopService } from '@desktop-data/desktop-data';
+import { DESKTOP_API } from 'tokens/desktop';
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
   BehaviorSubject,
@@ -18,42 +20,37 @@ import {
   tap,
   timer,
 } from 'rxjs';
-import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
-import { PortfolioListDialog } from '../dialog';
-import { DesktopService } from '@desktop-data/desktop-data';
-import { DESKTOP_API } from 'tokens/desktop';
-import { stringifyBroker, stringifyCurrency } from '../utils';
-import { Params } from '@angular/router';
+import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { distinctUntilChanged, map } from 'rxjs/operators';
+import { Params } from '@angular/router';
 import { Response } from 'types/response';
-import { LoaderComponent } from '@ui/components/loader';
+import { PortfolioListDialog } from '../dialog';
+import { stringifyBroker, stringifyCurrency } from '../utils';
+import { TuiInputNumberModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'lib-deposit',
+  selector: 'lib-withdrawal',
   standalone: true,
   imports: [
-    AsyncPipe,
+    CommonModule,
+    ControlPortfolioComponent,
     FormsModule,
-    NgForOf,
-    NgIf,
+    LoaderComponent,
     ReactiveFormsModule,
     TuiAutoFocus,
     TuiButton,
-    TuiDataListComponent,
-    TuiTextfieldControllerModule,
-    TuiInputNumberModule,
-    TuiNumberFormat,
     TuiSelectModule,
-    ControlPortfolioComponent,
+    TuiTextfieldControllerModule,
     TuiFormatNumberPipe,
-    LoaderComponent,
+    TuiNumberFormat,
+    TuiInputNumberModule,
   ],
-  templateUrl: './deposit.component.html',
-  styleUrls: ['../dialog.scss', './deposit.component.scss'],
+  templateUrl: './withdrawal.component.html',
+  styleUrls: ['../dialog.scss', './withdrawal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DepositComponent extends PortfolioListDialog {
+export class WithdrawalComponent extends PortfolioListDialog {
   readonly #api: DesktopService = inject(DESKTOP_API);
   readonly #service: AccountFacade = inject(AccountFacade);
   readonly #updateBalance$: Subject<void> = new BehaviorSubject<void>(undefined);
@@ -116,6 +113,7 @@ export class DepositComponent extends PortfolioListDialog {
     tap(() => this.form.patchValue({ amount: null })),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly balance$: Observable<null | number> = this.value$.pipe(map((value: { balance: number }) => value.balance));
 
   onSubmit(event: SubmitEvent) {
     event.preventDefault();
@@ -127,7 +125,7 @@ export class DepositComponent extends PortfolioListDialog {
     };
 
     this.#api
-      .addToAccountDeposit(params)
+      .subToAccountDeposit(params)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((_) => this.#updateBalance$.next(undefined));
 

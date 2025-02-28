@@ -222,8 +222,18 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<AccountBalance>>(`${this.host}/api/v1/account/balance`, params);
   }
 
-  setAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
+  getBalancePortfolioBrokerCurrency(params: Params): Observable<Response<any>> {
+    return this._http.get<Response<DataList<AccountCurrency>>>(
+      `${this.host}/api/v1/account/portfolios/${params['portfolioId']}/brokers/${params['brokerId']}/currencies/${params['currencyId']}`
+    );
+  }
+
+  addToAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
     return this._http.post<Response<AccountDeposit>>(`${this.host}/api/v1/account/deposit`, params);
+  }
+
+  subToAccountDeposit(params: Params): Observable<Response<AccountDeposit>> {
+    return this._http.post<Response<AccountDeposit>>(`${this.host}/api/v1/account/withdrawal`, params);
   }
 
   getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>> {
@@ -312,6 +322,10 @@ export class DesktopApiService extends DesktopService {
   }
 
   getCommission(params: Params): Observable<Response<Commission>> {
-    return this._http.post<Response<AccountBalance>>(`${this.host}/api/v1/comission/portfolio`, params);
+    return this._http.post<Response<Commission>>(`${this.host}/api/v1/comission/portfolio`, params);
+  }
+
+  addCommission(params: Params): Observable<Response<any>> {
+    return this._http.post<Response<any>>(`${this.host}/api/v1/comission`, params);
   }
 }

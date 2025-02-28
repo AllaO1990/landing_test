@@ -70,7 +70,7 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
   private readonly _dialog: DialogService = inject(DIALOG);
   readonly #list$: Subject<AccountPortfolio[] | null> = new BehaviorSubject<AccountPortfolio[] | null>(null);
 
-  private _dialogApproveComponent: PolymorpheusComponent<DialogApproveComponent> | null = null;
+  #dialogApproveComponent: PolymorpheusComponent<DialogApproveComponent> | null = null;
 
   readonly size = 's';
 
@@ -151,12 +151,14 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
   async onRemove(event: Event, item: AccountPortfolio) {
     event.stopPropagation();
 
-    this._dialogApproveComponent = await import('ui-common/lib/dialog-approve')
-      .then((m) => m.DialogApproveComponent)
-      .then((c) => new PolymorpheusComponent(c, this._injector));
+    if (this.#dialogApproveComponent === null) {
+      this.#dialogApproveComponent = await import('ui-common/lib/dialog-approve')
+        .then((m) => m.DialogApproveComponent)
+        .then((c) => new PolymorpheusComponent(c, this._injector));
+    }
 
     this._dialog
-      .open(this._dialogApproveComponent, {
+      .open(this.#dialogApproveComponent, {
         appearance: 'dialog-remove',
         data: {
           template: this.templateDelete,
