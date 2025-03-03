@@ -37,11 +37,11 @@
         <td
           class="td"
           *tuiCell="'date'"
-          [title]="item.createdAt | date : 'dd.MM.yyyy'"
+          [title]="item.entries[0].date | date : 'dd.MM.yyyy'"
           tuiTd
         >
-          {{ item.createdAt | date : 'dd.MM' }}
-          <div class="substring">{{ item.createdAt | datePassed }} дней</div>
+          {{ item.entries[0].date | date : 'dd.MM' }}
+          <div class="substring">{{ item.entries[0].date | datePassed }} дней</div>
         </td>
 
         <td *tuiCell="'cost'" tuiTd class="td td--number">

@@ -17,6 +17,7 @@ export class IdeaFacade {
     switchMap((idea: StockPosition | null) => {
       if (idea === null) {
         return this._store.selected.instrument$.pipe(
+          // tap((data) => console.log(data)),
           filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
           switchMap((instrument: StockInstrument) =>
             this._store.getPriceOfInstruments([instrument.id]).pipe(
@@ -39,6 +40,7 @@ export class IdeaFacade {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  readonly resetIdea = () => this._store.idea.updateIdea(null);
   readonly loadIdea = this._store.idea.loadIdea;
   readonly createIdea = this._store.idea.create;
   readonly editIdea = this._store.idea.edit;

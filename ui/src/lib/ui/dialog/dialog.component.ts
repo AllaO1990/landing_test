@@ -1,10 +1,9 @@
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PolymorpheusTemplate, PolymorpheusOutlet } from "@taiga-ui/polymorpheus";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { POLYMORPHEUS_CONTEXT, PolymorpheusOutlet } from '@taiga-ui/polymorpheus';
 import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core';
 import { TuiPopover } from '@taiga-ui/cdk';
 import { TuiDialogCloseService } from '@taiga-ui/core';
-import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import { takeUntil } from 'rxjs';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'lib-dialog',
@@ -12,10 +11,10 @@ import { takeUntil } from 'rxjs';
   styleUrl: './dialog.component.scss',
   standalone: true,
   host: {
-    '[attr.appearance]': 'context.appearance',
+    '[attr.appearance]': 'context.appearance || null',
     '[class.lib-dialog]': 'true',
   },
-  imports: [PolymorpheusTemplate, PolymorpheusOutlet],
+  imports: [PolymorpheusOutlet],
   providers: [TuiDialogCloseService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -25,7 +24,12 @@ export class DialogComponent {
   private _close$ = inject(TuiDialogCloseService);
 
   constructor() {
-    this._close$.pipe(takeUntilDestroyed()).subscribe(() => this.context.$implicit.complete());
+    this._close$
+      .pipe(
+        takeUntilDestroyed(),
+        filter((event: unknown) => event instanceof KeyboardEvent)
+      )
+      .subscribe(() => this.context.$implicit.complete());
   }
 
   onClick(response: boolean): void {

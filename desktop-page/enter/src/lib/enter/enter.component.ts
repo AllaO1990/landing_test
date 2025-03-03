@@ -1,6 +1,6 @@
 import { TUI_CONFIRM, TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import {
   TuiAlertService,
@@ -127,7 +127,7 @@ function maxAmount(): ValidatorFn {
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [triggerHeightAnimations],
 })
-export class VtEnterComponent implements AfterViewInit {
+export class VtEnterComponent implements AfterViewInit, OnDestroy {
   private readonly _dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _select: SelectFacade = inject(SelectFacade);
@@ -251,7 +251,11 @@ export class VtEnterComponent implements AfterViewInit {
         this.isPending$.next(false);
 
         if (last !== null && result !== null) {
-          if (last.idea.id === result.idea.id && last.idea.instrument.id === result.idea.instrument.id) {
+          if (
+            result.idea.id !== null &&
+            last.idea.id === result.idea.id &&
+            last.idea.instrument.id === result.idea.instrument.id
+          ) {
             this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
           }
         }
@@ -295,6 +299,10 @@ export class VtEnterComponent implements AfterViewInit {
           this.controlSidebar[action]();
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this._idea.resetIdea();
   }
 
   trackByIndex(index: number): number {

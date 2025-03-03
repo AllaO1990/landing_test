@@ -1,16 +1,16 @@
-<div class="actions" *ngIf="isMobile$ | async">
-  <div class="space"></div>
-  <button
-    class="close"
-    appearance="icon"
-    iconStart="@tui.x"
-    tuiIconButton
-    size="s"
-    type="button"
-    (click)="onClose($event)"
-  ></button>
-</div>
-<form class="form" [formGroup]="form">
+<!--<div class="actions" *ngIf="isMobile$ | async">-->
+<!--  <div class="space"></div>-->
+<!--  <button-->
+<!--    class="close"-->
+<!--    appearance="icon"-->
+<!--    iconStart="@tui.x"-->
+<!--    tuiIconButton-->
+<!--    size="s"-->
+<!--    type="button"-->
+<!--    (click)="onClose($event)"-->
+<!--  ></button>-->
+<!--</div>-->
+<form tuiGroup class="form" [formGroup]="form">
   <tui-input
     tuiAutoFocus
     formControlName="search"
@@ -20,6 +20,15 @@
     Введите название тикера
     <input tuiTextfieldLegacy />
   </tui-input>
+  <button
+    class="close"
+    appearance="outline"
+    tuiButton
+    size="s"
+    type="button"
+    (click)="onClose($event)"
+  >Закрыть
+  </button>
 </form>
 <div class="list">
   <lib-list
