@@ -10,7 +10,7 @@ import {
   Input,
   NgZone,
 } from '@angular/core';
-import { AsyncPipe, DatePipe, JsonPipe, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import {
   AbstractControl,
@@ -74,7 +74,6 @@ import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
     TuiFormatNumberPipe,
     ListComponent,
     LoaderComponent,
-    JsonPipe,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
@@ -299,31 +298,40 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
             const atrList: number[] = [1, 2, 4];
             let quantity = 0;
 
-            const data: StockPositionTarget[] = [0.4, 0.3, 0.3].map((pct: number, index: number, array: number[]) => {
-              const price = getNumberPrecision(
-                priceEntry + multiplier * atrList[index] * indicator.atr,
-                priceIncrement
-              );
-              let amount = getNumberPrecision(quantityEntry * pct, priceIncrement === 8 ? priceIncrement : 0);
+            const data: StockPositionTarget[] = [0.4, 0.3, 0.3].reduce(
+              (acc: StockPositionTarget[], pct: number, index: number, array: number[]) => {
+                const price = getNumberPrecision(
+                  priceEntry + multiplier * atrList[index] * indicator.atr,
+                  priceIncrement
+                );
+                let amount = getNumberPrecision(quantityEntry * pct, priceIncrement === 8 ? priceIncrement : 0);
 
-              if (index === array.length - 1) {
-                amount = getNumberPrecision(quantityEntry - quantity, priceIncrement);
-              }
+                if (index === array.length - 1) {
+                  amount = getNumberPrecision(quantityEntry - quantity, priceIncrement);
 
-              quantity += amount;
+                  if (amount === 0) {
+                    return acc;
+                  }
+                }
 
-              return {
-                price: price,
-                amount: amount,
-                totalPrice: price * amount,
-                profit: getNumberPrecision((price - priceEntry) * amount * multiplier, this.priceIncrement),
-                profitPercent: getNumberPrecision(((price - priceEntry) / priceEntry) * 100 * multiplier, 2),
-                depositShare: null,
-                reached: false,
-                stopDate: null,
-                broker: null,
-              };
-            });
+                quantity += amount;
+
+                acc.push({
+                  price: price,
+                  amount: amount,
+                  totalPrice: price * amount,
+                  profit: getNumberPrecision((price - priceEntry) * amount * multiplier, this.priceIncrement),
+                  profitPercent: getNumberPrecision(((price - priceEntry) / priceEntry) * 100 * multiplier, 2),
+                  depositShare: null,
+                  reached: false,
+                  stopDate: null,
+                  broker: null,
+                });
+
+                return acc;
+              },
+              []
+            );
 
             this._updateFormArray('targets', data, true);
           }

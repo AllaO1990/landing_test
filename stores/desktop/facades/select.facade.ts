@@ -20,9 +20,9 @@ export class SelectFacade {
     this._select.updateEvent(event);
   }
 
-  updateInstrument(instrument: null | StockInstrument): void {
-    this._select.updateInstrument(instrument);
-  }
+  // updateInstrument(instrument: null | StockInstrument): void {
+  //   this._select.updateInstrument(instrument);
+  // }
 
   updateList(list: null | StockId[]): void {
     this._select.updateList(list);

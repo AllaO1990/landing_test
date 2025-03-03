@@ -245,7 +245,6 @@ export class MainStore extends ComponentStore<any> {
     ]).pipe(
       tap(([event, list]: [StockEvent, StockListItems]) => {
         const find = list.find((item: StockInstrument) => item.id === event.id) || null;
-
         this._updateSelected(find, null, null, null, event.group);
       })
     )
@@ -275,6 +274,7 @@ export class MainStore extends ComponentStore<any> {
       source$.pipe(this._getIdFrom(EventSelected.IDEA)),
       this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
     ]).pipe(
+      // tap((data) => console.log(data)),
       filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Position[]]) => {
         const find = list.find((item: Position) => item.id === event.id) || null;

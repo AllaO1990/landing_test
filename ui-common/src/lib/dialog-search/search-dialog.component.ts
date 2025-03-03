@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TuiAutoFocus, TuiPopover } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TuiBreakpointService, TuiButton } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiGroup } from '@taiga-ui/core';
 import { debounceTime, Observable, switchMap } from 'rxjs';
 import { StockInstrument, StockListItems } from 'types/stock';
 import { filter, map, startWith } from 'rxjs/operators';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
@@ -20,13 +20,13 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
     NgIf,
-    NgFor,
     AsyncPipe,
     ListComponent,
     ItemDirective,
     HeaderComponent,
     TuiAutoFocus,
     TuiButton,
+    TuiGroup,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrl: './search-dialog.component.scss',
@@ -55,7 +55,7 @@ export class SearchDialogComponent {
     switchMap((stock: StockListItems | null) =>
       this.controlSearch.valueChanges.pipe(
         debounceTime(300),
-        filter((value: string) => value.length > 1 || value.length === 0),
+        filter((value: string) => value.length > 0 || value.length === 0),
         startWith(this.controlSearch.value),
         map((value: string) => value.trim().toLowerCase()),
         map((value: string) => this._searched(stock, value))
@@ -72,11 +72,18 @@ export class SearchDialogComponent {
       return list;
     }
 
-    return list.filter((item: StockInstrument) => {
-      const concat = [item.ticker, item.name].map((item: string) => item.toLowerCase()).join('⁂');
+    return list
+      .filter((item: StockInstrument) => {
+        const concat = this._getSearchString(item);
 
-      return concat.indexOf(value) !== -1;
-    });
+        return concat.indexOf(value) !== -1;
+      })
+      .sort((a, b) => {
+        const indexA = this._getSearchString(a).indexOf(value);
+        const indexB = this._getSearchString(b).indexOf(value);
+
+        return indexA - indexB;
+      });
   }
 
   onClick(event: Event, value: StockInstrument): void {
@@ -89,5 +96,9 @@ export class SearchDialogComponent {
     event.preventDefault();
 
     this.context.completeWith(null);
+  }
+
+  private _getSearchString(item: StockInstrument): string {
+    return [item.ticker, item.name].map((item: string) => item.toLowerCase()).join('⁂');
   }
 }

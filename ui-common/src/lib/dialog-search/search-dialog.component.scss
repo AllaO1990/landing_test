@@ -10,6 +10,10 @@
   background-color: var(--block-bg-color);
 }
 
+.close {
+  flex: 0 0 auto;
+}
+
 .actions {
   display: flex;
   flex-flow: row nowrap;

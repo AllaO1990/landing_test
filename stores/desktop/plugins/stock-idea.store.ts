@@ -126,7 +126,6 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           .getIdea(value)
           .pipe(catchError((err) => of(null).pipe(tap(() => this._queryParams.update(null, '')))));
       }),
-      tap((data) => console.log(data)),
       tap((result: StockPosition | null) => this.updateIdea(result))
     )
   );
