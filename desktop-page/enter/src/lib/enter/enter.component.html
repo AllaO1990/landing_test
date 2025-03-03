@@ -18,12 +18,12 @@
           tuiIconButton
           [appearance]="form.pristine || (isDisabled$ | async) ? 'outline' : 'primary'"
           [size]="size"
-          [loading]="isPending"
-          [disabled]="form.pristine || (isDisabled$ | async)"
+          [loading]="isPending$ | async"
           (click)="onSubmit($event, result.idea.id)"
           type="button"
           iconStart="@tui.save"
         ></button>
+        <!--          [disabled]="form.pristine || (isDisabled$ | async)"-->
         <button
           class="action bell"
           tuiIconButton
@@ -107,7 +107,7 @@
           tuiButton
           type="button"
           [disabled]="form.pristine || (isDisabled$ | async)"
-          [loading]="isPending"
+          [loading]="isPending$ | async"
           (click)="onSubmit($event, result.idea.id)"
           [size]="size">
           <tui-icon icon="@tui.save"></tui-icon>
