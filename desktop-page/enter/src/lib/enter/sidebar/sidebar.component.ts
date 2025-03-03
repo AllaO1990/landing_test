@@ -177,7 +177,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     const action = isDisabled ? 'disable' : 'enable';
 
     this.form[action]();
-    this.formControlPortfolio[action]();
+    // this.formControlPortfolio[action]();
     this.formControlStrategy[action]();
   }
 
@@ -253,7 +253,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
           }
           this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
           if (this.controlPortfolio.value === null) {
-            this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: true });
+            this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
           }
 
           this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });

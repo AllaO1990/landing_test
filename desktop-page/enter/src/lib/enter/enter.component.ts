@@ -14,6 +14,7 @@ import {
 } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import {
+  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   filter,
@@ -239,7 +240,7 @@ export class VtEnterComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
   activeItemIndex = 0;
-  isPending = false;
+  isPending$: Subject<boolean> = new BehaviorSubject<boolean>(false);
 
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
@@ -247,7 +248,7 @@ export class VtEnterComponent implements AfterViewInit {
     this.data$
       .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
       .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
-        this.isPending = false;
+        this.isPending$.next(false);
 
         if (last !== null && result !== null) {
           if (last.idea.id === result.idea.id && last.idea.instrument.id === result.idea.instrument.id) {
@@ -342,7 +343,8 @@ export class VtEnterComponent implements AfterViewInit {
 
   onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
-    this.isPending = true;
+
+    this.isPending$.next(true);
 
     if (ideaId === null) {
       this._idea.createIdea(this._getValueToSubmit(this.form.getRawValue()));
