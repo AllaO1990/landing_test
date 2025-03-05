@@ -81,6 +81,7 @@ export class MainStore extends ComponentStore<any> {
 
     const instrumentTrust$: Observable<StockInstrument> = this.selected.instrument$.pipe(
       filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
+      distinctUntilChanged((a, b) => a.id === b.id),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
 
@@ -106,8 +107,8 @@ export class MainStore extends ComponentStore<any> {
     this.idea.loadPositions(timerSource);
 
     this.onChangeInstrument(this.selected.event$);
-    this.onChangePosition(eventWithoutDialog$);
-    this.onChangeIdea(eventWithoutDialog$);
+    this.onChangePosition(this.selected.event$);
+    this.onChangeIdea(this.selected.event$);
     this.onChangeWatch(eventWithoutDialog$);
     this.onChangeTransaction(eventWithoutDialog$);
 
@@ -124,10 +125,14 @@ export class MainStore extends ComponentStore<any> {
     this.ema.load(
       combineLatest([
         instrumentTrust$.pipe(map((instrument: StockInstrument) => instrument.id)),
-        this.ema.selected$.pipe(filter((selected: null | any): selected is any => selected !== null)),
+        this.ema.selected$.pipe(
+          filter((selected: null | any): selected is any => selected !== null),
+          distinctUntilChanged((a: string[], b: string[]) => a.toString() === b.toString())
+        ),
         this._range$,
         interval$,
       ]).pipe(
+        debounceTime(100),
         map(([id, types, period, interval]: [string, string[], DateRange, Timeframe]) => ({
           id,
           types,
@@ -139,10 +144,14 @@ export class MainStore extends ComponentStore<any> {
     this.sma.load(
       combineLatest([
         instrumentTrust$.pipe(map((instrument: StockInstrument) => instrument.id)),
-        this.sma.selected$.pipe(filter((selected: null | any): selected is any => selected !== null)),
+        this.sma.selected$.pipe(
+          filter((selected: null | any): selected is any => selected !== null),
+          distinctUntilChanged((a: string[], b: string[]) => a.toString() === b.toString())
+        ),
         this._range$,
         interval$,
       ]).pipe(
+        debounceTime(100),
         map(([id, types, period, interval]: [string, string[], DateRange, Timeframe]) => ({
           id,
           types,

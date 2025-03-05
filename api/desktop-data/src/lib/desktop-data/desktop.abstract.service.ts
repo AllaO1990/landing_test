@@ -117,4 +117,6 @@ export abstract class DesktopService {
   abstract getCommission(params: Params): Observable<Response<Commission>>;
 
   abstract addCommission(params: Params): Observable<Response<any>>;
+
+  abstract deleteCommission(id: StockId): Observable<Response<any>>;
 }

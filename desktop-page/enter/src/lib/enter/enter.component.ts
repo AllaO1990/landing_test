@@ -43,7 +43,13 @@ import { StockId, StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
-import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import {
+  StockPosition,
+  StockPositionActionEntry,
+  StockPositionIdeaEntry,
+  StockPositionStop,
+  StockPositionTarget,
+} from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
   AbstractControl,
@@ -257,6 +263,10 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
             last.idea.instrument.id === result.idea.instrument.id
           ) {
             this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
+            this._idea.loadFigures({
+              ideaId: '' + result.idea.id,
+              instrumentId: result.idea.instrument.id,
+            });
           }
         }
 
@@ -266,7 +276,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
             result.actions.outs,
             result.idea.positionType === 'long' ? 1 : -1
           );
-          const entries = this._getIdeaEntries(result.idea.entries);
+          const entries = this._getIdeaEntries(result.idea.entries, result.actions.entries);
           const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
           let action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
 
@@ -453,8 +463,11 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     };
   }
 
-  private _getIdeaEntries(list: any[]): StockPositionIdeaEntry[] {
-    return list.map((item) => ({
+  private _getIdeaEntries(list: any[], actions: StockPositionActionEntry[]): StockPositionIdeaEntry[] {
+    const check = !!(actions[0] && actions[0].date);
+
+    return list.map((item, index: number) => ({
+      check: index === 0 && item.date ? item.date : check,
       date: item.date || null,
       depositShare: item.depositShare || null,
       broker: null,

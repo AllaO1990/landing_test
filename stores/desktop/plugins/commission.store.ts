@@ -4,6 +4,7 @@ import { Observable, switchMap, tap } from 'rxjs';
 import { Params } from '@angular/router';
 import { Commission, CommissionItem } from 'types/commission';
 import { Response } from 'types/response';
+import { StockId } from 'types/stock';
 
 export interface CommissionState {
   list: null | CommissionItem[];
@@ -46,5 +47,9 @@ export class CommissionStore extends ComponentStore<CommissionState> {
 
   addCommission(params: Params) {
     return this._api.addCommission(params);
+  }
+
+  deleteCommission(id: StockId): Observable<Response<any>> {
+    return this._api.deleteCommission(id);
   }
 }

@@ -442,7 +442,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
         )
       )
       .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
-        this._removeZones(zones, chart, this._figuresName);
+        this._removeFigures(zones, chart);
         this._addZones(zones, chart);
       });
 
@@ -499,6 +499,16 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       .forEach((id: string) => {
         chart.removeAnnotation(id);
       });
+  }
+
+  private _removeFigures(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
+    (chart as any).annotations.map((item: any) => {
+      const annotationId: string = item.userOptions.id;
+
+      if (this._figuresName.includes(annotationId.split('--')[0])) {
+        chart.removeAnnotation(annotationId);
+      }
+    });
   }
 
   private _updateChartText(chart: Highcharts.Chart, text: string | number | null): void {

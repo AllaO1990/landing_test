@@ -40,6 +40,7 @@ export class IdeaFacade {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  readonly loadFigures = this._store.figures.load;
   readonly resetIdea = () => this._store.idea.updateIdea(null);
   readonly loadIdea = this._store.idea.loadIdea;
   readonly createIdea = this._store.idea.create;

@@ -179,7 +179,7 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   }
 
   onEdit(event: Event, item: CommissionItem): void {
-    this.openDialogAdd(event);
+    this.openDialogAdd(event, item);
   }
 
   protected selectRangeHandler = (item: { text: string; range: TuiDayRange }) => item.range;
@@ -229,5 +229,11 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
     }
 
     return { brokerId, currencyId, portfolioId, from, to };
+  }
+
+  onRemove(event: Event, item: any) {
+    event.preventDefault();
+
+    console.log(item);
   }
 }

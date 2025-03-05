@@ -68,13 +68,14 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
 
   ngAfterViewInit(): void {
     if (this.context.data) {
-      const { portfolio, currency, broker } = this.context.data;
+      const { portfolio, currency, broker, size } = this.context.data;
 
       this.form.patchValue({
         date: getTuiDayTime(new Date().toISOString()),
         portfolio: portfolio && portfolio.portfolioId !== null ? portfolio : null,
         currencyId: currency && currency.currencyId,
         brokerId: broker && broker.brokerId,
+        size,
       });
     }
   }

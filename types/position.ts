@@ -99,6 +99,7 @@ export interface StockPositionStop {
 }
 
 export interface StockPositionIdeaEntry {
+  check: boolean;
   date: string | null;
   depositShare: number | null;
   price: number;

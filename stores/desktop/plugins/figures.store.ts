@@ -7,10 +7,11 @@ import { Response } from 'types/response';
 import * as Highcharts from 'highcharts/highstock';
 import { ConsolidationZonesShape, ConsolidationZonesState } from 'types/consolidation-zones';
 import { AnnotationShapePointOptions, AnnotationsShapesOptions } from 'highcharts';
-import { getJoinUniq } from 'utils/get-join-uniq';
 import { StockTransaction } from 'types/stock';
 
 type FigureState = ConsolidationZonesState & { zonesUser: null | ConsolidationZonesShape };
+
+let FIGURE_ID = 0;
 
 export class FiguresStore extends WithQueue<FigureState> {
   private readonly _commonAxisValues = { xAxis: 0, yAxis: 0 };
@@ -74,12 +75,12 @@ export class FiguresStore extends WithQueue<FigureState> {
       return of(null);
     }
 
-    const key = getJoinUniq(data.ideaId, data.instrumentId);
-    const value = this.queue.getValue(key);
-
-    if (value) {
-      return of(value);
-    }
+    // const key = getJoinUniq(data.ideaId, data.instrumentId);
+    // const value = this.queue.getValue(key);
+    //
+    // if (value) {
+    //   return of(value);
+    // }
 
     return this._api.getChartFigures(data.ideaId, this._from.toISOString(), this._to.toISOString()).pipe(
       filter(
@@ -91,8 +92,8 @@ export class FiguresStore extends WithQueue<FigureState> {
         data: response,
         instrument: data.instrumentId,
         parent: data.ideaId,
-      })),
-      tap((data: ConsolidationZonesShape) => this.queue.setValue(key, data))
+      }))
+      // tap((data: ConsolidationZonesShape) => this.queue.setValue(key, data))
     );
   }
 
@@ -189,18 +190,20 @@ export class FiguresStore extends WithQueue<FigureState> {
       shapes.push(...targets);
     }
 
+    const id = ++FIGURE_ID;
+
     return [
       {
         shapes: shapes,
         draggable: '',
         zIndex: 20,
-        id: `lines-idea`,
+        id: `lines-idea--${id}`,
       },
       {
         shapes: shapesUser,
         draggable: '',
         zIndex: 20,
-        id: `lines-user`,
+        id: `lines-user--${id}`,
       },
     ];
   }
