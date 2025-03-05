@@ -1,0 +1,62 @@
+.dialog {
+  position: relative;
+  width: 40vw;
+  max-width: 600px;
+
+  padding: var(--padding-2);
+  background-color: var(--block-bg-color);
+
+  &__close {
+    position: absolute;
+    right: var(--padding-2);
+    top: var(--padding-2);
+  }
+
+  &__header {
+    margin: var(--padding-2) 0;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font: var(--tui-font-heading-3);
+  }
+
+  &__content {
+    text-align: center;
+  }
+
+  &__action {
+    text-align: center;
+    font: var(--tui-font-text-l);
+  }
+}
+
+.check {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  stroke-width: 3px;
+
+  margin-right: var(--padding-2)
+}
+
+.animate {
+  stroke-dasharray: 5rem;
+  stroke-dashoffset: 0;
+  animation: dash 2s linear 2s 1;
+
+}
+
+::ng-deep {
+  @keyframes dash {
+    from {
+      stroke-dashoffset: 5rem;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+}
