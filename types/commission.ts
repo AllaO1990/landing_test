@@ -2,7 +2,7 @@ import { AccountBroker, AccountCurrency, AccountPortfolio } from './account';
 
 export interface Commission {
   total: number;
-  comissionItemitems: CommissionItem[] | null;
+  items: CommissionItem[] | null;
 }
 
 export interface CommissionItem {
@@ -11,4 +11,5 @@ export interface CommissionItem {
   broker: AccountBroker;
   currency: AccountCurrency;
   size: number;
+  id: number;
 }

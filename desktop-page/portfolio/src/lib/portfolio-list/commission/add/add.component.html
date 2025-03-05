@@ -85,7 +85,8 @@
     <button
       class="form__action"
       [size]="size"
-      [disabled]="form.invalid"
+      [loading]="isLoading$ | async"
+      [disabled]="form.invalid || (isLoading$ | async)"
       tuiButton
       type="submit">
       Сохранить

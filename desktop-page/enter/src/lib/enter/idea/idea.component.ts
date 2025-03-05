@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
   forwardRef,
@@ -95,7 +94,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   private readonly _service: IdeaService = inject(IdeaService);
   private readonly _ideaFacade: IdeaFacade = inject(IdeaFacade);
   private readonly _ngZone: NgZone = inject(NgZone);
-  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;

@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  Injector,
+} from '@angular/core';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe } from '@taiga-ui/core';
@@ -9,7 +17,20 @@ import { DesktopService } from '@desktop-data/desktop-data';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { BehaviorSubject, filter, Observable, shareReplay, startWith, Subject, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  filter,
+  forkJoin,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+  tap,
+  timer,
+} from 'rxjs';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { RangeWithListComponent } from 'ui-common/lib/range-with-list/range-with-list.component';
 import { map } from 'rxjs/operators';
@@ -21,6 +42,14 @@ import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/li
 import { LoaderComponent } from '@ui/components/loader';
 import { Params } from '@angular/router';
 import { CommissionItem } from 'types/commission';
+import { TuiButtonLoading } from '@taiga-ui/kit';
+import { Response } from 'types/response';
+import { triggerHeightAnimations } from '@ui/animations/height.animations';
+
+type Loading = {
+  loadingRemove: boolean;
+  loadingEdit: boolean;
+};
 
 @Component({
   selector: 'lib-commission',
@@ -40,9 +69,11 @@ import { CommissionItem } from 'types/commission';
     LoaderComponent,
     HeaderComponent,
     TuiFormatNumberPipe,
+    TuiButtonLoading,
   ],
   templateUrl: './commission.component.html',
   styleUrls: ['../dialog.scss', './commission.component.scss'],
+  animations: [triggerHeightAnimations],
   providers: [
     {
       provide: CommissionStore,
@@ -59,7 +90,13 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   readonly #service: AccountFacade = inject(AccountFacade);
   readonly #store: CommissionStore = inject(CommissionStore);
   readonly #filterValue$: Subject<Params> = new BehaviorSubject({});
-  readonly list$ = this.#store.list$;
+  readonly #cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  readonly list$ = this.#store.list$.pipe(
+    map(
+      (list: CommissionItem[] | null) =>
+        list && list.map((item: CommissionItem) => ({ ...item, loadingEdit: false, loadingRemove: false }))
+    )
+  );
   readonly itemHeight = 28;
   readonly portfolios$: Observable<AccountPortfolio[]> = this.#service.portfolios$.pipe(
     filter((list: AccountPortfolio[] | null): list is AccountPortfolio[] => list !== null),
@@ -168,7 +205,11 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
       this.#dialogAddComponent as PolymorpheusComponent<CommissionAddComponent>,
       data,
       'Ввести комиссию'
-    ).subscribe((res) => console.log(res));
+    ).subscribe((response: boolean) => {
+      if (response) {
+        this._onLoadList();
+      }
+    });
   }
 
   onSubmit(event: SubmitEvent) {
@@ -178,8 +219,8 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
     this.#filterValue$.next(this._getParams());
   }
 
-  onEdit(event: Event, item: CommissionItem): void {
-    this.openDialogAdd(event);
+  onEdit(event: Event, item: CommissionItem & Loading): void {
+    this.openDialogAdd(event, item);
   }
 
   protected selectRangeHandler = (item: { text: string; range: TuiDayRange }) => item.range;
@@ -229,5 +270,30 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
     }
 
     return { brokerId, currencyId, portfolioId, from, to };
+  }
+
+  onRemove(event: Event, item: CommissionItem & Loading) {
+    event.preventDefault();
+
+    item.loadingRemove = true;
+
+    forkJoin([this.#store.deleteCommission(item.id), timer(1000)])
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        map(([response]: [Response<any>, number]) => response),
+        catchError((error: any) => {
+          console.error(error);
+          return of(null);
+        })
+      )
+      .subscribe((res) => {
+        this._onLoadList();
+        item.loadingRemove = false;
+        this.#cdr.markForCheck();
+      });
+  }
+
+  trackById(_: number, item: CommissionItem): number {
+    return item.id;
   }
 }

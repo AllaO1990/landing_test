@@ -1,7 +1,7 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, Subject, timer } from 'rxjs';
 import { PortfolioListDialog } from '../../dialog';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
@@ -13,11 +13,15 @@ import {
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
 import { TuiButton, TuiNumberFormat } from '@taiga-ui/core';
-import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { stringifyBroker, stringifyCurrency } from '../../utils';
 import { getTuiDayTime } from 'utils/get-tui-day-time';
 import { CommissionStore } from 'stores/plugins/commission.store';
 import { Params } from '@angular/router';
+import { TuiButtonLoading } from '@taiga-ui/kit';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Response } from 'types/response';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'lib-commission-add',
@@ -35,6 +39,7 @@ import { Params } from '@angular/router';
     TuiAutoFocus,
     TuiInputNumberModule,
     TuiNumberFormat,
+    TuiButtonLoading,
   ],
   templateUrl: './add.component.html',
   styleUrls: ['../../dialog.scss', './add.component.scss'],
@@ -43,6 +48,7 @@ import { Params } from '@angular/router';
 export class CommissionAddComponent extends PortfolioListDialog implements AfterViewInit {
   readonly #service: AccountFacade = inject(AccountFacade);
   readonly #store: CommissionStore = inject(CommissionStore);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   readonly portfolios$: Observable<null | AccountPortfolio[]> = this.#service.portfolios$;
   readonly brokers$: Observable<null | AccountBroker[]> = this.#service.brokers$;
@@ -56,6 +62,8 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
     brokerId: new FormControl(null, Validators.required),
   });
 
+  readonly isLoading$: Subject<boolean> = new BehaviorSubject(false);
+
   @tuiPure
   protected stringifyBroker(items: readonly AccountBroker[]): TuiStringHandler<TuiContext<number>> {
     return stringifyBroker(items);
@@ -68,21 +76,38 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
 
   ngAfterViewInit(): void {
     if (this.context.data) {
-      const { portfolio, currency, broker } = this.context.data;
+      const { portfolio, currency, broker, size, date } = this.context.data;
+
+      console.log(date);
 
       this.form.patchValue({
-        date: getTuiDayTime(new Date().toISOString()),
+        date: getTuiDayTime(date || new Date().toISOString()),
         portfolio: portfolio && portfolio.portfolioId !== null ? portfolio : null,
         currencyId: currency && currency.currencyId,
         brokerId: broker && broker.brokerId,
+        size,
       });
     }
   }
 
   onSubmit(event: SubmitEvent) {
     event.preventDefault();
+    this.isLoading$.next(true);
 
-    this.#store.addCommission(this._getParams()).subscribe((res) => console.log(res));
+    const request =
+      this.context.data.id !== undefined
+        ? this.#store.updateCommission(this.context.data.id, this._getParams())
+        : this.#store.addCommission(this._getParams());
+
+    forkJoin([request, timer(1000)])
+      .pipe(
+        map(([response]: [Response<any>, number]) => response),
+        takeUntilDestroyed(this.#destroyRef)
+      )
+      .subscribe((_) => {
+        this.isLoading$.next(false);
+        this.context.completeWith(true);
+      });
   }
 
   private _getParams(): Params {
@@ -95,7 +120,7 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
     return {
       ...other,
       portfolioId,
-      date: `${date[0].toString('YMD', '-')}T${date[1].toString('HH:MM:SS.MSS')}Z`,
+      date: (date[0] as TuiDay).toLocalNativeDate(),
     };
   }
 }

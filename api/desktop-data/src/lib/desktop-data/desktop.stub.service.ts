@@ -197,4 +197,12 @@ export class DesktopStubService extends DesktopService {
   getBalancePortfolioBrokerCurrency(params: Params): Observable<Response<any>> {
     return of();
   }
+
+  updateCommission(id: number, params: Params): Observable<Response<any>> {
+    return of();
+  }
+
+  deleteCommission(id: number): Observable<Response<any>> {
+    return of();
+  }
 }

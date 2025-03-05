@@ -104,8 +104,9 @@
         [style.height.px]="10 * itemHeight"
         [list]="list"
         [header]="header"
+        [trackBy]="trackById"
         [itemSize]="itemHeight">
-        <div class="item" *libListItem="let item; let index = index">
+        <div class="item" *libListItem="let item; let index = index" @heightAnimations>
           <div class="item__value row__item row__date">
             {{ item.date | date: 'dd.MM.yy' }}
           </div>
@@ -130,8 +131,9 @@
               tuiIconButton
               size="xs"
               type="button"
+              [loading]="item.loadingEdit"
               (click)="onEdit($event, item)"
-              [disabled]="false"
+              [disabled]="item.loadingEdit || item.loadingRemove"
             ></button>
             <button
               appearance="icon"
@@ -139,7 +141,9 @@
               tuiIconButton
               size="xs"
               type="button"
-              [disabled]="false"
+              [loading]="item.loadingRemove"
+              (click)="onRemove($event, item)"
+              [disabled]="item.loadingEdit || item.loadingRemove"
             ></button>
           </div>
         </div>

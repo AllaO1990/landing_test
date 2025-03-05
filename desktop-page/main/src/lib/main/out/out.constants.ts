@@ -2,13 +2,18 @@ import { OutHeaderItem } from './out.types';
 import { sortNumber } from '../main.utils';
 import { OutEnums } from './out.enums';
 import { sortText } from 'utils/sort-text';
+import { StockPositionIdeaEntry } from 'types/position';
 
 export const OUT_HEADER: OutHeaderItem[] = [
   {
     name: 'date',
     label: `Дата<br>Кол.дн.`,
-    sorter: (a: { createdAt: string }, b: { createdAt: string }) =>
-      new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf(),
+    sorter: (a: { entries: StockPositionIdeaEntry[] }, b: { entries: StockPositionIdeaEntry[] }) => {
+      const dateA = a.entries[0].date ? new Date(a.entries[0].date).valueOf() : 0;
+      const dateB = b.entries[0].date ? new Date(b.entries[0].date).valueOf() : 0;
+
+      return dateB - dateA;
+    },
   },
   {
     name: 'direction',

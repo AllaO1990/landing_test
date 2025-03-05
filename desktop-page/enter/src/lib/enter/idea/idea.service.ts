@@ -5,6 +5,7 @@ import { getNumberPrecision } from 'utils/get-number-precision';
 @Injectable()
 export class IdeaService {
   private readonly _totalDefaultEntry: StockPositionIdeaEntry = {
+    check: false,
     date: null,
     depositShare: null,
     price: 0,
