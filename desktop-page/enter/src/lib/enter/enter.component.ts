@@ -1,6 +1,14 @@
 import { TUI_CONFIRM, TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  Injector,
+  OnDestroy,
+} from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import {
   TuiAlertService,
@@ -12,7 +20,7 @@ import {
   TuiNotification,
   TuiScrollbar,
 } from '@taiga-ui/core';
-import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
+import { POLYMORPHEUS_CONTEXT, PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import {
   BehaviorSubject,
   combineLatest,
@@ -62,6 +70,8 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EnterIdeaSubscribeDirective } from './enter.directive';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
+import { EnterFinishComponent } from './finish/finish.component';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -141,6 +151,8 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
   private readonly _alerts = inject(TuiAlertService);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _isShowCopyNotify$: Subject<void> = new Subject<void>();
+  readonly #injector: Injector = inject(Injector);
+  readonly #dialog: DialogService = inject(DIALOG);
 
   private readonly _ideaId$: Observable<StockId | null> = this._select.event$.pipe(
     takeUntilDestroyed(this._destroyRef),
@@ -154,6 +166,8 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     ),
     distinctUntilChanged()
   );
+
+  #dialogFinish: PolymorpheusContent<EnterFinishComponent> | null = null;
 
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
@@ -251,6 +265,8 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
+    this._showDialogFinish();
+
     this.data$
       .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
       .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
@@ -269,6 +285,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
             });
           }
         }
+        console.log(result);
 
         if (result) {
           const targets = this._getIdeaTargets(
@@ -477,8 +494,18 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     }));
   }
 
-  private _getDiffPct(currentPrice: number, lastPrice: number): number {
-    return Math.abs(((lastPrice - currentPrice) / currentPrice) * 100);
+  private async _showDialogFinish(): Promise<void> {
+    if (this.#dialogFinish === null) {
+      this.#dialogFinish = await import('./finish/finish.component')
+        .then((m) => m.EnterFinishComponent)
+        .then((c) => new PolymorpheusComponent(c, this.#injector));
+    }
+
+    this.#dialog
+      .open(this.#dialogFinish, {
+        appearance: 'dialog-block',
+      })
+      .subscribe((result) => console.log(result));
   }
 
   private _getIdeaTargets(list: any[], outs: any[] = [], direction: 1 | -1 = 1): StockPositionTarget[] {

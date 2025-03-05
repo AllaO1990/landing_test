@@ -101,12 +101,35 @@ export class FiguresStore extends WithQueue<FigureState> {
     const shapes: AnnotationsShapesOptions[] = [];
     const today = new Date().setUTCHours(12, 0, 0, 0);
     const endDate = new Date(today).setFullYear(new Date(today).getFullYear() + 5);
+    const priceEntry = data.ideaParams.actions.find((item: Action) => item.type === 'entry') || null;
 
     const shapesUser: AnnotationsShapesOptions[] = data.ideaParams.actions.map((item: Action) => {
+      let color = 'rgba(64, 224, 208, 1)';
+
+      if (item.type === 'out') {
+        if (priceEntry) {
+          if (data.ideaParams.positionType === 'short') {
+            if (priceEntry.price < item.price) {
+              color = 'rgba(255, 0, 0, 1)';
+            } else {
+              color = 'rgba(0, 255, 0, 1)';
+            }
+          } else {
+            if (priceEntry.price > item.price) {
+              color = 'rgba(255, 0, 0, 1)';
+            } else {
+              color = 'rgba(0, 255, 0, 1)';
+            }
+          }
+        } else {
+          color = 'rgba(0, 255, 0, 1)';
+        }
+      }
+
       return {
         type: 'path',
         fill: 'rgba(0,0,0,0)',
-        stroke: item.type === 'out' ? 'rgba(0, 255, 0, 1)' : 'rgba(64, 224, 208, 1)',
+        stroke: color,
         strokeWidth: 1.5,
         ry: Math.PI,
         dashStyle: 'Solid',
