@@ -18,6 +18,7 @@ export interface ResponsePosition {
   instrument: StockInstrument;
   lastPrice: number;
   inPositionTotalPrice: number;
+  inPositionAccountingPrice: number;
   minPriceIncrement: number;
   entries: StockPositionIdeaEntry[];
   targets: StockPositionTarget[];
@@ -164,6 +165,7 @@ export class Position implements ResponsePosition {
   minPriceIncrement: number;
   positionType: StockPositionDirection | null;
   priceIncrement: number;
+  inPositionAccountingPrice: number;
   inPositionTotalPrice: number;
   stop: StockPositionStop | null;
   strategy: StockPositionStrategy;
@@ -196,6 +198,7 @@ export class Position implements ResponsePosition {
     this.inPositionQuantityValue = data.inPositionQuantity;
     this.instrument = data.instrument;
     this.minPriceIncrement = data.minPriceIncrement;
+    this.inPositionAccountingPrice = data.inPositionAccountingPrice;
     this.entries = data.entries;
     this.targets = data.targets.map((item) => ({ ...item, totalPrice: item.price * item.amount }));
     this.fullPositionQuantity = this._getFulPositionQuantity(data.targets);

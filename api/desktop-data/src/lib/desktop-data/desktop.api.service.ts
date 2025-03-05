@@ -329,7 +329,11 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<any>>(`${this.host}/api/v1/comission`, params);
   }
 
-  deleteCommission(id: StockId): Observable<Response<any>> {
+  updateCommission(id: number, params: Params): Observable<Response<any>> {
+    return this._http.patch<Response<any>>(`${this.host}/api/v1/comission/${id}`, params);
+  }
+
+  deleteCommission(id: number): Observable<Response<any>> {
     return this._http.delete<Response<any>>(`${this.host}/api/v1/comission/${id}`);
   }
 }

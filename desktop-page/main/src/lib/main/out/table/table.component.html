@@ -117,7 +117,7 @@
             {{ item.entries[0].price | tuiFormatNumber: { precision: item.priceIncrement } | async }}
           </div>
           <div class="substring">
-            {{ (item.entries[0].totalPrice) | tuiFormatNumber | async }}
+            {{ (item.inPositionAccountingPrice) | tuiFormatNumber | async }}
           </div>
         </td>
 

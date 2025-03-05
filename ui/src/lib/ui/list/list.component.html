@@ -12,7 +12,7 @@
       [ngTemplateOutletContext]="{ viewport: viewport }">
     </ng-container>
     <ng-container
-      *cdkVirtualFor="let item of list; template: template">
+      *cdkVirtualFor="let item of list; trackBy: trackBy; template: template">
     </ng-container>
     <ng-container
       *ngIf="header"

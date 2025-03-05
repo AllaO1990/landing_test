@@ -1,35 +1,36 @@
-import { PolymorpheusContent, PolymorpheusOutlet, PolymorpheusTemplate } from '@taiga-ui/polymorpheus';
-import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef, ViewChild } from '@angular/core';
-import { ItemComponent } from './item/item.component';
+import { PolymorpheusContent, PolymorpheusOutlet } from '@taiga-ui/polymorpheus';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChild,
+  Input,
+  TemplateRef,
+  TrackByFunction,
+  ViewChild,
+} from '@angular/core';
 import { ItemDirective } from './item/item.directive';
 import {
   CdkFixedSizeVirtualScroll,
   CdkVirtualForOf,
   CdkVirtualForOfContext,
-  CdkVirtualScrollableElement,
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
 import { StockId } from 'types/stock';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
+import { TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { LoaderComponent } from '../loader';
 
 @Component({
   selector: 'lib-list[itemSize]',
   standalone: true,
   imports: [
-    ItemComponent,
-    ItemDirective,
     CdkVirtualScrollViewport,
     CdkVirtualForOf,
     NgIf,
     NgTemplateOutlet,
-    TuiLoader,
     CdkFixedSizeVirtualScroll,
     TuiScrollbar,
-    PolymorpheusTemplate,
     PolymorpheusOutlet,
-    CdkVirtualScrollableElement,
     LoaderComponent,
     TuiScrollable,
   ],
@@ -49,6 +50,8 @@ export class ListComponent<T> {
   @Input() header: PolymorpheusContent | null = null;
 
   @Input() footer: PolymorpheusContent | null = null;
+
+  @Input() trackBy: TrackByFunction<T> | undefined = undefined;
 
   @ContentChild(ItemDirective)
   public readonly item: ItemDirective | null = null;

@@ -4,7 +4,6 @@ import { Observable, switchMap, tap } from 'rxjs';
 import { Params } from '@angular/router';
 import { Commission, CommissionItem } from 'types/commission';
 import { Response } from 'types/response';
-import { StockId } from 'types/stock';
 
 export interface CommissionState {
   list: null | CommissionItem[];
@@ -40,7 +39,7 @@ export class CommissionStore extends ComponentStore<CommissionState> {
     stream$.pipe(
       tap((data) => console.log(data)),
       switchMap((params: Params) => this._api.getCommission(params)),
-      tap((response: Response<Commission>) => this.updateList(response.data.comissionItemitems)),
+      tap((response: Response<Commission>) => this.updateList(response.data.items)),
       tap((response: Response<Commission>) => this.updateTotal(response.data.total))
     )
   );
@@ -49,7 +48,11 @@ export class CommissionStore extends ComponentStore<CommissionState> {
     return this._api.addCommission(params);
   }
 
-  deleteCommission(id: StockId): Observable<Response<any>> {
+  updateCommission(id: number, params: Params): Observable<Response<any>> {
+    return this._api.updateCommission(id, params);
+  }
+
+  deleteCommission(id: number): Observable<Response<any>> {
     return this._api.deleteCommission(id);
   }
 }

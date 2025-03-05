@@ -198,7 +198,11 @@ export class DesktopStubService extends DesktopService {
     return of();
   }
 
-  deleteCommission(id: StockId): Observable<Response<any>> {
+  updateCommission(id: number, params: Params): Observable<Response<any>> {
+    return of();
+  }
+
+  deleteCommission(id: number): Observable<Response<any>> {
     return of();
   }
 }
