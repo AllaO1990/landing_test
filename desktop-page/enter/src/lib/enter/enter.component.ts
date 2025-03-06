@@ -265,8 +265,6 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
 
-    this._showDialogFinish();
-
     this.data$
       .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
       .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
@@ -283,9 +281,14 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
               ideaId: '' + result.idea.id,
               instrumentId: result.idea.instrument.id,
             });
+
+            const params = this._getDialogFinishType(result);
+
+            if (params !== null) {
+              this._showDialogFinish(params);
+            }
           }
         }
-        console.log(result);
 
         if (result) {
           const targets = this._getIdeaTargets(
@@ -494,7 +497,53 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     }));
   }
 
-  private async _showDialogFinish(): Promise<void> {
+  private _getDialogFinishType(value: StockPosition | null): 'profit' | 'loss' | null {
+    if (value === null) {
+      return null;
+    }
+
+    const {
+      actions: { entries, outs },
+      idea: { positionType },
+    } = value;
+
+    const getCommon = (
+      list: {
+        amount: number;
+        price: number;
+      }[]
+    ) =>
+      list.reduce(
+        (
+          acc: { amount: number; total: number },
+          item: {
+            amount: number;
+            price: number;
+          }
+        ) => {
+          acc.amount += item.amount;
+          acc.total += item.price * item.amount;
+
+          return acc;
+        },
+        { amount: 0, total: 0 }
+      );
+
+    const entry = getCommon(entries);
+    const out = getCommon(outs);
+
+    if (entry.amount !== out.amount) {
+      return null;
+    }
+
+    if (positionType === 'long') {
+      return out.total > entry.total ? 'profit' : 'loss';
+    }
+
+    return out.total < entry.total ? 'profit' : 'loss';
+  }
+
+  private async _showDialogFinish(type: 'profit' | 'loss' | null = null): Promise<void> {
     if (this.#dialogFinish === null) {
       this.#dialogFinish = await import('./finish/finish.component')
         .then((m) => m.EnterFinishComponent)
@@ -504,8 +553,9 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     this.#dialog
       .open(this.#dialogFinish, {
         appearance: 'dialog-block',
+        data: { type },
       })
-      .subscribe((result) => console.log(result));
+      .subscribe();
   }
 
   private _getIdeaTargets(list: any[], outs: any[] = [], direction: 1 | -1 = 1): StockPositionTarget[] {
