@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TuiButton, TuiLink } from '@taiga-ui/core';
 import { Router } from '@angular/router';
-import { TuiPopover } from '@taiga-ui/cdk';
+import { TuiPopover, tuiPure } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 
 @Component({
@@ -15,6 +15,17 @@ import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 export class EnterFinishComponent {
   readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, { optional: true });
   readonly #router: Router = inject(Router);
+
+  @tuiPure
+  get videoSrc(): string {
+    const type: string | undefined = this.#context?.data?.type;
+
+    if (type === 'profit') {
+      return `/assets/party.mp4`;
+    }
+
+    return '/assets/lock.mp4';
+  }
 
   onClick(event: Event): void {
     event.stopPropagation();
