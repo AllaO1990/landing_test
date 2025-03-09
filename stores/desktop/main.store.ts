@@ -261,7 +261,13 @@ export class MainStore extends ComponentStore<any> {
 
   onChangePosition = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([
-      merge(source$.pipe(this._getIdFrom(EventSelected.POSITION)), source$.pipe(this._getIdFrom(EventSelected.IDEA))),
+      source$.pipe(
+        filter((event: null | StockEvent): event is StockEvent => event !== null),
+        map((event: StockEvent) =>
+          event.type === EventSelected.POSITION || event.type === EventSelected.IDEA ? event : null
+        ),
+        distinctUntilChanged()
+      ),
       combineLatest([
         this._facade.idea.positions$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
         this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
