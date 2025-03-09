@@ -108,7 +108,7 @@ export class MainStore extends ComponentStore<any> {
 
     this.onChangeInstrument(this.selected.event$);
     this.onChangePosition(this.selected.event$);
-    this.onChangeIdea(this.selected.event$);
+    // this.onChangeIdea(this.selected.event$);
     this.onChangeWatch(eventWithoutDialog$);
     this.onChangeTransaction(eventWithoutDialog$);
 
@@ -261,15 +261,22 @@ export class MainStore extends ComponentStore<any> {
 
   onChangePosition = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([
-      source$.pipe(this._getIdFrom(EventSelected.POSITION)),
-      this._facade.idea.positions$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+      merge(source$.pipe(this._getIdFrom(EventSelected.POSITION)), source$.pipe(this._getIdFrom(EventSelected.IDEA))),
+      combineLatest([
+        this._facade.idea.positions$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+        this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+      ]).pipe(map(([positions, ideas]: [Position[], Position[]]) => [...positions, ...ideas])),
     ]).pipe(
       filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Position[]]) => {
         const find = list.find((item: Position) => item.id === event.id) || null;
 
         if (find) {
-          this._updateSelected(find.instrument, { ideaId: find.id, instrumentId: find.instrument.id });
+          if (event.type === EventSelected.POSITION) {
+            this._updateSelected(find.instrument, { ideaId: find.id, instrumentId: find.instrument.id });
+          } else {
+            this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
+          }
         } else {
           this._queryParams.update({}, '');
           this._updateSelected();
@@ -278,25 +285,27 @@ export class MainStore extends ComponentStore<any> {
     )
   );
 
-  onChangeIdea = this.effect((source$: Observable<StockEvent | null>) =>
-    combineLatest([
-      source$.pipe(this._getIdFrom(EventSelected.IDEA)),
-      this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
-    ]).pipe(
-      // tap((data) => console.log(data)),
-      filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
-      tap(([event, list]: [StockEvent, Position[]]) => {
-        const find = list.find((item: Position) => item.id === event.id) || null;
-
-        if (find) {
-          this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
-        } else {
-          this._queryParams.update({}, '');
-          this._updateSelected();
-        }
-      })
-    )
-  );
+  // onChangeIdea = this.effect((source$: Observable<StockEvent | null>) =>
+  //   combineLatest([
+  //     source$.pipe(this._getIdFrom(EventSelected.IDEA)),
+  //     forkJoin([
+  //       this._facade.idea.positions$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+  //       this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+  //     ]).pipe(map(([positions, ideas]: [Position[], Position[]]) => [...positions, ...ideas])),
+  //   ]).pipe(
+  //     filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
+  //     tap(([event, list]: [StockEvent, Position[]]) => {
+  //       const find = list.find((item: Position) => item.id === event.id) || null;
+  //
+  //       if (find) {
+  //         this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
+  //       } else {
+  //         this._queryParams.update({}, '');
+  //         this._updateSelected();
+  //       }
+  //     })
+  //   )
+  // );
 
   onChangeWatch = this.effect((source$: Observable<StockEvent | null>) =>
     combineLatest([

@@ -1,6 +1,6 @@
 import { TuiRingChart } from '@taiga-ui/addon-charts';
 import { TuiBlock, TuiPin } from '@taiga-ui/kit';
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
@@ -13,7 +13,6 @@ import {
   debounceTime,
   filter,
   Observable,
-  ReplaySubject,
   shareReplay,
   startWith,
   Subject,
@@ -38,21 +37,7 @@ interface StructureControl {
   value: string;
 }
 
-type StructureGroupBy = 'type' | 'company' | 'sector' | 'currency';
-
-interface StructureItem {
-  value: number;
-  name: string;
-  percentage: number;
-}
-
 type RingChartSize = 'm' | 'l' | 'xl' | 's' | 'xs';
-
-type StructureList = {
-  name: string;
-  value: string;
-  list: StructureItem[];
-}[];
 
 let COLOR_LIMIT = 5;
 
@@ -85,7 +70,6 @@ export class StructureComponent implements AfterViewInit {
   readonly #store: PortfolioFacade = inject(PortfolioFacade);
   private readonly _doc: Document = inject(DOCUMENT);
   private readonly _styleId: string = 'structure';
-  private readonly _data$: Subject<StructureList> = new ReplaySubject(1);
   private readonly _ringChartSizeMapper: { [key: string]: RingChartSize } = {
     mobile: 'xl',
     desktopSmall: 'm',
@@ -130,24 +114,6 @@ export class StructureComponent implements AfterViewInit {
   summary = 0;
   summaryCurrencySymbol = '';
 
-  private readonly data$: Observable<StructureList> = this._data$
-    .asObservable()
-    .pipe(filter((data: StructureList | null): data is StructureList => data !== null));
-
-  // list$: Observable<StructureItem[]> = this.data$.pipe(
-  //   switchMap((list: StructureList) =>
-  //     this.controlCategories.valueChanges.pipe(
-  //       startWith(this.controlCategories.value),
-  //       map((controlValue: StructureControl) => {
-  //         const find = list.find((item: { value: string }) => item.value === controlValue.value);
-  //
-  //         return find ? find.list : [];
-  //       }),
-  //       tap((list: StructureItem[]) => (this.summary = list.reduce((acc, item) => (acc += item.value), 0)))
-  //     )
-  //   )
-  // );
-
   list$: Observable<AccountStructureItem[] | null> = this.#store.structure$.pipe(
     map((list: null | AccountStructure) => list && list.items),
     tap((list: null | AccountStructureItem[]) => {
@@ -165,20 +131,6 @@ export class StructureComponent implements AfterViewInit {
     }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-
-  @Input()
-  set data(value: StructureList) {
-    if (value) {
-      const max = Math.max(...value.map((item) => item.list.length));
-
-      if (max > COLOR_LIMIT) {
-        COLOR_LIMIT = max;
-        this._generateColorList(COLOR_LIMIT);
-      }
-    }
-
-    this._data$.next(value);
-  }
 
   ngAfterViewInit(): void {
     combineLatest([
