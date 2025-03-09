@@ -37,7 +37,15 @@
         [class.card--warning]="data.profit < 0"
         [class.card--default]="data.profit === 0">
         <div class="card__title">{{ constants['profit'] }}</div>
-        <div class="card__title-value">{{ data.profit | tuiFormatNumber | async }} {{ data.currencySymbol }}</div>
+        <div class="card__title-value">
+          {{ data.profit | tuiFormatNumber | async }} {{ data.currencySymbol }}
+          <span
+            class="card__title-value-pct"
+            [class.long]="data.profit > 0"
+            [class.short]="data.profit < 0">
+            ({{ data.profitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
+          </span>
+        </div>
         <div class="card__list">
           <dl class="card__row">
             <dt class="card__cell card__name">

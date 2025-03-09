@@ -98,6 +98,15 @@
       font-weight: 700;
       font-size: 16px;
       line-height: 20px;
+
+      &-pct {
+        font-weight: 500;
+        font-size: 10px;
+        line-height: 100%;
+        vertical-align: middle;
+
+        padding-left: var(--padding-1);
+      }
     }
   }
 

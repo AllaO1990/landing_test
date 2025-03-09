@@ -42,8 +42,13 @@ form {
 .header {
   background-color: var(--block-bg-color);
 
-  &__item:first-child {
-    font-weight: 700;
+  &__item {
+    &:first-child {
+      font-weight: 700;
+    }
+
+    text-align: center;
+    white-space: nowrap;
   }
 }
 
@@ -74,7 +79,7 @@ form {
     overflow: hidden;
 
     min-width: 75px;
-    max-width: 100px;
+    max-width: 150px;
   }
 
   &__date {
@@ -97,35 +102,6 @@ form {
     }
   }
 
-  //
-  //&__price {
-  //  width: 60px;
-  //}
-  //
-  //&__quantity {
-  //  width: 60px;
-  //}
-  //
-  //&__deposit {
-  //  width: 60px;
-  //}
-  //
-  //&__total {
-  //  width: 60px;
-  //}
-  //
-  //&__profit {
-  //  width: 60px;
-  //}
-  //
-  //&__fix-half {
-  //  width: 40px;
-  //}
-  //
-  //&__fix {
-  //  width: 96px;
-  //}
-
   &__right {
     text-align: right;
   }
@@ -136,42 +112,48 @@ form {
 }
 
 .entry {
-  .row__item {
-    flex: 0 0 calc((100% - 40px - var(--padding-4)) / 8 - var(--padding-4));
-  }
+  .row {
+    &__item {
+      flex: 0 0 calc((100% - 40px - var(--padding-4)) / 4 - var(--padding-4));
+    }
 
-  .row__first {
-    flex: 0 0 40px;
-    min-width: 40px;
+    &__first {
+      flex: 0 0 40px;
+      min-width: 40px;
+    }
   }
 }
 
 .target {
-  .row__item {
-    flex: 0 0 calc((100% - 40px - var(--padding-4)) / 8 - var(--padding-4));
-  }
+  .row {
+    &__item {
+      flex: 0 0 calc((100% - 40px - var(--padding-4)) / 6 - var(--padding-4));
+    }
 
-  .row__first {
-    flex: 0 0 40px;
-    min-width: 40px;
-  }
+    &__first {
+      flex: 0 0 40px;
+      min-width: 40px;
+    }
 
-  .row__fix {
-    flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 8 - var(--padding-4)) * 2);
+    &__fix {
+      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 5 - var(--padding-4)) * 2);
+    }
   }
 }
 
 .stop {
-  .row__item {
-    flex: 0 0 calc((100% - 40px - var(--padding-4)) / 8 - var(--padding-4));
-  }
+  .row {
+    &__item {
+      flex: 0 0 calc((100% - 40px - var(--padding-4)) / 6 - var(--padding-4));
+    }
 
-  .row__first {
-    flex: 0 0 40px;
-    min-width: 40px;
-  }
+    &__first {
+      flex: 0 0 40px;
+      min-width: 40px;
+    }
 
-  .row__fix {
-    flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 8 - var(--padding-4)) * 2);
+    &__fix {
+      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 5 - var(--padding-4)) * 2);
+    }
   }
 }
