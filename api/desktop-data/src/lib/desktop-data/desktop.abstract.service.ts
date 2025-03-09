@@ -23,6 +23,7 @@ import {
   AccountDeposit,
   AccountPortfolio,
   AccountStrategies,
+  AccountStructure,
 } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
 import { Commission } from 'types/commission';
@@ -91,6 +92,8 @@ export abstract class DesktopService {
   abstract getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>>;
 
   abstract getAccountBalance(params: Params): Observable<Response<AccountBalance>>;
+
+  abstract getAccountStructure(params: Params): Observable<Response<AccountStructure>>;
 
   abstract getBalancePortfolioBrokerCurrency(params: Params): Observable<Response<any>>;
 

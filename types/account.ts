@@ -51,3 +51,19 @@ export interface AccountDeposit {
   id: number;
   portfolioId: number;
 }
+
+export interface AccountStructure {
+  items: AccountStructureItem[];
+  totalPortfolio: {
+    currencySymbol: string;
+    price: number;
+  };
+}
+
+export interface AccountStructureItem {
+  currencySymbol: string;
+  name: string;
+  portfolioSharePct: number;
+  totalPrice: number;
+  usdRate: number;
+}

@@ -20,3 +20,22 @@ export const COLOR_LIST = [
   '#d2e9a2',
   '#aadc42',
 ];
+
+export const STRUCTURE_CATEGORY: { name: string; value: string }[] = [
+  {
+    name: 'Активы',
+    value: 'type',
+  },
+  {
+    name: 'Компании',
+    value: 'company',
+  },
+  {
+    name: 'Отрасли',
+    value: 'sector',
+  },
+  {
+    name: 'Валюта',
+    value: 'currency',
+  },
+];
