@@ -26,6 +26,7 @@ import {
   AccountDeposit,
   AccountPortfolio,
   AccountStrategies,
+  AccountStructure,
 } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
@@ -319,6 +320,10 @@ export class DesktopApiService extends DesktopService {
         subscribed: boolean;
       }>
     >(`${this.host}/api/v1/ideas/${ideaId}/unsubscribe`, { ideaId });
+  }
+
+  getAccountStructure(params: Params): Observable<Response<AccountStructure>> {
+    return this._http.post<Response<AccountStructure>>(`${this.host}/api/v1/account/portfolios/structure`, params);
   }
 
   getCommission(params: Params): Observable<Response<Commission>> {

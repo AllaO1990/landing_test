@@ -5,8 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
 })
 export class StructureListValuePipe implements PipeTransform {
-  transform(list: { value: number }[]): number[] {
-    return list.map((item: { value: number }) => item.value);
+  transform<T>(list: T[], fn: (v: T) => number): number[] {
+    return list.map((item: T) => fn(item));
   }
 }
 

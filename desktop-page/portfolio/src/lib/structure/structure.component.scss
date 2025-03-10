@@ -7,6 +7,7 @@
 }
 
 .structure {
+  position: relative;
   display: flex;
   flex-flow: column nowrap;
 
@@ -30,13 +31,24 @@
     margin: var(--padding-2);
   }
 
+  &__content {
+    display: flex;
+    flex-flow: column nowrap;
+
+    height: 100%;
+  }
+
   &__container {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: column nowrap;
 
     width: 100%;
 
     overflow: hidden;
+
+    label {
+      justify-content: center;
+    }
   }
 
   &__list {
@@ -89,13 +101,26 @@
   }
 
   &__name {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
     flex: 1 1 auto;
-    width: 40%;
+    width: 60%;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    tui-pin {
+      transform: none;
+      margin-right: var(--padding-1);
+    }
   }
 
   &__percentage {
     flex: 1 1 auto;
-    width: 60%;
+    width: 40%;
 
     text-align: right;
   }
@@ -124,4 +149,16 @@
 ui-loader {
   width: 100%;
   height: 100%;
+}
+
+.loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  z-index: 10;
+}
+
+.loader ~ .structure__container, .loader ~ .structure__list {
+  filter: blur(2px);
 }

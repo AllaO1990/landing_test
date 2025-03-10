@@ -5,7 +5,14 @@ import { Params } from '@angular/router';
 import { PortfolioPosition } from 'types/portfolio';
 import { StockId } from 'types/stock';
 import { DataList, Response } from 'types/response';
-import { AccountBalance, AccountBroker, AccountCurrency, AccountPortfolio, AccountRange } from 'types/account';
+import {
+  AccountBalance,
+  AccountBroker,
+  AccountCurrency,
+  AccountPortfolio,
+  AccountRange,
+  AccountStructure,
+} from 'types/account';
 
 export interface PortfolioState {
   list: null | PortfolioPosition[];
@@ -16,6 +23,7 @@ export interface PortfolioState {
   toCurrency: null | AccountCurrency;
   range: null | AccountRange;
   balance: null | AccountBalance;
+  structure: null | AccountStructure;
 }
 
 export class PortfolioStore extends WithQueue<PortfolioState> {
@@ -26,6 +34,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly currency$: Observable<null | AccountCurrency> = this.select((state: PortfolioState) => state.currency);
   readonly range$: Observable<null | AccountRange> = this.select((state: PortfolioState) => state.range);
   readonly balance$: Observable<null | AccountBalance> = this.select((state: PortfolioState) => state.balance);
+  readonly structure$: Observable<null | AccountStructure> = this.select((state: PortfolioState) => state.structure);
 
   constructor(private readonly _api: DesktopService) {
     super({
@@ -37,6 +46,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
       toCurrency: null,
       range: null,
       balance: null,
+      structure: null,
     });
   }
 
@@ -96,6 +106,13 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
     })
   );
 
+  readonly updateStructure = this.updater(
+    (state: PortfolioState, structure: null | AccountStructure): PortfolioState => ({
+      ...state,
+      structure,
+    })
+  );
+
   selectItem(id: StockId): Observable<PortfolioPosition | null> {
     return this.select((state: PortfolioState) => {
       if (!state.list) {
@@ -125,6 +142,16 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
         this._api
           .getAccountBalance(params)
           .pipe(tap((response: Response<AccountBalance>) => this.updateBalance(response.data)))
+      )
+    )
+  );
+
+  readonly loadStructure = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api
+          .getAccountStructure(params)
+          .pipe(tap((response: Response<AccountStructure>) => this.updateStructure(response.data)))
       )
     )
   );

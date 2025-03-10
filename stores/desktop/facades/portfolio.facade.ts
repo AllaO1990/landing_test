@@ -3,7 +3,14 @@ import { MainStore } from 'stores/main.store';
 import { Observable, of } from 'rxjs';
 import { PortfolioPosition } from 'types/portfolio';
 import { StockId, StockTransaction } from 'types/stock';
-import { AccountBalance, AccountBroker, AccountCurrency, AccountPortfolio, AccountRange } from 'types/account';
+import {
+  AccountBalance,
+  AccountBroker,
+  AccountCurrency,
+  AccountPortfolio,
+  AccountRange,
+  AccountStructure,
+} from 'types/account';
 
 @Injectable()
 export class PortfolioFacade {
@@ -17,9 +24,11 @@ export class PortfolioFacade {
   readonly currency$: Observable<null | AccountCurrency> = this._store.portfolio.currency$;
   readonly range$: Observable<null | AccountRange> = this._store.portfolio.range$;
   readonly balance$: Observable<null | AccountBalance> = this._store.portfolio.balance$;
+  readonly structure$: Observable<null | AccountStructure> = this._store.portfolio.structure$;
 
   readonly load = this._store.portfolio.load;
   readonly loadBalance = this._store.portfolio.loadBalance;
+  readonly loadStructure = this._store.portfolio.loadStructure;
   readonly updatePortfolio = this._store.portfolio.updatePortfolio;
   readonly updateBroker = this._store.portfolio.updateBroker;
   readonly updateCurrency = this._store.portfolio.updateCurrency;

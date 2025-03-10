@@ -1,35 +1,43 @@
 import { TuiRingChart } from '@taiga-ui/addon-charts';
-import { TuiBlock, TuiRadio } from '@taiga-ui/kit';
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { TuiBlock, TuiPin } from '@taiga-ui/kit';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
-import { TuiBreakpointService, TuiFormatNumberPipe, TuiGroup } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiFormatNumberPipe, TuiGroup, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { COLOR_LIST } from './structure.constants';
-import { filter, Observable, ReplaySubject, startWith, Subject, switchMap, tap } from 'rxjs';
+import { COLOR_LIST, STRUCTURE_CATEGORY } from './structure.constants';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  Observable,
+  shareReplay,
+  startWith,
+  Subject,
+  tap,
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoaderComponent } from '@ui/components/loader';
 import { ItemDirective, ListComponent } from '@ui/components/list';
+import {
+  AccountBroker,
+  AccountCurrency,
+  AccountPortfolio,
+  AccountRange,
+  AccountStructure,
+  AccountStructureItem,
+} from 'types/account';
+import { PortfolioFacade } from 'stores/facades/portfolio.facade';
+import { Params } from '@angular/router';
 
 interface StructureControl {
   name: string;
   value: string;
 }
 
-interface StructureItem {
-  value: number;
-  name: string;
-  percentage: number;
-}
-
 type RingChartSize = 'm' | 'l' | 'xl' | 's' | 'xs';
-
-type StructureList = {
-  name: string;
-  value: string;
-  list: StructureItem[];
-}[];
 
 let COLOR_LIMIT = 5;
 
@@ -46,21 +54,22 @@ let COLOR_LIMIT = 5;
     TuiFormatNumberPipe,
     NgTemplateOutlet,
     TuiBlock,
-    TuiRadio,
     TuiGroup,
     ReactiveFormsModule,
     AsyncPipe,
     ListComponent,
     ItemDirective,
+    TuiPin,
   ],
   templateUrl: './structure.component.html',
   styleUrl: './structure.component.scss',
+  providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' })],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StructureComponent {
+export class StructureComponent implements AfterViewInit {
+  readonly #store: PortfolioFacade = inject(PortfolioFacade);
   private readonly _doc: Document = inject(DOCUMENT);
   private readonly _styleId: string = 'structure';
-  private readonly _data$: Subject<StructureList> = new ReplaySubject(1);
   private readonly _ringChartSizeMapper: { [key: string]: RingChartSize } = {
     mobile: 'xl',
     desktopSmall: 'm',
@@ -70,7 +79,8 @@ export class StructureComponent {
   };
   readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
-  readonly controlCategories: FormControl = new FormControl(null, Validators.required);
+  readonly categories: StructureControl[] = STRUCTURE_CATEGORY;
+  readonly controlCategories: FormControl = new FormControl(this.categories[0], Validators.required);
 
   readonly ringChartSize$: Observable<RingChartSize> = this.breakpoint$.pipe(
     map((desktopSize) => {
@@ -81,45 +91,70 @@ export class StructureComponent {
     })
   );
 
+  readonly portfolio$: Observable<AccountPortfolio> = this.#store.portfolio$.pipe(
+    filter((list: null | AccountPortfolio): list is AccountPortfolio => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  readonly broker$: Observable<AccountBroker> = this.#store.broker$.pipe(
+    filter((list: null | AccountBroker): list is AccountBroker => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  readonly currency$: Observable<AccountCurrency> = this.#store.currency$.pipe(
+    filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  readonly range$: Observable<AccountRange> = this.#store.range$.pipe(
+    filter((list: null | AccountRange): list is AccountRange => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly isLoad$: Subject<boolean> = new BehaviorSubject(false);
+
   activeItemIndex = Number.NaN;
   summary = 0;
+  summaryCurrencySymbol = '';
 
-  private readonly data$: Observable<StructureList> = this._data$
-    .asObservable()
-    .pipe(filter((data: StructureList | null): data is StructureList => data !== null));
+  list$: Observable<AccountStructureItem[] | null> = this.#store.structure$.pipe(
+    map((list: null | AccountStructure) => list && list.items),
+    tap((list: null | AccountStructureItem[]) => {
+      this.isLoad$.next(false);
 
-  categories$: Observable<StructureControl[]> = this.data$.pipe(
-    map((data: StructureList) => data.map(({ name, value }: { name: string; value: string }) => ({ name, value }))),
-    tap((list: { name: string; value: string }[]) => this.controlCategories.patchValue(list[0]))
-  );
+      if (list !== null) {
+        if (list.length > COLOR_LIMIT) {
+          COLOR_LIMIT = list.length;
+          this._generateColorList(COLOR_LIMIT);
+        }
 
-  list$: Observable<StructureItem[]> = this.data$.pipe(
-    switchMap((list: StructureList) =>
-      this.controlCategories.valueChanges.pipe(
-        startWith(this.controlCategories.value),
-        map((controlValue: StructureControl) => {
-          const find = list.find((item: { value: string }) => item.value === controlValue.value);
-
-          return find ? find.list : [];
-        }),
-        tap((list: StructureItem[]) => (this.summary = list.reduce((acc, item) => (acc += item.value), 0)))
-      )
-    )
-  );
-
-  @Input()
-  set data(value: StructureList) {
-    if (value) {
-      const max = Math.max(...value.map((item) => item.list.length));
-
-      if (max > COLOR_LIMIT) {
-        COLOR_LIMIT = max;
-        this._generateColorList(COLOR_LIMIT);
+        this.summaryCurrencySymbol = list[0].currencySymbol;
+        this.summary = list.reduce((acc: number, item: AccountStructureItem) => (acc += item.totalPrice), 0);
       }
-    }
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
-    this._data$.next(value);
+  ngAfterViewInit(): void {
+    combineLatest([
+      this.broker$,
+      this.currency$,
+      this.range$,
+      this.portfolio$,
+      this.controlCategories.valueChanges.pipe(startWith(this.controlCategories.value)),
+    ])
+      .pipe(
+        debounceTime(0),
+        map((params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio, { value: string }]) => ({
+          brokerId: params[0].brokerId,
+          currencyId: params[1].currencyId,
+          portfolioId: params[3].portfolioId,
+          date: params[2].to,
+          groupBy: params[4].value,
+        })),
+        tap(() => this.isLoad$.next(true))
+      )
+      .subscribe((params: Params) => this.#store.loadStructure(params));
   }
+
+  getNumber = (item: AccountStructureItem): number => item.portfolioSharePct;
 
   private _generateColorList(length: number): void {
     const style = this._getStyleTag();
