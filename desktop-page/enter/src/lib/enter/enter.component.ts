@@ -243,6 +243,8 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  readonly isLoading$: Observable<boolean> = this._idea.isLoading$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
+
   public readonly breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   public readonly orientation$: Observable<ScreenOrientation> = inject(TUI_WINDOW_SIZE).pipe(
     map(({ width, height }): ScreenOrientation => (width > height ? 'landscape' : 'portrait')),
@@ -268,8 +270,6 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     this.data$
       .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
       .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
-        this.isPending$.next(false);
-
         if (last !== null && result !== null) {
           if (
             result.idea.id !== null &&
@@ -382,8 +382,6 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
   onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
 
-    this.isPending$.next(true);
-
     if (ideaId === null) {
       this._idea.createIdea(this._getValueToSubmit(this.form.getRawValue()));
     } else {
@@ -487,7 +485,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     const check = !!(actions[0] && actions[0].date);
 
     return list.map((item, index: number) => ({
-      check: index === 0 && item.date ? item.date : check,
+      check: index === 0 && check,
       date: item.date || null,
       depositShare: item.depositShare || null,
       broker: null,
@@ -532,7 +530,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     const entry = getCommon(entries);
     const out = getCommon(outs);
 
-    if (entry.amount !== out.amount) {
+    if (entry.amount !== out.amount || entry.amount === 0) {
       return null;
     }
 

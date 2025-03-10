@@ -60,9 +60,16 @@ export class IndicatorEmaStore extends WithQueue<IndicatorEmaState> {
     }
 
     return this._api.getIndicatorEma(data).pipe(
-      map((res: Response<any>) => res.data && indicatorTransformToSeries(res.data)),
-      map((list: SeriesSplineOptions[]) => list.map((item: SeriesSplineOptions) => ({ ...item, instrument: data.id }))),
-      tap((value: SeriesSplineOptions[]) => this.queue.setValue(uniqKey, value))
+      map((res: Response<any>): null | SeriesSplineOptions[] => res.data && indicatorTransformToSeries(res.data)),
+      map(
+        (list: SeriesSplineOptions[] | null) =>
+          list &&
+          list.map((item: SeriesSplineOptions) => ({
+            ...item,
+            instrument: data.id,
+          }))
+      ),
+      tap((value: SeriesSplineOptions[] | null) => this.queue.setValue(uniqKey, value))
     );
   }
 }

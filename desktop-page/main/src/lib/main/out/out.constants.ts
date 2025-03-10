@@ -91,6 +91,6 @@ export const OUT_HEADER: OutHeaderItem[] = [
 ];
 
 export const OUT_CONSTANTS: { [key in OutEnums]: string } = {
-  [OutEnums.TITLE]: 'Выход',
+  [OutEnums.TITLE]: 'Сделки',
   [OutEnums.SEARCH]: 'Поиск',
 };

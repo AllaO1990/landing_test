@@ -13,6 +13,7 @@ export class IdeaFacade {
   readonly atr$: Observable<null | { data: IndicatorAtr; instrument: StockId }> = this._store.atr.value$;
   readonly positions$: Observable<Position[] | null> = this._store.idea.positions$;
   readonly ideas$: Observable<Position[] | null> = this._store.idea.ideas$;
+  readonly isLoading$: Observable<boolean> = this._store.idea.isLoading$;
   readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
     switchMap((idea: StockPosition | null) => {
       if (idea === null) {

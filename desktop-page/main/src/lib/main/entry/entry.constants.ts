@@ -5,7 +5,7 @@ import { IdeaAuthor, ResponseIdea } from 'types/idea';
 import { sortText } from 'utils/sort-text';
 
 export const ENTRY_CONSTANTS: { [key in EntryEnums]: string } = {
-  [EntryEnums.TITLE]: 'Вход',
+  [EntryEnums.TITLE]: 'Идеи',
   [EntryEnums.ADD_IDEA]: '+ Новая идея',
   [EntryEnums.SEARCH]: 'Поиск',
 };

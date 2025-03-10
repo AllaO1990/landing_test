@@ -21,9 +21,14 @@ form {
 .header {
   background-color: var(--block-bg-color);
 
-  &__item:first-child {
-    font-weight: 700;
+  &__item {
+    text-align: center;
+
+    &:first-child {
+      font-weight: 700;
+    }
   }
+
 }
 
 .item {
