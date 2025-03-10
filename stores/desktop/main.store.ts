@@ -273,6 +273,7 @@ export class MainStore extends ComponentStore<any> {
         this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
       ]).pipe(map(([positions, ideas]: [Position[], Position[]]) => [...positions, ...ideas])),
     ]).pipe(
+      debounceTime(500),
       filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
       tap(([event, list]: [StockEvent, Position[]]) => {
         const find = list.find((item: Position) => item.id === event.id) || null;

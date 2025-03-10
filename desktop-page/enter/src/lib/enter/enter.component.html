@@ -19,7 +19,7 @@
           [appearance]="form.pristine || (isDisabled$ | async) ? 'outline' : 'primary'"
           [size]="size"
           [disabled]="form.pristine || (isDisabled$ | async)"
-          [loading]="isPending$ | async"
+          [loading]="isLoading$ | async"
           (click)="onSubmit($event, result.idea.id)"
           type="button"
           iconStart="@tui.save"
@@ -107,7 +107,7 @@
           tuiButton
           type="button"
           [disabled]="form.pristine || (isDisabled$ | async)"
-          [loading]="isPending$ | async"
+          [loading]="isLoading$ | async"
           (click)="onSubmit($event, result.idea.id)"
           [size]="size">
           <tui-icon icon="@tui.save"></tui-icon>
@@ -176,7 +176,7 @@
       <div class="widget">
         <div class="widget__header">
           <div class="header">
-            Действия
+            Сделка
           </div>
         </div>
         <div class="widget__content">

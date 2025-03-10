@@ -61,8 +61,15 @@ export class IndicatorSmaStore extends WithQueue<IndicatorSmaState> {
 
     return this._api.getIndicatorSma(data).pipe(
       map((res: Response<any>) => res.data && indicatorTransformToSeries(res.data)),
-      map((list: SeriesSplineOptions[]) => list.map((item: SeriesSplineOptions) => ({ ...item, instrument: data.id }))),
-      tap((value: SeriesSplineOptions[]) => this.queue.setValue(uniqKey, value))
+      map(
+        (list: SeriesSplineOptions[] | null) =>
+          list &&
+          list.map((item: SeriesSplineOptions) => ({
+            ...item,
+            instrument: data.id,
+          }))
+      ),
+      tap((value: SeriesSplineOptions[] | null) => this.queue.setValue(uniqKey, value))
     );
   }
 }

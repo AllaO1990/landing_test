@@ -80,6 +80,13 @@ form {
 
     min-width: 75px;
     max-width: 150px;
+
+    flex: 0 0 calc((100% - 40px - var(--padding-4)) / 6 - var(--padding-4));
+  }
+
+  &__first {
+    flex: 0 0 40px;
+    min-width: 40px;
   }
 
   &__date {
@@ -111,49 +118,18 @@ form {
   }
 }
 
-.entry {
-  .row {
-    &__item {
-      flex: 0 0 calc((100% - 40px - var(--padding-4)) / 4 - var(--padding-4));
-    }
-
-    &__first {
-      flex: 0 0 40px;
-      min-width: 40px;
-    }
-  }
-}
-
 .target {
   .row {
-    &__item {
-      flex: 0 0 calc((100% - 40px - var(--padding-4)) / 6 - var(--padding-4));
-    }
-
-    &__first {
-      flex: 0 0 40px;
-      min-width: 40px;
-    }
-
     &__fix {
-      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 5 - var(--padding-4)) * 2);
+      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 6 - var(--padding-4)) * 2);
     }
   }
 }
 
 .stop {
   .row {
-    &__item {
-      flex: 0 0 calc((100% - 40px - var(--padding-4)) / 6 - var(--padding-4));
-    }
-
-    &__first {
-      flex: 0 0 40px;
-      min-width: 40px;
-    }
-
     &__fix {
-      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 5 - var(--padding-4)) * 2);
+      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 6 - var(--padding-4)) * 2);
     }
   }
 }

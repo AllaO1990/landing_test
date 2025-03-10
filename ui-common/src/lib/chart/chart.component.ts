@@ -111,7 +111,10 @@ export class ChartCandlestickComponent implements OnInit {
 
   readonly candles$: Observable<any | null> = this._store.instrument$.pipe(shareReplay(1));
 
-  readonly indicators$: Observable<any[]> = combineLatest([this._store.ema$, this._store.sma$]).pipe(
+  readonly indicators$: Observable<any[]> = combineLatest([
+    this._store.ema$.pipe(map((list: any[] | null) => (list === null ? [] : list))),
+    this._store.sma$.pipe(map((list: any[] | null) => (list === null ? [] : list))),
+  ]).pipe(
     debounceTime(0),
     map((data: any[][]) => data.flat())
   );

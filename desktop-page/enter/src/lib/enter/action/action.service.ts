@@ -183,7 +183,8 @@ export class ActionService {
     );
 
     return {
-      price: target.price || lastPrice,
+      // price: target.price || lastPrice,
+      price: getNumberPrecision(totalPrice / (entry.amount + dividend.amount), 2),
       amount: entry.amount + dividend.amount,
       totalPrice: totalPrice,
       profit: profit,

@@ -13,12 +13,14 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   readonly ideas$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.ideas);
   readonly positions$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.positions);
   readonly idea$: Observable<StockPosition | null> = this.select((state: StockIdeaState) => state.idea);
+  readonly isLoading$: Observable<boolean> = this.select((state: StockIdeaState) => state.isLoading);
 
   constructor(private readonly _api: DesktopService, private readonly _queryParams: QueryParams) {
     super({
       ideas: null,
       idea: null,
       positions: null,
+      isLoading: false,
     });
   }
 
@@ -40,6 +42,13 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     (state: StockIdeaState, idea: StockPosition | null): StockIdeaState => ({
       ...state,
       idea,
+    })
+  );
+
+  updateIsLoading = this.updater(
+    (state: StockIdeaState, isLoading: boolean): StockIdeaState => ({
+      ...state,
+      isLoading,
     })
   );
 
@@ -132,28 +141,28 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly create = this.effect((stream$: Observable<object>) =>
     stream$.pipe(
+      tap(() => this.updateIsLoading(true)),
       switchMap((body: object) =>
-        this._api.createIdea(body).pipe(
-          tap((response: Response<{ id: number }>) => {
-            this.loadIdeas(of(null));
-
-            this.selectIdea(response.data.id.toString())
-              .pipe(
-                filter((position: Position | null): position is Position => position !== null),
-                take(1)
-              )
-              .subscribe(() => {
-                this._queryParams.update({
-                  type: EventSelected.IDEA,
-                  id: response.data.id,
-                  dialog: 'visible',
-                });
-              });
-          })
+        this._api.createIdea(body).pipe(tap((response: Response<{ id: number }>) => this.loadIdeas(of(null))))
+      ),
+      switchMap((response: Response<{ id: number }>) =>
+        this.selectIdea(response.data.id.toString()).pipe(
+          filter((position: Position | null): position is Position => position !== null),
+          take(1),
+          tap(() =>
+            this._queryParams.update({
+              type: EventSelected.IDEA,
+              id: response.data.id,
+              dialog: 'visible',
+            })
+          ),
+          tap(() => this.updateIsLoading(false))
         )
       ),
       catchError((err: Error) => {
         console.error(err);
+        this.updateIsLoading(false);
+
         return of(null);
       })
     )
@@ -161,6 +170,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly edit = this.effect((stream$: Observable<{ id: StockId; body: object }>) =>
     stream$.pipe(
+      tap(() => this.updateIsLoading(true)),
       switchMap((data: { id: StockId; body: any }) =>
         this._api.editIdea(data.id, data.body).pipe(
           tap((response: Response<{ id: number }>) => {
@@ -170,23 +180,30 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             if (+response.data.id === +data.id) {
               this.loadIdea(data.id);
             }
+          }),
+          switchMap((response: Response<{ id: number }>) =>
+            this.selectFromAll(response.data.id.toString()).pipe(
+              filter((position: Position | null): position is Position => position !== null),
+              take(1),
+              tap((position: Position) => {
+                console.log(position);
 
-            this.selectFromAll(response.data.id.toString())
-              .pipe(
-                filter((position: Position | null): position is Position => position !== null),
-                take(1)
-              )
-              .subscribe(() => {
                 this._queryParams.update({
                   type: data.body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,
                   id: response.data.id,
+                  dialog: 'visible',
                 });
-              });
-          })
+              }),
+              tap(() => this.updateIsLoading(false))
+            )
+          )
         )
       ),
+
       catchError((err: Error) => {
         console.error(err);
+        this.updateIsLoading(false);
+
         return of(null);
       })
     )
