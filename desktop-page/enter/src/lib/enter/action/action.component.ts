@@ -219,16 +219,18 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     this.totalEntry$,
     this.totalOut$,
     this.position$,
+    this.multiplier$,
     this.priceIncrement$,
   ]).pipe(
     debounceTime(100),
     map(
-      ([totalEntry, totalOut, lastPrice, priceIncrement]: [
+      ([totalEntry, totalOut, lastPrice, multiplier, priceIncrement]: [
         StockPositionActionEntry,
         StockPositionActionTarget,
         number,
+        number,
         number
-      ]) => this._service.getTotalRemainder(totalEntry, totalOut, lastPrice, priceIncrement)
+      ]) => this._service.getTotalRemainder(totalEntry, totalOut, lastPrice, multiplier, priceIncrement)
     )
   );
   totalResult$: Observable<StockPositionActionTarget> = combineLatest([

@@ -1,20 +1,9 @@
-import {
-  TuiInputDateRangeModule,
-  TuiSelectModule,
-  TuiTextfieldControllerModule,
-  TuiUnfinishedValidator,
-} from '@taiga-ui/legacy';
+import { TuiInputDateRangeModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { AsyncPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import {
-  TuiCalendarRange,
-  TuiCheckbox,
-  TuiChevron,
-  TuiDataListDropdownManager,
-  TuiDataListWrapper,
-} from '@taiga-ui/kit';
+import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
+import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
-import { TuiBreakpointService, TuiButton, TuiDropdown, TuiGroup, TuiIcon } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { filter, Observable, shareReplay, startWith, tap } from 'rxjs';
 import { FILTER_CONSTANTS } from './filter.constants';
@@ -34,7 +23,6 @@ interface SelectListItem {
   selector: 'portfolio-filter',
   standalone: true,
   imports: [
-    NgFor,
     NgIf,
     ReactiveFormsModule,
     AsyncPipe,
@@ -44,15 +32,8 @@ interface SelectListItem {
     NgTemplateOutlet,
     TuiButton,
     TuiDropdown,
-    TuiChevron,
-    TuiCheckbox,
     TuiInputDateRangeModule,
-    TuiDataListDropdownManager,
     TuiDropdown,
-    TuiUnfinishedValidator,
-    TuiCalendarRange,
-    TuiIcon,
-    TuiGroup,
     RangeWithListComponent,
   ],
   templateUrl: './filter.component.html',

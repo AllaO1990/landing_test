@@ -1,5 +1,5 @@
 import { TuiTable } from '@taiga-ui/addon-table';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
 import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { WRAPPER_TABLE_HEADER } from './table.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
@@ -12,6 +12,7 @@ import {
   combineLatest,
   debounceTime,
   filter,
+  merge,
   Observable,
   shareReplay,
   startWith,
@@ -33,6 +34,7 @@ import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy'
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
+import { Params } from '@angular/router';
 
 @Component({
   selector: 'lib-wrapper-table',
@@ -69,6 +71,7 @@ export class WrapperTableComponent implements OnInit {
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _service: PortfolioFacade = inject(PortfolioFacade);
+  readonly #inputParams$: Subject<Params> = new Subject();
 
   readonly size = 's';
   readonly columns = [
@@ -130,6 +133,14 @@ export class WrapperTableComponent implements OnInit {
     filter((list: null | any): list is any => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  storeStream$: Observable<Params> = combineLatest([this.portfolio$, this.broker$, this.currency$]).pipe(
+    map(([portfolio, broker, currency]: [AccountPortfolio, AccountBroker, AccountCurrency]) => ({
+      brokerId: broker.brokerId,
+      currencyId: currency.currencyId,
+      portfolioId: portfolio.portfolioId,
+    }))
+  );
+  inputStream$: Observable<Params> = this.#inputParams$.asObservable();
 
   limit$: Observable<number> = this.controlLimit.valueChanges.pipe(
     startWith(this.controlLimit.value),
@@ -155,37 +166,40 @@ export class WrapperTableComponent implements OnInit {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
+  @Input() set params(value: Params) {
+    console.log(value);
+    if (value) {
+      const { portfolio, broker, currency } = value;
+
+      this.#inputParams$.next({
+        brokerId: broker && broker.brokerId,
+        currencyId: currency && currency.currencyId,
+        portfolioId: portfolio && portfolio.portfolioId,
+      });
+    }
+  }
+
   ngOnInit(): void {
     // const today = new Date().setUTCHours(12, 0, 0, 0);
     // const start = new Date(new Date(today).setDate(-365 + new Date(today).getDate())).toISOString();
     // const end = new Date(today).toISOString();
 
-    combineLatest([this.portfolio$, this.broker$, this.currency$, this.range$, this.index$.asObservable(), this.limit$])
+    // combineLatest([this.portfolio$, this.broker$, this.currency$, this.range$, this.index$.asObservable(), this.limit$])
+    combineLatest([merge(this.inputStream$, this.storeStream$), this.range$, this.index$.asObservable(), this.limit$])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(500))
-      .subscribe(
-        ([portfolio, broker, currency, range, index, limit]: [
-          AccountPortfolio,
-          AccountBroker,
-          AccountCurrency,
-          any,
-          number,
-          number
-        ]) => {
-          if (this.isData !== null) {
-            this.isLoad$.next(true);
-          }
-
-          this._service.load({
-            brokerId: broker.brokerId,
-            currencyId: currency.currencyId,
-            from: range.from,
-            portfolioId: portfolio.portfolioId,
-            to: range.to,
-            limit: limit,
-            page: index + 1,
-          });
+      .subscribe(([params, range, index, limit]: [any, any, number, number]) => {
+        if (this.isData !== null) {
+          this.isLoad$.next(true);
         }
-      );
+
+        this._service.load({
+          ...params,
+          from: range.from,
+          to: range.to,
+          limit: limit,
+          page: index + 1,
+        });
+      });
 
     combineLatest([
       this.data$.pipe(filter((list: PortfolioPosition[] | null): list is PortfolioPosition[] => list !== null)),

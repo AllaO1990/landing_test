@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
-import { TuiButton, TuiFormatNumberPipe } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
@@ -34,6 +34,7 @@ import { WithdrawalComponent } from './withdrawal/withdrawal.component';
   imports: [TuiButton, NgForOf, LoaderComponent, AsyncPipe, TuiFormatNumberPipe, NgIf],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
+  providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' })],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PortfolioListComponent implements AfterViewInit {

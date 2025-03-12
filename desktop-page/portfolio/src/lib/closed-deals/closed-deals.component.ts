@@ -1,19 +1,16 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { INPUT_DATA } from './constants';
-import { STOCK_POSITION_TYPE } from 'constants/stock-position-type';
-import { WrapperListComponent } from './list/list.component';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { WrapperTableComponent } from './table/table.component';
+import { FilterComponent } from './filter/filter.component';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'portfolio-closed-deals',
   standalone: true,
-  imports: [WrapperListComponent, WrapperTableComponent],
+  imports: [ReactiveFormsModule, WrapperTableComponent, FilterComponent],
   templateUrl: './closed-deals.component.html',
   styleUrl: './closed-deals.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClosedDealsComponent {
-  readonly positionType = STOCK_POSITION_TYPE;
-
-  @Input() list: any[] = INPUT_DATA;
+  readonly formControl: FormControl = new FormControl(null);
 }

@@ -114,6 +114,7 @@ export class ActionService {
     entry: StockPositionActionEntry,
     target: StockPositionActionTarget,
     lastPrice: number,
+    multiplier: number,
     priceIncrement = 8
   ): StockPositionTarget {
     if (entry.price === 0 || lastPrice === 0) {
@@ -121,7 +122,7 @@ export class ActionService {
     }
 
     const amount = entry.amount - target.amount;
-    const profit = getNumberPrecision(lastPrice * amount - entry.price * amount, priceIncrement);
+    const profit = getNumberPrecision((lastPrice * amount - entry.price * amount) * multiplier, priceIncrement);
 
     return {
       price: lastPrice,
