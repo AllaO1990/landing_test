@@ -1,8 +1,9 @@
 <div class="filter" [formGroup]="formGroup">
   <div class="filter__item assets">
-    <label>
+    <label for="filter--assets">
       <span>{{ constants.assets }}</span>
       <tui-select
+        id="filter--assets"
         *ngIf="assets$ | async as list"
         [valueContent]="assets"
         [tuiTextfieldSize]="size"
@@ -19,9 +20,10 @@
     </label>
   </div>
   <div class="filter__item transaction">
-    <label>
+    <label for="filter--transaction">
       <span>{{ constants.transaction }}</span>
       <tui-select
+        id="filter--transaction"
         *ngIf="transaction$ | async as list"
         [valueContent]="transaction"
         [tuiTextfieldSize]="size"
@@ -38,9 +40,10 @@
     </label>
   </div>
   <div class="filter__item portfolio">
-    <label>
+    <label for="filter--portfolio">
       <span>{{ constants.portfolio }}</span>
       <tui-select
+        id="filter--portfolio"
         *ngIf="portfolios$ | async as list"
         [valueContent]="portfolio"
         [tuiTextfieldSize]="size"
@@ -57,9 +60,10 @@
     </label>
   </div>
   <div class="filter__item broker">
-    <label>
+    <label for="filter--broker">
       <span>{{ constants.broker }}</span>
       <tui-select
+        id="filter--broker"
         *ngIf="broker$ | async as list"
         [valueContent]="broker"
         [tuiTextfieldSize]="size"
@@ -75,9 +79,10 @@
     </label>
   </div>
   <div class="filter__item strategy">
-    <label>
+    <label for="filter--strategy">
       <span>{{ constants.strategy }}</span>
       <tui-select
+        id="filter--strategy"
         *ngIf="strategy$ | async as list"
         [valueContent]="strategy"
         [tuiTextfieldSize]="size"
@@ -94,9 +99,10 @@
     </label>
   </div>
   <div class="filter__item currency">
-    <label>
+    <label for="filter--currency">
       <span>{{ constants.currency }}</span>
       <tui-select
+        id="filter--currency"
         *ngIf="currency$ | async as list"
         [valueContent]="currency"
         [tuiTextfieldSize]="size"

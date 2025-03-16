@@ -147,18 +147,18 @@ export class WrapperTableComponent implements OnInit {
     filter((limit: number | null): limit is number => limit !== null)
   );
 
-  length$: Observable<number> = this._service.total$.pipe(
-    filter((value: number | null): value is number => value !== null),
-    switchMap((total: number) =>
+  length$: Observable<{ total: number }> = this._service.total$.pipe(
+    filter((value: { total: number } | null): value is { total: number } => value !== null),
+    switchMap((data: { total: number }) =>
       combineLatest([this.limit$, this.index$.asObservable()]).pipe(
         map(([limit, index]: [number, number]) => {
-          const length = Math.ceil(total / limit);
+          const length = Math.ceil(data.total / limit);
 
           if (length < index) {
             this.index$.next(0);
           }
 
-          return length;
+          return { total: length };
         })
       )
     ),
@@ -167,7 +167,6 @@ export class WrapperTableComponent implements OnInit {
   );
 
   @Input() set params(value: Params) {
-    console.log(value);
     if (value) {
       const { portfolio, broker, currency } = value;
 

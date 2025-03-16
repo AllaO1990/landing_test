@@ -1,11 +1,19 @@
 import { TuiInputDateRangeModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiDataListWrapper } from '@taiga-ui/kit';
+import { TuiChip, TuiDataListWrapper, TuiDrawer } from '@taiga-ui/kit';
 import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
-import { TuiBreakpointService, TuiButton, TuiDropdown } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiPopup, TuiScrollbar } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { filter, Observable, shareReplay, startWith, tap } from 'rxjs';
+import { filter, Observable, of, shareReplay, startWith, tap } from 'rxjs';
 import { FILTER_CONSTANTS } from './filter.constants';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
@@ -13,11 +21,7 @@ import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RangeWithListComponent } from 'ui-common/lib/range-with-list/range-with-list.component';
-
-interface SelectListItem {
-  name: string;
-  id: string;
-}
+import { ChipComponent } from './chip/chip.component';
 
 @Component({
   selector: 'portfolio-filter',
@@ -31,10 +35,13 @@ interface SelectListItem {
     TuiDataListWrapper,
     NgTemplateOutlet,
     TuiButton,
-    TuiDropdown,
     TuiInputDateRangeModule,
-    TuiDropdown,
     RangeWithListComponent,
+    TuiDrawer,
+    TuiPopup,
+    TuiChip,
+    TuiScrollbar,
+    ChipComponent,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
@@ -46,9 +53,14 @@ export class FilterComponent implements AfterViewInit {
 
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
-  readonly isMobile$: Observable<boolean> = this._breakpoint$.pipe(
-    map((screen: string | null) => screen === 'mobile'),
-    tap((isMobile: boolean) => !isMobile && (this.open = false))
+  readonly isDesktop$: Observable<boolean> = this._breakpoint$.pipe(
+    map((screen: string | null) => screen !== 'mobile'),
+    tap((isDesktop: boolean) => isDesktop && this.openFilter.set(false)),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+  readonly isMobile$: Observable<boolean> = this.isDesktop$.pipe(
+    map((isDesktop: boolean) => !isDesktop),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly constants = FILTER_CONSTANTS;
   readonly size = 's';
@@ -90,15 +102,45 @@ export class FilterComponent implements AfterViewInit {
       ),
     },
   ];
-  label = false;
+  valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
+  valueDefaultBroker = { broker: 'Все', brokerId: null };
+  valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
 
-  readonly formGroup: FormGroup = new FormGroup({
-    portfolio: new FormControl({ value: null, disabled: false }, Validators.required),
-    broker: new FormControl({ value: null, disabled: false }, Validators.required),
-    currency: new FormControl({ value: null, disabled: false }, Validators.required),
-    toCurrency: new FormControl({ value: null, disabled: false }, Validators.required),
+  protected readonly openFilter: WritableSignal<boolean> = signal(false);
+
+  readonly formGroupDialog: FormGroup = new FormGroup({
+    assets: new FormControl({ value: null, disabled: true }, Validators.required),
+    transaction: new FormControl({ value: null, disabled: true }, Validators.required),
+    strategy: new FormControl({ value: null, disabled: true }, Validators.required),
+    portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
+    broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
+    currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
+    toCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
     range: new FormControl({ value: this.rangeList[3].range, disabled: false }, Validators.required),
   });
+
+  readonly formGroup: FormGroup = new FormGroup({
+    assets: new FormControl({ value: null, disabled: true }, Validators.required),
+    transaction: new FormControl({ value: null, disabled: true }, Validators.required),
+    strategy: new FormControl({ value: null, disabled: true }, Validators.required),
+    portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
+    broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
+    currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
+    toCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
+    range: new FormControl({ value: this.rangeList[3].range, disabled: false }, Validators.required),
+  });
+
+  get controlAssets() {
+    return this.formGroup.get('assets') as FormControl;
+  }
+
+  get controlTransaction() {
+    return this.formGroup.get('transaction') as FormControl;
+  }
+
+  get controlStrategy() {
+    return this.formGroup.get('strategy') as FormControl;
+  }
 
   get controlPortfolio() {
     return this.formGroup.get('portfolio') as FormControl;
@@ -120,46 +162,56 @@ export class FilterComponent implements AfterViewInit {
     return this.formGroup.get('range') as FormControl;
   }
 
-  readonly portfolios$: Observable<AccountPortfolio[]> = this._accountFacade.portfolios$.pipe(
-    filter((list: AccountPortfolio[] | null): list is AccountPortfolio[] => list !== null),
-    map((list: AccountPortfolio[]) => [{ portfolio: 'Все', portfolioId: null }, ...list]),
-    tap((list: AccountPortfolio[]) => {
-      if (list !== null && list.length > 0 && this.controlPortfolio.value === null) {
-        this.controlPortfolio.patchValue(list[0]);
+  readonly assets$: Observable<any[]> = of([]).pipe(
+    filter((list: any[] | null): list is any[] => list !== null),
+    map((list: any[]) => [{ value: 'Все', id: null }, ...list]),
+    tap((list: any[]) => {
+      if (list !== null && list.length > 0 && this.controlAssets.value === null) {
+        this.controlAssets.patchValue(list[0]);
       }
     }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly transaction$: Observable<any[]> = of([]).pipe(
+    filter((list: any[] | null): list is any[] => list !== null),
+    map((list: any[]) => [{ value: 'Все', id: null }, ...list]),
+    tap((list: any[]) => {
+      if (list !== null && list.length > 0 && this.controlTransaction.value === null) {
+        this.controlTransaction.patchValue(list[0]);
+      }
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly strategy$: Observable<any[]> = of([]).pipe(
+    filter((list: any[] | null): list is any[] => list !== null),
+    map((list: any[]) => [{ value: 'Все', id: null }, ...list]),
+    tap((list: any[]) => {
+      if (list !== null && list.length > 0 && this.controlStrategy.value === null) {
+        this.controlStrategy.patchValue(list[0]);
+      }
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly portfolios$: Observable<AccountPortfolio[]> = this._accountFacade.portfolios$.pipe(
+    filter((list: AccountPortfolio[] | null): list is AccountPortfolio[] => list !== null),
+    map((list: AccountPortfolio[]) => [this.valueDefaultPortfolio, ...list]),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly broker$: Observable<null | AccountBroker[]> = this._accountFacade.brokers$.pipe(
     filter((list: AccountBroker[] | null): list is AccountBroker[] => list !== null),
-    map((list: AccountBroker[]) => [{ broker: 'Все', brokerId: null }, ...list]),
-    tap((list: null | AccountBroker[]) => {
-      if (list !== null && list.length > 0 && this.controlBroker.value === null) {
-        this.controlBroker.patchValue(list[0]);
-      }
-    }),
+    map((list: AccountBroker[]) => [this.valueDefaultBroker, ...list]),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly currency$: Observable<null | AccountCurrency[]> = this._accountFacade.currencies$.pipe(
     filter((list: AccountCurrency[] | null): list is AccountCurrency[] => list !== null),
-    map((list: AccountCurrency[]) => [{ currency: 'Все', currencySymbol: 'Все', currencyId: null }, ...list]),
-    tap((list: null | AccountCurrency[]) => {
-      if (list !== null && list.length > 0) {
-        if (this.controlCurrency.value === null) {
-          this.controlCurrency.patchValue(list[0]);
-        }
-
-        if (this.controlToCurrency.value === null) {
-          this.controlToCurrency.patchValue(list[0]);
-        }
-      }
-    }),
+    map((list: AccountCurrency[]) => [this.valueDefaultCurrency, ...list]),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-
-  open = false;
 
   ngAfterViewInit(): void {
     this.portfolios$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
@@ -191,12 +243,17 @@ export class FilterComponent implements AfterViewInit {
     this.controlCurrency.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlCurrency.value))
       .subscribe((value) => this._portfolioFacade.updateCurrency(value));
+
+    this.formGroup.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((value: any) => this.formGroupDialog.patchValue(value));
   }
 
   onClose(event: Event): void {
     event.preventDefault();
 
-    this.open = false;
+    this.openFilter.set(false);
+    this.formGroupDialog.patchValue(this.formGroup.value);
   }
 
   selectRangeHandler = (item: { text: string; range: TuiDayRange }) => item.range;
@@ -204,5 +261,13 @@ export class FilterComponent implements AfterViewInit {
   private _getStartDate(start: number): Date {
     const date = new Date(this.today);
     return new Date(date.setDate(date.getDate() + start));
+  }
+
+  onSubmit(event: SubmitEvent): void {
+    event.preventDefault();
+
+    this.openFilter.set(false);
+    this.formGroup.patchValue(this.formGroupDialog.value);
+    this.formGroupDialog.markAsPristine();
   }
 }

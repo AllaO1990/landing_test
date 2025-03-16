@@ -10,10 +10,12 @@
           tuiGroup
           class="structure__controls">
           <label
+            for="structure--{{item.value}}"
             *ngFor="let item of categories"
             tuiBlock="s"
             [appearance]="item === controlCategories.value ? 'primary' : 'secondary-grayscale'">
             <input
+              id="structure--{{item.value}}"
               tuiBlock
               type="radio"
               [formControl]="controlCategories"

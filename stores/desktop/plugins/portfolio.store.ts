@@ -16,7 +16,7 @@ import {
 
 export interface PortfolioState {
   list: null | PortfolioPosition[];
-  total: null | number;
+  total: null | { total: number };
   broker: null | AccountBroker;
   currency: null | AccountCurrency;
   portfolio: null | AccountPortfolio;
@@ -28,7 +28,7 @@ export interface PortfolioState {
 
 export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly list$: Observable<PortfolioPosition[] | null> = this.select((state: PortfolioState) => state.list);
-  readonly total$: Observable<number | null> = this.select((state: PortfolioState) => state.total);
+  readonly total$: Observable<{ total: number } | null> = this.select((state: PortfolioState) => state.total);
   readonly portfolio$: Observable<null | AccountPortfolio> = this.select((state: PortfolioState) => state.portfolio);
   readonly broker$: Observable<AccountBroker | null> = this.select((state: PortfolioState) => state.broker);
   readonly currency$: Observable<null | AccountCurrency> = this.select((state: PortfolioState) => state.currency);
@@ -58,7 +58,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   );
 
   updateTotal = this.updater(
-    (state: PortfolioState, total: number | null): PortfolioState => ({
+    (state: PortfolioState, total: { total: number } | null): PortfolioState => ({
       ...state,
       total,
     })
@@ -129,7 +129,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
         this._api.getPortfolio(params).pipe(
           tap((result: DataList<PortfolioPosition> | null) => {
             this.updateList(result ? result.items : null);
-            this.updateTotal(result ? result.total : null);
+            this.updateTotal(result ? { total: result.total } : null);
           })
         )
       )
@@ -141,7 +141,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
       switchMap((params: Params) =>
         this._api
           .getAccountBalance(params)
-          .pipe(tap((response: Response<AccountBalance>) => this.updateBalance(response.data)))
+          .pipe(tap((response: Response<AccountBalance>) => this.updateBalance(response && response.data)))
       )
     )
   );
