@@ -1,3 +1,6 @@
+<div class="empty" *ngIf="isData === false">
+  Нет данных
+</div>
 <div class="container">
   <cdk-virtual-scroll-viewport
     #viewport
@@ -270,7 +273,7 @@
       [sidePadding]="1"
       [activePadding]="1"
       [index]="(index$ | async) || 0"
-      [length]="length"
+      [length]="length.total"
       (indexChange)="goToPage($event)"
     />
   </div>
@@ -337,3 +340,4 @@
     </div>
   </div>
 </ng-template>
+

@@ -17,7 +17,7 @@ export class PortfolioFacade {
   private readonly _store: MainStore = inject(MainStore);
 
   readonly list$: Observable<PortfolioPosition[] | null> = this._store.portfolio.list$;
-  readonly total$: Observable<number | null> = this._store.portfolio.total$;
+  readonly total$: Observable<{ total: number } | null> = this._store.portfolio.total$;
   readonly select$: Observable<null | StockTransaction> = this._store.selected.transaction$;
   readonly portfolio$: Observable<null | AccountPortfolio> = this._store.portfolio.portfolio$;
   readonly broker$: Observable<AccountBroker | null> = this._store.portfolio.broker$;

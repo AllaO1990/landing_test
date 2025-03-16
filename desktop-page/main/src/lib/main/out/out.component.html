@@ -15,6 +15,16 @@
     </div>
     <div class="out__actions">
       <button
+        tuiButton
+        type="button"
+        [size]="size"
+        appearance="secondary"
+        class="entry__add-idea"
+        (click)="onOpenDialog($event)">
+        {{ constants.add_idea }}
+      </button>
+
+      <button
         [tuiDropdown]="dropdownContentMore"
         [tuiDropdownManual]="openMore"
         [tuiDropdownAlign]="'right'"

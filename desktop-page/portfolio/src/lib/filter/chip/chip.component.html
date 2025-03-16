@@ -1,0 +1,17 @@
+<tui-chip
+  [appearance]="(isDisabled$ | async) ? 'neutral' : 'info'">
+  <ng-content select="[contentStart]"></ng-content>
+  <div
+    *polymorpheusOutlet="computedContent as text; context: {$implicit: valueChanged | async }"
+    [textContent]="text">
+    {{ text }}
+  </div>
+  <ng-content select="[contentEnd]"></ng-content>
+  <button
+    iconStart="@tui.x"
+    tuiIconButton
+    (click)="onReset($event)"
+    [disabled]="isDisabled$ | async"
+    type="button">
+  </button>
+</tui-chip>

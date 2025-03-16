@@ -115,20 +115,20 @@ export class StructureComponent implements AfterViewInit {
   summaryCurrencySymbol = '';
 
   list$: Observable<AccountStructureItem[] | null> = this.#store.structure$.pipe(
-    map((list: null | AccountStructure) => list && list.items),
-    tap((list: null | AccountStructureItem[]) => {
+    tap((structure: null | AccountStructure) => {
       this.isLoad$.next(false);
 
-      if (list !== null) {
-        if (list.length > COLOR_LIMIT) {
-          COLOR_LIMIT = list.length;
+      if (structure !== null && structure.items) {
+        if (structure.items.length > COLOR_LIMIT) {
+          COLOR_LIMIT = structure.items.length;
           this._generateColorList(COLOR_LIMIT);
         }
 
-        this.summaryCurrencySymbol = list[0].currencySymbol;
-        this.summary = list.reduce((acc: number, item: AccountStructureItem) => (acc += item.totalPrice), 0);
+        this.summaryCurrencySymbol = structure.totalPortfolio.currencySymbol;
+        this.summary = structure.items.reduce((acc: number, item: AccountStructureItem) => (acc += item.totalPrice), 0);
       }
     }),
+    map((structure: null | AccountStructure) => structure && structure.items),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 

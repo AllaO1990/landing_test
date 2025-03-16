@@ -11,107 +11,121 @@
   margin: 0 var(--padding-2);
 }
 
-label {
-  display: flex;
-  align-items: center;
-
-  span {
-    margin-right: var(--padding-2);
-    overflow: hidden;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.filter-dialog {
+  &__action {
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 
-  tui-select, lib-range-with-list {
-    flex: 1;
+  &__actions {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    border-top: 1px solid var(--tui-border-normal);
+
+    width: 100%;
+    padding: var(--padding-2);
+    text-align: right;
+
+    button:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
   }
 }
 
 .filter {
+  display: flex;
+  align-items: center;
+
   width: 100%;
-  overflow: hidden;
+  height: 100%;
 
-  &__hosted-dropdown {
-    width: 100%;
-    max-width: 10rem;
-  }
-
-  &__action {
-  }
-
-  &__text {
-    width: 100%;
-    text-align: right;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &__list {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-
-    width: 100%;
+  &__hr {
+    margin: var(--padding-6) 0;
   }
 
   &__item {
+    margin-bottom: var(--padding-4);
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &__list {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__item {
+    &.range lib-range-with-list {
+      width: 220px;
+    }
+
+    &.to-currency tui-select {
+      width: 80px;
+    }
+
+    .label {
+      display: flex;
+      align-items: center;
+    }
+
+    span {
+      white-space: nowrap;
+
+      margin-right: var(--padding-1);
+    }
+
     &:not(:last-child) {
-      margin-bottom: var(--padding-2);
+      margin-right: var(--padding-2);
     }
-
-    flex: 1 1 auto;
-    width: 100%;
   }
 
-  &__space {
-    flex: 1 1;
+  &__divider {
+    border-right: 1px solid var(--main-bg-color);
+
+    height: 100%;
+    width: 1px;
+
+    margin: 0 var(--padding-2);
   }
 }
 
-//.range {
-//  width: 100%;
-//  max-width: 300px;
-//}
+.chips {
+  margin: 0 var(--padding-2);
 
-.filter-dialog {
-  width: calc(100vw - 10px);
-  height: auto;
+  &__list {
+    white-space: nowrap;
 
-  background-color: var(--tui-background-base);
-
-  &__action {
-    text-align: right;
+    margin: var(--padding-2) 0;
   }
 
-  .list {
-    padding: var(--padding-2);
-  }
-
-  label span {
-    width: 60px;
+  tui-chip, lib-filter-chip {
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
   }
 }
 
-@media screen and (min-width: 768px) {
-  .filter {
-    &__list {
-      flex-flow: row nowrap;
-    }
+.drawer {
+  top: 0;
+  border-radius: 0;
+  inline-size: 20rem;
 
-    &__item {
-      &:not(:last-child) {
-        margin-bottom: 0;
-        margin-right: var(--padding-2);
-      }
-
-      max-width: 220px;
-    }
-
-    &__item.range {
-      max-width: 280px;
+  ::ng-deep {
+    .t-content .t-content {
+      padding: var(--padding-8) var(--padding-2) var(--padding-2);
     }
   }
 }

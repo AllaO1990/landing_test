@@ -4,6 +4,10 @@ export const FILTER_CONSTANTS = {
   currency: 'Валюта',
   range: 'Период',
   toCurrency: 'Привести к',
+  filter: 'Фильтр',
+  assets: 'Активы',
+  strategy: 'Стратегия',
+  transaction: 'Сделка',
 };
 
 export const PORTFOLIO_LIST = [

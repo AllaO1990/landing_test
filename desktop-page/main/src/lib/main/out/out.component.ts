@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, Input } from '@angular/core';
 import { OUT_CONSTANTS } from './out.constants';
 import { OutEnums } from './out.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
@@ -6,15 +6,21 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { Position } from 'types/position';
 import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { TuiActiveZone, TuiAutoFocus, TuiBooleanHandler, TuiObscured } from '@taiga-ui/cdk';
 import { OutTableComponent } from './table/table.component';
-import { TuiBlock, TuiFilter } from '@taiga-ui/kit';
+import { TuiFilter } from '@taiga-ui/kit';
 import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
 import { searchPosition } from '../common/utils/search-position';
 import { AccountStrategies } from 'types/account';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StockInstrument } from 'types/stock';
+import { EventSelected } from 'types/events';
+import { SelectFacade } from 'stores/facades/select.facade';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
 
 interface StockInstrumentWithMap {
   id: string;
@@ -42,7 +48,6 @@ interface AccountStrategiesWithMap extends AccountStrategies {
     TuiActiveZone,
     TuiObscured,
     AsyncPipe,
-    TuiBlock,
     TuiAutoFocus,
   ],
   templateUrl: './out.component.html',
@@ -52,6 +57,9 @@ interface AccountStrategiesWithMap extends AccountStrategies {
 export class OutComponent {
   private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly _data$: Subject<Position[] | null> = new BehaviorSubject<Position[] | null>(null);
+  readonly #store: SelectFacade = inject(SelectFacade);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   public readonly constants: { [key in OutEnums]: string } = OUT_CONSTANTS;
 
   readonly instrumentType = (d: Position) => d.instrument.type;
@@ -123,6 +131,24 @@ export class OutComponent {
 
   public onActiveZoneMore(active: boolean): void {
     this.openMore = active && this.openMore;
+  }
+
+  onOpenDialog(event: Event): void {
+    event.preventDefault();
+
+    this.#store.instrument$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        take(1),
+        filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null)
+      )
+      .subscribe((instrument: StockInstrument) => {
+        this.#queryParams.update({
+          type: EventSelected.STOCK_LIST,
+          id: instrument.id,
+          dialog: 'visible',
+        });
+      });
   }
 
   private _updateFilterList<T>(

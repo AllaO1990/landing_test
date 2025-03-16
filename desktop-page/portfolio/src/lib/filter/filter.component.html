@@ -1,43 +1,156 @@
-<div class="filter">
-  <ng-container *ngIf="isMobile$ | async; else form">
-    <div
-      class="filter__hosted-dropdown"
-      [tuiDropdown]="dialog"
-      [(tuiDropdownOpen)]="open">
-      <button
-        tuiIconButton
-        type="button"
-        appearance="outline"
-        [tuiAppearanceMode]="open ? 'checked' : ''"
-        iconEnd="@tui.filter"
-        [size]="size">
-      </button>
+<div class="filter" [formGroup]="formGroup">
+  <button
+    tuiButton
+    type="button"
+    appearance="outline"
+    [tuiAppearanceMode]="openFilter() ? 'checked' : ''"
+    iconStart="@tui.filter"
+    (click)="openFilter.set(true)"
+    [size]="size">
+    {{ constants.filter }}
+  </button>
+
+  <div class="controls" *ngIf="isDesktop$ | async">
+    <tui-scrollbar class="chips">
+      <div class="chips__list">
+        <lib-filter-chip
+          formControlName="portfolio"
+          [valueContent]="portfolio"
+          [valueDefault]="valueDefaultPortfolio">
+          <span contentStart>{{ constants.portfolio }}:</span>
+        </lib-filter-chip>
+
+        <lib-filter-chip
+          formControlName="broker"
+          [valueContent]="broker"
+          [valueDefault]="valueDefaultBroker">
+          <span contentStart>{{ constants.broker }}:</span>
+        </lib-filter-chip>
+
+        <lib-filter-chip
+          formControlName="currency"
+          [valueContent]="currency"
+          [valueDefault]="valueDefaultCurrency">
+          <span contentStart>{{ constants.currency }}:</span>
+        </lib-filter-chip>
+
+        <tui-chip>
+          {{ constants.strategy }}
+          <button
+            iconStart="@tui.x"
+            tuiIconButton
+            type="button">
+          </button>
+        </tui-chip>
+        <tui-chip>
+          {{ constants.assets }}
+          <button
+            iconStart="@tui.x"
+            tuiIconButton
+            type="button">
+          </button>
+        </tui-chip>
+        <tui-chip>
+          {{ constants.transaction }}
+          <button
+            iconStart="@tui.x"
+            tuiIconButton
+            type="button">
+          </button>
+        </tui-chip>
+      </div>
+    </tui-scrollbar>
+
+    <div class="space"></div>
+
+    <div class="controls__divider"></div>
+
+    <div class="controls__list">
+      <div class="controls__item range">
+        <div class="label">
+          <span>{{ constants.range }}</span>
+          <lib-range-with-list
+            formControlName="range"
+            [items]="rangeList"
+            [itemContent]="itemRange"
+            [selectHandler]="selectRangeHandler"
+          ></lib-range-with-list>
+        </div>
+      </div>
+
+      <div class="controls__item to-currency">
+        <div class="label">
+          <span>{{ constants.toCurrency }}</span>
+          <tui-select
+            *ngIf="currency$ | async as list"
+            [valueContent]="currency"
+            [tuiTextfieldSize]="size"
+            formControlName="toCurrency"
+            [tuiTextfieldLabelOutside]="true">
+            <tui-data-list-wrapper
+              *tuiDataList
+              size="s"
+              [items]="list"
+              [itemContent]="currency">
+            </tui-data-list-wrapper>
+          </tui-select>
+        </div>
+      </div>
     </div>
-  </ng-container>
+
+    <div class="controls__divider"></div>
+  </div>
 </div>
+
+<tui-drawer
+  *tuiPopup="openFilter()"
+  direction="left"
+  class="drawer"
+  [overlay]="true"
+  (click.self)="openFilter.set(false)">
+  <ng-container [ngTemplateOutlet]="dialog"></ng-container>
+</tui-drawer>
 
 <ng-template #portfolio let-item>
   <div class="item">
-    {{ item.portfolio }}
+    {{ item && item.portfolio }}
   </div>
 </ng-template>
 
 <ng-template #broker let-item>
   <div class="item">
-    {{ item.broker }}
+    {{ item && item.broker }}
   </div>
 </ng-template>
 
 <ng-template #currency let-item>
   <div class="item">
-    {{ item.currencySymbol }}
+    {{ item && item.currencySymbol }}
+  </div>
+</ng-template>
+
+<ng-template #assets let-item>
+  <div class="item">
+    {{ item.value }}
+  </div>
+</ng-template>
+
+<ng-template #transaction let-item>
+  <div class="item">
+    {{ item.value }}
+  </div>
+</ng-template>
+
+<ng-template #strategy let-item>
+  <div class="item">
+    {{ item.value }}
   </div>
 </ng-template>
 
 <ng-template #form>
-  <div class="filter__list list" [formGroup]="formGroup">
+  <div class="filter__list list" [formGroup]="formGroupDialog">
     <div class="filter__item portfolio">
-      <label>
+      <div class="label">
         <span>{{ constants.portfolio }}</span>
         <tui-select
           *ngIf="portfolios$ | async as list"
@@ -52,10 +165,10 @@
             [itemContent]="portfolio">
           </tui-data-list-wrapper>
         </tui-select>
-      </label>
+      </div>
     </div>
     <div class="filter__item broker">
-      <label>
+      <div class="label">
         <span>{{ constants.broker }}</span>
         <tui-select
           *ngIf="broker$ | async as list"
@@ -70,10 +183,10 @@
             [itemContent]="broker">
           </tui-data-list-wrapper>
         </tui-select>
-      </label>
+      </div>
     </div>
     <div class="filter__item currency">
-      <label>
+      <div class="label">
         <span>{{ constants.currency }}</span>
         <tui-select
           *ngIf="currency$ | async as list"
@@ -88,43 +201,102 @@
             [itemContent]="currency">
           </tui-data-list-wrapper>
         </tui-select>
-      </label>
+      </div>
     </div>
-    <div class="filter__item range">
-      <label>
-        <span>{{ constants.range }}</span>
-        <lib-range-with-list
-          formControlName="range"
-          [items]="rangeList"
-          [itemContent]="itemRange"
-          [selectHandler]="selectRangeHandler"
-        ></lib-range-with-list>
-      </label>
-    </div>
-    <div class="filter__space"></div>
-    <div class="filter__item to-currency">
-      <label>
-        <span>{{ constants.toCurrency }}</span>
+    <div class="filter__item strategy">
+      <div class="label">
+        <span>{{ constants.strategy }}</span>
         <tui-select
-          *ngIf="currency$ | async as list"
-          [valueContent]="currency"
+          *ngIf="strategy$ | async as list"
+          [valueContent]="strategy"
           [tuiTextfieldSize]="size"
-          formControlName="toCurrency"
+          formControlName="strategy"
           [tuiTextfieldLabelOutside]="true">
+          {{ constants.strategy }}
           <tui-data-list-wrapper
             *tuiDataList
             size="s"
             [items]="list"
-            [itemContent]="currency">
+            [itemContent]="strategy">
           </tui-data-list-wrapper>
         </tui-select>
-      </label>
+      </div>
     </div>
+    <div class="filter__item assets">
+      <div class="label">
+        <span>{{ constants.assets }}</span>
+        <tui-select
+          *ngIf="assets$ | async as list"
+          [valueContent]="assets"
+          [tuiTextfieldSize]="size"
+          formControlName="assets"
+          [tuiTextfieldLabelOutside]="true">
+          {{ constants.assets }}
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="assets">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </div>
+    </div>
+    <div class="filter__item transaction">
+      <div class="label">
+        <span>{{ constants.transaction }}</span>
+        <tui-select
+          *ngIf="transaction$ | async as list"
+          [valueContent]="transaction"
+          [tuiTextfieldSize]="size"
+          formControlName="transaction"
+          [tuiTextfieldLabelOutside]="true">
+          {{ constants.transaction }}
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="transaction">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </div>
+    </div>
+    <ng-container *ngIf="isMobile$ | async">
+      <hr class="filter__hr" />
+      <div class="filter__item range">
+        <div class="label">
+          <span>{{ constants.range }}</span>
+          <lib-range-with-list
+            formControlName="range"
+            [items]="rangeList"
+            [itemContent]="itemRange"
+            [selectHandler]="selectRangeHandler"
+          ></lib-range-with-list>
+        </div>
+      </div>
+      <div class="filter__item to-currency">
+        <div class="label">
+          <span>{{ constants.toCurrency }}</span>
+          <tui-select
+            *ngIf="currency$ | async as list"
+            [valueContent]="currency"
+            [tuiTextfieldSize]="size"
+            formControlName="toCurrency"
+            [tuiTextfieldLabelOutside]="true">
+            <tui-data-list-wrapper
+              *tuiDataList
+              size="s"
+              [items]="list"
+              [itemContent]="currency">
+            </tui-data-list-wrapper>
+          </tui-select>
+        </div>
+      </div>
+    </ng-container>
   </div>
 </ng-template>
 
 <ng-template #dialog>
-  <div class="filter-dialog">
+  <form class="filter-dialog" [formGroup]="formGroupDialog" (ngSubmit)="onSubmit($event)">
     <div class="filter-dialog__action">
       <button
         tuiIconButton
@@ -136,7 +308,24 @@
       </button>
     </div>
     <ng-container [ngTemplateOutlet]="form"></ng-container>
-  </div>
+    <div class="filter-dialog__actions">
+      <button
+        [size]="size"
+        tuiButton
+        appearance="secondary"
+        type="button"
+        (click)="onClose($event)">
+        Отменить
+      </button>
+      <button
+        [size]="size"
+        [disabled]="formGroupDialog.pristine"
+        tuiButton
+        type="submit">
+        Применить
+      </button>
+    </div>
+  </form>
 </ng-template>
 
 <ng-template #itemRange let-item>
