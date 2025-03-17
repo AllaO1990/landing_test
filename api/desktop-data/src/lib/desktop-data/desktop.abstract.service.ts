@@ -18,6 +18,7 @@ import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Params } from '@angular/router';
 import {
   AccountBalance,
+  AccountBalanceHistory,
   AccountBroker,
   AccountCurrency,
   AccountDeposit,
@@ -92,6 +93,8 @@ export abstract class DesktopService {
   abstract getAccountCurrencies(params: Params): Observable<Response<DataList<AccountCurrency>>>;
 
   abstract getAccountBalance(params: Params): Observable<Response<AccountBalance>>;
+
+  abstract getAccountBalanceHistory(params: Params): Observable<Response<AccountBalanceHistory>>;
 
   abstract getAccountStructure(params: Params): Observable<Response<AccountStructure>>;
 

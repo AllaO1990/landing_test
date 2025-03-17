@@ -21,6 +21,7 @@ import { Timeframe } from 'types/timeframe';
 import { Params } from '@angular/router';
 import {
   AccountBalance,
+  AccountBalanceHistory,
   AccountBroker,
   AccountCurrency,
   AccountDeposit,
@@ -221,6 +222,10 @@ export class DesktopApiService extends DesktopService {
 
   getAccountBalance(params: Params): Observable<Response<AccountBalance>> {
     return this._http.post<Response<AccountBalance>>(`${this.host}/api/v1/account/balance`, params);
+  }
+
+  getAccountBalanceHistory(params: Params): Observable<Response<AccountBalanceHistory>> {
+    return this._http.post<Response<AccountBalanceHistory>>(`${this.host}/api/v1/account/balance/history`, params);
   }
 
   getBalancePortfolioBrokerCurrency(params: Params): Observable<Response<any>> {

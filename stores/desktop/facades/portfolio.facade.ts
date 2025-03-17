@@ -5,6 +5,7 @@ import { PortfolioPosition } from 'types/portfolio';
 import { StockId, StockTransaction } from 'types/stock';
 import {
   AccountBalance,
+  AccountBalanceHistory,
   AccountBroker,
   AccountCurrency,
   AccountPortfolio,
@@ -24,10 +25,12 @@ export class PortfolioFacade {
   readonly currency$: Observable<null | AccountCurrency> = this._store.portfolio.currency$;
   readonly range$: Observable<null | AccountRange> = this._store.portfolio.range$;
   readonly balance$: Observable<null | AccountBalance> = this._store.portfolio.balance$;
+  readonly balanceHistory$: Observable<null | AccountBalanceHistory> = this._store.portfolio.balanceHistory$;
   readonly structure$: Observable<null | AccountStructure> = this._store.portfolio.structure$;
 
   readonly load = this._store.portfolio.load;
   readonly loadBalance = this._store.portfolio.loadBalance;
+  readonly loadBalanceHistory = this._store.portfolio.loadBalanceHistory;
   readonly loadStructure = this._store.portfolio.loadStructure;
   readonly updatePortfolio = this._store.portfolio.updatePortfolio;
   readonly updateBroker = this._store.portfolio.updateBroker;

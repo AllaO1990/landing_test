@@ -39,6 +39,16 @@ export interface AccountBalance {
   currencySymbol: string;
 }
 
+export interface AccountBalanceHistory {
+  currencySymbol: string;
+  items: AccountBalanceHistoryItem[];
+}
+
+export interface AccountBalanceHistoryItem {
+  balance: 0;
+  date: string;
+}
+
 export interface AccountRange {
   from: string;
   to: string;

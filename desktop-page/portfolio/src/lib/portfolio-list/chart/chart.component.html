@@ -1,0 +1,20 @@
+<tui-axes
+  *ngIf="(axisXLabels$ | async) as labels; else load"
+  class="axes"
+  [horizontalLines]="4"
+  [tuiLineChartHint]="hintContent"
+  [verticalLines]="labels.length - 1"
+  [axisXLabels]="labels">
+  <tui-line-days-chart
+    *ngIf="(chart$ | async) as chart"
+    [dots]="true"
+    [height]="200"
+    [xStringify]="xStringify$ | async"
+    [yStringify]="yStringify$ | async"
+    [value]="chart.points">
+  </tui-line-days-chart>
+</tui-axes>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>
