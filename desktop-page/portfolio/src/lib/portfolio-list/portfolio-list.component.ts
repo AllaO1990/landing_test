@@ -27,11 +27,12 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { DepositComponent } from './deposit/deposit.component';
 import { CommissionComponent } from './commission/commission.component';
 import { WithdrawalComponent } from './withdrawal/withdrawal.component';
+import { ChartComponent } from './chart/chart.component';
 
 @Component({
   selector: 'portfolio-list',
   standalone: true,
-  imports: [TuiButton, NgForOf, LoaderComponent, AsyncPipe, TuiFormatNumberPipe, NgIf],
+  imports: [TuiButton, NgForOf, LoaderComponent, AsyncPipe, TuiFormatNumberPipe, NgIf, ChartComponent],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
   providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' })],
@@ -128,7 +129,7 @@ export class PortfolioListComponent implements AfterViewInit {
       this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
       { max: null },
       'Внести средства'
-    ).subscribe((res) => console.log(res));
+    ).subscribe();
   }
 
   async openDialogExpense(event: Event): Promise<void> {
@@ -144,7 +145,7 @@ export class PortfolioListComponent implements AfterViewInit {
       this.#dialogWithdrawalComponent as PolymorpheusComponent<WithdrawalComponent>,
       { max: true },
       'Вывести средства'
-    ).subscribe((res) => console.log(res));
+    ).subscribe();
   }
 
   async openDialogCommission(event: Event): Promise<void> {
@@ -160,6 +161,6 @@ export class PortfolioListComponent implements AfterViewInit {
       this.#dialogCommissionComponent as PolymorpheusComponent<CommissionComponent>,
       {},
       'Комиссии'
-    ).subscribe((res) => console.log(res));
+    ).subscribe();
   }
 }
