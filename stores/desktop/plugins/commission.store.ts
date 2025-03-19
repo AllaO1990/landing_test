@@ -37,7 +37,6 @@ export class CommissionStore extends ComponentStore<CommissionState> {
 
   load = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
-      tap((data) => console.log(data)),
       switchMap((params: Params) => this._api.getCommission(params)),
       tap((response: Response<Commission>) => this.updateList(response.data.items)),
       tap((response: Response<Commission>) => this.updateTotal(response.data.total))

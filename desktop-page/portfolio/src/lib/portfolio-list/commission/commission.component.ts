@@ -45,6 +45,7 @@ import { CommissionItem } from 'types/commission';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 import { Response } from 'types/response';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
+import { DialogFilterComponent } from '../dialog-filter/dialog-filter.component';
 
 type Loading = {
   loadingRemove: boolean;
@@ -70,6 +71,7 @@ type Loading = {
     HeaderComponent,
     TuiFormatNumberPipe,
     TuiButtonLoading,
+    DialogFilterComponent,
   ],
   templateUrl: './commission.component.html',
   styleUrls: ['../dialog.scss', './commission.component.scss'],
@@ -173,6 +175,8 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   get controlPortfolio(): FormControl {
     return this.form.get('portfolio') as FormControl;
   }
+
+  controlFilter: FormControl = new FormControl(null);
 
   readonly isDisabled$: Observable<boolean> = this.form.valueChanges.pipe(
     startWith(this.form.value),
