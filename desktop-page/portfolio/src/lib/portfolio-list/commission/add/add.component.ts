@@ -78,8 +78,6 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
     if (this.context.data) {
       const { portfolio, currency, broker, size, date } = this.context.data;
 
-      console.log(date);
-
       this.form.patchValue({
         date: getTuiDayTime(date || new Date().toISOString()),
         portfolio: portfolio && portfolio.portfolioId !== null ? portfolio : null,

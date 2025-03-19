@@ -40,7 +40,7 @@ export abstract class DesktopService {
 
   abstract deleteIdea(id: StockId): Observable<number | null>;
 
-  public abstract getStockList(): Observable<Response<Stock>>;
+  public abstract getStockList(params: Params): Observable<Response<Stock>>;
 
   public abstract getInstrumentsLists(): Observable<Response<{ items: StockLists }>>;
 

@@ -1,0 +1,111 @@
+<div class="filter" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+  <div class="filter__row">
+    <div class="filter__control form__control--portfolio">
+      <label for="portfolio">Портфель:</label>
+      <tui-select
+        *ngIf="(portfolios$ | async) as items"
+        [valueContent]="portfolioContent"
+        [tuiTextfieldSize]="size"
+        formControlName="portfolio">
+        Портфель
+        <input autocomplete="off" tuiTextfieldLegacy id="portfolio" />
+        <ng-template tuiDataList>
+          <tui-data-list>
+            <button
+              *ngFor="let item of items"
+              tuiOption
+              type="button"
+              [value]="item">
+              {{ item.portfolio }}
+            </button>
+          </tui-data-list>
+        </ng-template>
+      </tui-select>
+    </div>
+    <div class="filter__control form__control--broker">
+      <label for="broker">Брокер:</label>
+      <tui-select
+        *ngIf="(brokers$ | async) as items"
+        class="filter__control"
+        [valueContent]="brokerContent"
+        [tuiTextfieldSize]="size"
+        formControlName="broker">
+        Брокер
+        <input autocomplete="off" tuiTextfieldLegacy id="broker" />
+        <ng-template tuiDataList>
+          <tui-data-list>
+            <button
+              *ngFor="let item of items"
+              tuiOption
+              type="button"
+              [value]="item">
+              {{ item.broker }}
+            </button>
+          </tui-data-list>
+        </ng-template>
+      </tui-select>
+    </div>
+    <div class="filter__control form__control--currency">
+      <label for="currency">Валюта:</label>
+      <tui-select
+        *ngIf="(currencies$ | async) as items"
+        class="filter__control"
+        [valueContent]="currencyContent"
+        [tuiTextfieldSize]="size"
+        formControlName="currency">
+        Валюта
+        <input autocomplete="off" tuiTextfieldLegacy id="currency" />
+        <ng-template tuiDataList>
+          <tui-data-list>
+            <button
+              *ngFor="let item of items"
+              tuiOption
+              type="button"
+              [value]="item">
+              {{ item.currencySymbol }}
+            </button>
+          </tui-data-list>
+        </ng-template>
+      </tui-select>
+    </div>
+  </div>
+  <div class="filter__row">
+    <div class="filter__control form__control--range">
+      Период:
+      <lib-range-with-list
+        formControlName="range"
+        [items]="rangeList"
+        [max]="maxDate"
+        [itemContent]="itemRange"
+        [selectHandler]="selectRangeHandler"
+      ></lib-range-with-list>
+    </div>
+    <div class="filter__control form__control--action">
+      <button
+        class="filter__action"
+        [size]="size"
+        tuiButton
+        [disabled]="isDisabled$ | async"
+        appearance="secondary"
+        type="submit">
+        Показать
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #portfolioContent let-item>
+  {{ item.portfolio }}
+</ng-template>
+
+<ng-template #brokerContent let-item>
+  {{ item.broker }}
+</ng-template>
+
+<ng-template #currencyContent let-item>
+  {{ item.currencySymbol }}
+</ng-template>
+
+<ng-template #itemRange let-item>
+  {{ item.text }}
+</ng-template>
