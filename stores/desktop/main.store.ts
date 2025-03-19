@@ -185,7 +185,7 @@ export class MainStore extends ComponentStore<any> {
     this.consolidationZonesIdea.load(
       merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(
         filter((instrument: null | StockTransaction): instrument is StockTransaction => instrument !== null),
-        distinctUntilChanged((a, b) => a.ideaId !== b.ideaId)
+        distinctUntilChanged((a, b) => a.ideaId === b.ideaId)
       )
     );
     this.consolidationZonesWatch.load(
