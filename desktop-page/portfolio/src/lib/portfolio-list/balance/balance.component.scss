@@ -1,0 +1,10 @@
+.form {
+  max-width: 600px;
+  width: 40vw;
+
+  &__list {
+    min-height: 250px;
+    width: 100%;
+    margin: var(--padding-4) 0;
+  }
+}

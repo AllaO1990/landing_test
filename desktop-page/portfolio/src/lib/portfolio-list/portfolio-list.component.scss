@@ -157,10 +157,14 @@
     width: calc(50% - var(--padding-1));
   }
 
-  &--commission {
-    width: 100%;
+  &--balance {
+    width: calc(50% - var(--padding-1));
 
-    margin-top: var(--padding-2);
+    margin-right: var(--padding-2);
+  }
+
+  &--commission {
+    width: calc(50% - var(--padding-1));
   }
 }
 

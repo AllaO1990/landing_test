@@ -1,6 +1,6 @@
-<div class="filter" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+<form class="filter" [formGroup]="form" (ngSubmit)="onSubmit($event)">
   <div class="filter__row">
-    <div class="filter__control form__control--portfolio">
+    <div class="filter__control filter__control--portfolio">
       <label for="portfolio">Портфель:</label>
       <tui-select
         *ngIf="(portfolios$ | async) as items"
@@ -22,7 +22,7 @@
         </ng-template>
       </tui-select>
     </div>
-    <div class="filter__control form__control--broker">
+    <div class="filter__control filter__control--broker">
       <label for="broker">Брокер:</label>
       <tui-select
         *ngIf="(brokers$ | async) as items"
@@ -45,7 +45,7 @@
         </ng-template>
       </tui-select>
     </div>
-    <div class="filter__control form__control--currency">
+    <div class="filter__control filter__control--currency">
       <label for="currency">Валюта:</label>
       <tui-select
         *ngIf="(currencies$ | async) as items"
@@ -70,7 +70,7 @@
     </div>
   </div>
   <div class="filter__row">
-    <div class="filter__control form__control--range">
+    <div class="filter__control filter__control--range">
       Период:
       <lib-range-with-list
         formControlName="range"
@@ -80,7 +80,7 @@
         [selectHandler]="selectRangeHandler"
       ></lib-range-with-list>
     </div>
-    <div class="filter__control form__control--action">
+    <div class="filter__control filter__control--action">
       <button
         class="filter__action"
         [size]="size"
@@ -92,7 +92,7 @@
       </button>
     </div>
   </div>
-</div>
+</form>
 
 <ng-template #portfolioContent let-item>
   {{ item.portfolio }}
