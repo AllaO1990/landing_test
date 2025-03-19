@@ -24,10 +24,9 @@ import { Params } from '@angular/router';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { DepositComponent } from './deposit/deposit.component';
 import { CommissionComponent } from './commission/commission.component';
-import { WithdrawalComponent } from './withdrawal/withdrawal.component';
 import { ChartComponent } from './chart/chart.component';
+import { BalanceComponent } from './balance/balance.component';
 
 @Component({
   selector: 'portfolio-list',
@@ -45,9 +44,8 @@ export class PortfolioListComponent implements AfterViewInit {
   readonly #injector: Injector = inject(Injector);
   readonly #isLoadInfo$: Subject<boolean> = new BehaviorSubject<boolean>(false);
 
-  #dialogDepositComponent: PolymorpheusComponent<DepositComponent> | null = null;
-  #dialogWithdrawalComponent: PolymorpheusComponent<WithdrawalComponent> | null = null;
   #dialogCommissionComponent: PolymorpheusComponent<CommissionComponent> | null = null;
+  #dialogBalanceComponent: PolymorpheusComponent<BalanceComponent> | null = null;
 
   readonly portfolio$: Observable<AccountPortfolio> = this._service.portfolio$.pipe(
     filter((list: null | AccountPortfolio): list is AccountPortfolio => list !== null),
@@ -116,38 +114,6 @@ export class PortfolioListComponent implements AfterViewInit {
       .pipe(takeUntilDestroyed(this.#destroyRef));
   }
 
-  async openDialogDeposit(event: Event): Promise<void> {
-    event.preventDefault();
-
-    if (!this.#dialogDepositComponent) {
-      this.#dialogDepositComponent = await import('./deposit/deposit.component')
-        .then((m) => m.DepositComponent)
-        .then((c) => new PolymorpheusComponent(c, this.#injector));
-    }
-
-    this._openDialog(
-      this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
-      { max: null },
-      'Внести средства'
-    ).subscribe();
-  }
-
-  async openDialogExpense(event: Event): Promise<void> {
-    event.preventDefault();
-
-    if (!this.#dialogWithdrawalComponent) {
-      this.#dialogWithdrawalComponent = await import('./withdrawal/withdrawal.component')
-        .then((m) => m.WithdrawalComponent)
-        .then((c) => new PolymorpheusComponent(c, this.#injector));
-    }
-
-    this._openDialog(
-      this.#dialogWithdrawalComponent as PolymorpheusComponent<WithdrawalComponent>,
-      { max: true },
-      'Вывести средства'
-    ).subscribe();
-  }
-
   async openDialogCommission(event: Event): Promise<void> {
     event.preventDefault();
 
@@ -161,6 +127,22 @@ export class PortfolioListComponent implements AfterViewInit {
       this.#dialogCommissionComponent as PolymorpheusComponent<CommissionComponent>,
       {},
       'Комиссии'
+    ).subscribe();
+  }
+
+  async openDialogBalance(event: Event): Promise<void> {
+    event.preventDefault();
+
+    if (!this.#dialogBalanceComponent) {
+      this.#dialogBalanceComponent = await import('./balance/balance.component')
+        .then((m) => m.BalanceComponent)
+        .then((c) => new PolymorpheusComponent(c, this.#injector));
+    }
+
+    this._openDialog(
+      this.#dialogBalanceComponent as PolymorpheusComponent<BalanceComponent>,
+      {},
+      'Депозит'
     ).subscribe();
   }
 }

@@ -93,22 +93,13 @@
     <div class="portfolio__description">
       <div class="portfolio__actions">
         <button
-          class="portfolio__action button button--in"
+          class="portfolio__action button button--balance"
           tuiButton
           appearance="secondary"
-          iconStart="@tui.circle-arrow-down"
+          iconStart="@tui.banknote"
           [size]="size"
-          (click)="openDialogDeposit($event)"
-          type="button">Внести
-        </button>
-        <button
-          class="portfolio__action button button--out"
-          tuiButton
-          appearance="secondary"
-          iconStart="@tui.circle-arrow-up"
-          [size]="size"
-          (click)="openDialogExpense($event)"
-          type="button">Вывести
+          (click)="openDialogBalance($event)"
+          type="button">Депозит
         </button>
         <button
           class="portfolio__action button button--commission"

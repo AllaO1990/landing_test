@@ -1,14 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { ControlValueAccessor, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { RangeWithListComponent } from 'ui-common/lib/range-with-list/range-with-list.component';
 import { TuiButton } from '@taiga-ui/core';
-import { filter, Observable, of, shareReplay, tap } from 'rxjs';
+import { BehaviorSubject, filter, Observable, shareReplay, startWith, Subject, switchMap, take, tap } from 'rxjs';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Params } from '@angular/router';
 
 @Component({
   selector: 'lib-dialog-filter',
@@ -17,20 +19,29 @@ import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
     AsyncPipe,
     TuiSelectModule,
     NgIf,
-    TuiTextfieldControllerModule,
     ReactiveFormsModule,
     NgForOf,
     RangeWithListComponent,
     TuiButton,
+    TuiTextfieldControllerModule,
   ],
   templateUrl: './dialog-filter.component.html',
   styleUrl: './dialog-filter.component.scss',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => DialogFilterComponent),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DialogFilterComponent implements ControlValueAccessor {
+export class DialogFilterComponent implements ControlValueAccessor, AfterViewInit {
   readonly #service: AccountFacade = inject(AccountFacade);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #filterValue$: Subject<Params> = new BehaviorSubject({});
 
-  readonly size = 'm';
+  readonly size = 's';
   readonly maxDate = TuiDay.fromLocalNativeDate(new Date());
   readonly portfolios$: Observable<AccountPortfolio[]> = this.#service.portfolios$.pipe(
     filter((list: AccountPortfolio[] | null): list is AccountPortfolio[] => list !== null),
@@ -88,7 +99,6 @@ export class DialogFilterComponent implements ControlValueAccessor {
       ),
     },
   ];
-  readonly isDisabled$: Observable<boolean> = of(false);
 
   isDisabled = false;
 
@@ -114,10 +124,20 @@ export class DialogFilterComponent implements ControlValueAccessor {
     return this.form.get('portfolio') as FormControl;
   }
 
+  readonly isDisabled$: Observable<boolean> = this.form.valueChanges.pipe(
+    startWith(this.form.value),
+    switchMap((_: Params) =>
+      this.#filterValue$
+        .asObservable()
+        .pipe(map((filter: Params) => JSON.stringify(this.form.value) === JSON.stringify(filter)))
+    )
+  );
+
   selectRangeHandler = (item: { text: string; range: TuiDayRange }) => item.range;
 
   writeValue(obj: any): void {
     this.form.patchValue(obj);
+    this.#filterValue$.next(obj);
   }
 
   registerOnChange(fn: any): void {
@@ -132,9 +152,24 @@ export class DialogFilterComponent implements ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
+  ngAfterViewInit(): void {
+    this.form.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        startWith(this.form.value),
+        filter((value: any) => value['broker'] !== null && value['currency'] !== null && value['portfolio'] !== null),
+        take(1)
+      )
+      .subscribe((value) => {
+        this.#filterValue$.next(value);
+        this.onChange(value);
+      });
+  }
+
   onSubmit(event: SubmitEvent): void {
     event.preventDefault();
 
+    this.#filterValue$.next(this.form.value);
     this.onChange(this.form.value);
     this.onTouched();
   }
