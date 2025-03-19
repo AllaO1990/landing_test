@@ -54,10 +54,12 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
       filter(
         (response: Response<ActiveZone | null> | null): response is Response<ActiveZone | null> => response !== null
       ),
-      filter((response: Response<ActiveZone | null>): response is Response<ActiveZone> => response.data !== null),
-      map((response: Response<ActiveZone>) => this._getResponseData(response.data)),
-      map((data: Highcharts.AnnotationsOptions) => ({
-        data: [data],
+      map((response: Response<ActiveZone | null>) => response.data && this._getResponseData(response.data)),
+      tap(
+        (data: Highcharts.AnnotationsOptions | null) => !data && console.warn('idea consolidation', params.ideaId, data)
+      ),
+      map((data: Highcharts.AnnotationsOptions | null) => ({
+        data: data ? [data] : [],
         instrument: params.instrumentId,
         parent: params.ideaId,
       })),
