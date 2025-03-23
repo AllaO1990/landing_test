@@ -357,7 +357,7 @@ export class ChartCandlestickComponent implements OnInit {
     return user;
   }
 
-  onEvent(event: { type: string; event: Event }): void {
+  onEvent(event: { type: string; event: Event | null }): void {
     if (this.mapInterval[event.type]) {
       this._store.updateInterval(this.mapInterval[event.type]);
     }

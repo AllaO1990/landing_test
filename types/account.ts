@@ -45,7 +45,7 @@ export interface AccountBalanceHistory {
 }
 
 export interface AccountBalanceHistoryItem {
-  balance: 0;
+  balance: number;
   date: string;
 }
 
@@ -76,4 +76,29 @@ export interface AccountStructureItem {
   portfolioSharePct: number;
   totalPrice: number;
   usdRate: number;
+}
+
+export interface AccountTransactions {
+  items: AccountTransaction[];
+  total: number;
+}
+
+export interface AccountTransaction {
+  amount: number;
+  broker: {
+    broker: string;
+    brokerId: number;
+  };
+  currency: {
+    currency: string;
+    currencyId: number;
+    currencySymbol: string;
+  };
+  date: string;
+  id: number;
+  portfolio: {
+    portfolio: string;
+    portfolioId: number;
+  };
+  transactionType: string;
 }

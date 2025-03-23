@@ -324,7 +324,7 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
     this._text$.next(value);
   }
 
-  @Output() event: EventEmitter<{ type: string; event: Event }> = new EventEmitter();
+  @Output() event: EventEmitter<{ type: string; event: Event | null }> = new EventEmitter();
 
   constructor() {
     Highcharts.setOptions({
@@ -345,6 +345,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    this.event.emit({ type: 'buttonDay', event: null });
+
     const chart$ = this._chart$.asObservable().pipe(
       filter((chart: Highcharts.Chart | null): chart is Highcharts.Chart => chart !== null),
       shareReplay(1)

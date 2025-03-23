@@ -6,11 +6,11 @@
     <lib-dialog-filter [formControl]="controlFilter"></lib-dialog-filter>
   </div>
   <div class="form__content">
-    <div class="form__list" *ngIf="(list$ | async) as list; else load">
+    <div class="form__list" *ngIf="(transactions$ | async) as transactions; else load">
       <lib-list
         class="list"
         [style.height.px]="10 * itemHeight"
-        [list]="list"
+        [list]="transactions.items"
         [header]="header"
         [itemSize]="itemHeight">
         <div class="item" *libListItem="let item; let index = index" @heightAnimations>
@@ -24,7 +24,12 @@
             {{ item.broker.broker }}
           </div>
           <div class="item__value row__item row__right">
-            {{ item.balance | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+            {{ item.transactionType === 'deposit' ? '+' : '-' }}{{
+              item.amount | tuiFormatNumber: {
+                precision: 2,
+                decimalMode: 'always'
+              } | async
+            }}
           </div>
           <div class="item__value row__item">
             {{ item.currency.currencySymbol }}
