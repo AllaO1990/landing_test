@@ -14762,3 +14762,9 @@ If you get this error again, check for any errors in the daemon process logs fou
 [NX Daemon Server] - 2025-03-24T15:19:12.770Z - [SYNC]: project graph hash is the same, not collecting task sync generators
 [NX Daemon Server] - 2025-03-24T15:19:12.770Z - [SYNC]: nx.json hash is the same, not collecting global sync generators
 [NX Daemon Server] - 2025-03-24T15:19:12.770Z - Time taken for 'total execution time for createProjectGraph()' 106.7731250077486ms
+[NX Daemon Server] - 2025-03-24T16:31:32.944Z - [WATCHER]: desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.ts was modified
+[NX Daemon Server] - 2025-03-24T16:31:32.946Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2025-03-24T16:31:33.578Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2025-03-24T16:31:33.579Z - [WATCHER]: desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.ts was modified
+[NX Daemon Server] - 2025-03-24T16:31:33.630Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2025-03-24T16:31:34.249Z - [WATCHER]: Processing file changes in outputs
