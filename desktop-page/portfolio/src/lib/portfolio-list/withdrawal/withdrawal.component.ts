@@ -4,7 +4,7 @@ import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoaderComponent } from '@ui/components/loader';
 import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
-import { TuiButton, TuiFormatNumberPipe, TuiNumberFormat } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { DESKTOP_API } from 'tokens/desktop';
 import { AccountFacade } from 'stores/facades/account.facade';
@@ -26,8 +26,9 @@ import { Params } from '@angular/router';
 import { Response } from 'types/response';
 import { PortfolioListDialog } from '../dialog';
 import { stringifyBroker, stringifyCurrency } from '../utils';
-import { TuiInputNumberModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TuiInputNumberDirective } from '@taiga-ui/kit';
 
 @Component({
   selector: 'lib-withdrawal',
@@ -44,7 +45,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     TuiTextfieldControllerModule,
     TuiFormatNumberPipe,
     TuiNumberFormat,
-    TuiInputNumberModule,
+    TuiTextareaModule,
+    TuiInputNumberDirective,
+    TuiTextfield,
   ],
   templateUrl: './withdrawal.component.html',
   styleUrls: ['../dialog.scss', './withdrawal.component.scss'],
@@ -65,6 +68,7 @@ export class WithdrawalComponent extends PortfolioListDialog {
     brokerId: new FormControl(null, [Validators.required]),
     currencyId: new FormControl(null, [Validators.required]),
     portfolio: new FormControl(null, [Validators.required]),
+    comment: new FormControl({ value: null, disabled: true }),
   });
 
   get controlBroker(): FormControl {
