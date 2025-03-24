@@ -1,20 +1,70 @@
-<tui-axes
-  *ngIf="(axisXLabels$ | async) as labels; else load"
-  class="axes"
-  [horizontalLines]="4"
-  [tuiLineChartHint]="hintContent"
-  [verticalLines]="labels.length - 1"
-  [axisXLabels]="labels">
-  <tui-line-days-chart
-    *ngIf="(chart$ | async) as chart"
-    [dots]="true"
-    [height]="200"
-    [xStringify]="xStringify$ | async"
-    [yStringify]="yStringify$ | async"
-    [value]="chart.points">
-  </tui-line-days-chart>
-</tui-axes>
+<div class="chart" #chart>
+  <svg
+    xmlns:svg="http://www.w3.org/1999/html"
+    *ngIf="(chart$ | async) as chart; else load"
+    viewBox="0 0 300 300"
+    preserveAspectRatio="xMinYMin meet">
+    <svg:g
+      [attr.transform]="'translate(0,' + (chart.height - chart.marginBottom) + ')'"
+      fill="none"
+      font-size="10"
+      font-family="sans-serif"
+      text-anchor="middle">
+      <svg:path
+        class="domain"
+        stroke="currentColor"
+        [attr.d]="chart.xTicksLine" />
+      <svg:g
+        class="tick"
+        opacity="1"
+        [attr.transform]="'translate(' + item.offset + ',0)'"
+        *ngFor="let item of chart.xTicks">
+        <svg:line stroke="currentColor" y2="6"></svg:line>
+        <svg:text fill="currentColor" y="9" dy="0.71em">{{ item.value | date: 'dd.MM' }}</svg:text>
+      </svg:g>
+    </svg:g>
+
+
+    <svg:g
+      [attr.transform]="'translate(' + chart.marginLeft + ',0)'"
+      fill="none"
+      font-size="10"
+      font-family="sans-serif"
+      text-anchor="end">
+      <g
+        *ngFor="let item of chart.yTicks"
+        class="tick"
+        opacity="1"
+        [attr.transform]="'translate(0,' + item.offset + ')'">
+        <line stroke="currentColor" x2="-6"></line>
+        <svg:line
+          [attr.x2]="chart.yTicksLine"
+          stroke="currentColor"
+          stroke-opacity="0.1" />
+        <svg:text fill="currentColor" x="-9" dy="0.32em">
+          {{ item.value | tuiFormatNumber: { precision: 0, decimalMode: 'always' } | async }} {{ chart.currencySymbol }}
+        </svg:text>
+      </g>
+    </svg:g>
+
+    <svg:path
+      class="chart__path"
+      [attr.d]="chart.line(chart.items)" />
+
+    <svg:g>
+      <svg:circle
+        class="chart__circle"
+        r="3"
+        *ngFor="let item of chart.items"
+        [attr.cx]="chart.x(item.date)"
+        [attr.cy]="chart.y(item.balance)"
+      />
+    </svg:g>
+  </svg>
+</div>
 
 <ng-template #load>
   <ui-loader></ui-loader>
 </ng-template>
+
+

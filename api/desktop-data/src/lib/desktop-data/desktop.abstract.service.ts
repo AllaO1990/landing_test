@@ -25,6 +25,7 @@ import {
   AccountPortfolio,
   AccountStrategies,
   AccountStructure,
+  AccountTransactions,
 } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
 import { Commission } from 'types/commission';
@@ -107,6 +108,8 @@ export abstract class DesktopService {
   abstract getAccountPortfolios(params: Params): Observable<Response<DataList<AccountPortfolio>>>;
 
   abstract getAccountStrategies(): Observable<Response<DataList<AccountStrategies>>>;
+
+  abstract getAccountTransactions(params: Params): Observable<Response<AccountTransactions>>;
 
   abstract createAccountPortfolio(name: string): Observable<Response<AccountPortfolio>>;
 

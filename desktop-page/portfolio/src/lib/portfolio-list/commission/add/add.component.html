@@ -29,19 +29,17 @@
         </tui-data-list>
       </ng-template>
     </tui-select>
-    <tui-input-number
-      class="form__control"
-      tuiAutoFocus
+    <tui-textfield
       [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: 2}"
-      formControlName="size">
-      Цена
+      class="form__control">
       <input
-        autocomplete="off"
-        name="size"
-        tuiTextfieldLegacy
+        placeholder="Цена"
+        tuiInputNumber
+        tuiAutoFocus
+        [tuiNumberFormat]="{precision: 2}"
+        formControlName="size"
       />
-    </tui-input-number>
+    </tui-textfield>
     <tui-select
       *ngIf="(currencies$ | async) as items"
       class="form__control"
@@ -67,9 +65,15 @@
       [max]="maxDate"
       class="form__control"
       formControlName="date"
-      tuiTextfieldSize="s">
+      [tuiTextfieldSize]="size">
       Выбрать дату
     </tui-input-date-time>
+    <tui-textarea
+      class="form__control"
+      formControlName="comment"
+      [tuiTextfieldSize]="size">
+      Добавить комментарий
+    </tui-textarea>
   </div>
   <div class="form__actions">
     <div class="space"></div>

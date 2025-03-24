@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
-import { TuiButton, TuiDataListComponent, TuiFormatNumberPipe, TuiNumberFormat } from '@taiga-ui/core';
-import { TuiInputNumberModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiButton, TuiDataListComponent, TuiFormatNumberPipe, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
+import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
@@ -28,6 +28,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TuiInputNumberDirective } from '@taiga-ui/kit';
 
 @Component({
   selector: 'lib-deposit',
@@ -42,12 +43,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     TuiButton,
     TuiDataListComponent,
     TuiTextfieldControllerModule,
-    TuiInputNumberModule,
     TuiNumberFormat,
     TuiSelectModule,
     ControlPortfolioComponent,
     TuiFormatNumberPipe,
     LoaderComponent,
+    TuiTextareaModule,
+    TuiInputNumberDirective,
+    TuiTextfield,
   ],
   templateUrl: './deposit.component.html',
   styleUrls: ['../dialog.scss', './deposit.component.scss'],
@@ -68,6 +71,7 @@ export class DepositComponent extends PortfolioListDialog {
     brokerId: new FormControl(null, [Validators.required]),
     currencyId: new FormControl(null, [Validators.required]),
     portfolio: new FormControl(null, [Validators.required]),
+    comment: new FormControl({ value: null, disabled: true }),
   });
 
   get controlBroker(): FormControl {

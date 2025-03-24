@@ -57,20 +57,23 @@
         </ng-template>
       </tui-select>
     </div>
-    <tui-input-number
-      class="form__cell form__cell--amount"
-      tuiAutoFocus
-      [max]="balance$ | async"
+    <tui-textfield
       [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: 2}"
-      formControlName="amount">
-      Сумма
+      class="form__control form__cell form__cell--amount">
       <input
-        autocomplete="off"
-        name="amount"
-        tuiTextfieldLegacy
+        placeholder="Сумма"
+        tuiInputNumber
+        tuiAutoFocus
+        [tuiNumberFormat]="{precision: 2}"
+        formControlName="amount"
       />
-    </tui-input-number>
+    </tui-textfield>
+    <tui-textarea
+      class="form__control"
+      formControlName="comment"
+      [tuiTextfieldSize]="size">
+      Добавить комментарий
+    </tui-textarea>
   </div>
   <div class="form__actions">
     <button

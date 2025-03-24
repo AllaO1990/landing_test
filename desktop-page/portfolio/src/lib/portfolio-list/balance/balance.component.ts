@@ -18,6 +18,7 @@ import { DesktopService } from '@desktop-data/desktop-data';
 import { DESKTOP_API } from 'tokens/desktop';
 import { getParamsFromFilter } from '../utils';
 import { TuiButtonLoading } from '@taiga-ui/kit';
+import { AccountTransactions } from 'types/account';
 
 @Component({
   selector: 'lib-portfolio-list-balance',
@@ -57,7 +58,7 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
   #dialogDepositComponent: PolymorpheusComponent<DepositComponent> | null = null;
   #dialogWithdrawalComponent: PolymorpheusComponent<WithdrawalComponent> | null = null;
 
-  readonly list$ = this.#store.list$;
+  readonly transactions$: Observable<AccountTransactions | null> = this.#store.list$;
   readonly controlFilter: FormControl = new FormControl(null);
   readonly itemHeight = 28;
 

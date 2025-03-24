@@ -8,17 +8,17 @@ import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account'
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
   TuiInputDateTimeModule,
-  TuiInputNumberModule,
   TuiSelectModule,
+  TuiTextareaModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
-import { TuiButton, TuiNumberFormat } from '@taiga-ui/core';
+import { TuiButton, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
 import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { stringifyBroker, stringifyCurrency } from '../../utils';
 import { getTuiDayTime } from 'utils/get-tui-day-time';
 import { CommissionStore } from 'stores/plugins/commission.store';
 import { Params } from '@angular/router';
-import { TuiButtonLoading } from '@taiga-ui/kit';
+import { TuiButtonLoading, TuiInputNumber } from '@taiga-ui/kit';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Response } from 'types/response';
 import { map } from 'rxjs/operators';
@@ -37,9 +37,11 @@ import { map } from 'rxjs/operators';
     TuiButton,
     TuiInputDateTimeModule,
     TuiAutoFocus,
-    TuiInputNumberModule,
     TuiNumberFormat,
     TuiButtonLoading,
+    TuiTextareaModule,
+    TuiTextfield,
+    TuiInputNumber,
   ],
   templateUrl: './add.component.html',
   styleUrls: ['../../dialog.scss', './add.component.scss'],
@@ -60,6 +62,7 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
     portfolio: new FormControl(null, Validators.required),
     currencyId: new FormControl(null, Validators.required),
     brokerId: new FormControl(null, Validators.required),
+    comment: new FormControl({ value: null, disabled: true }),
   });
 
   readonly isLoading$: Subject<boolean> = new BehaviorSubject(false);

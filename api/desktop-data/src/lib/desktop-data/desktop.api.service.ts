@@ -28,6 +28,7 @@ import {
   AccountPortfolio,
   AccountStrategies,
   AccountStructure,
+  AccountTransactions,
 } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
@@ -252,6 +253,10 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<DataList<AccountPortfolio>>>(`${this.host}/api/v1/account/portfolios`, {
       params,
     });
+  }
+
+  getAccountTransactions(params: Params): Observable<Response<AccountTransactions>> {
+    return this._http.post<Response<AccountTransactions>>(`${this.host}/api/v1/account/transactions`, params);
   }
 
   getAccountStrategies(): Observable<Response<DataList<AccountStrategies>>> {

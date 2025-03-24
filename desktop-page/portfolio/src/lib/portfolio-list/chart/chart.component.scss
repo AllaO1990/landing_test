@@ -4,3 +4,16 @@
 
   color: var(--tui-background-accent-1);
 }
+
+.chart {
+  &__path {
+    fill: none;
+    stroke: var(--tui-background-accent-1);
+    stroke-width: 1.5;
+  }
+
+  &__circle {
+    fill: var(--block-bg-color);
+    stroke: var(--tui-background-accent-1);
+  }
+}
