@@ -58,6 +58,9 @@
         *ngFor="let item of chart.items"
         [attr.cx]="chart.x(item.date)"
         [attr.cy]="chart.y(item.balance)"
+        [tuiHint]="tooltip"
+        [tuiHintContext]="{ $implicit: { balance: item.balance, date: item.date, currency: chart.currencySymbol } }"
+        tuiHintAppearance="dark"
       />
     </svg:g>
   </svg>
@@ -65,6 +68,17 @@
 
 <ng-template #load>
   <ui-loader></ui-loader>
+</ng-template>
+
+<ng-template #tooltip let-item>
+  <div class="tooltip">
+    <div class="tooltip__balance">
+      {{ item.balance | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }} {{ item.currency }}
+    </div>
+    <div class="tooltip__date">
+      {{ item.date | date: 'dd.MM.yyyy' }}
+    </div>
+  </div>
 </ng-template>
 
 
