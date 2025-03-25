@@ -17,3 +17,9 @@
     stroke: var(--tui-background-accent-1);
   }
 }
+
+.tooltip {
+  &__balance {
+    font-weight: 600;
+  }
+}

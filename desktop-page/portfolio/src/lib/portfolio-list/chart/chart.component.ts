@@ -15,13 +15,13 @@ import { LoaderComponent } from '@ui/components/loader';
 import * as d3 from 'd3';
 import { extent } from 'd3-array';
 import { scaleLinear, scaleUtc } from 'd3-scale';
-import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
-import { TuiFormatNumberPipe } from '@taiga-ui/core';
+import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 
 @Component({
   selector: 'lib-portfolio-list-chart',
   standalone: true,
-  imports: [LoaderComponent, NgIf, AsyncPipe, NgForOf, DatePipe, TuiFormatNumberPipe],
+  imports: [LoaderComponent, NgIf, AsyncPipe, NgForOf, DatePipe, TuiFormatNumberPipe, TuiHint, JsonPipe],
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
