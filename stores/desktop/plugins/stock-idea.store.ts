@@ -186,7 +186,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
               filter((position: Position | null): position is Position => position !== null),
               take(1),
               tap((position: Position) => {
-                console.log(position);
+                // console.log(position);
 
                 this._queryParams.update({
                   type: data.body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,

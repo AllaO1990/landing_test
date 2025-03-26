@@ -21,4 +21,6 @@ export class CheckComponent {
   get value() {
     return this._value;
   }
+
+  @Input() negative = false;
 }
