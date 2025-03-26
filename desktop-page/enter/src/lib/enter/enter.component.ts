@@ -297,7 +297,11 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
             result.idea.positionType === 'long' ? 1 : -1
           );
           const entries = this._getIdeaEntries(result.idea.entries, result.actions.entries);
-          const stop = this._getIdeStop(result.idea.stop ? [result.idea.stop] : []);
+          const stop = this._getIdeStop(
+            result.idea.stop ? [result.idea.stop] : [],
+            result.actions.outs,
+            result.idea.positionType === 'long' ? 1 : -1
+          );
           let action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
 
           if (result.actions.entries.length !== 0) {
@@ -587,16 +591,33 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private _getIdeStop(list: any[]): StockPositionStop[] {
-    return list.map((item) => ({
-      depositShare: item.depositShare || null,
-      lossPercent: item.lossPercent || null,
-      loss: item.loss || null,
-      price: item.price,
-      stopCandleDate: item.stopCandleDate || null,
-      amount: item.amount || null,
-      amountPercent: item.amountPercent || 100,
-    }));
+  private _getIdeStop(list: any[], outs: any[] = [], direction: 1 | -1 = 1): StockPositionStop[] {
+    return list.map((item) => {
+      let stopDate = item.stopDate;
+
+      if (stopDate === null) {
+        const findIndex = outs.findIndex((out) => {
+          if (direction === 1) {
+            return out.price * 0.995 <= item.price;
+          }
+          return out.price * 1.005 >= item.price;
+        });
+
+        if (findIndex !== -1) {
+          stopDate = outs[findIndex].date;
+        }
+      }
+
+      return {
+        depositShare: item.depositShare || null,
+        lossPercent: item.lossPercent || null,
+        loss: item.loss || null,
+        price: item.price,
+        stopCandleDate: item.stopCandleDate || stopDate,
+        amount: item.amount || null,
+        amountPercent: item.amountPercent || null,
+      };
+    });
   }
 
   onCopy(event: Event): void {

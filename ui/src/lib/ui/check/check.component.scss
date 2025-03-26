@@ -29,4 +29,10 @@
     border-color: var(--tui-text-positive, #039322);
     background-color: var(--tui-text-positive, #039322);
   }
+
+  &--checked#{&}--negative {
+    color: #FFFFFF;
+    border-color: var(--tui-text-negative, #dd4c1e);
+    background-color: var(--tui-text-negative, #dd4c1e);
+  }
 }
