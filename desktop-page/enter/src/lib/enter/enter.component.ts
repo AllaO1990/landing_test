@@ -22,7 +22,6 @@ import {
 } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT, PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   filter,
@@ -174,7 +173,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
   });
 
   readonly form: FormGroup = new FormGroup({
-    actions: new FormControl({ entries: [], dividends: [], outs: [], position: null }),
+    actions: new FormControl({ entries: [], dividends: [], commissions: [], outs: [], position: null }),
     idea: new FormControl({ entries: [], targets: [], stop: [] }, maxAmount()),
     sidebar: new FormControl({
       instrumentId: null,
@@ -262,7 +261,6 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     shareReplay({ bufferSize: 1, refCount: true })
   );
   activeItemIndex = 0;
-  isPending$: Subject<boolean> = new BehaviorSubject<boolean>(false);
 
   ngAfterViewInit(): void {
     this._idea.loadIdea(this._ideaId$);
@@ -309,7 +307,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
           }
 
           this.form.patchValue({
-            actions: { ...result.actions, dividends: result.dividends },
+            actions: { ...result.actions, dividends: result.dividends, commissions: result.comissions },
             idea: {
               entries,
               targets,
@@ -462,6 +460,12 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
       dividends: value.actions.dividends.map((item: any) => ({
         amount: item.amount,
         brokerId: item.brokerId,
+        date: item.date,
+        size: item.size,
+      })),
+      comissions: value.actions.commissions.map((item: any) => ({
+        brokerId: item.brokerId,
+        comment: item.comment,
         date: item.date,
         size: item.size,
       })),

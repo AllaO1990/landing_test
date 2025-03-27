@@ -64,6 +64,7 @@ const DEFAULT_IDEA = {
     position: null,
   },
   dividends: [],
+  comissions: [],
   idea: {
     author: 'user',
     createdAt: null,

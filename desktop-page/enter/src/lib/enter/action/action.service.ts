@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   StockPositionActionEntry,
   StockPositionActionTarget,
+  StockPositionCommission,
   StockPositionDividend,
   StockPositionTarget,
 } from 'types/position';
@@ -48,6 +49,15 @@ export class ActionService {
     profitPct: null,
     depositShare: null,
     date: null,
+    brokerId: null,
+  };
+
+  private readonly _defaultTotalCommission: StockPositionCommission = {
+    size: 0,
+    comment: null,
+    date: null,
+    profitPct: null,
+    profit: null,
     brokerId: null,
   };
 
@@ -162,6 +172,26 @@ export class ActionService {
 
       return value;
     }, this._defaultTotalDividend);
+  }
+
+  getTotalCommission(entry: StockPositionActionEntry, list: StockPositionCommission[]): StockPositionCommission {
+    if (list.length === 0) {
+      return this._defaultTotalCommission;
+    }
+
+    return list.reduce((acc: StockPositionCommission, item: StockPositionCommission, index: number) => {
+      const value: StockPositionCommission = {
+        ...acc,
+        size: acc.size + item.size,
+      };
+
+      if (list.length - 1 === index) {
+        value.size = getNumberPrecision(value.size, 2);
+        value.profitPct = (value.size / entry.totalPrice) * 100;
+      }
+
+      return value;
+    }, this._defaultTotalCommission);
   }
 
   getTotalResult(

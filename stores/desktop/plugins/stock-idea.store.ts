@@ -71,6 +71,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             outs: [],
           },
           dividends: [],
+          comissions: [],
           idea: {
             ...idea,
             author: 'user',
@@ -173,6 +174,23 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       tap(() => this.updateIsLoading(true)),
       switchMap((data: { id: StockId; body: any }) =>
         this._api.editIdea(data.id, data.body).pipe(
+          catchError((err: Error) => {
+            console.error(err);
+            this.updateIsLoading(false);
+
+            return of({
+              data: { id: null },
+              message: 'Error editing Idea',
+              success: false,
+            });
+          }),
+          filter(
+            (
+              response: Response<{ id: number | null }>
+            ): response is Response<{
+              id: number;
+            }> => response.data.id !== null
+          ),
           tap((response: Response<{ id: number }>) => {
             this.loadIdeas(of(null));
             this.loadPositions(of(null));
@@ -181,6 +199,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
               this.loadIdea(data.id);
             }
           }),
+
           switchMap((response: Response<{ id: number }>) =>
             this.selectFromAll(response.data.id.toString()).pipe(
               filter((position: Position | null): position is Position => position !== null),
@@ -198,14 +217,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             )
           )
         )
-      ),
-
-      catchError((err: Error) => {
-        console.error(err);
-        this.updateIsLoading(false);
-
-        return of(null);
-      })
+      )
     )
   );
 

@@ -15691,12 +15691,12 @@
       },
       {
         "source": "enter",
-        "target": "npm:@taiga-ui/legacy",
+        "target": "npm:@taiga-ui/cdk",
         "type": "static"
       },
       {
         "source": "enter",
-        "target": "npm:@taiga-ui/cdk",
+        "target": "npm:@taiga-ui/legacy",
         "type": "static"
       },
       {

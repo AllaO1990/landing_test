@@ -15,6 +15,7 @@ import {
   StockPosition,
   StockPositionActionEntry,
   StockPositionActionTarget,
+  StockPositionCommission,
   StockPositionDividend,
   StockPositionTarget,
 } from 'types/position';
@@ -54,8 +55,9 @@ import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { AddDividendComponent } from './add-dividend/add-dividend.component';
+import { AddCommissionComponent } from './add-commission/add-commission.component';
 
-type DialogType = 'entries' | 'outs' | 'dividends';
+type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
 @Component({
   selector: 'lib-enter-action',
@@ -119,6 +121,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
   private _dialogDividendComponent: PolymorpheusComponent<AddDividendComponent> | null = null;
+  private _dialogCommissionComponent: PolymorpheusComponent<AddCommissionComponent> | null = null;
 
   private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
   private readonly _formGroupValueChanges$: Subject<any> = new ReplaySubject(1);
@@ -130,6 +133,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     entries: new FormArray<FormControl<StockPositionActionEntry>>([]),
     outs: new FormArray<FormControl<StockPositionActionTarget>>([]),
     dividends: new FormArray<FormControl<StockPositionDividend>>([]),
+    commissions: new FormArray<FormControl<StockPositionCommission>>([]),
   });
 
   get formArrayEntries(): FormArray {
@@ -144,6 +148,10 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     return this.controlFormArray.get('dividends') as FormArray;
   }
 
+  get formArrayCommissions(): FormArray {
+    return this.controlFormArray.get('commissions') as FormArray;
+  }
+
   entriesList$: Observable<StockPositionActionEntry[]> = this._createStream<StockPositionActionEntry[]>(
     this.formArrayEntries
   ).pipe(startWith(this.formArrayEntries.value), shareReplay({ bufferSize: 1, refCount: true }));
@@ -153,6 +161,9 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   dividendsList$: Observable<StockPositionDividend[]> = this._createStream<StockPositionDividend[]>(
     this.formArrayDividends
   ).pipe(startWith(this.formArrayDividends.value), shareReplay({ bufferSize: 1, refCount: true }));
+  commissionList$: Observable<StockPositionCommission[]> = this._createStream<StockPositionCommission[]>(
+    this.formArrayCommissions
+  ).pipe(startWith(this.formArrayCommissions.value), shareReplay({ bufferSize: 1, refCount: true }));
   position$: Observable<any> = this.formGroupValueChanges$.pipe(
     filter((value: any | null): value is any => value !== null),
     map((value) => value.lastPrice || 0),
@@ -162,10 +173,11 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     })
   );
 
-  private readonly _mapForm: Partial<{ [key in DialogType]: any }> = {
+  private readonly _mapForm: Partial<{ [key in DialogType]: (...args: any) => Promise<void> }> = {
     entries: this.addEntry,
     outs: this.addTarget,
     dividends: this.addDividend,
+    commissions: this.addCommission,
   };
 
   multiplier$: Observable<number> = this.formGroupValueChanges$.pipe(
@@ -213,6 +225,12 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     debounceTime(100),
     map(([entry, dividend, priceIncrement]: [StockPositionActionEntry, StockPositionDividend[], number]) =>
       this._service.getTotalDividend(entry, dividend, priceIncrement)
+    )
+  );
+  totalCommission$: Observable<StockPositionCommission> = combineLatest([this.totalEntry$, this.commissionList$]).pipe(
+    debounceTime(100),
+    map(([entry, commission]: [StockPositionActionEntry, StockPositionCommission[]]) =>
+      this._service.getTotalCommission(entry, commission)
     )
   );
   totalRemainder$: Observable<StockPositionTarget> = combineLatest([
@@ -413,9 +431,11 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   async addDividend(event: Event, data: any | null = null, controlIndex: number | null = null): Promise<void> {
     event.preventDefault();
 
-    this._dialogDividendComponent = await import('./add-dividend/add-dividend.component')
-      .then((m) => m.AddDividendComponent)
-      .then((c) => new PolymorpheusComponent(c, this._injector));
+    if (this._dialogDividendComponent === null) {
+      this._dialogDividendComponent = await import('./add-dividend/add-dividend.component')
+        .then((m) => m.AddDividendComponent)
+        .then((c) => new PolymorpheusComponent(c, this._injector));
+    }
 
     this._openDialog(this._dialogDividendComponent as PolymorpheusComponent<AddDividendComponent>, {
       ...data,
@@ -425,6 +445,32 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     }).subscribe((result: object | null) => {
       if (result) {
         this._updateDataFromDialog(this.formArrayDividends, result, controlIndex);
+      }
+    });
+  }
+
+  async addCommission(event: Event, data: any | null = null, controlIndex: number | null = null): Promise<void> {
+    event.preventDefault();
+
+    const brokerId = this.formArrayEntries.value[0] && this.formArrayEntries.value[0].brokerId;
+    const totalEntry = this.formArrayEntries.value.reduce(
+      (acc: number, item: StockPositionActionEntry) => (acc += item.price * item.amount),
+      0
+    );
+
+    if (this._dialogCommissionComponent === null) {
+      this._dialogCommissionComponent = await import('./add-commission/add-commission.component')
+        .then((m) => m.AddCommissionComponent)
+        .then((c) => new PolymorpheusComponent(c, this._injector));
+    }
+
+    this._openDialog(this._dialogCommissionComponent as PolymorpheusComponent<AddCommissionComponent>, {
+      ...data,
+      brokerId,
+      totalEntry,
+    }).subscribe((result: object | null) => {
+      if (result) {
+        this._updateDataFromDialog(this.formArrayCommissions, result, controlIndex);
       }
     });
   }
@@ -445,7 +491,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     const formArray = this.controlFormArray.get(formName);
 
     if (formArray !== null) {
-      this._mapForm[formName].bind(this)(event, (formArray as FormArray).at(index).value, index);
+      this._mapForm[formName]!.bind(this)!(event, (formArray as FormArray).at(index).value, index);
     }
   }
 

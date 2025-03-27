@@ -48,6 +48,7 @@ export interface StockPosition {
       totalPrice: number;
     } | null;
   };
+  comissions: StockPositionCommission[];
   dividends: {
     amount: number;
     brokerId: number;
@@ -149,6 +150,15 @@ export interface StockPositionDividend {
   depositShare: null | number;
   date: null | string;
   brokerId: number | null;
+}
+
+export interface StockPositionCommission {
+  size: number;
+  brokerId: null | number;
+  comment: null | string;
+  date: null | string;
+  profit: null | number;
+  profitPct: null | number;
 }
 
 export class Position implements ResponsePosition {
