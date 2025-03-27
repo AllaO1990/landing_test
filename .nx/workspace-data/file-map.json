@@ -162,340 +162,176 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "tools/generators/.gitkeep",
-        "hash": "3244421341483603138"
+        "file": "types/stock-timing.ts",
+        "hash": "8959005219878837631"
       },
       {
-        "file": "types/chart.ts",
-        "hash": "12172838154247292316"
+        "file": "utils/get-number-precision.ts",
+        "hash": "17232379818128499480"
       },
       {
-        "file": ".github/workflows/main.yml",
-        "hash": "6567351483453608176"
-      },
-      {
-        "file": "jest.config.ts",
-        "hash": "12333515226966617182"
-      },
-      {
-        "file": "stores/desktop/facades/stock-list.facade.ts",
-        "hash": "12842148422659565756"
-      },
-      {
-        "file": "package-lock.json",
-        "hash": "4743880675591247943"
-      },
-      {
-        "file": "stores/desktop/tsconfig.json",
-        "hash": "4946853427242191187"
-      },
-      {
-        "file": "jest.preset.js",
-        "hash": "9430166341120122740"
-      },
-      {
-        "file": "utils/sort-text.ts",
-        "hash": "14350963164483326807"
-      },
-      {
-        "file": "nginx.conf",
-        "hash": "16607992467286289491"
-      },
-      {
-        "file": ".eslintrc.json",
-        "hash": "11528891500695373006"
-      },
-      {
-        "file": "README.md",
-        "hash": "1797001136010212337"
-      },
-      {
-        "file": "stores/desktop/select.store.ts",
-        "hash": "18430688436634204438"
-      },
-      {
-        "file": "types/http.ts",
-        "hash": "9501627852758142185"
-      },
-      {
-        "file": "types/date-range.ts",
-        "hash": "856570791877064439"
-      },
-      {
-        "file": "types/portfolio.ts",
-        "hash": "5480137907324235796"
-      },
-      {
-        "file": "stores/desktop/chart-store.ts",
-        "hash": "14959104725184418055"
-      },
-      {
-        "file": "stores/desktop/plugins/commission.store.ts",
-        "hash": "5599694482889320668"
-      },
-      {
-        "file": "stores/desktop/tsconfig.editor.json",
-        "hash": "5620303981993226606"
-      },
-      {
-        "file": "stores/desktop/core/with-queue.abstract.ts",
-        "hash": "15545226676708413392"
-      },
-      {
-        "file": "types/consolidation-zones.ts",
-        "hash": "106541791700358324"
-      },
-      {
-        "file": "package.json",
-        "hash": "3927501102505951177"
-      },
-      {
-        "file": "tokens/desktop/query-params.ts",
-        "hash": "11403705156624692300"
+        "file": "tokens/desktop/api.ts",
+        "hash": "8835767563209562145"
       },
       {
         "file": "stores/desktop/plugins/stock-list.store.ts",
         "hash": "7736410936572115323"
       },
       {
-        "file": "desktop-page/core/auth/index.ts",
-        "hash": "15853768214166025652"
+        "file": "stores/desktop/plugins/stock-price.store.ts",
+        "hash": "17815605950364854536"
       },
       {
-        "file": "utils/get-price-increment.ts",
-        "hash": "2604435726832192206"
-      },
-      {
-        "file": "types/events.ts",
-        "hash": "7790859914686806606"
-      },
-      {
-        "file": "types/timeframe.ts",
-        "hash": "12758475339519077989"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones.store.ts",
-        "hash": "17342550503720434314"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "15253751730211665980"
-      },
-      {
-        "file": "types/stock-strategy.ts",
-        "hash": "15391669681337752535"
-      },
-      {
-        "file": "Dockerfile",
-        "hash": "15043109864072530452"
-      },
-      {
-        "file": "utils/get-color.ts",
-        "hash": "615013208832581229"
-      },
-      {
-        "file": ".vscode/settings.json",
-        "hash": "11631447716040061077"
-      },
-      {
-        "file": "types/stock-list-state.ts",
-        "hash": "2661636031452649317"
-      },
-      {
-        "file": "desktop-page/core/auth/auth.service.ts",
-        "hash": "17443619007899360292"
-      },
-      {
-        "file": "stores/desktop/facades/idea.facade.ts",
-        "hash": "13040065637907292471"
-      },
-      {
-        "file": "utils/indicators-func.ts",
-        "hash": "15328477665892579063"
-      },
-      {
-        "file": "stores/desktop/facades/portfolio.facade.ts",
-        "hash": "5421716064086983777"
-      },
-      {
-        "file": "types/position.ts",
-        "hash": "11487993842231751639"
-      },
-      {
-        "file": "stores/desktop/plugins/stock-idea.store.ts",
-        "hash": "4024860880994973108"
-      },
-      {
-        "file": "tokens/desktop/store.ts",
-        "hash": "4350201171798864014"
-      },
-      {
-        "file": "svgo.config.js",
-        "hash": "6344222163676722495"
-      },
-      {
-        "file": "stores/desktop/plugins/indicator.sma.store.ts",
-        "hash": "4441204503863480796"
-      },
-      {
-        "file": "types/stock.ts",
-        "hash": "5747509670363482196"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "13626919460495499675"
-      },
-      {
-        "file": "stores/desktop/plugins/candles.store.ts",
-        "hash": "5027618935211472399"
-      },
-      {
-        "file": "stores/desktop/main.store.ts",
-        "hash": "11882505197961468032"
-      },
-      {
-        "file": "types/chart-state.ts",
-        "hash": "13848149630909623046"
-      },
-      {
-        "file": ".prettierignore",
-        "hash": "5407418692668764289"
-      },
-      {
-        "file": ".editorconfig",
-        "hash": "6686520031028425313"
-      },
-      {
-        "file": "types/index.ts",
-        "hash": "10737035727801252421"
-      },
-      {
-        "file": "stores/desktop/plugins/balance.store.ts",
-        "hash": "6968375549417348547"
-      },
-      {
-        "file": "stores/desktop/facades/select.facade.ts",
-        "hash": "12916716133405722608"
-      },
-      {
-        "file": "constants/stock-position-type.ts",
-        "hash": "17835411523342321475"
-      },
-      {
-        "file": "types/indicator-sma.ts",
-        "hash": "14783819045198025126"
-      },
-      {
-        "file": "stores/desktop/plugins/account.store.ts",
-        "hash": "4843661959001783028"
-      },
-      {
-        "file": "tools/tsconfig.tools.json",
-        "hash": "16088922570277978783"
-      },
-      {
-        "file": "constants/stock-timing.ts",
-        "hash": "2487749763275918160"
-      },
-      {
-        "file": "stores/desktop/facades/account.facade.ts",
-        "hash": "13344607673559345211"
-      },
-      {
-        "file": "stores/desktop/plugins/portfolio.store.ts",
-        "hash": "13196497036168586181"
-      },
-      {
-        "file": "utils/transform-consolidation-zones.ts",
-        "hash": "9779565911203741329"
-      },
-      {
-        "file": "types/stock-event.ts",
-        "hash": "6926961109073169976"
-      },
-      {
-        "file": ".dockerignore",
-        "hash": "13894842070724749366"
-      },
-      {
-        "file": "nx.json",
-        "hash": "3040162377246326026"
-      },
-      {
-        "file": "types/lk-state.ts",
-        "hash": "10674194768720520325"
-      },
-      {
-        "file": "stores/desktop/plugins/indicator.ema.store.ts",
-        "hash": "2487486000652917630"
-      },
-      {
-        "file": "utils/queue.ts",
-        "hash": "6839892358163581581"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones-idea.store.ts",
-        "hash": "13128103012513567342"
-      },
-      {
-        "file": "types/stock-position-state.ts",
-        "hash": "4424871609977729530"
-      },
-      {
-        "file": "tokens/desktop/date-range.ts",
-        "hash": "2763031870217487539"
-      },
-      {
-        "file": "types/stock-idea-state.ts",
-        "hash": "2746179174270277591"
-      },
-      {
-        "file": "stores/desktop/index.ts",
-        "hash": "15838021625544229352"
+        "file": "stores/desktop/select.store.ts",
+        "hash": "18430688436634204438"
       },
       {
         "file": ".prettierrc",
         "hash": "18364264586821277305"
       },
       {
-        "file": "utils/get-number-from-e.ts",
-        "hash": "12141788394617030620"
+        "file": "karma.conf.js",
+        "hash": "9656364725710720620"
       },
       {
-        "file": "types/stock-timing.ts",
-        "hash": "8959005219878837631"
+        "file": "types/consolidation-zones.ts",
+        "hash": "106541791700358324"
       },
       {
-        "file": "stores/desktop/plugins/interval.store.ts",
-        "hash": "917511730260053550"
+        "file": "types/stock-event.ts",
+        "hash": "6926961109073169976"
       },
       {
-        "file": "types/commission.ts",
-        "hash": "8206014515230553021"
+        "file": "types/response.ts",
+        "hash": "7078947606388261446"
+      },
+      {
+        "file": "tokens/desktop/environment.ts",
+        "hash": "3770306032964912197"
+      },
+      {
+        "file": "utils/get-join-uniq.ts",
+        "hash": "12530976718137645059"
+      },
+      {
+        "file": "types/timeframe.ts",
+        "hash": "12758475339519077989"
+      },
+      {
+        "file": "types/portfolio.ts",
+        "hash": "5480137907324235796"
+      },
+      {
+        "file": "types/http.ts",
+        "hash": "9501627852758142185"
+      },
+      {
+        "file": "types/chart.ts",
+        "hash": "12172838154247292316"
       },
       {
         "file": "utils/break-array.ts",
         "hash": "10377388548199749854"
       },
       {
-        "file": "tokens/desktop/index.ts",
-        "hash": "2275070386040432809"
+        "file": "types/stock-position-state.ts",
+        "hash": "4424871609977729530"
+      },
+      {
+        "file": ".vscode/settings.json",
+        "hash": "11631447716040061077"
+      },
+      {
+        "file": "types/index.ts",
+        "hash": "10737035727801252421"
+      },
+      {
+        "file": "package.json",
+        "hash": "3927501102505951177"
+      },
+      {
+        "file": "stores/desktop/plugins/portfolio.store.ts",
+        "hash": "13196497036168586181"
+      },
+      {
+        "file": "stores/desktop/tsconfig.editor.json",
+        "hash": "5620303981993226606"
+      },
+      {
+        "file": "types/stock-list-state.ts",
+        "hash": "2661636031452649317"
+      },
+      {
+        "file": "types/stock-strategy.ts",
+        "hash": "15391669681337752535"
       },
       {
         "file": ".eslintignore",
         "hash": "7663861978715868291"
       },
       {
+        "file": "desktop-page/core/auth/auth.service.ts",
+        "hash": "17443619007899360292"
+      },
+      {
+        "file": "tokens/desktop/index.ts",
+        "hash": "2275070386040432809"
+      },
+      {
+        "file": "stores/desktop/plugins/commission.store.ts",
+        "hash": "5599694482889320668"
+      },
+      {
+        "file": "stores/desktop/facades/stock-list.facade.ts",
+        "hash": "12842148422659565756"
+      },
+      {
+        "file": "utils/sort-text.ts",
+        "hash": "14350963164483326807"
+      },
+      {
+        "file": "utils/transform-consolidation-zones.ts",
+        "hash": "9779565911203741329"
+      },
+      {
+        "file": "stores/desktop/facade.ts",
+        "hash": "6831515373145937581"
+      },
+      {
+        "file": "tools/tsconfig.tools.json",
+        "hash": "16088922570277978783"
+      },
+      {
+        "file": "constants/stock-position-type.ts",
+        "hash": "17835411523342321475"
+      },
+      {
+        "file": "tokens/desktop/date-range.ts",
+        "hash": "2763031870217487539"
+      },
+      {
         "file": "types/indicator-ema.ts",
         "hash": "10092307796873794279"
       },
       {
-        "file": "types/idea.ts",
-        "hash": "8302576054992558772"
+        "file": "utils/get-number-from-e.ts",
+        "hash": "12141788394617030620"
       },
       {
-        "file": "stores/desktop/plugins/consolidation-zones-watchlist.store.ts",
-        "hash": "971190707975142440"
+        "file": "stores/desktop/plugins/indicator.sma.store.ts",
+        "hash": "4441204503863480796"
+      },
+      {
+        "file": "stores/desktop/facades/portfolio.facade.ts",
+        "hash": "5421716064086983777"
+      },
+      {
+        "file": "README.md",
+        "hash": "1797001136010212337"
+      },
+      {
+        "file": "types/position.ts",
+        "hash": "11487993842231751639"
       },
       {
         "file": "stores/desktop/lk.store.ts",
@@ -506,80 +342,244 @@
         "hash": "13870905045391488843"
       },
       {
-        "file": "desktop-page/core/storage/local-storage.service.ts",
-        "hash": "15470114868170470195"
+        "file": ".dockerignore",
+        "hash": "13894842070724749366"
       },
       {
-        "file": "stores/desktop/plugins/figures.store.ts",
-        "hash": "12720449796190065076"
+        "file": ".eslintrc.json",
+        "hash": "11528891500695373006"
       },
       {
-        "file": "utils/index.ts",
-        "hash": "16850469695194830204"
+        "file": "stores/desktop/plugins/consolidation-zones-idea.store.ts",
+        "hash": "13128103012513567342"
       },
       {
-        "file": "karma.conf.js",
-        "hash": "9656364725710720620"
+        "file": ".gitignore",
+        "hash": "15253751730211665980"
       },
       {
-        "file": "types/stock-position-type.ts",
-        "hash": "7296227016803517367"
-      },
-      {
-        "file": "utils/query-params.ts",
-        "hash": "11323392232080435065"
-      },
-      {
-        "file": "desktop-page/core/storage/index.ts",
-        "hash": "11151808605438075593"
-      },
-      {
-        "file": "utils/get-join-uniq.ts",
-        "hash": "12530976718137645059"
-      },
-      {
-        "file": "stores/desktop/facade.ts",
-        "hash": "6831515373145937581"
-      },
-      {
-        "file": "types/response.ts",
-        "hash": "7078947606388261446"
-      },
-      {
-        "file": "tokens/desktop/api.ts",
-        "hash": "8835767563209562145"
+        "file": "utils/queue.ts",
+        "hash": "6839892358163581581"
       },
       {
         "file": "utils/get-tui-day-time.ts",
         "hash": "11208528851252702053"
       },
       {
-        "file": "stores/desktop/facades/chart.facade.ts",
-        "hash": "9042610362831071862"
-      },
-      {
-        "file": "utils/get-number-precision.ts",
-        "hash": "17232379818128499480"
-      },
-      {
         "file": "constants/stock-strategy.ts",
         "hash": "17382634736577566273"
       },
       {
-        "file": "stores/desktop/plugins/indicator.atr.store.ts",
-        "hash": "4102625905627432528"
+        "file": "utils/query-params.ts",
+        "hash": "11323392232080435065"
+      },
+      {
+        "file": "stores/desktop/plugins/interval.store.ts",
+        "hash": "917511730260053550"
+      },
+      {
+        "file": "desktop-page/core/auth/index.ts",
+        "hash": "15853768214166025652"
+      },
+      {
+        "file": ".editorconfig",
+        "hash": "6686520031028425313"
+      },
+      {
+        "file": "stores/desktop/plugins/consolidation-zones.store.ts",
+        "hash": "17342550503720434314"
+      },
+      {
+        "file": "stores/desktop/plugins/candles.store.ts",
+        "hash": "5027618935211472399"
+      },
+      {
+        "file": "stores/desktop/tsconfig.json",
+        "hash": "4946853427242191187"
+      },
+      {
+        "file": "utils/get-price-increment.ts",
+        "hash": "2604435726832192206"
+      },
+      {
+        "file": "types/date-range.ts",
+        "hash": "856570791877064439"
+      },
+      {
+        "file": "nx.json",
+        "hash": "3040162377246326026"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
+      },
+      {
+        "file": "tools/generators/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "utils/index.ts",
+        "hash": "16850469695194830204"
       },
       {
         "file": "types/color.ts",
         "hash": "2752454321606950145"
       },
       {
-        "file": "stores/desktop/plugins/stock-price.store.ts",
-        "hash": "17815605950364854536"
+        "file": "stores/desktop/plugins/consolidation-zones-watchlist.store.ts",
+        "hash": "971190707975142440"
       },
       {
-        "file": "tokens/desktop/environment.ts",
-        "hash": "3770306032964912197"
+        "file": "svgo.config.js",
+        "hash": "6344222163676722495"
+      },
+      {
+        "file": "nginx.conf",
+        "hash": "16607992467286289491"
+      },
+      {
+        "file": "types/chart-state.ts",
+        "hash": "13848149630909623046"
+      },
+      {
+        "file": "stores/desktop/chart-store.ts",
+        "hash": "14959104725184418055"
+      },
+      {
+        "file": "stores/desktop/index.ts",
+        "hash": "15838021625544229352"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-idea.store.ts",
+        "hash": "4024860880994973108"
+      },
+      {
+        "file": "types/lk-state.ts",
+        "hash": "10674194768720520325"
+      },
+      {
+        "file": "types/events.ts",
+        "hash": "7790859914686806606"
+      },
+      {
+        "file": "types/stock-idea-state.ts",
+        "hash": "2746179174270277591"
+      },
+      {
+        "file": "stores/desktop/facades/chart.facade.ts",
+        "hash": "9042610362831071862"
+      },
+      {
+        "file": "stores/desktop/facades/idea.facade.ts",
+        "hash": "13040065637907292471"
+      },
+      {
+        "file": "stores/desktop/main.store.ts",
+        "hash": "11882505197961468032"
+      },
+      {
+        "file": "stores/desktop/plugins/figures.store.ts",
+        "hash": "12720449796190065076"
+      },
+      {
+        "file": "stores/desktop/core/with-queue.abstract.ts",
+        "hash": "15545226676708413392"
+      },
+      {
+        "file": "types/commission.ts",
+        "hash": "8206014515230553021"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.atr.store.ts",
+        "hash": "4102625905627432528"
+      },
+      {
+        "file": "types/idea.ts",
+        "hash": "8302576054992558772"
+      },
+      {
+        "file": "types/indicator-sma.ts",
+        "hash": "14783819045198025126"
+      },
+      {
+        "file": "tokens/desktop/store.ts",
+        "hash": "4350201171798864014"
+      },
+      {
+        "file": "utils/indicators-func.ts",
+        "hash": "15328477665892579063"
+      },
+      {
+        "file": "tokens/desktop/query-params.ts",
+        "hash": "11403705156624692300"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.ema.store.ts",
+        "hash": "2487486000652917630"
+      },
+      {
+        "file": "constants/stock-timing.ts",
+        "hash": "2487749763275918160"
+      },
+      {
+        "file": "desktop-page/core/storage/local-storage.service.ts",
+        "hash": "15470114868170470195"
+      },
+      {
+        "file": ".github/workflows/main.yml",
+        "hash": "6567351483453608176"
+      },
+      {
+        "file": "types/stock-position-type.ts",
+        "hash": "7296227016803517367"
+      },
+      {
+        "file": "stores/desktop/plugins/balance.store.ts",
+        "hash": "6968375549417348547"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "12333515226966617182"
+      },
+      {
+        "file": "stores/desktop/facades/account.facade.ts",
+        "hash": "13344607673559345211"
+      },
+      {
+        "file": "utils/get-color.ts",
+        "hash": "615013208832581229"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "5407418692668764289"
+      },
+      {
+        "file": "stores/desktop/facades/select.facade.ts",
+        "hash": "12916716133405722608"
+      },
+      {
+        "file": "desktop-page/core/storage/index.ts",
+        "hash": "11151808605438075593"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "4743880675591247943"
+      },
+      {
+        "file": "types/stock.ts",
+        "hash": "5747509670363482196"
+      },
+      {
+        "file": "Dockerfile",
+        "hash": "15043109864072530452"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "13626919460495499675"
+      },
+      {
+        "file": "stores/desktop/plugins/account.store.ts",
+        "hash": "4843661959001783028"
       }
     ],
     "projectFileMap": {
@@ -1994,7 +1994,7 @@
         },
         {
           "file": "desktop-page/enter/src/lib/enter/idea/idea.component.html",
-          "hash": "346361503343246772"
+          "hash": "3877775143953216352"
         },
         {
           "file": "desktop-page/enter/src/lib/enter/idea/idea.component.scss",

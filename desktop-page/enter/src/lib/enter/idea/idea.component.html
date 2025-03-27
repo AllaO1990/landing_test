@@ -160,10 +160,9 @@
   <div class="stop table" formArrayName="stop" *ngIf="(stopList$ | async) as list; else load">
     <lib-list
       class="list"
-      [style.height.px]="list.length > 2 ? 3 * itemHeight : list.length * itemHeight + 56"
+      [style.height.px]="list.length > 2 ? 3 * itemHeight : list.length * itemHeight + 28"
       [list]="list"
       [header]="stopHeader"
-      [footer]="stopFooter"
       [itemSize]="itemHeight">
       <lib-list-item
         class="row"
