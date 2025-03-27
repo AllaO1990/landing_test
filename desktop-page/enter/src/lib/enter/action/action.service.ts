@@ -99,8 +99,8 @@ export class ActionService {
 
         if (list.length - 1 === index) {
           value.totalPrice = value.price;
-          value.profit = getNumberPrecision((value.price - total.price * value.amount) * multiplier, priceIncrement);
-          value.profitPercent = getNumberPrecision((value.profit / (total.price * value.amount)) * 100, priceIncrement);
+          value.profit = getNumberPrecision((value.price - total.price * value.amount) * multiplier, 2);
+          value.profitPercent = getNumberPrecision((value.profit / (total.price * value.amount)) * 100, 2);
           value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
         }
 

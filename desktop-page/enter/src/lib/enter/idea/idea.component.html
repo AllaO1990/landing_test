@@ -171,7 +171,9 @@
         *libListItem="let item">
         <div class="item">
           <div class="item__value row__item row__first">
-            <lib-check [negative]="true" [value]="!!item.stopCandleDate"></lib-check>
+            <lib-check
+              [negative]="true"
+              [value]="!!item.stopCandleDate" />
           </div>
           <!--          <div class="item__value row__item row__date">-->
           <!--            {{ item.stopCandleDate | date: 'dd.MM.yy' }}-->
