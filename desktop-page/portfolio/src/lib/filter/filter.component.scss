@@ -124,7 +124,7 @@
   inline-size: 20rem;
 
   ::ng-deep {
-    .t-content .t-content {
+    .t-content > .t-content {
       padding: var(--padding-8) var(--padding-2) var(--padding-2);
     }
   }
