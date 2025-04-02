@@ -64,28 +64,32 @@ export class DialogFilterComponent implements ControlValueAccessor, AfterViewIni
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
   readonly rangeList: { text: string; range: TuiDayRange }[] = [
     {
-      text: '7',
+      text: 'Сегодня',
+      range: new TuiDayRange(TuiDay.fromLocalNativeDate(this.today), TuiDay.fromLocalNativeDate(this.today)),
+    },
+    {
+      text: '7 дней',
       range: new TuiDayRange(
         TuiDay.fromLocalNativeDate(this._getStartDate(-7)),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },
     {
-      text: '30',
+      text: '30 дней',
       range: new TuiDayRange(
         TuiDay.fromLocalNativeDate(this._getStartDate(-30)),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },
     {
-      text: '90',
+      text: '90 дней',
       range: new TuiDayRange(
         TuiDay.fromLocalNativeDate(this._getStartDate(-90)),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },
     {
-      text: '365',
+      text: '365 дней',
       range: new TuiDayRange(
         TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this._getStartDate(-365).getFullYear(), 0, 1))),
         TuiDay.fromLocalNativeDate(this.today)

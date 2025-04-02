@@ -16,6 +16,12 @@ export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse, data: any) => {
+      if (error.status === 401) {
+        _authService.logout();
+        _router.navigate(['/login']);
+        // window.location.href = '/login';
+      }
+
       if (_statusList.find((status: number) => status === error.status)) {
         _alerts
           .open(`<p><strong>${error.error.message}</strong></p> ${error.url}`, {
@@ -24,12 +30,6 @@ export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
             autoClose: 5000,
           })
           .subscribe();
-      }
-
-      if (error.status === 401) {
-        _authService.logout();
-        _router.navigate(['/login']);
-        // window.location.href = '/login';
       }
 
       return throwError(() => {

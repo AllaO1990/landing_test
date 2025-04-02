@@ -199,6 +199,7 @@ export class ActionService {
     target: StockPositionActionTarget,
     remainder: StockPositionTarget,
     dividend: StockPositionDividend,
+    commission: StockPositionCommission,
     lastPrice: number,
     multiplier: number,
     priceIncrement = 8
@@ -207,7 +208,7 @@ export class ActionService {
       return this._defaultTotalOut;
     }
 
-    const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice, priceIncrement);
+    const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice - commission.size, priceIncrement);
     const profit = getNumberPrecision(
       (totalPrice - entry.totalPrice) * multiplier + (dividend.profit || 0),
       priceIncrement

@@ -256,17 +256,19 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     this.totalOut$,
     this.totalRemainder$,
     this.totalDividend$,
+    this.totalCommission$,
     this.lastPrice$,
     this.multiplier$,
     this.priceIncrement$,
   ]).pipe(
     debounceTime(100),
     map(
-      ([totalEntry, totalOut, totalRemainder, totalDividend, lastPrice, multiplier, priceIncrement]: [
+      ([totalEntry, totalOut, totalRemainder, totalDividend, totalCommission, lastPrice, multiplier, priceIncrement]: [
         StockPositionActionEntry,
         StockPositionActionTarget,
         StockPositionTarget,
         StockPositionDividend,
+        StockPositionCommission,
         number,
         number,
         number
@@ -276,6 +278,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
           totalOut,
           totalRemainder,
           totalDividend,
+          totalCommission,
           lastPrice,
           multiplier,
           priceIncrement
@@ -324,6 +327,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
             })),
             true
           );
+          this._updateFormArray('commissions', result.commissions || [], true);
         }
 
         setTimeout(() => {

@@ -29,8 +29,8 @@ export const getParamsFromFilter = (value: any): Params => {
   let currencyId: number | null = null;
 
   if (range !== null) {
-    from = (range.from as TuiDay).toLocalNativeDate().toISOString();
-    to = (range.to as TuiDay).toLocalNativeDate().toISOString();
+    from = new Date((range.from as TuiDay).toLocalNativeDate().setUTCHours(0, 0, 0)).toISOString();
+    to = new Date((range.to as TuiDay).toLocalNativeDate().setUTCHours(23, 59, 59)).toISOString();
   }
 
   if (portfolio !== null && portfolio.portfolioId !== null) {

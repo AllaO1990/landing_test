@@ -15,13 +15,13 @@ import { LoaderComponent } from '@ui/components/loader';
 import * as d3 from 'd3';
 import { extent } from 'd3-array';
 import { scaleLinear, scaleUtc } from 'd3-scale';
-import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 
 @Component({
   selector: 'lib-portfolio-list-chart',
   standalone: true,
-  imports: [LoaderComponent, NgIf, AsyncPipe, NgForOf, DatePipe, TuiFormatNumberPipe, TuiHint, JsonPipe],
+  imports: [LoaderComponent, NgIf, AsyncPipe, NgForOf, DatePipe, TuiFormatNumberPipe, TuiHint],
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,15 +61,20 @@ export class ChartComponent implements AfterViewInit {
 
       const items = data.items.map((item: AccountBalanceHistoryItem) => ({ ...item, date: new Date(item.date) }));
       const yDomain = extent(items, (d) => d.balance);
-      const yMax = yDomain[1];
+      const yMax = Math.max(Math.abs(yDomain[1] as number), Math.abs(yDomain[0] as number));
       const width = 300;
       const height = 300;
       const marginTop = 20;
       const marginRight = 30;
       const marginBottom = 30;
-      const marginLeft = 40 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 4 : 0);
+      const marginLeft = 40 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 7 : 0);
       const x = scaleUtc(extent(items, (d) => d.date) as any, [marginLeft, width - marginRight]);
-      const y = scaleLinear([(yDomain[0] as number) * 0.9, (yDomain[1] as number) * 1.1] as any, [
+      const distance =
+        (Math.abs(yDomain[1] as number) - Math.abs(yDomain[0] as number)) *
+        0.1 *
+        ((yDomain[1] as number) + (yDomain[0] as number) > 0 ? 1 : -1);
+
+      const y = scaleLinear([(yDomain[0] as number) - distance, (yDomain[1] as number) + distance] as any, [
         height - marginBottom,
         marginTop,
       ]);

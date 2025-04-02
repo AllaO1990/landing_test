@@ -34,6 +34,7 @@ import { getParamsFromFilter } from '../utils';
 type Loading = {
   loadingRemove: boolean;
   loadingEdit: boolean;
+  disabled: boolean;
 };
 
 @Component({
@@ -77,7 +78,13 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   readonly list$ = this.#store.list$.pipe(
     map(
       (list: CommissionItem[] | null) =>
-        list && list.map((item: CommissionItem) => ({ ...item, loadingEdit: false, loadingRemove: false }))
+        list &&
+        list.map((item: CommissionItem) => ({
+          ...item,
+          loadingEdit: false,
+          loadingRemove: false,
+          disabled: item.ideaId !== null,
+        }))
     )
   );
   readonly itemHeight = 28;
@@ -118,7 +125,10 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   }
 
   onEdit(event: Event, item: CommissionItem & Loading): void {
-    this.openDialogAdd(event, item);
+    this.openDialogAdd(event, item).then(() => {
+      item.loadingEdit = false;
+    });
+    item.loadingEdit = true;
   }
 
   private _openDialog(c: PolymorpheusComponent<any>, data: any = null, label: string | null = null): Observable<any> {
@@ -139,6 +149,7 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
     event.preventDefault();
 
     item.loadingRemove = true;
+    item.disabled = true;
 
     forkJoin([this.#store.deleteCommission(item.id), timer(1000)])
       .pipe(
@@ -152,6 +163,7 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
       .subscribe((res) => {
         this._onLoadList();
         item.loadingRemove = false;
+        item.disabled = false;
         this.#cdr.markForCheck();
       });
   }
