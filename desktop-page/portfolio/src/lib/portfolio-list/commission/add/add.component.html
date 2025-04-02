@@ -29,6 +29,13 @@
         </tui-data-list>
       </ng-template>
     </tui-select>
+    <tui-input
+      *ngIf="valueInstrument !== null"
+      class="form__control"
+      [tuiTextfieldSize]="size"
+      formControlName="instrument">
+      <input tuiTextfieldLegacy />
+    </tui-input>
     <tui-textfield
       [tuiTextfieldSize]="size"
       class="form__control">

@@ -4,7 +4,6 @@ import { TuiBreakpointService } from '@taiga-ui/core';
 import { Observable, of, shareReplay, switchMap, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PortfolioListComponent } from '../portfolio-list/portfolio-list.component';
-import { ProfitComponent } from '../profit/profit.component';
 import { StructureComponent } from '../structure';
 import { ClosedDealsComponent } from '../closed-deals';
 import { TabsComponent } from 'ui-common/lib/tabs';
@@ -138,7 +137,6 @@ const INPUT_DATA_PORTFOLIO_PROFIT = {
     NgIf,
     TabsComponent,
     PortfolioListComponent,
-    ProfitComponent,
     StructureComponent,
     ClosedDealsComponent,
     ChartCandlestickComponent,
@@ -187,7 +185,7 @@ export class LayoutComponent {
     },
     {
       icon: '@tui.aperture',
-      text: 'Анатика',
+      text: 'Аналика',
     },
     {
       icon: '@tui.shopping-cart',

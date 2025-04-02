@@ -8,6 +8,7 @@ import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account'
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
   TuiInputDateTimeModule,
+  TuiInputModule,
   TuiSelectModule,
   TuiTextareaModule,
   TuiTextfieldControllerModule,
@@ -42,6 +43,7 @@ import { map } from 'rxjs/operators';
     TuiTextareaModule,
     TuiTextfield,
     TuiInputNumber,
+    TuiInputModule,
   ],
   templateUrl: './add.component.html',
   styleUrls: ['../../dialog.scss', './add.component.scss'],
@@ -62,8 +64,14 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
     portfolio: new FormControl(null, Validators.required),
     currencyId: new FormControl(null, Validators.required),
     brokerId: new FormControl(null, Validators.required),
-    comment: new FormControl({ value: null, disabled: true }),
+    comment: new FormControl(null),
+    ideaId: new FormControl({ value: null, disabled: true }),
+    instrument: new FormControl({ value: null, disabled: true }),
   });
+
+  get valueInstrument(): FormControl {
+    return (this.form.get('instrument') as FormControl).getRawValue();
+  }
 
   readonly isLoading$: Subject<boolean> = new BehaviorSubject(false);
 
@@ -79,7 +87,7 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
 
   ngAfterViewInit(): void {
     if (this.context.data) {
-      const { portfolio, currency, broker, size, date } = this.context.data;
+      const { portfolio, currency, broker, size, date, comment, ideaId, instrument } = this.context.data;
 
       this.form.patchValue({
         date: getTuiDayTime(date || new Date().toISOString()),
@@ -87,6 +95,9 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
         currencyId: currency && currency.currencyId,
         brokerId: broker && broker.brokerId,
         size,
+        comment,
+        ideaId,
+        instrument: instrument && instrument.ticker,
       });
     }
   }
@@ -115,8 +126,10 @@ export class CommissionAddComponent extends PortfolioListDialog implements After
     const {
       date,
       portfolio: { portfolioId },
+      ideaId,
+      instrument,
       ...other
-    } = this.form.value;
+    } = this.form.getRawValue();
 
     return {
       ...other,
