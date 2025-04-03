@@ -2,8 +2,10 @@
   "name": "ui",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ui/src",
-  "prefix": "vt",
-  "tags": ["trade"],
+  "prefix": "ui",
+  "tags": [
+    "trade"
+  ],
   "projectType": "library",
   "targets": {}
 }

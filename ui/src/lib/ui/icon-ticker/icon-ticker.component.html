@@ -1,0 +1,25 @@
+<div class="icon-ticker" *ngIf="instrument">
+  <ng-container
+    [ngTemplateOutlet]="isError ? avatar : img"
+    [ngTemplateOutletContext]="{ $implicit: instrument }">
+  </ng-container>
+</div>
+
+<ng-template #img let-instrument>
+  <div class="icon-ticker__img">
+    <img
+      src="/assets/tickers-v2/{{ instrument.ticker }}.{{instrument.type === 'crypto' ? 'svg' : 'png'}}"
+      [attr.alt]="instrument.name"
+      (error)="onErrorImg($event)"
+    >
+  </div>
+</ng-template>
+
+<ng-template #avatar let-instrument>
+  <div class="icon-ticker__avatar">
+    <img
+      [attr.src]="'@tui.circle-help' | tuiIcon"
+      [attr.alt]="instrument.ticker"
+    />
+  </div>
+</ng-template>

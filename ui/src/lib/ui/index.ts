@@ -5,3 +5,4 @@ export * from './list';
 export * from './check';
 export * from './logo';
 export * from './loader';
+export * from './icon-ticker';

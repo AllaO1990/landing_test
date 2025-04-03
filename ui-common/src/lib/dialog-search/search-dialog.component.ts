@@ -7,10 +7,11 @@ import { TuiBreakpointService, TuiButton, TuiGroup } from '@taiga-ui/core';
 import { debounceTime, Observable, switchMap } from 'rxjs';
 import { StockInstrument, StockListItems } from 'types/stock';
 import { filter, map, startWith } from 'rxjs/operators';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
+import { IconTickerComponent } from '@ui/components/icon-ticker';
 
 @Component({
   selector: 'lib-dialog-search',
@@ -19,7 +20,6 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
     TuiInputModule,
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
-    NgIf,
     AsyncPipe,
     ListComponent,
     ItemDirective,
@@ -27,6 +27,7 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
     TuiAutoFocus,
     TuiButton,
     TuiGroup,
+    IconTickerComponent,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrl: './search-dialog.component.scss',

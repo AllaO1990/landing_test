@@ -39,10 +39,7 @@
     <div class="item row" *libListItem="let item" (click)="onClick($event, item)">
       <div class="cell item__ticker">
         <div class="item__img">
-          <img
-            src="/assets/tickers-v2/{{ item.ticker }}.{{item.type === 'crypto' ? 'svg' : 'png'}}"
-            [attr.alt]="item.name"
-          />
+          <ui-icon-ticker [instrument]="item"></ui-icon-ticker>
         </div>
         <div class="item__column item__description">
           <div class="item__title ellipsis" [title]="item.ticker">

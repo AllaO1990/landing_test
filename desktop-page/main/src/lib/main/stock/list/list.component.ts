@@ -1,4 +1,3 @@
-import { TuiTable } from '@taiga-ui/addon-table';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -32,6 +31,7 @@ import { EventSelected } from 'types/events';
 import { StockListWithType } from '../stock.component';
 import { StockListItemComponent } from '../item';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IconTickerComponent } from '@ui/components/icon-ticker';
 
 @Pipe({
   name: 'stockItemRemove',
@@ -57,7 +57,6 @@ export class StockListRemovePipe implements PipeTransform {
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
     StockListItemComponent,
-    TuiTable,
     AsyncPipe,
     TuiScrollbar,
     NgTemplateOutlet,
@@ -68,6 +67,7 @@ export class StockListRemovePipe implements PipeTransform {
     TuiHintDirective,
     TuiHintComponent,
     TuiHintUnstyled,
+    IconTickerComponent,
   ],
   providers: [],
 })

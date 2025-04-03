@@ -141,33 +141,33 @@ export class StockListStore extends ComponentStore<StockState> {
   readonly loadList = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
       switchMap((_) =>
-        this._api.getStockList({ sub: true, limit: 100 }).pipe(
+        this._api.getStockList({ limit: 100 }).pipe(
           filter((result: Response<Stock>) => !!result.data),
-          switchMap((result: Response<Stock>) => {
-            if (result.data.total === result.data.items.length) {
-              return of(result.data.items);
-            }
-
-            const countPages = Math.ceil(result.data.total / 100);
-
-            return forkJoin(
-              Array.from({ length: countPages - 1 }, (_, index: number) =>
-                this._api.getStockList({
-                  sub: true,
-                  limit: 100,
-                  page: index + 2,
-                })
-              )
-            ).pipe(
-              map(
-                (commonResult: Response<Stock>[]): StockListItems => [
-                  ...result.data.items,
-                  ...commonResult.reduce((acc: StockListItems, item) => [...acc, ...item.data.items], []),
-                ]
-              )
-            );
-          }),
-          tap((data: StockListItems) => this.updateList(data))
+          // switchMap((result: Response<Stock>) => {
+          //   if (result.data.total === result.data.items.length) {
+          //     return of(result.data.items);
+          //   }
+          //
+          //   const countPages = Math.ceil(result.data.total / 100);
+          //
+          //   return forkJoin(
+          //     Array.from({ length: countPages - 1 }, (_, index: number) =>
+          //       this._api.getStockList({
+          //         sub: false,
+          //         limit: 100,
+          //         page: index + 2,
+          //       })
+          //     )
+          //   ).pipe(
+          //     map(
+          //       (commonResult: Response<Stock>[]): StockListItems => [
+          //         ...result.data.items,
+          //         ...commonResult.reduce((acc: StockListItems, item) => [...acc, ...item.data.items], []),
+          //       ]
+          //     )
+          //   );
+          // }),
+          tap((response: Response<Stock>) => this.updateList(response.data.items))
         )
       ),
       catchError((err: Error) => {
