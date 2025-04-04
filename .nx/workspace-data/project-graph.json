@@ -16182,6 +16182,11 @@
       },
       {
         "source": "ui-common",
+        "target": "desktop-data",
+        "type": "static"
+      },
+      {
+        "source": "ui-common",
         "target": "npm:jest-preset-angular",
         "type": "static"
       }

@@ -1,36 +1,38 @@
-<!--<div class="actions" *ngIf="isMobile$ | async">-->
-<!--  <div class="space"></div>-->
-<!--  <button-->
-<!--    class="close"-->
-<!--    appearance="icon"-->
-<!--    iconStart="@tui.x"-->
-<!--    tuiIconButton-->
-<!--    size="s"-->
-<!--    type="button"-->
-<!--    (click)="onClose($event)"-->
-<!--  ></button>-->
-<!--</div>-->
-<form tuiGroup class="form" [formGroup]="form">
+<form tuiGroup class="form" [formGroup]="form" (ngSubmit)="onSearch($event)">
   <tui-input
     tuiAutoFocus
     formControlName="search"
-    tuiTextfieldSize="s"
+    [tuiTextfieldSize]="size"
     [tuiTextfieldCleaner]="true"
     [tuiTextfieldLabelOutside]="true">
     Введите название тикера
-    <input tuiTextfieldLegacy />
+    <input tuiTextfieldLegacy autocomplete="off" />
   </tui-input>
+  <button
+    class="search"
+    appearance="primary"
+    tuiButton
+    [size]="size"
+    [disabled]="controlSearch.value && controlSearch.value.length === 0"
+    type="submit"
+  >Найти
+  </button>
   <button
     class="close"
     appearance="outline"
     tuiButton
-    size="s"
+    [size]="size"
     type="button"
     (click)="onClose($event)"
   >Закрыть
   </button>
 </form>
 <div class="list">
+  <div
+    class="empty"
+    *ngIf="isEmpty$ | async">
+    Ничего не найдено
+  </div>
   <lib-list
     class="viewport"
     [list]="list$ | async"
@@ -57,6 +59,17 @@
     </div>
   </lib-list>
 </div>
+<div class="actions" *ngIf="length$ | async as length">
+  <ui-loader
+    class="loader"
+    *ngIf="isLoad$ | async" />
+  <tui-pagination
+    class="pagination"
+    [index]="index"
+    [length]="length"
+    (indexChange)="goToPage($event)"
+  />
+</div>
 
 <ng-template #headerTemplate>
   <lib-list-header class="header">
@@ -64,8 +77,4 @@
     <div class="cell">Сектор</div>
     <div class="cell">Биржа</div>
   </lib-list-header>
-</ng-template>
-
-<ng-template #noSearch>
-  Ничего не найдено
 </ng-template>

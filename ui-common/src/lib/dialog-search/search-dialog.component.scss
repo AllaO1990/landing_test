@@ -10,18 +10,8 @@
   background-color: var(--block-bg-color);
 }
 
-.close {
+.close, .search {
   flex: 0 0 auto;
-}
-
-.actions {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-
-  height: 48px;
-  margin-bottom: var(--padding-1);
-  padding: 0 var(--padding-2);
 }
 
 .space {
@@ -37,8 +27,36 @@
 }
 
 .list {
+  position: relative;
   flex: 1;
   padding: 0 var(--padding-2);
+}
+
+.actions {
+  position: relative;
+  flex: 0;
+
+  padding: var(--padding-2);
+}
+
+.loader, .empty {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.loader ~ .pagination {
+  filter: blur(2px);
 }
 
 .viewport {
