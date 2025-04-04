@@ -1243,7 +1243,7 @@
         "name": "ui",
         "$schema": "../node_modules/nx/schemas/project-schema.json",
         "sourceRoot": "ui/src",
-        "prefix": "vt",
+        "prefix": "ui",
         "projectType": "library",
         "tags": [
           "trade"
@@ -16178,6 +16178,11 @@
       {
         "source": "ui-common",
         "target": "npm:@taiga-ui/polymorpheus",
+        "type": "static"
+      },
+      {
+        "source": "ui-common",
+        "target": "desktop-data",
         "type": "static"
       },
       {

@@ -1,16 +1,30 @@
 import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TuiAutoFocus, TuiPopover } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TuiBreakpointService, TuiButton, TuiGroup } from '@taiga-ui/core';
-import { debounceTime, Observable, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+} from 'rxjs';
 import { StockInstrument, StockListItems } from 'types/stock';
-import { filter, map, startWith } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
-import { StockListFacade } from 'stores/facades/stock-list.facade';
+import { IconTickerComponent } from '@ui/components/icon-ticker';
+import { StockSearchInstrumentsStore } from 'stores/plugins/stock-search-instruments.store';
+import { DesktopService } from '@desktop-data/desktop-data';
+import { DESKTOP_API } from 'tokens/desktop';
+import { TuiPagination } from '@taiga-ui/kit';
+import { LoaderComponent } from '@ui/components/loader';
 
 @Component({
   selector: 'lib-dialog-search',
@@ -19,7 +33,6 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
     TuiInputModule,
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
-    NgIf,
     AsyncPipe,
     ListComponent,
     ItemDirective,
@@ -27,20 +40,35 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
     TuiAutoFocus,
     TuiButton,
     TuiGroup,
+    IconTickerComponent,
+    TuiPagination,
+    NgIf,
+    LoaderComponent,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrl: './search-dialog.component.scss',
-  providers: [],
+  providers: [
+    {
+      provide: StockSearchInstrumentsStore,
+      useFactory: (api: DesktopService) => new StockSearchInstrumentsStore(api),
+      deps: [DESKTOP_API],
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchDialogComponent {
-  public readonly _breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
-  private readonly _store: StockListFacade = inject(StockListFacade);
+export class SearchDialogComponent implements AfterViewInit {
+  readonly #limit = 100;
+  private readonly _store: StockSearchInstrumentsStore = inject(StockSearchInstrumentsStore);
 
+  public readonly _breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
+
+  readonly isLoad$: Subject<boolean> = new BehaviorSubject<boolean>(false);
+  readonly isSearch$: Subject<boolean> = new BehaviorSubject<boolean>(false);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
+  readonly size = 's';
 
   readonly form: FormGroup = new FormGroup({
-    search: new FormControl<string>('', { nonNullable: true }),
+    search: new FormControl<string | null>(null),
   });
 
   readonly isMobile$: Observable<boolean> = this._breakpoint$.pipe(
@@ -51,39 +79,63 @@ export class SearchDialogComponent {
     return this.form.get('search') as FormControl;
   }
 
-  readonly list$: Observable<StockListItems | null> = this._store.listInstrument$.pipe(
-    switchMap((stock: StockListItems | null) =>
-      this.controlSearch.valueChanges.pipe(
-        debounceTime(300),
-        filter((value: string) => value.length > 0 || value.length === 0),
-        startWith(this.controlSearch.value),
-        map((value: string) => value.trim().toLowerCase()),
-        map((value: string) => this._searched(stock, value))
-      )
-    )
+  readonly #type$: Observable<'search' | 'default'> = combineLatest([
+    this.isSearch$.asObservable(),
+    this.controlSearch.valueChanges.pipe(startWith(this.controlSearch.value)),
+  ]).pipe(
+    map(([isSearch, search]: [boolean, string | null]) => {
+      if (isSearch) {
+        return search === null || search.length === 0 ? 'default' : 'search';
+      }
+
+      return 'default';
+    }),
+    distinctUntilChanged()
   );
 
-  private _searched(list: StockListItems | null, value: string): StockListItems | null {
-    if (list === null) {
-      return null;
-    }
+  readonly list$: Observable<StockListItems | null> = this.#type$.pipe(
+    tap((type: 'search' | 'default') => type === 'default' && this.isSearch$.next(false)),
+    switchMap((type: 'search' | 'default') => (type === 'default' ? this._store.list$ : this._store.searchList$)),
+    tap(() => this.isLoad$.next(false)),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
-    if (!value || value.length === 0) {
-      return list;
-    }
+  readonly length$: Observable<number | null> = this._store.total$.pipe(
+    switchMap((total: null | number) =>
+      this.#type$.pipe(map((type: 'search' | 'default') => (type === 'default' ? total : null)))
+    ),
+    map((total: null | number) => total && Math.ceil(total / this.#limit))
+  );
 
-    return list
-      .filter((item: StockInstrument) => {
-        const concat = this._getSearchString(item);
+  readonly isEmpty$: Observable<boolean> = this.list$.pipe(
+    map((list: StockListItems | null) => {
+      if (list === null) {
+        return false;
+      }
 
-        return concat.indexOf(value) !== -1;
-      })
-      .sort((a, b) => {
-        const indexA = this._getSearchString(a).indexOf(value);
-        const indexB = this._getSearchString(b).indexOf(value);
+      return list.length === 0;
+    })
+  );
 
-        return indexA - indexB;
-      });
+  index = 0;
+
+  ngAfterViewInit(): void {
+    this._loadInstruments(1);
+    this.isLoad$.next(true);
+  }
+
+  private _loadInstruments = this._store.loadWithLimitListInstrument(this.#limit);
+
+  goToPage(index: number): void {
+    this.index = index;
+    this._loadInstruments(index + 1);
+  }
+
+  onSearch(event: Event): void {
+    event.preventDefault();
+
+    this.isSearch$.next(true);
+    this._store.searchListInstrument(this.controlSearch.value);
   }
 
   onClick(event: Event, value: StockInstrument): void {
@@ -96,9 +148,5 @@ export class SearchDialogComponent {
     event.preventDefault();
 
     this.context.completeWith(null);
-  }
-
-  private _getSearchString(item: StockInstrument): string {
-    return [item.ticker, item.name].map((item: string) => item.toLowerCase()).join('⁂');
   }
 }

@@ -162,408 +162,244 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "stores/desktop/plugins/indicator.atr.store.ts",
-        "hash": "4102625905627432528"
-      },
-      {
-        "file": "desktop-page/core/auth/auth.service.ts",
-        "hash": "17443619007899360292"
-      },
-      {
-        "file": "stores/desktop/plugins/indicator.ema.store.ts",
-        "hash": "2487486000652917630"
-      },
-      {
-        "file": "types/portfolio.ts",
-        "hash": "5480137907324235796"
-      },
-      {
-        "file": "jest.preset.js",
-        "hash": "9430166341120122740"
-      },
-      {
-        "file": "stores/desktop/tsconfig.editor.json",
-        "hash": "5620303981993226606"
-      },
-      {
-        "file": "constants/stock-position-type.ts",
-        "hash": "17835411523342321475"
-      },
-      {
-        "file": "stores/desktop/tsconfig.json",
-        "hash": "4946853427242191187"
-      },
-      {
-        "file": "stores/desktop/plugins/account.store.ts",
-        "hash": "4843661959001783028"
-      },
-      {
-        "file": "tokens/desktop/date-range.ts",
-        "hash": "2763031870217487539"
-      },
-      {
-        "file": "stores/desktop/plugins/stock-list.store.ts",
-        "hash": "7736410936572115323"
-      },
-      {
-        "file": "stores/desktop/plugins/indicator.sma.store.ts",
-        "hash": "4441204503863480796"
-      },
-      {
-        "file": "nginx.conf",
-        "hash": "16607992467286289491"
-      },
-      {
-        "file": "types/stock-strategy.ts",
-        "hash": "15391669681337752535"
-      },
-      {
         "file": ".dockerignore",
         "hash": "13894842070724749366"
-      },
-      {
-        "file": "types/stock-event.ts",
-        "hash": "6926961109073169976"
-      },
-      {
-        "file": "types/timeframe.ts",
-        "hash": "12758475339519077989"
-      },
-      {
-        "file": "README.md",
-        "hash": "1797001136010212337"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones-watchlist.store.ts",
-        "hash": "971190707975142440"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones-idea.store.ts",
-        "hash": "13128103012513567342"
-      },
-      {
-        "file": "stores/desktop/plugins/stock-idea.store.ts",
-        "hash": "4024860880994973108"
-      },
-      {
-        "file": ".prettierrc",
-        "hash": "18364264586821277305"
-      },
-      {
-        "file": "types/response.ts",
-        "hash": "7078947606388261446"
-      },
-      {
-        "file": "tools/generators/.gitkeep",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "utils/get-tui-day-time.ts",
-        "hash": "11208528851252702053"
-      },
-      {
-        "file": "stores/desktop/plugins/portfolio.store.ts",
-        "hash": "13196497036168586181"
-      },
-      {
-        "file": "utils/get-color.ts",
-        "hash": "615013208832581229"
-      },
-      {
-        "file": "utils/indicators-func.ts",
-        "hash": "15328477665892579063"
-      },
-      {
-        "file": "utils/get-number-precision.ts",
-        "hash": "17232379818128499480"
-      },
-      {
-        "file": "types/index.ts",
-        "hash": "10737035727801252421"
-      },
-      {
-        "file": ".eslintignore",
-        "hash": "7663861978715868291"
-      },
-      {
-        "file": "types/indicator-sma.ts",
-        "hash": "14783819045198025126"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "13626919460495499675"
-      },
-      {
-        "file": "utils/break-array.ts",
-        "hash": "10377388548199749854"
-      },
-      {
-        "file": "utils/get-join-uniq.ts",
-        "hash": "12530976718137645059"
-      },
-      {
-        "file": "types/stock.ts",
-        "hash": "5747509670363482196"
-      },
-      {
-        "file": "stores/desktop/main.store.ts",
-        "hash": "11882505197961468032"
-      },
-      {
-        "file": "types/stock-list-state.ts",
-        "hash": "2661636031452649317"
-      },
-      {
-        "file": "utils/queue.ts",
-        "hash": "6839892358163581581"
-      },
-      {
-        "file": "types/stock-timing.ts",
-        "hash": "8959005219878837631"
-      },
-      {
-        "file": "stores/desktop/lk.store.ts",
-        "hash": "10912605472109501113"
-      },
-      {
-        "file": ".github/workflows/main.yml",
-        "hash": "6567351483453608176"
-      },
-      {
-        "file": "utils/get-number-from-e.ts",
-        "hash": "12141788394617030620"
-      },
-      {
-        "file": "types/position.ts",
-        "hash": "11487993842231751639"
-      },
-      {
-        "file": "stores/desktop/chart-store.ts",
-        "hash": "14959104725184418055"
-      },
-      {
-        "file": "package.json",
-        "hash": "3927501102505951177"
-      },
-      {
-        "file": "desktop-page/core/storage/local-storage.service.ts",
-        "hash": "15470114868170470195"
-      },
-      {
-        "file": "types/date-range.ts",
-        "hash": "856570791877064439"
-      },
-      {
-        "file": "types/stock-position-state.ts",
-        "hash": "4424871609977729530"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones.store.ts",
-        "hash": "17342550503720434314"
-      },
-      {
-        "file": "tokens/desktop/store.ts",
-        "hash": "4350201171798864014"
-      },
-      {
-        "file": "types/color.ts",
-        "hash": "2752454321606950145"
-      },
-      {
-        "file": ".prettierignore",
-        "hash": "5407418692668764289"
-      },
-      {
-        "file": "types/commission.ts",
-        "hash": "7218503035178094790"
-      },
-      {
-        "file": "types/events.ts",
-        "hash": "7790859914686806606"
-      },
-      {
-        "file": "constants/stock-strategy.ts",
-        "hash": "17382634736577566273"
-      },
-      {
-        "file": "stores/desktop/plugins/balance.store.ts",
-        "hash": "6968375549417348547"
-      },
-      {
-        "file": "constants/stock-timing.ts",
-        "hash": "2487749763275918160"
-      },
-      {
-        "file": "utils/transform-consolidation-zones.ts",
-        "hash": "9779565911203741329"
-      },
-      {
-        "file": "karma.conf.js",
-        "hash": "9656364725710720620"
-      },
-      {
-        "file": "Dockerfile",
-        "hash": "15043109864072530452"
-      },
-      {
-        "file": "nx.json",
-        "hash": "3040162377246326026"
-      },
-      {
-        "file": "stores/desktop/core/with-queue.abstract.ts",
-        "hash": "15545226676708413392"
-      },
-      {
-        "file": "stores/desktop/facades/chart.facade.ts",
-        "hash": "9042610362831071862"
-      },
-      {
-        "file": "types/account.ts",
-        "hash": "13870905045391488843"
-      },
-      {
-        "file": "package-lock.json",
-        "hash": "4743880675591247943"
-      },
-      {
-        "file": "types/chart-state.ts",
-        "hash": "13848149630909623046"
-      },
-      {
-        "file": "stores/desktop/facade.ts",
-        "hash": "6831515373145937581"
-      },
-      {
-        "file": "stores/desktop/facades/portfolio.facade.ts",
-        "hash": "5421716064086983777"
-      },
-      {
-        "file": "stores/desktop/plugins/interval.store.ts",
-        "hash": "917511730260053550"
-      },
-      {
-        "file": "desktop-page/core/storage/index.ts",
-        "hash": "11151808605438075593"
-      },
-      {
-        "file": "utils/sort-text.ts",
-        "hash": "14350963164483326807"
-      },
-      {
-        "file": "utils/get-price-increment.ts",
-        "hash": "2604435726832192206"
-      },
-      {
-        "file": "types/stock-idea-state.ts",
-        "hash": "2746179174270277591"
-      },
-      {
-        "file": "stores/desktop/plugins/candles.store.ts",
-        "hash": "5027618935211472399"
-      },
-      {
-        "file": "tokens/desktop/api.ts",
-        "hash": "8835767563209562145"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "15253751730211665980"
-      },
-      {
-        "file": "stores/desktop/index.ts",
-        "hash": "15838021625544229352"
-      },
-      {
-        "file": "svgo.config.js",
-        "hash": "6344222163676722495"
-      },
-      {
-        "file": "types/http.ts",
-        "hash": "9501627852758142185"
-      },
-      {
-        "file": "types/lk-state.ts",
-        "hash": "10674194768720520325"
       },
       {
         "file": ".editorconfig",
         "hash": "6686520031028425313"
       },
       {
-        "file": "types/chart.ts",
-        "hash": "12172838154247292316"
+        "file": ".eslintignore",
+        "hash": "7663861978715868291"
       },
       {
-        "file": "jest.config.ts",
-        "hash": "12333515226966617182"
+        "file": ".eslintrc.json",
+        "hash": "11528891500695373006"
       },
       {
-        "file": "stores/desktop/plugins/stock-price.store.ts",
-        "hash": "17815605950364854536"
+        "file": ".github/workflows/main.yml",
+        "hash": "6567351483453608176"
       },
       {
-        "file": "types/consolidation-zones.ts",
-        "hash": "106541791700358324"
+        "file": ".gitignore",
+        "hash": "15253751730211665980"
       },
       {
-        "file": "stores/desktop/plugins/figures.store.ts",
-        "hash": "12720449796190065076"
+        "file": ".prettierignore",
+        "hash": "5407418692668764289"
       },
       {
-        "file": "stores/desktop/plugins/commission.store.ts",
-        "hash": "5599694482889320668"
-      },
-      {
-        "file": "stores/desktop/facades/select.facade.ts",
-        "hash": "12916716133405722608"
-      },
-      {
-        "file": "stores/desktop/facades/account.facade.ts",
-        "hash": "13344607673559345211"
-      },
-      {
-        "file": "tokens/desktop/query-params.ts",
-        "hash": "11403705156624692300"
-      },
-      {
-        "file": "types/indicator-ema.ts",
-        "hash": "10092307796873794279"
-      },
-      {
-        "file": "stores/desktop/facades/stock-list.facade.ts",
-        "hash": "12842148422659565756"
-      },
-      {
-        "file": "tools/tsconfig.tools.json",
-        "hash": "16088922570277978783"
-      },
-      {
-        "file": "utils/query-params.ts",
-        "hash": "11323392232080435065"
-      },
-      {
-        "file": "utils/index.ts",
-        "hash": "16850469695194830204"
+        "file": ".prettierrc",
+        "hash": "18364264586821277305"
       },
       {
         "file": ".vscode/settings.json",
         "hash": "11631447716040061077"
       },
       {
+        "file": "Dockerfile",
+        "hash": "15043109864072530452"
+      },
+      {
+        "file": "README.md",
+        "hash": "1797001136010212337"
+      },
+      {
+        "file": "constants/stock-position-type.ts",
+        "hash": "17835411523342321475"
+      },
+      {
+        "file": "constants/stock-strategy.ts",
+        "hash": "17382634736577566273"
+      },
+      {
+        "file": "constants/stock-timing.ts",
+        "hash": "2487749763275918160"
+      },
+      {
+        "file": "desktop-page/core/auth/auth.service.ts",
+        "hash": "17443619007899360292"
+      },
+      {
+        "file": "desktop-page/core/auth/index.ts",
+        "hash": "15853768214166025652"
+      },
+      {
+        "file": "desktop-page/core/storage/index.ts",
+        "hash": "11151808605438075593"
+      },
+      {
+        "file": "desktop-page/core/storage/local-storage.service.ts",
+        "hash": "15470114868170470195"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "12333515226966617182"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
+      },
+      {
+        "file": "karma.conf.js",
+        "hash": "9656364725710720620"
+      },
+      {
+        "file": "nginx.conf",
+        "hash": "16607992467286289491"
+      },
+      {
+        "file": "nx.json",
+        "hash": "3040162377246326026"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "4743880675591247943"
+      },
+      {
+        "file": "package.json",
+        "hash": "3927501102505951177"
+      },
+      {
+        "file": "stores/desktop/chart-store.ts",
+        "hash": "14959104725184418055"
+      },
+      {
+        "file": "stores/desktop/core/with-queue.abstract.ts",
+        "hash": "15545226676708413392"
+      },
+      {
+        "file": "stores/desktop/facade.ts",
+        "hash": "6831515373145937581"
+      },
+      {
+        "file": "stores/desktop/facades/account.facade.ts",
+        "hash": "13344607673559345211"
+      },
+      {
+        "file": "stores/desktop/facades/chart.facade.ts",
+        "hash": "9042610362831071862"
+      },
+      {
         "file": "stores/desktop/facades/idea.facade.ts",
         "hash": "13040065637907292471"
       },
       {
-        "file": "types/idea.ts",
-        "hash": "8302576054992558772"
+        "file": "stores/desktop/facades/portfolio.facade.ts",
+        "hash": "5421716064086983777"
       },
       {
-        "file": "types/stock-position-type.ts",
-        "hash": "7296227016803517367"
+        "file": "stores/desktop/facades/select.facade.ts",
+        "hash": "12916716133405722608"
+      },
+      {
+        "file": "stores/desktop/facades/stock-list.facade.ts",
+        "hash": "12842148422659565756"
+      },
+      {
+        "file": "stores/desktop/index.ts",
+        "hash": "15838021625544229352"
+      },
+      {
+        "file": "stores/desktop/lk.store.ts",
+        "hash": "10912605472109501113"
+      },
+      {
+        "file": "stores/desktop/main.store.ts",
+        "hash": "11882505197961468032"
+      },
+      {
+        "file": "stores/desktop/plugins/account.store.ts",
+        "hash": "4843661959001783028"
+      },
+      {
+        "file": "stores/desktop/plugins/balance.store.ts",
+        "hash": "6968375549417348547"
+      },
+      {
+        "file": "stores/desktop/plugins/candles.store.ts",
+        "hash": "5027618935211472399"
+      },
+      {
+        "file": "stores/desktop/plugins/commission.store.ts",
+        "hash": "5599694482889320668"
+      },
+      {
+        "file": "stores/desktop/plugins/consolidation-zones-idea.store.ts",
+        "hash": "13128103012513567342"
+      },
+      {
+        "file": "stores/desktop/plugins/consolidation-zones-watchlist.store.ts",
+        "hash": "971190707975142440"
+      },
+      {
+        "file": "stores/desktop/plugins/consolidation-zones.store.ts",
+        "hash": "17342550503720434314"
+      },
+      {
+        "file": "stores/desktop/plugins/figures.store.ts",
+        "hash": "12720449796190065076"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.atr.store.ts",
+        "hash": "4102625905627432528"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.ema.store.ts",
+        "hash": "2487486000652917630"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.sma.store.ts",
+        "hash": "4441204503863480796"
+      },
+      {
+        "file": "stores/desktop/plugins/interval.store.ts",
+        "hash": "917511730260053550"
+      },
+      {
+        "file": "stores/desktop/plugins/portfolio.store.ts",
+        "hash": "13196497036168586181"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-idea.store.ts",
+        "hash": "4024860880994973108"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-list.store.ts",
+        "hash": "2902011462850123269"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-price.store.ts",
+        "hash": "17815605950364854536"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-search-instruments.store.ts",
+        "hash": "16987411914651914224"
       },
       {
         "file": "stores/desktop/select.store.ts",
         "hash": "18430688436634204438"
+      },
+      {
+        "file": "stores/desktop/tsconfig.editor.json",
+        "hash": "5620303981993226606"
+      },
+      {
+        "file": "stores/desktop/tsconfig.json",
+        "hash": "4946853427242191187"
+      },
+      {
+        "file": "svgo.config.js",
+        "hash": "6344222163676722495"
+      },
+      {
+        "file": "tokens/desktop/api.ts",
+        "hash": "8835767563209562145"
+      },
+      {
+        "file": "tokens/desktop/date-range.ts",
+        "hash": "2763031870217487539"
       },
       {
         "file": "tokens/desktop/environment.ts",
@@ -574,12 +410,180 @@
         "hash": "2275070386040432809"
       },
       {
-        "file": ".eslintrc.json",
-        "hash": "11528891500695373006"
+        "file": "tokens/desktop/query-params.ts",
+        "hash": "11403705156624692300"
       },
       {
-        "file": "desktop-page/core/auth/index.ts",
-        "hash": "15853768214166025652"
+        "file": "tokens/desktop/store.ts",
+        "hash": "4350201171798864014"
+      },
+      {
+        "file": "tools/generators/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "tools/tsconfig.tools.json",
+        "hash": "16088922570277978783"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "13626919460495499675"
+      },
+      {
+        "file": "types/account.ts",
+        "hash": "13870905045391488843"
+      },
+      {
+        "file": "types/chart-state.ts",
+        "hash": "13848149630909623046"
+      },
+      {
+        "file": "types/chart.ts",
+        "hash": "12172838154247292316"
+      },
+      {
+        "file": "types/color.ts",
+        "hash": "2752454321606950145"
+      },
+      {
+        "file": "types/commission.ts",
+        "hash": "7218503035178094790"
+      },
+      {
+        "file": "types/consolidation-zones.ts",
+        "hash": "106541791700358324"
+      },
+      {
+        "file": "types/date-range.ts",
+        "hash": "856570791877064439"
+      },
+      {
+        "file": "types/events.ts",
+        "hash": "7790859914686806606"
+      },
+      {
+        "file": "types/http.ts",
+        "hash": "9501627852758142185"
+      },
+      {
+        "file": "types/idea.ts",
+        "hash": "8302576054992558772"
+      },
+      {
+        "file": "types/index.ts",
+        "hash": "10737035727801252421"
+      },
+      {
+        "file": "types/indicator-ema.ts",
+        "hash": "10092307796873794279"
+      },
+      {
+        "file": "types/indicator-sma.ts",
+        "hash": "14783819045198025126"
+      },
+      {
+        "file": "types/lk-state.ts",
+        "hash": "10674194768720520325"
+      },
+      {
+        "file": "types/portfolio.ts",
+        "hash": "5480137907324235796"
+      },
+      {
+        "file": "types/position.ts",
+        "hash": "11487993842231751639"
+      },
+      {
+        "file": "types/response.ts",
+        "hash": "7078947606388261446"
+      },
+      {
+        "file": "types/stock-event.ts",
+        "hash": "6926961109073169976"
+      },
+      {
+        "file": "types/stock-idea-state.ts",
+        "hash": "2746179174270277591"
+      },
+      {
+        "file": "types/stock-list-state.ts",
+        "hash": "2661636031452649317"
+      },
+      {
+        "file": "types/stock-position-state.ts",
+        "hash": "4424871609977729530"
+      },
+      {
+        "file": "types/stock-position-type.ts",
+        "hash": "7296227016803517367"
+      },
+      {
+        "file": "types/stock-strategy.ts",
+        "hash": "15391669681337752535"
+      },
+      {
+        "file": "types/stock-timing.ts",
+        "hash": "8959005219878837631"
+      },
+      {
+        "file": "types/stock.ts",
+        "hash": "5747509670363482196"
+      },
+      {
+        "file": "types/timeframe.ts",
+        "hash": "12758475339519077989"
+      },
+      {
+        "file": "utils/break-array.ts",
+        "hash": "10377388548199749854"
+      },
+      {
+        "file": "utils/get-color.ts",
+        "hash": "615013208832581229"
+      },
+      {
+        "file": "utils/get-join-uniq.ts",
+        "hash": "12530976718137645059"
+      },
+      {
+        "file": "utils/get-number-from-e.ts",
+        "hash": "12141788394617030620"
+      },
+      {
+        "file": "utils/get-number-precision.ts",
+        "hash": "17232379818128499480"
+      },
+      {
+        "file": "utils/get-price-increment.ts",
+        "hash": "2604435726832192206"
+      },
+      {
+        "file": "utils/get-tui-day-time.ts",
+        "hash": "11208528851252702053"
+      },
+      {
+        "file": "utils/index.ts",
+        "hash": "16850469695194830204"
+      },
+      {
+        "file": "utils/indicators-func.ts",
+        "hash": "15328477665892579063"
+      },
+      {
+        "file": "utils/query-params.ts",
+        "hash": "11323392232080435065"
+      },
+      {
+        "file": "utils/queue.ts",
+        "hash": "6839892358163581581"
+      },
+      {
+        "file": "utils/sort-text.ts",
+        "hash": "14350963164483326807"
+      },
+      {
+        "file": "utils/transform-consolidation-zones.ts",
+        "hash": "9779565911203741329"
       }
     ],
     "projectFileMap": {
@@ -660,1324 +664,74 @@
           "hash": "2129196202529263968"
         }
       ],
-      "dashboard": [
+      "shall": [
         {
-          "file": "desktop-page/dashboard/.eslintrc.json",
+          "file": "desktop-page/shall/.eslintrc.json",
           "hash": "9628345067573567197"
         },
         {
-          "file": "desktop-page/dashboard/README.md",
-          "hash": "13979165953912037690"
+          "file": "desktop-page/shall/README.md",
+          "hash": "2908662979967205114"
         },
         {
-          "file": "desktop-page/dashboard/jest.config.ts",
-          "hash": "17992068442936652086"
+          "file": "desktop-page/shall/jest.config.ts",
+          "hash": "16266925096625252383"
         },
         {
-          "file": "desktop-page/dashboard/project.json",
-          "hash": "11124908732920750148"
+          "file": "desktop-page/shall/project.json",
+          "hash": "12563626443727848008"
         },
         {
-          "file": "desktop-page/dashboard/src/index.ts",
-          "hash": "13016798126781182746"
+          "file": "desktop-page/shall/src/index.ts",
+          "hash": "6936664725505316092"
         },
         {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard-routing.module.ts",
-          "hash": "15974981277344683695",
-          "deps": [
-            "npm:@angular/common",
-            "npm:@angular/core",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.html",
-          "hash": "11747888495317311879"
-        },
-        {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.scss",
-          "hash": "7177682918352506687"
-        },
-        {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.ts",
-          "hash": "15221486546709904261",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.module.ts",
-          "hash": "12356825633996217690",
-          "deps": [
-            "npm:@angular/common",
-            "npm:@angular/core",
-            "desktop"
-          ]
-        },
-        {
-          "file": "desktop-page/dashboard/src/lib/dashboard/shared/.gitkeep",
+          "file": "desktop-page/shall/src/lib/shall/shall.component.css",
           "hash": "3244421341483603138"
         },
         {
-          "file": "desktop-page/dashboard/src/test-setup.ts",
+          "file": "desktop-page/shall/src/lib/shall/shall.component.html",
+          "hash": "16297046413830794483"
+        },
+        {
+          "file": "desktop-page/shall/src/lib/shall/shall.component.spec.ts",
+          "hash": "9958392946843871150",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/shall/src/lib/shall/shall.component.ts",
+          "hash": "11676583296078345324",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "desktop-page/shall/src/test-setup.ts",
           "hash": "12935735732682149507",
           "deps": [
             "npm:jest-preset-angular"
           ]
         },
         {
-          "file": "desktop-page/dashboard/tsconfig.json",
+          "file": "desktop-page/shall/tsconfig.json",
           "hash": "15487755565970508470"
         },
         {
-          "file": "desktop-page/dashboard/tsconfig.lib.json",
+          "file": "desktop-page/shall/tsconfig.lib.json",
           "hash": "5796668385415907511"
         },
         {
-          "file": "desktop-page/dashboard/tsconfig.spec.json",
+          "file": "desktop-page/shall/tsconfig.spec.json",
           "hash": "2927375835638640771"
-        }
-      ],
-      "page-401": [
-        {
-          "file": "page-401/.eslintrc.json",
-          "hash": "13179335397355282534"
-        },
-        {
-          "file": "page-401/README.md",
-          "hash": "4787190493838082033"
-        },
-        {
-          "file": "page-401/jest.config.ts",
-          "hash": "491031037932208597"
-        },
-        {
-          "file": "page-401/project.json",
-          "hash": "5508963310502524486"
-        },
-        {
-          "file": "page-401/src/index.ts",
-          "hash": "16050477103364702815"
-        },
-        {
-          "file": "page-401/src/lib/page-401/index.ts",
-          "hash": "14037363085938103876"
-        },
-        {
-          "file": "page-401/src/lib/page-401/page-401-routing.module.ts",
-          "hash": "10963065799933359172",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "page-401/src/lib/page-401/page-401.module.ts",
-          "hash": "8558410942248718252",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "page-401/src/lib/page-401/page/page.component.html",
-          "hash": "14444319821233753525"
-        },
-        {
-          "file": "page-401/src/lib/page-401/page/page.component.scss",
-          "hash": "546689368371533098"
-        },
-        {
-          "file": "page-401/src/lib/page-401/page/page.component.ts",
-          "hash": "6724558817912590753",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "page-401/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "page-401/tsconfig.json",
-          "hash": "4881022640630122902"
-        },
-        {
-          "file": "page-401/tsconfig.lib.json",
-          "hash": "4766185256741444917"
-        },
-        {
-          "file": "page-401/tsconfig.spec.json",
-          "hash": "2129196202529263968"
-        }
-      ],
-      "sale": [
-        {
-          "file": "desktop-page/sale/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "desktop-page/sale/README.md",
-          "hash": "15088715706601879732"
-        },
-        {
-          "file": "desktop-page/sale/jest.config.ts",
-          "hash": "981013926101950286"
-        },
-        {
-          "file": "desktop-page/sale/project.json",
-          "hash": "13164248024371778200"
-        },
-        {
-          "file": "desktop-page/sale/src/index.ts",
-          "hash": "5107300821701742070"
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/index.ts",
-          "hash": "4284839470747344006"
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/sale-routing.module.ts",
-          "hash": "3765868258428862833",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/sale.component.html",
-          "hash": "8176643835257164536"
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/sale.component.scss",
-          "hash": "13412862896713902490"
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/sale.component.ts",
-          "hash": "13027345849767612109",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/sale.module.ts",
-          "hash": "16182898185708760623",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/material"
-          ]
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/shared/components/toolbar/toolbar.component.html",
-          "hash": "9963774639886360172"
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/shared/components/toolbar/toolbar.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/sale/src/lib/sale/shared/components/toolbar/toolbar.component.ts",
-          "hash": "5177320246124553185",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/sale/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/sale/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/sale/tsconfig.lib.json",
-          "hash": "5796668385415907511"
-        },
-        {
-          "file": "desktop-page/sale/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "login": [
-        {
-          "file": "desktop-page/login/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "desktop-page/login/README.md",
-          "hash": "4687560939830118400"
-        },
-        {
-          "file": "desktop-page/login/jest.config.ts",
-          "hash": "11751231301273746891"
-        },
-        {
-          "file": "desktop-page/login/project.json",
-          "hash": "10459402763052083508"
-        },
-        {
-          "file": "desktop-page/login/src/index.ts",
-          "hash": "7952461400697172163"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.component.html",
-          "hash": "7760582869407597470"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.component.scss",
-          "hash": "14713978809217953597"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.component.ts",
-          "hash": "6993980112681420647",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.module.ts",
-          "hash": "1493507927692430428",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/material",
-            "npm:@angular/router",
-            "ui"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.html",
-          "hash": "11480780168733651447"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.scss",
-          "hash": "2464484139908854198"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.ts",
-          "hash": "2616738294427371562",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@angular/material",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.html",
-          "hash": "11322519715006088902"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.scss",
-          "hash": "6087259777045198695"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.ts",
-          "hash": "13405797918981531176",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@angular/material",
-            "npm:@angular/router",
-            "npm:ngx-mask"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/login/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/login/tsconfig.lib.json",
-          "hash": "5796668385415907511"
-        },
-        {
-          "file": "desktop-page/login/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "main": [
-        {
-          "file": "desktop-page/main/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "desktop-page/main/README.md",
-          "hash": "4614061588645657124"
-        },
-        {
-          "file": "desktop-page/main/jest.config.ts",
-          "hash": "10447283107311862346"
-        },
-        {
-          "file": "desktop-page/main/project.json",
-          "hash": "14740576290403522375"
-        },
-        {
-          "file": "desktop-page/main/src/index.ts",
-          "hash": "12184461800867837432"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/common/pipe/date-passed.pipe.ts",
-          "hash": "5082405011570016684",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/common/utils/search-position.ts",
-          "hash": "7748638205973657628"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.component.css",
-          "hash": "15143031331715572813"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.component.css.map",
-          "hash": "6901165734572100369"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.component.html",
-          "hash": "6246679383750120452"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.component.scss",
-          "hash": "14281940642582349146"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.component.spec.ts",
-          "hash": "14902487260979865389",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.component.ts",
-          "hash": "9578404796416038488",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.constants.ts",
-          "hash": "18293655928062657367"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.enums.ts",
-          "hash": "17133991831981402623"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.module.ts",
-          "hash": "13368484967057592391",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@angular/cdk",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/entry.types.ts",
-          "hash": "15886576700122754363",
-          "deps": [
-            "npm:@taiga-ui/addon-table"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.css",
-          "hash": "537244371255776617"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.css.map",
-          "hash": "13035569475074907819"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.html",
-          "hash": "7366869931739146711"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.scss",
-          "hash": "6015921814688076602"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.spec.ts",
-          "hash": "7723682215948533175",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.ts",
-          "hash": "2700610666778056926",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/idea/idea.types.ts",
-          "hash": "10538330269463596222"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/table/color.pipe.ts",
-          "hash": "11402773711098321247",
-          "deps": [
-            "npm:@angular/core",
-            "npm:d3-scale",
-            "npm:d3-color"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/table/table.component.html",
-          "hash": "1638008643510890184"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/table/table.component.scss",
-          "hash": "13761865144356775573"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/table/table.component.spec.ts",
-          "hash": "10857045527704817970",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/entry/table/table.component.ts",
-          "hash": "16600966448493933848",
-          "deps": [
-            "npm:@taiga-ui/addon-table",
-            "npm:@angular/cdk",
-            "npm:@angular/common",
-            "npm:@angular/core",
-            "npm:@taiga-ui/core",
-            "npm:rxjs",
-            "ui"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.component.css",
-          "hash": "9112813511554861601"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.component.css.map",
-          "hash": "18431209331228588575"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.component.html",
-          "hash": "2619627450083389097"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.component.scss",
-          "hash": "14727801599072630783"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.component.spec.ts",
-          "hash": "8520823663430953480",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.component.ts",
-          "hash": "13575533961185163245",
-          "deps": [
-            "npm:@angular/common",
-            "npm:@angular/core",
-            "npm:rxjs",
-            "npm:@taiga-ui/core",
-            "ui-common",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.constants.ts",
-          "hash": "3098415530928961318"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.service.ts",
-          "hash": "9620909704269989949",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/main.utils.ts",
-          "hash": "11393450889205527992"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.css",
-          "hash": "537244371255776617"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.css.map",
-          "hash": "13035569475074907819"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.html",
-          "hash": "5755059154739114244"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.scss",
-          "hash": "6015921814688076602"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.spec.ts",
-          "hash": "7723682215948533175",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.ts",
-          "hash": "276488989971695075",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/idea/idea.types.ts",
-          "hash": "18337069047823733599"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.component.css",
-          "hash": "4897421929080810124"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.component.css.map",
-          "hash": "2836173411047275664"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.component.html",
-          "hash": "5982219903401191212"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.component.scss",
-          "hash": "14360404117630767796"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.component.spec.ts",
-          "hash": "12155982023908553637",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.component.ts",
-          "hash": "16521307249197728048",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.constants.ts",
-          "hash": "4732052693329833094"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.enums.ts",
-          "hash": "8884567589803485454"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/out.types.ts",
-          "hash": "17860697601281739670",
-          "deps": [
-            "npm:@taiga-ui/addon-table"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/table/color.pipe.ts",
-          "hash": "15642770611785848396",
-          "deps": [
-            "npm:@angular/core",
-            "npm:d3-scale",
-            "npm:d3-color"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/table/table.component.html",
-          "hash": "528539610798957098"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/table/table.component.scss",
-          "hash": "12691102835249345529"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/table/table.component.spec.ts",
-          "hash": "10857045527704817970",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/out/table/table.component.ts",
-          "hash": "10442127377632398185",
-          "deps": [
-            "npm:@taiga-ui/addon-table",
-            "npm:@angular/core",
-            "npm:@angular/cdk",
-            "npm:@taiga-ui/core",
-            "npm:@angular/common",
-            "npm:rxjs",
-            "ui"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.html",
-          "hash": "12318468486650849792"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.scss",
-          "hash": "6139851310689789916"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.spec.ts",
-          "hash": "9307325227151736827",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.ts",
-          "hash": "4355250066913097753",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/dialog/index.ts",
-          "hash": "13556040544322550329"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.html",
-          "hash": "3441542181878274662"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.scss",
-          "hash": "17659667045173945829"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.spec.ts",
-          "hash": "11386096690717949278",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.ts",
-          "hash": "3670374299880443265",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.types.ts",
-          "hash": "16548369399020566630"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/form-input/index.ts",
-          "hash": "7833459235121186719"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/item/index.ts",
-          "hash": "13750098191497282949"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/item/item.component.html",
-          "hash": "11276105877545240770"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/item/item.component.ts",
-          "hash": "8043029953933801026",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/list/index.ts",
-          "hash": "6616800294341127205"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/list/list.component.css",
-          "hash": "12962247022918181805"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/list/list.component.css.map",
-          "hash": "3103747530708924366"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/list/list.component.html",
-          "hash": "3508848643787519925"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/list/list.component.scss",
-          "hash": "14958054256146166921"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/list/list.component.ts",
-          "hash": "4125676200656918663",
-          "deps": [
-            "npm:@taiga-ui/addon-table",
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@angular/cdk",
-            "npm:@angular/common",
-            "npm:rxjs",
-            "npm:@taiga-ui/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/stock.component.css",
-          "hash": "18038903076864744957"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/stock.component.css.map",
-          "hash": "6709055597618486260"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/stock.component.html",
-          "hash": "13139627473142219741"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/stock.component.scss",
-          "hash": "5041586601806152981"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/stock.component.ts",
-          "hash": "9501993117992190540",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/cdk",
-            "npm:rxjs",
-            "npm:@taiga-ui/polymorpheus",
-            "ui",
-            "ui-common",
-            [
-              "ui-common",
-              "dynamic"
-            ]
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/stock.constant.ts",
-          "hash": "3123259102381395126"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/stock/stock.service.ts",
-          "hash": "5875997844635670920",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/toolbar-search/index.ts",
-          "hash": "3523690087866009167"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/toolbar-search/toolbar-search.component.html",
-          "hash": "8018792515844331135"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/toolbar-search/toolbar-search.component.scss",
-          "hash": "3613132802094968424"
-        },
-        {
-          "file": "desktop-page/main/src/lib/main/toolbar-search/toolbar-search.component.ts",
-          "hash": "1356395703546486003",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@angular/core",
-            "npm:rxjs",
-            "npm:@angular/common",
-            "ui",
-            "ui-common"
-          ]
-        },
-        {
-          "file": "desktop-page/main/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/main/tsconfig.editor.json",
-          "hash": "1055794200401717100"
-        },
-        {
-          "file": "desktop-page/main/tsconfig.json",
-          "hash": "14497592296276664655"
-        },
-        {
-          "file": "desktop-page/main/tsconfig.lib.json",
-          "hash": "1557657743604328370"
-        },
-        {
-          "file": "desktop-page/main/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "registration": [
-        {
-          "file": "desktop-page/registration/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "desktop-page/registration/README.md",
-          "hash": "3716625526328470897"
-        },
-        {
-          "file": "desktop-page/registration/jest.config.ts",
-          "hash": "14760237983411174043"
-        },
-        {
-          "file": "desktop-page/registration/project.json",
-          "hash": "14008188004727362359"
-        },
-        {
-          "file": "desktop-page/registration/src/index.ts",
-          "hash": "17871950768768837336"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/index.ts",
-          "hash": "8649438111259049237"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration-routing.module.ts",
-          "hash": "14835946205869504272",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.component.html",
-          "hash": "11612646316008952149"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.component.scss",
-          "hash": "7338960139972381774"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.component.ts",
-          "hash": "54774572821290340",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.module.ts",
-          "hash": "10200530365267822893",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/registration/tsconfig.lib.json",
-          "hash": "5796668385415907511"
-        },
-        {
-          "file": "desktop-page/registration/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "ui-common": [
-        {
-          "file": "ui-common/.eslintrc.json",
-          "hash": "10757071654933456057"
-        },
-        {
-          "file": "ui-common/README.md",
-          "hash": "5816055938019890372"
-        },
-        {
-          "file": "ui-common/jest.config.ts",
-          "hash": "2664794947007966611"
-        },
-        {
-          "file": "ui-common/project.json",
-          "hash": "15080497402530908895"
-        },
-        {
-          "file": "ui-common/src/index.ts",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.html",
-          "hash": "18301338088019648186"
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.scss",
-          "hash": "16492863302078358550"
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.spec.ts",
-          "hash": "3024323876436833465",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.ts",
-          "hash": "16265706731435330079",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "ui"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/index.ts",
-          "hash": "13659396345628661871"
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.html",
-          "hash": "6528905929005432552"
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.scss",
-          "hash": "11627025729105634011"
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.spec.ts",
-          "hash": "11723183580131596825",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.ts",
-          "hash": "13942091061815998822",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:rxjs",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "ui",
-            "npm:highcharts"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.constants.ts",
-          "hash": "3698868381136879165"
-        },
-        {
-          "file": "ui-common/src/lib/chart/index.ts",
-          "hash": "9406689297810529802"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/index.ts",
-          "hash": "5745511280332774025"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.html",
-          "hash": "7173725620768371719"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.scss",
-          "hash": "1990136345915956056"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.spec.ts",
-          "hash": "9087512765393713942",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.ts",
-          "hash": "12668548699999998227",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.html",
-          "hash": "5269999913805328798"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.scss",
-          "hash": "6989279386178872289"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.spec.ts",
-          "hash": "2278514590815772323",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.ts",
-          "hash": "16124748344002642865",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/index.ts",
-          "hash": "1686567866560726447"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/index.ts",
-          "hash": "5349029330638346466"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.html",
-          "hash": "8462682956881720527"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.scss",
-          "hash": "15839349938139019398"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.spec.ts",
-          "hash": "6139567703309547518",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.ts",
-          "hash": "4098540274762664368",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:rxjs",
-            "npm:@angular/common",
-            "ui"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.directive.ts",
-          "hash": "7269629609324237172",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "ui"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/index.ts",
-          "hash": "6953974381309696337"
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.html",
-          "hash": "7533169075811219554"
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.scss",
-          "hash": "17659667045173945829"
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.spec.ts",
-          "hash": "7088917497444896382",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.ts",
-          "hash": "14859128882057295655",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.types.ts",
-          "hash": "9799676994095510131"
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.html",
-          "hash": "17474790633429942875"
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.scss",
-          "hash": "4033421804863297901"
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.spec.ts",
-          "hash": "17629693822150111963",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.ts",
-          "hash": "17300817190926797045",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/cdk",
-            "ui",
-            "npm:rxjs",
-            "npm:@taiga-ui/polymorpheus"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/index.ts",
-          "hash": "12006756909037497301"
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.html",
-          "hash": "2920839672885795725"
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.scss",
-          "hash": "2123470966219968611"
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.spec.ts",
-          "hash": "5468812668842304990",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.ts",
-          "hash": "15104903864690253042",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/common",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/tabs/index.ts",
-          "hash": "8608207449962467909"
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.html",
-          "hash": "1632066864779346266"
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.scss",
-          "hash": "8486763067119016048"
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.spec.ts",
-          "hash": "9006161805572515304",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.ts",
-          "hash": "8715903411620468751",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/kit",
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "ui-common/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "ui-common/tsconfig.json",
-          "hash": "4881022640630122902"
-        },
-        {
-          "file": "ui-common/tsconfig.lib.json",
-          "hash": "6705096346873024967"
-        },
-        {
-          "file": "ui-common/tsconfig.spec.json",
-          "hash": "17181539404635497500"
         }
       ],
       "ui": [
         {
           "file": "ui/.eslintrc.json",
-          "hash": "2465364339696821534"
+          "hash": "3153815012633646403"
         },
         {
           "file": "ui/README.md",
@@ -1989,7 +743,7 @@
         },
         {
           "file": "ui/project.json",
-          "hash": "10627446861972137153"
+          "hash": "11996983685232892538"
         },
         {
           "file": "ui/src/index.ts",
@@ -2194,8 +948,36 @@
           "hash": "18438424571696725578"
         },
         {
+          "file": "ui/src/lib/ui/icon-ticker/icon-ticker.component.html",
+          "hash": "9820122295648313548"
+        },
+        {
+          "file": "ui/src/lib/ui/icon-ticker/icon-ticker.component.scss",
+          "hash": "4698116686174925549"
+        },
+        {
+          "file": "ui/src/lib/ui/icon-ticker/icon-ticker.component.spec.ts",
+          "hash": "6569097925053891006",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui/src/lib/ui/icon-ticker/icon-ticker.component.ts",
+          "hash": "1004163045583678717",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/core"
+          ]
+        },
+        {
+          "file": "ui/src/lib/ui/icon-ticker/index.ts",
+          "hash": "2223582466190289835"
+        },
+        {
           "file": "ui/src/lib/ui/index.ts",
-          "hash": "11410478070799999741"
+          "hash": "17442970327410741435"
         },
         {
           "file": "ui/src/lib/ui/list/header/header.component.html",
@@ -2448,700 +1230,81 @@
           "hash": "2129196202529263968"
         }
       ],
-      "portfolio": [
+      "dashboard": [
         {
-          "file": "desktop-page/portfolio/.eslintrc.json",
-          "hash": "15565797867970708751"
-        },
-        {
-          "file": "desktop-page/portfolio/README.md",
-          "hash": "15164439612651713485"
-        },
-        {
-          "file": "desktop-page/portfolio/jest.config.ts",
-          "hash": "6548967508801254571"
-        },
-        {
-          "file": "desktop-page/portfolio/project.json",
-          "hash": "13947776939399899100"
-        },
-        {
-          "file": "desktop-page/portfolio/src/index.ts",
-          "hash": "5695913695333002437"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.html",
-          "hash": "17668621477435990207"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.scss",
-          "hash": "6854383675048879791"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.spec.ts",
-          "hash": "394640705265265323",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.ts",
-          "hash": "15435186271309657070",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/constants.ts",
-          "hash": "17851499191056716013"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.html",
-          "hash": "1045061286215655723"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.scss",
-          "hash": "373560739814049085"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.spec.ts",
-          "hash": "4449481562109801258",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.ts",
-          "hash": "13011762258304236450",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@angular/common",
-            "npm:@taiga-ui/legacy",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.constants.ts",
-          "hash": "3994462898704849946"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/index.ts",
-          "hash": "11993383390609802902"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.html",
-          "hash": "5424871415402899146"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.scss",
-          "hash": "16009406095804559645"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.spec.ts",
-          "hash": "7237780120822297618",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.ts",
-          "hash": "9431612947204505342",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "ui"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.html",
-          "hash": "17086383566183572996"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.scss",
-          "hash": "2174911502338065361"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.spec.ts",
-          "hash": "10857045527704817970",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.ts",
-          "hash": "437968462276785497",
-          "deps": [
-            "npm:@taiga-ui/addon-table",
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/cdk",
-            "npm:@taiga-ui/core",
-            "ui",
-            "npm:rxjs",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/forms",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.constants.ts",
-          "hash": "7973938665348995957"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.types.ts",
-          "hash": "16577103726916449230"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.html",
-          "hash": "6202038310777997558"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.spec.ts",
-          "hash": "16158832826221031004",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.ts",
-          "hash": "3762329277046874254",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk",
-            "npm:rxjs",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/filter.component.html",
-          "hash": "13612389680026567804"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/filter.component.scss",
-          "hash": "9369957091298028850"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/filter.component.spec.ts",
-          "hash": "8825613848126566552",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/filter.component.ts",
-          "hash": "150408039407811515",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/core",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "ui-common"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/filter.constants.ts",
-          "hash": "4644953657310509677"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/filter/index.ts",
-          "hash": "16215751783000700043"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/layout/index.ts",
-          "hash": "1064132104000310455"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/layout/layout.component.html",
-          "hash": "4924752221338577964"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/layout/layout.component.scss",
-          "hash": "2591472109424663074"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/layout/layout.component.spec.ts",
-          "hash": "6425803281489670887",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/layout/layout.component.ts",
-          "hash": "12904062208188969180",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/core",
-            "npm:rxjs",
-            "ui-common"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.html",
-          "hash": "1753494583012606579"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.scss",
-          "hash": "17923373301485075377"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.spec.ts",
-          "hash": "1956527030056217208",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.ts",
-          "hash": "16156316213780465871",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "ui",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:rxjs",
-            "desktop-data",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.html",
-          "hash": "10299992312233827891"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.scss",
-          "hash": "6957807629502438747"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.spec.ts",
-          "hash": "8708539916996580386",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.ts",
-          "hash": "7759071285715716750",
-          "deps": [
-            "npm:@angular/core",
-            "npm:rxjs",
-            "npm:@angular/router",
-            "ui",
-            "npm:d3",
-            "npm:d3-array",
-            "npm:d3-scale",
-            "npm:@angular/common",
-            "npm:@taiga-ui/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.html",
-          "hash": "5781506462194536786"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.scss",
-          "hash": "13170210209467368733"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.spec.ts",
-          "hash": "16545887001638602343",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.ts",
-          "hash": "8343894091359617828",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "ui-common",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/router",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.html",
-          "hash": "14902423307874568199"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.scss",
-          "hash": "3339564131356256728"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.spec.ts",
-          "hash": "7485062053320760102",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.ts",
-          "hash": "10353529027019511182",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "desktop-data",
-            "npm:@taiga-ui/legacy",
-            "npm:rxjs",
-            "ui",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@angular/router",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.html",
-          "hash": "13818081008429480826"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.scss",
-          "hash": "15595441055056921319"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.spec.ts",
-          "hash": "7156996339840445541",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.ts",
-          "hash": "13094683959640090410",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:rxjs",
-            "ui-common",
-            "desktop-data",
-            "npm:@angular/router",
-            "ui",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.html",
-          "hash": "9707424322432065937"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.scss",
-          "hash": "5970218521058525323"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.spec.ts",
-          "hash": "3569391266747269491",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.ts",
-          "hash": "11687989843447348991",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/forms",
-            "ui-common",
-            "npm:@taiga-ui/core",
-            "npm:rxjs",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog.scss",
-          "hash": "16535922214761407101"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog.ts",
-          "hash": "18298091259318565312",
-          "deps": [
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/index.ts",
-          "hash": "8060981354395425191"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.html",
-          "hash": "15885541184084947092"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.scss",
-          "hash": "7411297897853036399"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.spec.ts",
-          "hash": "9621529937389201804",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.ts",
-          "hash": "12472674758515962699",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/core",
-            "npm:@angular/common",
-            "ui",
-            "npm:rxjs",
-            "npm:@angular/router",
-            "npm:@taiga-ui/polymorpheus"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.constants.ts",
-          "hash": "10860764140834328292"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.types.ts",
-          "hash": "1570355172005411366"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/utils.ts",
-          "hash": "12787714194444881942",
-          "deps": [
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.html",
-          "hash": "5570288902264307055"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.scss",
-          "hash": "15595441055056921319"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.spec.ts",
-          "hash": "5090063032538830959",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.ts",
-          "hash": "12470792302811304912",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "ui-common",
-            "npm:@angular/forms",
-            "ui",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/core",
-            "desktop-data",
-            "npm:rxjs",
-            "npm:@angular/router",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/profit/index.ts",
-          "hash": "4509903449269460903"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/profit/profit.component.html",
-          "hash": "8884781514232227621"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/profit/profit.component.scss",
-          "hash": "1382677154512269008"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/profit/profit.component.spec.ts",
-          "hash": "18067700022902977235",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/profit/profit.component.ts",
-          "hash": "14955776729215713938",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@taiga-ui/addon-charts",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/kit",
-            "npm:@angular/forms",
-            "ui",
-            "npm:@angular/common",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/profit/profit.constants.ts",
-          "hash": "11218202026097395080"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/profit/profit.types.ts",
-          "hash": "606932839256735145"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/structure/index.ts",
-          "hash": "11830328254898461518"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/structure/structure.component.html",
-          "hash": "17709970873910281850"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/structure/structure.component.scss",
-          "hash": "6648149232571464748"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/structure/structure.component.spec.ts",
-          "hash": "3484799133669976760",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/structure/structure.component.ts",
-          "hash": "11476095730644994753",
-          "deps": [
-            "npm:@taiga-ui/addon-charts",
-            "npm:@taiga-ui/kit",
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:d3-scale",
-            "npm:@taiga-ui/core",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "ui",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/structure/structure.constants.ts",
-          "hash": "9474922885265702971"
-        },
-        {
-          "file": "desktop-page/portfolio/src/lib/structure/structure.pipe.ts",
-          "hash": "13400300259364323687",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/portfolio/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/portfolio/tsconfig.lib.json",
-          "hash": "6118786724257570734"
-        },
-        {
-          "file": "desktop-page/portfolio/tsconfig.spec.json",
-          "hash": "2628739785099261941"
-        }
-      ],
-      "shall": [
-        {
-          "file": "desktop-page/shall/.eslintrc.json",
+          "file": "desktop-page/dashboard/.eslintrc.json",
           "hash": "9628345067573567197"
         },
         {
-          "file": "desktop-page/shall/README.md",
-          "hash": "2908662979967205114"
+          "file": "desktop-page/dashboard/README.md",
+          "hash": "13979165953912037690"
         },
         {
-          "file": "desktop-page/shall/jest.config.ts",
-          "hash": "16266925096625252383"
+          "file": "desktop-page/dashboard/jest.config.ts",
+          "hash": "17992068442936652086"
         },
         {
-          "file": "desktop-page/shall/project.json",
-          "hash": "12563626443727848008"
+          "file": "desktop-page/dashboard/project.json",
+          "hash": "11124908732920750148"
         },
         {
-          "file": "desktop-page/shall/src/index.ts",
-          "hash": "6936664725505316092"
+          "file": "desktop-page/dashboard/src/index.ts",
+          "hash": "13016798126781182746"
         },
         {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.css",
-          "hash": "3244421341483603138"
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard-routing.module.ts",
+          "hash": "15974981277344683695",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
         },
         {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.html",
-          "hash": "16297046413830794483"
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.html",
+          "hash": "11747888495317311879"
         },
         {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.spec.ts",
-          "hash": "9958392946843871150",
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.scss",
+          "hash": "7177682918352506687"
+        },
+        {
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.ts",
+          "hash": "15221486546709904261",
           "deps": [
             "npm:@angular/core"
           ]
         },
         {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.ts",
-          "hash": "11676583296078345324",
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.module.ts",
+          "hash": "12356825633996217690",
           "deps": [
+            "npm:@angular/common",
             "npm:@angular/core",
-            "npm:@angular/common"
+            "desktop"
           ]
         },
         {
-          "file": "desktop-page/shall/src/test-setup.ts",
+          "file": "desktop-page/dashboard/src/lib/dashboard/shared/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/dashboard/src/test-setup.ts",
           "hash": "12935735732682149507",
           "deps": [
             "npm:jest-preset-angular"
           ]
         },
         {
-          "file": "desktop-page/shall/tsconfig.json",
+          "file": "desktop-page/dashboard/tsconfig.json",
           "hash": "15487755565970508470"
         },
         {
-          "file": "desktop-page/shall/tsconfig.lib.json",
+          "file": "desktop-page/dashboard/tsconfig.lib.json",
           "hash": "5796668385415907511"
         },
         {
-          "file": "desktop-page/shall/tsconfig.spec.json",
+          "file": "desktop-page/dashboard/tsconfig.spec.json",
           "hash": "2927375835638640771"
         }
       ],
@@ -3729,7 +1892,7 @@
         },
         {
           "file": "api/desktop-data/src/lib/desktop-data/desktop.abstract.service.ts",
-          "hash": "6273091613243764519",
+          "hash": "932511002537369916",
           "deps": [
             "npm:rxjs",
             "npm:@angular/router"
@@ -3737,7 +1900,7 @@
         },
         {
           "file": "api/desktop-data/src/lib/desktop-data/desktop.api.service.ts",
-          "hash": "10268053237653572246",
+          "hash": "17465639132618850039",
           "deps": [
             "npm:@angular/common",
             "npm:@angular/core",
@@ -3767,6 +1930,84 @@
         {
           "file": "api/desktop-data/tsconfig.spec.json",
           "hash": "2927375835638640771"
+        }
+      ],
+      "page-401": [
+        {
+          "file": "page-401/.eslintrc.json",
+          "hash": "13179335397355282534"
+        },
+        {
+          "file": "page-401/README.md",
+          "hash": "4787190493838082033"
+        },
+        {
+          "file": "page-401/jest.config.ts",
+          "hash": "491031037932208597"
+        },
+        {
+          "file": "page-401/project.json",
+          "hash": "5508963310502524486"
+        },
+        {
+          "file": "page-401/src/index.ts",
+          "hash": "16050477103364702815"
+        },
+        {
+          "file": "page-401/src/lib/page-401/index.ts",
+          "hash": "14037363085938103876"
+        },
+        {
+          "file": "page-401/src/lib/page-401/page-401-routing.module.ts",
+          "hash": "10963065799933359172",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "page-401/src/lib/page-401/page-401.module.ts",
+          "hash": "8558410942248718252",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "page-401/src/lib/page-401/page/page.component.html",
+          "hash": "14444319821233753525"
+        },
+        {
+          "file": "page-401/src/lib/page-401/page/page.component.scss",
+          "hash": "546689368371533098"
+        },
+        {
+          "file": "page-401/src/lib/page-401/page/page.component.ts",
+          "hash": "6724558817912590753",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "page-401/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "page-401/tsconfig.json",
+          "hash": "4881022640630122902"
+        },
+        {
+          "file": "page-401/tsconfig.lib.json",
+          "hash": "4766185256741444917"
+        },
+        {
+          "file": "page-401/tsconfig.spec.json",
+          "hash": "2129196202529263968"
         }
       ],
       "desktop": [
@@ -31083,81 +29324,1705 @@
           "hash": "2927375835638640771"
         }
       ],
-      "page-404": [
+      "portfolio": [
         {
-          "file": "page-404/.eslintrc.json",
-          "hash": "13179335397355282534"
+          "file": "desktop-page/portfolio/.eslintrc.json",
+          "hash": "15565797867970708751"
         },
         {
-          "file": "page-404/README.md",
-          "hash": "17942793518392976538"
+          "file": "desktop-page/portfolio/README.md",
+          "hash": "15164439612651713485"
         },
         {
-          "file": "page-404/jest.config.ts",
-          "hash": "7541574667304820180"
+          "file": "desktop-page/portfolio/jest.config.ts",
+          "hash": "6548967508801254571"
         },
         {
-          "file": "page-404/project.json",
-          "hash": "12699096764956940756"
+          "file": "desktop-page/portfolio/project.json",
+          "hash": "13947776939399899100"
         },
         {
-          "file": "page-404/src/index.ts",
-          "hash": "15945492212031282274"
+          "file": "desktop-page/portfolio/src/index.ts",
+          "hash": "5695913695333002437"
         },
         {
-          "file": "page-404/src/lib/page-404/index.ts",
-          "hash": "13789432557938518705"
+          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.html",
+          "hash": "17668621477435990207"
         },
         {
-          "file": "page-404/src/lib/page-404/page-404-routing.module.ts",
-          "hash": "3880808887301265761",
+          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.scss",
+          "hash": "6854383675048879791"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.spec.ts",
+          "hash": "394640705265265323",
           "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
+            "npm:@angular/core"
           ]
         },
         {
-          "file": "page-404/src/lib/page-404/page-404.module.ts",
-          "hash": "4124055266822575954",
+          "file": "desktop-page/portfolio/src/lib/closed-deals/closed-deals.component.ts",
+          "hash": "15435186271309657070",
           "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/constants.ts",
+          "hash": "17851499191056716013"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.html",
+          "hash": "1045061286215655723"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.scss",
+          "hash": "373560739814049085"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.spec.ts",
+          "hash": "4449481562109801258",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.component.ts",
+          "hash": "13011762258304236450",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/common",
+            "npm:@taiga-ui/legacy",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/filter/filter.constants.ts",
+          "hash": "3994462898704849946"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/index.ts",
+          "hash": "11993383390609802902"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.html",
+          "hash": "5424871415402899146"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.scss",
+          "hash": "16009406095804559645"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.spec.ts",
+          "hash": "7237780120822297618",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/list/list.component.ts",
+          "hash": "9431612947204505342",
+          "deps": [
+            "npm:@taiga-ui/core",
             "npm:@angular/core",
             "npm:@angular/common",
             "ui"
           ]
         },
         {
-          "file": "page-404/src/lib/page-404/page/page.component.html",
-          "hash": "4567789133421593887"
+          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.html",
+          "hash": "17086383566183572996"
         },
         {
-          "file": "page-404/src/lib/page-404/page/page.component.scss",
-          "hash": "8854893831102484630"
+          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.scss",
+          "hash": "2174911502338065361"
         },
         {
-          "file": "page-404/src/lib/page-404/page/page.component.ts",
-          "hash": "5869778260026747431",
+          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.spec.ts",
+          "hash": "10857045527704817970",
           "deps": [
             "npm:@angular/core"
           ]
         },
         {
-          "file": "page-404/src/test-setup.ts",
+          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.component.ts",
+          "hash": "437968462276785497",
+          "deps": [
+            "npm:@taiga-ui/addon-table",
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/cdk",
+            "npm:@taiga-ui/core",
+            "ui",
+            "npm:rxjs",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/forms",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.constants.ts",
+          "hash": "7973938665348995957"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/closed-deals/table/table.types.ts",
+          "hash": "16577103726916449230"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.html",
+          "hash": "6202038310777997558"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.spec.ts",
+          "hash": "16158832826221031004",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/chip/chip.component.ts",
+          "hash": "3762329277046874254",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk",
+            "npm:rxjs",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/filter.component.html",
+          "hash": "13612389680026567804"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/filter.component.scss",
+          "hash": "9369957091298028850"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/filter.component.spec.ts",
+          "hash": "8825613848126566552",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/filter.component.ts",
+          "hash": "150408039407811515",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/core",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "ui-common"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/filter.constants.ts",
+          "hash": "4644953657310509677"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/filter/index.ts",
+          "hash": "16215751783000700043"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/layout/index.ts",
+          "hash": "1064132104000310455"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/layout/layout.component.html",
+          "hash": "4924752221338577964"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/layout/layout.component.scss",
+          "hash": "2591472109424663074"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/layout/layout.component.spec.ts",
+          "hash": "6425803281489670887",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/layout/layout.component.ts",
+          "hash": "12904062208188969180",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/core",
+            "npm:rxjs",
+            "ui-common"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.html",
+          "hash": "1753494583012606579"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.scss",
+          "hash": "17923373301485075377"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.spec.ts",
+          "hash": "1956527030056217208",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/balance/balance.component.ts",
+          "hash": "16156316213780465871",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "ui",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:rxjs",
+            "desktop-data",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.html",
+          "hash": "10299992312233827891"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.scss",
+          "hash": "6957807629502438747"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.spec.ts",
+          "hash": "8708539916996580386",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/chart/chart.component.ts",
+          "hash": "7759071285715716750",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs",
+            "npm:@angular/router",
+            "ui",
+            "npm:d3",
+            "npm:d3-array",
+            "npm:d3-scale",
+            "npm:@angular/common",
+            "npm:@taiga-ui/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.html",
+          "hash": "5781506462194536786"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.scss",
+          "hash": "13170210209467368733"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.spec.ts",
+          "hash": "16545887001638602343",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/add/add.component.ts",
+          "hash": "8343894091359617828",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "ui-common",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/router",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.html",
+          "hash": "14902423307874568199"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.scss",
+          "hash": "3339564131356256728"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.spec.ts",
+          "hash": "7485062053320760102",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.ts",
+          "hash": "10353529027019511182",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "desktop-data",
+            "npm:@taiga-ui/legacy",
+            "npm:rxjs",
+            "ui",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@angular/router",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.html",
+          "hash": "13818081008429480826"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.scss",
+          "hash": "15595441055056921319"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.spec.ts",
+          "hash": "7156996339840445541",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/deposit/deposit.component.ts",
+          "hash": "13094683959640090410",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:rxjs",
+            "ui-common",
+            "desktop-data",
+            "npm:@angular/router",
+            "ui",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.html",
+          "hash": "9707424322432065937"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.scss",
+          "hash": "5970218521058525323"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.spec.ts",
+          "hash": "3569391266747269491",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog-filter/dialog-filter.component.ts",
+          "hash": "11687989843447348991",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/forms",
+            "ui-common",
+            "npm:@taiga-ui/core",
+            "npm:rxjs",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog.scss",
+          "hash": "16535922214761407101"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/dialog.ts",
+          "hash": "18298091259318565312",
+          "deps": [
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/index.ts",
+          "hash": "8060981354395425191"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.html",
+          "hash": "15885541184084947092"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.scss",
+          "hash": "7411297897853036399"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.spec.ts",
+          "hash": "9621529937389201804",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.component.ts",
+          "hash": "12472674758515962699",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/core",
+            "npm:@angular/common",
+            "ui",
+            "npm:rxjs",
+            "npm:@angular/router",
+            "npm:@taiga-ui/polymorpheus"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.constants.ts",
+          "hash": "10860764140834328292"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/portfolio-list.types.ts",
+          "hash": "1570355172005411366"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/utils.ts",
+          "hash": "12787714194444881942",
+          "deps": [
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.html",
+          "hash": "5570288902264307055"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.scss",
+          "hash": "15595441055056921319"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.spec.ts",
+          "hash": "5090063032538830959",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/portfolio-list/withdrawal/withdrawal.component.ts",
+          "hash": "12470792302811304912",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "ui-common",
+            "npm:@angular/forms",
+            "ui",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/core",
+            "desktop-data",
+            "npm:rxjs",
+            "npm:@angular/router",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/profit/index.ts",
+          "hash": "4509903449269460903"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/profit/profit.component.html",
+          "hash": "8884781514232227621"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/profit/profit.component.scss",
+          "hash": "1382677154512269008"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/profit/profit.component.spec.ts",
+          "hash": "18067700022902977235",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/profit/profit.component.ts",
+          "hash": "14955776729215713938",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@taiga-ui/addon-charts",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/kit",
+            "npm:@angular/forms",
+            "ui",
+            "npm:@angular/common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/profit/profit.constants.ts",
+          "hash": "11218202026097395080"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/profit/profit.types.ts",
+          "hash": "606932839256735145"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/structure/index.ts",
+          "hash": "11830328254898461518"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/structure/structure.component.html",
+          "hash": "17709970873910281850"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/structure/structure.component.scss",
+          "hash": "6648149232571464748"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/structure/structure.component.spec.ts",
+          "hash": "3484799133669976760",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/structure/structure.component.ts",
+          "hash": "11476095730644994753",
+          "deps": [
+            "npm:@taiga-ui/addon-charts",
+            "npm:@taiga-ui/kit",
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:d3-scale",
+            "npm:@taiga-ui/core",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "ui",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/structure/structure.constants.ts",
+          "hash": "9474922885265702971"
+        },
+        {
+          "file": "desktop-page/portfolio/src/lib/structure/structure.pipe.ts",
+          "hash": "13400300259364323687",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/portfolio/src/test-setup.ts",
           "hash": "12935735732682149507",
           "deps": [
             "npm:jest-preset-angular"
           ]
         },
         {
-          "file": "page-404/tsconfig.json",
+          "file": "desktop-page/portfolio/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/portfolio/tsconfig.lib.json",
+          "hash": "6118786724257570734"
+        },
+        {
+          "file": "desktop-page/portfolio/tsconfig.spec.json",
+          "hash": "2628739785099261941"
+        }
+      ],
+      "login": [
+        {
+          "file": "desktop-page/login/.eslintrc.json",
+          "hash": "9628345067573567197"
+        },
+        {
+          "file": "desktop-page/login/README.md",
+          "hash": "4687560939830118400"
+        },
+        {
+          "file": "desktop-page/login/jest.config.ts",
+          "hash": "11751231301273746891"
+        },
+        {
+          "file": "desktop-page/login/project.json",
+          "hash": "10459402763052083508"
+        },
+        {
+          "file": "desktop-page/login/src/index.ts",
+          "hash": "7952461400697172163"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.component.html",
+          "hash": "7760582869407597470"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.component.scss",
+          "hash": "14713978809217953597"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.component.ts",
+          "hash": "6993980112681420647",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.module.ts",
+          "hash": "1493507927692430428",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "ui"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.html",
+          "hash": "11480780168733651447"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.scss",
+          "hash": "2464484139908854198"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.ts",
+          "hash": "2616738294427371562",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.html",
+          "hash": "11322519715006088902"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.scss",
+          "hash": "6087259777045198695"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.ts",
+          "hash": "13405797918981531176",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "npm:ngx-mask"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/login/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/login/tsconfig.lib.json",
+          "hash": "5796668385415907511"
+        },
+        {
+          "file": "desktop-page/login/tsconfig.spec.json",
+          "hash": "2927375835638640771"
+        }
+      ],
+      "main": [
+        {
+          "file": "desktop-page/main/.eslintrc.json",
+          "hash": "9628345067573567197"
+        },
+        {
+          "file": "desktop-page/main/README.md",
+          "hash": "4614061588645657124"
+        },
+        {
+          "file": "desktop-page/main/jest.config.ts",
+          "hash": "10447283107311862346"
+        },
+        {
+          "file": "desktop-page/main/project.json",
+          "hash": "14740576290403522375"
+        },
+        {
+          "file": "desktop-page/main/src/index.ts",
+          "hash": "12184461800867837432"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/common/pipe/date-passed.pipe.ts",
+          "hash": "5082405011570016684",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/common/utils/search-position.ts",
+          "hash": "7748638205973657628"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.component.css",
+          "hash": "15143031331715572813"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.component.css.map",
+          "hash": "6901165734572100369"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.component.html",
+          "hash": "6246679383750120452"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.component.scss",
+          "hash": "14281940642582349146"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.component.spec.ts",
+          "hash": "14902487260979865389",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.component.ts",
+          "hash": "9578404796416038488",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.constants.ts",
+          "hash": "18293655928062657367"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.enums.ts",
+          "hash": "17133991831981402623"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.module.ts",
+          "hash": "13368484967057592391",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@angular/cdk",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/entry.types.ts",
+          "hash": "15886576700122754363",
+          "deps": [
+            "npm:@taiga-ui/addon-table"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.css",
+          "hash": "537244371255776617"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.css.map",
+          "hash": "13035569475074907819"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.html",
+          "hash": "7366869931739146711"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.scss",
+          "hash": "6015921814688076602"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.spec.ts",
+          "hash": "7723682215948533175",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/idea/idea.component.ts",
+          "hash": "2700610666778056926",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/idea/idea.types.ts",
+          "hash": "10538330269463596222"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/table/color.pipe.ts",
+          "hash": "11402773711098321247",
+          "deps": [
+            "npm:@angular/core",
+            "npm:d3-scale",
+            "npm:d3-color"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/table/table.component.html",
+          "hash": "1638008643510890184"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/table/table.component.scss",
+          "hash": "13761865144356775573"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/table/table.component.spec.ts",
+          "hash": "10857045527704817970",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/entry/table/table.component.ts",
+          "hash": "16600966448493933848",
+          "deps": [
+            "npm:@taiga-ui/addon-table",
+            "npm:@angular/cdk",
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@taiga-ui/core",
+            "npm:rxjs",
+            "ui"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.component.css",
+          "hash": "9112813511554861601"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.component.css.map",
+          "hash": "18431209331228588575"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.component.html",
+          "hash": "2619627450083389097"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.component.scss",
+          "hash": "14727801599072630783"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.component.spec.ts",
+          "hash": "8520823663430953480",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.component.ts",
+          "hash": "13575533961185163245",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs",
+            "npm:@taiga-ui/core",
+            "ui-common",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.constants.ts",
+          "hash": "3098415530928961318"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.service.ts",
+          "hash": "9620909704269989949",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/main.utils.ts",
+          "hash": "11393450889205527992"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.css",
+          "hash": "537244371255776617"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.css.map",
+          "hash": "13035569475074907819"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.html",
+          "hash": "5755059154739114244"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.scss",
+          "hash": "6015921814688076602"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.spec.ts",
+          "hash": "7723682215948533175",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/idea/idea.component.ts",
+          "hash": "276488989971695075",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/idea/idea.types.ts",
+          "hash": "18337069047823733599"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.component.css",
+          "hash": "4897421929080810124"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.component.css.map",
+          "hash": "2836173411047275664"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.component.html",
+          "hash": "5982219903401191212"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.component.scss",
+          "hash": "14360404117630767796"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.component.spec.ts",
+          "hash": "12155982023908553637",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.component.ts",
+          "hash": "16521307249197728048",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.constants.ts",
+          "hash": "4732052693329833094"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.enums.ts",
+          "hash": "8884567589803485454"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/out.types.ts",
+          "hash": "17860697601281739670",
+          "deps": [
+            "npm:@taiga-ui/addon-table"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/table/color.pipe.ts",
+          "hash": "15642770611785848396",
+          "deps": [
+            "npm:@angular/core",
+            "npm:d3-scale",
+            "npm:d3-color"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/table/table.component.html",
+          "hash": "528539610798957098"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/table/table.component.scss",
+          "hash": "12691102835249345529"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/table/table.component.spec.ts",
+          "hash": "10857045527704817970",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/out/table/table.component.ts",
+          "hash": "10442127377632398185",
+          "deps": [
+            "npm:@taiga-ui/addon-table",
+            "npm:@angular/core",
+            "npm:@angular/cdk",
+            "npm:@taiga-ui/core",
+            "npm:@angular/common",
+            "npm:rxjs",
+            "ui"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.html",
+          "hash": "12318468486650849792"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.scss",
+          "hash": "6139851310689789916"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.spec.ts",
+          "hash": "9307325227151736827",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/dialog/dialog.component.ts",
+          "hash": "4355250066913097753",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/dialog/index.ts",
+          "hash": "13556040544322550329"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.html",
+          "hash": "3441542181878274662"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.scss",
+          "hash": "17659667045173945829"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.spec.ts",
+          "hash": "11386096690717949278",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.component.ts",
+          "hash": "3670374299880443265",
+          "deps": [
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/form-input/form-input.types.ts",
+          "hash": "16548369399020566630"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/form-input/index.ts",
+          "hash": "7833459235121186719"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/item/index.ts",
+          "hash": "13750098191497282949"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/item/item.component.html",
+          "hash": "11276105877545240770"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/item/item.component.ts",
+          "hash": "8043029953933801026",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/list/index.ts",
+          "hash": "6616800294341127205"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/list/list.component.css",
+          "hash": "12962247022918181805"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/list/list.component.css.map",
+          "hash": "3103747530708924366"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/list/list.component.html",
+          "hash": "15063853041856183916"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/list/list.component.scss",
+          "hash": "14958054256146166921"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/list/list.component.ts",
+          "hash": "17086829357190698130",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/cdk",
+            "npm:@angular/common",
+            "npm:rxjs",
+            "npm:@taiga-ui/core",
+            "ui"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/stock.component.css",
+          "hash": "18038903076864744957"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/stock.component.css.map",
+          "hash": "6709055597618486260"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/stock.component.html",
+          "hash": "13139627473142219741"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/stock.component.scss",
+          "hash": "5041586601806152981"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/stock.component.ts",
+          "hash": "9501993117992190540",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/cdk",
+            "npm:rxjs",
+            "npm:@taiga-ui/polymorpheus",
+            "ui",
+            "ui-common",
+            [
+              "ui-common",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/stock.constant.ts",
+          "hash": "3123259102381395126"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/stock/stock.service.ts",
+          "hash": "5875997844635670920",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/toolbar-search/index.ts",
+          "hash": "3523690087866009167"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/toolbar-search/toolbar-search.component.html",
+          "hash": "8018792515844331135"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/toolbar-search/toolbar-search.component.scss",
+          "hash": "3613132802094968424"
+        },
+        {
+          "file": "desktop-page/main/src/lib/main/toolbar-search/toolbar-search.component.ts",
+          "hash": "1356395703546486003",
+          "deps": [
+            "npm:@taiga-ui/core",
+            "npm:@angular/core",
+            "npm:rxjs",
+            "npm:@angular/common",
+            "ui",
+            "ui-common"
+          ]
+        },
+        {
+          "file": "desktop-page/main/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/main/tsconfig.editor.json",
+          "hash": "1055794200401717100"
+        },
+        {
+          "file": "desktop-page/main/tsconfig.json",
+          "hash": "14497592296276664655"
+        },
+        {
+          "file": "desktop-page/main/tsconfig.lib.json",
+          "hash": "1557657743604328370"
+        },
+        {
+          "file": "desktop-page/main/tsconfig.spec.json",
+          "hash": "2927375835638640771"
+        }
+      ],
+      "ui-common": [
+        {
+          "file": "ui-common/.eslintrc.json",
+          "hash": "10757071654933456057"
+        },
+        {
+          "file": "ui-common/README.md",
+          "hash": "5816055938019890372"
+        },
+        {
+          "file": "ui-common/jest.config.ts",
+          "hash": "2664794947007966611"
+        },
+        {
+          "file": "ui-common/project.json",
+          "hash": "15080497402530908895"
+        },
+        {
+          "file": "ui-common/src/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.html",
+          "hash": "18301338088019648186"
+        },
+        {
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.scss",
+          "hash": "16492863302078358550"
+        },
+        {
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.spec.ts",
+          "hash": "3024323876436833465",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.ts",
+          "hash": "16265706731435330079",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "ui"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/button-with-list/index.ts",
+          "hash": "13659396345628661871"
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.html",
+          "hash": "6528905929005432552"
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.scss",
+          "hash": "11627025729105634011"
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.spec.ts",
+          "hash": "11723183580131596825",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.ts",
+          "hash": "13942091061815998822",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "ui",
+            "npm:highcharts"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.constants.ts",
+          "hash": "3698868381136879165"
+        },
+        {
+          "file": "ui-common/src/lib/chart/index.ts",
+          "hash": "9406689297810529802"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/index.ts",
+          "hash": "5745511280332774025"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.html",
+          "hash": "7173725620768371719"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.scss",
+          "hash": "1990136345915956056"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.spec.ts",
+          "hash": "9087512765393713942",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.ts",
+          "hash": "12668548699999998227",
+          "deps": [
+            "npm:@taiga-ui/core",
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.html",
+          "hash": "5269999913805328798"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.scss",
+          "hash": "6989279386178872289"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.spec.ts",
+          "hash": "2278514590815772323",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.ts",
+          "hash": "16124748344002642865",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-approve/index.ts",
+          "hash": "1686567866560726447"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/index.ts",
+          "hash": "5349029330638346466"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.html",
+          "hash": "11066341003770762483"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.scss",
+          "hash": "11067637295899466990"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.spec.ts",
+          "hash": "6139567703309547518",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.ts",
+          "hash": "15760146149270111014",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:rxjs",
+            "npm:@angular/common",
+            "ui",
+            "desktop-data",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.directive.ts",
+          "hash": "7269629609324237172",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "ui"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/index.ts",
+          "hash": "6953974381309696337"
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.html",
+          "hash": "7533169075811219554"
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.scss",
+          "hash": "17659667045173945829"
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.spec.ts",
+          "hash": "7088917497444896382",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.ts",
+          "hash": "14859128882057295655",
+          "deps": [
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.types.ts",
+          "hash": "9799676994095510131"
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.html",
+          "hash": "17474790633429942875"
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.scss",
+          "hash": "4033421804863297901"
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.spec.ts",
+          "hash": "17629693822150111963",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.ts",
+          "hash": "17300817190926797045",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/cdk",
+            "ui",
+            "npm:rxjs",
+            "npm:@taiga-ui/polymorpheus"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/index.ts",
+          "hash": "12006756909037497301"
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.html",
+          "hash": "2920839672885795725"
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.scss",
+          "hash": "2123470966219968611"
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.spec.ts",
+          "hash": "5468812668842304990",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.ts",
+          "hash": "6083532712583629186",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/common",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/tabs/index.ts",
+          "hash": "8608207449962467909"
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.html",
+          "hash": "1632066864779346266"
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.scss",
+          "hash": "8486763067119016048"
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.spec.ts",
+          "hash": "9006161805572515304",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.ts",
+          "hash": "8715903411620468751",
+          "deps": [
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/kit",
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "ui-common/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "ui-common/tsconfig.json",
           "hash": "4881022640630122902"
         },
         {
-          "file": "page-404/tsconfig.lib.json",
-          "hash": "4766185256741444917"
+          "file": "ui-common/tsconfig.lib.json",
+          "hash": "6705096346873024967"
         },
         {
-          "file": "page-404/tsconfig.spec.json",
-          "hash": "2129196202529263968"
+          "file": "ui-common/tsconfig.spec.json",
+          "hash": "17181539404635497500"
+        }
+      ],
+      "registration": [
+        {
+          "file": "desktop-page/registration/.eslintrc.json",
+          "hash": "9628345067573567197"
+        },
+        {
+          "file": "desktop-page/registration/README.md",
+          "hash": "3716625526328470897"
+        },
+        {
+          "file": "desktop-page/registration/jest.config.ts",
+          "hash": "14760237983411174043"
+        },
+        {
+          "file": "desktop-page/registration/project.json",
+          "hash": "14008188004727362359"
+        },
+        {
+          "file": "desktop-page/registration/src/index.ts",
+          "hash": "17871950768768837336"
+        },
+        {
+          "file": "desktop-page/registration/src/lib/registration/index.ts",
+          "hash": "8649438111259049237"
+        },
+        {
+          "file": "desktop-page/registration/src/lib/registration/registration-routing.module.ts",
+          "hash": "14835946205869504272",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/registration/src/lib/registration/registration.component.html",
+          "hash": "11612646316008952149"
+        },
+        {
+          "file": "desktop-page/registration/src/lib/registration/registration.component.scss",
+          "hash": "7338960139972381774"
+        },
+        {
+          "file": "desktop-page/registration/src/lib/registration/registration.component.ts",
+          "hash": "54774572821290340",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/registration/src/lib/registration/registration.module.ts",
+          "hash": "10200530365267822893",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "desktop-page/registration/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/registration/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/registration/tsconfig.lib.json",
+          "hash": "5796668385415907511"
+        },
+        {
+          "file": "desktop-page/registration/tsconfig.spec.json",
+          "hash": "2927375835638640771"
         }
       ],
       "lk": [
@@ -31270,6 +31135,175 @@
         },
         {
           "file": "desktop-page/lk/tsconfig.spec.json",
+          "hash": "2927375835638640771"
+        }
+      ],
+      "page-404": [
+        {
+          "file": "page-404/.eslintrc.json",
+          "hash": "13179335397355282534"
+        },
+        {
+          "file": "page-404/README.md",
+          "hash": "17942793518392976538"
+        },
+        {
+          "file": "page-404/jest.config.ts",
+          "hash": "7541574667304820180"
+        },
+        {
+          "file": "page-404/project.json",
+          "hash": "12699096764956940756"
+        },
+        {
+          "file": "page-404/src/index.ts",
+          "hash": "15945492212031282274"
+        },
+        {
+          "file": "page-404/src/lib/page-404/index.ts",
+          "hash": "13789432557938518705"
+        },
+        {
+          "file": "page-404/src/lib/page-404/page-404-routing.module.ts",
+          "hash": "3880808887301265761",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "page-404/src/lib/page-404/page-404.module.ts",
+          "hash": "4124055266822575954",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "ui"
+          ]
+        },
+        {
+          "file": "page-404/src/lib/page-404/page/page.component.html",
+          "hash": "4567789133421593887"
+        },
+        {
+          "file": "page-404/src/lib/page-404/page/page.component.scss",
+          "hash": "8854893831102484630"
+        },
+        {
+          "file": "page-404/src/lib/page-404/page/page.component.ts",
+          "hash": "5869778260026747431",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "page-404/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "page-404/tsconfig.json",
+          "hash": "4881022640630122902"
+        },
+        {
+          "file": "page-404/tsconfig.lib.json",
+          "hash": "4766185256741444917"
+        },
+        {
+          "file": "page-404/tsconfig.spec.json",
+          "hash": "2129196202529263968"
+        }
+      ],
+      "sale": [
+        {
+          "file": "desktop-page/sale/.eslintrc.json",
+          "hash": "9628345067573567197"
+        },
+        {
+          "file": "desktop-page/sale/README.md",
+          "hash": "15088715706601879732"
+        },
+        {
+          "file": "desktop-page/sale/jest.config.ts",
+          "hash": "981013926101950286"
+        },
+        {
+          "file": "desktop-page/sale/project.json",
+          "hash": "13164248024371778200"
+        },
+        {
+          "file": "desktop-page/sale/src/index.ts",
+          "hash": "5107300821701742070"
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/index.ts",
+          "hash": "4284839470747344006"
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/sale-routing.module.ts",
+          "hash": "3765868258428862833",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/sale.component.html",
+          "hash": "8176643835257164536"
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/sale.component.scss",
+          "hash": "13412862896713902490"
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/sale.component.ts",
+          "hash": "13027345849767612109",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/sale.module.ts",
+          "hash": "16182898185708760623",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/material"
+          ]
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/shared/components/toolbar/toolbar.component.html",
+          "hash": "9963774639886360172"
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/shared/components/toolbar/toolbar.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/sale/src/lib/sale/shared/components/toolbar/toolbar.component.ts",
+          "hash": "5177320246124553185",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/sale/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/sale/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/sale/tsconfig.lib.json",
+          "hash": "5796668385415907511"
+        },
+        {
+          "file": "desktop-page/sale/tsconfig.spec.json",
           "hash": "2927375835638640771"
         }
       ]
