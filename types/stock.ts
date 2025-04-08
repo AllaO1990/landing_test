@@ -38,6 +38,7 @@ export interface StockInstrument {
   currency: string;
   currencySymbol: string;
   minPriceIncrement: number;
+  subscriptionStatus: number;
 }
 
 export interface StockListItemPrice {
