@@ -1,9 +1,13 @@
 import { PolymorpheusContent, PolymorpheusOutlet } from '@taiga-ui/polymorpheus';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ContentChild,
+  DestroyRef,
+  inject,
   Input,
+  NgZone,
   TemplateRef,
   TrackByFunction,
   ViewChild,
@@ -19,6 +23,8 @@ import { StockId } from 'types/stock';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { LoaderComponent } from '../loader';
+import { BehaviorSubject, defer, filter, Observable, of, Subject, switchMap, take, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'lib-list[itemSize]',
@@ -38,9 +44,17 @@ import { LoaderComponent } from '../loader';
   styleUrl: './list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListComponent<T> {
+export class ListComponent<T> implements AfterViewInit {
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #ngZone: NgZone = inject(NgZone);
+  readonly #scrollToTop: Subject<boolean> = new BehaviorSubject(false);
+
   get template(): TemplateRef<any> {
     return this.item ? this.item.template : this.simple;
+  }
+
+  @Input() set scrollToTop(value: boolean) {
+    this.#scrollToTop.next(value);
   }
 
   @Input() list: T[] | null = null;
@@ -58,4 +72,29 @@ export class ListComponent<T> {
 
   @ViewChild('simple', { static: true })
   public readonly simple!: TemplateRef<CdkVirtualForOfContext<{ id: StockId }>>;
+
+  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport | null = null;
+
+  readonly #viewport: Observable<CdkVirtualScrollViewport | null> = defer(() => {
+    if (this.viewport !== null) {
+      return of(this.viewport);
+    }
+
+    return this.#ngZone.onStable.asObservable().pipe(
+      take(1),
+      switchMap(() => this.#viewport)
+    );
+  });
+
+  ngAfterViewInit(): void {
+    this.#scrollToTop
+      .asObservable()
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((scrollToTop: boolean) => (scrollToTop ? this.#viewport : of(null))),
+        filter((viewport: CdkVirtualScrollViewport | null): viewport is CdkVirtualScrollViewport => viewport !== null),
+        tap((data) => console.log(data))
+      )
+      .subscribe((viewport: CdkVirtualScrollViewport) => viewport.scrollToIndex(0));
+  }
 }

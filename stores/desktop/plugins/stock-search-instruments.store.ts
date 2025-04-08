@@ -1,64 +1,48 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { Stock, StockListItems } from 'types/stock';
+import { Stock } from 'types/stock';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { Observable, switchMap, tap } from 'rxjs';
 import { Response } from 'types/response';
+import { Params } from '@angular/router';
 
 interface StockSearchInstrumentsState {
-  list: null | StockListItems;
-  searchList: null | StockListItems;
-  total: number | null;
+  list: null | Stock;
+  search: null | Stock;
 }
 
 export class StockSearchInstrumentsStore extends ComponentStore<StockSearchInstrumentsState> {
-  readonly list$: Observable<StockListItems | null> = this.select((state: StockSearchInstrumentsState) => state.list);
-  readonly searchList$: Observable<StockListItems | null> = this.select(
-    (state: StockSearchInstrumentsState) => state.searchList
-  );
-  readonly total$: Observable<number | null> = this.select((state: StockSearchInstrumentsState) => state.total);
+  readonly list$: Observable<Stock | null> = this.select((state: StockSearchInstrumentsState) => state.list);
+  readonly searchList$: Observable<Stock | null> = this.select((state: StockSearchInstrumentsState) => state.search);
 
-  updateList = this.updater((state: StockSearchInstrumentsState, list: StockListItems | null) => ({ ...state, list }));
+  updateList = this.updater((state: StockSearchInstrumentsState, list: Stock | null) => ({ ...state, list }));
 
-  updateSearchList = this.updater((state: StockSearchInstrumentsState, searchList: StockListItems | null) => ({
+  updateSearchList = this.updater((state: StockSearchInstrumentsState, search: Stock | null) => ({
     ...state,
-    searchList,
+    search,
   }));
-
-  updateTotal = this.updater((state: StockSearchInstrumentsState, total: number | null) => ({ ...state, total }));
 
   constructor(private readonly _api: DesktopService) {
     super({
       list: null,
-      searchList: null,
-      total: null,
+      search: null,
     });
   }
 
-  readonly searchListInstrument = this.effect((stream$: Observable<string>) =>
+  readonly searchListInstrument = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
-      switchMap((query: string) =>
+      switchMap((params: Params) =>
         this._api
-          .searchStockListInstrument({ query })
-          .pipe(
-            tap((response: Response<Stock>) =>
-              this.updateSearchList(response.success && response.data.items === null ? [] : response.data.items)
-            )
-          )
+          .searchStockListInstrument(params)
+          .pipe(tap((response: Response<Stock>) => this.updateSearchList(response.success ? response.data : null)))
       )
     )
   );
 
-  readonly loadWithLimitListInstrument = (limit = 100) =>
-    this.effect((stream$: Observable<number>) =>
-      stream$.pipe(
-        switchMap((page: number) =>
-          this._api.getStockList({ page, limit }).pipe(
-            tap((response: Response<Stock>) => this.updateList(response.data.items)),
-            tap((response: Response<Stock>) => this.updateTotal(response.data.total))
-          )
-        )
+  readonly loadListInstrument = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api.getStockList(params).pipe(tap((response: Response<Stock>) => this.updateList(response.data)))
       )
-    );
-
-  readonly loadListInstrument = this.loadWithLimitListInstrument(100);
+    )
+  );
 }

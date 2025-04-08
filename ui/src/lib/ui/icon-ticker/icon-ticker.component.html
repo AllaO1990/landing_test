@@ -8,7 +8,7 @@
 <ng-template #img let-instrument>
   <div class="icon-ticker__img">
     <img
-      src="/assets/tickers-v2/{{ instrument.ticker }}.{{instrument.type === 'crypto' ? 'svg' : 'png'}}"
+      [attr.src]="instrument | iconTickerSrc"
       [attr.alt]="instrument.name"
       (error)="onErrorImg($event)"
     >
