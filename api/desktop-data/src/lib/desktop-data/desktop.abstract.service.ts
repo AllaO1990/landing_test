@@ -45,6 +45,8 @@ export abstract class DesktopService {
 
   abstract searchStockListInstrument(queryParams: Params): Observable<Response<Stock>>;
 
+  abstract addSubscriptionStockListInstrument(queryParams: Params): Observable<Response<any>>;
+
   public abstract getInstrumentsLists(): Observable<Response<{ items: StockLists }>>;
 
   public abstract getWatchInstrumentsListItems(): Observable<Response<Stock>>;

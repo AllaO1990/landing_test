@@ -1,0 +1,15 @@
+<button
+  appearance="icon"
+  iconStart="@tui.list-check"
+  tuiIconButton
+  size="xs"
+  [disabled]="true"
+  type="button"
+  (click)="onClick($event)"
+  [tuiHint]="tooltip"
+  tuiHintAppearance="dark"
+></button>
+
+<ng-template #tooltip>
+  Включен в подписку
+</ng-template>

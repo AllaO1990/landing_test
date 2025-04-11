@@ -45,4 +45,11 @@ export class StockSearchInstrumentsStore extends ComponentStore<StockSearchInstr
       )
     )
   );
+
+  readonly addSubscriptionStockListInstrument = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) => this._api.addSubscriptionStockListInstrument(params)),
+      tap((data) => console.log(data))
+    )
+  );
 }

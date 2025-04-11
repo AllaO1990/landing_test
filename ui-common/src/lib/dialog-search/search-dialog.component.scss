@@ -57,6 +57,7 @@
   flex-flow: column nowrap;
 
   height: 100%;
+  overflow: hidden;
 }
 
 .viewport {
@@ -101,15 +102,19 @@
 .cell {
   box-sizing: border-box;
 
-  flex: 0 0 auto;
-  width: 24%;
+  flex: 0 auto;
+  width: calc((100% - 40px) / 3);
   max-width: 200px;
 
   overflow: hidden;
 
   &:not(:last-child) {
-    width: 38%;
     padding-right: var(--padding-4);
+  }
+
+  &:last-child {
+    flex: 0 auto;
+    width: 40px;
   }
 }
 
@@ -201,9 +206,5 @@
     max-height: 400px;
 
     margin: var(--padding-4);
-  }
-
-  .cell {
-    min-width: 100px;
   }
 }

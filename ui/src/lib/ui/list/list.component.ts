@@ -57,6 +57,8 @@ export class ListComponent<T> implements AfterViewInit {
     this.#scrollToTop.next(value);
   }
 
+  @Input() templateCacheSize = 20;
+
   @Input() list: T[] | null = null;
 
   @Input() itemSize = 28;
