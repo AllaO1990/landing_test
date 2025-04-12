@@ -1,6 +1,11 @@
 :host {
   display: block;
+
+  [tuiGroup] {
+    --t-group-mask-end: none;
+  }
 }
+
 
 tui-badged-content button {
   border-top-left-radius: 0;
