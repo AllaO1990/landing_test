@@ -103,4 +103,10 @@ export interface StockParamsConsolidationZones {
   to: string;
 }
 
+export interface StockInstrumentToSubscription {
+  authorId: number;
+  instrument: StockInstrument;
+  subscriptionStatus: string;
+}
+
 export type StockGroupList = StockGroup & { items: StockListItems };

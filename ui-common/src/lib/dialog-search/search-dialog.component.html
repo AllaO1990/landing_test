@@ -41,6 +41,7 @@
         class="viewport"
         [list]="list.total === 0 ? [] : list.items"
         [trackBy]="trackById"
+        [templateCacheSize]="0"
         [header]="headerTemplate"
         [itemSize]="40">
         <div
@@ -65,6 +66,13 @@
             {{ item.sector }}
           </div>
           <div class="cell item__exchange">{{ item.realExchange }}</div>
+          <div class="cell item__action">
+            <lib-action
+              (action)="onAction($event)"
+              *ngIf="!item.inSub"
+              [data]="item">
+            </lib-action>
+          </div>
         </div>
       </lib-list>
 

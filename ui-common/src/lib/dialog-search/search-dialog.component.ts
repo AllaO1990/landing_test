@@ -18,6 +18,7 @@ import { TuiPagination } from '@taiga-ui/kit';
 import { SearchDialogListLengthPipe } from './search-dialog.pipe';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActionComponent } from './action/action.component';
 
 type ActionForList = 'search' | 'default';
 
@@ -40,6 +41,7 @@ type ActionForList = 'search' | 'default';
     NgIf,
     SearchDialogListLengthPipe,
     LoaderComponent,
+    ActionComponent,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrl: './search-dialog.component.scss',
@@ -96,6 +98,14 @@ export class SearchDialogComponent implements AfterViewInit {
     distinctUntilChanged(),
     switchMap((type: ActionForList) => (type === 'default' ? this._store.list$ : this._store.searchList$)),
     tap(() => this.isLoad$.next(false)),
+    map(
+      (list: Stock | null) =>
+        list &&
+        ({
+          ...list,
+          items: list?.items?.map((item) => ({ ...item, onAction: (item: any) => console.log(item) } as any)),
+        } as Stock)
+    ),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
@@ -146,6 +156,21 @@ export class SearchDialogComponent implements AfterViewInit {
 
   trackById(_: number, item: StockInstrument): string {
     return item.id;
+  }
+
+  onAction(instrument: StockInstrument): void {
+    if (instrument.subscriptionStatus === 0) {
+      this._store.addSubscriptionStockListInstrument({
+        instrumentId: instrument.id,
+        type: this.controlParams.value.type,
+      });
+    }
+  }
+
+  onSubscribe(event: Event, item: StockInstrument): void {
+    event.preventDefault();
+
+    console.log(item);
   }
 
   private _conditionLoad(type: ActionForList, page = 1): void {

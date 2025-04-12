@@ -77,6 +77,12 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<Stock>>(`${this.host}/api/v1/instruments/search`, { params: queryParams });
   }
 
+  addSubscriptionStockListInstrument(params: Params): Observable<Response<any>> {
+    return this._http.post<Response<Stock>>(`${this.host}/api/v1/instruments/add-to-subscription`, {
+      ...params,
+    });
+  }
+
   getInstrumentsLists(): Observable<Response<{ items: StockLists }>> {
     return this._http.get<Response<{ items: StockLists }>>(`${this.host}/api/v1/instruments-lists`);
   }
