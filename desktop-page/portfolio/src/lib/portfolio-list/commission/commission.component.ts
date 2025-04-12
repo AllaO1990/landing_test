@@ -9,10 +9,10 @@ import {
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiButton, TuiFormatNumberPipe } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 import { PortfolioListDialog } from '../dialog';
 import { CommissionStore } from 'stores/plugins/commission.store';
-import { DESKTOP_API } from 'tokens/desktop';
+import { DESKTOP_API, QUERY_PARAMS } from 'tokens/desktop';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { BehaviorSubject, catchError, forkJoin, Observable, of, startWith, Subject, timer } from 'rxjs';
@@ -30,6 +30,7 @@ import { Response } from 'types/response';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { DialogFilterComponent } from '../dialog-filter/dialog-filter.component';
 import { getParamsFromFilter } from '../utils';
+import { QueryParams } from 'utils/query-params';
 
 type Loading = {
   loadingRemove: boolean;
@@ -55,6 +56,7 @@ type Loading = {
     TuiFormatNumberPipe,
     TuiButtonLoading,
     DialogFilterComponent,
+    TuiHint,
   ],
   templateUrl: './commission.component.html',
   styleUrls: ['../dialog.scss', './commission.component.scss'],
@@ -70,6 +72,7 @@ type Loading = {
 })
 export class CommissionComponent extends PortfolioListDialog implements AfterViewInit {
   readonly #dialogService: DialogService = inject(DIALOG);
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
   readonly #store: CommissionStore = inject(CommissionStore);
@@ -129,6 +132,12 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
       item.loadingEdit = false;
     });
     item.loadingEdit = true;
+  }
+
+  onShow(event: Event, item: CommissionItem & Loading): void {
+    event.preventDefault();
+
+    this.#queryParams.update({ id: item.ideaId, dialog: 'visible' }, 'merge');
   }
 
   private _openDialog(c: PolymorpheusComponent<any>, data: any = null, label: string | null = null): Observable<any> {

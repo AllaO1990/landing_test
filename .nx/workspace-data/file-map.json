@@ -162,508 +162,431 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "stores/desktop/facades/select.facade.ts",
-        "hash": "12916716133405722608"
-      },
-      {
-        "file": "types/stock-position-type.ts",
-        "hash": "7296227016803517367"
-      },
-      {
-        "file": "stores/desktop/plugins/indicator.sma.store.ts",
-        "hash": "4441204503863480796"
-      },
-      {
-        "file": "types/index.ts",
-        "hash": "10737035727801252421"
-      },
-      {
-        "file": "stores/desktop/plugins/stock-idea.store.ts",
-        "hash": "4024860880994973108"
-      },
-      {
-        "file": "desktop-page/core/auth/auth.service.ts",
-        "hash": "17443619007899360292"
-      },
-      {
-        "file": "types/indicator-sma.ts",
-        "hash": "14783819045198025126"
-      },
-      {
-        "file": "stores/desktop/plugins/indicator.atr.store.ts",
-        "hash": "4102625905627432528"
-      },
-      {
-        "file": "types/stock-idea-state.ts",
-        "hash": "2746179174270277591"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones-idea.store.ts",
-        "hash": "13128103012513567342"
-      },
-      {
-        "file": "stores/desktop/plugins/commission.store.ts",
-        "hash": "5599694482889320668"
-      },
-      {
-        "file": "utils/indicators-func.ts",
-        "hash": "15328477665892579063"
-      },
-      {
-        "file": "stores/desktop/plugins/stock-list.store.ts",
-        "hash": "2902011462850123269"
-      },
-      {
-        "file": "stores/desktop/facades/chart.facade.ts",
-        "hash": "9042610362831071862"
-      },
-      {
-        "file": "types/response.ts",
-        "hash": "7078947606388261446"
-      },
-      {
-        "file": "types/stock-timing.ts",
-        "hash": "8959005219878837631"
-      },
-      {
-        "file": "nginx.conf",
-        "hash": "16607992467286289491"
-      },
-      {
-        "file": "stores/desktop/core/with-queue.abstract.ts",
-        "hash": "15545226676708413392"
-      },
-      {
-        "file": "types/timeframe.ts",
-        "hash": "12758475339519077989"
-      },
-      {
-        "file": "svgo.config.js",
-        "hash": "6344222163676722495"
-      },
-      {
-        "file": "utils/get-price-increment.ts",
-        "hash": "2604435726832192206"
-      },
-      {
-        "file": "utils/break-array.ts",
-        "hash": "10377388548199749854"
-      },
-      {
-        "file": "stores/desktop/plugins/stock-search-instruments.store.ts",
-        "hash": "15668266238994830195"
-      },
-      {
-        "file": "package-lock.json",
-        "hash": "4743880675591247943"
-      },
-      {
-        "file": "stores/desktop/facades/account.facade.ts",
-        "hash": "13344607673559345211"
-      },
-      {
-        "file": ".editorconfig",
-        "hash": "6686520031028425313"
-      },
-      {
-        "file": "types/consolidation-zones.ts",
-        "hash": "106541791700358324"
-      },
-      {
-        "file": "types/idea.ts",
-        "hash": "8302576054992558772"
-      },
-      {
-        "file": "stores/desktop/plugins/account.store.ts",
-        "hash": "4843661959001783028"
-      },
-      {
-        "file": "constants/stock-timing.ts",
-        "hash": "2487749763275918160"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones-watchlist.store.ts",
-        "hash": "971190707975142440"
-      },
-      {
-        "file": "stores/desktop/plugins/candles.store.ts",
-        "hash": "5027618935211472399"
-      },
-      {
-        "file": "types/indicator-ema.ts",
-        "hash": "10092307796873794279"
-      },
-      {
-        "file": "utils/sort-text.ts",
-        "hash": "14350963164483326807"
-      },
-      {
-        "file": "constants/stock-position-type.ts",
-        "hash": "17835411523342321475"
-      },
-      {
-        "file": "utils/transform-consolidation-zones.ts",
-        "hash": "9779565911203741329"
-      },
-      {
-        "file": "tokens/desktop/index.ts",
-        "hash": "2275070386040432809"
-      },
-      {
-        "file": "karma.conf.js",
-        "hash": "9656364725710720620"
-      },
-      {
-        "file": "utils/index.ts",
-        "hash": "16850469695194830204"
-      },
-      {
-        "file": "desktop-page/core/storage/local-storage.service.ts",
-        "hash": "15470114868170470195"
-      },
-      {
-        "file": "types/events.ts",
-        "hash": "7790859914686806606"
-      },
-      {
-        "file": "stores/desktop/lk.store.ts",
-        "hash": "10912605472109501113"
-      },
-      {
-        "file": "desktop-page/core/auth/index.ts",
-        "hash": "15853768214166025652"
-      },
-      {
-        "file": "tokens/desktop/api.ts",
-        "hash": "8835767563209562145"
-      },
-      {
-        "file": "stores/desktop/tsconfig.editor.json",
-        "hash": "5620303981993226606"
-      },
-      {
-        "file": "types/chart-state.ts",
-        "hash": "13848149630909623046"
-      },
-      {
-        "file": "stores/desktop/plugins/portfolio.store.ts",
-        "hash": "13196497036168586181"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "8447140535463659719"
-      },
-      {
-        "file": "types/stock-list-state.ts",
-        "hash": "2661636031452649317"
-      },
-      {
-        "file": "tokens/desktop/query-params.ts",
-        "hash": "11403705156624692300"
-      },
-      {
-        "file": "utils/queue.ts",
-        "hash": "6839892358163581581"
-      },
-      {
-        "file": ".vscode/settings.json",
-        "hash": "11631447716040061077"
-      },
-      {
-        "file": "stores/desktop/plugins/balance.store.ts",
-        "hash": "6968375549417348547"
-      },
-      {
-        "file": "nx.json",
-        "hash": "3040162377246326026"
-      },
-      {
-        "file": ".prettierignore",
-        "hash": "5407418692668764289"
-      },
-      {
-        "file": ".prettierrc",
-        "hash": "18364264586821277305"
-      },
-      {
-        "file": "types/commission.ts",
-        "hash": "7218503035178094790"
-      },
-      {
         "file": "constants/stock-strategy.ts",
         "hash": "17382634736577566273"
-      },
-      {
-        "file": "tokens/desktop/store.ts",
-        "hash": "4350201171798864014"
-      },
-      {
-        "file": "types/stock-position-state.ts",
-        "hash": "4424871609977729530"
-      },
-      {
-        "file": ".eslintignore",
-        "hash": "7663861978715868291"
-      },
-      {
-        "file": "stores/desktop/plugins/interval.store.ts",
-        "hash": "917511730260053550"
-      },
-      {
-        "file": "utils/get-number-precision.ts",
-        "hash": "17232379818128499480"
-      },
-      {
-        "file": "utils/get-color.ts",
-        "hash": "615013208832581229"
-      },
-      {
-        "file": ".github/workflows/main.yml",
-        "hash": "6567351483453608176"
-      },
-      {
-        "file": "Dockerfile",
-        "hash": "15043109864072530452"
-      },
-      {
-        "file": "stores/desktop/plugins/consolidation-zones.store.ts",
-        "hash": "17342550503720434314"
-      },
-      {
-        "file": "types/stock-strategy.ts",
-        "hash": "15391669681337752535"
-      },
-      {
-        "file": "tokens/desktop/date-range.ts",
-        "hash": "2763031870217487539"
-      },
-      {
-        "file": "stores/desktop/tsconfig.json",
-        "hash": "4946853427242191187"
-      },
-      {
-        "file": "types/portfolio.ts",
-        "hash": "5480137907324235796"
-      },
-      {
-        "file": ".dockerignore",
-        "hash": "13894842070724749366"
-      },
-      {
-        "file": "package.json",
-        "hash": "3927501102505951177"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "13626919460495499675"
-      },
-      {
-        "file": "utils/get-number-from-e.ts",
-        "hash": "12141788394617030620"
-      },
-      {
-        "file": "stores/desktop/plugins/stock-price.store.ts",
-        "hash": "17815605950364854536"
-      },
-      {
-        "file": "types/color.ts",
-        "hash": "2752454321606950145"
-      },
-      {
-        "file": "desktop-page/core/storage/index.ts",
-        "hash": "11151808605438075593"
-      },
-      {
-        "file": "stores/desktop/facades/stock-list.facade.ts",
-        "hash": "12842148422659565756"
-      },
-      {
-        "file": "stores/desktop/facades/idea.facade.ts",
-        "hash": "13040065637907292471"
-      },
-      {
-        "file": "tokens/desktop/environment.ts",
-        "hash": "3770306032964912197"
-      },
-      {
-        "file": "types/http.ts",
-        "hash": "9501627852758142185"
-      },
-      {
-        "file": "types/lk-state.ts",
-        "hash": "10674194768720520325"
-      },
-      {
-        "file": "utils/get-join-uniq.ts",
-        "hash": "12530976718137645059"
-      },
-      {
-        "file": "types/account.ts",
-        "hash": "13870905045391488843"
-      },
-      {
-        "file": "stores/desktop/facades/portfolio.facade.ts",
-        "hash": "5421716064086983777"
-      },
-      {
-        "file": "jest.config.ts",
-        "hash": "12333515226966617182"
-      },
-      {
-        "file": "stores/desktop/select.store.ts",
-        "hash": "18430688436634204438"
-      },
-      {
-        "file": "stores/desktop/chart-store.ts",
-        "hash": "14959104725184418055"
-      },
-      {
-        "file": "types/position.ts",
-        "hash": "11487993842231751639"
-      },
-      {
-        "file": "stores/desktop/plugins/figures.store.ts",
-        "hash": "12720449796190065076"
-      },
-      {
-        "file": "stores/desktop/plugins/indicator.ema.store.ts",
-        "hash": "2487486000652917630"
-      },
-      {
-        "file": "stores/desktop/facade.ts",
-        "hash": "6831515373145937581"
-      },
-      {
-        "file": "types/stock.ts",
-        "hash": "4178762479224453293"
-      },
-      {
-        "file": ".eslintrc.json",
-        "hash": "11528891500695373006"
-      },
-      {
-        "file": "types/chart.ts",
-        "hash": "12172838154247292316"
-      },
-      {
-        "file": "stores/desktop/index.ts",
-        "hash": "15838021625544229352"
-      },
-      {
-        "file": "utils/query-params.ts",
-        "hash": "11323392232080435065"
-      },
-      {
-        "file": "tools/generators/.gitkeep",
-        "hash": "3244421341483603138"
-      },
-      {
-        "file": "README.md",
-        "hash": "1797001136010212337"
       },
       {
         "file": "utils/get-tui-day-time.ts",
         "hash": "11208528851252702053"
       },
       {
-        "file": "stores/desktop/main.store.ts",
-        "hash": "11882505197961468032"
+        "file": "tokens/desktop/index.ts",
+        "hash": "2275070386040432809"
       },
       {
-        "file": "types/date-range.ts",
-        "hash": "856570791877064439"
+        "file": ".eslintrc.json",
+        "hash": "11528891500695373006"
+      },
+      {
+        "file": "types/stock-position-state.ts",
+        "hash": "4424871609977729530"
+      },
+      {
+        "file": "stores/desktop/facades/portfolio.facade.ts",
+        "hash": "5421716064086983777"
+      },
+      {
+        "file": "stores/desktop/facades/select.facade.ts",
+        "hash": "12916716133405722608"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "480155257305932439"
+      },
+      {
+        "file": "utils/get-number-precision.ts",
+        "hash": "17232379818128499480"
+      },
+      {
+        "file": "types/account.ts",
+        "hash": "13870905045391488843"
+      },
+      {
+        "file": "tokens/desktop/store.ts",
+        "hash": "4350201171798864014"
+      },
+      {
+        "file": "types/stock-idea-state.ts",
+        "hash": "2746179174270277591"
+      },
+      {
+        "file": "types/consolidation-zones.ts",
+        "hash": "106541791700358324"
+      },
+      {
+        "file": "types/lk-state.ts",
+        "hash": "10674194768720520325"
+      },
+      {
+        "file": "stores/desktop/select.store.ts",
+        "hash": "18430688436634204438"
+      },
+      {
+        "file": "svgo.config.js",
+        "hash": "6344222163676722495"
+      },
+      {
+        "file": "types/index.ts",
+        "hash": "10737035727801252421"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.sma.store.ts",
+        "hash": "4441204503863480796"
+      },
+      {
+        "file": "types/events.ts",
+        "hash": "7790859914686806606"
+      },
+      {
+        "file": "utils/get-number-from-e.ts",
+        "hash": "12141788394617030620"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.atr.store.ts",
+        "hash": "4102625905627432528"
+      },
+      {
+        "file": "desktop-page/core/storage/local-storage.service.ts",
+        "hash": "15470114868170470195"
+      },
+      {
+        "file": "utils/sort-text.ts",
+        "hash": "14350963164483326807"
+      },
+      {
+        "file": "stores/desktop/facades/idea.facade.ts",
+        "hash": "13040065637907292471"
+      },
+      {
+        "file": "stores/desktop/plugins/figures.store.ts",
+        "hash": "12720449796190065076"
+      },
+      {
+        "file": "types/commission.ts",
+        "hash": "7218503035178094790"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "4743880675591247943"
+      },
+      {
+        "file": "types/stock-event.ts",
+        "hash": "6926961109073169976"
+      },
+      {
+        "file": "stores/desktop/plugins/account.store.ts",
+        "hash": "4843661959001783028"
+      },
+      {
+        "file": "types/stock-list-state.ts",
+        "hash": "2661636031452649317"
+      },
+      {
+        "file": "types/portfolio.ts",
+        "hash": "5480137907324235796"
+      },
+      {
+        "file": "types/stock-timing.ts",
+        "hash": "8959005219878837631"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "12333515226966617182"
+      },
+      {
+        "file": "stores/desktop/plugins/portfolio.store.ts",
+        "hash": "13196497036168586181"
+      },
+      {
+        "file": "stores/desktop/facades/stock-list.facade.ts",
+        "hash": "12842148422659565756"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-idea.store.ts",
+        "hash": "4024860880994973108"
+      },
+      {
+        "file": "stores/desktop/plugins/consolidation-zones.store.ts",
+        "hash": "17342550503720434314"
+      },
+      {
+        "file": "types/response.ts",
+        "hash": "7078947606388261446"
+      },
+      {
+        "file": "tokens/desktop/date-range.ts",
+        "hash": "2763031870217487539"
+      },
+      {
+        "file": "desktop-page/core/storage/index.ts",
+        "hash": "11151808605438075593"
+      },
+      {
+        "file": "stores/desktop/facades/chart.facade.ts",
+        "hash": "9042610362831071862"
       },
       {
         "file": "tools/tsconfig.tools.json",
         "hash": "16088922570277978783"
       },
       {
+        "file": "stores/desktop/plugins/stock-price.store.ts",
+        "hash": "17815605950364854536"
+      },
+      {
+        "file": "stores/desktop/chart-store.ts",
+        "hash": "14959104725184418055"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "13626919460495499675"
+      },
+      {
+        "file": "utils/break-array.ts",
+        "hash": "10377388548199749854"
+      },
+      {
+        "file": "tokens/desktop/environment.ts",
+        "hash": "3770306032964912197"
+      },
+      {
+        "file": "utils/get-join-uniq.ts",
+        "hash": "12530976718137645059"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "18364264586821277305"
+      },
+      {
         "file": "jest.preset.js",
         "hash": "9430166341120122740"
       },
       {
-        "file": "types/stock-event.ts",
-        "hash": "6926961109073169976"
+        "file": "utils/get-price-increment.ts",
+        "hash": "2604435726832192206"
+      },
+      {
+        "file": "types/chart-state.ts",
+        "hash": "13848149630909623046"
+      },
+      {
+        "file": "types/color.ts",
+        "hash": "2752454321606950145"
+      },
+      {
+        "file": "stores/desktop/tsconfig.editor.json",
+        "hash": "5620303981993226606"
+      },
+      {
+        "file": "constants/stock-timing.ts",
+        "hash": "2487749763275918160"
+      },
+      {
+        "file": "tools/generators/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "stores/desktop/plugins/indicator.ema.store.ts",
+        "hash": "2487486000652917630"
+      },
+      {
+        "file": "types/http.ts",
+        "hash": "9501627852758142185"
+      },
+      {
+        "file": "stores/desktop/facade.ts",
+        "hash": "6831515373145937581"
+      },
+      {
+        "file": "types/position.ts",
+        "hash": "11487993842231751639"
+      },
+      {
+        "file": "utils/indicators-func.ts",
+        "hash": "15328477665892579063"
+      },
+      {
+        "file": "nx.json",
+        "hash": "3040162377246326026"
+      },
+      {
+        "file": "types/stock.ts",
+        "hash": "4360048746419504899"
+      },
+      {
+        "file": ".dockerignore",
+        "hash": "13894842070724749366"
+      },
+      {
+        "file": "utils/query-params.ts",
+        "hash": "11323392232080435065"
+      },
+      {
+        "file": "stores/desktop/tsconfig.json",
+        "hash": "4946853427242191187"
+      },
+      {
+        "file": ".eslintignore",
+        "hash": "7663861978715868291"
+      },
+      {
+        "file": ".github/workflows/main.yml",
+        "hash": "6567351483453608176"
+      },
+      {
+        "file": "tokens/desktop/api.ts",
+        "hash": "8835767563209562145"
+      },
+      {
+        "file": "stores/desktop/plugins/interval.store.ts",
+        "hash": "917511730260053550"
+      },
+      {
+        "file": "stores/desktop/plugins/consolidation-zones-idea.store.ts",
+        "hash": "13128103012513567342"
+      },
+      {
+        "file": "desktop-page/core/auth/auth.service.ts",
+        "hash": "17443619007899360292"
+      },
+      {
+        "file": "types/idea.ts",
+        "hash": "8302576054992558772"
+      },
+      {
+        "file": ".editorconfig",
+        "hash": "6686520031028425313"
+      },
+      {
+        "file": "types/chart.ts",
+        "hash": "12172838154247292316"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "5407418692668764289"
+      },
+      {
+        "file": "stores/desktop/index.ts",
+        "hash": "15838021625544229352"
+      },
+      {
+        "file": "stores/desktop/core/with-queue.abstract.ts",
+        "hash": "15545226676708413392"
+      },
+      {
+        "file": "tokens/desktop/query-params.ts",
+        "hash": "11403705156624692300"
+      },
+      {
+        "file": "karma.conf.js",
+        "hash": "9656364725710720620"
+      },
+      {
+        "file": "stores/desktop/plugins/candles.store.ts",
+        "hash": "5027618935211472399"
+      },
+      {
+        "file": "stores/desktop/facades/account.facade.ts",
+        "hash": "13344607673559345211"
+      },
+      {
+        "file": "stores/desktop/main.store.ts",
+        "hash": "11882505197961468032"
+      },
+      {
+        "file": "utils/get-color.ts",
+        "hash": "615013208832581229"
+      },
+      {
+        "file": "types/date-range.ts",
+        "hash": "856570791877064439"
+      },
+      {
+        "file": ".vscode/settings.json",
+        "hash": "11631447716040061077"
+      },
+      {
+        "file": "utils/transform-consolidation-zones.ts",
+        "hash": "9779565911203741329"
+      },
+      {
+        "file": "types/stock-strategy.ts",
+        "hash": "15391669681337752535"
+      },
+      {
+        "file": "types/indicator-ema.ts",
+        "hash": "10092307796873794279"
+      },
+      {
+        "file": "stores/desktop/plugins/balance.store.ts",
+        "hash": "6968375549417348547"
+      },
+      {
+        "file": "utils/index.ts",
+        "hash": "16850469695194830204"
+      },
+      {
+        "file": "README.md",
+        "hash": "1797001136010212337"
+      },
+      {
+        "file": "utils/queue.ts",
+        "hash": "6839892358163581581"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-search-instruments.store.ts",
+        "hash": "10978210675416510304"
+      },
+      {
+        "file": "types/timeframe.ts",
+        "hash": "12758475339519077989"
+      },
+      {
+        "file": "package.json",
+        "hash": "3927501102505951177"
+      },
+      {
+        "file": "stores/desktop/plugins/stock-list.store.ts",
+        "hash": "2902011462850123269"
+      },
+      {
+        "file": "stores/desktop/lk.store.ts",
+        "hash": "10912605472109501113"
+      },
+      {
+        "file": "nginx.conf",
+        "hash": "16607992467286289491"
+      },
+      {
+        "file": "Dockerfile",
+        "hash": "15043109864072530452"
+      },
+      {
+        "file": "types/indicator-sma.ts",
+        "hash": "14783819045198025126"
+      },
+      {
+        "file": "constants/stock-position-type.ts",
+        "hash": "17835411523342321475"
+      },
+      {
+        "file": "desktop-page/core/auth/index.ts",
+        "hash": "15853768214166025652"
+      },
+      {
+        "file": "stores/desktop/plugins/consolidation-zones-watchlist.store.ts",
+        "hash": "971190707975142440"
+      },
+      {
+        "file": "stores/desktop/plugins/commission.store.ts",
+        "hash": "5599694482889320668"
+      },
+      {
+        "file": "types/stock-position-type.ts",
+        "hash": "7296227016803517367"
       }
     ],
     "projectFileMap": {
-      "page-404": [
-        {
-          "file": "page-404/.eslintrc.json",
-          "hash": "13179335397355282534"
-        },
-        {
-          "file": "page-404/README.md",
-          "hash": "17942793518392976538"
-        },
-        {
-          "file": "page-404/jest.config.ts",
-          "hash": "7541574667304820180"
-        },
-        {
-          "file": "page-404/project.json",
-          "hash": "12699096764956940756"
-        },
-        {
-          "file": "page-404/src/index.ts",
-          "hash": "15945492212031282274"
-        },
-        {
-          "file": "page-404/src/lib/page-404/index.ts",
-          "hash": "13789432557938518705"
-        },
-        {
-          "file": "page-404/src/lib/page-404/page-404-routing.module.ts",
-          "hash": "3880808887301265761",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "page-404/src/lib/page-404/page-404.module.ts",
-          "hash": "4124055266822575954",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "ui"
-          ]
-        },
-        {
-          "file": "page-404/src/lib/page-404/page/page.component.html",
-          "hash": "4567789133421593887"
-        },
-        {
-          "file": "page-404/src/lib/page-404/page/page.component.scss",
-          "hash": "8854893831102484630"
-        },
-        {
-          "file": "page-404/src/lib/page-404/page/page.component.ts",
-          "hash": "5869778260026747431",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "page-404/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "page-404/tsconfig.json",
-          "hash": "4881022640630122902"
-        },
-        {
-          "file": "page-404/tsconfig.lib.json",
-          "hash": "4766185256741444917"
-        },
-        {
-          "file": "page-404/tsconfig.spec.json",
-          "hash": "2129196202529263968"
-        }
-      ],
       "desktop": [
         {
           "file": "apps/desktop/.eslintrc.json",
@@ -27978,6 +27901,173 @@
           "hash": "2927375835638640771"
         }
       ],
+      "shall": [
+        {
+          "file": "desktop-page/shall/.eslintrc.json",
+          "hash": "9628345067573567197"
+        },
+        {
+          "file": "desktop-page/shall/README.md",
+          "hash": "2908662979967205114"
+        },
+        {
+          "file": "desktop-page/shall/jest.config.ts",
+          "hash": "16266925096625252383"
+        },
+        {
+          "file": "desktop-page/shall/project.json",
+          "hash": "12563626443727848008"
+        },
+        {
+          "file": "desktop-page/shall/src/index.ts",
+          "hash": "6936664725505316092"
+        },
+        {
+          "file": "desktop-page/shall/src/lib/shall/shall.component.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/shall/src/lib/shall/shall.component.html",
+          "hash": "16297046413830794483"
+        },
+        {
+          "file": "desktop-page/shall/src/lib/shall/shall.component.spec.ts",
+          "hash": "9958392946843871150",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/shall/src/lib/shall/shall.component.ts",
+          "hash": "11676583296078345324",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "desktop-page/shall/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/shall/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/shall/tsconfig.lib.json",
+          "hash": "5796668385415907511"
+        },
+        {
+          "file": "desktop-page/shall/tsconfig.spec.json",
+          "hash": "2927375835638640771"
+        }
+      ],
+      "login": [
+        {
+          "file": "desktop-page/login/.eslintrc.json",
+          "hash": "9628345067573567197"
+        },
+        {
+          "file": "desktop-page/login/README.md",
+          "hash": "4687560939830118400"
+        },
+        {
+          "file": "desktop-page/login/jest.config.ts",
+          "hash": "11751231301273746891"
+        },
+        {
+          "file": "desktop-page/login/project.json",
+          "hash": "10459402763052083508"
+        },
+        {
+          "file": "desktop-page/login/src/index.ts",
+          "hash": "7952461400697172163"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.component.html",
+          "hash": "7760582869407597470"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.component.scss",
+          "hash": "14713978809217953597"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.component.ts",
+          "hash": "6993980112681420647",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/login.module.ts",
+          "hash": "1493507927692430428",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "ui"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.html",
+          "hash": "11480780168733651447"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.scss",
+          "hash": "2464484139908854198"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.ts",
+          "hash": "2616738294427371562",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.html",
+          "hash": "11322519715006088902"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.scss",
+          "hash": "6087259777045198695"
+        },
+        {
+          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.ts",
+          "hash": "13405797918981531176",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "npm:ngx-mask"
+          ]
+        },
+        {
+          "file": "desktop-page/login/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/login/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/login/tsconfig.lib.json",
+          "hash": "5796668385415907511"
+        },
+        {
+          "file": "desktop-page/login/tsconfig.spec.json",
+          "hash": "2927375835638640771"
+        }
+      ],
       "main": [
         {
           "file": "desktop-page/main/.eslintrc.json",
@@ -28523,1305 +28613,6 @@
         {
           "file": "desktop-page/main/tsconfig.spec.json",
           "hash": "2927375835638640771"
-        }
-      ],
-      "enter": [
-        {
-          "file": "desktop-page/enter/.eslintrc.json",
-          "hash": "2732611068997327425"
-        },
-        {
-          "file": "desktop-page/enter/README.md",
-          "hash": "6869911560618988538"
-        },
-        {
-          "file": "desktop-page/enter/jest.config.ts",
-          "hash": "6215446492168393328"
-        },
-        {
-          "file": "desktop-page/enter/project.json",
-          "hash": "66855714970266987"
-        },
-        {
-          "file": "desktop-page/enter/src/index.ts",
-          "hash": "1818306602668910589"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/action.component.html",
-          "hash": "7607409736221970656"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/action.component.scss",
-          "hash": "1530342467655498703"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/action.component.spec.ts",
-          "hash": "16465337127406855651",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/action.component.ts",
-          "hash": "4812396018931974638",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/core",
-            "ui",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "npm:@taiga-ui/polymorpheus"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/action.service.ts",
-          "hash": "8957788979639711233",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/action.types.ts",
-          "hash": "7977319231279417998"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.html",
-          "hash": "175107919559136142"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.spec.ts",
-          "hash": "6191430539345413048",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.ts",
-          "hash": "4952014509071806444",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/common",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.html",
-          "hash": "12971856987728416645"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.spec.ts",
-          "hash": "10987799043454991001",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.ts",
-          "hash": "8475782376796901770",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/cdk",
-            "npm:rxjs",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.html",
-          "hash": "5487445429863468684"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.spec.ts",
-          "hash": "14995406952601540814",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.ts",
-          "hash": "13066441811555767722",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/cdk",
-            "npm:rxjs",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.html",
-          "hash": "7051907406823590948"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.spec.ts",
-          "hash": "5459728487932509325",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.ts",
-          "hash": "13854438514826403193",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk",
-            "npm:rxjs",
-            "npm:@angular/common",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add.scss",
-          "hash": "17677983706356913294"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/action/add.ts",
-          "hash": "5224768636251310303",
-          "deps": [
-            "npm:@angular/forms",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/color.pipe.ts",
-          "hash": "8980956365771120335",
-          "deps": [
-            "npm:@angular/core",
-            "npm:d3-scale",
-            "npm:d3-color"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.html",
-          "hash": "8580908993683546188"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.scss",
-          "hash": "3208754969449769213"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.spec.ts",
-          "hash": "9307325227151736827",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.ts",
-          "hash": "12542205873197607387",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@angular/common",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/core",
-            "npm:rxjs",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.module.ts",
-          "hash": "2182863383204673724",
-          "deps": [
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/core",
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.service.ts",
-          "hash": "2361012290041746157",
-          "deps": [
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/core",
-            "npm:@taiga-ui/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/dialog/index.ts",
-          "hash": "9004913392056948209"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/enter.component.html",
-          "hash": "15552041353127387673"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/enter.component.scss",
-          "hash": "10108363884260465479"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/enter.component.spec.ts",
-          "hash": "11619494319410498162",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/enter.component.ts",
-          "hash": "8839889574810748308",
-          "deps": [
-            "npm:@taiga-ui/kit",
-            "npm:@angular/common",
-            "npm:@angular/core",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:rxjs",
-            "ui",
-            "ui-common",
-            "npm:@angular/forms"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/enter.constants.ts",
-          "hash": "13809792288573918100"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/enter.directive.ts",
-          "hash": "1580051489006996720",
-          "deps": [
-            "npm:@angular/core",
-            "desktop-data",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.html",
-          "hash": "2612068665758848952"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.scss",
-          "hash": "4632825380988943254"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.spec.ts",
-          "hash": "7552451774621343013",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.ts",
-          "hash": "5819008951720980867",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/core",
-            "npm:@angular/router",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/polymorpheus"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.html",
-          "hash": "14431435551494675454"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.spec.ts",
-          "hash": "14995406952601540814",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.ts",
-          "hash": "9315766567887006366",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.html",
-          "hash": "14022042057658013384"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.spec.ts",
-          "hash": "2218828994207948699",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.ts",
-          "hash": "12174123384842407321",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.html",
-          "hash": "3711888603243771407"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.spec.ts",
-          "hash": "5459728487932509325",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.ts",
-          "hash": "12643373664495865000",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add.scss",
-          "hash": "17677983706356913294"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/add.ts",
-          "hash": "10792914028788067958",
-          "deps": [
-            "npm:@angular/forms",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.html",
-          "hash": "3877775143953216352"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.scss",
-          "hash": "14833083296257424410"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.spec.ts",
-          "hash": "8276793467316025309",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.ts",
-          "hash": "12204747968531835716",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/core",
-            "npm:@angular/forms",
-            "ui",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:rxjs",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/idea.service.ts",
-          "hash": "17502967085914293819",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/idea/idea.types.ts",
-          "hash": "15859926796655843342"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.html",
-          "hash": "15428278840930663921"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.scss",
-          "hash": "1047669778555404448"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.spec.ts",
-          "hash": "8453044337105038623",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.ts",
-          "hash": "6756451197952189531",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.html",
-          "hash": "16377949440300747292"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.scss",
-          "hash": "14357679132585353669"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.spec.ts",
-          "hash": "2897880440968947678",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.ts",
-          "hash": "9370180215148557360",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/cdk",
-            "npm:rxjs",
-            "ui-common"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.constants.ts",
-          "hash": "4801482771102642963"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.html",
-          "hash": "10778781230438349268"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.scss",
-          "hash": "11613514314254437934"
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.spec.ts",
-          "hash": "4643431280206138389",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.ts",
-          "hash": "16008910375782544226",
-          "deps": [
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/cdk",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.constants.ts",
-          "hash": "14522673272320397245"
-        },
-        {
-          "file": "desktop-page/enter/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/enter/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/enter/tsconfig.lib.json",
-          "hash": "4766185256741444917"
-        },
-        {
-          "file": "desktop-page/enter/tsconfig.spec.json",
-          "hash": "8752052113741712502"
-        }
-      ],
-      "login": [
-        {
-          "file": "desktop-page/login/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "desktop-page/login/README.md",
-          "hash": "4687560939830118400"
-        },
-        {
-          "file": "desktop-page/login/jest.config.ts",
-          "hash": "11751231301273746891"
-        },
-        {
-          "file": "desktop-page/login/project.json",
-          "hash": "10459402763052083508"
-        },
-        {
-          "file": "desktop-page/login/src/index.ts",
-          "hash": "7952461400697172163"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.component.html",
-          "hash": "7760582869407597470"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.component.scss",
-          "hash": "14713978809217953597"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.component.ts",
-          "hash": "6993980112681420647",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/login.module.ts",
-          "hash": "1493507927692430428",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/material",
-            "npm:@angular/router",
-            "ui"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.html",
-          "hash": "11480780168733651447"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.scss",
-          "hash": "2464484139908854198"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/sign-in/sign-in.component.ts",
-          "hash": "2616738294427371562",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@angular/material",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.html",
-          "hash": "11322519715006088902"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.scss",
-          "hash": "6087259777045198695"
-        },
-        {
-          "file": "desktop-page/login/src/lib/login/tg-key/tg-key.component.ts",
-          "hash": "13405797918981531176",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@angular/material",
-            "npm:@angular/router",
-            "npm:ngx-mask"
-          ]
-        },
-        {
-          "file": "desktop-page/login/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/login/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/login/tsconfig.lib.json",
-          "hash": "5796668385415907511"
-        },
-        {
-          "file": "desktop-page/login/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "shall": [
-        {
-          "file": "desktop-page/shall/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "desktop-page/shall/README.md",
-          "hash": "2908662979967205114"
-        },
-        {
-          "file": "desktop-page/shall/jest.config.ts",
-          "hash": "16266925096625252383"
-        },
-        {
-          "file": "desktop-page/shall/project.json",
-          "hash": "12563626443727848008"
-        },
-        {
-          "file": "desktop-page/shall/src/index.ts",
-          "hash": "6936664725505316092"
-        },
-        {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.css",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.html",
-          "hash": "16297046413830794483"
-        },
-        {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.spec.ts",
-          "hash": "9958392946843871150",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/shall/src/lib/shall/shall.component.ts",
-          "hash": "11676583296078345324",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "desktop-page/shall/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/shall/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/shall/tsconfig.lib.json",
-          "hash": "5796668385415907511"
-        },
-        {
-          "file": "desktop-page/shall/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "desktop-data": [
-        {
-          "file": "api/desktop-data/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "api/desktop-data/README.md",
-          "hash": "503483430961993583"
-        },
-        {
-          "file": "api/desktop-data/jest.config.ts",
-          "hash": "6435835894750732591"
-        },
-        {
-          "file": "api/desktop-data/project.json",
-          "hash": "17517310949151234814"
-        },
-        {
-          "file": "api/desktop-data/src/lib/desktop-data/desktop.abstract.service.ts",
-          "hash": "4926751344534437924",
-          "deps": [
-            "npm:rxjs",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "api/desktop-data/src/lib/desktop-data/desktop.api.service.ts",
-          "hash": "17954640474540842885",
-          "deps": [
-            "npm:@angular/common",
-            "npm:@angular/core",
-            "npm:rxjs",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "api/desktop-data/src/lib/desktop-data/index.ts",
-          "hash": "17486167584840717661"
-        },
-        {
-          "file": "api/desktop-data/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "api/desktop-data/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "api/desktop-data/tsconfig.lib.json",
-          "hash": "5796668385415907511"
-        },
-        {
-          "file": "api/desktop-data/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "registration": [
-        {
-          "file": "desktop-page/registration/.eslintrc.json",
-          "hash": "9628345067573567197"
-        },
-        {
-          "file": "desktop-page/registration/README.md",
-          "hash": "3716625526328470897"
-        },
-        {
-          "file": "desktop-page/registration/jest.config.ts",
-          "hash": "14760237983411174043"
-        },
-        {
-          "file": "desktop-page/registration/project.json",
-          "hash": "14008188004727362359"
-        },
-        {
-          "file": "desktop-page/registration/src/index.ts",
-          "hash": "17871950768768837336"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/index.ts",
-          "hash": "8649438111259049237"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration-routing.module.ts",
-          "hash": "14835946205869504272",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.component.html",
-          "hash": "11612646316008952149"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.component.scss",
-          "hash": "7338960139972381774"
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.component.ts",
-          "hash": "54774572821290340",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/src/lib/registration/registration.module.ts",
-          "hash": "10200530365267822893",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "desktop-page/registration/tsconfig.json",
-          "hash": "15487755565970508470"
-        },
-        {
-          "file": "desktop-page/registration/tsconfig.lib.json",
-          "hash": "5796668385415907511"
-        },
-        {
-          "file": "desktop-page/registration/tsconfig.spec.json",
-          "hash": "2927375835638640771"
-        }
-      ],
-      "ui-common": [
-        {
-          "file": "ui-common/.eslintrc.json",
-          "hash": "10757071654933456057"
-        },
-        {
-          "file": "ui-common/README.md",
-          "hash": "5816055938019890372"
-        },
-        {
-          "file": "ui-common/jest.config.ts",
-          "hash": "2664794947007966611"
-        },
-        {
-          "file": "ui-common/project.json",
-          "hash": "15080497402530908895"
-        },
-        {
-          "file": "ui-common/src/index.ts",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.html",
-          "hash": "18301338088019648186"
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.scss",
-          "hash": "16492863302078358550"
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.spec.ts",
-          "hash": "3024323876436833465",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.ts",
-          "hash": "16265706731435330079",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/core",
-            "npm:@angular/common",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/forms",
-            "npm:rxjs",
-            "ui"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/button-with-list/index.ts",
-          "hash": "13659396345628661871"
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.html",
-          "hash": "6528905929005432552"
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.scss",
-          "hash": "11627025729105634011"
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.spec.ts",
-          "hash": "11723183580131596825",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.component.ts",
-          "hash": "13942091061815998822",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:rxjs",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "ui",
-            "npm:highcharts"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/chart.constants.ts",
-          "hash": "3698868381136879165"
-        },
-        {
-          "file": "ui-common/src/lib/chart/index.ts",
-          "hash": "9406689297810529802"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/index.ts",
-          "hash": "5745511280332774025"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.html",
-          "hash": "7173725620768371719"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.scss",
-          "hash": "1990136345915956056"
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.spec.ts",
-          "hash": "9087512765393713942",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/chart/legend/legend.component.ts",
-          "hash": "12668548699999998227",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.html",
-          "hash": "5269999913805328798"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.scss",
-          "hash": "6989279386178872289"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.spec.ts",
-          "hash": "2278514590815772323",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.ts",
-          "hash": "16124748344002642865",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-approve/index.ts",
-          "hash": "1686567866560726447"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action-default/action-default.component.html",
-          "hash": "11433929950173409564"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action-default/action-default.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action-default/action-default.component.spec.ts",
-          "hash": "11859498496433632166",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action-default/action-default.component.ts",
-          "hash": "2047247493200577831",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action.service.ts",
-          "hash": "8220485154775223618",
-          "deps": [
-            "npm:@angular/core",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action/action.component.html",
-          "hash": "10468732669850986829"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action/action.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action/action.component.spec.ts",
-          "hash": "10401413649478923058",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action/action.component.ts",
-          "hash": "12653569974687576252",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/action/action.providers.ts",
-          "hash": "4055606894390288348"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/index.ts",
-          "hash": "5349029330638346466"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/plugins/action-default.ts",
-          "hash": "11870446765805569844",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/plugins/action.ts",
-          "hash": "6877569238997152577",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.html",
-          "hash": "7259436763138056116"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.scss",
-          "hash": "7929623168274725735"
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.spec.ts",
-          "hash": "6139567703309547518",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.component.ts",
-          "hash": "6693865419098642916",
-          "deps": [
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@taiga-ui/cdk",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:rxjs",
-            "npm:@angular/common",
-            "ui",
-            "desktop-data",
-            "npm:@taiga-ui/kit"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.directive.ts",
-          "hash": "7269629609324237172",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@taiga-ui/polymorpheus",
-            "ui"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.pipe.ts",
-          "hash": "9013535627299454982",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/dialog-search/search-dialog.tokens.ts",
-          "hash": "6123887621055547304",
-          "deps": [
-            "npm:@angular/core",
-            "npm:rxjs"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/index.ts",
-          "hash": "6953974381309696337"
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.html",
-          "hash": "7533169075811219554"
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.scss",
-          "hash": "17659667045173945829"
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.spec.ts",
-          "hash": "7088917497444896382",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.ts",
-          "hash": "14859128882057295655",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/input-with-actions/input-with-actions.types.ts",
-          "hash": "9799676994095510131"
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.html",
-          "hash": "17474790633429942875"
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.scss",
-          "hash": "4033421804863297901"
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.spec.ts",
-          "hash": "17629693822150111963",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/control-portfolio.component.ts",
-          "hash": "17300817190926797045",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/common",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/legacy",
-            "npm:@taiga-ui/cdk",
-            "ui",
-            "npm:rxjs",
-            "npm:@taiga-ui/polymorpheus"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/portfolio/index.ts",
-          "hash": "12006756909037497301"
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.html",
-          "hash": "2920839672885795725"
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.scss",
-          "hash": "2123470966219968611"
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.spec.ts",
-          "hash": "5468812668842304990",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/range-with-list/range-with-list.component.ts",
-          "hash": "6083532712583629186",
-          "deps": [
-            "npm:@angular/core",
-            "npm:@angular/forms",
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/legacy",
-            "npm:@angular/common",
-            "npm:@taiga-ui/kit",
-            "npm:@taiga-ui/polymorpheus",
-            "npm:@taiga-ui/cdk"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/tabs/index.ts",
-          "hash": "8608207449962467909"
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.html",
-          "hash": "1632066864779346266"
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.scss",
-          "hash": "8486763067119016048"
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.spec.ts",
-          "hash": "9006161805572515304",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "ui-common/src/lib/tabs/tabs.component.ts",
-          "hash": "8715903411620468751",
-          "deps": [
-            "npm:@taiga-ui/core",
-            "npm:@taiga-ui/kit",
-            "npm:@angular/core",
-            "npm:@angular/common"
-          ]
-        },
-        {
-          "file": "ui-common/src/test-setup.ts",
-          "hash": "12935735732682149507",
-          "deps": [
-            "npm:jest-preset-angular"
-          ]
-        },
-        {
-          "file": "ui-common/tsconfig.json",
-          "hash": "4881022640630122902"
-        },
-        {
-          "file": "ui-common/tsconfig.lib.json",
-          "hash": "6705096346873024967"
-        },
-        {
-          "file": "ui-common/tsconfig.spec.json",
-          "hash": "17181539404635497500"
         }
       ],
       "ui": [
@@ -30426,82 +29217,645 @@
           "hash": "2927375835638640771"
         }
       ],
-      "dashboard": [
+      "registration": [
         {
-          "file": "desktop-page/dashboard/.eslintrc.json",
+          "file": "desktop-page/registration/.eslintrc.json",
           "hash": "9628345067573567197"
         },
         {
-          "file": "desktop-page/dashboard/README.md",
-          "hash": "13979165953912037690"
+          "file": "desktop-page/registration/README.md",
+          "hash": "3716625526328470897"
         },
         {
-          "file": "desktop-page/dashboard/jest.config.ts",
-          "hash": "17992068442936652086"
+          "file": "desktop-page/registration/jest.config.ts",
+          "hash": "14760237983411174043"
         },
         {
-          "file": "desktop-page/dashboard/project.json",
-          "hash": "11124908732920750148"
+          "file": "desktop-page/registration/project.json",
+          "hash": "14008188004727362359"
         },
         {
-          "file": "desktop-page/dashboard/src/index.ts",
-          "hash": "13016798126781182746"
+          "file": "desktop-page/registration/src/index.ts",
+          "hash": "17871950768768837336"
         },
         {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard-routing.module.ts",
-          "hash": "15974981277344683695",
+          "file": "desktop-page/registration/src/lib/registration/index.ts",
+          "hash": "8649438111259049237"
+        },
+        {
+          "file": "desktop-page/registration/src/lib/registration/registration-routing.module.ts",
+          "hash": "14835946205869504272",
           "deps": [
-            "npm:@angular/common",
             "npm:@angular/core",
             "npm:@angular/router"
           ]
         },
         {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.html",
-          "hash": "11747888495317311879"
+          "file": "desktop-page/registration/src/lib/registration/registration.component.html",
+          "hash": "11612646316008952149"
         },
         {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.scss",
-          "hash": "7177682918352506687"
+          "file": "desktop-page/registration/src/lib/registration/registration.component.scss",
+          "hash": "7338960139972381774"
         },
         {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.ts",
-          "hash": "15221486546709904261",
+          "file": "desktop-page/registration/src/lib/registration/registration.component.ts",
+          "hash": "54774572821290340",
           "deps": [
             "npm:@angular/core"
           ]
         },
         {
-          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.module.ts",
-          "hash": "12356825633996217690",
+          "file": "desktop-page/registration/src/lib/registration/registration.module.ts",
+          "hash": "10200530365267822893",
           "deps": [
-            "npm:@angular/common",
             "npm:@angular/core",
-            "desktop"
+            "npm:@angular/common"
           ]
         },
         {
-          "file": "desktop-page/dashboard/src/lib/dashboard/shared/.gitkeep",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "desktop-page/dashboard/src/test-setup.ts",
+          "file": "desktop-page/registration/src/test-setup.ts",
           "hash": "12935735732682149507",
           "deps": [
             "npm:jest-preset-angular"
           ]
         },
         {
-          "file": "desktop-page/dashboard/tsconfig.json",
+          "file": "desktop-page/registration/tsconfig.json",
           "hash": "15487755565970508470"
         },
         {
-          "file": "desktop-page/dashboard/tsconfig.lib.json",
+          "file": "desktop-page/registration/tsconfig.lib.json",
           "hash": "5796668385415907511"
         },
         {
-          "file": "desktop-page/dashboard/tsconfig.spec.json",
+          "file": "desktop-page/registration/tsconfig.spec.json",
           "hash": "2927375835638640771"
+        }
+      ],
+      "enter": [
+        {
+          "file": "desktop-page/enter/.eslintrc.json",
+          "hash": "2732611068997327425"
+        },
+        {
+          "file": "desktop-page/enter/README.md",
+          "hash": "6869911560618988538"
+        },
+        {
+          "file": "desktop-page/enter/jest.config.ts",
+          "hash": "6215446492168393328"
+        },
+        {
+          "file": "desktop-page/enter/project.json",
+          "hash": "66855714970266987"
+        },
+        {
+          "file": "desktop-page/enter/src/index.ts",
+          "hash": "1818306602668910589"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/action.component.html",
+          "hash": "7607409736221970656"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/action.component.scss",
+          "hash": "1530342467655498703"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/action.component.spec.ts",
+          "hash": "16465337127406855651",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/action.component.ts",
+          "hash": "4812396018931974638",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/core",
+            "ui",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "npm:@taiga-ui/polymorpheus"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/action.service.ts",
+          "hash": "8957788979639711233",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/action.types.ts",
+          "hash": "7977319231279417998"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.html",
+          "hash": "175107919559136142"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.spec.ts",
+          "hash": "6191430539345413048",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-commission/add-commission.component.ts",
+          "hash": "4952014509071806444",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/common",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.html",
+          "hash": "12971856987728416645"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.spec.ts",
+          "hash": "10987799043454991001",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-dividend/add-dividend.component.ts",
+          "hash": "8475782376796901770",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/cdk",
+            "npm:rxjs",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.html",
+          "hash": "5487445429863468684"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.spec.ts",
+          "hash": "14995406952601540814",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-entry/add-entry.component.ts",
+          "hash": "13066441811555767722",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/cdk",
+            "npm:rxjs",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.html",
+          "hash": "7051907406823590948"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.spec.ts",
+          "hash": "5459728487932509325",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add-target/add-target.component.ts",
+          "hash": "13854438514826403193",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk",
+            "npm:rxjs",
+            "npm:@angular/common",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add.scss",
+          "hash": "17677983706356913294"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/action/add.ts",
+          "hash": "5224768636251310303",
+          "deps": [
+            "npm:@angular/forms",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/color.pipe.ts",
+          "hash": "8980956365771120335",
+          "deps": [
+            "npm:@angular/core",
+            "npm:d3-scale",
+            "npm:d3-color"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.html",
+          "hash": "8580908993683546188"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.scss",
+          "hash": "3208754969449769213"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.spec.ts",
+          "hash": "9307325227151736827",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.component.ts",
+          "hash": "12542205873197607387",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@angular/common",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/core",
+            "npm:rxjs",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.module.ts",
+          "hash": "2182863383204673724",
+          "deps": [
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/dialog/dialog.service.ts",
+          "hash": "2361012290041746157",
+          "deps": [
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/core",
+            "npm:@taiga-ui/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/dialog/index.ts",
+          "hash": "9004913392056948209"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/enter.component.html",
+          "hash": "15552041353127387673"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/enter.component.scss",
+          "hash": "10108363884260465479"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/enter.component.spec.ts",
+          "hash": "11619494319410498162",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/enter.component.ts",
+          "hash": "8839889574810748308",
+          "deps": [
+            "npm:@taiga-ui/kit",
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:rxjs",
+            "ui",
+            "ui-common",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/enter.constants.ts",
+          "hash": "13809792288573918100"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/enter.directive.ts",
+          "hash": "1580051489006996720",
+          "deps": [
+            "npm:@angular/core",
+            "desktop-data",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.html",
+          "hash": "2612068665758848952"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.scss",
+          "hash": "4632825380988943254"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.spec.ts",
+          "hash": "7552451774621343013",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/finish/finish.component.ts",
+          "hash": "5819008951720980867",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/core",
+            "npm:@angular/router",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/polymorpheus"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.html",
+          "hash": "14431435551494675454"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.spec.ts",
+          "hash": "14995406952601540814",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-entry/add-entry.component.ts",
+          "hash": "9315766567887006366",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.html",
+          "hash": "14022042057658013384"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.spec.ts",
+          "hash": "2218828994207948699",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-stop/add-stop.component.ts",
+          "hash": "12174123384842407321",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.html",
+          "hash": "3711888603243771407"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.spec.ts",
+          "hash": "5459728487932509325",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add-target/add-target.component.ts",
+          "hash": "12643373664495865000",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add.scss",
+          "hash": "17677983706356913294"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/add.ts",
+          "hash": "10792914028788067958",
+          "deps": [
+            "npm:@angular/forms",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.html",
+          "hash": "3877775143953216352"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.scss",
+          "hash": "14833083296257424410"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.spec.ts",
+          "hash": "8276793467316025309",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/idea.component.ts",
+          "hash": "12204747968531835716",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/core",
+            "npm:@angular/forms",
+            "ui",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:rxjs",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/idea.service.ts",
+          "hash": "17502967085914293819",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/idea/idea.types.ts",
+          "hash": "15859926796655843342"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.html",
+          "hash": "15428278840930663921"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.scss",
+          "hash": "1047669778555404448"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.spec.ts",
+          "hash": "8453044337105038623",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/instrument/instrument.component.ts",
+          "hash": "6756451197952189531",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.html",
+          "hash": "16377949440300747292"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.scss",
+          "hash": "14357679132585353669"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.spec.ts",
+          "hash": "2897880440968947678",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.component.ts",
+          "hash": "9370180215148557360",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/cdk",
+            "npm:rxjs",
+            "ui-common"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/sidebar.constants.ts",
+          "hash": "4801482771102642963"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.html",
+          "hash": "10778781230438349268"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.scss",
+          "hash": "11613514314254437934"
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.spec.ts",
+          "hash": "4643431280206138389",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.component.ts",
+          "hash": "16008910375782544226",
+          "deps": [
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/cdk",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/src/lib/enter/sidebar/valid-date/valid-date.constants.ts",
+          "hash": "14522673272320397245"
+        },
+        {
+          "file": "desktop-page/enter/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/enter/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/enter/tsconfig.lib.json",
+          "hash": "4766185256741444917"
+        },
+        {
+          "file": "desktop-page/enter/tsconfig.spec.json",
+          "hash": "8752052113741712502"
         }
       ],
       "lk": [
@@ -30617,80 +29971,140 @@
           "hash": "2927375835638640771"
         }
       ],
-      "page-403": [
+      "desktop-data": [
         {
-          "file": "page-403/.eslintrc.json",
-          "hash": "13179335397355282534"
+          "file": "api/desktop-data/.eslintrc.json",
+          "hash": "9628345067573567197"
         },
         {
-          "file": "page-403/README.md",
-          "hash": "12686857620717931995"
+          "file": "api/desktop-data/README.md",
+          "hash": "503483430961993583"
         },
         {
-          "file": "page-403/jest.config.ts",
-          "hash": "1708124533256708914"
+          "file": "api/desktop-data/jest.config.ts",
+          "hash": "6435835894750732591"
         },
         {
-          "file": "page-403/project.json",
-          "hash": "16687166639082115719"
+          "file": "api/desktop-data/project.json",
+          "hash": "17517310949151234814"
         },
         {
-          "file": "page-403/src/index.ts",
-          "hash": "7903193251760647670"
-        },
-        {
-          "file": "page-403/src/lib/page-403/index.ts",
-          "hash": "6022462063791560910"
-        },
-        {
-          "file": "page-403/src/lib/page-403/page-403-routing.module.ts",
-          "hash": "2190310313096613053",
+          "file": "api/desktop-data/src/lib/desktop-data/desktop.abstract.service.ts",
+          "hash": "13790775644110035869",
           "deps": [
-            "npm:@angular/core",
+            "npm:rxjs",
             "npm:@angular/router"
           ]
         },
         {
-          "file": "page-403/src/lib/page-403/page-403.module.ts",
-          "hash": "14740858249438915577",
+          "file": "api/desktop-data/src/lib/desktop-data/desktop.api.service.ts",
+          "hash": "17954640474540842885",
           "deps": [
-            "npm:@angular/core",
             "npm:@angular/common",
-            "ui"
+            "npm:@angular/core",
+            "npm:rxjs",
+            "npm:@angular/router"
           ]
         },
         {
-          "file": "page-403/src/lib/page-403/page/page.component.html",
-          "hash": "18373593032836617318"
+          "file": "api/desktop-data/src/lib/desktop-data/index.ts",
+          "hash": "17486167584840717661"
         },
         {
-          "file": "page-403/src/lib/page-403/page/page.component.scss",
-          "hash": "3244421341483603138"
-        },
-        {
-          "file": "page-403/src/lib/page-403/page/page.component.ts",
-          "hash": "2218592731400157833",
-          "deps": [
-            "npm:@angular/core"
-          ]
-        },
-        {
-          "file": "page-403/src/test-setup.ts",
+          "file": "api/desktop-data/src/test-setup.ts",
           "hash": "12935735732682149507",
           "deps": [
             "npm:jest-preset-angular"
           ]
         },
         {
-          "file": "page-403/tsconfig.json",
+          "file": "api/desktop-data/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "api/desktop-data/tsconfig.lib.json",
+          "hash": "5796668385415907511"
+        },
+        {
+          "file": "api/desktop-data/tsconfig.spec.json",
+          "hash": "2927375835638640771"
+        }
+      ],
+      "page-401": [
+        {
+          "file": "page-401/.eslintrc.json",
+          "hash": "13179335397355282534"
+        },
+        {
+          "file": "page-401/README.md",
+          "hash": "4787190493838082033"
+        },
+        {
+          "file": "page-401/jest.config.ts",
+          "hash": "491031037932208597"
+        },
+        {
+          "file": "page-401/project.json",
+          "hash": "5508963310502524486"
+        },
+        {
+          "file": "page-401/src/index.ts",
+          "hash": "16050477103364702815"
+        },
+        {
+          "file": "page-401/src/lib/page-401/index.ts",
+          "hash": "14037363085938103876"
+        },
+        {
+          "file": "page-401/src/lib/page-401/page-401-routing.module.ts",
+          "hash": "10963065799933359172",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "page-401/src/lib/page-401/page-401.module.ts",
+          "hash": "8558410942248718252",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "page-401/src/lib/page-401/page/page.component.html",
+          "hash": "14444319821233753525"
+        },
+        {
+          "file": "page-401/src/lib/page-401/page/page.component.scss",
+          "hash": "546689368371533098"
+        },
+        {
+          "file": "page-401/src/lib/page-401/page/page.component.ts",
+          "hash": "6724558817912590753",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "page-401/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "page-401/tsconfig.json",
           "hash": "4881022640630122902"
         },
         {
-          "file": "page-403/tsconfig.lib.json",
+          "file": "page-401/tsconfig.lib.json",
           "hash": "4766185256741444917"
         },
         {
-          "file": "page-403/tsconfig.spec.json",
+          "file": "page-401/tsconfig.spec.json",
           "hash": "2129196202529263968"
         }
       ],
@@ -31031,7 +30445,7 @@
         },
         {
           "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.html",
-          "hash": "14902423307874568199"
+          "hash": "6558676952669945366"
         },
         {
           "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.scss",
@@ -31046,7 +30460,7 @@
         },
         {
           "file": "desktop-page/portfolio/src/lib/portfolio-list/commission/commission.component.ts",
-          "hash": "10353529027019511182",
+          "hash": "3854669031145828495",
           "deps": [
             "npm:@angular/core",
             "npm:@angular/common",
@@ -31327,81 +30741,731 @@
           "hash": "2628739785099261941"
         }
       ],
-      "page-401": [
+      "ui-common": [
         {
-          "file": "page-401/.eslintrc.json",
-          "hash": "13179335397355282534"
+          "file": "ui-common/.eslintrc.json",
+          "hash": "10757071654933456057"
         },
         {
-          "file": "page-401/README.md",
-          "hash": "4787190493838082033"
+          "file": "ui-common/README.md",
+          "hash": "5816055938019890372"
         },
         {
-          "file": "page-401/jest.config.ts",
-          "hash": "491031037932208597"
+          "file": "ui-common/jest.config.ts",
+          "hash": "2664794947007966611"
         },
         {
-          "file": "page-401/project.json",
-          "hash": "5508963310502524486"
+          "file": "ui-common/project.json",
+          "hash": "15080497402530908895"
         },
         {
-          "file": "page-401/src/index.ts",
-          "hash": "16050477103364702815"
+          "file": "ui-common/src/index.ts",
+          "hash": "3244421341483603138"
         },
         {
-          "file": "page-401/src/lib/page-401/index.ts",
-          "hash": "14037363085938103876"
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.html",
+          "hash": "18301338088019648186"
         },
         {
-          "file": "page-401/src/lib/page-401/page-401-routing.module.ts",
-          "hash": "10963065799933359172",
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.scss",
+          "hash": "16492863302078358550"
+        },
+        {
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.spec.ts",
+          "hash": "3024323876436833465",
           "deps": [
-            "npm:@angular/core",
-            "npm:@angular/router"
+            "npm:@angular/core"
           ]
         },
         {
-          "file": "page-401/src/lib/page-401/page-401.module.ts",
-          "hash": "8558410942248718252",
+          "file": "ui-common/src/lib/chart/button-with-list/button-with-list.component.ts",
+          "hash": "16265706731435330079",
           "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/core",
+            "npm:@angular/common",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/forms",
+            "npm:rxjs",
+            "ui"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/button-with-list/index.ts",
+          "hash": "13659396345628661871"
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.html",
+          "hash": "6528905929005432552"
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.scss",
+          "hash": "11627025729105634011"
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.spec.ts",
+          "hash": "11723183580131596825",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.component.ts",
+          "hash": "13942091061815998822",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:rxjs",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "ui",
+            "npm:highcharts"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/chart.constants.ts",
+          "hash": "3698868381136879165"
+        },
+        {
+          "file": "ui-common/src/lib/chart/index.ts",
+          "hash": "9406689297810529802"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/index.ts",
+          "hash": "5745511280332774025"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.html",
+          "hash": "7173725620768371719"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.scss",
+          "hash": "1990136345915956056"
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.spec.ts",
+          "hash": "9087512765393713942",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/chart/legend/legend.component.ts",
+          "hash": "12668548699999998227",
+          "deps": [
+            "npm:@taiga-ui/core",
             "npm:@angular/core",
             "npm:@angular/common"
           ]
         },
         {
-          "file": "page-401/src/lib/page-401/page/page.component.html",
-          "hash": "14444319821233753525"
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.html",
+          "hash": "5269999913805328798"
         },
         {
-          "file": "page-401/src/lib/page-401/page/page.component.scss",
-          "hash": "546689368371533098"
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.scss",
+          "hash": "6989279386178872289"
         },
         {
-          "file": "page-401/src/lib/page-401/page/page.component.ts",
-          "hash": "6724558817912590753",
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.spec.ts",
+          "hash": "2278514590815772323",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-approve/dialog-approve.component.ts",
+          "hash": "16124748344002642865",
           "deps": [
             "npm:@angular/core",
-            "npm:@angular/router",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-approve/index.ts",
+          "hash": "1686567866560726447"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/action.component.html",
+          "hash": "10468732669850986829"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/action.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/action.component.spec.ts",
+          "hash": "10401413649478923058",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/action.component.ts",
+          "hash": "14503390590394622457",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
             "npm:rxjs"
           ]
         },
         {
-          "file": "page-401/src/test-setup.ts",
+          "file": "ui-common/src/lib/dialog-search/action/action.providers.ts",
+          "hash": "14182462810987390586",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/action.service.ts",
+          "hash": "8717191678800228996",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/action.types.ts",
+          "hash": "15676029271115818161",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/approval/action-approval.component.html",
+          "hash": "396426865199405995"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/approval/action-approval.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/approval/action-approval.component.ts",
+          "hash": "6436519661876889130",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/awaits/action-awaits.component.html",
+          "hash": "9991745417918171219"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/awaits/action-awaits.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/awaits/action-awaits.component.ts",
+          "hash": "5108164997964022555",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/checked/action-checked.component.html",
+          "hash": "1969218430475652995"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/checked/action-checked.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/checked/action-checked.component.ts",
+          "hash": "10673926450281237547",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/default/action-default.component.html",
+          "hash": "5363640837528895650"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/default/action-default.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/default/action-default.component.ts",
+          "hash": "14634131573373818513",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/plugins/action-approval.ts",
+          "hash": "9869867819796816762",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/plugins/action-awaits.ts",
+          "hash": "13176733666297619981",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/plugins/action-checked.ts",
+          "hash": "130194391757638244",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/action/plugins/action-default.ts",
+          "hash": "4869422287634691593",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/index.ts",
+          "hash": "5349029330638346466"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.html",
+          "hash": "7259436763138056116"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.scss",
+          "hash": "7929623168274725735"
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.spec.ts",
+          "hash": "6139567703309547518",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.component.ts",
+          "hash": "6968535221333311564",
+          "deps": [
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@taiga-ui/cdk",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:rxjs",
+            "npm:@angular/common",
+            "ui",
+            "desktop-data",
+            "npm:@taiga-ui/kit"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.directive.ts",
+          "hash": "7269629609324237172",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@taiga-ui/polymorpheus",
+            "ui"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/dialog-search/search-dialog.pipe.ts",
+          "hash": "9013535627299454982",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/index.ts",
+          "hash": "6953974381309696337"
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.html",
+          "hash": "7533169075811219554"
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.scss",
+          "hash": "17659667045173945829"
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.spec.ts",
+          "hash": "7088917497444896382",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.component.ts",
+          "hash": "14859128882057295655",
+          "deps": [
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/input-with-actions/input-with-actions.types.ts",
+          "hash": "9799676994095510131"
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.html",
+          "hash": "17474790633429942875"
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.scss",
+          "hash": "4033421804863297901"
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.spec.ts",
+          "hash": "17629693822150111963",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/control-portfolio.component.ts",
+          "hash": "17300817190926797045",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/legacy",
+            "npm:@taiga-ui/cdk",
+            "ui",
+            "npm:rxjs",
+            "npm:@taiga-ui/polymorpheus"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/portfolio/index.ts",
+          "hash": "12006756909037497301"
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.html",
+          "hash": "2920839672885795725"
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.scss",
+          "hash": "2123470966219968611"
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.spec.ts",
+          "hash": "5468812668842304990",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/range-with-list/range-with-list.component.ts",
+          "hash": "6083532712583629186",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/legacy",
+            "npm:@angular/common",
+            "npm:@taiga-ui/kit",
+            "npm:@taiga-ui/polymorpheus",
+            "npm:@taiga-ui/cdk"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/tabs/index.ts",
+          "hash": "8608207449962467909"
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.html",
+          "hash": "1632066864779346266"
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.scss",
+          "hash": "8486763067119016048"
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.spec.ts",
+          "hash": "9006161805572515304",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "ui-common/src/lib/tabs/tabs.component.ts",
+          "hash": "8715903411620468751",
+          "deps": [
+            "npm:@taiga-ui/core",
+            "npm:@taiga-ui/kit",
+            "npm:@angular/core",
+            "npm:@angular/common"
+          ]
+        },
+        {
+          "file": "ui-common/src/test-setup.ts",
           "hash": "12935735732682149507",
           "deps": [
             "npm:jest-preset-angular"
           ]
         },
         {
-          "file": "page-401/tsconfig.json",
+          "file": "ui-common/tsconfig.json",
           "hash": "4881022640630122902"
         },
         {
-          "file": "page-401/tsconfig.lib.json",
+          "file": "ui-common/tsconfig.lib.json",
+          "hash": "6705096346873024967"
+        },
+        {
+          "file": "ui-common/tsconfig.spec.json",
+          "hash": "17181539404635497500"
+        }
+      ],
+      "page-403": [
+        {
+          "file": "page-403/.eslintrc.json",
+          "hash": "13179335397355282534"
+        },
+        {
+          "file": "page-403/README.md",
+          "hash": "12686857620717931995"
+        },
+        {
+          "file": "page-403/jest.config.ts",
+          "hash": "1708124533256708914"
+        },
+        {
+          "file": "page-403/project.json",
+          "hash": "16687166639082115719"
+        },
+        {
+          "file": "page-403/src/index.ts",
+          "hash": "7903193251760647670"
+        },
+        {
+          "file": "page-403/src/lib/page-403/index.ts",
+          "hash": "6022462063791560910"
+        },
+        {
+          "file": "page-403/src/lib/page-403/page-403-routing.module.ts",
+          "hash": "2190310313096613053",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "page-403/src/lib/page-403/page-403.module.ts",
+          "hash": "14740858249438915577",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "ui"
+          ]
+        },
+        {
+          "file": "page-403/src/lib/page-403/page/page.component.html",
+          "hash": "18373593032836617318"
+        },
+        {
+          "file": "page-403/src/lib/page-403/page/page.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "page-403/src/lib/page-403/page/page.component.ts",
+          "hash": "2218592731400157833",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "page-403/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "page-403/tsconfig.json",
+          "hash": "4881022640630122902"
+        },
+        {
+          "file": "page-403/tsconfig.lib.json",
           "hash": "4766185256741444917"
         },
         {
-          "file": "page-401/tsconfig.spec.json",
+          "file": "page-403/tsconfig.spec.json",
+          "hash": "2129196202529263968"
+        }
+      ],
+      "dashboard": [
+        {
+          "file": "desktop-page/dashboard/.eslintrc.json",
+          "hash": "9628345067573567197"
+        },
+        {
+          "file": "desktop-page/dashboard/README.md",
+          "hash": "13979165953912037690"
+        },
+        {
+          "file": "desktop-page/dashboard/jest.config.ts",
+          "hash": "17992068442936652086"
+        },
+        {
+          "file": "desktop-page/dashboard/project.json",
+          "hash": "11124908732920750148"
+        },
+        {
+          "file": "desktop-page/dashboard/src/index.ts",
+          "hash": "13016798126781182746"
+        },
+        {
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard-routing.module.ts",
+          "hash": "15974981277344683695",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.html",
+          "hash": "11747888495317311879"
+        },
+        {
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.scss",
+          "hash": "7177682918352506687"
+        },
+        {
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.component.ts",
+          "hash": "15221486546709904261",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "desktop-page/dashboard/src/lib/dashboard/charts-dashboard.module.ts",
+          "hash": "12356825633996217690",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "desktop"
+          ]
+        },
+        {
+          "file": "desktop-page/dashboard/src/lib/dashboard/shared/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "desktop-page/dashboard/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "desktop-page/dashboard/tsconfig.json",
+          "hash": "15487755565970508470"
+        },
+        {
+          "file": "desktop-page/dashboard/tsconfig.lib.json",
+          "hash": "5796668385415907511"
+        },
+        {
+          "file": "desktop-page/dashboard/tsconfig.spec.json",
+          "hash": "2927375835638640771"
+        }
+      ],
+      "page-404": [
+        {
+          "file": "page-404/.eslintrc.json",
+          "hash": "13179335397355282534"
+        },
+        {
+          "file": "page-404/README.md",
+          "hash": "17942793518392976538"
+        },
+        {
+          "file": "page-404/jest.config.ts",
+          "hash": "7541574667304820180"
+        },
+        {
+          "file": "page-404/project.json",
+          "hash": "12699096764956940756"
+        },
+        {
+          "file": "page-404/src/index.ts",
+          "hash": "15945492212031282274"
+        },
+        {
+          "file": "page-404/src/lib/page-404/index.ts",
+          "hash": "13789432557938518705"
+        },
+        {
+          "file": "page-404/src/lib/page-404/page-404-routing.module.ts",
+          "hash": "3880808887301265761",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "page-404/src/lib/page-404/page-404.module.ts",
+          "hash": "4124055266822575954",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/common",
+            "ui"
+          ]
+        },
+        {
+          "file": "page-404/src/lib/page-404/page/page.component.html",
+          "hash": "4567789133421593887"
+        },
+        {
+          "file": "page-404/src/lib/page-404/page/page.component.scss",
+          "hash": "8854893831102484630"
+        },
+        {
+          "file": "page-404/src/lib/page-404/page/page.component.ts",
+          "hash": "5869778260026747431",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "page-404/src/test-setup.ts",
+          "hash": "12935735732682149507",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "page-404/tsconfig.json",
+          "hash": "4881022640630122902"
+        },
+        {
+          "file": "page-404/tsconfig.lib.json",
+          "hash": "4766185256741444917"
+        },
+        {
+          "file": "page-404/tsconfig.spec.json",
           "hash": "2129196202529263968"
         }
       ]
