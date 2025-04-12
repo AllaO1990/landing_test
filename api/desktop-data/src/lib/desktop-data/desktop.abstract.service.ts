@@ -4,6 +4,7 @@ import {
   Stock,
   StockId,
   StockInstrumentList,
+  StockInstrumentToSubscription,
   StockLinkListInstrument,
   StockLists,
   StockParamsConsolidationZones,
@@ -45,7 +46,7 @@ export abstract class DesktopService {
 
   abstract searchStockListInstrument(queryParams: Params): Observable<Response<Stock>>;
 
-  abstract addSubscriptionStockListInstrument(queryParams: Params): Observable<Response<any>>;
+  abstract addSubscriptionStockListInstrument(queryParams: Params): Observable<Response<StockInstrumentToSubscription>>;
 
   public abstract getInstrumentsLists(): Observable<Response<{ items: StockLists }>>;
 

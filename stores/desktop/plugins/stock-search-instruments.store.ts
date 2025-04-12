@@ -1,5 +1,5 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { Stock } from 'types/stock';
+import { Stock, StockInstrument, StockInstrumentToSubscription } from 'types/stock';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { Observable, switchMap, tap } from 'rxjs';
 import { Response } from 'types/response';
@@ -20,6 +20,22 @@ export class StockSearchInstrumentsStore extends ComponentStore<StockSearchInstr
     ...state,
     search,
   }));
+
+  patchSearchList = (response: StockInstrumentToSubscription, type: string) =>
+    this.patchState((state: StockSearchInstrumentsState): Partial<StockSearchInstrumentsState> => {
+      const list = state.list;
+      const search = state.search;
+
+      if (type === 'search' && search) {
+        return { search: this._updateInListForIndex(search, response.instrument) };
+      }
+
+      if (list) {
+        return { list: this._updateInListForIndex(list, response.instrument) };
+      }
+
+      return state;
+    });
 
   constructor(private readonly _api: DesktopService) {
     super({
@@ -48,8 +64,27 @@ export class StockSearchInstrumentsStore extends ComponentStore<StockSearchInstr
 
   readonly addSubscriptionStockListInstrument = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
-      switchMap((params: Params) => this._api.addSubscriptionStockListInstrument(params)),
-      tap((data) => console.log(data))
+      switchMap((params: Params) =>
+        this._api
+          .addSubscriptionStockListInstrument({ instrumentId: params['instrumentId'] })
+          .pipe(
+            tap((response: Response<StockInstrumentToSubscription>) =>
+              this.patchSearchList(response.data, params['type'])
+            )
+          )
+      )
     )
   );
+
+  _updateInListForIndex(list: Stock, instrument: StockInstrument): Stock {
+    const findIndex = list.items.findIndex((item: StockInstrument) => item.id === instrument.id);
+
+    if (findIndex !== -1) {
+      list.items[findIndex] = instrument;
+
+      return { ...list };
+    }
+
+    return list;
+  }
 }

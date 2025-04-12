@@ -158,16 +158,19 @@ export class SearchDialogComponent implements AfterViewInit {
     return item.id;
   }
 
-  onAction(event: any): void {
-    console.log(event);
+  onAction(instrument: StockInstrument): void {
+    if (instrument.subscriptionStatus === 0) {
+      this._store.addSubscriptionStockListInstrument({
+        instrumentId: instrument.id,
+        type: this.controlParams.value.type,
+      });
+    }
   }
 
   onSubscribe(event: Event, item: StockInstrument): void {
     event.preventDefault();
 
     console.log(item);
-
-    this._store.addSubscriptionStockListInstrument({ instrumentId: item.id });
   }
 
   private _conditionLoad(type: ActionForList, page = 1): void {
