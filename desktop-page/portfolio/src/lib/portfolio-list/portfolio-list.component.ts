@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, 
 import { TuiButton, TuiFormatNumberPipe, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
 import { LoaderComponent } from '@ui/components/loader';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import {
@@ -31,7 +31,7 @@ import { BalanceComponent } from './balance/balance.component';
 @Component({
   selector: 'portfolio-list',
   standalone: true,
-  imports: [TuiButton, NgForOf, LoaderComponent, AsyncPipe, TuiFormatNumberPipe, NgIf, ChartComponent],
+  imports: [TuiButton, NgForOf, LoaderComponent, AsyncPipe, TuiFormatNumberPipe, NgIf, ChartComponent, JsonPipe],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
   providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' })],
@@ -43,6 +43,7 @@ export class PortfolioListComponent implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
   readonly #isLoadInfo$: Subject<boolean> = new BehaviorSubject<boolean>(false);
+  readonly #today: Date = new Date(new Date().setUTCHours(0, 0, 0, 0));
 
   #dialogCommissionComponent: PolymorpheusComponent<CommissionComponent> | null = null;
   #dialogBalanceComponent: PolymorpheusComponent<BalanceComponent> | null = null;
@@ -68,11 +69,14 @@ export class PortfolioListComponent implements AfterViewInit {
     tap(() => this.#isLoadInfo$.next(false))
   );
 
+  readonly dataToday$: Observable<null | AccountBalance> = this._service.balanceToday$;
+
   readonly size = 's';
   readonly listFirst: PortfolioInfoEnum[] = [
     PortfolioInfoEnum.INCOME,
     PortfolioInfoEnum.EXPENCE,
     PortfolioInfoEnum.COMISSION,
+    PortfolioInfoEnum.FIXED_PROFIT,
   ];
   readonly listSecond: PortfolioInfoEnum[] = [PortfolioInfoEnum.IN_POSITION, PortfolioInfoEnum.SPARE];
   readonly constants: { [key: string]: string } = PORTFOLIO_LIST_CONSTANTS;
@@ -87,17 +91,31 @@ export class PortfolioListComponent implements AfterViewInit {
   );
 
   ngAfterViewInit(): void {
-    combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$])
+    const params$: Observable<Params> = combineLatest([this.broker$, this.currency$, this.portfolio$]).pipe(
+      debounceTime(0),
+      map((params: [AccountBroker, AccountCurrency, AccountPortfolio]) => ({
+        brokerId: params[0].brokerId,
+        currencyId: params[1].currencyId,
+        portfolioId: params[2].portfolioId,
+      })),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    params$.pipe().subscribe((params: Params) => {
+      this._service.loadTodayBalance({
+        ...params,
+        from: this.#today.toISOString(),
+        to: new Date(new Date(this.#today).setUTCHours(23, 59, 59)).toISOString(),
+      });
+    });
+
+    combineLatest([params$, this.range$])
       .pipe(
         debounceTime(0),
-        map((params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio]) => ({
-          brokerId: params[0].brokerId,
-          currencyId: params[1].currencyId,
-          from: params[2].from,
-          // limit: 0,
-          // page: 0,
-          portfolioId: params[3].portfolioId,
-          to: params[2].to,
+        map(([params, range]: [Params, AccountRange]) => ({
+          ...params,
+          from: range.from,
+          to: range.to,
         })),
         tap(() => this.#isLoadInfo$.next(true))
       )

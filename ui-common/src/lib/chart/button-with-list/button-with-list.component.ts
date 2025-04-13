@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { TuiBadge, TuiBadgedContent, TuiBadgedContentComponent } from '@taiga-ui/kit';
 import { TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf } from '@angular/common';
 import { TuiActiveZone, TuiObscured } from '@taiga-ui/cdk';
 import {
   ControlValueAccessor,
@@ -34,7 +34,6 @@ import { IsDisabledStatePipe } from '@ui/pipes/is-disabled-state.pipe';
   selector: 'lib-button-with-list',
   standalone: true,
   imports: [
-    NgIf,
     NgForOf,
     TuiButton,
     TuiDataList,

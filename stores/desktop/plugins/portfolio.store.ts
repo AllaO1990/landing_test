@@ -24,6 +24,7 @@ export interface PortfolioState {
   toCurrency: null | AccountCurrency;
   range: null | AccountRange;
   balance: null | AccountBalance;
+  balanceToday: null | AccountBalance;
   balanceHistory: null | AccountBalanceHistory;
   structure: null | AccountStructure;
 }
@@ -36,6 +37,9 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly currency$: Observable<null | AccountCurrency> = this.select((state: PortfolioState) => state.currency);
   readonly range$: Observable<null | AccountRange> = this.select((state: PortfolioState) => state.range);
   readonly balance$: Observable<null | AccountBalance> = this.select((state: PortfolioState) => state.balance);
+  readonly balanceToday$: Observable<null | AccountBalance> = this.select(
+    (state: PortfolioState) => state.balanceToday
+  );
   readonly balanceHistory$: Observable<null | AccountBalanceHistory> = this.select(
     (state: PortfolioState) => state.balanceHistory
   );
@@ -51,6 +55,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
       toCurrency: null,
       range: null,
       balance: null,
+      balanceToday: null,
       balanceHistory: null,
       structure: null,
     });
@@ -112,6 +117,13 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
     })
   );
 
+  readonly updateTodayBalance = this.updater(
+    (state: PortfolioState, todayBalance: null | AccountBalance): PortfolioState => ({
+      ...state,
+      balanceToday: todayBalance,
+    })
+  );
+
   readonly updateBalanceHistory = this.updater(
     (state: PortfolioState, balanceHistory: null | AccountBalanceHistory): PortfolioState => ({
       ...state,
@@ -155,6 +167,16 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
         this._api
           .getAccountBalance(params)
           .pipe(tap((response: Response<AccountBalance>) => this.updateBalance(response && response.data)))
+      )
+    )
+  );
+
+  readonly loadTodayBalance = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api
+          .getAccountBalance(params)
+          .pipe(tap((response: Response<AccountBalance>) => this.updateTodayBalance(response && response.data)))
       )
     )
   );
