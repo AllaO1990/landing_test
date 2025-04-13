@@ -8,6 +8,6 @@ export const PORTFOLIO_LIST_CONSTANTS: { [key: string]: string } = {
   inPosition: 'В сделках',
   spare: 'Свободно',
   turnover: 'Оборот',
-  fixedProfit: 'Реализованная',
-  inPositionProfit: 'Нереализованная',
+  fixedProfit: 'Прибыль реализ.',
+  inPositionProfit: 'Прибыль нереализ.',
 };

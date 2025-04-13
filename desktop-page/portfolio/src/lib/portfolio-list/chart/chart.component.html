@@ -1,4 +1,4 @@
-<div class="chart" #chart>
+<div class="chart-line">
   <svg
     xmlns:svg="http://www.w3.org/1999/html"
     *ngIf="(chart$ | async) as chart; else load"
@@ -48,12 +48,12 @@
     </svg:g>
 
     <svg:path
-      class="chart__path"
+      class="chart-line__path"
       [attr.d]="chart.line(chart.items)" />
 
     <svg:g>
       <svg:circle
-        class="chart__circle"
+        class="chart-line__circle"
         r="3"
         *ngFor="let item of chart.items"
         [attr.cx]="chart.x(item.date)"

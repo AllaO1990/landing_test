@@ -103,8 +103,12 @@
   }
 
   &__title {
+    display: flex;
+    
+    margin-bottom: var(--padding-1);
+
     &-value {
-      margin: var(--padding-1) 0;
+      margin-bottom: var(--padding-1);
 
       font-weight: 700;
       font-size: 16px;
@@ -138,7 +142,10 @@
   }
 
   &__name {
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
+    overflow: hidden;
   }
 
   &__description {
