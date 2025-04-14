@@ -1,6 +1,26 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  NgZone,
+  ViewChild,
+} from '@angular/core';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
-import { combineLatest, debounceTime, filter, Observable, shareReplay } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  defer,
+  filter,
+  finalize,
+  Observable,
+  shareReplay,
+  Subscriber,
+  switchMap,
+  take,
+} from 'rxjs';
 import {
   AccountBalanceHistory,
   AccountBalanceHistoryItem,
@@ -17,6 +37,7 @@ import { extent } from 'd3-array';
 import { scaleLinear, scaleUtc } from 'd3-scale';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'lib-portfolio-list-chart',
@@ -28,6 +49,8 @@ import { TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 })
 export class ChartComponent implements AfterViewInit {
   readonly #store: PortfolioFacade = inject(PortfolioFacade);
+  readonly #ngZone: NgZone = inject(NgZone);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   readonly portfolio$: Observable<AccountPortfolio> = this.#store.portfolio$.pipe(
     filter((list: null | AccountPortfolio): list is AccountPortfolio => list !== null),
@@ -54,60 +77,94 @@ export class ChartComponent implements AfterViewInit {
   );
 
   readonly chart$: Observable<any> = this.data$.pipe(
-    map((data: AccountBalanceHistory | null) => {
-      if (data === null) {
-        return null;
-      }
+    map((data: AccountBalanceHistory | null) => this._createChart(data))
 
-      const items = data.items.map((item: AccountBalanceHistoryItem) => ({ ...item, date: new Date(item.date) }));
-      const yDomain = extent(items, (d) => d.balance);
-      const yMax = Math.max(Math.abs(yDomain[1] as number), Math.abs(yDomain[0] as number));
-      const width = 300;
-      const height = 300;
-      const marginTop = 20;
-      const marginRight = 30;
-      const marginBottom = 30;
-      const marginLeft = 40 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 7 : 0);
-      const x = scaleUtc(extent(items, (d) => d.date) as any, [marginLeft, width - marginRight]);
-      const distance =
-        (Math.abs(yDomain[1] as number) - Math.abs(yDomain[0] as number)) *
-        0.1 *
-        ((yDomain[1] as number) + (yDomain[0] as number) > 0 ? 1 : -1);
-
-      const y = scaleLinear([(yDomain[0] as number) - distance, (yDomain[1] as number) + distance] as any, [
-        height - marginBottom,
-        marginTop,
-      ]);
-      const line = d3
-        .line()
-        .x((d: any) => x(d.date))
-        .y((d: any) => y(d.balance));
-
-      return {
-        items,
-        currencySymbol: data.currencySymbol,
-        width,
-        height,
-        marginTop,
-        marginRight,
-        marginBottom,
-        marginLeft,
-        x,
-        xTicksLine: ['M', x.range()[0], 0, 'L', x.range()[1], 0].join(' '),
-        xTicks: x.ticks(width / 80).map((value: Date) => ({
-          value,
-          offset: x(value),
-        })),
-        y,
-        yTicksLine: x.range()[1] - marginLeft,
-        yTicks: y.ticks(height / 40).map((value: number) => ({
-          value,
-          offset: y(value),
-        })),
-        line,
-      };
-    })
+    // switchMap((data: AccountBalanceHistory | null) =>
+    //   this.resize$.pipe(
+    //     map((resizeEntry: ResizeObserverEntry) => {
+    //       if (data === null) {
+    //         return null;
+    //       }
+    //
+    //       const {
+    //         contentRect: { width, height },
+    //       } = resizeEntry;
+    //
+    //       const items = data.items.map((item: AccountBalanceHistoryItem) => ({ ...item, date: new Date(item.date) }));
+    //       const yDomain = extent(items, (d) => d.balance);
+    //       const yMax = Math.max(Math.abs(yDomain[1] as number), Math.abs(yDomain[0] as number));
+    //       // const width = 300;
+    //       // const height = 300;
+    //       const marginTop = 20;
+    //       const marginRight = 30;
+    //       const marginBottom = 30;
+    //       const marginLeft = 40 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 7 : 0);
+    //       const x = scaleUtc(extent(items, (d) => d.date) as any, [marginLeft, width - marginRight]);
+    //       const distance =
+    //         (Math.abs(yDomain[1] as number) - Math.abs(yDomain[0] as number)) *
+    //         0.1 *
+    //         ((yDomain[1] as number) + (yDomain[0] as number) > 0 ? 1 : -1);
+    //
+    //       const y = scaleLinear([(yDomain[0] as number) - distance, (yDomain[1] as number) + distance] as any, [
+    //         height - marginBottom,
+    //         marginTop,
+    //       ]);
+    //       const line = d3
+    //         .line()
+    //         .x((d: any) => x(d.date))
+    //         .y((d: any) => y(d.balance));
+    //
+    //       return {
+    //         items,
+    //         currencySymbol: data.currencySymbol,
+    //         width,
+    //         height,
+    //         marginTop,
+    //         marginRight,
+    //         marginBottom,
+    //         marginLeft,
+    //         x,
+    //         xTicksLine: ['M', x.range()[0], 0, 'L', x.range()[1], 0].join(' '),
+    //         xTicks: x.ticks(width / 80).map((value: Date) => ({
+    //           value,
+    //           offset: x(value),
+    //         })),
+    //         y,
+    //         yTicksLine: x.range()[1] - marginLeft,
+    //         yTicks: y.ticks(height / 40).map((value: number) => ({
+    //           value,
+    //           offset: y(value),
+    //         })),
+    //         line,
+    //       };
+    //     })
+    //   )
+    // )
   );
+
+  @ViewChild('chart', { static: true }) chartElementRef: ElementRef<HTMLElement> | null = null;
+
+  resize$: Observable<ResizeObserverEntry> = defer(() => {
+    const elementRef = this.chartElementRef;
+
+    if (elementRef && elementRef.nativeElement) {
+      return new Observable((subscriber: Subscriber<ResizeObserverEntry>) => {
+        const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => subscriber.next(entries[0]));
+
+        resizeObserver.observe(elementRef.nativeElement);
+
+        return () => {
+          resizeObserver.unobserve(elementRef.nativeElement);
+          resizeObserver.disconnect();
+        };
+      }).pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(50));
+    }
+
+    return this.#ngZone.onStable.asObservable().pipe(
+      take(1),
+      switchMap((_) => this.resize$)
+    );
+  });
 
   ngAfterViewInit(): void {
     combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$])
@@ -123,5 +180,59 @@ export class ChartComponent implements AfterViewInit {
         // tap(() => this.#isLoadInfo$.next(true))
       )
       .subscribe((params: Params) => this.#store.loadBalanceHistory(params));
+
+    this.resize$.pipe(finalize(() => console.log('resize complete'))).subscribe((res) => console.log(res));
+  }
+
+  private _createChart(data: AccountBalanceHistory | null, width = 300, height = 300): any {
+    if (data === null) {
+      return null;
+    }
+
+    const items = data.items.map((item: AccountBalanceHistoryItem) => ({ ...item, date: new Date(item.date) }));
+    const yDomain = extent(items, (d) => d.balance);
+    const yMax = Math.max(Math.abs(yDomain[1] as number), Math.abs(yDomain[0] as number));
+    const marginTop = 20;
+    const marginRight = 30;
+    const marginBottom = 30;
+    const marginLeft = 40 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 7 : 0);
+    const x = scaleUtc(extent(items, (d) => d.date) as any, [marginLeft, width - marginRight]);
+    const distance =
+      (Math.abs(yDomain[1] as number) - Math.abs(yDomain[0] as number)) *
+      0.1 *
+      ((yDomain[1] as number) + (yDomain[0] as number) > 0 ? 1 : -1);
+
+    const y = scaleLinear([(yDomain[0] as number) - distance, (yDomain[1] as number) + distance] as any, [
+      height - marginBottom,
+      marginTop,
+    ]);
+    const line = d3
+      .line()
+      .x((d: any) => x(d.date))
+      .y((d: any) => y(d.balance));
+
+    return {
+      items,
+      currencySymbol: data.currencySymbol,
+      width,
+      height,
+      marginTop,
+      marginRight,
+      marginBottom,
+      marginLeft,
+      x,
+      xTicksLine: ['M', x.range()[0], 0, 'L', x.range()[1], 0].join(' '),
+      xTicks: x.ticks(width / 80).map((value: Date) => ({
+        value,
+        offset: x(value),
+      })),
+      y,
+      yTicksLine: x.range()[1] - marginLeft,
+      yTicks: y.ticks(height / 40).map((value: number) => ({
+        value,
+        offset: y(value),
+      })),
+      line,
+    };
   }
 }

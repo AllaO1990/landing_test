@@ -3,6 +3,7 @@ import { DataList, Response } from 'types/response';
 import {
   Stock,
   StockId,
+  StockInstrument,
   StockInstrumentList,
   StockInstrumentToSubscription,
   StockLinkListInstrument,
@@ -43,6 +44,8 @@ export abstract class DesktopService {
   abstract deleteIdea(id: StockId): Observable<number | null>;
 
   public abstract getStockList(params: Params): Observable<Response<Stock>>;
+
+  abstract getStockInstrument(instrumentId: string): Observable<Response<StockInstrument>>;
 
   abstract searchStockListInstrument(queryParams: Params): Observable<Response<Stock>>;
 

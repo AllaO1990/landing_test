@@ -1,8 +1,8 @@
-<div class="chart-line">
+<div class="chart-line" #chart>
   <svg
     xmlns:svg="http://www.w3.org/1999/html"
     *ngIf="(chart$ | async) as chart; else load"
-    viewBox="0 0 300 300"
+    [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height"
     preserveAspectRatio="xMinYMin meet">
     <svg:g
       [attr.transform]="'translate(0,' + (chart.height - chart.marginBottom) + ')'"

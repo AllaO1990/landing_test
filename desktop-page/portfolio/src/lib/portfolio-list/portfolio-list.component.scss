@@ -60,6 +60,8 @@
     flex-flow: column nowrap;
 
     margin-left: var(--padding-2);
+
+    overflow: hidden;
   }
 
   &__actions {
@@ -104,7 +106,7 @@
 
   &__title {
     display: flex;
-    
+
     margin-bottom: var(--padding-1);
 
     &-value {

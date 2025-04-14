@@ -8,6 +8,7 @@ import { DataList, Response, ResponseMessage } from 'types/response';
 import {
   Stock,
   StockId,
+  StockInstrument,
   StockInstrumentList,
   StockLinkListInstrument,
   StockLists,
@@ -71,6 +72,10 @@ export class DesktopApiService extends DesktopService {
 
   public getStockList(queryParams: Params): Observable<Response<Stock>> {
     return this._http.get<Response<Stock>>(`${this.host}/api/v1/instruments`, { params: queryParams });
+  }
+
+  getStockInstrument(instrumentId: string): Observable<Response<StockInstrument>> {
+    return this._http.get<Response<StockInstrument>>(`${this.host}/api/v1/instruments/${instrumentId}`);
   }
 
   searchStockListInstrument(queryParams: Params): Observable<Response<Stock>> {
