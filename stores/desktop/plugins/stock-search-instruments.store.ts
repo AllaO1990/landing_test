@@ -44,6 +44,10 @@ export class StockSearchInstrumentsStore extends ComponentStore<StockSearchInstr
     });
   }
 
+  readonly resetSearchListInstrument = this.effect((stream$: Observable<void>) =>
+    stream$.pipe(tap(() => this.updateSearchList(null)))
+  );
+
   readonly searchListInstrument = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>

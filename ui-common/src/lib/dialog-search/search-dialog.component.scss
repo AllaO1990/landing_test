@@ -16,7 +16,16 @@
   background-color: var(--block-bg-color);
 
   &__form {
+    display: flex;
+    flex-direction: column;
+
     padding: var(--padding-2);
+  }
+
+  &__row {
+    &:not(:last-child) {
+      margin-bottom: var(--padding-2);
+    }
   }
 
   &__container {
@@ -202,8 +211,7 @@
     width: 50vw;
     max-width: 500px;
 
-    height: 40vh;
-    max-height: 400px;
+    height: 50vh;
 
     margin: var(--padding-4);
   }
