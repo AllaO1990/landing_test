@@ -104,8 +104,8 @@ export class SearchDialogComponent implements AfterViewInit {
 
   readonly subscription$: Observable<{ id: boolean | null; text: string }[]> = of([
     { id: null, text: 'Все' },
-    { id: true, text: 'Отслеживаемые' },
-    { id: false, text: 'Не отслеживаемые' },
+    { id: true, text: 'В подписке' },
+    { id: false, text: 'Без подписки' },
   ]).pipe(tap((list) => this.controlSubscription.patchValue(list[1])));
 
   readonly isMobile$: Observable<boolean> = this._breakpoint$.pipe(

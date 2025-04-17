@@ -67,6 +67,10 @@ export class FilterComponent implements AfterViewInit {
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
   readonly rangeList: { text: string; range: TuiDayRange }[] = [
     {
+      text: 'Сегодня',
+      range: new TuiDayRange(TuiDay.fromLocalNativeDate(this.today), TuiDay.fromLocalNativeDate(this.today)),
+    },
+    {
       text: '7 дней',
       range: new TuiDayRange(
         TuiDay.fromLocalNativeDate(this._getStartDate(-7)),
@@ -116,7 +120,7 @@ export class FilterComponent implements AfterViewInit {
     broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
     currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
     toCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
-    range: new FormControl({ value: this.rangeList[3].range, disabled: false }, Validators.required),
+    range: new FormControl({ value: this.rangeList[5].range, disabled: false }, Validators.required),
   });
 
   readonly formGroup: FormGroup = new FormGroup({
@@ -127,7 +131,7 @@ export class FilterComponent implements AfterViewInit {
     broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
     currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
     toCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
-    range: new FormControl({ value: this.rangeList[3].range, disabled: false }, Validators.required),
+    range: new FormControl({ value: this.rangeList[5].range, disabled: false }, Validators.required),
   });
 
   get controlAssets() {
