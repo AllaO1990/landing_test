@@ -1,32 +1,55 @@
 <div class="search-dialog">
-  <form tuiGroup class="search-dialog__form form" [formGroup]="form" (ngSubmit)="onSearch($event)">
-    <tui-input
-      tuiAutoFocus
-      formControlName="search"
-      [tuiTextfieldSize]="size"
-      [tuiTextfieldCleaner]="true"
-      [tuiTextfieldLabelOutside]="true">
-      Введите название тикера
-      <input tuiTextfieldLegacy autocomplete="off" />
-    </tui-input>
-    <button
-      class="search"
-      appearance="primary"
-      tuiButton
-      [size]="size"
-      [disabled]="isDisabledSearch$ | async"
-      type="submit"
-    >Найти
-    </button>
-    <button
-      class="close"
-      appearance="outline"
-      tuiButton
-      [size]="size"
-      type="button"
-      (click)="onClose($event)"
-    >Закрыть
-    </button>
+  <form class="search-dialog__form form" [formGroup]="form" (ngSubmit)="onSearch($event)">
+    <div tuiGroup class="search-dialog__row">
+      <tui-input
+        tuiAutoFocus
+        [formControl]="controlSearch"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="true"
+        [tuiTextfieldLabelOutside]="true">
+        Введите название тикера
+        <input tuiTextfieldLegacy autocomplete="off" />
+      </tui-input>
+      <button
+        class="search"
+        appearance="primary"
+        tuiButton
+        [size]="size"
+        [disabled]="isDisabledSearch$ | async"
+        type="submit"
+      >Найти
+      </button>
+      <button
+        class="close"
+        appearance="outline"
+        tuiButton
+        [size]="size"
+        type="button"
+        (click)="onClose($event)"
+      >Закрыть
+      </button>
+    </div>
+    <div tuiGroup class="search-dialog__row">
+      <tui-select
+        *ngIf="(subscription$ | async) as items"
+        [valueContent]="subscriptionContent"
+        [tuiTextfieldSize]="size"
+        formControlName="subscription">
+        Отслеживаемые
+        <input autocomplete="off" tuiTextfieldLegacy id="subscription" />
+        <ng-template tuiDataList>
+          <tui-data-list>
+            <button
+              *ngFor="let item of items"
+              tuiOption
+              type="button"
+              [value]="item">
+              {{ item.text }}
+            </button>
+          </tui-data-list>
+        </ng-template>
+      </tui-select>
+    </div>
   </form>
 
   <div class="search-dialog__container">
@@ -46,7 +69,7 @@
         [itemSize]="40">
         <div
           class="item row"
-          [class.unsubscription]="!item.inSub"
+          [class.unsubscription]="item | searchDialogItemCondition"
           *libListItem="let item"
           (click)="onClick($event, item)">
           <div class="cell item__ticker">
@@ -69,7 +92,7 @@
           <div class="cell item__action">
             <lib-action
               (action)="onAction($event)"
-              *ngIf="!item.inSub"
+              *ngIf="item | searchDialogItemCondition"
               [data]="item">
             </lib-action>
           </div>
@@ -99,4 +122,8 @@
 
 <ng-template #loader>
   <ui-loader class="loader"></ui-loader>
+</ng-template>
+
+<ng-template #subscriptionContent let-item>
+  {{ item.text }}
 </ng-template>

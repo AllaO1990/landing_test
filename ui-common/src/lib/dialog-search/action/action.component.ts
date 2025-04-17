@@ -13,7 +13,6 @@ import { ActionPlugin } from './action.types';
 import { ActionDefaultCondition } from './plugins/action-default';
 import { ActionApprovalCondition } from './plugins/action-approval';
 import { ActionAwaitsCondition } from './plugins/action-awaits';
-import { ActionCheckedCondition } from './plugins/action-checked';
 
 @Component({
   selector: 'lib-action',
@@ -44,11 +43,6 @@ import { ActionCheckedCondition } from './plugins/action-checked';
     {
       provide: SEARCH_DIALOG_ACTION_CONDITION_TOKEN,
       useClass: ActionAwaitsCondition,
-      multi: true,
-    },
-    {
-      provide: SEARCH_DIALOG_ACTION_CONDITION_TOKEN,
-      useClass: ActionCheckedCondition,
       multi: true,
     },
   ],

@@ -316,36 +316,20 @@ export class MainStore extends ComponentStore<any> {
   //   )
   // );
 
-  onChangeWatch = this.effect(
-    (source$: Observable<StockEvent | null>) =>
-      source$.pipe(
-        this._getIdFrom(EventSelected.WATCH_LIST),
-        filter((event: StockEvent | null): event is StockEvent => event !== null),
-        switchMap((event: StockEvent) =>
-          this.api
-            .getStockInstrument(event.id)
-            .pipe(
-              tap((response: Response<StockInstrument>) =>
-                this._updateSelected(response.data, null, null, null, event.group)
-              )
+  onChangeWatch = this.effect((source$: Observable<StockEvent | null>) =>
+    source$.pipe(
+      this._getIdFrom(EventSelected.WATCH_LIST),
+      filter((event: StockEvent | null): event is StockEvent => event !== null),
+      switchMap((event: StockEvent) =>
+        this.api
+          .getStockInstrument(event.id)
+          .pipe(
+            tap((response: Response<StockInstrument>) =>
+              this._updateSelected(response.data, null, null, null, event.group)
             )
-        )
+          )
       )
-
-    // combineLatest([
-    //   ,
-    //   this._facade.stockList.list$.pipe(filter((list: StockListItems | null): list is StockListItems => list !== null)),
-    // ]).pipe(
-    //   filter(
-    //     (combine: [StockEvent | null, StockListItems]): combine is [StockEvent, StockListItems] => combine[0] !== null
-    //   ),
-    //   tap(([event, list]: [StockEvent, StockListItems]) => {
-    //     console.log('onChangeWatch', event, list);
-    //
-    //     const find = list.find((item: StockInstrument) => item.id === event.id) || null;
-    //     this._updateSelected(find, null, null, null, event.group);
-    //   })
-    // )
+    )
   );
 
   onChangeTransaction = this.effect((source$: Observable<StockEvent | null>) =>
