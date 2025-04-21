@@ -1,6 +1,6 @@
 import { EntryEnums } from './entry.enums';
 import { EntryHeaderItem } from './entry.types';
-import { sortNumber } from '../main.utils';
+import { sortNumber } from 'utils/sort-number';
 import { IdeaAuthor, ResponseIdea } from 'types/idea';
 import { sortText } from 'utils/sort-text';
 

@@ -31,6 +31,7 @@ import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { DialogFilterComponent } from '../dialog-filter/dialog-filter.component';
 import { getParamsFromFilter } from '../utils';
 import { QueryParams } from 'utils/query-params';
+import { CommissionAddWithTickerComponent } from './add-with-ticker/add-with-ticker.component';
 
 type Loading = {
   loadingRemove: boolean;
@@ -95,6 +96,7 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   readonly controlFilter: FormControl = new FormControl(null);
 
   #dialogAddComponent: PolymorpheusComponent<CommissionAddComponent> | null = null;
+  #dialogAddWithTickerComponent: PolymorpheusComponent<CommissionAddWithTickerComponent> | null = null;
 
   ngAfterViewInit(): void {
     this.controlFilter.valueChanges
@@ -127,8 +129,37 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
     });
   }
 
+  async openDialogAddWithTicker(event: Event, value: (CommissionItem & Loading) | null = null): Promise<void> {
+    event.preventDefault();
+
+    if (!this.#dialogAddWithTickerComponent) {
+      this.#dialogAddWithTickerComponent = await import('./add-with-ticker/add-with-ticker.component')
+        .then((m) => m.CommissionAddWithTickerComponent)
+        .then((c) => new PolymorpheusComponent(c, this.#injector));
+    }
+
+    const data = value !== null ? value : this.controlFilter.value;
+
+    this._openDialog(
+      this.#dialogAddWithTickerComponent as PolymorpheusComponent<CommissionAddWithTickerComponent>,
+      data,
+      'Ввести комиссию'
+    ).subscribe((response: boolean) => {
+      if (response) {
+        this._onLoadList();
+      }
+    });
+  }
+
   onEdit(event: Event, item: CommissionItem & Loading): void {
     this.openDialogAdd(event, item).then(() => {
+      item.loadingEdit = false;
+    });
+    item.loadingEdit = true;
+  }
+
+  onEditWithTicker(event: Event, item: CommissionItem & Loading): void {
+    this.openDialogAddWithTicker(event, item).then(() => {
       item.loadingEdit = false;
     });
     item.loadingEdit = true;

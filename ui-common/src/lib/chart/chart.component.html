@@ -34,6 +34,7 @@
       <lib-button-with-list
         class="action"
         [formControl]="controlEma"
+        [valueMatcher]="valueMatcherEma"
         [icon]="emaIcon"
         [list]="emaList">
       </lib-button-with-list>
@@ -41,6 +42,7 @@
       <lib-button-with-list
         class="action"
         [formControl]="controlSma"
+        [valueMatcher]="valueMatcherEma"
         [icon]="smaIcon"
         [list]="smaList">
       </lib-button-with-list>
@@ -48,6 +50,7 @@
       <lib-button-with-list
         class="action"
         [formControl]="controlZone"
+        [valueMatcher]="valueMatcherEma"
         [icon]="zoneIcon"
         [list]="zoneList"
         (toggled)="onToggledZone()"

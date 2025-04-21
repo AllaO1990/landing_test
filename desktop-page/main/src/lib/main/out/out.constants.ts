@@ -1,5 +1,5 @@
 import { OutHeaderItem } from './out.types';
-import { sortNumber } from '../main.utils';
+import { sortNumber } from 'utils/sort-number';
 import { OutEnums } from './out.enums';
 import { sortText } from 'utils/sort-text';
 import { StockPositionIdeaEntry } from 'types/position';

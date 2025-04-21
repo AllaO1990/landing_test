@@ -41,8 +41,7 @@
           {{ data.profit | tuiFormatNumber | async }} {{ data.currencySymbol }}
           <span
             class="card__title-value-pct"
-            [class.long]="data.profit > 0"
-            [class.short]="data.profit < 0">
+            [uiPriceColor]="data.profit">
             ({{ data.profitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
           </span>
         </div>
@@ -53,6 +52,9 @@
             </dt>
             <dd class="card__cell card__description">
               {{ data.fixedProfit | tuiFormatNumber | async }}
+              <span class="card__value-pct" [uiPriceColor]="data.fixedProfitPct">
+                ({{ data.fixedProfitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
+              </span>
             </dd>
           </dl>
           <dl class="card__row">
@@ -72,6 +74,9 @@
             </dt>
             <dd class="card__cell card__description">
               {{ data.inPositionProfit | tuiFormatNumber | async }}
+              <span class="card__value-pct" [uiPriceColor]="data.inPositionProfitPct">
+                ({{ data.inPositionProfitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
+              </span>
             </dd>
           </dl>
           <dl class="card__row">
@@ -80,42 +85,6 @@
               <span class="long">{{ data.inPositionSuccessCount }}</span>
               /
               <span class="short">{{ data.inPositionUnsuccessCount }}</span>
-            </dd>
-          </dl>
-        </div>
-      </div>
-      <div
-        *ngIf="(dataToday$ | async) as data; else load"
-        class="card"
-        [class.card--success]="data.profit > 0"
-        [class.card--warning]="data.profit < 0"
-        [class.card--default]="data.profit === 0">
-        <div class="card__title">
-          Сегодня
-          <div class="space"></div>
-          {{ data.profit | tuiFormatNumber | async }} {{ data.currencySymbol }}
-          <span
-            class="card__title-value-pct"
-            [class.long]="data.profit > 0"
-            [class.short]="data.profit < 0">
-            ({{ data.profitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
-          </span>
-        </div>
-        <div class="card__list">
-          <dl class="card__row">
-            <dt class="card__cell card__name">
-              {{ constants['fixedProfit'] }}
-            </dt>
-            <dd class="card__cell card__description">
-              {{ data.fixedProfit | tuiFormatNumber | async }}
-            </dd>
-          </dl>
-          <dl class="card__row">
-            <dt class="card__cell card__name">
-              {{ constants['inPositionProfit'] }}
-            </dt>
-            <dd class="card__cell card__description">
-              {{ data.inPositionProfit | tuiFormatNumber | async }}
             </dd>
           </dl>
         </div>

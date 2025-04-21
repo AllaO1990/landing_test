@@ -44,7 +44,7 @@
         *ngFor="let item of list"
         tuiOption
         [disabled]="item.disabled"
-        [value]="item">
+        [value]="valueMatcher(item)">
         {{ item.name }}
       </button>
     </tui-opt-group>

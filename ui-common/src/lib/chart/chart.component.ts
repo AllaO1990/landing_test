@@ -24,7 +24,7 @@ import {
 } from './chart.constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton } from '@taiga-ui/core';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { LegendComponent } from './legend';
 import { Timeframe } from 'types/timeframe';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -36,6 +36,10 @@ import { ConsolidationZonesShape } from 'types/consolidation-zones';
 import { SelectFacade } from 'stores/facades/select.facade';
 import * as Highcharts from 'highcharts/highstock';
 import { EventSelected } from 'types/events';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
+import { LocalStorage } from 'storage/local.storage';
+import { sortText } from 'utils/sort-text';
+import { sortNumber } from 'utils/sort-number';
 
 interface IndicatorListItem<T = string> {
   name: string;
@@ -62,6 +66,7 @@ interface IndicatorListItem<T = string> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartCandlestickComponent implements OnInit {
+  readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
   private readonly _store: ChartFacade = inject(ChartFacade);
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _destroy$: DestroyRef = inject(DestroyRef);
@@ -77,24 +82,30 @@ export class ChartCandlestickComponent implements OnInit {
 
   emaIcon = CHART_EMA_ICON;
   emaList: IndicatorListItem[] = CHART_EMA_LIST;
-  valueEma: IndicatorListItem[] | null = null;
+  valueEma: string[] | null = null;
   smaIcon = CHART_SMA_ICON;
   smaList: IndicatorListItem[] = CHART_SMA_LIST;
-  valueSma: IndicatorListItem[] | null = null;
+  valueSma: string[] | null = null;
   zoneIcon = CHART_ZONE_ICON;
   zoneList: IndicatorListItem<Timeframe>[] = CHART_ZONE_LIST;
-  valueZone: IndicatorListItem<Timeframe>[] | null = null;
+  valueZone: number[] | null = null;
   artIcon = CHART_ATR_ICON;
   ideaIcon = CHART_IDEA_ICON;
 
   // @Input() event: null | StockEvent = null;
 
   readonly size = 's';
-  readonly controlEma: FormControl<IndicatorListItem[] | null> = new FormControl([this.emaList[0], this.emaList[5]]);
-  readonly controlSma: FormControl<IndicatorListItem[] | null> = new FormControl([this.smaList[0], this.smaList[5]]);
+  readonly controlEma: FormControl<string[] | null> = new FormControl(
+    this.#localStorage.getItem('chartControlEma') || [this.emaList[0].value, this.emaList[5].value]
+  );
+  readonly controlSma: FormControl<string[] | null> = new FormControl(
+    this.#localStorage.getItem('chartControlSma') || [this.smaList[0].value, this.smaList[5].value]
+  );
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
   readonly controlTarget: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
-  readonly controlZone: FormControl<IndicatorListItem<Timeframe>[] | null> = new FormControl([this.zoneList[0]]);
+  readonly controlZone: FormControl<number[] | null> = new FormControl(
+    this.#localStorage.getItem('chartControlZone') || [this.zoneList[0].value]
+  );
 
   readonly selected$: Observable<StockInstrument | null> = this._store.selected$;
 
@@ -175,14 +186,15 @@ export class ChartCandlestickComponent implements OnInit {
   legend$: Observable<IndicatorListItem[]> = combineLatest([
     this.controlEma.valueChanges.pipe(
       startWith(this.controlEma.value),
-      map((list: IndicatorListItem[] | null) => (list ? list : []))
+      map((list: string[] | null) => (list ? list : []))
     ),
     this.controlSma.valueChanges.pipe(
       startWith(this.controlSma.value),
-      map((list: IndicatorListItem[] | null) => (list ? list : []))
+      map((list: string[] | null) => (list ? list : []))
     ),
   ]).pipe(
-    map(([ema, sma]: [IndicatorListItem[], IndicatorListItem[]]) => [...ema, ...sma]),
+    map(([ema, sma]: [string[], string[]]) => [...ema, ...sma]),
+    map((list: string[]) => [...this.emaList, ...this.smaList].filter((item) => list.includes(item.value))),
     shareReplay({ bufferSize: 1, refCount: false })
   );
 
@@ -191,29 +203,43 @@ export class ChartCandlestickComponent implements OnInit {
     this.controlSma.valueChanges,
   ]).pipe(
     map(
-      ([emaList, smaList]: [IndicatorListItem[] | null, IndicatorListItem[] | null]) =>
+      ([emaList, smaList]: [string[] | null, string[] | null]) =>
         !((emaList && emaList.length > 0) || (smaList && smaList.length > 0))
     )
     // tap((value: boolean) => (this.toggleLegend = !value))
   );
 
+  valueMatcherEma = (d: IndicatorListItem) => d.value;
+
   ngOnInit(): void {
     this.controlEma.valueChanges
-      .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlEma.value))
-      .subscribe((result: IndicatorListItem[] | null) => {
-        this._store.updateSelectedEma(this._getValue(result));
+      .pipe(
+        takeUntilDestroyed(this._destroy$),
+        tap((result: string[] | null) => this.#localStorage.setItem('chartControlEma', result)),
+        startWith(this.controlEma.value)
+      )
+      .subscribe((result: string[] | null) => {
+        this._store.updateSelectedEma(this._getValue(result, sortText));
       });
 
     this.controlSma.valueChanges
-      .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlSma.value))
-      .subscribe((result: IndicatorListItem[] | null) => {
-        this._store.updateSelectedSma(this._getValue(result));
+      .pipe(
+        takeUntilDestroyed(this._destroy$),
+        tap((result: string[] | null) => this.#localStorage.setItem('chartControlSma', result)),
+        startWith(this.controlSma.value)
+      )
+      .subscribe((result: string[] | null) => {
+        this._store.updateSelectedSma(this._getValue(result, sortText));
       });
 
     this.controlZone.valueChanges
-      .pipe(takeUntilDestroyed(this._destroy$), startWith(this.controlZone.value))
-      .subscribe((result: IndicatorListItem<Timeframe>[] | null) => {
-        this._store.updateSelectedConsolidationZones(this._getValue(result));
+      .pipe(
+        takeUntilDestroyed(this._destroy$),
+        tap((result: number[] | null) => this.#localStorage.setItem('chartControlZone', result)),
+        startWith(this.controlZone.value)
+      )
+      .subscribe((result: number[] | null) => {
+        this._store.updateSelectedConsolidationZones(this._getValue(result, sortNumber));
       });
 
     this._store.updateSelectedAtr(this.controlAtr.value);
@@ -285,14 +311,12 @@ export class ChartCandlestickComponent implements OnInit {
     this.toggleActions = !this.toggleActions;
   }
 
-  private _getValue<T>(value: IndicatorListItem<T>[] | null): T[] {
+  private _getValue<T>(value: T[] | null, sortFn: (a: any, b: any) => number): T[] {
     if (value === null) {
       return [];
     }
 
-    return value
-      .sort((a: IndicatorListItem<T>, b: IndicatorListItem<T>) => a.order - b.order)
-      .map((item: IndicatorListItem<T>) => item.value);
+    return value.sort(sortFn);
   }
 
   private _actionEma(): void {

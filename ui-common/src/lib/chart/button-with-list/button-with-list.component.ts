@@ -77,7 +77,11 @@ export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit 
 
   @Input() list: { name: string; disabled: boolean }[] = [];
 
-  @Input() icon = '';
+  @Input() valueMatcher = (d: any) => d;
+
+  @Input()
+  @Input()
+  icon = '';
 
   @Output() opened: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -133,7 +137,7 @@ export class ButtonWithListComponent<T> implements ControlValueAccessor, OnInit 
 
   writeValue(obj: any): void {
     this.value = obj;
-    this.control.patchValue(obj, { emitEvent: true });
+    this.control.patchValue(this.value, { emitEvent: true });
   }
 
   registerOnChange(fn: any): void {

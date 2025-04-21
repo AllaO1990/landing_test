@@ -46,13 +46,13 @@
             <button
               *ngIf="item.disabled"
               appearance="icon"
-              iconStart="@tui.fullscreen"
+              iconStart="@tui.square-arrow-up-right"
               tuiIconButton
               size="xs"
               type="button"
               [tuiHint]="tooltip"
               tuiHintAppearance="dark"
-              (click)="onShow($event, item)"
+              (click)="onEditWithTicker($event, item)"
             ></button>
             <button
               *ngIf="!item.disabled"

@@ -1,6 +1,6 @@
 <form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
   <div class="form__header" *ngIf="label">
-    <h3>{{ label }}</h3>
+    <h3>{{ label }} для сделки <a tuiLink (click)="onShow($event)">{{ ticker }}</a></h3>
   </div>
   <div class="form__form">
     <lib-control-portfolio
@@ -38,31 +38,13 @@
         tuiAutoFocus
         [tuiNumberFormat]="{precision: 2}"
         formControlName="size"
+        [postfix]="' ' + currencySymbol"
       />
     </tui-textfield>
-    <tui-select
-      *ngIf="(currencies$ | async) as items"
-      class="form__control"
-      [valueContent]="stringifyCurrency(items)"
-      [tuiTextfieldSize]="size"
-      formControlName="currencyId">
-      Валюта
-      <input autocomplete="off" tuiTextfieldLegacy />
-      <ng-template tuiDataList>
-        <tui-data-list>
-          <button
-            *ngFor="let item of items"
-            tuiOption
-            type="button"
-            [value]="item.currencyId">
-            {{ item.currencySymbol }}
-          </button>
-        </tui-data-list>
-      </ng-template>
-    </tui-select>
     <tui-input-date-time
       [tuiTextfieldCleaner]="true"
       [max]="maxDate"
+      [min]="minDate"
       class="form__control"
       formControlName="date"
       [tuiTextfieldSize]="size">

@@ -261,7 +261,7 @@
     <div class="action">
       <button
         class="button"
-        [disabled]="formArrayEntries.value.length === 0 || (isDisableDividends$ | async)"
+        [disabled]="formArrayEntries.value.length === 0"
         (click)="addDividend($event)"
         tuiButton
         type="button">
@@ -328,7 +328,7 @@
     <div class="action">
       <button
         class="button"
-        [disabled]="formArrayEntries.value.length === 0 || (isDisableDividends$ | async)"
+        [disabled]="formArrayEntries.value.length === 0"
         (click)="addCommission($event)"
         tuiButton
         type="button">
