@@ -59,6 +59,7 @@ export class ActionService {
     profitPct: null,
     profit: null,
     brokerId: null,
+    id: null,
   };
 
   getTotalEntry(list: StockPositionActionEntry[] | null, priceIncrement = 8): StockPositionActionEntry {

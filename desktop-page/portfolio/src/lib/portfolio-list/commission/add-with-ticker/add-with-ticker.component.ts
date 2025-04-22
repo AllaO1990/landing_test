@@ -18,7 +18,6 @@ import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@ta
 import { stringifyBroker } from '../../utils';
 import { getTuiDayTime } from 'utils/get-tui-day-time';
 import { CommissionStore } from 'stores/plugins/commission.store';
-import { Params } from '@angular/router';
 import { TuiButtonLoading, TuiInputNumber } from '@taiga-ui/kit';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
@@ -26,6 +25,14 @@ import { StockPosition } from 'types/position';
 import { map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Response } from 'types/response';
+
+type CommissionItem = {
+  brokerId: number;
+  comment: string | null;
+  date: string;
+  size: number;
+  id: number;
+};
 
 @Component({
   selector: 'lib-commission-add',
@@ -68,6 +75,7 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
     portfolio: new FormControl(null, Validators.required),
     brokerId: new FormControl(null, Validators.required),
     comment: new FormControl(null),
+    id: new FormControl(null, Validators.required),
   });
 
   minDate: TuiDay | null = null;
@@ -83,7 +91,7 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
 
   ngAfterViewInit(): void {
     if (this.context.data) {
-      const { portfolio, currency, broker, size, date, comment, ideaId, instrument } = this.context.data;
+      const { portfolio, currency, broker, size, date, comment, ideaId, instrument, id } = this.context.data;
 
       this.currencySymbol = currency.currencySymbol;
       this.ticker = instrument.ticker;
@@ -92,12 +100,11 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
         date: getTuiDayTime(date || new Date().toISOString()),
         portfolio: portfolio && portfolio.portfolioId !== null ? portfolio : null,
         brokerId: broker && broker.brokerId,
+        id,
         size,
         comment,
         ideaId,
       });
-
-      this.#store.getIdea(this.context.data.ideaId).subscribe((res) => console.log(res));
     }
   }
 
@@ -117,6 +124,13 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
         console.log(position);
 
         const body = this._getBody(position);
+        const value = this._getParams();
+
+        const findIndex = body.comissions.findIndex((item) => item.id === value.id);
+
+        if (findIndex === -1) {
+          body.comissions[findIndex] = value;
+        }
 
         return this.#store.editIdea(this.context.data.ideaId, body);
       })
@@ -138,14 +152,15 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
       });
   }
 
-  private _getParams(): Params {
-    const { date, brokerId, size, comment } = this.form.getRawValue();
+  private _getParams(): CommissionItem {
+    const { date, brokerId, size, comment, id } = this.form.getRawValue();
 
     return {
+      id,
       brokerId,
       comment,
       size,
-      date: (date[0] as TuiDay).toLocalNativeDate(),
+      date: (date[0] as TuiDay).toLocalNativeDate().toISOString(),
     };
   }
 
@@ -170,6 +185,7 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
         comment: item.comment,
         date: item.date,
         size: item.size,
+        id: item.id,
       })),
       dividends: position.dividends.map((item) => ({
         amount: item.amount,
@@ -187,7 +203,7 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
         })),
         expirationDate: null,
         comment: '',
-        strategyId: null,
+        strategyId: 4,
         watch: position.idea.subscribed,
         instrumentId: position.idea.instrument.id,
         parentId: position.idea.parentId,

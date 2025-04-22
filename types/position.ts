@@ -58,6 +58,8 @@ export interface StockPosition {
   idea: {
     author: string;
     createdAt: string | null;
+    comment: string;
+    expirationDate: string | null;
     entries: StockPositionIdeaEntry[];
     id: number | null;
     inPosition: boolean;
@@ -88,6 +90,7 @@ export interface StockPositionStrategy {
   successProbability: number;
   type: string;
   name: string;
+  id: number;
 }
 
 export interface StockPositionStop {
@@ -159,6 +162,7 @@ export interface StockPositionCommission {
   date: null | string;
   profit: null | number;
   profitPct: null | number;
+  id: number | null;
 }
 
 export class Position implements ResponsePosition {
