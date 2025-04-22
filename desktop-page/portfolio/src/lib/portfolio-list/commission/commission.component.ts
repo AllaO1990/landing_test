@@ -15,7 +15,7 @@ import { CommissionStore } from 'stores/plugins/commission.store';
 import { DESKTOP_API, QUERY_PARAMS } from 'tokens/desktop';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { BehaviorSubject, catchError, forkJoin, Observable, of, startWith, Subject, timer } from 'rxjs';
+import { BehaviorSubject, catchError, filter, forkJoin, Observable, of, startWith, Subject, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -100,7 +100,11 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
 
   ngAfterViewInit(): void {
     this.controlFilter.valueChanges
-      .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlFilter.value))
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        startWith(this.controlFilter.value),
+        filter((value: null | any) => value !== null)
+      )
       .subscribe((value) => {
         this._onLoadList();
         this.#filterValue$.next(getParamsFromFilter(value));
