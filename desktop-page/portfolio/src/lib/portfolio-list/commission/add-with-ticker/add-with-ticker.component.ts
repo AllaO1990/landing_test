@@ -22,9 +22,8 @@ import { TuiButtonLoading, TuiInputNumber } from '@taiga-ui/kit';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { StockPosition } from 'types/position';
-import { map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Response } from 'types/response';
+import { map } from 'rxjs/operators';
 
 type CommissionItem = {
   brokerId: number;
@@ -121,14 +120,11 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
     const request = this.#store.getIdea(this.context.data.ideaId).pipe(
       filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
       switchMap((position: StockPosition) => {
-        console.log(position);
-
         const body = this._getBody(position);
         const value = this._getParams();
+        const findIndex = body.comissions.findIndex((item) => Number(item.id) === Number(value.id));
 
-        const findIndex = body.comissions.findIndex((item) => item.id === value.id);
-
-        if (findIndex === -1) {
+        if (findIndex !== -1) {
           body.comissions[findIndex] = value;
         }
 
@@ -143,7 +139,7 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
     //
     forkJoin([request, timer(1000)])
       .pipe(
-        map(([response]: [Response<any>, number]) => response),
+        map(([response]: [any, number]) => response),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe((_) => {
@@ -160,7 +156,7 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
       brokerId,
       comment,
       size,
-      date: (date[0] as TuiDay).toLocalNativeDate().toISOString(),
+      date: new Date(date[0].toLocalNativeDate().valueOf() + date[1].valueOf()).toISOString(),
     };
   }
 
