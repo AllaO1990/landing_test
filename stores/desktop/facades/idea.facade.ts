@@ -69,6 +69,8 @@ const DEFAULT_IDEA = {
     author: 'user',
     createdAt: null,
     entries: [],
+    comment: '',
+    expirationDate: null,
     id: null,
     inPosition: false,
     inPositionDepositShare: 0,

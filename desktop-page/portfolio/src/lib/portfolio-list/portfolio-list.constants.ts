@@ -3,7 +3,7 @@ export const PORTFOLIO_LIST_CONSTANTS: { [key: string]: string } = {
   expence: 'Расходы',
   income: 'Внесено',
   withdrawn: 'Выведено',
-  comission: 'Комиссии',
+  comissions: 'Комиссии',
   profit: 'Общая прибыль',
   inPosition: 'В сделках',
   spare: 'Свободно',

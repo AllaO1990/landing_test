@@ -1,4 +1,4 @@
-import { NG_EVENT_PLUGINS } from '@taiga-ui/event-plugins';
+import { provideEventPlugins } from '@taiga-ui/event-plugins';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
@@ -14,6 +14,10 @@ import { routes } from './app-routing.module';
 import { httpInterceptors } from './core/interceptors';
 import { TUI_LANGUAGE, TUI_RUSSIAN_LANGUAGE } from '@taiga-ui/i18n';
 import { of } from 'rxjs';
+import { WINDOW } from 'tokens/desktop/window';
+import { DOCUMENT } from '@angular/common';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
+import { LocalStorage } from 'storage/local.storage';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,7 +27,17 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors(httpInterceptors)),
     provideAnimations(),
     importProvidersFrom(),
-    NG_EVENT_PLUGINS,
+    // NG_EVENT_PLUGINS,
+    provideEventPlugins(),
+    {
+      provide: WINDOW,
+      useFactory: (document: Document): Window => document.defaultView!,
+      deps: [DOCUMENT],
+    },
+    {
+      provide: LOCAL_STORAGE,
+      useClass: LocalStorage,
+    },
     {
       provide: DESKTOP_ENVIRONMENT,
       useValue: environment,
@@ -70,6 +84,5 @@ export const appConfig: ApplicationConfig = {
       useValue: of(TUI_RUSSIAN_LANGUAGE),
     },
     GlobalDateRangeService,
-    NG_EVENT_PLUGINS,
   ],
 };

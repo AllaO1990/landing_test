@@ -25,18 +25,26 @@ export interface AccountBalance {
   deposit: number;
   income: number;
   expence: number;
-  comission: number;
+  comissions: number;
   inPosition: number;
   spare: number;
   profit: number;
   profitPct: number;
   fixedProfit: number;
+  fixedProfitPct: number;
   fixedSuccessCount: number;
   fixedUnsuccessCount: number;
   inPositionProfit: number;
+  inPositionProfitPct: number;
   inPositionSuccessCount: number;
   inPositionUnsuccessCount: number;
   currencySymbol: string;
+  ideasComissions: number;
+  ideasDividends: number;
+  ideasEndPeriodResult: number;
+  ideasStartPeriodResult: number;
+  startDeposit: number;
+  totalEntryPrice: number;
 }
 
 export interface AccountBalanceHistory {

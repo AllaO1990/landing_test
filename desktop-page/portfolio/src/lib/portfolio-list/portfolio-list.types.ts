@@ -2,7 +2,7 @@ export enum PortfolioInfoEnum {
   DEPOSIT = 'deposit',
   INCOME = 'income',
   EXPENCE = 'expence',
-  COMISSION = 'comission',
+  COMISSION = 'comissions',
   IN_POSITION = 'inPosition',
   SPARE = 'spare',
   PROFIT = 'profit',

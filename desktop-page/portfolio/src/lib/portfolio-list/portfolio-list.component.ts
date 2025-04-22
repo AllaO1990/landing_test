@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, 
 import { TuiButton, TuiFormatNumberPipe, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
-import { AsyncPipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { LoaderComponent } from '@ui/components/loader';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import {
@@ -27,11 +27,21 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { CommissionComponent } from './commission/commission.component';
 import { ChartComponent } from './chart/chart.component';
 import { BalanceComponent } from './balance/balance.component';
+import { ColorPriceDirective } from '@ui/components/price';
 
 @Component({
   selector: 'portfolio-list',
   standalone: true,
-  imports: [TuiButton, NgForOf, LoaderComponent, AsyncPipe, TuiFormatNumberPipe, NgIf, ChartComponent, JsonPipe],
+  imports: [
+    TuiButton,
+    NgForOf,
+    LoaderComponent,
+    AsyncPipe,
+    TuiFormatNumberPipe,
+    NgIf,
+    ChartComponent,
+    ColorPriceDirective,
+  ],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
   providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' })],
@@ -68,8 +78,6 @@ export class PortfolioListComponent implements AfterViewInit {
   readonly data$: Observable<null | AccountBalance> = this._service.balance$.pipe(
     tap(() => this.#isLoadInfo$.next(false))
   );
-
-  readonly dataToday$: Observable<null | AccountBalance> = this._service.balanceToday$;
 
   readonly size = 's';
   readonly listFirst: PortfolioInfoEnum[] = [
