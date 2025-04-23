@@ -32,7 +32,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiPagination } from '@taiga-ui/kit';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
+import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategy, AccountType } from 'types/account';
 import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 import { Params } from '@angular/router';
 
@@ -125,6 +125,14 @@ export class WrapperTableComponent implements OnInit {
     filter((list: null | AccountBroker): list is AccountBroker => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  type$: Observable<AccountType> = this._service.type$.pipe(
+    filter((list: null | AccountType): list is AccountType => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  strategy$: Observable<AccountStrategy> = this._service.strategy$.pipe(
+    filter((list: null | AccountStrategy): list is AccountStrategy => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
   currency$: Observable<AccountCurrency> = this._service.currency$.pipe(
     filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -133,12 +141,28 @@ export class WrapperTableComponent implements OnInit {
     filter((list: null | any): list is any => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
-  storeStream$: Observable<Params> = combineLatest([this.portfolio$, this.broker$, this.currency$]).pipe(
-    map(([portfolio, broker, currency]: [AccountPortfolio, AccountBroker, AccountCurrency]) => ({
-      brokerId: broker.brokerId,
-      currencyId: currency.currencyId,
-      portfolioId: portfolio.portfolioId,
-    }))
+  storeStream$: Observable<Params> = combineLatest([
+    this.portfolio$,
+    this.broker$,
+    this.currency$,
+    this.type$,
+    this.strategy$,
+  ]).pipe(
+    map(
+      ([portfolio, broker, currency, type, strategy]: [
+        AccountPortfolio,
+        AccountBroker,
+        AccountCurrency,
+        AccountType,
+        AccountStrategy
+      ]) => ({
+        brokerId: broker.brokerId,
+        currencyId: currency.currencyId,
+        portfolioId: portfolio.portfolioId,
+        instrumentType: type.id,
+        strategyId: strategy.id,
+      })
+    )
   );
   inputStream$: Observable<Params> = this.#inputParams$.asObservable();
 

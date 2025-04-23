@@ -1,16 +1,18 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable, shareReplay, switchMap, tap } from 'rxjs';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategy, AccountType } from 'types/account';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { DataList, Response } from 'types/response';
+import { sortText } from 'utils/sort-text';
 
 export interface AccountState {
   brokers: null | AccountBroker[];
   brokersMap: Map<number | null, AccountBroker>;
   currencies: null | AccountCurrency[];
   portfolios: null | AccountPortfolio[];
-  strategies: null | AccountStrategies[];
-  strategiesMap: Map<string, AccountStrategies>;
+  strategies: null | AccountStrategy[];
+  strategiesMap: Map<string, AccountStrategy>;
+  types: null | AccountType[];
 }
 
 export class AccountStore extends ComponentStore<AccountState> {
@@ -20,8 +22,9 @@ export class AccountStore extends ComponentStore<AccountState> {
   ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
   readonly currencies$: Observable<null | AccountCurrency[]> = this.select((state: AccountState) => state.currencies);
   readonly portfolios$: Observable<null | AccountPortfolio[]> = this.select((state: AccountState) => state.portfolios);
-  readonly strategies$: Observable<null | AccountStrategies[]> = this.select((state: AccountState) => state.strategies);
-  readonly strategiesMap$: Observable<Map<string, AccountStrategies>> = this.select(
+  readonly strategies$: Observable<null | AccountStrategy[]> = this.select((state: AccountState) => state.strategies);
+  readonly types$: Observable<null | AccountType[]> = this.select((state: AccountState) => state.types);
+  readonly strategiesMap$: Observable<Map<string, AccountStrategy>> = this.select(
     (state: AccountState) => state.strategiesMap
   ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
@@ -33,6 +36,7 @@ export class AccountStore extends ComponentStore<AccountState> {
       portfolios: null,
       strategies: null,
       strategiesMap: new Map(),
+      types: null,
     });
   }
 
@@ -73,18 +77,25 @@ export class AccountStore extends ComponentStore<AccountState> {
   );
 
   readonly updateStrategies = this.updater(
-    (state: AccountState, strategies: null | AccountStrategies[]): AccountState => ({
+    (state: AccountState, strategies: null | AccountStrategy[]): AccountState => ({
       ...state,
       strategies,
     })
   );
 
+  readonly updateTypes = this.updater(
+    (state: AccountState, types: null | AccountType[]): AccountState => ({
+      ...state,
+      types,
+    })
+  );
+
   readonly updateStrategiesMap = this.updater(
-    (state: AccountState, strategiesMap: null | AccountStrategies[]): AccountState => {
-      const map = new Map<string, AccountStrategies>();
+    (state: AccountState, strategiesMap: null | AccountStrategy[]): AccountState => {
+      const map = new Map<string, AccountStrategy>();
 
       if (strategiesMap !== null) {
-        strategiesMap.forEach((item: AccountStrategies) => {
+        strategiesMap.forEach((item: AccountStrategy) => {
           map.set(item.key, item);
         });
       }
@@ -165,9 +176,20 @@ export class AccountStore extends ComponentStore<AccountState> {
     stream$.pipe(
       switchMap(() =>
         this._api.getAccountStrategies().pipe(
-          tap((response: Response<DataList<AccountStrategies>>) => {
-            this.updateStrategies(response.data.items);
+          tap((response: Response<DataList<AccountStrategy>>) => {
+            this.updateStrategies(response.data.items.sort((a, b) => sortText(a.name, b.name)));
             this.updateStrategiesMap(response.data.items);
+          })
+        )
+      )
+    )
+  );
+  readonly loadTypes = this.effect((stream$: Observable<void>) =>
+    stream$.pipe(
+      switchMap(() =>
+        this._api.getAccountTypes().pipe(
+          tap((response: Response<DataList<AccountType>>) => {
+            this.updateTypes(response.data.items.sort((a, b) => sortText(a.name, b.name)));
           })
         )
       )

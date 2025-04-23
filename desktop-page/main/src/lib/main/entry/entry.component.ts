@@ -15,7 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockInstrument } from 'types/stock';
 import { Position } from 'types/position';
 import { searchPosition } from '../common/utils/search-position';
-import { AccountStrategies } from 'types/account';
+import { AccountStrategy } from 'types/account';
 
 interface StockInstrumentWithMap {
   id: string;
@@ -24,7 +24,7 @@ interface StockInstrumentWithMap {
   disabled: boolean;
 }
 
-interface AccountStrategiesWithMap extends AccountStrategies {
+interface AccountStrategiesWithMap extends AccountStrategy {
   map: string[];
   disabled: boolean;
 }

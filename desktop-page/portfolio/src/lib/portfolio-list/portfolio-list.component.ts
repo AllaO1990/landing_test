@@ -18,7 +18,15 @@ import {
   tap,
   timer,
 } from 'rxjs';
-import { AccountBalance, AccountBroker, AccountCurrency, AccountPortfolio, AccountRange } from 'types/account';
+import {
+  AccountBalance,
+  AccountBroker,
+  AccountCurrency,
+  AccountPortfolio,
+  AccountRange,
+  AccountStrategy,
+  AccountType,
+} from 'types/account';
 import { map } from 'rxjs/operators';
 import { Params } from '@angular/router';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -66,6 +74,14 @@ export class PortfolioListComponent implements AfterViewInit {
     filter((list: null | AccountBroker): list is AccountBroker => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly type$: Observable<AccountType> = this._service.type$.pipe(
+    filter((list: null | AccountType): list is AccountType => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  readonly strategy$: Observable<AccountStrategy> = this._service.strategy$.pipe(
+    filter((list: null | AccountStrategy): list is AccountStrategy => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
   readonly currency$: Observable<AccountCurrency> = this._service.currency$.pipe(
     filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -99,23 +115,23 @@ export class PortfolioListComponent implements AfterViewInit {
   );
 
   ngAfterViewInit(): void {
-    const params$: Observable<Params> = combineLatest([this.broker$, this.currency$, this.portfolio$]).pipe(
+    const params$: Observable<Params> = combineLatest([
+      this.broker$,
+      this.currency$,
+      this.portfolio$,
+      this.type$,
+      this.strategy$,
+    ]).pipe(
       debounceTime(0),
-      map((params: [AccountBroker, AccountCurrency, AccountPortfolio]) => ({
+      map((params: [AccountBroker, AccountCurrency, AccountPortfolio, AccountType, AccountStrategy]) => ({
         brokerId: params[0].brokerId,
         currencyId: params[1].currencyId,
         portfolioId: params[2].portfolioId,
+        instrumentType: params[3].id,
+        strategyId: params[4].id,
       })),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-
-    params$.pipe().subscribe((params: Params) => {
-      this._service.loadTodayBalance({
-        ...params,
-        from: this.#today.toISOString(),
-        to: new Date(new Date(this.#today).setUTCHours(23, 59, 59)).toISOString(),
-      });
-    });
 
     combineLatest([params$, this.range$])
       .pipe(

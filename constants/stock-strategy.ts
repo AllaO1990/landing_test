@@ -1,5 +1,5 @@
 import { StockStrategyEnums } from '../types/stock-strategy';
-import { AccountStrategies } from '../types/account';
+import { AccountStrategy } from '../types/account';
 
 export const STOCK_STRATEGY: { [key in StockStrategyEnums]: string } = {
   [StockStrategyEnums.CONSOLIDATION]: 'Консолидация',
@@ -11,7 +11,7 @@ export const STOCK_STRATEGY: { [key in StockStrategyEnums]: string } = {
   [StockStrategyEnums.ACTIVE_ZONE_BULLISH_ENGULFING]: 'АЗТ (Поглощение покупателями)',
 };
 
-export const STOCK_STRATEGY_LIST: (AccountStrategies & { disabled: boolean })[] = [
+export const STOCK_STRATEGY_LIST: (AccountStrategy & { disabled: boolean })[] = [
   {
     id: 1,
     key: StockStrategyEnums.CONSOLIDATION,

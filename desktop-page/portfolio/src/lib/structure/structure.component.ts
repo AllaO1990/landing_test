@@ -26,8 +26,10 @@ import {
   AccountCurrency,
   AccountPortfolio,
   AccountRange,
+  AccountStrategy,
   AccountStructure,
   AccountStructureItem,
+  AccountType,
 } from 'types/account';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
@@ -99,6 +101,14 @@ export class StructureComponent implements AfterViewInit {
     filter((list: null | AccountBroker): list is AccountBroker => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly type$: Observable<AccountType> = this.#store.type$.pipe(
+    filter((list: null | AccountType): list is AccountType => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  readonly strategy$: Observable<AccountStrategy> = this.#store.strategy$.pipe(
+    filter((list: null | AccountStrategy): list is AccountStrategy => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
   readonly currency$: Observable<AccountCurrency> = this.#store.currency$.pipe(
     filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -138,17 +148,35 @@ export class StructureComponent implements AfterViewInit {
       this.currency$,
       this.range$,
       this.portfolio$,
+      this.type$,
+      this.strategy$,
       this.controlCategories.valueChanges.pipe(startWith(this.controlCategories.value)),
     ])
       .pipe(
         debounceTime(0),
-        map((params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio, { value: string }]) => ({
-          brokerId: params[0].brokerId,
-          currencyId: params[1].currencyId,
-          portfolioId: params[3].portfolioId,
-          date: params[2].to,
-          groupBy: params[4].value,
-        })),
+        map(
+          (
+            params: [
+              AccountBroker,
+              AccountCurrency,
+              AccountRange,
+              AccountPortfolio,
+              AccountType,
+              AccountStrategy,
+              {
+                value: string;
+              }
+            ]
+          ) => ({
+            brokerId: params[0].brokerId,
+            currencyId: params[1].currencyId,
+            date: params[2].to,
+            portfolioId: params[3].portfolioId,
+            instrumentType: params[4].id,
+            strategyId: params[5].id,
+            groupBy: params[6].value,
+          })
+        ),
         tap(() => this.isLoad$.next(true))
       )
       .subscribe((params: Params) => this.#store.loadStructure(params));
