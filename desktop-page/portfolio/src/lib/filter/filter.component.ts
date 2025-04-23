@@ -18,7 +18,7 @@ import { FILTER_CONSTANTS } from './filter.constants';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategy, AccountType } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RangeWithListComponent } from 'ui-common/lib/range-with-list/range-with-list.component';
 import { ChipComponent } from './chip/chip.component';
@@ -113,8 +113,9 @@ export class FilterComponent implements AfterViewInit {
   valueDefaultBroker = { broker: 'Все', brokerId: null };
   valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
   valueDefaultStrategy = { name: 'Все', key: 'all', id: null };
+  valueDefaultType = { name: 'Все', key: 'all', id: null };
   valueDefault = {
-    assets: null,
+    type: this.valueDefaultType,
     transaction: null,
     strategy: this.valueDefaultStrategy,
     portfolio: this.valueDefaultPortfolio,
@@ -127,7 +128,7 @@ export class FilterComponent implements AfterViewInit {
   protected readonly openFilter: WritableSignal<boolean> = signal(false);
 
   readonly formGroupDialog: FormGroup = new FormGroup({
-    assets: new FormControl({ value: null, disabled: true }, Validators.required),
+    type: new FormControl({ value: this.valueDefaultType, disabled: false }, Validators.required),
     transaction: new FormControl({ value: null, disabled: true }, Validators.required),
     strategy: new FormControl({ value: this.valueDefaultStrategy, disabled: false }, Validators.required),
     portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
@@ -138,7 +139,7 @@ export class FilterComponent implements AfterViewInit {
   });
 
   readonly formGroup: FormGroup = new FormGroup({
-    assets: new FormControl({ value: null, disabled: true }, Validators.required),
+    type: new FormControl({ value: this.valueDefaultType, disabled: false }, Validators.required),
     transaction: new FormControl({ value: null, disabled: true }, Validators.required),
     strategy: new FormControl({ value: this.valueDefaultStrategy, disabled: false }, Validators.required),
     portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
@@ -148,8 +149,8 @@ export class FilterComponent implements AfterViewInit {
     range: new FormControl({ value: this.rangeList[5].range, disabled: false }, Validators.required),
   });
 
-  get controlAssets() {
-    return this.formGroup.get('assets') as FormControl;
+  get controlType() {
+    return this.formGroup.get('type') as FormControl;
   }
 
   get controlTransaction() {
@@ -180,16 +181,11 @@ export class FilterComponent implements AfterViewInit {
     return this.formGroup.get('range') as FormControl;
   }
 
-  readonly assets$: Observable<any[]> = of([]).pipe(
-    filter((list: any[] | null): list is any[] => list !== null),
-    map((list: any[]) => [{ value: 'Все', id: null }, ...list]),
-    tap((list: any[]) => {
-      if (list !== null && list.length > 0 && this.controlAssets.value === null) {
-        this.controlAssets.patchValue(list[0]);
-      }
-    }),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
+  // readonly assets$: Observable<AccountTypes[]> = this._accountFacade.types$.pipe(
+  //   filter((list: AccountTypes[] | null): list is AccountTypes[] => list !== null),
+  //   map((list: AccountTypes[]) => [this.valueDefaultType, ...list]),
+  //   shareReplay({ bufferSize: 1, refCount: true })
+  // );
 
   readonly transaction$: Observable<any[]> = of([]).pipe(
     filter((list: any[] | null): list is any[] => list !== null),
@@ -202,9 +198,15 @@ export class FilterComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly strategy$: Observable<AccountStrategies[]> = this._accountFacade.strategies$.pipe(
-    filter((list: AccountStrategies[] | null): list is AccountStrategies[] => list !== null),
-    map((list: AccountStrategies[]) => [this.valueDefaultStrategy, ...list]),
+  readonly strategy$: Observable<AccountStrategy[]> = this._accountFacade.strategies$.pipe(
+    filter((list: AccountStrategy[] | null): list is AccountStrategy[] => list !== null),
+    map((list: AccountStrategy[]) => [this.valueDefaultStrategy, ...list]),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly types$: Observable<AccountType[]> = this._accountFacade.types$.pipe(
+    filter((list: AccountType[] | null): list is AccountType[] => list !== null),
+    map((list: AccountType[]) => [this.valueDefaultType, ...list]),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -227,17 +229,12 @@ export class FilterComponent implements AfterViewInit {
   );
 
   ngAfterViewInit(): void {
-    this.portfolios$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
-    this.broker$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
-    this.currency$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
-    this.strategy$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+    // this.portfolios$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+    // this.broker$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+    // this.currency$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+    // this.strategy$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
 
     const value = this.#localStorage.getItem('portfolioFilter') || this.valueDefault;
-
-    this.formGroup.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((value) => {
-      const { range, ...other } = value;
-      this.#localStorage.setItem('portfolioFilter', other);
-    });
 
     this.formGroup.patchValue(value);
     this.formGroupDialog.patchValue(value);
@@ -260,6 +257,10 @@ export class FilterComponent implements AfterViewInit {
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlPortfolio.value))
       .subscribe((value) => this._portfolioFacade.updatePortfolio(value));
 
+    this.controlType.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlType.value))
+      .subscribe((value) => this._portfolioFacade.updateType(value));
+
     this.controlBroker.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlBroker.value))
       .subscribe((value) => this._portfolioFacade.updateBroker(value));
@@ -268,9 +269,16 @@ export class FilterComponent implements AfterViewInit {
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlCurrency.value))
       .subscribe((value) => this._portfolioFacade.updateCurrency(value));
 
-    this.formGroup.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((value: any) => this.formGroupDialog.patchValue(value));
+    this.controlStrategy.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlStrategy.value))
+      .subscribe((value) => this._portfolioFacade.updateStrategy(value));
+
+    this.formGroup.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((value) => {
+      const { range, ...other } = value;
+      this.#localStorage.setItem('portfolioFilter', other);
+
+      this.formGroupDialog.patchValue(value);
+    });
   }
 
   onClose(event: Event): void {

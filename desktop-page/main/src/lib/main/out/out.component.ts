@@ -14,7 +14,7 @@ import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
 import { searchPosition } from '../common/utils/search-position';
-import { AccountStrategies } from 'types/account';
+import { AccountStrategy } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
@@ -29,7 +29,7 @@ interface StockInstrumentWithMap {
   disabled: boolean;
 }
 
-interface AccountStrategiesWithMap extends AccountStrategies {
+interface AccountStrategiesWithMap extends AccountStrategy {
   map: string[];
   disabled: boolean;
 }

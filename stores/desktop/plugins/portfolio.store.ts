@@ -12,7 +12,9 @@ import {
   AccountCurrency,
   AccountPortfolio,
   AccountRange,
+  AccountStrategy,
   AccountStructure,
+  AccountType,
 } from 'types/account';
 
 export interface PortfolioState {
@@ -20,13 +22,14 @@ export interface PortfolioState {
   total: null | { total: number };
   broker: null | AccountBroker;
   currency: null | AccountCurrency;
+  strategy: null | AccountStrategy;
   portfolio: null | AccountPortfolio;
   toCurrency: null | AccountCurrency;
   range: null | AccountRange;
   balance: null | AccountBalance;
-  balanceToday: null | AccountBalance;
   balanceHistory: null | AccountBalanceHistory;
   structure: null | AccountStructure;
+  type: null | AccountType;
 }
 
 export class PortfolioStore extends WithQueue<PortfolioState> {
@@ -34,12 +37,11 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly total$: Observable<{ total: number } | null> = this.select((state: PortfolioState) => state.total);
   readonly portfolio$: Observable<null | AccountPortfolio> = this.select((state: PortfolioState) => state.portfolio);
   readonly broker$: Observable<AccountBroker | null> = this.select((state: PortfolioState) => state.broker);
+  readonly type$: Observable<AccountType | null> = this.select((state: PortfolioState) => state.type);
+  readonly strategy$: Observable<AccountStrategy | null> = this.select((state: PortfolioState) => state.strategy);
   readonly currency$: Observable<null | AccountCurrency> = this.select((state: PortfolioState) => state.currency);
   readonly range$: Observable<null | AccountRange> = this.select((state: PortfolioState) => state.range);
   readonly balance$: Observable<null | AccountBalance> = this.select((state: PortfolioState) => state.balance);
-  readonly balanceToday$: Observable<null | AccountBalance> = this.select(
-    (state: PortfolioState) => state.balanceToday
-  );
   readonly balanceHistory$: Observable<null | AccountBalanceHistory> = this.select(
     (state: PortfolioState) => state.balanceHistory
   );
@@ -55,9 +57,10 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
       toCurrency: null,
       range: null,
       balance: null,
-      balanceToday: null,
       balanceHistory: null,
       structure: null,
+      type: null,
+      strategy: null,
     });
   }
 
@@ -79,6 +82,20 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
     (state: PortfolioState, broker: null | AccountBroker): PortfolioState => ({
       ...state,
       broker,
+    })
+  );
+
+  updateType = this.updater(
+    (state: PortfolioState, type: null | AccountType): PortfolioState => ({
+      ...state,
+      type,
+    })
+  );
+
+  updateStrategy = this.updater(
+    (state: PortfolioState, strategy: null | AccountStrategy): PortfolioState => ({
+      ...state,
+      strategy,
     })
   );
 
@@ -114,13 +131,6 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
     (state: PortfolioState, balance: null | AccountBalance): PortfolioState => ({
       ...state,
       balance,
-    })
-  );
-
-  readonly updateTodayBalance = this.updater(
-    (state: PortfolioState, todayBalance: null | AccountBalance): PortfolioState => ({
-      ...state,
-      balanceToday: todayBalance,
     })
   );
 
@@ -167,16 +177,6 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
         this._api
           .getAccountBalance(params)
           .pipe(tap((response: Response<AccountBalance>) => this.updateBalance(response && response.data)))
-      )
-    )
-  );
-
-  readonly loadTodayBalance = this.effect((stream$: Observable<Params>) =>
-    stream$.pipe(
-      switchMap((params: Params) =>
-        this._api
-          .getAccountBalance(params)
-          .pipe(tap((response: Response<AccountBalance>) => this.updateTodayBalance(response && response.data)))
       )
     )
   );

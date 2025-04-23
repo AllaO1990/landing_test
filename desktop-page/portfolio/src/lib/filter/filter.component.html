@@ -41,14 +41,12 @@
           <span contentStart>{{ constants.strategy }}:</span>
         </lib-filter-chip>
 
-        <tui-chip>
-          {{ constants.assets }}
-          <button
-            iconStart="@tui.x"
-            tuiIconButton
-            type="button">
-          </button>
-        </tui-chip>
+        <lib-filter-chip
+          formControlName="type"
+          [valueContent]="type"
+          [valueDefault]="valueDefaultType">
+          <span contentStart>{{ constants.assets }}:</span>
+        </lib-filter-chip>
         <tui-chip>
           {{ constants.transaction }}
           <button
@@ -128,9 +126,9 @@
   </div>
 </ng-template>
 
-<ng-template #assets let-item>
+<ng-template #type let-item>
   <div class="item">
-    {{ item.value }}
+    {{ item.name }}
   </div>
 </ng-template>
 
@@ -225,17 +223,17 @@
       <div class="label">
         <span>{{ constants.assets }}</span>
         <tui-select
-          *ngIf="assets$ | async as list"
-          [valueContent]="assets"
+          *ngIf="types$ | async as list"
+          [valueContent]="type"
           [tuiTextfieldSize]="size"
-          formControlName="assets"
+          formControlName="type"
           [tuiTextfieldLabelOutside]="true">
           {{ constants.assets }}
           <tui-data-list-wrapper
             *tuiDataList
             size="s"
             [items]="list"
-            [itemContent]="assets">
+            [itemContent]="type">
           </tui-data-list-wrapper>
         </tui-select>
       </div>

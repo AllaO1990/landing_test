@@ -37,7 +37,7 @@ import {
   startWith,
   Subject,
 } from 'rxjs';
-import { AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
+import { AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
 import { ControlPortfolioComponent } from '../../../../../../ui-common/src/lib/portfolio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
@@ -87,14 +87,14 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
 
-  readonly strategy: AccountStrategies[] = STOCK_STRATEGY_LIST;
+  readonly strategy: AccountStrategy[] = STOCK_STRATEGY_LIST;
   readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
   readonly constants = SIDEBAR_CONSTANTS;
 
   private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
 
-  readonly strategies$: Observable<AccountStrategies[]> = this._accountStore.strategies$.pipe(
-    filter((value: AccountStrategies[] | null): value is AccountStrategies[] => value !== null),
+  readonly strategies$: Observable<AccountStrategy[]> = this._accountStore.strategies$.pipe(
+    filter((value: AccountStrategy[] | null): value is AccountStrategy[] => value !== null),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly currencies$: Observable<AccountCurrency[]> = this._accountStore.currencies$.pipe(
@@ -148,7 +148,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     { value: null, disabled: true },
     Validators.required
   );
-  readonly formControlStrategy: FormControl<null | AccountStrategies> = new FormControl<null | AccountStrategies>(
+  readonly formControlStrategy: FormControl<null | AccountStrategy> = new FormControl<null | AccountStrategy>(
     null,
     Validators.required
   );
@@ -226,7 +226,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
       .subscribe(
         ([currencies, strategies, portfolios, position]: [
           AccountCurrency[],
-          AccountStrategies[],
+          AccountStrategy[],
           AccountPortfolio[],
           StockPosition
         ]) => {
@@ -277,30 +277,30 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
 
     this.formControlStrategy.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((result: AccountStrategies | null) => {
+      .subscribe((result: AccountStrategy | null) => {
         this.controlStrategy.patchValue(result ? result.id : null);
       });
   }
 
-  private _getControlStrategyUser(): AccountStrategies {
-    return this.strategy.find((item: AccountStrategies) => item.key === 'user') || this.strategy[0];
+  private _getControlStrategyUser(): AccountStrategy {
+    return this.strategy.find((item: AccountStrategy) => item.key === 'user') || this.strategy[0];
   }
 
-  private _getControlStrategy(strategy: AccountStrategies | null): AccountStrategies | null {
+  private _getControlStrategy(strategy: AccountStrategy | null): AccountStrategy | null {
     if (strategy === null) {
       return null;
     }
 
-    return this.strategy.find((item: AccountStrategies) => strategy.key.indexOf(item.key) !== -1) || null;
+    return this.strategy.find((item: AccountStrategy) => strategy.key.indexOf(item.key) !== -1) || null;
   }
 
-  private _getIdeaStrategy(list: AccountStrategies[], position: StockPosition): AccountStrategies | null {
+  private _getIdeaStrategy(list: AccountStrategy[], position: StockPosition): AccountStrategy | null {
     const strategy = position.idea.strategy;
 
     if (strategy === null) {
       return null;
     }
 
-    return list.find((item: AccountStrategies) => item.key === strategy.type) || null;
+    return list.find((item: AccountStrategy) => item.key === strategy.type) || null;
   }
 }

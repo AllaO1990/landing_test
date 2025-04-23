@@ -2,7 +2,7 @@ import { inject, Pipe, PipeTransform } from '@angular/core';
 import { StockStrategyEnums } from 'types/stock-strategy';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { map, Observable, of } from 'rxjs';
-import { AccountStrategies } from 'types/account';
+import { AccountStrategy } from 'types/account';
 
 @Pipe({
   name: 'getStrategyName',
@@ -17,7 +17,7 @@ export class GetStrategyNamePipe implements PipeTransform {
     }
 
     return this.#store.strategiesMap$.pipe(
-      map((strategiesMap: Map<string, AccountStrategies>) => {
+      map((strategiesMap: Map<string, AccountStrategy>) => {
         const strategy = strategiesMap.get(value);
 
         return strategy ? strategy.name : null;
