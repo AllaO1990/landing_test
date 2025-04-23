@@ -15,7 +15,7 @@ export interface AccountPortfolio {
 }
 
 export interface AccountStrategies {
-  id: number;
+  id: number | null;
   key: string;
   name: string;
 }

@@ -18,10 +18,12 @@ import { FILTER_CONSTANTS } from './filter.constants';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
-import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
+import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategies } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RangeWithListComponent } from 'ui-common/lib/range-with-list/range-with-list.component';
 import { ChipComponent } from './chip/chip.component';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
+import { LocalStorage } from 'storage/local.storage';
 
 @Component({
   selector: 'portfolio-filter',
@@ -48,6 +50,7 @@ import { ChipComponent } from './chip/chip.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent implements AfterViewInit {
+  readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
   private readonly _accountFacade: AccountFacade = inject(AccountFacade);
   private readonly _portfolioFacade: PortfolioFacade = inject(PortfolioFacade);
 
@@ -109,13 +112,24 @@ export class FilterComponent implements AfterViewInit {
   valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
   valueDefaultBroker = { broker: 'Все', brokerId: null };
   valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
+  valueDefaultStrategy = { name: 'Все', key: 'all', id: null };
+  valueDefault = {
+    assets: null,
+    transaction: null,
+    strategy: this.valueDefaultStrategy,
+    portfolio: this.valueDefaultPortfolio,
+    broker: this.valueDefaultBroker,
+    currency: this.valueDefaultCurrency,
+    toCurrency: this.valueDefaultCurrency,
+    // range: this.rangeList[5].range,
+  };
 
   protected readonly openFilter: WritableSignal<boolean> = signal(false);
 
   readonly formGroupDialog: FormGroup = new FormGroup({
     assets: new FormControl({ value: null, disabled: true }, Validators.required),
     transaction: new FormControl({ value: null, disabled: true }, Validators.required),
-    strategy: new FormControl({ value: null, disabled: true }, Validators.required),
+    strategy: new FormControl({ value: this.valueDefaultStrategy, disabled: false }, Validators.required),
     portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
     broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
     currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
@@ -126,7 +140,7 @@ export class FilterComponent implements AfterViewInit {
   readonly formGroup: FormGroup = new FormGroup({
     assets: new FormControl({ value: null, disabled: true }, Validators.required),
     transaction: new FormControl({ value: null, disabled: true }, Validators.required),
-    strategy: new FormControl({ value: null, disabled: true }, Validators.required),
+    strategy: new FormControl({ value: this.valueDefaultStrategy, disabled: false }, Validators.required),
     portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
     broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
     currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
@@ -188,14 +202,9 @@ export class FilterComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly strategy$: Observable<any[]> = of([]).pipe(
-    filter((list: any[] | null): list is any[] => list !== null),
-    map((list: any[]) => [{ value: 'Все', id: null }, ...list]),
-    tap((list: any[]) => {
-      if (list !== null && list.length > 0 && this.controlStrategy.value === null) {
-        this.controlStrategy.patchValue(list[0]);
-      }
-    }),
+  readonly strategy$: Observable<AccountStrategies[]> = this._accountFacade.strategies$.pipe(
+    filter((list: AccountStrategies[] | null): list is AccountStrategies[] => list !== null),
+    map((list: AccountStrategies[]) => [this.valueDefaultStrategy, ...list]),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
@@ -221,6 +230,17 @@ export class FilterComponent implements AfterViewInit {
     this.portfolios$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
     this.broker$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
     this.currency$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+    this.strategy$.pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+
+    const value = this.#localStorage.getItem('portfolioFilter') || this.valueDefault;
+
+    this.formGroup.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((value) => {
+      const { range, ...other } = value;
+      this.#localStorage.setItem('portfolioFilter', other);
+    });
+
+    this.formGroup.patchValue(value);
+    this.formGroupDialog.patchValue(value);
 
     this.controlRange.valueChanges
       .pipe(

@@ -34,14 +34,13 @@
           <span contentStart>{{ constants.currency }}:</span>
         </lib-filter-chip>
 
-        <tui-chip>
-          {{ constants.strategy }}
-          <button
-            iconStart="@tui.x"
-            tuiIconButton
-            type="button">
-          </button>
-        </tui-chip>
+        <lib-filter-chip
+          formControlName="strategy"
+          [valueContent]="strategy"
+          [valueDefault]="valueDefaultStrategy">
+          <span contentStart>{{ constants.strategy }}:</span>
+        </lib-filter-chip>
+
         <tui-chip>
           {{ constants.assets }}
           <button
@@ -143,7 +142,7 @@
 
 <ng-template #strategy let-item>
   <div class="item">
-    {{ item.value }}
+    {{ item.name }}
   </div>
 </ng-template>
 
