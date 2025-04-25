@@ -18,6 +18,7 @@
         [class.stock-item--actions]="list.type.action | stockItemRemove"
         *cdkVirtualFor="let item of list.items; trackBy: trackByStockListItem; templateCacheSize: 0"
         [value]="item.id"
+        [disabledItemHandler]="disabledItemHandler(list.items)"
         #checkbox='stockListItem'
         [formControl]="controlItem">
         <div

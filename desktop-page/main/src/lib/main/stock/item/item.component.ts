@@ -8,6 +8,7 @@ import {
   Input,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { TuiBooleanHandler, tuiPure } from '@taiga-ui/cdk';
 
 @Component({
   selector: 'vt-stock-list-item',
@@ -16,6 +17,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   templateUrl: './item.component.html',
   host: {
     '[attr.checked]': 'checked || null',
+    '[attr.disabled]': 'disabledItem || null',
   },
   providers: [
     {
@@ -35,10 +37,20 @@ export class StockListItemComponent<T = any> implements ControlValueAccessor {
   @Input() disabled = false;
   @Input() checked = false;
   @Input() value: T | null = null;
+  @Input() disabledItemHandler: TuiBooleanHandler<T | null> = () => false;
+
+  @tuiPure
+  get disabledItem(): boolean {
+    return this.disabled || this.disabledItemHandler(this.value);
+  }
 
   @HostListener('click', ['$event'])
   public onClick(event: Event): void {
     event.preventDefault();
+
+    if (this.disabledItem) {
+      return;
+    }
 
     this.onChecked(!this.checked);
   }

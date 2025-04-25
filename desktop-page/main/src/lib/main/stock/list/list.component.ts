@@ -32,6 +32,7 @@ import { StockListWithType } from '../stock.component';
 import { StockListItemComponent } from '../item';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconTickerComponent } from '@ui/components/icon-ticker';
+import { TuiBooleanHandler } from '@taiga-ui/cdk';
 
 @Pipe({
   name: 'stockItemRemove',
@@ -111,6 +112,20 @@ export class StockListComponent implements AfterContentInit {
   trackByStockListItem(_: number, item: StockInstrument): StockId {
     return item.id;
   }
+
+  disabledItemHandler = (items: StockInstrument[]): TuiBooleanHandler<any> => {
+    const map = new Map(items.map((item) => [item.id, item] as [string, StockInstrument]));
+
+    return (id) => {
+      const instrument = map.get(id);
+
+      if (!instrument) {
+        return false;
+      }
+
+      return !instrument.inSub || instrument.subscriptionStatus === 0;
+    };
+  };
 
   onRemove(event: Event, item: StockInstrument): void {
     event.stopPropagation();

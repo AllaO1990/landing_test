@@ -49,17 +49,21 @@
   width: 100%;
   height: 32px;
 
-  cursor: pointer;
   transition: background-color 0.25s ease-in-out;
 
-  &:hover {
+  &:not([disabled='true']):hover {
+    cursor: pointer;
     background-color: rgba(0, 102, 255, 0.1);
 
     transition: none;
   }
 
-  &[checked='true'] {
+  &:not([disabled='true'])[checked='true'] {
     background-color: rgba(0, 102, 255, 0.15);
+  }
+
+  &[disabled='true'] > * {
+    opacity: 0.3;
   }
 
   &__row {
