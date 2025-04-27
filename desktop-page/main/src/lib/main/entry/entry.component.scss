@@ -67,6 +67,14 @@
     align-items: center;
 
     padding: var(--padding-1) var(--padding-2);
+
+    tui-multi-select {
+      flex: 1;
+
+      &:not(:last-child) {
+        margin-right: var(--padding-2);
+      }
+    }
   }
 
   &__table {

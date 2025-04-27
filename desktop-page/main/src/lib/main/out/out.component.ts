@@ -7,10 +7,18 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { Position } from 'types/position';
 import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
-import { TuiActiveZone, TuiAutoFocus, TuiBooleanHandler, TuiObscured } from '@taiga-ui/cdk';
+import {
+  TuiActiveZone,
+  TuiAutoFocus,
+  TuiBooleanHandler,
+  TuiContext,
+  TuiIdentityMatcher,
+  TuiObscured,
+  TuiStringHandler,
+} from '@taiga-ui/cdk';
 import { OutTableComponent } from './table/table.component';
-import { TuiFilter } from '@taiga-ui/kit';
-import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiDataListWrapperComponent } from '@taiga-ui/kit';
+import { TuiInputModule, TuiMultiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
 import { searchPosition } from '../common/utils/search-position';
@@ -40,7 +48,6 @@ interface AccountStrategiesWithMap extends AccountStrategy {
   imports: [
     ReactiveFormsModule,
     OutTableComponent,
-    TuiFilter,
     TuiInputModule,
     TuiTextfieldControllerModule,
     TuiButton,
@@ -49,6 +56,8 @@ interface AccountStrategiesWithMap extends AccountStrategy {
     TuiObscured,
     AsyncPipe,
     TuiAutoFocus,
+    TuiDataListWrapperComponent,
+    TuiMultiSelectModule,
   ],
   templateUrl: './out.component.html',
   styleUrls: ['./out.component.scss'],
@@ -107,6 +116,11 @@ export class OutComponent {
   );
 
   public openMore = false;
+
+  readonly stringify: TuiStringHandler<StockInstrumentWithMap | TuiContext<StockInstrumentWithMap>> = (item) =>
+    'name' in item ? item.name : item.$implicit.name;
+
+  readonly identityMatcher: TuiIdentityMatcher<StockInstrumentWithMap> = (a, b) => a.id === b.id;
 
   disabledItemHandler: TuiBooleanHandler<{ disabled: boolean }> = (item: { disabled: boolean }) => item.disabled;
 

@@ -92,8 +92,6 @@ export class ChartCandlestickComponent implements OnInit {
   artIcon = CHART_ATR_ICON;
   ideaIcon = CHART_IDEA_ICON;
 
-  // @Input() event: null | StockEvent = null;
-
   readonly size = 's';
   readonly controlEma: FormControl<string[] | null> = new FormControl(
     this.#localStorage.getItem('chartControlEma') || [this.emaList[0].value, this.emaList[5].value]

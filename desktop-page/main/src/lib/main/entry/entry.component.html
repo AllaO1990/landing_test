@@ -4,14 +4,7 @@
       {{ constants.title }}
     </div>
     <div class="entry__stock">
-      <tui-filter
-        [formControl]="controlFilterStock"
-        [size]="size"
-        class="item"
-        [content]="content"
-        [items]="filterStock"
-        [disabledItemHandler]="disabledItemHandler"
-      ></tui-filter>
+
     </div>
     <div class="entry__action">
       <button
@@ -52,14 +45,43 @@
     </div>
   </div>
   <div class="entry__strategy">
-    <tui-filter
+    <tui-multi-select
+      [formControl]="controlFilterStock"
+      [rows]="1"
+      [tuiTextfieldSize]="size"
+      [identityMatcher]="identityMatcher"
+      [stringify]="stringify"
+      [tuiTextfieldCleaner]="true"
+      [tuiTextfieldLabelOutside]="true">
+      Активы
+      <tui-data-list-wrapper
+        *tuiDataList
+        size="s"
+        tuiMultiSelectGroup
+        [items]="filterStock"
+        [disabledItemHandler]="disabledItemHandler"
+        [itemContent]="content"
+      />
+    </tui-multi-select>
+
+    <tui-multi-select
       [formControl]="controlFilterStrategy"
-      [size]="size"
-      class="item"
-      [content]="content"
-      [items]="filterStrategy"
-      [disabledItemHandler]="disabledItemHandler"
-    ></tui-filter>
+      [rows]="1"
+      [tuiTextfieldSize]="size"
+      [identityMatcher]="identityMatcher"
+      [stringify]="stringify"
+      [tuiTextfieldCleaner]="true"
+      [tuiTextfieldLabelOutside]="true">
+      Стратегии
+      <tui-data-list-wrapper
+        *tuiDataList
+        size="s"
+        tuiMultiSelectGroup
+        [items]="filterStrategy"
+        [disabledItemHandler]="disabledItemHandler"
+        [itemContent]="content"
+      />
+    </tui-multi-select>
   </div>
   <div class="entry__table">
     <vt-entry-table [data]="data$ | async"></vt-entry-table>

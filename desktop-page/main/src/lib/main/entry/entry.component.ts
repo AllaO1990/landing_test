@@ -6,7 +6,7 @@ import { MAIN_FILTER_STOCK } from '../main.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
-import { TuiBooleanHandler } from '@taiga-ui/cdk';
+import { TuiBooleanHandler, TuiContext, TuiIdentityMatcher, TuiStringHandler } from '@taiga-ui/cdk';
 import { EventSelected } from 'types/events';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
@@ -82,6 +82,11 @@ export class EntryComponent {
       )
     )
   );
+
+  readonly stringify: TuiStringHandler<StockInstrumentWithMap | TuiContext<StockInstrumentWithMap>> = (item) =>
+    'name' in item ? item.name : item.$implicit.name;
+
+  readonly identityMatcher: TuiIdentityMatcher<StockInstrumentWithMap> = (a, b) => a.id === b.id;
 
   disabledItemHandler: TuiBooleanHandler<{ disabled: boolean }> = (item: { disabled: boolean }) => item.disabled;
 

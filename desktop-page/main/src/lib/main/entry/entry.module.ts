@@ -1,4 +1,4 @@
-import { TuiInputModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiInputModule, TuiMultiSelectModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EntryComponent } from './entry.component';
@@ -8,7 +8,7 @@ import { TuiButton, TuiDropdown, TuiFormatNumberPipe, TuiLoader, TuiScrollbar } 
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { EntryTableComponent } from './table/table.component';
 import { TuiActiveZone, TuiAutoFocus, TuiObscured } from '@taiga-ui/cdk';
-import { TuiFilter } from '@taiga-ui/kit';
+import { TuiDataListWrapperComponent, TuiFilter } from '@taiga-ui/kit';
 
 @NgModule({
   declarations: [EntryComponent, EntryIdeaComponent],
@@ -28,6 +28,9 @@ import { TuiFilter } from '@taiga-ui/kit';
     TuiInputModule,
     TuiTextfieldControllerModule,
     TuiAutoFocus,
+    TuiDataListWrapperComponent,
+    TuiSelectModule,
+    TuiMultiSelectModule,
   ],
   providers: [],
   exports: [EntryComponent],
