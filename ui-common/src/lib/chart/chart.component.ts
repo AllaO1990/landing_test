@@ -101,8 +101,16 @@ export class ChartCandlestickComponent implements OnInit {
   readonly controlSma: FormControl<string[] | null> = new FormControl(
     this.#localStorage.getItem('chartControlSma') || [this.smaList[0].value, this.smaList[5].value]
   );
-  readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
-  readonly controlTarget: FormControl<boolean> = new FormControl<boolean>(true, { nonNullable: true });
+  readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(
+    this.#localStorage.getItem('chartControlAtr') !== undefined ? this.#localStorage.getItem('chartControlAtr') : true,
+    { nonNullable: true }
+  );
+  readonly controlTarget: FormControl<boolean> = new FormControl<boolean>(
+    this.#localStorage.getItem('chartControlTarget') !== undefined
+      ? this.#localStorage.getItem('chartControlTarget')
+      : true,
+    { nonNullable: true }
+  );
   readonly controlZone: FormControl<number[] | null> = new FormControl(
     this.#localStorage.getItem('chartControlZone') || [this.zoneList[0].value]
   );
@@ -250,6 +258,7 @@ export class ChartCandlestickComponent implements OnInit {
 
     const value = !this.controlAtr.value;
 
+    this.#localStorage.setItem('chartControlAtr', value);
     this.controlAtr.patchValue(value);
     this._store.updateSelectedAtr(value);
   }
@@ -259,6 +268,7 @@ export class ChartCandlestickComponent implements OnInit {
 
     const value = !this.controlTarget.value;
 
+    this.#localStorage.setItem('chartControlTarget', value);
     this.controlTarget.patchValue(value);
     // this._store.updateFigure(value);
   }

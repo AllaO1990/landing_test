@@ -2,9 +2,9 @@ import { TuiInputModule, TuiSelectModule, TuiTextfieldControllerModule } from '@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
-import { TuiButton, TuiDataList, TuiDropdown, TuiIcon, TuiLoader } from '@taiga-ui/core';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiAutoFocus, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiButton, TuiDataList } from '@taiga-ui/core';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { TuiStringHandler } from '@taiga-ui/cdk';
 import { combineLatest, Observable, startWith } from 'rxjs';
 import { filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import {
@@ -48,19 +48,12 @@ export type StockListWithType = StockGroup & {
     TuiTextfieldControllerModule,
     TuiDataList,
     NgIf,
-    TuiIcon,
     AsyncPipe,
-    NgForOf,
     TuiInputModule,
-    TuiAutoFocus,
     TuiButton,
     StockListComponent,
-    TuiLoader,
     TuiDataListWrapper,
-    TuiDropdown,
     FormInputComponent,
-    DialogComponent,
-    SearchDialogComponent,
     LoaderComponent,
   ],
   templateUrl: './stock.component.html',
@@ -125,7 +118,11 @@ export class StockComponent implements AfterViewInit {
     tap((value: StockGroup) => (this.isDisabled = value.type.action === StockGroupType.DEFAULT)),
     switchMap((value: StockGroup) => this._stock.selectStockGroupList(value.id)),
     filter((group: StockGroupList | null): group is StockGroupList => group !== null),
-    tap((group: StockGroupList) => this._stock.loadPrice(group.items.map((item) => item.id))),
+    tap((group: StockGroupList) =>
+      this._stock.loadPrice(
+        group.items.filter((item) => item.inSub || item.subscriptionStatus !== 0).map((item) => item.id)
+      )
+    ),
     switchMap((group: StockGroupList) =>
       this._stock.listPrice$.pipe(
         filter((price: StockPrice<WithLastPrice> | null): price is StockPrice<WithLastPrice> => price !== null),

@@ -29,12 +29,12 @@ export class LocalStorage implements Storage {
     return this.#storage.removeItem(key);
   }
 
-  setItem(key: string, value: string | object | null): void {
-    if (typeof value === 'object') {
-      this.#storage.setItem(key, JSON.stringify(value));
+  setItem(key: string, value: string | object | boolean | null): void {
+    if (typeof value === 'string') {
+      this.#storage.setItem(key, value);
       return;
     }
 
-    this.#storage.setItem(key, value);
+    this.#storage.setItem(key, JSON.stringify(value));
   }
 }
