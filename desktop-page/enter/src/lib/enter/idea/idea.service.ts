@@ -51,7 +51,7 @@ export class IdeaService {
         };
 
         if (list.length - 1 === index) {
-          value.price = getNumberPrecision(value.totalPrice / value.quantity, priceIncrement);
+          value.price = value.quantity && getNumberPrecision(value.totalPrice / value.quantity, priceIncrement);
 
           return value;
         }
