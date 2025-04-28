@@ -36,6 +36,12 @@ import { CommissionComponent } from './commission/commission.component';
 import { ChartComponent } from './chart/chart.component';
 import { BalanceComponent } from './balance/balance.component';
 import { ColorPriceDirective } from '@ui/components/price';
+import { getNumberPrecision } from 'utils/get-number-precision';
+
+type AccountBalanceCommon = AccountBalance & {
+  inPositionCountPct: number;
+  fixedPositionCountPct: number;
+};
 
 @Component({
   selector: 'portfolio-list',
@@ -91,7 +97,8 @@ export class PortfolioListComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly data$: Observable<null | AccountBalance> = this._service.balance$.pipe(
+  readonly data$: Observable<null | AccountBalanceCommon> = this._service.balance$.pipe(
+    map((value: null | AccountBalance) => this._calcBalance(value)),
     tap(() => this.#isLoadInfo$.next(false))
   );
 
@@ -186,5 +193,27 @@ export class PortfolioListComponent implements AfterViewInit {
       {},
       'Депозит'
     ).subscribe();
+  }
+
+  private _calcBalance(data: null | AccountBalance): null | AccountBalanceCommon {
+    return (
+      data && {
+        ...data,
+        inPositionCountPct: this._getPct(data.inPositionSuccessCount, data.inPositionUnsuccessCount),
+        fixedPositionCountPct: this._getPct(data.fixedSuccessCount, data.fixedUnsuccessCount),
+      }
+    );
+  }
+
+  private _getPct(a: number, b: number): number {
+    if (a === 0 && b === 0) {
+      return 0;
+    }
+    
+    if (b === 0) {
+      return 100;
+    }
+
+    return getNumberPrecision((a / (a + b)) * 100, 2);
   }
 }
