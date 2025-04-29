@@ -42,7 +42,7 @@
           stroke="currentColor"
           stroke-opacity="0.1" />
         <svg:text fill="currentColor" x="-9" dy="0.32em">
-          {{ item.value | tuiFormatNumber: { precision: 0, decimalMode: 'always' } | async }} {{ chart.currencySymbol }}
+          {{ item.value | chartNumberFormat | async }} {{ chart.currencySymbol }}
         </svg:text>
       </g>
     </svg:g>
