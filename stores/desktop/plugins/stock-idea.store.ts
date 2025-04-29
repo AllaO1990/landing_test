@@ -140,32 +140,84 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     )
   );
 
+  // readonly create = this.effect((stream$: Observable<object>) =>
+  //   stream$.pipe(
+  //     tap(() => this.updateIsLoading(true)),
+  //     switchMap((body: object) =>
+  //       this._api.createIdea(body).pipe(tap((response: Response<{ id: number }>) => this.loadIdeas(of(null))))
+  //     ),
+  //     switchMap((response: Response<{ id: number }>) =>
+  //       this.selectIdea(response.data.id.toString()).pipe(
+  //         filter((position: Position | null): position is Position => position !== null),
+  //         take(1),
+  //         tap(() =>
+  //           this._queryParams.update({
+  //             type: EventSelected.IDEA,
+  //             id: response.data.id,
+  //             dialog: 'visible',
+  //           })
+  //         ),
+  //         tap(() => this.updateIsLoading(false))
+  //       )
+  //     ),
+  //     catchError((err: Error) => {
+  //       console.error(err);
+  //       this.updateIsLoading(false);
+  //
+  //       return of(null);
+  //     })
+  //   )
+  // );
+
   readonly create = this.effect((stream$: Observable<object>) =>
     stream$.pipe(
       tap(() => this.updateIsLoading(true)),
-      switchMap((body: object) =>
-        this._api.createIdea(body).pipe(tap((response: Response<{ id: number }>) => this.loadIdeas(of(null))))
-      ),
-      switchMap((response: Response<{ id: number }>) =>
-        this.selectIdea(response.data.id.toString()).pipe(
-          filter((position: Position | null): position is Position => position !== null),
-          take(1),
-          tap(() =>
-            this._queryParams.update({
-              type: EventSelected.IDEA,
-              id: response.data.id,
-              dialog: 'visible',
-            })
-          ),
-          tap(() => this.updateIsLoading(false))
-        )
-      ),
-      catchError((err: Error) => {
-        console.error(err);
-        this.updateIsLoading(false);
+      switchMap((body: any) =>
+        this._api.createIdea(body).pipe(
+          catchError((err: Error) => {
+            console.error(err);
+            this.updateIsLoading(false);
 
-        return of(null);
-      })
+            return of({
+              data: { id: null },
+              message: 'Error editing Idea',
+              success: false,
+            });
+          }),
+          filter(
+            (
+              response: Response<{ id: number | null }>
+            ): response is Response<{
+              id: number;
+            }> => response.data.id !== null
+          ),
+          tap((response: Response<{ id: number }>) => {
+            this.loadIdeas(of(null));
+            this.loadPositions(of(null));
+
+            // if (+response.data.id !== null) {
+            //   this.loadIdea(+response.data.id);
+            // }
+          }),
+
+          switchMap((response: Response<{ id: number }>) =>
+            this.selectFromAll(response.data.id.toString()).pipe(
+              filter((position: Position | null): position is Position => position !== null),
+              take(1),
+              tap((position: Position) => {
+                // console.log(position);
+
+                this._queryParams.update({
+                  type: body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,
+                  id: response.data.id,
+                  dialog: 'visible',
+                });
+              }),
+              tap(() => this.updateIsLoading(false))
+            )
+          )
+        )
+      )
     )
   );
 
