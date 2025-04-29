@@ -76,7 +76,7 @@ export class FilterComponent implements AfterViewInit {
     {
       text: '7 дней',
       range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(-7)),
+        TuiDay.fromLocalNativeDate(this._getStartDate(-6)),
         TuiDay.fromLocalNativeDate(this.today)
       ),
     },

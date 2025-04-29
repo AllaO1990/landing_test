@@ -8,6 +8,7 @@ import { DataList, Response } from 'types/response';
 import {
   AccountBalance,
   AccountBalanceHistory,
+  AccountBalanceHistoryItem,
   AccountBroker,
   AccountCurrency,
   AccountPortfolio,
@@ -16,6 +17,11 @@ import {
   AccountStructure,
   AccountType,
 } from 'types/account';
+import { map } from 'rxjs/operators';
+import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
+import { isSameDay } from 'date-fns/isSameDay';
+import { eachMonthOfInterval } from 'date-fns/eachMonthOfInterval';
+import { isSameMonth } from 'date-fns/isSameMonth';
 
 export interface PortfolioState {
   list: null | PortfolioPosition[];
@@ -184,12 +190,62 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly loadBalanceHistory = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>
-        this._api
-          .getAccountBalanceHistory(params)
-          .pipe(tap((response: Response<AccountBalanceHistory>) => this.updateBalanceHistory(response.data)))
+        this._api.getAccountBalanceHistory(params).pipe(
+          map(
+            (response: Response<AccountBalanceHistory>) =>
+              response.data && this._getAccountBalance(response.data, params['from'], params['to'])
+          ),
+          tap((data: AccountBalanceHistory) => this.updateBalanceHistory(data))
+        )
       )
     )
   );
+
+  _getAccountBalance(data: AccountBalanceHistory, from: string, to: string): AccountBalanceHistory {
+    const dateFrom = new Date(from);
+    const dateTo = new Date(to);
+
+    const rangeDayArray = eachDayOfInterval({ start: dateFrom, end: dateTo });
+
+    if (rangeDayArray.length === data.items.length) {
+      return data;
+    }
+
+    if (rangeDayArray.length <= 31) {
+      const list: AccountBalanceHistoryItem[] = [];
+
+      for (let i = 0; i < rangeDayArray.length; i++) {
+        const findIndex = data.items.findIndex((item) => isSameDay(rangeDayArray[i], new Date(item.date)));
+
+        if (findIndex !== -1) {
+          list.push(data.items[findIndex]);
+        } else if (i === 0) {
+          list.push({ balance: 0, date: rangeDayArray[i].toISOString() });
+        } else {
+          list.push({ balance: list[i - 1].balance, date: rangeDayArray[i].toISOString() });
+        }
+      }
+
+      return { ...data, items: list };
+    }
+
+    const rangeMonthArray = eachMonthOfInterval({ start: dateFrom, end: dateTo });
+    const list: AccountBalanceHistoryItem[] = [];
+
+    for (let i = 0; i < rangeMonthArray.length; i++) {
+      const findIndex = data.items.findIndex((item) => isSameMonth(rangeMonthArray[i], new Date(item.date)));
+
+      if (findIndex !== -1) {
+        list.push(data.items[findIndex]);
+      } else if (i === 0) {
+        list.push({ balance: 0, date: rangeMonthArray[i].toISOString() });
+      } else {
+        list.push({ balance: list[i - 1].balance, date: rangeMonthArray[i].toISOString() });
+      }
+    }
+
+    return { ...data, items: list };
+  }
 
   readonly loadStructure = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(

@@ -38,13 +38,15 @@ import { scaleLinear, scaleUtc } from 'd3-scale';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChartNumberFormatPipe } from './chart.pipe';
 
 @Component({
   selector: 'lib-portfolio-list-chart',
   standalone: true,
-  imports: [LoaderComponent, NgIf, AsyncPipe, NgForOf, DatePipe, TuiFormatNumberPipe, TuiHint],
+  imports: [LoaderComponent, NgIf, AsyncPipe, NgForOf, DatePipe, TuiFormatNumberPipe, TuiHint, ChartNumberFormatPipe],
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
+  providers: [TuiFormatNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartComponent implements AfterViewInit {
