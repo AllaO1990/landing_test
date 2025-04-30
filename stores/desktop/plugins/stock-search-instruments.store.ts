@@ -1,7 +1,7 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Stock, StockInstrument, StockInstrumentToSubscription } from 'types/stock';
 import { DesktopService } from '@desktop-data/desktop-data';
-import { Observable, of, switchMap, tap } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 import { Response } from 'types/response';
 import { Params } from '@angular/router';
 
@@ -69,34 +69,33 @@ export class StockSearchInstrumentsStore extends ComponentStore<StockSearchInstr
   readonly addSubscriptionStockListInstrument = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>
-        of({
-          success: true,
-          message: 'Success',
-          data: {
-            subscriptionStatus: 'Ожидает согласования',
-            authorId: 82077519,
-            instrument: {
-              id: '11bc0dc8-fff7-4cec-8257-1838db8345fe',
-              source: 'binance',
-              ticker: 'LQTYUSDT',
-              name: 'LQTYUSDT',
-              type: 'crypto',
-              exchange: 'binance',
-              realExchange: 'binance',
-              inSub: false,
-              sector: '-',
-              currency: 'usdt',
-              minPriceIncrement: 1e-8,
-              subscriptionStatus: 1,
-            },
-          },
-        })
-          // this._api.addSubscriptionStockListInstrument({ instrumentId: params['instrumentId'] })
-          .pipe(
-            tap((response: Response<StockInstrumentToSubscription>) => {
-              this.patchSearchList(response.data, params['type']);
-            })
-          )
+        // of({
+        //   success: true,
+        //   message: 'Success',
+        //   data: {
+        //     subscriptionStatus: 'Ожидает согласования',
+        //     authorId: 82077519,
+        //     instrument: {
+        //       id: '11bc0dc8-fff7-4cec-8257-1838db8345fe',
+        //       source: 'binance',
+        //       ticker: 'LQTYUSDT',
+        //       name: 'LQTYUSDT',
+        //       type: 'crypto',
+        //       exchange: 'binance',
+        //       realExchange: 'binance',
+        //       inSub: false,
+        //       sector: '-',
+        //       currency: 'usdt',
+        //       minPriceIncrement: 1e-8,
+        //       subscriptionStatus: 1,
+        //     },
+        //   },
+        // })
+        this._api.addSubscriptionStockListInstrument({ instrumentId: params['instrumentId'] }).pipe(
+          tap((response: Response<StockInstrumentToSubscription>) => {
+            this.patchSearchList(response.data, params['type']);
+          })
+        )
       )
     )
   );
