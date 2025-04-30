@@ -1,5 +1,12 @@
 import { TuiInputModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { TuiAutoFocus, TuiPopover } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -85,6 +92,7 @@ export class SearchDialogComponent implements AfterViewInit {
   readonly #limit = 100;
   readonly #startPage = 0;
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   readonly #store: StockSearchInstrumentsStore = inject(StockSearchInstrumentsStore);
   readonly #itemCondition: SearchDialogItemCondition = inject(SearchDialogItemCondition);
   readonly #disabled$: Subject<boolean> = new BehaviorSubject<boolean>(true);
@@ -98,6 +106,7 @@ export class SearchDialogComponent implements AfterViewInit {
   readonly form: FormGroup = new FormGroup({
     subscription: new FormControl<{ id: boolean | null; text: string } | null>(null),
     page: new FormControl<number>(this.#startPage),
+    type: new FormControl<string>('default'),
   });
 
   readonly controlSearch: FormControl = new FormControl<string | null>(null);
@@ -161,6 +170,7 @@ export class SearchDialogComponent implements AfterViewInit {
       search: this.controlSearch.valueChanges.pipe(
         tap((value: string | null) => {
           !!value && this.#store.resetSearchListInstrument();
+          this.form.patchValue({ type: !value ? 'default' : 'search' });
           this.#disabled$.next(false);
         }),
         debounceTimeWithCondition((value: string | null) => !!value),
