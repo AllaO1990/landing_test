@@ -11,6 +11,7 @@ import { AccountFacade } from 'stores/facades/account.facade';
 import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Params } from '@angular/router';
+import { getListOfRange } from 'utils/get-list-of-range';
 
 @Component({
   selector: 'lib-dialog-filter',
@@ -62,47 +63,7 @@ export class DialogFilterComponent implements ControlValueAccessor, AfterViewIni
     shareReplay({ bufferSize: 1, refCount: true })
   );
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
-  readonly rangeList: { text: string; range: TuiDayRange }[] = [
-    {
-      text: 'Сегодня',
-      range: new TuiDayRange(TuiDay.fromLocalNativeDate(this.today), TuiDay.fromLocalNativeDate(this.today)),
-    },
-    {
-      text: '7 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(-7)),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: '30 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(-30)),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: '90 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(-90)),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: '365 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this._getStartDate(-365).getFullYear(), 0, 1))),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: 'С Начала года',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this.today.getFullYear(), 0, 1))),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-  ];
+  readonly rangeList: { text: string; range: TuiDayRange }[] = getListOfRange(this.today);
 
   isDisabled = false;
 

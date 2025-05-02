@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiChip, TuiDataListWrapper, TuiDrawer } from '@taiga-ui/kit';
-import { TuiDay, TuiDayRange } from '@taiga-ui/cdk';
+import { TuiDayRange } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiPopup, TuiScrollbar } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { filter, Observable, of, shareReplay, startWith, tap } from 'rxjs';
@@ -24,6 +24,7 @@ import { RangeWithListComponent } from 'ui-common/lib/range-with-list/range-with
 import { ChipComponent } from './chip/chip.component';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { LocalStorage } from 'storage/local.storage';
+import { getListOfRange } from 'utils/get-list-of-range';
 
 @Component({
   selector: 'portfolio-filter',
@@ -68,47 +69,7 @@ export class FilterComponent implements AfterViewInit {
   readonly constants = FILTER_CONSTANTS;
   readonly size = 's';
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
-  readonly rangeList: { text: string; range: TuiDayRange }[] = [
-    {
-      text: 'Сегодня',
-      range: new TuiDayRange(TuiDay.fromLocalNativeDate(this.today), TuiDay.fromLocalNativeDate(this.today)),
-    },
-    {
-      text: '7 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(-6)),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: '30 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(-30)),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: '90 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(this._getStartDate(-90)),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: '365 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this._getStartDate(-365).getFullYear(), 0, 1))),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-    {
-      text: 'С Начала года',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(this.today.getFullYear(), 0, 1))),
-        TuiDay.fromLocalNativeDate(this.today)
-      ),
-    },
-  ];
+  readonly rangeList: { text: string; range: TuiDayRange }[] = getListOfRange(this.today);
   valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
   valueDefaultBroker = { broker: 'Все', brokerId: null };
   valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
