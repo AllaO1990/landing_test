@@ -288,7 +288,7 @@ export class MainStore extends ComponentStore<any> {
             this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
           }
         } else {
-          this._queryParams.update({}, '');
+          // this._queryParams.update({}, '');
           this._updateSelected();
         }
       })

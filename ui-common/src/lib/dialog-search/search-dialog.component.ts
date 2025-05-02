@@ -143,6 +143,7 @@ export class SearchDialogComponent implements AfterViewInit {
     startWith(this.controlSearch.value),
     distinctUntilChanged(),
     switchMap((value: string | null) => (!value ? this.#store.list$ : this.#store.searchList$)),
+    map((data: Stock | null) => data && { ...data, items: data.items.slice() }),
     tap(() => this.isLoad$.next(false)),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
