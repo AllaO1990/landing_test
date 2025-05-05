@@ -10,7 +10,6 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { StockInstrument } from 'types/stock';
 import { ButtonWithListComponent } from './button-with-list';
 import {
   CHART_ATR_ICON,
@@ -113,14 +112,12 @@ export class ChartCandlestickComponent implements OnInit {
     this.#localStorage.getItem('chartControlZone') || [this.zoneList[0].value]
   );
 
-  readonly selected$: Observable<StockInstrument | null> = this._store.selected$;
-
   readonly isUpdate$: Observable<boolean | null> = this._store.selected$.pipe(
-    filter((select: null | StockInstrument): select is StockInstrument => select !== null),
-    switchMap((select: StockInstrument) =>
+    filter((id: null | string): id is string => id !== null),
+    switchMap((id: string) =>
       this._store.instrument$.pipe(
         filter((candles: any | null): candles is any => candles !== null),
-        map((candles: any) => select.id !== candles.id)
+        map((candles: any) => id !== candles.id)
       )
     ),
     shareReplay({ refCount: true, bufferSize: 1 })

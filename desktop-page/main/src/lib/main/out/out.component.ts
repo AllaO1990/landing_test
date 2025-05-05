@@ -24,7 +24,6 @@ import { AsyncPipe } from '@angular/common';
 import { searchPosition } from '../common/utils/search-position';
 import { AccountStrategy } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { QueryParams } from 'utils/query-params';
@@ -154,12 +153,12 @@ export class OutComponent {
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
         take(1),
-        filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null)
+        filter((instrumentId: null | string): instrumentId is string => instrumentId !== null)
       )
-      .subscribe((instrument: StockInstrument) => {
+      .subscribe((instrument: string) => {
         this.#queryParams.update({
           type: EventSelected.STOCK_LIST,
-          id: instrument.id,
+          id: instrument,
           dialog: 'visible',
         });
       });

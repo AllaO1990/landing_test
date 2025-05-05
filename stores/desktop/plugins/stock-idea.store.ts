@@ -85,7 +85,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     });
   };
 
-  selectIdea(id: StockId): Observable<Position | null> {
+  selectIdea(id: string): Observable<Position | null> {
     return this.select((state: StockIdeaState) => {
       if (!state.ideas) {
         return null;
@@ -95,7 +95,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     });
   }
 
-  selectFromAll(id: StockId): Observable<Position | null> {
+  selectFromAll(id: string): Observable<Position | null> {
     return this.select((state: StockIdeaState) => {
       if (!state.ideas && !state.positions) {
         return null;
@@ -125,9 +125,9 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     )
   );
 
-  readonly loadIdea = this.effect((stream$: Observable<number | string | null>) =>
+  readonly loadIdea = this.effect((stream$: Observable<number | null>) =>
     stream$.pipe(
-      switchMap((value: number | string | null) => {
+      switchMap((value: number | null) => {
         if (value === null) {
           return of(null);
         }
@@ -136,7 +136,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           .getIdea(value)
           .pipe(catchError((err) => of(null).pipe(tap(() => this._queryParams.update(null, '')))));
       }),
-      tap((result: StockPosition | null) => this.updateIdea(result))
+      tap((result: Response<StockPosition | null> | null) => result && this.updateIdea(result.data))
     )
   );
 
@@ -275,13 +275,15 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly delete = this.effect((stream$: Observable<StockId>) =>
     stream$.pipe(
+      tap(() => this.updateIsLoading(true)),
       switchMap((id: StockId) =>
         this._api.deleteIdea(id).pipe(
           tap((response: number | null) => {
             this.loadIdeas(of(null));
             this.loadPositions(of(null));
             this._queryParams.update({}, '');
-          })
+          }),
+          tap(() => this.updateIsLoading(false))
         )
       )
     )

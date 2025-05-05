@@ -1,6 +1,6 @@
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { StockId, StockPrice, WithLastPrice } from 'types/stock';
+import { StockPrice, WithLastPrice } from 'types/stock';
 import { forkJoin, Observable, startWith, switchMap, tap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { breakArray } from 'utils/break-array';
@@ -19,11 +19,11 @@ export class StockPriceStore extends ComponentStore<StockPriceState> {
     })
   );
 
-  readonly load = this.effect((stream$: Observable<StockId[] | null>) =>
+  readonly load = this.effect((stream$: Observable<string[] | null>) =>
     stream$.pipe(
-      filter((list: StockId[] | null): list is StockId[] => !!list),
-      switchMap((list: StockId[]) =>
-        forkJoin(breakArray(list).map((subList: StockId[]) => this._api.getActiveStock(subList)))
+      filter((list: string[] | null): list is string[] => !!list),
+      switchMap((list: string[]) =>
+        forkJoin(breakArray(list).map((subList: string[]) => this._api.getActiveStock(subList)))
       ),
       map((list: StockPrice<WithLastPrice>[]) => this._concatActivePrice(list)),
       startWith({}),

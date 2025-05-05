@@ -4,7 +4,7 @@ import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/c
 import { WRAPPER_TABLE_HEADER } from './table.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollable, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
-import { StockId, StockTransaction } from 'types/stock';
+import { StockId } from 'types/stock';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import {
@@ -100,7 +100,6 @@ export class WrapperTableComponent implements OnInit {
   isData: boolean | null = null;
 
   public activeIdeaId$: Observable<StockId | null> = this._service.select$.pipe(
-    map((result: StockTransaction | null) => (result ? result.ideaId : null)),
     distinctUntilChanged(),
     shareReplay({ refCount: true, bufferSize: 1 })
   );

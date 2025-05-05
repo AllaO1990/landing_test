@@ -14,7 +14,7 @@ import {
 } from 'types/stock';
 
 import { ActiveZone, FigureIdea } from 'types/chart';
-import { Position } from 'types/position';
+import { Position, StockPosition } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Params } from '@angular/router';
@@ -36,7 +36,7 @@ import { Commission } from 'types/commission';
 export abstract class DesktopService {
   public abstract getIdeaList(): Observable<Position[]>;
 
-  abstract getIdea(id: number | string): Observable<any>;
+  abstract getIdea(id: number | string): Observable<Response<StockPosition | null>>;
 
   abstract createIdea(body: object): Observable<any>;
 
@@ -56,29 +56,29 @@ export abstract class DesktopService {
 
   public abstract getWatchInstrumentsListItems(): Observable<Response<Stock>>;
 
-  public abstract getInstrumentsListItems(listId: StockId): Observable<Response<Stock>>;
+  public abstract getInstrumentsListItems(listId: string): Observable<Response<Stock>>;
 
   public abstract addInstrumentsListItems(
     value: StockLinkListInstrument
   ): Observable<Response<StockLinkListInstrument>>;
 
-  public abstract getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>>;
+  public abstract getActiveStock(list: string[]): Observable<StockPrice<WithLastPrice>>;
 
   public abstract getPositionList(): Observable<Position[]>;
 
   public abstract getCandles(id: any): Observable<any>;
 
   public abstract getChartFigures(
-    ideaId: string,
+    ideaId: StockId,
     from: string,
     to: string
   ): Observable<Response<FigureIdea | null> | null>;
 
-  public abstract getIdeaConsolidationZone(ideaId: string): Observable<Response<ActiveZone | null> | null>;
+  public abstract getIdeaConsolidationZone(ideaId: string | number): Observable<Response<ActiveZone | null> | null>;
 
   public abstract getWatchlistConsolidationZone(id: StockId): Observable<Response<ActiveZone> | null>;
 
-  public abstract getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>>;
+  public abstract getIndicatorAtr(id: string | number, interval: number, date: string): Observable<Response<any>>;
 
   public abstract getIndicatorEma(params: IndicatorEmaParams): Observable<Response<any>>;
 

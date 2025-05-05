@@ -12,7 +12,6 @@ import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { StockInstrument } from 'types/stock';
 import { Position } from 'types/position';
 import { searchPosition } from '../common/utils/search-position';
 import { AccountStrategy } from 'types/account';
@@ -167,12 +166,12 @@ export class EntryComponent {
       .pipe(
         takeUntilDestroyed(this._destroyRef),
         take(1),
-        filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null)
+        filter((instrumentId: null | string): instrumentId is string => instrumentId !== null)
       )
-      .subscribe((instrument: StockInstrument) => {
+      .subscribe((instrument: string) => {
         this._queryParams.update({
           type: EventSelected.STOCK_LIST,
-          id: instrument.id,
+          id: instrument,
           dialog: 'visible',
         });
       });

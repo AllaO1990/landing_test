@@ -1,4 +1,4 @@
-import { StockId, StockInstrument, StockPositionDirection } from './stock';
+import { StockInstrument, StockPositionDirection } from './stock';
 import { getPriceIncrement } from '../utils/get-price-increment';
 import { AccountBroker } from './account';
 
@@ -167,7 +167,7 @@ export interface StockPositionCommission {
 
 export class Position implements ResponsePosition {
   readonly multiplier: number;
-  id: StockId;
+  id: string;
   author: string;
   createdAt: string;
   entries: StockPositionIdeaEntry[];

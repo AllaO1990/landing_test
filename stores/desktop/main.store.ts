@@ -5,7 +5,6 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
-  merge,
   Observable,
   of,
   shareReplay,
@@ -20,15 +19,14 @@ import { StockEvent } from 'types/stock-event';
 import { filter, map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { ComponentStore } from '@ngrx/component-store';
-import { StockId, StockInstrument, StockPrice, StockTransaction, WithLastPrice } from 'types/stock';
-import { Position } from 'types/position';
+import { StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { DateRange } from 'types/date-range';
 import { Timeframe } from 'types/timeframe';
 import { GLOBAL_DATE_RANGE, QUERY_PARAMS } from 'tokens/desktop';
-import { PortfolioPosition } from 'types/portfolio';
 import { IntervalStore } from 'stores/plugins/interval.store';
 import { QueryParams } from 'utils/query-params';
 import { Response } from 'types/response';
+import { StockPosition } from 'types/position';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -80,7 +78,7 @@ export class MainStore extends ComponentStore<any> {
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    const instrumentTrust$: Observable<StockInstrument> = this.selected.instrument$.pipe(
+    const instrumentTrust$: Observable<StockInstrument> = this.stock.instrument$.pipe(
       filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
       distinctUntilChanged((a, b) => a.id === b.id),
       shareReplay({ refCount: true, bufferSize: 1 })
@@ -108,11 +106,12 @@ export class MainStore extends ComponentStore<any> {
     this.idea.loadIdeas(timerSource);
     this.idea.loadPositions(timerSource);
 
-    this.onChangeInstrument(this.selected.event$);
-    this.onChangePosition(this.selected.event$);
+    this.onChangeQueryParams(this.selected.event$);
+    // this.onChangeInstrument(this.selected.event$);
+    // this.onChangePosition(this.selected.event$);
     // this.onChangeIdea(this.selected.event$);
-    this.onChangeWatch(eventWithoutDialog$);
-    this.onChangeTransaction(eventWithoutDialog$);
+    // this.onChangeWatch(eventWithoutDialog$);
+    // this.onChangeTransaction(eventWithoutDialog$);
 
     this.candles.loadCandles(
       timerWithIndex(
@@ -185,9 +184,9 @@ export class MainStore extends ComponentStore<any> {
       )
     );
     this.consolidationZonesIdea.load(
-      merge(this.selected.idea$, this.selected.position$, this.selected.transaction$).pipe(
-        filter((instrument: null | StockTransaction): instrument is StockTransaction => instrument !== null),
-        distinctUntilChanged((a, b) => a.ideaId === b.ideaId)
+      this.selected.idea$.pipe(
+        filter((idea: null | StockId): idea is StockId => idea !== null),
+        distinctUntilChanged((a, b) => a === b)
       )
     );
     this.consolidationZonesWatch.load(
@@ -197,23 +196,11 @@ export class MainStore extends ComponentStore<any> {
         distinctUntilChanged()
       )
     );
-    this.figures.load(
-      combineLatest([this.selected.idea$, this.selected.position$, this.selected.transaction$]).pipe(
-        debounceTime(0),
-        map(
-          ([idea, position, transaction]: [
-            null | StockTransaction,
-            null | StockTransaction,
-            null | StockTransaction
-          ]) => idea || position || transaction || null
-        ),
-        distinctUntilChanged((a, b) => a?.ideaId === b?.ideaId)
-      )
-    );
+    this.figures.load(this.selected.idea$.pipe(distinctUntilChanged((a, b) => a !== null && a === b)));
     this.atr.load(
       combineLatest([
-        instrumentTrust$.pipe(
-          map((instrument: StockInstrument) => instrument.id),
+        this.selected.instrument$.pipe(
+          filter((instrument: string | null): instrument is string => instrument !== null),
           distinctUntilChanged()
         ),
         this.atr.selected$.pipe(distinctUntilChanged()),
@@ -234,7 +221,7 @@ export class MainStore extends ComponentStore<any> {
     );
   }
 
-  onLoadPrice = (stream$: StockId[] | null) => {
+  onLoadPrice = (stream$: string[] | null) => {
     this._destroyed$.next();
 
     return this.price.load(
@@ -246,54 +233,104 @@ export class MainStore extends ComponentStore<any> {
     );
   };
 
-  onChangeInstrument = this.effect((source$: Observable<null | StockEvent>) =>
+  // onChangeInstrument = this.effect((source$: Observable<null | StockEvent>) =>
+  //   source$.pipe(
+  //     filter((event: StockEvent | null): event is StockEvent => event !== null),
+  //     filter((event: StockEvent) => event.type === EventSelected.STOCK_LIST || event.type === EventSelected.WATCH_LIST),
+  //     switchMap((event: StockEvent) =>
+  //       this.api
+  //         .getStockInstrument(event.id)
+  //         .pipe(
+  //           tap((response: Response<StockInstrument>) =>
+  //             this._updateSelected(response.data, null, null, null, event.group)
+  //           )
+  //         )
+  //     )
+  //   )
+  // );
+
+  onChangeQueryParams = this.effect((source$: Observable<null | StockEvent>) =>
     source$.pipe(
       filter((event: StockEvent | null): event is StockEvent => event !== null),
-      filter((event: StockEvent) => event.type === EventSelected.STOCK_LIST),
-      switchMap((event: StockEvent) =>
-        this.api
-          .getStockInstrument(event.id)
-          .pipe(
-            tap((response: Response<StockInstrument>) =>
-              this._updateSelected(response.data, null, null, null, event.group)
-            )
-          )
-      )
-    )
-  );
-
-  onChangePosition = this.effect((source$: Observable<StockEvent | null>) =>
-    combineLatest([
-      source$.pipe(
-        filter((event: null | StockEvent): event is StockEvent => event !== null),
-        map((event: StockEvent) =>
-          event.type === EventSelected.POSITION || event.type === EventSelected.IDEA ? event : null
-        ),
-        distinctUntilChanged()
-      ),
-      combineLatest([
-        this._facade.idea.positions$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
-        this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
-      ]).pipe(map(([positions, ideas]: [Position[], Position[]]) => [...positions, ...ideas])),
-    ]).pipe(
-      debounceTime(500),
-      filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
-      tap(([event, list]: [StockEvent, Position[]]) => {
-        const find = list.find((item: Position) => item.id === event.id) || null;
-
-        if (find) {
-          if (event.type === EventSelected.POSITION) {
-            this._updateSelected(find.instrument, { ideaId: find.id, instrumentId: find.instrument.id });
-          } else {
-            this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
-          }
-        } else {
-          // this._queryParams.update({}, '');
-          this._updateSelected();
+      switchMap((event: StockEvent) => {
+        if (event.type === EventSelected.WATCH_LIST || event.type === EventSelected.STOCK_LIST) {
+          return this.api.getStockInstrument(event.id.toString()).pipe(
+            map((response: Response<StockInstrument>) => response.data),
+            tap((instrument: StockInstrument) => {
+              this.stock.updateInstrument(instrument);
+              this._updateSelected({
+                instrument: instrument.id,
+                idea: null,
+                group: event.group || null,
+              });
+            })
+          );
         }
+
+        if (
+          event.type === EventSelected.POSITION ||
+          event.type === EventSelected.IDEA ||
+          event.type === EventSelected.TRANSACTION
+        ) {
+          return this.api.getIdea(event.id).pipe(
+            map((response: Response<StockPosition | null>) => response.data),
+            tap((position: StockPosition | null) => {
+              this.idea.updateIdea(position);
+              this._updateSelected({
+                instrument: position && position.idea.instrument.id,
+                group: null,
+                idea: position && position.idea.id,
+              });
+            })
+          );
+        }
+
+        return timer(3000).pipe(
+          tap(() => this._queryParams.update({}, '')),
+          tap(() =>
+            this._updateSelected({
+              instrument: null,
+              idea: null,
+              group: null,
+            })
+          )
+        );
       })
     )
   );
+
+  // onChangePosition = this.effect((source$: Observable<StockEvent | null>) =>
+  //   combineLatest([
+  //     source$.pipe(
+  //       filter((event: null | StockEvent): event is StockEvent => event !== null),
+  //       map((event: StockEvent) =>
+  //         event.type === EventSelected.POSITION || event.type === EventSelected.IDEA ? event : null
+  //       ),
+  //       distinctUntilChanged()
+  //     ),
+  //     combineLatest([
+  //       this._facade.idea.positions$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+  //       this._facade.idea.ideas$.pipe(filter((list: Position[] | null): list is Position[] => list !== null)),
+  //     ]).pipe(map(([positions, ideas]: [Position[], Position[]]) => [...positions, ...ideas])),
+  //   ]).pipe(
+  //     debounceTime(500),
+  //     filter((combine: [StockEvent | null, Position[]]): combine is [StockEvent, Position[]] => combine[0] !== null),
+  //     tap(([event, list]: [StockEvent, Position[]]) => {
+  //       const find = list.find((item: Position) => item.id === event.id) || null;
+  //
+  //       if (find) {
+  //         if (event.type === EventSelected.POSITION) {
+  //           this._updateSelected(find.instrument, { ideaId: find.id, instrumentId: find.instrument.id });
+  //         } else {
+  //           this._updateSelected(find.instrument, null, { ideaId: find.id, instrumentId: find.instrument.id });
+  //         }
+  //       } else {
+  //         // this._queryParams.update({}, '');
+  //         this._updateSelected();
+  //       }
+  //     })
+  //   )
+  // );
 
   // onChangeIdea = this.effect((source$: Observable<StockEvent | null>) =>
   //   combineLatest([
@@ -317,60 +354,56 @@ export class MainStore extends ComponentStore<any> {
   //   )
   // );
 
-  onChangeWatch = this.effect((source$: Observable<StockEvent | null>) =>
-    source$.pipe(
-      this._getIdFrom(EventSelected.WATCH_LIST),
-      filter((event: StockEvent | null): event is StockEvent => event !== null),
-      switchMap((event: StockEvent) =>
-        this.api
-          .getStockInstrument(event.id)
-          .pipe(
-            tap((response: Response<StockInstrument>) =>
-              this._updateSelected(response.data, null, null, null, event.group)
-            )
-          )
-      )
-    )
-  );
+  // onChangeWatch = this.effect((source$: Observable<StockEvent | null>) =>
+  //   source$.pipe(
+  //     this._getIdFrom(EventSelected.WATCH_LIST),
+  //     filter((event: StockEvent | null): event is StockEvent => event !== null),
+  //     switchMap((event: StockEvent) =>
+  //       this.api
+  //         .getStockInstrument(event.id)
+  //         .pipe(
+  //           tap((response: Response<StockInstrument>) =>
+  //             this._updateSelected(response.data, null, null, null, event.group)
+  //           )
+  //         )
+  //     )
+  //   )
+  // );
 
-  onChangeTransaction = this.effect((source$: Observable<StockEvent | null>) =>
-    combineLatest([
-      source$.pipe(this._getIdFrom(EventSelected.TRANSACTION)),
-      this.portfolio.list$.pipe(
-        filter((list: PortfolioPosition[] | null): list is PortfolioPosition[] => list !== null)
-      ),
-    ]).pipe(
-      filter(
-        (combine: [StockEvent | null, PortfolioPosition[]]): combine is [StockEvent, PortfolioPosition[]] =>
-          combine[0] !== null
-      ),
-      tap(([event, list]: [StockEvent, PortfolioPosition[]]) => {
-        const find = list.find((item: PortfolioPosition) => item.ideaId === event.id) || null;
+  // onChangeTransaction = this.effect((source$: Observable<StockEvent | null>) =>
+  //   combineLatest([
+  //     source$.pipe(this._getIdFrom(EventSelected.TRANSACTION)),
+  //     this.portfolio.list$.pipe(
+  //       filter((list: PortfolioPosition[] | null): list is PortfolioPosition[] => list !== null)
+  //     ),
+  //   ]).pipe(
+  //     filter(
+  //       (combine: [StockEvent | null, PortfolioPosition[]]): combine is [StockEvent, PortfolioPosition[]] =>
+  //         combine[0] !== null
+  //     ),
+  //     tap(([event, list]: [StockEvent, PortfolioPosition[]]) => {
+  //       const find = list.find((item: PortfolioPosition) => item.ideaId === event.id) || null;
+  //
+  //       if (find) {
+  //         this._updateSelected(find.instrument, null, null, { ideaId: find.ideaId, instrumentId: find.instrument.id });
+  //       } else {
+  //         this._queryParams.update({}, '');
+  //         this._updateSelected({
+  //           instrument: null,
+  //           idea: null,
+  //           group: null,
+  //         });
+  //       }
+  //     })
+  //   )
+  // );
 
-        if (find) {
-          this._updateSelected(find.instrument, null, null, { ideaId: find.ideaId, instrumentId: find.instrument.id });
-        } else {
-          this._queryParams.update({}, '');
-          this._updateSelected();
-        }
-      })
-    )
-  );
+  getPriceOfInstruments = (list: string[]): Observable<StockPrice<WithLastPrice>> => this.api.getActiveStock(list);
 
-  getPriceOfInstruments = (list: StockId[]): Observable<StockPrice<WithLastPrice>> => this.api.getActiveStock(list);
-
-  private _updateSelected(
-    instrument: StockInstrument | null = null,
-    position: StockTransaction | null = null,
-    idea: StockTransaction | null = null,
-    transaction: StockTransaction | null = null,
-    group: StockId | null = null
-  ): void {
-    this.selected.updateInstrument(instrument);
-    this.selected.updatePosition(position);
-    this.selected.updateIdea(idea);
-    this.selected.updateTransaction(transaction);
-    this.selected.updateGroup(group);
+  private _updateSelected(selected: { instrument: string | null; idea: StockId | null; group: string | null }): void {
+    this.selected.updateInstrument(selected.instrument);
+    this.selected.updateIdea(selected.idea);
+    this.selected.updateGroup(selected.group);
   }
 
   private _getIdFrom(type: EventSelected) {

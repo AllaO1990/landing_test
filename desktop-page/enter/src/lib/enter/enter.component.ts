@@ -160,7 +160,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
       event.type === EventSelected.IDEA ||
       event.type === EventSelected.POSITION ||
       event.type === EventSelected.TRANSACTION
-        ? event.id
+        ? +event.id
         : null
     ),
     distinctUntilChanged()
@@ -275,10 +275,11 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
             last.idea.instrument.id === result.idea.instrument.id
           ) {
             this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
-            this._idea.loadFigures({
-              ideaId: '' + result.idea.id,
-              instrumentId: result.idea.instrument.id,
-            });
+            this._idea.loadFigures(result.idea.id);
+            // this._idea.loadFigures({
+            //   ideaId: result.idea.id,
+            //   instrumentId: result.idea.instrument.id,
+            // });
 
             const params = this._getDialogFinishType(result);
 
@@ -387,7 +388,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
     if (ideaId === null) {
       this._idea.createIdea(this._getValueToSubmit(this.form.getRawValue()));
     } else {
-      this._idea.editIdea({ id: ideaId.toString(), body: this._getValueToSubmit(this.form.getRawValue()) });
+      this._idea.editIdea({ id: ideaId, body: this._getValueToSubmit(this.form.getRawValue()) });
     }
   }
 
@@ -408,7 +409,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
         })
         .subscribe((result: boolean) => {
           if (result) {
-            this._idea.deleteIdea(ideaId.toString());
+            this._idea.deleteIdea(ideaId);
           }
         });
     }

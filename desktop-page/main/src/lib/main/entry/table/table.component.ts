@@ -2,13 +2,12 @@ import { TuiTable } from '@taiga-ui/addon-table';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
-import { TuiFormatNumberPipe, TuiHint, TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
+import { TuiFormatNumberPipe, TuiLoader, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
 import { Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { EventSelected } from 'types/events';
-import { StockId, StockTransaction } from 'types/stock';
-import { StockEvent } from 'types/stock-event';
+import { StockId } from 'types/stock';
 import { getColor, getRGBA } from 'utils/get-color';
 import { QueryParams } from 'utils/query-params';
 import { ENTRY_HEADER } from '../entry.constants';
@@ -33,7 +32,6 @@ import { ColorToPositionPipe } from './color.pipe';
     TuiTable,
     DatePassedPipe,
     GetStrategyNamePipe,
-    TuiHint,
     TuiScrollable,
     ColorToPositionPipe,
   ],
@@ -51,10 +49,7 @@ export class EntryTableComponent {
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
-  public activeIdeaId$: Observable<StockId | null> = this._store.idea$.pipe(
-    map((result: StockTransaction | null) => (result ? result.ideaId : null)),
-    distinctUntilChanged()
-  );
+  public activeIdeaId$: Observable<StockId | null> = this._store.idea$.pipe(distinctUntilChanged());
 
   @Input() data: Position[] | null = null;
 
@@ -85,7 +80,7 @@ export class EntryTableComponent {
     });
   }
 
-  private _conditionActive(selected: StockEvent): StockId | null {
-    return selected.type === EventSelected.IDEA ? selected.id : null;
-  }
+  // private _conditionActive(selected: StockEvent): string | null {
+  //   return selected.type === EventSelected.IDEA ? selected.id : null;
+  // }
 }

@@ -24,6 +24,7 @@ import { QUERY_PARAMS } from 'tokens/desktop';
 import { StockPosition } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
+import { Response } from 'types/response';
 
 type CommissionItem = {
   brokerId: number;
@@ -118,6 +119,7 @@ export class CommissionAddWithTickerComponent extends PortfolioListDialog implem
     this.isLoading$.next(true);
 
     const request = this.#store.getIdea(this.context.data.ideaId).pipe(
+      map((idea: Response<StockPosition | null>) => idea.data),
       filter((idea: StockPosition | null): idea is StockPosition => idea !== null),
       switchMap((position: StockPosition) => {
         const body = this._getBody(position);

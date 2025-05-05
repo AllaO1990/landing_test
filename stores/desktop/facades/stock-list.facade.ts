@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { MainStore } from '../main.store';
 import { Observable } from 'rxjs';
-import { StockGroupList, StockListItems, StockPrice, WithLastPrice } from 'types/stock';
+import { StockGroupList, StockInstrument, StockListItems, StockPrice, WithLastPrice } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
 
 @Injectable()
@@ -11,6 +11,7 @@ export class StockListFacade {
   private readonly _price = this._store.price;
 
   readonly listInstrument$: Observable<StockListItems | null> = this._stock.list$;
+  readonly instrument$: Observable<StockInstrument | null> = this._stock.instrument$;
   readonly group$: Observable<StockGroupList[] | null> = this._stock.group$;
   readonly listPrice$: Observable<StockPrice<WithLastPrice> | null> = this._price.list$;
   readonly event$: Observable<null | StockEvent> = this._store.selected.event$;
