@@ -22,6 +22,7 @@ import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
 import { isSameDay } from 'date-fns/isSameDay';
 import { eachMonthOfInterval } from 'date-fns/eachMonthOfInterval';
 import { isSameMonth } from 'date-fns/isSameMonth';
+import { addMinutes } from 'date-fns/addMinutes';
 
 export interface PortfolioState {
   list: null | PortfolioPosition[];
@@ -202,10 +203,14 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   );
 
   _getAccountBalance(data: AccountBalanceHistory, from: string, to: string): AccountBalanceHistory {
-    const dateFrom = new Date(from);
-    const dateTo = new Date(to);
+    const dateFrom = new Date(from).setUTCHours(12);
+    const dateTo = new Date(to).setUTCHours(12);
+    const timezoneOffset = new Date().getTimezoneOffset() * -1;
 
-    const rangeDayArray = eachDayOfInterval({ start: dateFrom, end: dateTo });
+    const rangeDayArray = eachDayOfInterval({
+      start: dateFrom,
+      end: dateTo,
+    }).map((item: Date) => addMinutes(item, timezoneOffset));
 
     if (rangeDayArray.length === data.items.length) {
       return data;
@@ -220,9 +225,9 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
         if (findIndex !== -1) {
           list.push(data.items[findIndex]);
         } else if (i === 0) {
-          list.push({ balance: 0, date: rangeDayArray[i].toISOString() });
+          list.push({ date: rangeDayArray[i].toISOString(), balance: 0 });
         } else {
-          list.push({ balance: list[i - 1].balance, date: rangeDayArray[i].toISOString() });
+          list.push({ date: rangeDayArray[i].toISOString(), balance: list[i - 1].balance });
         }
       }
 
@@ -238,9 +243,9 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
       if (findIndex !== -1) {
         list.push(data.items[findIndex]);
       } else if (i === 0) {
-        list.push({ balance: 0, date: rangeMonthArray[i].toISOString() });
+        list.push({ date: rangeMonthArray[i].toISOString(), balance: 0 });
       } else {
-        list.push({ balance: list[i - 1].balance, date: rangeMonthArray[i].toISOString() });
+        list.push({ date: rangeMonthArray[i].toISOString(), balance: list[i - 1].balance });
       }
     }
 
