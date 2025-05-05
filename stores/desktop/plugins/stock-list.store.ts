@@ -44,8 +44,6 @@ export class StockListStore extends ComponentStore<StockState> {
    */
   readonly group$: Observable<null | StockGroupList[]> = this.select((state: StockState) => state.group);
 
-  readonly instrument$: Observable<null | StockInstrument> = this.select((state: StockState) => state.instrument);
-
   /**
    * Получение определённой группы тикеров для Stock
    */
@@ -75,10 +73,6 @@ export class StockListStore extends ComponentStore<StockState> {
 
   updateList = this.updater((state: StockState, list: StockListItems | null) => ({ ...state, list }));
   updateGroup = this.updater((state: StockState, group: StockGroupList[] | null) => ({ ...state, group }));
-  updateInstrument = this.updater((state: StockState, instrument: StockInstrument | null) => ({
-    ...state,
-    instrument,
-  }));
 
   deleteGroup = this.updater((state: StockState, id: string) => {
     let group = null;

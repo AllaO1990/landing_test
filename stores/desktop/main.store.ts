@@ -78,7 +78,7 @@ export class MainStore extends ComponentStore<any> {
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    const instrumentTrust$: Observable<StockInstrument> = this.stock.instrument$.pipe(
+    const instrumentTrust$: Observable<StockInstrument> = this.idea.instrument$.pipe(
       filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
       distinctUntilChanged((a, b) => a.id === b.id),
       shareReplay({ refCount: true, bufferSize: 1 })
@@ -257,7 +257,7 @@ export class MainStore extends ComponentStore<any> {
           return this.api.getStockInstrument(event.id.toString()).pipe(
             map((response: Response<StockInstrument>) => response.data),
             tap((instrument: StockInstrument) => {
-              this.stock.updateInstrument(instrument);
+              this.idea.updateInstrument(instrument);
               this._updateSelected({
                 instrument: instrument.id,
                 idea: null,
@@ -276,6 +276,8 @@ export class MainStore extends ComponentStore<any> {
             map((response: Response<StockPosition | null>) => response.data),
             tap((position: StockPosition | null) => {
               this.idea.updateIdea(position);
+              position && this.idea.updateInstrument(position.idea.instrument);
+
               this._updateSelected({
                 instrument: position && position.idea.instrument.id,
                 group: null,

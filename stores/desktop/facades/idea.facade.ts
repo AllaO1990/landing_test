@@ -13,11 +13,12 @@ export class IdeaFacade {
   readonly atr$: Observable<null | { data: IndicatorAtr; instrument: string }> = this._store.atr.value$;
   readonly positions$: Observable<Position[] | null> = this._store.idea.positions$;
   readonly ideas$: Observable<Position[] | null> = this._store.idea.ideas$;
+  readonly instrument$: Observable<StockInstrument | null> = this._store.idea.instrument$;
   readonly isLoading$: Observable<boolean> = this._store.idea.isLoading$;
   readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
     switchMap((idea: StockPosition | null) => {
       if (idea === null) {
-        return this._store.stock.instrument$.pipe(
+        return this._store.idea.instrument$.pipe(
           // tap((data) => console.log(data)),
           filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
           switchMap((instrument: StockInstrument) =>
@@ -37,7 +38,7 @@ export class IdeaFacade {
       }
       return of(idea);
     }),
-    tap((idea: StockPosition) => this._store.stock.updateInstrument(idea.idea.instrument)),
+    tap((idea: StockPosition) => this._store.idea.updateInstrument(idea.idea.instrument)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 

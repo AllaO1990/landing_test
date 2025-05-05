@@ -8,7 +8,7 @@ import { EventSelected } from 'types/events';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { LoaderComponent } from '@ui/components/loader';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
-import { StockListFacade } from 'stores/facades/stock-list.facade';
+import { IdeaFacade } from 'stores/facades/idea.facade';
 
 @Component({
   selector: 'lib-toolbar-search',
@@ -19,10 +19,10 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolbarSearchComponent {
-  private readonly _select: StockListFacade = inject(StockListFacade);
+  readonly #store: IdeaFacade = inject(IdeaFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  public readonly selected$: Observable<StockInstrument | null> = this._select.instrument$;
+  public readonly selected$: Observable<StockInstrument | null> = this.#store.instrument$;
 
   onSelect(event: StockInstrument | null): void {
     if (event !== null) {

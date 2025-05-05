@@ -182,6 +182,7 @@ export class ChartCandlestickComponent implements OnInit {
     ),
     this._store.figureUser$,
   ]).pipe(
+    tap((data) => console.log(data)),
     map((list) => this._concatFigures(list)),
     shareReplay({ bufferSize: 1, refCount: true })
   );

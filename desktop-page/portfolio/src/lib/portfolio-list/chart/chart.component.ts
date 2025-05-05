@@ -28,6 +28,7 @@ import {
   AccountCurrency,
   AccountPortfolio,
   AccountRange,
+  AccountStrategy,
 } from 'types/account';
 import { map } from 'rxjs/operators';
 import { Params } from '@angular/router';
@@ -64,6 +65,10 @@ export class ChartComponent implements AfterViewInit {
   );
   readonly currency$: Observable<AccountCurrency> = this.#store.currency$.pipe(
     filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  readonly strategy$: Observable<AccountStrategy> = this.#store.strategy$.pipe(
+    filter((list: null | AccountStrategy): list is AccountStrategy => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
   readonly range$: Observable<AccountRange> = this.#store.range$.pipe(
@@ -169,15 +174,16 @@ export class ChartComponent implements AfterViewInit {
   });
 
   ngAfterViewInit(): void {
-    combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$])
+    combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$, this.strategy$])
       .pipe(
         debounceTime(0),
-        map((params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio]) => ({
+        map((params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio, AccountStrategy]) => ({
           brokerId: params[0].brokerId,
           currencyId: params[1].currencyId,
           from: params[2].from,
           portfolioId: params[3].portfolioId,
           to: params[2].to,
+          strategyId: params[4].id,
         }))
         // tap(() => this.#isLoadInfo$.next(true))
       )

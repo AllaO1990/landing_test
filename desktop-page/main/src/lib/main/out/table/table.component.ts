@@ -86,7 +86,7 @@ export class OutTableComponent {
     return index;
   }
 
-  trackById(_: number, item: Position): string | null {
+  trackById(_: number, item: Position): StockId | null {
     return item.id;
   }
 }
