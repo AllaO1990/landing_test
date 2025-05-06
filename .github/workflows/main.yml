@@ -45,7 +45,7 @@ jobs:
           name: build_artifacts
           path: dist
       - name: copy file to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -55,7 +55,7 @@ jobs:
           target: /home/mantyz/projects/vanya-frontend-builds
       # Runs a single command using the runners shell
       - name: Run docker build
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
@@ -63,10 +63,12 @@ jobs:
           key: ${{ secrets.VANYA_SECRET }}
           script: |
             set -xe
+            sudo wg-quick up wg0
             cd projects/vanya-frontend-builds
             docker build -t vanya-web-image .
             docker stop vanya-web
             docker rm vanya-web
             docker run --restart always --name vanya-web -d -p 8082:80 vanya-web-image:latest
+            sudo wg-quick down wg0
             # docker system prune -f
             curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": "${{ secrets.VANYA_TECH_CHAT_ID}}", "text": "WEB-интерфейс обновлен", "disable_notification": true}' https://api.telegram.org/bot${{ secrets.VANYA_CI_CD_BOT_TOKEN }}/sendMessage
