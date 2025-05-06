@@ -20,13 +20,13 @@ export type StockTransaction = {
   instrumentId: StockId;
 };
 
-export type StockId = string;
+export type StockId = number;
 
 /**
  * Элемент списокв тикеров с полной информацией по эмитенту без цены
  */
 export interface StockInstrument {
-  id: StockId;
+  id: string;
   source: string;
   ticker: string;
   name: string;

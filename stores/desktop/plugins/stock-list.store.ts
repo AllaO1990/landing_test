@@ -23,6 +23,7 @@ export interface StockState {
   list: null | StockListItems;
   group: null | StockGroupList[];
   now: number;
+  instrument: null | StockInstrument;
 }
 
 export class StockListStore extends ComponentStore<StockState> {
@@ -65,6 +66,7 @@ export class StockListStore extends ComponentStore<StockState> {
     super({
       list: null,
       group: null,
+      instrument: null,
       now: Date.now(),
     });
   }

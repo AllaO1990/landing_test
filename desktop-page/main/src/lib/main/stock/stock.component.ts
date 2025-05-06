@@ -11,7 +11,6 @@ import {
   StockGroup,
   StockGroupList,
   StockGroupType,
-  StockId,
   StockInstrument,
   StockListItemWithPrice,
   StockPrice,
@@ -140,7 +139,7 @@ export class StockComponent implements AfterViewInit {
     this._initGroupSelected();
   }
 
-  onSelect(value: { type: EventSelected; id: StockId }): void {
+  onSelect(value: { type: EventSelected; id: string }): void {
     this._queryParams.update(value);
   }
 

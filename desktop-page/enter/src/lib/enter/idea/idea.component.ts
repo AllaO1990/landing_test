@@ -9,7 +9,7 @@ import {
   Input,
   NgZone,
 } from '@angular/core';
-import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import {
   AbstractControl,
@@ -50,7 +50,6 @@ import { map, tap } from 'rxjs/operators';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { StockId } from 'types/stock';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 import { TUI_CONFIRM } from '@taiga-ui/kit';
 import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
@@ -64,7 +63,6 @@ import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
     ItemDirective,
     HeaderComponent,
     TuiButton,
-    DatePipe,
     ReactiveFormsModule,
     NgIf,
     ColorForPriceEntryPipe,
@@ -270,10 +268,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       this._ideaFacade.atr$.pipe(
         filter(
           (
-            value: null | { data: IndicatorAtr; instrument: StockId }
+            value: null | { data: IndicatorAtr; instrument: string }
           ): value is {
             data: IndicatorAtr;
-            instrument: StockId;
+            instrument: string;
           } => value !== null
         )
       ),

@@ -21,10 +21,7 @@ export const getListOfRange = (day: Date): { text: string; range: TuiDayRange }[
     },
     {
       text: '365 дней',
-      range: new TuiDayRange(
-        TuiDay.fromLocalNativeDate(new Date(new Date().setFullYear(addDays(day, -364).getFullYear(), 0, 1))),
-        TuiDay.fromLocalNativeDate(day)
-      ),
+      range: new TuiDayRange(TuiDay.fromLocalNativeDate(addDays(day, -364)), TuiDay.fromLocalNativeDate(day)),
     },
     {
       text: 'С Начала года',

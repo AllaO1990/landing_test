@@ -2,7 +2,7 @@ import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
 import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { StockIdeaState } from 'types/stock-idea-state';
-import { StockId } from 'types/stock';
+import { StockId, StockInstrument } from 'types/stock';
 import { Position, StockPosition, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { Response } from 'types/response';
 import { QueryParams } from 'utils/query-params';
@@ -13,10 +13,12 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   readonly ideas$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.ideas);
   readonly positions$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.positions);
   readonly idea$: Observable<StockPosition | null> = this.select((state: StockIdeaState) => state.idea);
+  readonly instrument$: Observable<StockInstrument | null> = this.select((state: StockIdeaState) => state.instrument);
   readonly isLoading$: Observable<boolean> = this.select((state: StockIdeaState) => state.isLoading);
 
   constructor(private readonly _api: DesktopService, private readonly _queryParams: QueryParams) {
     super({
+      instrument: null,
       ideas: null,
       idea: null,
       positions: null,
@@ -42,6 +44,13 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     (state: StockIdeaState, idea: StockPosition | null): StockIdeaState => ({
       ...state,
       idea,
+    })
+  );
+
+  updateInstrument = this.updater(
+    (state: StockIdeaState, instrument: StockInstrument | null): StockIdeaState => ({
+      ...state,
+      instrument,
     })
   );
 
@@ -125,9 +134,9 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     )
   );
 
-  readonly loadIdea = this.effect((stream$: Observable<number | string | null>) =>
+  readonly loadIdea = this.effect((stream$: Observable<number | null>) =>
     stream$.pipe(
-      switchMap((value: number | string | null) => {
+      switchMap((value: number | null) => {
         if (value === null) {
           return of(null);
         }
@@ -136,7 +145,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           .getIdea(value)
           .pipe(catchError((err) => of(null).pipe(tap(() => this._queryParams.update(null, '')))));
       }),
-      tap((result: StockPosition | null) => this.updateIdea(result))
+      tap((result: Response<StockPosition | null> | null) => result && this.updateIdea(result.data))
     )
   );
 
@@ -201,7 +210,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           }),
 
           switchMap((response: Response<{ id: number }>) =>
-            this.selectFromAll(response.data.id.toString()).pipe(
+            this.selectFromAll(response.data.id).pipe(
               filter((position: Position | null): position is Position => position !== null),
               take(1),
               tap((position: Position) => {
@@ -253,7 +262,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           }),
 
           switchMap((response: Response<{ id: number }>) =>
-            this.selectFromAll(response.data.id.toString()).pipe(
+            this.selectFromAll(response.data.id).pipe(
               filter((position: Position | null): position is Position => position !== null),
               take(1),
               tap((position: Position) => {
@@ -275,13 +284,15 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly delete = this.effect((stream$: Observable<StockId>) =>
     stream$.pipe(
+      tap(() => this.updateIsLoading(true)),
       switchMap((id: StockId) =>
         this._api.deleteIdea(id).pipe(
           tap((response: number | null) => {
             this.loadIdeas(of(null));
             this.loadPositions(of(null));
             this._queryParams.update({}, '');
-          })
+          }),
+          tap(() => this.updateIsLoading(false))
         )
       )
     )

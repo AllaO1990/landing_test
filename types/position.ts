@@ -8,7 +8,7 @@ export interface ResponsePositions {
 }
 
 export interface ResponsePosition {
-  id: string | null;
+  id: StockId | null;
   createdAt: string;
   updatedAt: string | null;
   inPosition: boolean;
@@ -167,7 +167,7 @@ export interface StockPositionCommission {
 
 export class Position implements ResponsePosition {
   readonly multiplier: number;
-  id: StockId;
+  id: StockId | null;
   author: string;
   createdAt: string;
   entries: StockPositionIdeaEntry[];
@@ -202,7 +202,7 @@ export class Position implements ResponsePosition {
   constructor(data: ResponsePosition) {
     this.multiplier = data.positionType === 'short' ? -1 : 1;
 
-    this.id = (data.id && data.id.toString()) || '';
+    this.id = data.id;
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;
     this.positionType = data.positionType;

@@ -56,11 +56,11 @@ export class CommissionStore extends ComponentStore<CommissionState> {
     return this._api.deleteCommission(id);
   }
 
-  getIdea(id: string | number): Observable<StockPosition | null> {
+  getIdea(id: number): Observable<Response<StockPosition | null>> {
     return this._api.getIdea(id);
   }
 
-  editIdea(id: string, body: object): Observable<Response<{ id: number }>> {
+  editIdea(id: number, body: object): Observable<Response<{ id: number }>> {
     return this._api.editIdea(id, body);
   }
 }

@@ -16,7 +16,7 @@ import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } 
 import { AsyncPipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { StockGroupType, StockId, StockInstrument, StockListItemWithPrice } from 'types/stock';
+import { StockGroupType, StockInstrument, StockListItemWithPrice } from 'types/stock';
 import {
   TuiButton,
   TuiFormatNumberPipe,
@@ -79,7 +79,7 @@ export class StockListComponent implements AfterContentInit {
 
   readonly list$: Observable<StockListWithType | null> = this._list$.asObservable();
 
-  @Output() selected: Observable<{ id: StockId; type: EventSelected }> = this.list$.pipe(
+  @Output() selected: Observable<{ id: string; type: EventSelected }> = this.list$.pipe(
     filter((list: StockListWithType | null): list is StockListWithType => list !== null),
     switchMap((list: StockListWithType) =>
       this.controlItem.valueChanges.pipe(
@@ -109,7 +109,7 @@ export class StockListComponent implements AfterContentInit {
     return index;
   }
 
-  trackByStockListItem(_: number, item: StockInstrument): StockId {
+  trackByStockListItem(_: number, item: StockInstrument): string {
     return item.id;
   }
 
@@ -142,10 +142,10 @@ export class StockListComponent implements AfterContentInit {
       .subscribe((event: StockEvent | null) => this.controlItem.patchValue(event && event.id, { emitEvent: false }));
   }
 
-  private _getValue(event: StockEvent | null, type: EventSelected | null): StockId | null {
-    if (event === null || event.type !== type) {
-      return null;
-    }
-    return event.id;
-  }
+  // private _getValue(event: StockEvent | null, type: EventSelected | null): number | null {
+  //   if (event === null || event.type !== type) {
+  //     return null;
+  //   }
+  //   return event.id;
+  // }
 }

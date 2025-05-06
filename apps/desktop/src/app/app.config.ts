@@ -18,6 +18,8 @@ import { WINDOW } from 'tokens/desktop/window';
 import { DOCUMENT } from '@angular/common';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { LocalStorage } from 'storage/local.storage';
+import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
+import { TimerInterval } from 'utils/timer-interval';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -51,6 +53,10 @@ export const appConfig: ApplicationConfig = {
       provide: QUERY_PARAMS,
       useFactory: (router: Router, activatedRoute: ActivatedRoute) => new QueryParams(router, activatedRoute),
       deps: [Router, ActivatedRoute],
+    },
+    {
+      provide: TIMER_INTERVAL,
+      useClass: TimerInterval,
     },
     {
       provide: MAT_DATE_LOCALE,

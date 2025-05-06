@@ -31,4 +31,22 @@ export class BalanceStore extends ComponentStore<BalanceState> {
       tap((response: Response<AccountTransactions>) => this.updateList(response.data))
     )
   );
+
+  edit = this.effect((stream$: Observable<{ id: number | string; params: Params }>) =>
+    stream$.pipe(
+      switchMap((value: { id: number | string; params: Params }) =>
+        this._api.editAccountTransactions(value.id, value.params)
+      ),
+      tap((response: Response<any>) => console.log(response))
+    )
+  );
+
+  delete = this.effect((stream$: Observable<{ id: number | string; params: Params }>) =>
+    stream$.pipe(
+      switchMap((value: { id: number | string; params: Params }) =>
+        this._api.deleteAccountTransactions(value.id).pipe(tap((response: Response<number>) => this.load(value.params)))
+      ),
+      tap((response: Response<number>) => console.log(response))
+    )
+  );
 }

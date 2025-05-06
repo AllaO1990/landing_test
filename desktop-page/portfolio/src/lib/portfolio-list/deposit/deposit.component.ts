@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
@@ -29,6 +29,7 @@ import { Response } from 'types/response';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiInputNumberDirective } from '@taiga-ui/kit';
+import { StockId } from 'types/stock';
 
 @Component({
   selector: 'lib-deposit',
@@ -56,7 +57,7 @@ import { TuiInputNumberDirective } from '@taiga-ui/kit';
   styleUrls: ['../dialog.scss', './deposit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DepositComponent extends PortfolioListDialog {
+export class DepositComponent extends PortfolioListDialog implements AfterViewInit {
   readonly #api: DesktopService = inject(DESKTOP_API);
   readonly #service: AccountFacade = inject(AccountFacade);
   readonly #updateBalance$: Subject<void> = new BehaviorSubject<void>(undefined);
@@ -117,25 +118,45 @@ export class DepositComponent extends PortfolioListDialog {
     map(([portfolio, brokerId, currencyId]: any[]) => ({ brokerId, currencyId, portfolioId: portfolio.portfolioId })),
     switchMap((params: Params) => this.getBalance(params)),
     tap(() => this.isLoadValue$.next(false)),
-    tap(() => this.form.patchValue({ amount: null })),
+    // tap(() => this.form.patchValue({ amount: null })),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+
+  ngAfterViewInit(): void {
+    if (this.context.data.type === 'edit') {
+      const {
+        amount,
+        portfolio,
+        currency: { currencyId },
+        broker: { brokerId },
+      } = this.context.data;
+
+      this.form.patchValue({ amount, currencyId, brokerId, portfolio });
+      this.controlCurrency.disable();
+      this.controlBroker.disable();
+      this.controlPortfolio.disable();
+    }
+  }
 
   onSubmit(event: SubmitEvent) {
     event.preventDefault();
 
-    const { portfolio, ...other } = this.form.value;
+    const { id, type } = this.context.data;
+    const source$ = (params: Params) =>
+      type === 'deposit'
+        ? this.#api.addToAccountDeposit(params)
+        : ((id: StockId) => this.#api.editAccountTransactions(id, params))(id);
+    const { portfolio, comment, ...other } = this.form.getRawValue();
     const params = {
       ...other,
       portfolioId: portfolio.portfolioId,
     };
 
-    this.#api
-      .addToAccountDeposit(params)
+    source$(params)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((_) => this.#updateBalance$.next(undefined));
 
-    this.form.patchValue({ amount: null });
+    // this.form.patchValue({ amount: null });
   }
 
   @tuiPure

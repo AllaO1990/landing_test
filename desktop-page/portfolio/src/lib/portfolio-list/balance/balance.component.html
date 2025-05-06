@@ -46,8 +46,9 @@
               tuiIconButton
               size="xs"
               type="button"
+              (click)="onEdit($event, item)"
               [loading]="item.loadingEdit"
-              [disabled]="item.loadingEdit || item.loadingRemove || true"
+              [disabled]="item.loadingEdit || item.loadingRemove"
             ></button>
             <button
               appearance="icon"
@@ -55,8 +56,9 @@
               tuiIconButton
               size="xs"
               type="button"
+              (click)="onDelete($event, item)"
               [loading]="item.loadingRemove"
-              [disabled]="item.loadingEdit || item.loadingRemove || true"
+              [disabled]="item.loadingEdit || item.loadingRemove"
             ></button>
           </div>
         </div>

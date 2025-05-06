@@ -1,6 +1,6 @@
 <form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
   <div class="form__header">
-    <h3>Внести средства</h3>
+    <h3>{{ label }}</h3>
   </div>
   <div class="form__form">
     <lib-control-portfolio
@@ -92,7 +92,7 @@
       [disabled]="form.invalid"
       tuiButton
       type="submit">
-      Пополнить
+      {{ action }}
     </button>
   </div>
 </form>

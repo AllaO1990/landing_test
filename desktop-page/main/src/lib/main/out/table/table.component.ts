@@ -13,8 +13,8 @@ import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { getColor, getRGBA } from 'utils/get-color';
 import { Observable, shareReplay } from 'rxjs';
-import { StockId, StockTransaction } from 'types/stock';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { StockId } from 'types/stock';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { ColorPriceDirective, LastPriceDirective } from '@ui/components/price';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
@@ -56,8 +56,7 @@ export class OutTableComponent {
   public readonly header: OutHeaderItem[] = OUT_HEADER;
   public readonly columnList: string[] = this.header.map((item: { name: string }) => item.name);
 
-  public activeIdeaId$: Observable<StockId | null> = this._store.position$.pipe(
-    map((result: StockTransaction | null) => (result ? result.ideaId : null)),
+  public activeIdeaId$: Observable<StockId | null> = this._store.idea$.pipe(
     distinctUntilChanged(),
     shareReplay({ refCount: true, bufferSize: 1 })
   );

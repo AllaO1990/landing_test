@@ -57,7 +57,11 @@ export class DesktopApiService extends DesktopService {
     );
   }
 
-  public getChartFigures(ideaId: string, from: string, to: string): Observable<Response<FigureIdea | null> | null> {
+  public getChartFigures(
+    ideaId: string | number,
+    from: string,
+    to: string
+  ): Observable<Response<FigureIdea | null> | null> {
     return this._http
       .get<Response<FigureIdea | null>>(`${this.host}/api/v1/chart-figures`, {
         params: { ideaId, from, to },
@@ -93,8 +97,8 @@ export class DesktopApiService extends DesktopService {
     return this._http.get<Response<{ items: StockLists }>>(`${this.host}/api/v1/instruments-lists`);
   }
 
-  getInstrumentsListItems(id: StockId): Observable<Response<Stock>> {
-    return this._http.get<Response<any>>(`${this.host}/api/v1/instruments-list-items`, { params: { id } });
+  getInstrumentsListItems(id: string): Observable<Response<Stock>> {
+    return this._http.get<Response<Stock>>(`${this.host}/api/v1/instruments-list-items`, { params: { id } });
   }
 
   addInstrumentsListItems(value: StockLinkListInstrument): Observable<Response<StockLinkListInstrument>> {
@@ -137,7 +141,7 @@ export class DesktopApiService extends DesktopService {
     return this._http.patch<Response<StockInstrumentList>>(`${this.host}/api/v1/instruments-lists/edit`, value);
   }
 
-  public getActiveStock(list: StockId[]): Observable<StockPrice<WithLastPrice>> {
+  public getActiveStock(list: (string | number)[]): Observable<StockPrice<WithLastPrice>> {
     return this._http
       .post<Response<StockPrice<WithLastPrice>>>(`${this.host}/api/v1/instruments/last-close-price/by-ids`, {
         ids: [...new Set(list)],
@@ -185,7 +189,7 @@ export class DesktopApiService extends DesktopService {
       );
   }
 
-  getIdeaConsolidationZone(id: StockId): Observable<Response<ActiveZone | null> | null> {
+  getIdeaConsolidationZone(id: string): Observable<Response<ActiveZone | null> | null> {
     return this._http
       .get<Response<ActiveZone | null> | null>(`${this.host}/api/v1/chart/idea-consolidation-zone`, {
         params: { ideaId: id },
@@ -207,7 +211,7 @@ export class DesktopApiService extends DesktopService {
     );
   }
 
-  getIndicatorAtr(id: StockId, interval: number, date: string): Observable<Response<any>> {
+  getIndicatorAtr(id: string | number, interval: number, date: string): Observable<Response<any>> {
     return this._http.get<Response<any>>(`${this.host}/api/v1/chart/atr`, { params: { id, interval, date } }).pipe(
       catchError((err) => {
         return of({
@@ -275,6 +279,14 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<AccountTransactions>>(`${this.host}/api/v1/account/transactions`, params);
   }
 
+  editAccountTransactions(id: number | string, params: Params): Observable<Response<any>> {
+    return this._http.patch<Response<any>>(`${this.host}/api/v1/account/transactions/${id}`, params);
+  }
+
+  deleteAccountTransactions(id: number | string): Observable<Response<number>> {
+    return this._http.delete<Response<number>>(`${this.host}/api/v1/account/transactions/${id}`);
+  }
+
   getAccountStrategies(): Observable<Response<DataList<AccountStrategy>>> {
     return this._http.get<Response<DataList<AccountStrategy>>>(`${this.host}/api/v1/ideas/strategies`);
   }
@@ -306,7 +318,7 @@ export class DesktopApiService extends DesktopService {
       map((result: Response<DataList<PortfolioPosition>>) => {
         return {
           total: result.data.total,
-          items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId.toString() })),
+          items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId })),
         };
       }),
       catchError((err: Error) => {
@@ -316,10 +328,8 @@ export class DesktopApiService extends DesktopService {
     );
   }
 
-  getIdea(id: StockId): Observable<StockPosition | null> {
-    return this._http
-      .get<Response<StockPosition>>(`${this.host}/api/v1/ideas/${id}`)
-      .pipe(map((response: Response<StockPosition>): StockPosition => response.data));
+  getIdea(id: StockId): Observable<Response<StockPosition | null>> {
+    return this._http.get<Response<StockPosition>>(`${this.host}/api/v1/ideas/${id}`);
   }
 
   deleteIdea(id: StockId): Observable<number | null> {

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { MainStore } from '../main.store';
 import { Observable, of, switchMap, tap } from 'rxjs';
-import { StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
+import { StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { Position, StockPosition } from 'types/position';
 import { filter, map, shareReplay } from 'rxjs/operators';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
@@ -10,14 +10,15 @@ import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 export class IdeaFacade {
   private readonly _store: MainStore = inject(MainStore);
 
-  readonly atr$: Observable<null | { data: IndicatorAtr; instrument: StockId }> = this._store.atr.value$;
+  readonly atr$: Observable<null | { data: IndicatorAtr; instrument: string }> = this._store.atr.value$;
   readonly positions$: Observable<Position[] | null> = this._store.idea.positions$;
   readonly ideas$: Observable<Position[] | null> = this._store.idea.ideas$;
+  readonly instrument$: Observable<StockInstrument | null> = this._store.idea.instrument$;
   readonly isLoading$: Observable<boolean> = this._store.idea.isLoading$;
   readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
     switchMap((idea: StockPosition | null) => {
       if (idea === null) {
-        return this._store.selected.instrument$.pipe(
+        return this._store.idea.instrument$.pipe(
           // tap((data) => console.log(data)),
           filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
           switchMap((instrument: StockInstrument) =>
@@ -37,7 +38,7 @@ export class IdeaFacade {
       }
       return of(idea);
     }),
-    tap((idea: StockPosition) => this._store.selected.updateInstrument(idea.idea.instrument)),
+    tap((idea: StockPosition) => this._store.idea.updateInstrument(idea.idea.instrument)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
