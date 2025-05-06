@@ -96,6 +96,10 @@ export class PortfolioListComponent implements AfterViewInit {
     filter((list: null | AccountRange): list is AccountRange => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly leadToCurrency$: Observable<AccountCurrency> = this._service.leadToCurrency$.pipe(
+    filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   readonly data$: Observable<null | AccountBalanceCommon> = this._service.balance$.pipe(
     map((value: null | AccountBalance) => this._calcBalance(value)),
@@ -128,15 +132,21 @@ export class PortfolioListComponent implements AfterViewInit {
       this.portfolio$,
       this.type$,
       this.strategy$,
+      this.leadToCurrency$,
     ]).pipe(
       debounceTime(0),
-      map((params: [AccountBroker, AccountCurrency, AccountPortfolio, AccountType, AccountStrategy]) => ({
-        brokerId: params[0].brokerId,
-        currencyId: params[1].currencyId,
-        portfolioId: params[2].portfolioId,
-        instrumentType: params[3].id,
-        strategyId: params[4].id,
-      })),
+      map(
+        (
+          params: [AccountBroker, AccountCurrency, AccountPortfolio, AccountType, AccountStrategy, AccountCurrency]
+        ) => ({
+          brokerId: params[0].brokerId,
+          currencyId: params[1].currencyId,
+          portfolioId: params[2].portfolioId,
+          instrumentType: params[3].id,
+          strategyId: params[4].id,
+          leadToCurrency: params[5].currency,
+        })
+      ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
@@ -209,7 +219,7 @@ export class PortfolioListComponent implements AfterViewInit {
     if (a === 0 && b === 0) {
       return 0;
     }
-    
+
     if (b === 0) {
       return 100;
     }

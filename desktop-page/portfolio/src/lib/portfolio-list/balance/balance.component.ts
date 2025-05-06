@@ -82,7 +82,7 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
 
     this._openDialog(
       this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
-      { max: null },
+      { max: null, type: 'deposit' },
       'Внести средства'
     ).subscribe(() => this._updateList());
   }
@@ -98,7 +98,7 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
 
     this._openDialog(
       this.#dialogWithdrawalComponent as PolymorpheusComponent<WithdrawalComponent>,
-      { max: true, type: 'deposit' },
+      { max: true },
       'Вывести средства'
     ).subscribe(() => this._updateList());
   }

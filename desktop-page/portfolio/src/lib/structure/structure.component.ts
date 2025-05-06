@@ -117,6 +117,10 @@ export class StructureComponent implements AfterViewInit {
     filter((list: null | AccountRange): list is AccountRange => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly leadToCurrency$: Observable<AccountCurrency> = this.#store.leadToCurrency$.pipe(
+    filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   readonly isLoad$: Subject<boolean> = new BehaviorSubject(false);
 
@@ -150,6 +154,7 @@ export class StructureComponent implements AfterViewInit {
       this.portfolio$,
       this.type$,
       this.strategy$,
+      this.leadToCurrency$,
       this.controlCategories.valueChanges.pipe(startWith(this.controlCategories.value)),
     ])
       .pipe(
@@ -163,6 +168,7 @@ export class StructureComponent implements AfterViewInit {
               AccountPortfolio,
               AccountType,
               AccountStrategy,
+              AccountCurrency,
               {
                 value: string;
               }
@@ -174,7 +180,8 @@ export class StructureComponent implements AfterViewInit {
             portfolioId: params[3].portfolioId,
             instrumentType: params[4].id,
             strategyId: params[5].id,
-            groupBy: params[6].value,
+            leadToCurrency: params[6].currency,
+            groupBy: params[7].value,
           })
         ),
         tap(() => this.isLoad$.next(true))
