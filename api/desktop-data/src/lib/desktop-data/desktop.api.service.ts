@@ -279,6 +279,14 @@ export class DesktopApiService extends DesktopService {
     return this._http.post<Response<AccountTransactions>>(`${this.host}/api/v1/account/transactions`, params);
   }
 
+  editAccountTransactions(id: number | string, params: Params): Observable<Response<any>> {
+    return this._http.patch<Response<any>>(`${this.host}/api/v1/account/transactions/${id}`, params);
+  }
+
+  deleteAccountTransactions(id: number | string): Observable<Response<number>> {
+    return this._http.delete<Response<number>>(`${this.host}/api/v1/account/transactions/${id}`);
+  }
+
   getAccountStrategies(): Observable<Response<DataList<AccountStrategy>>> {
     return this._http.get<Response<DataList<AccountStrategy>>>(`${this.host}/api/v1/ideas/strategies`);
   }

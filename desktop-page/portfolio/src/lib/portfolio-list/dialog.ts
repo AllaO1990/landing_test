@@ -12,6 +12,11 @@ export class PortfolioListDialog {
     return this.context.label || null;
   }
 
+  @tuiPure
+  get action(): string | null {
+    return this.context.action || null;
+  }
+
   onCancel(event: Event): void {
     event.preventDefault();
 

@@ -122,6 +122,10 @@ export abstract class DesktopService {
 
   abstract getAccountTransactions(params: Params): Observable<Response<AccountTransactions>>;
 
+  abstract editAccountTransactions(id: string | number, params: Params): Observable<Response<any>>;
+
+  abstract deleteAccountTransactions(id: string | number): Observable<Response<number>>;
+
   abstract createAccountPortfolio(name: string): Observable<Response<AccountPortfolio>>;
 
   abstract editAccountPortfolio(portfolio: AccountPortfolio): Observable<Response<AccountPortfolio>>;

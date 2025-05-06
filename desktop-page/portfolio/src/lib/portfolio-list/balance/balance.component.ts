@@ -3,7 +3,7 @@ import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { DialogFilterComponent } from '../dialog-filter/dialog-filter.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
-import { TuiButton, TuiFormatNumberPipe } from '@taiga-ui/core';
+import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import { LoaderComponent } from '@ui/components/loader';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { PortfolioListDialog } from '../dialog';
@@ -17,8 +17,8 @@ import { BalanceStore } from 'stores/plugins/balance.store';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { DESKTOP_API } from 'tokens/desktop';
 import { getParamsFromFilter } from '../utils';
-import { TuiButtonLoading } from '@taiga-ui/kit';
-import { AccountTransactions } from 'types/account';
+import { TUI_CONFIRM, TuiButtonLoading } from '@taiga-ui/kit';
+import { AccountTransaction, AccountTransactions } from 'types/account';
 
 @Component({
   selector: 'lib-portfolio-list-balance',
@@ -52,6 +52,7 @@ import { AccountTransactions } from 'types/account';
 export class BalanceComponent extends PortfolioListDialog implements AfterViewInit {
   readonly #injector: Injector = inject(Injector);
   readonly #dialogService: DialogService = inject(DIALOG);
+  readonly #tuiDialog: TuiDialogService = inject(TuiDialogService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: BalanceStore = inject(BalanceStore);
 
@@ -83,7 +84,7 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
       this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
       { max: null },
       'Внести средства'
-    ).subscribe();
+    ).subscribe(() => this._updateList());
   }
 
   async openDialogExpense(event: Event): Promise<void> {
@@ -97,18 +98,67 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
 
     this._openDialog(
       this.#dialogWithdrawalComponent as PolymorpheusComponent<WithdrawalComponent>,
-      { max: true },
+      { max: true, type: 'deposit' },
       'Вывести средства'
-    ).subscribe();
+    ).subscribe(() => this._updateList());
   }
 
-  private _openDialog(c: PolymorpheusComponent<any>, data: any = null, label: string | null = null): Observable<any> {
+  onDelete(event: Event, item: AccountTransaction & { loadingRemove: boolean }): void {
+    event.preventDefault();
+
+    this.#tuiDialog
+      .open<boolean>(TUI_CONFIRM, {
+        appearance: 'dialog-confirm',
+        closeable: false,
+        size: 'auto',
+        data: {
+          content: `<p class="tui-text_h6">Удалить внесённую сумму ${item.amount}${item.currency.currencySymbol}?</p>`,
+          yes: 'Да',
+          no: 'Нет',
+        },
+      })
+      .subscribe((result: boolean) => {
+        if (result) {
+          item.loadingRemove = true;
+          this.#store.delete({ id: item.id, params: getParamsFromFilter(this.controlFilter.value) });
+        }
+      });
+  }
+
+  async onEdit(event: Event, item: AccountTransaction): Promise<void> {
+    event.preventDefault();
+
+    if (!this.#dialogDepositComponent) {
+      this.#dialogDepositComponent = await import('../deposit/deposit.component')
+        .then((m) => m.DepositComponent)
+        .then((c) => new PolymorpheusComponent(c, this.#injector));
+    }
+
+    this._openDialog(
+      this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
+      { max: null, ...item, type: 'edit' },
+      'Изменить',
+      'Обновить'
+    ).subscribe(() => this._updateList());
+  }
+
+  private _openDialog(
+    c: PolymorpheusComponent<any>,
+    data: any = null,
+    label: string | null = null,
+    action = 'Пополнить'
+  ): Observable<any> {
     return this.#dialogService
       .open(c, {
         appearance: 'dialog-block',
         data,
         label,
+        action,
       })
       .pipe(takeUntilDestroyed(this.#destroyRef));
+  }
+
+  private _updateList(): void {
+    this.#store.load(getParamsFromFilter(this.controlFilter.value));
   }
 }
