@@ -27,6 +27,7 @@ export class PortfolioFacade {
   readonly type$: Observable<AccountType | null> = this._store.portfolio.type$;
   readonly strategy$: Observable<AccountStrategy | null> = this._store.portfolio.strategy$;
   readonly currency$: Observable<null | AccountCurrency> = this._store.portfolio.currency$;
+  readonly leadToCurrency$: Observable<null | AccountCurrency> = this._store.portfolio.leadToCurrency$;
   readonly range$: Observable<null | AccountRange> = this._store.portfolio.range$;
   readonly balance$: Observable<null | AccountBalance> = this._store.portfolio.balance$;
   readonly balanceHistory$: Observable<null | AccountBalanceHistory> = this._store.portfolio.balanceHistory$;
@@ -41,7 +42,7 @@ export class PortfolioFacade {
   readonly updateType = this._store.portfolio.updateType;
   readonly updateStrategy = this._store.portfolio.updateStrategy;
   readonly updateCurrency = this._store.portfolio.updateCurrency;
-  readonly updateToCurrency = this._store.portfolio.updateToCurrency;
+  readonly updateLeadToCurrency = this._store.portfolio.updateToCurrency;
   readonly updateRange = this._store.portfolio.updateRange;
 
   selectItem(id: StockId | null): Observable<PortfolioPosition | null> {

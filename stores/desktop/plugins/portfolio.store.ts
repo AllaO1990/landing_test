@@ -31,7 +31,7 @@ export interface PortfolioState {
   currency: null | AccountCurrency;
   strategy: null | AccountStrategy;
   portfolio: null | AccountPortfolio;
-  toCurrency: null | AccountCurrency;
+  leadToCurrency: null | AccountCurrency;
   range: null | AccountRange;
   balance: null | AccountBalance;
   balanceHistory: null | AccountBalanceHistory;
@@ -47,6 +47,9 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   readonly type$: Observable<AccountType | null> = this.select((state: PortfolioState) => state.type);
   readonly strategy$: Observable<AccountStrategy | null> = this.select((state: PortfolioState) => state.strategy);
   readonly currency$: Observable<null | AccountCurrency> = this.select((state: PortfolioState) => state.currency);
+  readonly leadToCurrency$: Observable<null | AccountCurrency> = this.select(
+    (state: PortfolioState) => state.leadToCurrency
+  );
   readonly range$: Observable<null | AccountRange> = this.select((state: PortfolioState) => state.range);
   readonly balance$: Observable<null | AccountBalance> = this.select((state: PortfolioState) => state.balance);
   readonly balanceHistory$: Observable<null | AccountBalanceHistory> = this.select(
@@ -61,7 +64,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
       broker: null,
       currency: null,
       portfolio: null,
-      toCurrency: null,
+      leadToCurrency: null,
       range: null,
       balance: null,
       balanceHistory: null,
@@ -121,9 +124,9 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
   );
 
   updateToCurrency = this.updater(
-    (state: PortfolioState, toCurrency: null | AccountCurrency): PortfolioState => ({
+    (state: PortfolioState, leadToCurrency: null | AccountCurrency): PortfolioState => ({
       ...state,
-      toCurrency,
+      leadToCurrency,
     })
   );
 

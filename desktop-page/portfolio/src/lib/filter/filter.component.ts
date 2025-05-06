@@ -82,7 +82,7 @@ export class FilterComponent implements AfterViewInit {
     portfolio: this.valueDefaultPortfolio,
     broker: this.valueDefaultBroker,
     currency: this.valueDefaultCurrency,
-    toCurrency: this.valueDefaultCurrency,
+    leadToCurrency: this.valueDefaultCurrency,
     // range: this.rangeList[5].range,
   };
 
@@ -95,7 +95,7 @@ export class FilterComponent implements AfterViewInit {
     portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
     broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
     currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
-    toCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
+    leadToCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
     range: new FormControl({ value: this.rangeList[5].range, disabled: false }, Validators.required),
   });
 
@@ -106,7 +106,7 @@ export class FilterComponent implements AfterViewInit {
     portfolio: new FormControl({ value: this.valueDefaultPortfolio, disabled: false }, Validators.required),
     broker: new FormControl({ value: this.valueDefaultBroker, disabled: false }, Validators.required),
     currency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
-    toCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
+    leadToCurrency: new FormControl({ value: this.valueDefaultCurrency, disabled: false }, Validators.required),
     range: new FormControl({ value: this.rangeList[5].range, disabled: false }, Validators.required),
   });
 
@@ -134,8 +134,8 @@ export class FilterComponent implements AfterViewInit {
     return this.formGroup.get('currency') as FormControl;
   }
 
-  get controlToCurrency() {
-    return this.formGroup.get('toCurrency') as FormControl;
+  get controlLeadToCurrency() {
+    return this.formGroup.get('leadToCurrency') as FormControl;
   }
 
   get controlRange() {
@@ -233,6 +233,10 @@ export class FilterComponent implements AfterViewInit {
     this.controlStrategy.valueChanges
       .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlStrategy.value))
       .subscribe((value) => this._portfolioFacade.updateStrategy(value));
+
+    this.controlLeadToCurrency.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.controlLeadToCurrency.value))
+      .subscribe((value) => this._portfolioFacade.updateLeadToCurrency(value));
 
     this.formGroup.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((value) => {
       const { range, ...other } = value;
