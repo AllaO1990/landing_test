@@ -19,7 +19,7 @@ import { StockEvent } from 'types/stock-event';
 import { filter, map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { ComponentStore } from '@ngrx/component-store';
-import { StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
+import { StockId, StockInstrument, StockPrice, StockTransaction, WithLastPrice } from 'types/stock';
 import { DateRange } from 'types/date-range';
 import { Timeframe } from 'types/timeframe';
 import { GLOBAL_DATE_RANGE, QUERY_PARAMS } from 'tokens/desktop';
@@ -184,8 +184,8 @@ export class MainStore extends ComponentStore<any> {
       )
     );
     this.consolidationZonesIdea.load(
-      this.selected.idea$.pipe(
-        filter((idea: null | StockId): idea is StockId => idea !== null),
+      this.selected.common$.pipe(
+        filter((transaction: StockTransaction): transaction is StockTransaction => transaction !== null),
         distinctUntilChanged((a, b) => a === b)
       )
     );
@@ -196,7 +196,7 @@ export class MainStore extends ComponentStore<any> {
         distinctUntilChanged()
       )
     );
-    this.figures.load(this.selected.idea$.pipe(distinctUntilChanged((a, b) => a !== null && a === b)));
+    this.figures.load(this.selected.common$.pipe(distinctUntilChanged((a, b) => a !== null && a === b)));
     this.atr.load(
       combineLatest([
         this.selected.instrument$.pipe(

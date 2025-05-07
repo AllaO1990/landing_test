@@ -17,7 +17,7 @@ export enum StockPositionDirection {
 
 export type StockTransaction = {
   ideaId: StockId;
-  instrumentId: StockId;
+  instrumentId: string;
 };
 
 export type StockId = number;
