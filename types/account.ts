@@ -4,7 +4,7 @@ export interface AccountBroker {
 }
 
 export interface AccountCurrency {
-  currency: string;
+  currency: string | null;
   currencyId: number | null;
   currencySymbol: string;
 }

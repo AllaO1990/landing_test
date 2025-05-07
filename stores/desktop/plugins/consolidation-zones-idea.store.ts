@@ -9,7 +9,7 @@ import { MAP_COLOR_CONSOLIDATION } from 'types/color';
 import { WithQueue } from '../core/with-queue.abstract';
 import { getJoinUniq } from 'utils/get-join-uniq';
 import * as Highcharts from 'highcharts/highstock';
-import { StockId } from 'types/stock';
+import { StockTransaction } from 'types/stock';
 
 export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesState> {
   private _colorConsolidation = MAP_COLOR_CONSOLIDATION;
@@ -30,20 +30,22 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
     zones,
   }));
 
-  readonly load = this.effect((stream$: Observable<null | StockId>) =>
+  readonly load = this.effect((stream$: Observable<StockTransaction>) =>
     stream$.pipe(
-      switchMap((params: StockId | null) =>
+      switchMap((params: StockTransaction) =>
         this._getConsolidationZones(params).pipe(tap((data) => this.updateZone(data)))
       )
     )
   );
 
-  private _getConsolidationZones(ideaId: StockId | null): Observable<any> {
-    if (ideaId === null) {
+  private _getConsolidationZones(params: StockTransaction | null): Observable<any> {
+    if (params === null) {
       return of(null);
     }
 
-    const uniqKey = getJoinUniq(ideaId);
+    const { ideaId, instrumentId } = params;
+
+    const uniqKey = getJoinUniq(ideaId, instrumentId);
     const value = this.queue.getValue(uniqKey);
 
     if (value) {
@@ -58,8 +60,7 @@ export class ConsolidationZonesIdeaStore extends WithQueue<ConsolidationZonesSta
       tap((data: Highcharts.AnnotationsOptions | null) => !data && console.warn('idea consolidation', ideaId, data)),
       map((data: Highcharts.AnnotationsOptions | null) => ({
         data: data ? [data] : [],
-        instrument: ideaId.toString(),
-        // instrument: params.instrumentId,
+        instrument: instrumentId,
         parent: ideaId,
       })),
       tap((value: ConsolidationZonesShape) => this.queue.setValue(uniqKey, value))

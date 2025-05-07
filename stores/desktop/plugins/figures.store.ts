@@ -7,7 +7,8 @@ import { Response } from 'types/response';
 import * as Highcharts from 'highcharts/highstock';
 import { ConsolidationZonesShape, ConsolidationZonesState } from 'types/consolidation-zones';
 import { AnnotationShapePointOptions, AnnotationsShapesOptions } from 'highcharts';
-import { StockId } from 'types/stock';
+import { StockTransaction } from 'types/stock';
+import { getJoinUniq } from 'utils/get-join-uniq';
 
 type FigureState = ConsolidationZonesState & { zonesUser: null | ConsolidationZonesShape };
 
@@ -40,9 +41,9 @@ export class FiguresStore extends WithQueue<FigureState> {
     return { ...state, zonesUser };
   });
 
-  readonly load = this.effect((stream$: Observable<StockId | null>) => {
+  readonly load = this.effect((stream$: Observable<StockTransaction>) => {
     return stream$.pipe(
-      switchMap((id: StockId | null) => this._getFigures(id)),
+      switchMap((params: StockTransaction) => this._getFigures(params)),
       tap((response: ConsolidationZonesShape | null) => {
         if (response === null) {
           this.updateFigures(null);
@@ -70,17 +71,19 @@ export class FiguresStore extends WithQueue<FigureState> {
     );
   });
 
-  private _getFigures(ideaId: StockId | null): Observable<ConsolidationZonesShape | null> {
-    if (ideaId === null) {
+  private _getFigures(params: StockTransaction | null): Observable<ConsolidationZonesShape | null> {
+    if (params === null) {
       return of(null);
     }
 
-    // const key = getJoinUniq(data.ideaId, data.instrumentId);
-    // const value = this.queue.getValue(key);
-    //
-    // if (value) {
-    //   return of(value);
-    // }
+    const { ideaId, instrumentId } = params;
+
+    const key = getJoinUniq(ideaId, instrumentId);
+    const value = this.queue.getValue(key);
+
+    if (value) {
+      return of(value);
+    }
 
     return this._api.getChartFigures(ideaId, this._from.toISOString(), this._to.toISOString()).pipe(
       filter(
@@ -90,11 +93,10 @@ export class FiguresStore extends WithQueue<FigureState> {
       map((response: Response<FigureIdea>) => this._getResponseData(response.data)),
       map((response: Highcharts.AnnotationsOptions[]) => ({
         data: response,
-        instrument: ideaId.toString(),
-        // instrument: data.instrumentId,
+        instrument: instrumentId,
         parent: ideaId,
-      }))
-      // tap((data: ConsolidationZonesShape) => this.queue.setValue(key, data))
+      })),
+      tap((data: ConsolidationZonesShape) => this.queue.setValue(key, data))
     );
   }
 

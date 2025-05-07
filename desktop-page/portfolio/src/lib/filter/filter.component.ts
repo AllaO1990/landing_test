@@ -72,7 +72,7 @@ export class FilterComponent implements AfterViewInit {
   readonly rangeList: { text: string; range: TuiDayRange }[] = getListOfRange(this.today);
   valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
   valueDefaultBroker = { broker: 'Все', brokerId: null };
-  valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
+  valueDefaultCurrency = { currency: null, currencySymbol: 'Все', currencyId: null };
   valueDefaultStrategy = { name: 'Все', key: 'all', id: null };
   valueDefaultType = { name: 'Все', key: 'all', id: null };
   valueDefault = {
@@ -183,7 +183,7 @@ export class FilterComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly currency$: Observable<null | AccountCurrency[]> = this._accountFacade.currencies$.pipe(
+  readonly currency$: Observable<AccountCurrency[] | null> = this._accountFacade.currencies$.pipe(
     filter((list: AccountCurrency[] | null): list is AccountCurrency[] => list !== null),
     map((list: AccountCurrency[]) => [this.valueDefaultCurrency, ...list]),
     shareReplay({ bufferSize: 1, refCount: true })

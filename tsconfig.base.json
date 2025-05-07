@@ -10,86 +10,35 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@core/*": [
-        "desktop-page/core/*"
-      ],
-      "@desktop-data/*": [
-        "api/desktop-data/src/lib/*"
-      ],
-      "@ui/animations/*": [
-        "ui/src/lib/animations/*"
-      ],
-      "@ui/components/*": [
-        "ui/src/lib/ui/*"
-      ],
-      "@ui/pipes/*": [
-        "ui/src/lib/pipe/*"
-      ],
-      "constants/*": [
-        "constants/*"
-      ],
-      "dashboard": [
-        "desktop-page/dashboard/src/index.ts"
-      ],
-      "desktop-page/enter": [
-        "desktop-page/enter/src/index.ts"
-      ],
-      "lk": [
-        "desktop-page/lk/src/index.ts"
-      ],
-      "login": [
-        "desktop-page/login/src/index.ts"
-      ],
-      "main": [
-        "desktop-page/main/src/index.ts"
-      ],
-      "page-401": [
-        "page-401/src/index.ts"
-      ],
-      "page-403": [
-        "page-403/src/index.ts"
-      ],
-      "page-404": [
-        "page-404/src/index.ts"
-      ],
-      "portfolio": [
-        "desktop-page/portfolio/src/index.ts"
-      ],
-      "registration": [
-        "desktop-page/registration/src/index.ts"
-      ],
-      "sale": [
-        "desktop-page/sale/src/index.ts"
-      ],
-      "shall": [
-        "desktop-page/shall/src/index.ts"
-      ],
-      "stores/*": [
-        "stores/desktop/*"
-      ],
-      "storage/*": [
-        "stores/local/*"
-      ],
-      "tokens/*": [
-        "tokens/*"
-      ],
-      "types/*": [
-        "types/*"
-      ],
-      "ui-common/*": [
-        "ui-common/src/*"
-      ],
-      "utils/*": [
-        "utils/*"
-      ]
+      "@core/*": ["desktop-page/core/*"],
+      "@desktop-data/*": ["api/desktop-data/src/lib/*"],
+      "@ui/animations/*": ["ui/src/lib/animations/*"],
+      "@ui/components/*": ["ui/src/lib/ui/*"],
+      "@ui/pipes/*": ["ui/src/lib/pipe/*"],
+      "constants/*": ["constants/*"],
+      "dashboard": ["desktop-page/dashboard/src/index.ts"],
+      "desktop-page/enter": ["desktop-page/enter/src/index.ts"],
+      "lk": ["desktop-page/lk/src/index.ts"],
+      "login": ["desktop-page/login/src/index.ts"],
+      "main": ["desktop-page/main/src/index.ts"],
+      "page-401": ["page-401/src/index.ts"],
+      "page-403": ["page-403/src/index.ts"],
+      "page-404": ["page-404/src/index.ts"],
+      "portfolio": ["desktop-page/portfolio/src/index.ts"],
+      "registration": ["desktop-page/registration/src/index.ts"],
+      "sale": ["desktop-page/sale/src/index.ts"],
+      "shall": ["desktop-page/shall/src/index.ts"],
+      "storage/*": ["stores/local/*"],
+      "stores/*": ["stores/desktop/*"],
+      "tokens/*": ["tokens/*"],
+      "types/*": ["types/*"],
+      "ui-common/*": ["ui-common/src/*"],
+      "utils/*": ["utils/*"]
     }
   },
   "angularCompilerOptions": {
@@ -98,8 +47,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

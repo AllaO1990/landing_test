@@ -438,8 +438,6 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
                 return { chart, zones: [] };
               }
 
-              console.log(zones, id);
-
               return { chart, zones: zones.instrument === id ? zones.data : [] };
             })
           )

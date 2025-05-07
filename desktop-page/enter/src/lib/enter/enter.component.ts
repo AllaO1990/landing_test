@@ -275,11 +275,11 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
             last.idea.instrument.id === result.idea.instrument.id
           ) {
             this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
-            this._idea.loadFigures(result.idea.id);
-            // this._idea.loadFigures({
-            //   ideaId: result.idea.id,
-            //   instrumentId: result.idea.instrument.id,
-            // });
+            // this._idea.loadFigures(result.idea.id);
+            this._idea.loadFigures({
+              ideaId: result.idea.id,
+              instrumentId: result.idea.instrument.id,
+            });
 
             const params = this._getDialogFinishType(result);
 

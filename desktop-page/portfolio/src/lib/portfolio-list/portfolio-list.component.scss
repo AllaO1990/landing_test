@@ -16,6 +16,8 @@
   display: flex;
   flex-flow: column nowrap;
 
+  overflow: hidden;
+
   hr {
     margin: var(--padding-1) 0;
   }
@@ -33,6 +35,8 @@
     flex-flow: row nowrap;
 
     margin: 0 var(--padding-2);
+
+    overflow: hidden;
   }
 
   &__info {
@@ -77,6 +81,8 @@
     flex: 1;
 
     margin: var(--padding-2) 0;
+
+    overflow: hidden;
   }
 
   &__action {

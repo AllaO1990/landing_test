@@ -1,7 +1,8 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable, shareReplay } from 'rxjs';
-import { StockId } from 'types/stock';
+import { StockId, StockTransaction } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
+import { filter } from 'rxjs/operators';
 
 export interface SelectState {
   event: null | StockEvent;
@@ -20,13 +21,12 @@ export class SelectStore extends ComponentStore<SelectState> {
   readonly event$: Observable<null | StockEvent> = this.select((state: SelectState) => state.event).pipe(
     shareReplay({ refCount: true, bufferSize: 1 })
   );
-  readonly common$: Observable<{
-    ideaId: StockId | null;
-    instrumentId: string | null;
-  }> = this.select(
+  readonly common$: Observable<StockTransaction> = this.select(
     {
-      ideaId: this.idea$,
-      instrumentId: this.instrument$,
+      ideaId: this.idea$.pipe(filter((idea: StockId | null): idea is StockId => idea !== null)),
+      instrumentId: this.instrument$.pipe(
+        filter((instrument: string | null): instrument is string => instrument !== null)
+      ),
     },
     { debounce: true }
   );
