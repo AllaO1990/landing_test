@@ -66,6 +66,10 @@ export class ChartComponent implements AfterViewInit {
     filter((list: null | AccountRange): list is AccountRange => list !== null),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly leadToCurrency$: Observable<AccountCurrency> = this.#store.leadToCurrency$.pipe(
+    filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
   readonly balanceHistory$: Observable<null | AccountBalanceHistory> = this.#store.balanceHistory$.pipe(
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -111,17 +115,22 @@ export class ChartComponent implements AfterViewInit {
   });
 
   ngAfterViewInit(): void {
-    combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$, this.strategy$])
+    combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$, this.strategy$, this.leadToCurrency$])
       .pipe(
         debounceTime(0),
-        map((params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio, AccountStrategy]) => ({
-          brokerId: params[0].brokerId,
-          currencyId: params[1].currencyId,
-          from: params[2].from,
-          portfolioId: params[3].portfolioId,
-          to: params[2].to,
-          strategyId: params[4].id,
-        }))
+        map(
+          (
+            params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio, AccountStrategy, AccountCurrency]
+          ) => ({
+            brokerId: params[0].brokerId,
+            currencyId: params[1].currencyId,
+            from: params[2].from,
+            portfolioId: params[3].portfolioId,
+            to: params[2].to,
+            strategyId: params[4].id,
+            leadToCurrency: params[5].currency,
+          })
+        )
         // tap(() => this.#isLoadInfo$.next(true))
       )
       .subscribe((params: Params) => this.#store.loadBalanceHistory(params));
