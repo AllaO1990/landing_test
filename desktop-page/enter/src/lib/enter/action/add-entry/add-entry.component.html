@@ -11,32 +11,56 @@
       tuiTextfieldSize="s">
       Выбрать дату
     </tui-input-date-time>
-    <tui-input-number
-      class="form__control"
-      tuiAutoFocus
-      [tuiTextfieldCustomContent]="priceIncrement"
+
+    <tui-textfield
       [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: precision}"
-      formControlName="price">
-      Цена
+      class="form__control">
+
       <input
+        placeholder="Цена"
+        tuiAutoFocus
+        tuiInputNumber
+        [tuiNumberFormat]="{precision: precision}"
         autocomplete="off"
         name="price"
-        tuiTextfieldLegacy
+        formControlName="price"
       />
-    </tui-input-number>
-    <tui-input-number
-      class="form__control"
+
+      <span class="form__increment" *ngIf="minPriceIncrement !== null">
+        Шаг цены: {{ getNumberFromE(minPriceIncrement) }}
+      </span>
+    </tui-textfield>
+
+    <tui-textfield
       [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: precisionAmount}"
-      formControlName="amount">
-      Количество
+      class="form__control">
+
       <input
+        placeholder="Количество"
+        tuiInputNumber
+        [tuiNumberFormat]="{precision: precisionAmount}"
         autocomplete="off"
         name="amount"
-        tuiTextfieldLegacy
+        formControlName="amount"
       />
-    </tui-input-number>
+
+    </tui-textfield>
+
+    <tui-textfield
+      [tuiTextfieldSize]="size"
+      class="form__control">
+
+      <input
+        placeholder="Комиссия"
+        tuiInputNumber
+        [tuiNumberFormat]="{precision: 2}"
+        autocomplete="off"
+        name="commission"
+        formControlName="commission"
+      />
+
+    </tui-textfield>
+
     <tui-select
       *ngIf="(brokers$ | async) as items"
       class="form__control"

@@ -19,10 +19,14 @@
   height: 100%;
   overflow: hidden;
 
+  &__area {
+    stroke: none;
+  }
+
   &__path {
     fill: none;
     stroke: var(--tui-background-accent-1);
-    stroke-width: 3;
+    stroke-width: 1;
   }
 
   &__circle {
@@ -35,4 +39,14 @@
   &__balance {
     font-weight: 600;
   }
+}
+
+.start {
+  stop-color: var(--tui-background-accent-1);
+  stop-opacity: 0.25;
+}
+
+.stop {
+  stop-color: var(--tui-background-base);
+  stop-opacity: 0.25;
 }

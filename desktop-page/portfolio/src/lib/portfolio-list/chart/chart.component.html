@@ -4,6 +4,12 @@
     *ngIf="(chart$ | async) as chart; else load"
     [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height"
     preserveAspectRatio="xMinYMin meet">
+    <defs>
+      <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
+        <stop class="start" offset="0%" />
+        <stop class="stop" offset="100%" />
+      </linearGradient>
+    </defs>
     <svg:g
       [attr.transform]="'translate(0,' + (chart.height - chart.marginBottom) + ')'"
       fill="none"
@@ -46,6 +52,11 @@
         </svg:text>
       </g>
     </svg:g>
+
+    <svg:path
+      class="chart-area__path"
+      fill="url(#area)"
+      [attr.d]="chart.area(chart.items)" />
 
     <svg:path
       class="chart-line__path"
