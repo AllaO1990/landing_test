@@ -10,7 +10,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfield, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import {
   TuiInputDateModule,
   TuiInputDateTimeModule,
@@ -22,7 +22,7 @@ import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@ta
 import { AccountFacade } from 'stores/facades/account.facade';
 import { Observable } from 'rxjs';
 import { AccountBroker } from 'types/account';
-import { TuiDataListWrapper } from '@taiga-ui/kit';
+import { TuiDataListWrapper, TuiInputNumber } from '@taiga-ui/kit';
 import { getNumberFromE } from 'utils/get-number-from-e';
 import { getNumberPrecision } from 'utils/get-number-precision';
 
@@ -47,6 +47,8 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
     TuiSelectModule,
     TuiDataList,
     TuiDataListWrapper,
+    TuiTextfield,
+    TuiInputNumber,
   ],
   templateUrl: './add-entry.component.html',
   styleUrls: ['../add.scss', './add-entry.component.scss'],
@@ -63,6 +65,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
     date: new FormControl({ value: [null, null], disabled: true }, completeDateTimeValidator),
     price: new FormControl({ value: null, disabled: true }, Validators.required),
     amount: new FormControl({ value: null, disabled: true }, Validators.required),
+    commission: new FormControl({ value: null, disabled: true }),
     brokerId: new FormControl({ value: null, disabled: true }, Validators.required),
   });
 
@@ -90,13 +93,14 @@ export class AddEntryComponent extends AddForm implements OnInit {
     event.preventDefault();
 
     if (this.context) {
-      const { date, price, amount, brokerId } = this.form.value;
+      const { date, price, amount, brokerId, commission } = this.form.value;
 
       this.context.completeWith({
         ...this.context.data,
         date: this.getISOString(date[0], date[1]),
         price,
         amount,
+        commission,
         totalPrice: getNumberPrecision(price * amount, this.precision),
         depositShare: null,
         brokerId: brokerId || null,

@@ -8,7 +8,6 @@ import * as Highcharts from 'highcharts/highstock';
 import { ConsolidationZonesShape, ConsolidationZonesState } from 'types/consolidation-zones';
 import { AnnotationShapePointOptions, AnnotationsShapesOptions } from 'highcharts';
 import { StockTransaction } from 'types/stock';
-import { getJoinUniq } from 'utils/get-join-uniq';
 
 type FigureState = ConsolidationZonesState & { zonesUser: null | ConsolidationZonesShape };
 
@@ -41,9 +40,9 @@ export class FiguresStore extends WithQueue<FigureState> {
     return { ...state, zonesUser };
   });
 
-  readonly load = this.effect((stream$: Observable<StockTransaction>) => {
+  readonly load = this.effect((stream$: Observable<StockTransaction | null>) => {
     return stream$.pipe(
-      switchMap((params: StockTransaction) => this._getFigures(params)),
+      switchMap((params: StockTransaction | null) => this._getFigures(params)),
       tap((response: ConsolidationZonesShape | null) => {
         if (response === null) {
           this.updateFigures(null);
@@ -78,12 +77,12 @@ export class FiguresStore extends WithQueue<FigureState> {
 
     const { ideaId, instrumentId } = params;
 
-    const key = getJoinUniq(ideaId, instrumentId);
-    const value = this.queue.getValue(key);
-
-    if (value) {
-      return of(value);
-    }
+    // const key = getJoinUniq(ideaId, instrumentId);
+    // const value = this.queue.getValue(key);
+    //
+    // if (value) {
+    //   return of(value);
+    // }
 
     return this._api.getChartFigures(ideaId, this._from.toISOString(), this._to.toISOString()).pipe(
       filter(
@@ -95,8 +94,8 @@ export class FiguresStore extends WithQueue<FigureState> {
         data: response,
         instrument: instrumentId,
         parent: ideaId,
-      })),
-      tap((data: ConsolidationZonesShape) => this.queue.setValue(key, data))
+      }))
+      // tap((data: ConsolidationZonesShape) => this.queue.setValue(key, data))
     );
   }
 

@@ -388,9 +388,29 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
       price: (data && data.price) || entry.price,
       amount: (data && data.amount) || entry.quantity,
       minPriceIncrement: this.minPriceIncrement,
-    }).subscribe((res: object | null) => {
+    }).subscribe((res: any | null) => {
       if (res) {
         this._updateDataFromDialog(this.formArrayEntries, res, index);
+
+        if (res['commission']) {
+          const { commission, date, brokerId } = res;
+          const totalEntry = this.formArrayEntries.value.reduce(
+            (acc: number, item: StockPositionActionEntry) => (acc += item.price * item.amount),
+            0
+          );
+
+          this._updateDataFromDialog(
+            this.formArrayCommissions,
+            {
+              size: commission,
+              date,
+              profitPct: totalEntry && (commission / totalEntry) * 100,
+              brokerId,
+              comment: '',
+            },
+            index
+          );
+        }
       }
     });
   }
@@ -508,7 +528,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
       .pipe(takeUntilDestroyed(this._destroyRef));
   }
 
-  private _updateDataFromDialog(formArray: FormArray, data: object | null = null, control: number | null = null): void {
+  private _updateDataFromDialog(formArray: FormArray, data: any | null = null, control: number | null = null): void {
     if (control === null) {
       formArray.setControl(formArray.length, new FormControl(data));
     } else {

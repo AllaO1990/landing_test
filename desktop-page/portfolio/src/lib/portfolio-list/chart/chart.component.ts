@@ -24,6 +24,7 @@ import { map } from 'rxjs/operators';
 import { Params } from '@angular/router';
 import { LoaderComponent } from '@ui/components/loader';
 import * as d3 from 'd3';
+import { curveBumpX } from 'd3';
 import { extent } from 'd3-array';
 import { scaleLinear, scaleUtc } from 'd3-scale';
 import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
@@ -158,10 +159,18 @@ export class ChartComponent implements AfterViewInit {
       height - marginBottom,
       marginTop,
     ]);
+    const area = d3
+      .area()
+      .x((d: any) => x(d.date))
+      .y0(y(0))
+      .y1((d: any) => y(d.balance))
+      .curve(curveBumpX);
+
     const line = d3
       .line()
       .x((d: any) => x(d.date))
-      .y((d: any) => y(d.balance));
+      .y((d: any) => y(d.balance))
+      .curve(curveBumpX);
 
     return {
       items,
@@ -185,6 +194,7 @@ export class ChartComponent implements AfterViewInit {
         offset: y(value),
       })),
       line,
+      area,
     };
   }
 }

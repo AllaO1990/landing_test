@@ -263,7 +263,7 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
   activeItemIndex = 0;
 
   ngAfterViewInit(): void {
-    this._idea.loadIdea(this._ideaId$);
+    // this._idea.loadIdea(this._ideaId$);
 
     this.data$
       .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
@@ -384,6 +384,8 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
 
   onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
+
+    console.log('onSubmit');
 
     if (ideaId === null) {
       this._idea.createIdea(this._getValueToSubmit(this.form.getRawValue()));

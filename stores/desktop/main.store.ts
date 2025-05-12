@@ -185,7 +185,7 @@ export class MainStore extends ComponentStore<any> {
     );
     this.consolidationZonesIdea.load(
       this.selected.common$.pipe(
-        filter((transaction: StockTransaction): transaction is StockTransaction => transaction !== null),
+        filter((transaction: StockTransaction | null): transaction is StockTransaction => transaction !== null),
         distinctUntilChanged((a, b) => a === b)
       )
     );
@@ -196,7 +196,12 @@ export class MainStore extends ComponentStore<any> {
         distinctUntilChanged()
       )
     );
-    this.figures.load(this.selected.common$.pipe(distinctUntilChanged((a, b) => a !== null && a === b)));
+    this.figures.load(
+      this.selected.common$
+        .pipe
+        // distinctUntilChanged((a, b) => a !== null && a === b)
+        ()
+    );
     this.atr.load(
       combineLatest([
         this.selected.instrument$.pipe(
@@ -252,6 +257,7 @@ export class MainStore extends ComponentStore<any> {
   onChangeQueryParams = this.effect((source$: Observable<null | StockEvent>) =>
     source$.pipe(
       filter((event: StockEvent | null): event is StockEvent => event !== null),
+      distinctUntilChanged((a, b) => a.id === b.id),
       switchMap((event: StockEvent) => {
         if (event.type === EventSelected.WATCH_LIST || event.type === EventSelected.STOCK_LIST) {
           return this.api.getStockInstrument(event.id.toString()).pipe(
