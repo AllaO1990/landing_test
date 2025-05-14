@@ -6,6 +6,19 @@
     <!--    <div class="closed-deals__filter">-->
     <!--      <lib-filter-closed-deals [formControl]="formControl"></lib-filter-closed-deals>-->
     <!--    </div>-->
+    <div class="space"></div>
+    <button
+      tuiButton
+      type="button"
+      [size]="size"
+      appearance="secondary"
+      class="entry__add-idea"
+      searchDialog
+      #dialog=SearchDialog
+      (click)="dialog.onSearch($event)"
+      (selected)="onOpenDialog($event)">
+      {{ constants.add_idea }}
+    </button>
   </div>
   <div class="closed-deals__table">
     <lib-wrapper-table [params]="formControl.value"></lib-wrapper-table>

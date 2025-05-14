@@ -5,16 +5,16 @@ import { EntryEnums } from './entry.enums';
 import { MAIN_FILTER_STOCK } from '../main.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { TuiBooleanHandler, TuiContext, TuiIdentityMatcher, TuiStringHandler } from '@taiga-ui/cdk';
 import { EventSelected } from 'types/events';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SelectFacade } from 'stores/facades/select.facade';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Position } from 'types/position';
 import { searchPosition } from '../common/utils/search-position';
 import { AccountStrategy } from 'types/account';
+import { StockInstrument } from 'types/stock';
 
 interface StockInstrumentWithMap {
   id: string;
@@ -159,21 +159,13 @@ export class EntryComponent {
     this.openMore = active && this.openMore;
   }
 
-  onOpenDialog(event: Event): void {
-    event.preventDefault();
-
-    this._store.instrument$
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        take(1),
-        filter((instrumentId: null | string): instrumentId is string => instrumentId !== null)
-      )
-      .subscribe((instrument: string) => {
-        this._queryParams.update({
-          type: EventSelected.STOCK_LIST,
-          id: instrument,
-          dialog: 'visible',
-        });
+  onOpenDialog(event: StockInstrument | null): void {
+    if (event) {
+      this._queryParams.update({
+        type: EventSelected.STOCK_LIST,
+        id: event.id,
+        dialog: 'visible',
       });
+    }
   }
 }

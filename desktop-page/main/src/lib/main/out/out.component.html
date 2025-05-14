@@ -20,7 +20,10 @@
         [size]="size"
         appearance="secondary"
         class="entry__add-idea"
-        (click)="onOpenDialog($event)">
+        searchDialog
+        #dialog=SearchDialog
+        (click)="dialog.onSearch($event)"
+        (selected)="onOpenDialog($event)">
         {{ constants.add_idea }}
       </button>
 

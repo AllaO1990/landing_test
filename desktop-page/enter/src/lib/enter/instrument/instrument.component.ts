@@ -1,14 +1,16 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { NgIf } from '@angular/common';
+import { IconTickerComponent } from '@ui/components/icon-ticker';
+import { StockInstrument } from 'types/stock';
 
 @Component({
   selector: 'lib-enter-sidebar-instrument',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, IconTickerComponent],
   templateUrl: './instrument.component.html',
   styleUrl: './instrument.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InstrumentComponent {
-  @Input() data: { name: string; ticker: string; type: string } | null = null;
+  @Input() data: StockInstrument | null = null;
 }

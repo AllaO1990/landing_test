@@ -9,6 +9,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { EntryTableComponent } from './table/table.component';
 import { TuiActiveZone, TuiAutoFocus, TuiObscured } from '@taiga-ui/cdk';
 import { TuiDataListWrapperComponent, TuiFilter } from '@taiga-ui/kit';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 
 @NgModule({
   declarations: [EntryComponent, EntryIdeaComponent],
@@ -31,6 +32,7 @@ import { TuiDataListWrapperComponent, TuiFilter } from '@taiga-ui/kit';
     TuiDataListWrapperComponent,
     TuiSelectModule,
     TuiMultiSelectModule,
+    SearchDialogDirective,
   ],
   providers: [],
   exports: [EntryComponent],
