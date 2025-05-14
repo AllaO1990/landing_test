@@ -142,7 +142,7 @@ function maxAmount(): ValidatorFn {
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [triggerHeightAnimations],
 })
-export class VtEnterComponent implements AfterViewInit, OnDestroy {
+export class VtEnterComponent implements AfterViewInit {
   private readonly _dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _select: SelectFacade = inject(SelectFacade);
@@ -332,10 +332,6 @@ export class VtEnterComponent implements AfterViewInit, OnDestroy {
           this.controlSidebar[action]();
         }
       });
-  }
-
-  ngOnDestroy(): void {
-    this._idea.resetIdea();
   }
 
   trackByIndex(index: number): number {

@@ -19,7 +19,6 @@ export class IdeaFacade {
     switchMap((idea: StockPosition | null) => {
       if (idea === null) {
         return this._store.idea.instrument$.pipe(
-          // tap((data) => console.log(data)),
           filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
           switchMap((instrument: StockInstrument) =>
             this._store.getPriceOfInstruments([instrument.id]).pipe(
