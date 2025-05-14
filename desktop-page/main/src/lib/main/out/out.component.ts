@@ -6,7 +6,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { Position } from 'types/position';
 import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import {
   TuiActiveZone,
   TuiAutoFocus,
@@ -23,11 +23,12 @@ import { TuiButton, TuiDropdown } from '@taiga-ui/core';
 import { AsyncPipe } from '@angular/common';
 import { searchPosition } from '../common/utils/search-position';
 import { AccountStrategy } from 'types/account';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventSelected } from 'types/events';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
+import { StockInstrument } from 'types/stock';
 
 interface StockInstrumentWithMap {
   id: string;
@@ -57,6 +58,7 @@ interface AccountStrategiesWithMap extends AccountStrategy {
     TuiAutoFocus,
     TuiDataListWrapperComponent,
     TuiMultiSelectModule,
+    SearchDialogDirective,
   ],
   templateUrl: './out.component.html',
   styleUrls: ['./out.component.scss'],
@@ -146,22 +148,14 @@ export class OutComponent {
     this.openMore = active && this.openMore;
   }
 
-  onOpenDialog(event: Event): void {
-    event.preventDefault();
-
-    this.#store.instrument$
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        take(1),
-        filter((instrumentId: null | string): instrumentId is string => instrumentId !== null)
-      )
-      .subscribe((instrument: string) => {
-        this.#queryParams.update({
-          type: EventSelected.STOCK_LIST,
-          id: instrument,
-          dialog: 'visible',
-        });
+  onOpenDialog(event: StockInstrument | null): void {
+    if (event) {
+      this.#queryParams.update({
+        type: EventSelected.STOCK_LIST,
+        id: event.id,
+        dialog: 'visible',
       });
+    }
   }
 
   private _updateFilterList<T>(

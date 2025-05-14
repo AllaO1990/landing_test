@@ -264,6 +264,8 @@ export class MainStore extends ComponentStore<any> {
             map((response: Response<StockInstrument>) => response.data),
             tap((instrument: StockInstrument) => {
               this.idea.updateInstrument(instrument);
+              this.idea.updateIdea(null);
+
               this._updateSelected({
                 instrument: instrument.id,
                 idea: null,
@@ -295,13 +297,13 @@ export class MainStore extends ComponentStore<any> {
 
         return timer(3000).pipe(
           tap(() => this._queryParams.update({}, '')),
-          tap(() =>
+          tap(() => {
             this._updateSelected({
               instrument: null,
               idea: null,
               group: null,
-            })
-          )
+            });
+          })
         );
       })
     )
