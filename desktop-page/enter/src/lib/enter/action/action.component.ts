@@ -393,23 +393,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
         this._updateDataFromDialog(this.formArrayEntries, res, index);
 
         if (res['commission']) {
-          const { commission, date, brokerId } = res;
-          const totalEntry = this.formArrayEntries.value.reduce(
-            (acc: number, item: StockPositionActionEntry) => (acc += item.price * item.amount),
-            0
-          );
-
-          this._updateDataFromDialog(
-            this.formArrayCommissions,
-            {
-              size: commission,
-              date,
-              profitPct: totalEntry && (commission / totalEntry) * 100,
-              brokerId,
-              comment: '',
-            },
-            index
-          );
+          this._updateDataFromDialog(this.formArrayCommissions, this._getCommissionData(res));
         }
       }
     });
@@ -445,9 +429,13 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
       price: (data && data.price) || target.price,
       brokerId: (data && data['brokerId']) || brokerId,
       minPriceIncrement: this.minPriceIncrement,
-    }).subscribe((result: object | null) => {
+    }).subscribe((result: any | null) => {
       if (result) {
         this._updateDataFromDialog(this.formArrayTargets, result, control);
+
+        if (result['commission']) {
+          this._updateDataFromDialog(this.formArrayCommissions, this._getCommissionData(result));
+        }
       }
     });
   }
@@ -562,5 +550,21 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     });
 
     return stream$;
+  }
+
+  private _getCommissionData(data: any): Partial<StockPositionCommission> {
+    const { commission, date, brokerId } = data;
+    const totalEntry = this.formArrayEntries.value.reduce(
+      (acc: number, item: StockPositionActionEntry) => (acc += item.price * item.amount),
+      0
+    );
+
+    return {
+      size: commission,
+      date,
+      profitPct: totalEntry && (commission / totalEntry) * 100,
+      brokerId,
+      comment: '',
+    };
   }
 }

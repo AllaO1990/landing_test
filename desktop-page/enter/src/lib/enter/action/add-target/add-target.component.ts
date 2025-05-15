@@ -11,18 +11,17 @@ import {
 import {
   TuiInputDateModule,
   TuiInputDateTimeModule,
-  TuiInputNumberModule,
   TuiSelectModule,
   TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
-import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfield, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import { AddForm } from '../add';
 import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler, TuiTime } from '@taiga-ui/cdk';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { AccountBroker } from 'types/account';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { TuiDataListWrapper } from '@taiga-ui/kit';
+import { TuiDataListWrapper, TuiInputNumberDirective } from '@taiga-ui/kit';
 import { StockPositionActionTarget } from 'types/position';
 import { getNumberFromE } from 'utils/get-number-from-e';
 
@@ -35,7 +34,6 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
   imports: [
     AsyncPipe,
     ReactiveFormsModule,
-    TuiInputNumberModule,
     TuiTextfieldControllerModule,
     TuiTextfieldOptionsDirective,
     TuiButton,
@@ -48,17 +46,21 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
     TuiInputDateTimeModule,
     NgIf,
     NgForOf,
+    TuiInputNumberDirective,
+    TuiTextfield,
   ],
   templateUrl: './add-target.component.html',
   styleUrls: ['../add.scss', './add-target.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTargetComponent extends AddForm implements OnInit {
-  private readonly _service: AccountFacade = inject(AccountFacade);
+  readonly #service: AccountFacade = inject(AccountFacade);
+  readonly #isShowCommission: Subject<boolean> = new BehaviorSubject(true);
 
-  readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$;
+  readonly brokers$: Observable<null | AccountBroker[]> = this.#service.brokers$;
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
   readonly maxDate = TuiDay.fromLocalNativeDate(this.today);
+  readonly isShowCommission$: Observable<boolean> = this.#isShowCommission.asObservable();
 
   form: FormGroup = new FormGroup({
     date: new FormControl<[TuiDay | null, TuiTime | null]>(
@@ -69,6 +71,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
       completeDateTimeValidator
     ),
     price: new FormControl<null | number>({ value: null, disabled: true }, Validators.required),
+    commission: new FormControl({ value: null, disabled: true }),
     amount: new FormControl<null | number>({ value: null, disabled: true }, Validators.required),
     brokerId: new FormControl<null | AccountBroker>({ value: null, disabled: true }, Validators.required),
   });
@@ -77,7 +80,9 @@ export class AddTargetComponent extends AddForm implements OnInit {
     if (this.context.data) {
       const { amount, price, date, brokerId, minPriceIncrement } = this.context.data;
 
-      this.form.setValue({
+      price !== null && this.#isShowCommission.next(false);
+
+      this.form.patchValue({
         amount: amount || null,
         price: price || null,
         date: this.getTuiDates(date || new Date().toISOString()),
@@ -97,7 +102,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
     event.preventDefault();
 
     if (this.context) {
-      const { amount, price, date, brokerId } = this.form.value;
+      const { amount, price, date, brokerId, commission } = this.form.value;
 
       this.context.completeWith({
         amount,
@@ -109,6 +114,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
         depositShare: null,
         profit: null,
         profitPercent: null,
+        commission,
       } as StockPositionActionTarget);
     }
   }

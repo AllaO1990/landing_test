@@ -47,6 +47,7 @@
     </tui-textfield>
 
     <tui-textfield
+      *ngIf="isShowCommission$ | async"
       [tuiTextfieldSize]="size"
       class="form__control">
 
