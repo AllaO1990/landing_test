@@ -20,7 +20,7 @@ import {
 } from '@taiga-ui/legacy';
 import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { AccountFacade } from 'stores/facades/account.facade';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { AccountBroker } from 'types/account';
 import { TuiDataListWrapper, TuiInputNumber } from '@taiga-ui/kit';
 import { getNumberFromE } from 'utils/get-number-from-e';
@@ -56,10 +56,12 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
 })
 export class AddEntryComponent extends AddForm implements OnInit {
   private readonly _service: AccountFacade = inject(AccountFacade);
+  readonly #isShowCommission: Subject<boolean> = new BehaviorSubject(true);
 
   readonly brokers$: Observable<null | AccountBroker[]> = this._service.brokers$;
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
   readonly maxDate = TuiDay.fromLocalNativeDate(this.today);
+  readonly isShowCommission$: Observable<boolean> = this.#isShowCommission.asObservable();
 
   form: FormGroup = new FormGroup({
     date: new FormControl({ value: [null, null], disabled: true }, completeDateTimeValidator),
@@ -72,6 +74,8 @@ export class AddEntryComponent extends AddForm implements OnInit {
   ngOnInit(): void {
     if (this.context.data) {
       const { date, price, amount, brokerId, minPriceIncrement } = this.context.data;
+
+      price !== 0 && this.#isShowCommission.next(false);
 
       this.form.patchValue({
         price: price || null,
