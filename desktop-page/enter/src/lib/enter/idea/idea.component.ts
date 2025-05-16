@@ -242,7 +242,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
         if (result === null) {
           this.controlFormArray.reset({ entries: [], targets: [], stop: [] });
         } else {
-          this._updateFormArray('entries', result.entries);
+          this._updateFormArray('entries', this._getEntries(result.entries));
           this._updateFormArray('targets', result.targets);
           this._updateFormArray('stop', result.stop);
         }
@@ -611,5 +611,30 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     });
 
     return stream$;
+  }
+
+  private _getEntries(list: StockPositionIdeaEntry[]): StockPositionIdeaEntry[] {
+    if (list.length === 1 && list[0].price === 0) {
+      const entries = this.formGroup.value.actions.entries.map((item: any) => ({
+        check: false,
+        date: item.date,
+        depositShare: null,
+        price: item.price,
+        quantity: item.amount,
+        totalPrice: item.totalPrice,
+        broker: null,
+      }));
+
+      this.isEdit$.next(true);
+
+      return [
+        {
+          ...this._service.getTotalEntry(entries),
+          check: true,
+        },
+      ];
+    }
+
+    return list;
   }
 }
