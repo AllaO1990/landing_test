@@ -242,9 +242,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
         if (result === null) {
           this.controlFormArray.reset({ entries: [], targets: [], stop: [] });
         } else {
-          this._updateFormArray('entries', this._getEntries(result.entries));
+          const { list: entries, status } = this._getEntries(result.entries);
+
           this._updateFormArray('targets', result.targets);
           this._updateFormArray('stop', result.stop);
+          this._updateFormArray('entries', entries, status);
         }
 
         setTimeout(() => {
@@ -613,7 +615,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     return stream$;
   }
 
-  private _getEntries(list: StockPositionIdeaEntry[]): StockPositionIdeaEntry[] {
+  private _getEntries(list: StockPositionIdeaEntry[]): { status: boolean; list: StockPositionIdeaEntry[] } {
     if (list.length === 1 && list[0].price === 0) {
       const entries = this.formGroup.value.actions.entries.map((item: any) => ({
         check: false,
@@ -627,14 +629,20 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
       this.isEdit$.next(true);
 
-      return [
-        {
-          ...this._service.getTotalEntry(entries),
-          check: true,
-        },
-      ];
+      return {
+        status: true,
+        list: [
+          {
+            ...this._service.getTotalEntry(entries),
+            check: true,
+          },
+        ],
+      };
     }
 
-    return list;
+    return {
+      status: false,
+      list,
+    };
   }
 }

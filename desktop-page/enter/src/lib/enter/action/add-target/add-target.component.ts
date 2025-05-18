@@ -55,7 +55,7 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
 })
 export class AddTargetComponent extends AddForm implements OnInit {
   readonly #service: AccountFacade = inject(AccountFacade);
-  readonly #isShowCommission: Subject<boolean> = new BehaviorSubject(true);
+  readonly #isShowCommission: Subject<boolean> = new BehaviorSubject(false);
 
   readonly brokers$: Observable<null | AccountBroker[]> = this.#service.brokers$;
   readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
@@ -78,9 +78,9 @@ export class AddTargetComponent extends AddForm implements OnInit {
 
   ngOnInit(): void {
     if (this.context.data) {
-      const { amount, price, date, brokerId, minPriceIncrement } = this.context.data;
+      const { amount, price, date, brokerId, minPriceIncrement, isNew } = this.context.data;
 
-      price !== null && this.#isShowCommission.next(false);
+      isNew && this.#isShowCommission.next(true);
 
       this.form.patchValue({
         amount: amount || null,
