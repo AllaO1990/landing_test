@@ -45,19 +45,35 @@
         tuiTextfieldLegacy
       />
     </tui-input-number>
-    <tui-input-number
-      class="form__control"
-      [max]="maxAmount[controlBroker.value] || null"
+    <!--    <tui-input-number-->
+    <!--      class="form__control"-->
+    <!--      [max]="maxAmount[controlBroker.value] || null"-->
+    <!--      [tuiTextfieldSize]="size"-->
+    <!--      [tuiNumberFormat]="{precision: precisionAmount}"-->
+    <!--      formControlName="amount">-->
+    <!--      Количество-->
+    <!--      <input-->
+    <!--        autocomplete="off"-->
+    <!--        name="amount"-->
+    <!--        tuiTextfieldLegacy-->
+    <!--      />-->
+    <!--    </tui-input-number>-->
+
+    <tui-textfield
       [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: precisionAmount}"
-      formControlName="amount">
-      Количество
+      class="form__control">
+
       <input
+        placeholder="Количество"
+        tuiInputNumber
+        [max]="maxAmount[controlBroker.value] || null"
+        [tuiNumberFormat]="{precision: precisionAmount}"
         autocomplete="off"
         name="amount"
-        tuiTextfieldLegacy
+        formControlName="amount"
       />
-    </tui-input-number>
+
+    </tui-textfield>
   </div>
   <div class="form__actions">
     <button
@@ -79,10 +95,6 @@
     </button>
   </div>
 </form>
-
-<ng-template #broker let-item>
-  {{ item | json }}
-</ng-template>
 
 <ng-template #priceIncrement>
   <span class="form__increment" *ngIf="minPriceIncrement !== null">

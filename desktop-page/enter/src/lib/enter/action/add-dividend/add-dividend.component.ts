@@ -10,7 +10,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfield, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
 import {
   TuiInputDateModule,
   TuiInputDateTimeModule,
@@ -22,7 +22,7 @@ import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@ta
 import { AccountFacade } from 'stores/facades/account.facade';
 import { BehaviorSubject, filter, Observable, Subject, switchMap } from 'rxjs';
 import { AccountBroker } from 'types/account';
-import { TuiDataListWrapper } from '@taiga-ui/kit';
+import { TuiDataListWrapper, TuiInputNumberDirective } from '@taiga-ui/kit';
 import { getNumberFromE } from 'utils/get-number-from-e';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { StockPositionActionEntry, StockPositionDividend } from 'types/position';
@@ -50,6 +50,8 @@ const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): Valid
     TuiSelectModule,
     TuiDataList,
     TuiDataListWrapper,
+    TuiInputNumberDirective,
+    TuiTextfield,
   ],
   templateUrl: './add-dividend.component.html',
   styleUrls: ['../add.scss', './add-dividend.component.scss'],

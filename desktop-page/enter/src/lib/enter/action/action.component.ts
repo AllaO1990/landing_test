@@ -388,6 +388,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
       price: (data && data.price) || entry.price,
       amount: (data && data.amount) || entry.quantity,
       minPriceIncrement: this.minPriceIncrement,
+      isNew: index === null,
     }).subscribe((res: any | null) => {
       if (res) {
         this._updateDataFromDialog(this.formArrayEntries, res, index);
@@ -429,6 +430,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
       price: (data && data.price) || target.price,
       brokerId: (data && data['brokerId']) || brokerId,
       minPriceIncrement: this.minPriceIncrement,
+      isNew: control === null,
     }).subscribe((result: any | null) => {
       if (result) {
         this._updateDataFromDialog(this.formArrayTargets, result, control);
