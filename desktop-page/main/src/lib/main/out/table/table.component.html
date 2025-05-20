@@ -28,6 +28,8 @@
         class="out__table-tr"
         (dblclick)="onDblclick($event, item)"
         (click)="onClick($event, item)"
+        tuiDropdownContext
+        [tuiDropdown]="contextMenu"
         *cdkVirtualFor="let item of data || [] | tuiTableSort; trackBy: trackById"
         [class.out__table-tr--active]="(activeIdeaId$ | async) === item.id"
         [style.background-color]="item | colorOutToPosition"
@@ -146,6 +148,35 @@
             {{ item.stop.lossPercent | tuiFormatNumber | async }}%
           </div>
         </td>
+
+        <ng-template #contextMenu let-close>
+          <tui-data-list
+            size="s"
+            role="menu"
+            class="context-menu">
+            <button
+              tuiOption
+              type="button"
+              (click)="onDblclick($event, item); close()">
+              <tui-icon icon="@tui.external-link"></tui-icon>
+              Открыть сделку
+            </button>
+            <button
+              tuiOption
+              type="button"
+              (click)="onNewPosition($event, item); close()">
+              <tui-icon icon="@tui.square-plus"></tui-icon>
+              Новая сделка
+            </button>
+            <button
+              tuiOption
+              type="button"
+              (click)="onDeletePosition($event, item); close()">
+              <tui-icon icon="@tui.square-minus"></tui-icon>
+              Удалить сделку
+            </button>
+          </tui-data-list>
+        </ng-template>
       </tr>
       </tbody>
     </table>
