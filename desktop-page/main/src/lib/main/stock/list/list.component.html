@@ -20,6 +20,8 @@
         [value]="item.id"
         [disabledItemHandler]="disabledItemHandler(list.items)"
         #checkbox='stockListItem'
+        tuiDropdownContext
+        [tuiDropdown]="contextMenu"
         [formControl]="controlItem">
         <div
           class="stock-item__row"
@@ -75,6 +77,20 @@
             </button>
           </div>
         </div>
+
+        <ng-template #contextMenu let-close>
+          <tui-data-list
+            size="s"
+            role="menu"
+            class="context-menu">
+            <button
+              tuiOption
+              type="button"
+              (click)="openDialogIdea($event, item); close()">
+              + Новая идея
+            </button>
+          </tui-data-list>
+        </ng-template>
       </vt-stock-list-item>
     </cdk-virtual-scroll-viewport>
   </tui-scrollbar>

@@ -99,13 +99,11 @@ export class ChartCandlestickComponent implements OnInit {
     this.#localStorage.getItem('chartControlSma') || [this.smaList[0].value, this.smaList[5].value]
   );
   readonly controlAtr: FormControl<boolean> = new FormControl<boolean>(
-    this.#localStorage.getItem('chartControlAtr') !== undefined ? this.#localStorage.getItem('chartControlAtr') : true,
+    this.#localStorage.getItem('chartControlAtr') ?? true,
     { nonNullable: true }
   );
   readonly controlTarget: FormControl<boolean> = new FormControl<boolean>(
-    this.#localStorage.getItem('chartControlTarget') !== undefined
-      ? this.#localStorage.getItem('chartControlTarget')
-      : true,
+    this.#localStorage.getItem('chartControlTarget') ?? true,
     { nonNullable: true }
   );
   readonly controlZone: FormControl<number[] | null> = new FormControl(

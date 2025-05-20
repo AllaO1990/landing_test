@@ -19,6 +19,8 @@ import { filter, map } from 'rxjs/operators';
 import { StockGroupType, StockInstrument, StockListItemWithPrice } from 'types/stock';
 import {
   TuiButton,
+  TuiDataList,
+  TuiDropdown,
   TuiFormatNumberPipe,
   TuiHintComponent,
   TuiHintDirective,
@@ -33,6 +35,8 @@ import { StockListItemComponent } from '../item';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IconTickerComponent } from '@ui/components/icon-ticker';
 import { TuiBooleanHandler } from '@taiga-ui/cdk';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
 
 @Pipe({
   name: 'stockItemRemove',
@@ -69,10 +73,13 @@ export class StockListRemovePipe implements PipeTransform {
     TuiHintComponent,
     TuiHintUnstyled,
     IconTickerComponent,
+    TuiDropdown,
+    TuiDataList,
   ],
   providers: [],
 })
 export class StockListComponent implements AfterContentInit {
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _list$: Subject<StockListWithType | null> = new BehaviorSubject<StockListWithType | null>(null);
   private readonly _event$: Subject<StockEvent | null> = new BehaviorSubject<StockEvent | null>(null);
@@ -140,6 +147,16 @@ export class StockListComponent implements AfterContentInit {
         map(([event]: [StockEvent | null, StockListWithType | null]) => event)
       )
       .subscribe((event: StockEvent | null) => this.controlItem.patchValue(event && event.id, { emitEvent: false }));
+  }
+
+  openDialogIdea(event: Event, item: StockInstrument): void {
+    event.preventDefault();
+
+    this.#queryParams.update({
+      type: EventSelected.STOCK_LIST,
+      id: item.id,
+      dialog: 'visible',
+    });
   }
 
   // private _getValue(event: StockEvent | null, type: EventSelected | null): number | null {
