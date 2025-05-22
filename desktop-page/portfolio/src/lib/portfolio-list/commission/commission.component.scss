@@ -15,6 +15,15 @@
     margin: var(--padding-4) 0;
   }
 
+  &__pagination {
+    display: inline-block;
+
+    width: 100%;
+    border-bottom: 1px solid var(--main-bg-color);
+
+    padding-bottom: var(--padding-4);
+  }
+
   &__row {
     &:not(:last-child) {
       margin-bottom: var(--padding-2);

@@ -1,0 +1,29 @@
+.actions {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  width: 100%;
+
+  &__pagination {
+    flex: 1;
+  }
+
+  &__select {
+    flex: 0 auto;
+  }
+}
+
+.amount-on-page {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  &__text {
+    margin-right: var(--padding-2);
+  }
+
+  &__select {
+    min-width: 5rem;
+  }
+}
