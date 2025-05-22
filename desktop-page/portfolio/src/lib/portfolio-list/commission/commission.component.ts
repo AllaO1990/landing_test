@@ -8,14 +8,14 @@ import {
   Injector,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 import { PortfolioListDialog } from '../dialog';
 import { CommissionStore } from 'stores/plugins/commission.store';
 import { DESKTOP_API, QUERY_PARAMS } from 'tokens/desktop';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { BehaviorSubject, catchError, filter, forkJoin, Observable, of, startWith, Subject, timer } from 'rxjs';
+import { catchError, combineLatest, debounceTime, filter, forkJoin, Observable, of, startWith, timer } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
@@ -32,6 +32,7 @@ import { DialogFilterComponent } from '../dialog-filter/dialog-filter.component'
 import { getParamsFromFilter } from '../utils';
 import { QueryParams } from 'utils/query-params';
 import { CommissionAddWithTickerComponent } from './add-with-ticker/add-with-ticker.component';
+import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 
 type Loading = {
   loadingRemove: boolean;
@@ -58,6 +59,7 @@ type Loading = {
     TuiButtonLoading,
     DialogFilterComponent,
     TuiHint,
+    WithPaginationComponent,
   ],
   templateUrl: './commission.component.html',
   styleUrls: ['../dialog.scss', './commission.component.scss'],
@@ -77,8 +79,8 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
   readonly #store: CommissionStore = inject(CommissionStore);
-  readonly #filterValue$: Subject<Params> = new BehaviorSubject({});
   readonly #cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  readonly listLimit: number[] = [10, 50, 100];
   readonly list$ = this.#store.list$.pipe(
     map(
       (list: CommissionItem[] | null) =>
@@ -91,23 +93,47 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
         }))
     )
   );
+
+  total$: Observable<number> = this.#store.total$.pipe(
+    filter((value: number | null): value is number => value !== null)
+  );
+
   readonly itemHeight = 28;
 
-  readonly controlFilter: FormControl = new FormControl(null);
+  readonly formGroup: FormGroup = new FormGroup({
+    filter: new FormControl(null),
+    pagination: new FormControl({
+      limit: this.listLimit[1],
+      page: 0,
+    }),
+  });
+
+  get controlFilter(): FormControl {
+    return this.formGroup.get('filter') as FormControl;
+  }
+
+  get controlPagination(): FormControl {
+    return this.formGroup.get('pagination') as FormControl;
+  }
 
   #dialogAddComponent: PolymorpheusComponent<CommissionAddComponent> | null = null;
   #dialogAddWithTickerComponent: PolymorpheusComponent<CommissionAddWithTickerComponent> | null = null;
 
   ngAfterViewInit(): void {
-    this.controlFilter.valueChanges
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        startWith(this.controlFilter.value),
-        filter((value: null | any) => value !== null)
-      )
-      .subscribe((value) => {
+    const valueChange$ = this.controlFilter.valueChanges.pipe(
+      startWith(this.controlFilter.value),
+      filter((value: null | any) => value !== null)
+    );
+
+    const pagination$ = this.controlPagination.valueChanges.pipe(
+      startWith(this.controlPagination.value),
+      filter((value: null | Params): value is Params => value !== null)
+    );
+
+    combineLatest([valueChange$, pagination$])
+      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(0))
+      .subscribe((_) => {
         this._onLoadList();
-        this.#filterValue$.next(getParamsFromFilter(value));
       });
   }
 
@@ -186,7 +212,12 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   }
 
   private _onLoadList(): void {
-    this.#store.load(getParamsFromFilter(this.controlFilter.value));
+    const params = {
+      ...getParamsFromFilter(this.controlFilter.value),
+      ...this.controlPagination.value,
+    };
+
+    this.#store.load(params);
   }
 
   onRemove(event: Event, item: CommissionItem & Loading) {

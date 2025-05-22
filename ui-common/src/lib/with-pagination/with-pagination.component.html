@@ -1,0 +1,32 @@
+<div class="actions" *ngIf="(length$ | async) as length; else load">
+  <div class="actions__pagination">
+    <tui-pagination
+      size="m"
+      [sidePadding]="1"
+      [activePadding]="1"
+      [index]="(index$ | async) || 0"
+      [length]="length"
+      (indexChange)="goToPage($event)"
+    />
+  </div>
+  <div class="actions__select amount-on-page">
+    <span class="ellipsis amount-on-page__text">
+      Кол-во строк:
+    </span>
+    <tui-select
+      class="amount-on-page__select"
+      [tuiTextfieldSize]="size"
+      [formControl]="controlLimit"
+      [tuiTextfieldLabelOutside]="true">
+      <input tuiTextfieldLegacy />
+      <tui-data-list-wrapper
+        *tuiDataList
+        [items]="list"
+      />
+    </tui-select>
+  </div>
+</div>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>

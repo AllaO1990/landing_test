@@ -5,6 +5,7 @@ import { Params } from '@angular/router';
 import { Commission, CommissionItem } from 'types/commission';
 import { Response } from 'types/response';
 import { StockPosition } from 'types/position';
+import { sortText } from 'utils/sort-text';
 
 export interface CommissionState {
   list: null | CommissionItem[];
@@ -39,8 +40,13 @@ export class CommissionStore extends ComponentStore<CommissionState> {
   load = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) => this._api.getCommission(params)),
-      tap((response: Response<Commission>) => this.updateList(response.data.items))
-      // tap((response: Response<Commission>) => this.updateTotal(response.data.total))
+      tap((response: Response<Commission>) =>
+        this.updateList(
+          response.data.items &&
+            response.data.items.sort((a: CommissionItem, b: CommissionItem) => sortText(b.date, a.date))
+        )
+      ),
+      tap((response: Response<Commission>) => this.updateTotal(response.data.total))
     )
   );
 
