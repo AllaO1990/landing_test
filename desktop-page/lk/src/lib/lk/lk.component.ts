@@ -1,17 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
-// import {
-//   ChartStore,
-//   ConsolidationZonesStore,
-//   DesktopLkStore,
-//   EntryStore,
-//   IndicatorAtrStore,
-//   IndicatorEmaStore,
-//   IndicatorSmaStore,
-//   PositionStore,
-//   _stockListStore,
-// } from 'stores/desktop';
-import { DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
+import { CONTEXT_ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
 import { debounceTime, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -28,6 +17,11 @@ import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
+import { ActionDeletePosition } from '../common/plugins/action-delete-position';
+import { ActionNewPosition } from '../common/plugins/action-new-position';
+import { ActionShowPosition } from '../common/plugins/action-show-position';
+import { ActionShowIdea } from '../common/plugins/action-show-idea';
+import { ActionCopyIdea } from '../common/plugins/action-copy-idea';
 
 @Component({
   selector: 'lib-lk',
@@ -47,6 +41,31 @@ import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
     ChartFacade,
     AccountFacade,
     PortfolioFacade,
+    {
+      provide: CONTEXT_ACTION_EVENTS,
+      useClass: ActionDeletePosition,
+      multi: true,
+    },
+    {
+      provide: CONTEXT_ACTION_EVENTS,
+      useClass: ActionNewPosition,
+      multi: true,
+    },
+    {
+      provide: CONTEXT_ACTION_EVENTS,
+      useClass: ActionShowPosition,
+      multi: true,
+    },
+    {
+      provide: CONTEXT_ACTION_EVENTS,
+      useClass: ActionShowIdea,
+      multi: true,
+    },
+    {
+      provide: CONTEXT_ACTION_EVENTS,
+      useClass: ActionCopyIdea,
+      multi: true,
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

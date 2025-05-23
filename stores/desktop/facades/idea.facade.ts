@@ -44,6 +44,7 @@ export class IdeaFacade {
   readonly loadFigures = this._store.figures.load;
   readonly resetIdea = () => this._store.idea.updateIdea(null);
   readonly loadIdea = this._store.idea.loadIdea;
+  readonly loadAndCopyIdea = this._store.idea.loadAndCopyIdea;
   readonly createIdea = this._store.idea.create;
   readonly editIdea = this._store.idea.edit;
   readonly deleteIdea = this._store.idea.delete;

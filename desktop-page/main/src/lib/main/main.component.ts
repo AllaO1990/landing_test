@@ -1,4 +1,4 @@
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { combineLatest, debounceTime, Observable, startWith, switchMap } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -23,16 +23,7 @@ import { StockListFacade } from 'stores/facades/stock-list.facade';
 @Component({
   selector: 'lib-main',
   standalone: true,
-  imports: [
-    AsyncPipe,
-    NgFor,
-    NgIf,
-    TabsComponent,
-    OutComponent,
-    StockComponent,
-    EntryModule,
-    ChartCandlestickComponent,
-  ],
+  imports: [AsyncPipe, NgIf, TabsComponent, OutComponent, StockComponent, EntryModule, ChartCandlestickComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [MainService],

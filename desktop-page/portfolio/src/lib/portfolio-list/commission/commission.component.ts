@@ -212,9 +212,11 @@ export class CommissionComponent extends PortfolioListDialog implements AfterVie
   }
 
   private _onLoadList(): void {
+    const { limit, page } = this.controlPagination.value;
     const params = {
       ...getParamsFromFilter(this.controlFilter.value),
-      ...this.controlPagination.value,
+      page: page + 1,
+      limit,
     };
 
     this.#store.load(params);

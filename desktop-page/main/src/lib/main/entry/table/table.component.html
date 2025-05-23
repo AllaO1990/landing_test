@@ -24,6 +24,8 @@
         <tbody tuiTbody>
         <!--          [style.background-color]="getColorBackGround(item.strategy.successProbability * 100)"-->
         <tr
+          tuiDropdownContext
+          [tuiDropdown]="contextMenu"
           (dblclick)="onDblclick($event, item)"
           (click)="onClick($event, item)"
           class="entry-table__table-tr"
@@ -114,6 +116,23 @@
           <td *tuiCell="'cost'" tuiTd class="td td--number">
             {{ item.lastPrice | tuiFormatNumber | async }}
           </td>
+
+          <ng-template #contextMenu let-close>
+            <tui-data-list
+              size="s"
+              role="menu"
+              class="context-menu">
+              <button
+                *ngFor="let button of listOfButton; trackBy: trackByType"
+                tuiOption
+                type="button"
+                [disabled]="button.disabled"
+                (click)="onContextClick($event, item, button); close()">
+                <tui-icon [icon]="button.icon"></tui-icon>
+                {{ button.text }}
+              </button>
+            </tui-data-list>
+          </ng-template>
         </tr>
         </tbody>
       </table>

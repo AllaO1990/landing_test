@@ -69,27 +69,9 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
         return state;
       }
 
-      const { actions, idea } = data;
-
       return {
         ...state,
-        idea: {
-          actions: {
-            ...actions,
-            entries: [],
-            outs: [],
-          },
-          dividends: [],
-          comissions: [],
-          idea: {
-            ...idea,
-            author: 'user',
-            id: null,
-            parentId: idea.id,
-            entries: idea.entries.map((item: StockPositionIdeaEntry) => ({ ...item, date: null })),
-            targets: idea.targets.map((item: StockPositionTarget) => ({ ...item, stopDate: null })),
-          },
-        },
+        idea: this._copyIdea(data),
       };
     });
   };
@@ -146,6 +128,21 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           .pipe(catchError((err) => of(null).pipe(tap(() => this._queryParams.update(null, '')))));
       }),
       tap((result: Response<StockPosition | null> | null) => result && this.updateIdea(result.data))
+    )
+  );
+
+  readonly loadAndCopyIdea = this.effect((stream$: Observable<number | null>) =>
+    stream$.pipe(
+      switchMap((value: number | null) => {
+        if (value === null) {
+          return of(null);
+        }
+
+        return this._api
+          .getIdea(value)
+          .pipe(catchError((err) => of(null).pipe(tap(() => this._queryParams.update(null, '')))));
+      }),
+      tap((result: Response<StockPosition | null> | null) => result && this.updateIdea(this._copyIdea(result.data)))
     )
   );
 
@@ -297,4 +294,30 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       )
     )
   );
+
+  private _copyIdea(data: StockPosition | null): StockPosition | null {
+    if (data === null) {
+      return null;
+    }
+
+    const { actions, idea } = data;
+
+    return {
+      actions: {
+        ...actions,
+        entries: [],
+        outs: [],
+      },
+      dividends: [],
+      comissions: [],
+      idea: {
+        ...idea,
+        author: 'user',
+        id: null,
+        parentId: idea.id,
+        entries: idea.entries.map((item: StockPositionIdeaEntry) => ({ ...item, date: null })),
+        targets: idea.targets.map((item: StockPositionTarget) => ({ ...item, stopDate: null })),
+      },
+    };
+  }
 }
