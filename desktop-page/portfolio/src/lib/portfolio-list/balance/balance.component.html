@@ -64,6 +64,12 @@
         </div>
       </lib-list>
     </div>
+    <lib-with-pagination
+      class="form__pagination"
+      [total]="(total$ | async) || 0"
+      [items]="listLimit"
+      [formControl]="controlPagination"
+    ></lib-with-pagination>
   </div>
   <div class="form__actions">
     <button

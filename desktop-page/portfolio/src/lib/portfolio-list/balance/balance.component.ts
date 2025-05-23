@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { DialogFilterComponent } from '../dialog-filter/dialog-filter.component';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import { LoaderComponent } from '@ui/components/loader';
@@ -10,7 +10,7 @@ import { PortfolioListDialog } from '../dialog';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { DepositComponent } from '../deposit/deposit.component';
 import { WithdrawalComponent } from '../withdrawal/withdrawal.component';
-import { Observable, startWith } from 'rxjs';
+import { debounceTime, filter, Observable, startWith } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { BalanceStore } from 'stores/plugins/balance.store';
@@ -19,6 +19,8 @@ import { DESKTOP_API } from 'tokens/desktop';
 import { getParamsFromFilter } from '../utils';
 import { TUI_CONFIRM, TuiButtonLoading } from '@taiga-ui/kit';
 import { AccountTransaction, AccountTransactions } from 'types/account';
+import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 @Component({
   selector: 'lib-portfolio-list-balance',
@@ -36,6 +38,7 @@ import { AccountTransaction, AccountTransactions } from 'types/account';
     TuiFormatNumberPipe,
     DatePipe,
     AsyncPipe,
+    WithPaginationComponent,
   ],
   templateUrl: './balance.component.html',
   styleUrls: ['../dialog.scss', './balance.component.scss'],
@@ -60,14 +63,44 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
   #dialogWithdrawalComponent: PolymorpheusComponent<WithdrawalComponent> | null = null;
 
   readonly transactions$: Observable<AccountTransactions | null> = this.#store.list$;
-  readonly controlFilter: FormControl = new FormControl(null);
   readonly itemHeight = 28;
+  readonly listLimit: number[] = [10, 50, 100];
+  readonly formGroup: FormGroup = new FormGroup({
+    filter: new FormControl(null),
+    pagination: new FormControl({
+      limit: this.listLimit[1],
+      page: 0,
+    }),
+  });
+
+  get controlFilter(): FormControl {
+    return this.formGroup.get('filter') as FormControl;
+  }
+
+  get controlPagination(): FormControl {
+    return this.formGroup.get('pagination') as FormControl;
+  }
+
+  total$: Observable<number> = this.#store.list$.pipe(
+    filter((value: AccountTransactions | null): value is AccountTransactions => value !== null),
+    map((value: AccountTransactions) => value.total),
+    distinctUntilChanged()
+  );
 
   ngAfterViewInit(): void {
-    this.controlFilter.valueChanges
-      .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlFilter.value))
+    this.formGroup.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value), debounceTime(0))
       .subscribe((value) => {
-        this.#store.load(getParamsFromFilter(value));
+        const {
+          filter,
+          pagination: { page, limit },
+        } = value;
+        const params = {
+          ...getParamsFromFilter(filter),
+          page: page + 1,
+          limit,
+        };
+        this.#store.load(params);
       });
   }
 
