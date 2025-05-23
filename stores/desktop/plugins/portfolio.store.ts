@@ -1,6 +1,6 @@
 import { WithQueue } from 'stores/core/with-queue.abstract';
 import { DesktopService } from '@desktop-data/desktop-data';
-import { Observable, switchMap, tap } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { Params } from '@angular/router';
 import { PortfolioPosition } from 'types/portfolio';
 import { StockId } from 'types/stock';
@@ -172,9 +172,23 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
     stream$.pipe(
       switchMap((params: Params) =>
         this._api.getPortfolio(params).pipe(
+          catchError((err: Error) => {
+            console.error(err);
+            return of(null);
+          }),
+          map((result: Response<DataList<PortfolioPosition>> | null) => {
+            if (result === null) {
+              return null;
+            }
+
+            return {
+              total: result.data.total,
+              items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId })),
+            };
+          }),
           tap((result: DataList<PortfolioPosition> | null) => {
-            this.updateList(result ? result.items : null);
-            this.updateTotal(result ? { total: result.total } : null);
+            this.updateList(result ? result.items : []);
+            this.updateTotal({ total: result ? result.total : 0 });
           })
         )
       )

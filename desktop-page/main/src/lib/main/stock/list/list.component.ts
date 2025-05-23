@@ -25,6 +25,7 @@ import {
   TuiHintComponent,
   TuiHintDirective,
   TuiHintUnstyled,
+  TuiIcon,
   TuiScrollable,
   TuiScrollbar,
 } from '@taiga-ui/core';
@@ -75,6 +76,7 @@ export class StockListRemovePipe implements PipeTransform {
     IconTickerComponent,
     TuiDropdown,
     TuiDataList,
+    TuiIcon,
   ],
   providers: [],
 })

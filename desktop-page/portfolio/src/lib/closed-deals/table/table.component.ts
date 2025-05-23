@@ -247,8 +247,14 @@ export class WrapperTableComponent implements OnInit {
               type: EventSelected.TRANSACTION,
               id: list[0].ideaId,
             });
+            return;
           }
         }
+
+        this._queryParams.update({
+          type: EventSelected.STOCK_LIST,
+          id: '72187db2-44d8-4b2e-8b43-c41fd30c4a39',
+        });
       });
   }
 

@@ -14,7 +14,7 @@ import {
 } from 'types/stock';
 
 import { ActiveZone, FigureIdea } from 'types/chart';
-import { Position, StockPosition } from 'types/position';
+import { Position, ResponsePositions, StockPosition } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Params } from '@angular/router';
@@ -64,7 +64,7 @@ export abstract class DesktopService {
 
   public abstract getActiveStock(list: string[]): Observable<StockPrice<WithLastPrice>>;
 
-  public abstract getPositionList(): Observable<Position[]>;
+  public abstract getPositionList(): Observable<Response<ResponsePositions>>;
 
   public abstract getCandles(id: any): Observable<any>;
 
@@ -132,7 +132,7 @@ export abstract class DesktopService {
 
   abstract deleteAccountPortfolio(id: number): Observable<Response<AccountPortfolio>>;
 
-  abstract getPortfolio(params: Params): Observable<DataList<PortfolioPosition> | null>;
+  abstract getPortfolio(params: Params): Observable<Response<DataList<PortfolioPosition>>>;
 
   abstract setSubscribe(id: number): Observable<Response<{ subscribed: boolean }>>;
 

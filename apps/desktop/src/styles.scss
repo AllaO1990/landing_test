@@ -95,6 +95,15 @@ tui-root {
   height: 100%;
 }
 
+tui-data-list[role="menu"] [tuiOption]:not([new]) {
+  justify-content: flex-start;
+
+  tui-icon {
+    font: var(--tui-font-text-ui-l);
+    margin-right: var(--padding-2);
+  }
+}
+
 .bold {
   font-weight: 500;
 }

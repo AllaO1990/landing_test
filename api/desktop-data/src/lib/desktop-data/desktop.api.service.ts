@@ -154,16 +154,8 @@ export class DesktopApiService extends DesktopService {
       );
   }
 
-  getPositionList(): Observable<Position[]> {
-    return this._http.get<Response<ResponsePositions>>(`${this.host}/api/v1/ideas/positions`).pipe(
-      filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
-      map((response: Response<ResponsePositions>) => {
-        if (response.data.items === null) {
-          return [];
-        }
-        return response.data.items.map((item: ResponsePosition) => new Position(item));
-      })
-    );
+  getPositionList(): Observable<Response<ResponsePositions>> {
+    return this._http.get<Response<ResponsePositions>>(`${this.host}/api/v1/ideas/positions`).pipe();
   }
 
   getCandles(selected: { source: any; index: number }): Observable<any> {
@@ -313,19 +305,8 @@ export class DesktopApiService extends DesktopService {
     });
   }
 
-  getPortfolio(params: Params): Observable<DataList<PortfolioPosition> | null> {
-    return this._http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/api/v1/ideas/portfolio`, params).pipe(
-      map((result: Response<DataList<PortfolioPosition>>) => {
-        return {
-          total: result.data.total,
-          items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId })),
-        };
-      }),
-      catchError((err: Error) => {
-        console.error(err);
-        return of(null);
-      })
-    );
+  getPortfolio(params: Params): Observable<Response<DataList<PortfolioPosition>>> {
+    return this._http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/api/v1/ideas/portfolio`, params);
   }
 
   getIdea(id: StockId): Observable<Response<StockPosition | null>> {
