@@ -82,7 +82,7 @@ export class EntryTableComponent {
       disabled: false,
     },
     {
-      text: 'Новая идею',
+      text: 'Новая идея',
       icon: '@tui.square-plus',
       type: 'newPosition',
       disabled: false,

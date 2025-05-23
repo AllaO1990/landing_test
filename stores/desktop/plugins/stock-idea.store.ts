@@ -1,9 +1,16 @@
 import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
-import { catchError, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { StockIdeaState } from 'types/stock-idea-state';
 import { StockId, StockInstrument } from 'types/stock';
-import { Position, StockPosition, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
+import {
+  Position,
+  ResponsePosition,
+  ResponsePositions,
+  StockPosition,
+  StockPositionIdeaEntry,
+  StockPositionTarget,
+} from 'types/position';
 import { Response } from 'types/response';
 import { QueryParams } from 'utils/query-params';
 import { filter, take } from 'rxjs/operators';
@@ -108,11 +115,21 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly loadPositions = this.effect((stream$: Observable<unknown>) =>
     stream$.pipe(
-      switchMap((_) => this._api.getPositionList().pipe(tap((result: Position[]) => this.updatePositions(result)))),
-      catchError((err: Error) => {
-        console.error(err);
-        return of(null);
-      })
+      switchMap((_) =>
+        this._api.getPositionList().pipe(
+          catchError((err: Error) => {
+            console.error(err);
+            return of(null);
+          }),
+          map((response: Response<ResponsePositions> | null) => {
+            if (response && response.data && response.data.items === null) {
+              return [];
+            }
+            return response!.data.items.map((item: ResponsePosition) => new Position(item));
+          }),
+          tap((result: Position[] | null) => this.updatePositions(result))
+        )
+      )
     )
   );
 
