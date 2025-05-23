@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, retry, timer } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ActiveZone, FigureIdea } from 'types/chart';
 import { Position, ResponsePosition, ResponsePositions, StockPosition } from 'types/position';
@@ -147,6 +147,10 @@ export class DesktopApiService extends DesktopService {
         ids: [...new Set(list)],
       })
       .pipe(
+        retry({
+          count: 3,
+          delay: (_, retryCount) => timer(Math.pow(2, retryCount - 1) * 1500),
+        }),
         filter(
           (response: Response<StockPrice<WithLastPrice>>) => response && response.message === ResponseMessage.success
         ),
