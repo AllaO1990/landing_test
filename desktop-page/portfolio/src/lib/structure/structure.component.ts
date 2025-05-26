@@ -1,6 +1,6 @@
 import { TuiRingChart } from '@taiga-ui/addon-charts';
 import { TuiBlock, TuiPin } from '@taiga-ui/kit';
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
@@ -33,6 +33,7 @@ import {
 } from 'types/account';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface StructureControl {
   name: string;
@@ -69,6 +70,7 @@ let COLOR_LIMIT = 5;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StructureComponent implements AfterViewInit {
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: PortfolioFacade = inject(PortfolioFacade);
   private readonly _doc: Document = inject(DOCUMENT);
   private readonly _styleId: string = 'structure';
@@ -158,6 +160,7 @@ export class StructureComponent implements AfterViewInit {
       this.controlCategories.valueChanges.pipe(startWith(this.controlCategories.value)),
     ])
       .pipe(
+        takeUntilDestroyed(this.#destroyRef),
         debounceTime(0),
         map(
           (

@@ -36,4 +36,10 @@
   &__table {
     flex: 1;
   }
+
+  &__search {
+    inline-size: fit-content;
+    min-width: 10rem;
+    margin: 0 var(--padding-2);
+  }
 }
