@@ -35,6 +35,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategy, AccountType } from 'types/account';
 import { GetBrokerPipe } from '@ui/pipes/get-broker.pipe';
 import { Params } from '@angular/router';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 @Component({
   selector: 'lib-wrapper-table',
@@ -94,7 +95,7 @@ export class WrapperTableComponent implements OnInit {
     'author',
   ];
   readonly listLimit: number[] = [10, 50, 100];
-  readonly controlLimit: FormControl = new FormControl<number>(100);
+  readonly controlLimit: FormControl = new FormControl<number>(this.listLimit[1]);
   readonly header = WRAPPER_TABLE_HEADER;
 
   isData: boolean | null = null;
@@ -108,6 +109,14 @@ export class WrapperTableComponent implements OnInit {
   isLoad$: Subject<boolean> = new BehaviorSubject(false);
 
   data$: Observable<PortfolioPosition[] | null> = this._service.list$.pipe(
+    map(
+      (data: PortfolioPosition[] | null) =>
+        data &&
+        data.map((item) => ({
+          ...item,
+          priceIncrement: getPriceIncrement(item.instrument.minPriceIncrement),
+        }))
+    ),
     tap((data: PortfolioPosition[] | null) => {
       this.isData = data && !!data.length;
 
@@ -189,25 +198,23 @@ export class WrapperTableComponent implements OnInit {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
-  @Input() set params(value: Params) {
-    if (value) {
-      const { portfolio, broker, currency } = value;
-
-      this.#inputParams$.next({
-        brokerId: broker && broker.brokerId,
-        currencyId: currency && currency.currencyId,
-        portfolioId: portfolio && portfolio.portfolioId,
-      });
-    }
+  @Input() set params(value: string | null) {
+    this.#inputParams$.next({ query: value });
   }
 
   ngOnInit(): void {
-    // const today = new Date().setUTCHours(12, 0, 0, 0);
-    // const start = new Date(new Date(today).setDate(-365 + new Date(today).getDate())).toISOString();
-    // const end = new Date(today).toISOString();
-
-    // combineLatest([this.portfolio$, this.broker$, this.currency$, this.range$, this.index$.asObservable(), this.limit$])
-    combineLatest([merge(this.inputStream$, this.storeStream$), this.range$, this.index$.asObservable(), this.limit$])
+    combineLatest([
+      merge(
+        this.inputStream$.pipe(
+          tap((_) => this.isLoad$.next(true)),
+          debounceTime(500)
+        ),
+        this.storeStream$
+      ),
+      this.range$,
+      this.index$.asObservable(),
+      this.limit$,
+    ])
       .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(500))
       .subscribe(([params, range, index, limit]: [any, any, number, number]) => {
         if (this.isData !== null) {

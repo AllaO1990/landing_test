@@ -7,12 +7,23 @@
     <!--      <lib-filter-closed-deals [formControl]="formControl"></lib-filter-closed-deals>-->
     <!--    </div>-->
     <div class="space"></div>
+    <tui-textfield
+      tuiTextfieldSize="s"
+      iconStart="@tui.search"
+      class="closed-deals__search">
+      <input
+        placeholder="Поиск"
+        tuiTextfield
+        autocomplete="off"
+        [formControl]="controlSearch"
+      />
+    </tui-textfield>
     <button
       tuiButton
       type="button"
       [size]="size"
       appearance="secondary"
-      class="entry__add-idea"
+      class="closed-deals__add-idea"
       searchDialog
       #dialog=SearchDialog
       (click)="dialog.onSearch($event)"
@@ -21,6 +32,6 @@
     </button>
   </div>
   <div class="closed-deals__table">
-    <lib-wrapper-table [params]="formControl.value"></lib-wrapper-table>
+    <lib-wrapper-table [params]="controlSearch.value"></lib-wrapper-table>
   </div>
 </div>

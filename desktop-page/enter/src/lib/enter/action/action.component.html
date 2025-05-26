@@ -518,7 +518,7 @@
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="totalCommission.profitPct; else none">
-        {{ totalCommission.profitPct | tuiFormatNumber: { precision: 4 } | async }}%
+        {{ totalCommission.profitPct | tuiFormatNumber: { precision: 2 } | async }}%
       </ng-container>
     </div>
   </lib-list-header>

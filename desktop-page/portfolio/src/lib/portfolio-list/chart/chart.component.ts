@@ -118,6 +118,7 @@ export class ChartComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$, this.strategy$, this.leadToCurrency$])
       .pipe(
+        takeUntilDestroyed(this.#destroyRef),
         debounceTime(0),
         map(
           (

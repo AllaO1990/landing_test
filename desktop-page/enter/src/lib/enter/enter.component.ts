@@ -294,11 +294,11 @@ export class VtEnterComponent implements AfterViewInit {
             result.actions.outs,
             result.idea.positionType === 'long' ? 1 : -1
           );
-          let action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
+          const action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
 
-          if (result.actions.entries.length !== 0) {
-            action = 'disable';
-          }
+          // if (result.actions.entries.length !== 0) {
+          //   action = 'disable';
+          // }
 
           this.form.patchValue({
             actions: { ...result.actions, dividends: result.dividends, commissions: result.comissions },

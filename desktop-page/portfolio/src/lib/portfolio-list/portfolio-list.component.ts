@@ -152,6 +152,7 @@ export class PortfolioListComponent implements AfterViewInit {
 
     combineLatest([params$, this.range$])
       .pipe(
+        takeUntilDestroyed(this.#destroyRef),
         debounceTime(0),
         map(([params, range]: [Params, AccountRange]) => ({
           ...params,
