@@ -180,6 +180,7 @@ export class ChartCandlestickComponent implements OnInit {
     ),
     this._store.figureUser$,
   ]).pipe(
+    debounceTime(0),
     map((list) => this._concatFigures(list)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
