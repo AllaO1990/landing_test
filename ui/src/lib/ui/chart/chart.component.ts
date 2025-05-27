@@ -426,6 +426,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
         this._removeZones(zones, chart, this._zonesName);
         this._addZones(zones, chart);
+
+        chart.redraw(false);
       });
 
     chartWithInstrumentId$
@@ -446,6 +448,8 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
       .subscribe(({ chart, zones }: { chart: Highcharts.Chart; zones: Highcharts.AnnotationsOptions[] }) => {
         this._removeFigures(zones, chart);
         this._addZones(zones, chart);
+
+        chart.redraw(false);
       });
 
     chartWithInstrumentId$
@@ -481,16 +485,13 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   }
 
   private _addZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
-    const ids: string[] = zones.map((zone: Highcharts.AnnotationsOptions) => zone.id as string);
+    const annotationIds = (chart as any).annotations.map((item: any) => item.userOptions.id);
 
     zones.forEach((item: Highcharts.AnnotationsOptions) => {
-      if (!this._prevZonesName.includes(item.id as string)) {
+      if (!annotationIds.includes(item.id as string)) {
         chart.addAnnotation(item, false);
       }
     });
-
-    this._prevZonesName = ids;
-    chart.redraw(false);
   }
 
   private _removeZones(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart, list: string[] = []): void {
@@ -504,9 +505,9 @@ export class ChartComponent implements AfterViewInit, OnDestroy {
   }
 
   private _removeFigures(zones: Highcharts.AnnotationsOptions[], chart: Highcharts.Chart): void {
-    (chart as any).annotations.map((item: any) => {
-      const annotationId: string = item.userOptions.id;
+    const annotationIds = (chart as any).annotations.map((item: any) => item.userOptions.id);
 
+    annotationIds.forEach((annotationId: string) => {
       if (this._figuresName.includes(annotationId.split('--')[0])) {
         chart.removeAnnotation(annotationId);
       }
