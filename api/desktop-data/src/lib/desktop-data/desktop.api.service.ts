@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of, retry, timer } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ActiveZone, FigureIdea } from 'types/chart';
-import { Position, ResponsePosition, ResponsePositions, StockPosition } from 'types/position';
+import { ResponsePositions, StockPosition } from 'types/position';
 import { DataList, Response, ResponseMessage } from 'types/response';
 import {
   Stock,
@@ -45,15 +45,16 @@ export class DesktopApiService extends DesktopService {
     return this._environment.host;
   }
 
-  public getIdeaList(): Observable<Position[]> {
-    return this._http.get<Response<ResponsePositions>>(`${this.host}/api/v1/ideas`).pipe(
-      filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
-      map((response: Response<ResponsePositions>) => {
-        if (response.data.items === null) {
-          return [];
-        }
-        return response.data.items.map((item: ResponsePosition) => new Position(item));
-      })
+  public getIdeaList(params: Params): Observable<ResponsePositions> {
+    return this._http.post<Response<ResponsePositions>>(`${this.host}/api/v1/ideas`, { ...params }).pipe(
+      map((response: Response<ResponsePositions>) => response.data)
+      //   filter((response: Response<ResponsePositions>) => response && response.message === ResponseMessage.success),
+      //   map((response: Response<ResponsePositions>) => {
+      //     if (response.data.items === null) {
+      //       return [];
+      //     }
+      //     return response.data.items.map((item: ResponsePosition) => new Position(item));
+      //   })
     );
   }
 
@@ -180,6 +181,10 @@ export class DesktopApiService extends DesktopService {
         },
       })
       .pipe(
+        retry({
+          count: 3,
+          delay: (_, retryCount) => timer(Math.pow(2, retryCount - 1) * 1500),
+        }),
         filter((response: Response<any>) => response && response.message === ResponseMessage.success),
         map((response: Response<any>) => response.data)
       );

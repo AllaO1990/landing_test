@@ -103,7 +103,7 @@ export class MainStore extends ComponentStore<any> {
     this.account.loadStrategies();
     this.account.loadTypes();
 
-    this.idea.loadIdeas(timerSource);
+    // this.idea.loadIdeas(timerSource);
     this.idea.loadPositions(timerSource);
 
     this.onChangeQueryParams(this.selected.event$);

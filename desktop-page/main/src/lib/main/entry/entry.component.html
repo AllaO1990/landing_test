@@ -31,6 +31,7 @@
         iconStart="@tui.search"
         tuiIconButton
         type="button"
+        [disabled]="true"
         appearance="outline-grayscale"
         [size]="size"
         class="entry__action-search">
@@ -47,47 +48,98 @@
       </button>
     </div>
   </div>
-  <div class="entry__strategy">
-    <tui-multi-select
-      [formControl]="controlFilterStock"
-      [rows]="1"
+  <div class="entry__strategy" [formGroup]="formGroup">
+    <tui-select
+      *ngIf="types$ | async as list"
+      [valueContent]="type"
       [tuiTextfieldSize]="size"
-      [identityMatcher]="identityMatcher"
-      [stringify]="stringify"
-      [tuiTextfieldCleaner]="true"
+      formControlName="type"
       [tuiTextfieldLabelOutside]="true">
-      Активы
+      {{ constants.type }}
       <tui-data-list-wrapper
         *tuiDataList
         size="s"
-        tuiMultiSelectGroup
-        [items]="filterStock"
-        [disabledItemHandler]="disabledItemHandler"
-        [itemContent]="content"
-      />
-    </tui-multi-select>
+        [items]="list"
+        [itemContent]="type">
+      </tui-data-list-wrapper>
+    </tui-select>
 
-    <tui-multi-select
-      [formControl]="controlFilterStrategy"
-      [rows]="1"
+    <tui-select
+      *ngIf="strategy$ | async as list"
+      [valueContent]="strategy"
       [tuiTextfieldSize]="size"
-      [identityMatcher]="identityMatcher"
-      [stringify]="stringify"
-      [tuiTextfieldCleaner]="true"
+      formControlName="strategy"
       [tuiTextfieldLabelOutside]="true">
-      Стратегии
       <tui-data-list-wrapper
         *tuiDataList
         size="s"
-        tuiMultiSelectGroup
-        [items]="filterStrategy"
-        [disabledItemHandler]="disabledItemHandler"
-        [itemContent]="content"
-      />
-    </tui-multi-select>
+        [items]="list"
+        [itemContent]="strategy">
+      </tui-data-list-wrapper>
+    </tui-select>
+
+    <tui-select
+      *ngIf="currency$ | async as list"
+      [valueContent]="currency"
+      [tuiTextfieldSize]="size"
+      formControlName="currency"
+      [tuiTextfieldLabelOutside]="true">
+      {{ constants.currency }}
+      <tui-data-list-wrapper
+        *tuiDataList
+        size="s"
+        [items]="list"
+        [itemContent]="currency">
+      </tui-data-list-wrapper>
+    </tui-select>
+
+    <!--    <tui-multi-select-->
+    <!--      [formControl]="controlFilterStock"-->
+    <!--      [rows]="1"-->
+    <!--      [tuiTextfieldSize]="size"-->
+    <!--      [identityMatcher]="identityMatcher"-->
+    <!--      [stringify]="stringify"-->
+    <!--      [tuiTextfieldCleaner]="true"-->
+    <!--      [tuiTextfieldLabelOutside]="true">-->
+    <!--      Активы-->
+    <!--      <tui-data-list-wrapper-->
+    <!--        *tuiDataList-->
+    <!--        size="s"-->
+    <!--        tuiMultiSelectGroup-->
+    <!--        [items]="filterStock"-->
+    <!--        [disabledItemHandler]="disabledItemHandler"-->
+    <!--        [itemContent]="content"-->
+    <!--      />-->
+    <!--    </tui-multi-select>-->
+
+    <!--    <tui-multi-select-->
+    <!--      [formControl]="controlFilterStrategy"-->
+    <!--      [rows]="1"-->
+    <!--      [tuiTextfieldSize]="size"-->
+    <!--      [identityMatcher]="identityMatcher"-->
+    <!--      [stringify]="stringify"-->
+    <!--      [tuiTextfieldCleaner]="true"-->
+    <!--      [tuiTextfieldLabelOutside]="true">-->
+    <!--      Стратегии-->
+    <!--      <tui-data-list-wrapper-->
+    <!--        *tuiDataList-->
+    <!--        size="s"-->
+    <!--        tuiMultiSelectGroup-->
+    <!--        [items]="filterStrategy"-->
+    <!--        [disabledItemHandler]="disabledItemHandler"-->
+    <!--        [itemContent]="content"-->
+    <!--      />-->
+    <!--    </tui-multi-select>-->
   </div>
   <div class="entry__table">
-    <vt-entry-table [data]="data$ | async"></vt-entry-table>
+    <vt-entry-table [data]="list$ | async"></vt-entry-table>
+  </div>
+  <div class="entry__pagination">
+    <lib-with-pagination
+      [total]="(total$ | async) || 0"
+      [formControl]="controlPaginationIdea"
+      [items]="listPagination">
+    </lib-with-pagination>
   </div>
 </div>
 
@@ -110,5 +162,23 @@
 <ng-template #content let-item>
   <div class="filter-content" [title]="item.name">
     {{ item.name }}
+  </div>
+</ng-template>
+
+<ng-template #type let-item>
+  <div class="item">
+    {{ item.name }}
+  </div>
+</ng-template>
+
+<ng-template #strategy let-item>
+  <div class="item">
+    {{ item.name }}
+  </div>
+</ng-template>
+
+<ng-template #currency let-item>
+  <div class="item">
+    {{ item && item.currencySymbol }}
   </div>
 </ng-template>

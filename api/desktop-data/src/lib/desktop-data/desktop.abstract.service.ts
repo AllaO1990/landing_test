@@ -14,7 +14,7 @@ import {
 } from 'types/stock';
 
 import { ActiveZone, FigureIdea } from 'types/chart';
-import { Position, ResponsePositions, StockPosition } from 'types/position';
+import { ResponsePositions, StockPosition } from 'types/position';
 import { IndicatorEmaParams } from 'types/indicator-ema';
 import { IndicatorSmaParams } from 'types/indicator-sma';
 import { Params } from '@angular/router';
@@ -34,7 +34,7 @@ import { PortfolioPosition } from 'types/portfolio';
 import { Commission } from 'types/commission';
 
 export abstract class DesktopService {
-  public abstract getIdeaList(): Observable<Position[]>;
+  public abstract getIdeaList(params: Params): Observable<ResponsePositions>;
 
   abstract getIdea(id: number | string): Observable<Response<StockPosition | null>>;
 

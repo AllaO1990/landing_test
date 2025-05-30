@@ -5,6 +5,7 @@ import { StockIdeaState } from 'types/stock-idea-state';
 import { StockId, StockInstrument } from 'types/stock';
 import {
   Position,
+  Positions,
   ResponsePosition,
   ResponsePositions,
   StockPosition,
@@ -15,9 +16,10 @@ import { Response } from 'types/response';
 import { QueryParams } from 'utils/query-params';
 import { filter, take } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
+import { Params } from '@angular/router';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
-  readonly ideas$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.ideas);
+  readonly ideas$: Observable<Positions | null> = this.select((state: StockIdeaState) => state.ideas);
   readonly positions$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.positions);
   readonly idea$: Observable<StockPosition | null> = this.select((state: StockIdeaState) => state.idea);
   readonly instrument$: Observable<StockInstrument | null> = this.select((state: StockIdeaState) => state.instrument);
@@ -34,7 +36,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   }
 
   updateIdeas = this.updater(
-    (state: StockIdeaState, ideas: Position[] | null): StockIdeaState => ({
+    (state: StockIdeaState, ideas: Positions | null): StockIdeaState => ({
       ...state,
       ideas,
     })
@@ -83,15 +85,15 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     });
   };
 
-  selectIdea(id: StockId): Observable<Position | null> {
-    return this.select((state: StockIdeaState) => {
-      if (!state.ideas) {
-        return null;
-      }
-
-      return state.ideas.find((item: Position) => item.id === id) || null;
-    });
-  }
+  // selectIdea(id: StockId): Observable<Position | null> {
+  //   return this.select((state: StockIdeaState) => {
+  //     if (!state.ideas) {
+  //       return null;
+  //     }
+  //
+  //     return state.ideas.find((item: Position) => item.id === id) || null;
+  //   });
+  // }
 
   selectFromAll(id: StockId): Observable<Position | null> {
     return this.select((state: StockIdeaState) => {
@@ -99,13 +101,25 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
         return null;
       }
 
-      return [...(state.ideas || []), ...(state.positions || [])].find((idea: Position) => idea.id === id) || null;
+      return (
+        [...((state.ideas && state.ideas.items) || []), ...(state.positions || [])].find(
+          (idea: Position) => idea.id === id
+        ) || null
+      );
     });
   }
 
-  readonly loadIdeas = this.effect((stream$: Observable<unknown>) =>
+  readonly loadIdeas = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
-      switchMap((_) => this._api.getIdeaList().pipe(tap((result: Position[]) => this.updateIdeas(result)))),
+      switchMap((params: Params) =>
+        this._api.getIdeaList(params).pipe(
+          map((response: ResponsePositions) => ({
+            ...response,
+            items: response.items && response.items.map((item: ResponsePosition) => new Position(item)),
+          })),
+          tap((result: Positions) => this.updateIdeas(result))
+        )
+      ),
       catchError((err: Error) => {
         console.error(err);
         return of(null);
@@ -125,7 +139,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             if (response && response.data && response.data.items === null) {
               return [];
             }
-            return response!.data.items.map((item: ResponsePosition) => new Position(item));
+            return response!.data!.items!.map((item: ResponsePosition) => new Position(item));
           }),
           tap((result: Position[] | null) => this.updatePositions(result))
         )
@@ -215,7 +229,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             }> => response.data.id !== null
           ),
           tap((response: Response<{ id: number }>) => {
-            this.loadIdeas(of(null));
+            this.loadIdeas(of({}));
             this.loadPositions(of(null));
 
             // if (+response.data.id !== null) {
@@ -267,7 +281,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             }> => response.data.id !== null
           ),
           tap((response: Response<{ id: number }>) => {
-            this.loadIdeas(of(null));
+            this.loadIdeas(of({}));
             this.loadPositions(of(null));
 
             if (+response.data.id === +data.id) {
@@ -302,7 +316,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       switchMap((id: StockId) =>
         this._api.deleteIdea(id).pipe(
           tap((response: number | null) => {
-            this.loadIdeas(of(null));
+            this.loadIdeas(of({}));
             this.loadPositions(of(null));
             this._queryParams.update({}, '');
           }),

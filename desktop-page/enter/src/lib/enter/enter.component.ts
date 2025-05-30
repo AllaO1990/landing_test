@@ -301,7 +301,14 @@ export class VtEnterComponent implements AfterViewInit {
           // }
 
           this.form.patchValue({
-            actions: { ...result.actions, dividends: result.dividends, commissions: result.comissions },
+            actions: {
+              ...result.actions,
+              dividends: result.dividends,
+              commissions: result.comissions.map((item) => ({
+                ...item,
+                profitPct: item.profitPct && Math.abs(item.profitPct as number),
+              })),
+            },
             idea: {
               entries,
               targets,

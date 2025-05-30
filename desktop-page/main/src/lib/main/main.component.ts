@@ -4,7 +4,7 @@ import { combineLatest, debounceTime, Observable, startWith, switchMap } from 'r
 import { filter, map, take } from 'rxjs/operators';
 import { MainService } from './main.service';
 import { TuiBreakpointService } from '@taiga-ui/core';
-import { Position } from 'types/position';
+import { Position, Positions } from 'types/position';
 import { MAIN_TAB_MOBILE_LIST, MAIN_TAB_TABLET_LIST } from './main.constants';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TabsComponent } from 'ui-common/lib/tabs';
@@ -68,7 +68,7 @@ export class MainComponent implements AfterViewInit {
   public readonly breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 
   public readonly ideaList$: Observable<Position[] | null> = this._idea.ideas$.pipe(
-    map((list: Position[] | null) => list && this._service.sortIdeaList(list))
+    map((list: Positions | null) => list && list.items && this._service.sortIdeaList(list.items))
   );
 
   public readonly positionList$: Observable<Position[] | null> = this._idea.positions$;
