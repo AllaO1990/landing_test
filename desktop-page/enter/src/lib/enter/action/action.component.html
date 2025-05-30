@@ -289,7 +289,7 @@
         </div>
         <div class="item__value row__item row__right row__quantity">
           <ng-container *ngIf="item.profitPct !== null; else none">
-            {{ item.profitPct | tuiFormatNumber: { precision: 4 } | async }}%
+            {{ item.profitPct | tuiFormatNumber: { precision: 2 } | async }}%
           </ng-container>
         </div>
         <div class="item__value row__item row__comment">

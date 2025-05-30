@@ -85,7 +85,9 @@ export class WithPaginationComponent implements ControlValueAccessor, AfterViewI
     this.list = value;
 
     if (!this.controlLimit.value) {
-      this.controlLimit.setValue(this.list[0]);
+      this.controlLimit.patchValue(this.list[0]);
+      
+      this.#limit$.next(this.list[0]);
     }
   }
 
@@ -94,7 +96,7 @@ export class WithPaginationComponent implements ControlValueAccessor, AfterViewI
   }
 
   writeValue(obj: any | EventPagination): void {
-    if (obj ?? obj.page ?? obj.limit) {
+    if (obj && obj.page && obj.limit) {
       this.controlLimit.setValue(obj.limit);
 
       this.#limit$.next(obj.limit);

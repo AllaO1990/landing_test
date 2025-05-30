@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { MainStore } from '../main.store';
 import { Observable, of, switchMap, tap } from 'rxjs';
 import { StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
-import { Position, StockPosition } from 'types/position';
+import { Position, Positions, StockPosition } from 'types/position';
 import { filter, map, shareReplay } from 'rxjs/operators';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 
@@ -12,7 +12,7 @@ export class IdeaFacade {
 
   readonly atr$: Observable<null | { data: IndicatorAtr; instrument: string }> = this._store.atr.value$;
   readonly positions$: Observable<Position[] | null> = this._store.idea.positions$;
-  readonly ideas$: Observable<Position[] | null> = this._store.idea.ideas$;
+  readonly ideas$: Observable<Positions | null> = this._store.idea.ideas$;
   readonly instrument$: Observable<StockInstrument | null> = this._store.idea.instrument$;
   readonly isLoading$: Observable<boolean> = this._store.idea.isLoading$;
   readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
@@ -44,6 +44,7 @@ export class IdeaFacade {
   readonly loadFigures = this._store.figures.load;
   readonly resetIdea = () => this._store.idea.updateIdea(null);
   readonly loadIdea = this._store.idea.loadIdea;
+  readonly loadIdeas = this._store.idea.loadIdeas;
   readonly loadAndCopyIdea = this._store.idea.loadAndCopyIdea;
   readonly createIdea = this._store.idea.create;
   readonly editIdea = this._store.idea.edit;

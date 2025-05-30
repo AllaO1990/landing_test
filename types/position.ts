@@ -3,7 +3,12 @@ import { getPriceIncrement } from '../utils/get-price-increment';
 import { AccountBroker } from './account';
 
 export interface ResponsePositions {
-  items: ResponsePosition[];
+  items: ResponsePosition[] | null;
+  total: number;
+}
+
+export interface Positions {
+  items: Position[] | null;
   total: number;
 }
 

@@ -1,5 +1,10 @@
 export const MAIN_FILTER_STOCK = [
   {
+    id: '',
+    name: 'Все',
+    disabled: false,
+  },
+  {
     id: 'shares',
     name: 'Акции',
     disabled: false,

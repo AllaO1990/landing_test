@@ -68,7 +68,7 @@
 
     padding: var(--padding-1) var(--padding-2);
 
-    tui-multi-select {
+    tui-multi-select, tui-select {
       flex: 1;
 
       &:not(:last-child) {
@@ -79,10 +79,18 @@
 
   &__table {
     flex: 1 1 auto;
+
+    vt-entry-table {
+      margin-bottom: 20px;
+    }
   }
 
   &__search {
     width: 150px;
+    margin: var(--padding-2);
+  }
+
+  &__pagination {
     margin: var(--padding-2);
   }
 }
