@@ -10,7 +10,6 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TabsComponent } from 'ui-common/lib/tabs';
 import { OutComponent } from './out/out.component';
 import { StockComponent } from './stock/stock.component';
-import { EntryModule } from './entry/entry.module';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
@@ -19,11 +18,12 @@ import { EventSelected } from 'types/events';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Params } from '@angular/router';
 import { StockListFacade } from 'stores/facades/stock-list.facade';
+import { EntryComponent } from './entry/entry.component';
 
 @Component({
   selector: 'lib-main',
   standalone: true,
-  imports: [AsyncPipe, NgIf, TabsComponent, OutComponent, StockComponent, EntryModule, ChartCandlestickComponent],
+  imports: [AsyncPipe, NgIf, TabsComponent, OutComponent, StockComponent, ChartCandlestickComponent, EntryComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [MainService],

@@ -5,4 +5,5 @@ export enum EntryEnums {
   TYPE = 'type',
   STRATEGY = 'strategy',
   CURRENCY = 'currency',
+  FILTER = 'filter',
 }

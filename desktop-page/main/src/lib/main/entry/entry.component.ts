@@ -1,8 +1,27 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ENTRY_CONSTANTS } from './entry.constants';
 import { EntryEnums } from './entry.enums';
-import { combineLatest, debounceTime, filter, Observable, shareReplay, startWith, timer } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  Observable,
+  shareReplay,
+  startWith,
+  Subject,
+  timer,
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { QueryParams } from 'utils/query-params';
@@ -13,16 +32,56 @@ import { AccountFacade } from 'stores/facades/account.facade';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Position, Positions } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
+import { MainService } from '../main.service';
+import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
+import { TuiButton, TuiHint, TuiPopup, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
+import { TuiInputModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
+import { EntryTableComponent } from './table/table.component';
+import { TuiDrawer } from '@taiga-ui/kit';
 
 const TIMER_INTERVAL = 60 * 1000;
+
+interface PaginationValue {
+  limit: number;
+  page: number;
+}
+
+interface FilterValue {
+  type: any;
+  strategy: any;
+  currency: any;
+  query: any;
+}
 
 @Component({
   selector: 'vt-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
+  standalone: true,
+  imports: [
+    AsyncPipe,
+    ReactiveFormsModule,
+    TuiButton,
+    SearchDialogDirective,
+    TuiTextfield,
+    TuiSelectModule,
+    NgIf,
+    TuiTextfieldControllerModule,
+    WithPaginationComponent,
+    EntryTableComponent,
+    TuiInputModule,
+    TuiDrawer,
+    TuiPopup,
+    NgTemplateOutlet,
+    TuiScrollbar,
+    TuiHint,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryComponent implements AfterViewInit {
+  readonly #service: MainService = inject(MainService);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #accountFacade: AccountFacade = inject(AccountFacade);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
@@ -51,8 +110,13 @@ export class EntryComponent implements AfterViewInit {
   );
 
   readonly data$: Observable<Positions | null> = this.#idea.ideas$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
-  readonly list$: Observable<Position[] | null> = this.data$.pipe(map((data: Positions | null) => data && data.items));
-  readonly total$: Observable<number | null> = this.data$.pipe(map((data: Positions | null) => data && data.total));
+  readonly list$: Observable<Position[] | null> = this.data$.pipe(
+    map((data: Positions | null) => data && data.items),
+    map((data: Position[] | null) => data && this.#service.sortIdeaList(data))
+  );
+  readonly total$: Observable<number | null> = this.data$.pipe(
+    map((data: Positions | null) => (data !== null ? data.total : null))
+  );
 
   readonly formGroup: FormGroup = new FormGroup({
     type: new FormControl(this.#valueDefaultType),
@@ -60,142 +124,106 @@ export class EntryComponent implements AfterViewInit {
     currency: new FormControl(this.#valueDefaultCurrency),
   });
 
-  readonly controlPaginationIdea: FormControl = new FormControl(null);
-  readonly controlSearch: FormControl<string> = new FormControl('', { nonNullable: true });
-  public openMore = false;
-  public constants: { [key in EntryEnums]: string } = ENTRY_CONSTANTS;
+  readonly isActiveFilter$: Observable<boolean> = this.formGroup.valueChanges.pipe(
+    startWith(this.formGroup.value),
+    map(
+      (value: FilterValue) =>
+        value.currency.currencyId !== this.#valueDefaultCurrency.currencyId ||
+        value.strategy.id !== this.#valueDefaultStrategy.id ||
+        value.type.id !== this.#valueDefaultType.id
+    )
+  );
+
   readonly listPagination = [10, 50, 100];
-  // public filterStock: StockInstrumentWithMap[] = this._updateFilterList(
-  //   MAIN_FILTER_STOCK,
-  //   null,
-  //   this.instrumentType,
-  //   this.mainFilterId
-  // );
-  // public filterStrategy: AccountStrategiesWithMap[] = this._updateFilterList(
-  //   STOCK_STRATEGY_LIST,
-  //   null,
-  //   this.strategyType,
-  //   this.stockStrategyKey
-  // );
+  readonly controlPaginationIdea: FormControl<PaginationValue | null> = new FormControl({
+    limit: this.listPagination[2],
+    page: 0,
+  });
+  protected readonly openFilter: WritableSignal<boolean> = signal(false);
+
+  readonly controlSearch: FormControl<string | null> = new FormControl('', { nonNullable: true });
+  readonly controlFilterSearch: FormControl<string | null> = new FormControl('', { nonNullable: true });
+
+  readonly constants: { [key in EntryEnums]: string } = ENTRY_CONSTANTS;
   readonly size = 's';
 
-  // public readonly data$: Observable<Position[] | null> = this._data$.asObservable().pipe(
-  //   map((list: Position[] | null) => list && list.sort((a, b) => (a.priceToTarget || 0) - (b.priceToTarget || 0))),
-  //   switchMap((data: Position[] | null) =>
-  //     combineLatest([
-  //       this.controlSearch.valueChanges.pipe(
-  //         map((value: string) => value.trim().toLowerCase()),
-  //         startWith(this.controlSearch.value)
-  //       ),
-  //       this.controlFilterStock.valueChanges.pipe(startWith(this.controlFilterStock.value)),
-  //       this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
-  //     ]).pipe(
-  //       map(([search, stock, strategy]: [string, StockInstrumentWithMap[], AccountStrategiesWithMap[]]) =>
-  //         this._filterData(searchPosition(data, search), stock, strategy)
-  //       )
-  //     )
-  //   )
-  // );
+  readonly #params$: Subject<any> = new BehaviorSubject(this.formGroup.value);
+  templateValue = this.formGroup.value;
 
-  // readonly stringify: TuiStringHandler<StockInstrumentWithMap | TuiContext<StockInstrumentWithMap>> = (item) =>
-  //   'name' in item ? item.name : item.$implicit.name;
-  //
-  // readonly identityMatcher: TuiIdentityMatcher<StockInstrumentWithMap> = (a, b) => a.id === b.id;
-  //
-  // disabledItemHandler: TuiBooleanHandler<{ disabled: boolean }> = (item: { disabled: boolean }) => item.disabled;
-
-  // @Input()
-  // set data(value: Position[] | null) {
-  //   this.filterStock = this._updateFilterList(MAIN_FILTER_STOCK, value, this.instrumentType, this.mainFilterId);
-  //   this.filterStrategy = this._updateFilterList(STOCK_STRATEGY_LIST, value, this.strategyType, this.stockStrategyKey);
-  //
-  //   this._data$.next(value);
-  // }
+  constructor() {
+    effect(() => {
+      if (this.openFilter()) {
+        this.templateValue = this.formGroup.value;
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
+    this.controlSearch.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(500))
+      .subscribe((value: string | null) => {
+        this.controlFilterSearch.patchValue(value, { emitEvent: false });
+
+        this.#params$.next({
+          ...this.formGroup.value,
+          query: value,
+        });
+      });
+
     combineLatest([
       timer(0, TIMER_INTERVAL),
-      this.formGroup.valueChanges.pipe(startWith(this.formGroup.value)),
-      this.controlPaginationIdea.valueChanges.pipe(startWith(this.controlPaginationIdea.value)),
+      this.#params$.asObservable(),
+      this.controlPaginationIdea.valueChanges.pipe(
+        startWith(this.controlPaginationIdea.value),
+        filter((value: PaginationValue | null): value is PaginationValue => value !== null)
+      ),
     ])
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
-        map(([_, value, pagination]: [number, any, any]) => ({
+        map(([_, value, pagination]: [number, FilterValue, PaginationValue]) => ({
           currencyId: value.currency.currencyId,
           instrumentType: value.type.id,
           strategyId: value.strategy.id,
           limit: pagination.limit,
           page: pagination.page + 1,
+          query: value.query,
         })),
         debounceTime(0)
       )
       .subscribe((res) => {
-        console.log(res);
-
         this.#idea.loadIdeas(res);
       });
   }
 
-  // private _updateFilterList<T>(
-  //   list: any[],
-  //   data: Position[] | null,
-  //   fnType: (d: Position) => string,
-  //   fnKey: (d: T) => string
-  // ): T[] {
-  //   const types: string[] = [...new Set((data || []).map((item: Position) => fnType(item)))];
-  //
-  //   return list.map((item: T) => {
-  //     const map: string[] = types.filter((type: string) => type.indexOf(fnKey(item)) !== -1);
-  //
-  //     return {
-  //       ...item,
-  //       map: [...map, fnKey(item)],
-  //       disabled: !map.length,
-  //     };
-  //   });
-  // }
+  onClose(event: Event): void {
+    event.preventDefault();
 
-  // private _filterData(
-  //   data: Position[] | null,
-  //   valueStock: StockInstrumentWithMap[],
-  //   valueStrategy: AccountStrategiesWithMap[]
-  // ): Position[] | null {
-  //   if (data === null) {
-  //     return data;
-  //   }
-  //   const mapStock = this._getObject(valueStock);
-  //   const mapStrategy = this._getObject(valueStrategy);
-  //
-  //   return data.filter((item: Position) => {
-  //     return (
-  //       (!valueStock.length || mapStock[item.instrument.type]) &&
-  //       (!valueStrategy.length || mapStrategy[item.strategy.type])
-  //     );
-  //   });
-  // }
-
-  // private _getObject(list: { map: string[] }[]): { [key: string]: boolean } {
-  //   return list.reduce(
-  //     (acc: { [key: string]: boolean }, item: { map: string[] }) => ({
-  //       ...acc,
-  //       ...item.map.reduce((common, uid: string) => ({ ...common, [uid]: true }), {}),
-  //     }),
-  //     {}
-  //   );
-  // }
-
-  public onOpenMore(): void {
-    this.openMore = !this.openMore;
+    this.openFilter.set(false);
+    this.formGroup.patchValue(this.templateValue);
   }
 
-  public onObscuredMore(obscured: boolean): void {
-    if (obscured) {
-      this.openMore = false;
-    }
+  onReset(event: Event): void {
+    event.preventDefault();
+
+    this.formGroup.patchValue({
+      type: this.#valueDefaultType,
+      strategy: this.#valueDefaultStrategy,
+      currency: this.#valueDefaultCurrency,
+    });
+
+    this.controlFilterSearch.patchValue('');
   }
 
-  public onActiveZoneMore(active: boolean): void {
-    this.openMore = active && this.openMore;
+  onSubmit(event: Event): void {
+    event.preventDefault();
+
+    this.openFilter.set(false);
+    this.#params$.next({
+      ...this.formGroup.value,
+      query: this.controlFilterSearch.value,
+    });
+
+    this.controlSearch.patchValue(this.controlFilterSearch.value, { emitEvent: false });
   }
 
   onOpenDialog(event: StockInstrument | null): void {

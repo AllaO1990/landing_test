@@ -7,7 +7,7 @@ import {
   inject,
   Input,
 } from '@angular/core';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
 import { TuiPagination } from '@taiga-ui/kit';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiTextfield } from '@taiga-ui/core';
@@ -40,6 +40,7 @@ export type EventPagination = { page: number; limit: number };
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
     LoaderComponent,
+    JsonPipe,
   ],
   templateUrl: './with-pagination.component.html',
   styleUrl: './with-pagination.component.scss',
@@ -57,7 +58,7 @@ export class WithPaginationComponent implements ControlValueAccessor, AfterViewI
 
   #onChange = (_: any) => {};
   #onTouched = () => {};
-  #total$: Subject<number> = new BehaviorSubject<number>(0);
+  #total$: Subject<number | null> = new BehaviorSubject<number | null>(0);
   #index$: Subject<number> = new BehaviorSubject<number>(0);
   #limit$: Subject<number> = new BehaviorSubject<number>(0);
 
@@ -72,9 +73,14 @@ export class WithPaginationComponent implements ControlValueAccessor, AfterViewI
 
   controlLimit: FormControl = new FormControl(null);
 
-  readonly length$: Observable<number> = combineLatest([this.#total$.asObservable(), this.#limit$.asObservable()]).pipe(
+  readonly length$: Observable<number | null> = combineLatest([
+    this.#total$.asObservable(),
+    this.#limit$.asObservable(),
+  ]).pipe(
     debounceTime(0),
-    map(([total, limit]: [number, number]) => (!limit ? 0 : Math.ceil(total / limit))),
+    map(([total, limit]: [number | null, number | null]) =>
+      !limit || total === null ? null : Math.ceil(total / limit)
+    ),
     distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -86,17 +92,17 @@ export class WithPaginationComponent implements ControlValueAccessor, AfterViewI
 
     if (!this.controlLimit.value) {
       this.controlLimit.patchValue(this.list[0]);
-      
+
       this.#limit$.next(this.list[0]);
     }
   }
 
-  @Input() set total(value: number) {
+  @Input() set total(value: number | null) {
     this.#total$.next(value);
   }
 
   writeValue(obj: any | EventPagination): void {
-    if (obj && obj.page && obj.limit) {
+    if (obj && obj.page !== undefined && obj.limit !== undefined) {
       this.controlLimit.setValue(obj.limit);
 
       this.#limit$.next(obj.limit);
@@ -122,7 +128,7 @@ export class WithPaginationComponent implements ControlValueAccessor, AfterViewI
     this.length$
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
-        switchMap((length: number) => this.index$.pipe(filter((index: number) => length < index)))
+        switchMap((length: number | null) => this.index$.pipe(filter((index: number) => (length || 0) < index)))
       )
       .subscribe((_) => {
         this.#index$.next(0);
