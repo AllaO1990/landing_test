@@ -6,11 +6,12 @@ import { sortText } from 'utils/sort-text';
 
 export const ENTRY_CONSTANTS: { [key in EntryEnums]: string } = {
   [EntryEnums.TITLE]: 'Идеи',
-  [EntryEnums.ADD_IDEA]: '+ Новая идея',
+  [EntryEnums.ADD_IDEA]: 'Новая идея',
   [EntryEnums.SEARCH]: 'Поиск',
   [EntryEnums.TYPE]: 'Актив',
   [EntryEnums.STRATEGY]: 'Стратегия',
   [EntryEnums.CURRENCY]: 'Валюта',
+  [EntryEnums.FILTER]: 'Фильтр',
 };
 
 export const ENTRY_HEADER: EntryHeaderItem[] = [

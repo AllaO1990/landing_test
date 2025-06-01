@@ -6,13 +6,38 @@
     <div class="entry__stock">
 
     </div>
+
     <div class="entry__action">
+      <button
+        tuiHintAppearance="dark"
+        tuiHintDirection="right"
+        [tuiHint]="tooltip"
+        tuiButton
+        [appearance]="(isActiveFilter$ | async) ? 'primary' : 'secondary'"
+        type="button"
+        [size]="size"
+        iconStart="@tui.filter"
+        class="entry__add-idea"
+        (click)="openFilter.set(true)">
+        {{ constants.filter }}
+      </button>
+
+      <tui-drawer
+        *tuiPopup="openFilter()"
+        direction="left"
+        class="drawer"
+        [overlay]="true"
+        (click.self)="onClose($event)">
+        <ng-container [ngTemplateOutlet]="filter"></ng-container>
+      </tui-drawer>
+
       <button
         tuiButton
         type="button"
         [size]="size"
         appearance="secondary"
         class="entry__add-idea"
+        iconStart="@tui.plus"
         searchDialog
         #dialog=SearchDialog
         (click)="dialog.onSearch($event)"
@@ -20,22 +45,17 @@
         {{ constants.add_idea }}
       </button>
 
-      <button
-        [tuiDropdown]="dropdownContentMore"
-        [tuiDropdownManual]="openMore"
-        [tuiDropdownAlign]="'right'"
-        [tuiDropdownOffset]="8"
-        (click)="onOpenMore()"
-        (tuiActiveZoneChange)="onActiveZoneMore($event)"
-        (tuiObscured)="onObscuredMore($event)"
+      <tui-textfield
+        [tuiTextfieldSize]="size"
         iconStart="@tui.search"
-        tuiIconButton
-        type="button"
-        [disabled]="true"
-        appearance="outline-grayscale"
-        [size]="size"
-        class="entry__action-search">
-      </button>
+        class="entry__search">
+        <input
+          [placeholder]="constants.search"
+          tuiTextfield
+          autocomplete="off"
+          [formControl]="controlSearch"
+        />
+      </tui-textfield>
 
       <button
         [disabled]="true"
@@ -48,122 +68,17 @@
       </button>
     </div>
   </div>
-  <div class="entry__strategy" [formGroup]="formGroup">
-    <tui-select
-      *ngIf="types$ | async as list"
-      [valueContent]="type"
-      [tuiTextfieldSize]="size"
-      formControlName="type"
-      [tuiTextfieldLabelOutside]="true">
-      {{ constants.type }}
-      <tui-data-list-wrapper
-        *tuiDataList
-        size="s"
-        [items]="list"
-        [itemContent]="type">
-      </tui-data-list-wrapper>
-    </tui-select>
-
-    <tui-select
-      *ngIf="strategy$ | async as list"
-      [valueContent]="strategy"
-      [tuiTextfieldSize]="size"
-      formControlName="strategy"
-      [tuiTextfieldLabelOutside]="true">
-      <tui-data-list-wrapper
-        *tuiDataList
-        size="s"
-        [items]="list"
-        [itemContent]="strategy">
-      </tui-data-list-wrapper>
-    </tui-select>
-
-    <tui-select
-      *ngIf="currency$ | async as list"
-      [valueContent]="currency"
-      [tuiTextfieldSize]="size"
-      formControlName="currency"
-      [tuiTextfieldLabelOutside]="true">
-      {{ constants.currency }}
-      <tui-data-list-wrapper
-        *tuiDataList
-        size="s"
-        [items]="list"
-        [itemContent]="currency">
-      </tui-data-list-wrapper>
-    </tui-select>
-
-    <!--    <tui-multi-select-->
-    <!--      [formControl]="controlFilterStock"-->
-    <!--      [rows]="1"-->
-    <!--      [tuiTextfieldSize]="size"-->
-    <!--      [identityMatcher]="identityMatcher"-->
-    <!--      [stringify]="stringify"-->
-    <!--      [tuiTextfieldCleaner]="true"-->
-    <!--      [tuiTextfieldLabelOutside]="true">-->
-    <!--      Активы-->
-    <!--      <tui-data-list-wrapper-->
-    <!--        *tuiDataList-->
-    <!--        size="s"-->
-    <!--        tuiMultiSelectGroup-->
-    <!--        [items]="filterStock"-->
-    <!--        [disabledItemHandler]="disabledItemHandler"-->
-    <!--        [itemContent]="content"-->
-    <!--      />-->
-    <!--    </tui-multi-select>-->
-
-    <!--    <tui-multi-select-->
-    <!--      [formControl]="controlFilterStrategy"-->
-    <!--      [rows]="1"-->
-    <!--      [tuiTextfieldSize]="size"-->
-    <!--      [identityMatcher]="identityMatcher"-->
-    <!--      [stringify]="stringify"-->
-    <!--      [tuiTextfieldCleaner]="true"-->
-    <!--      [tuiTextfieldLabelOutside]="true">-->
-    <!--      Стратегии-->
-    <!--      <tui-data-list-wrapper-->
-    <!--        *tuiDataList-->
-    <!--        size="s"-->
-    <!--        tuiMultiSelectGroup-->
-    <!--        [items]="filterStrategy"-->
-    <!--        [disabledItemHandler]="disabledItemHandler"-->
-    <!--        [itemContent]="content"-->
-    <!--      />-->
-    <!--    </tui-multi-select>-->
-  </div>
   <div class="entry__table">
     <vt-entry-table [data]="list$ | async"></vt-entry-table>
   </div>
   <div class="entry__pagination">
     <lib-with-pagination
-      [total]="(total$ | async) || 0"
+      [total]="(total$ | async)"
       [formControl]="controlPaginationIdea"
       [items]="listPagination">
     </lib-with-pagination>
   </div>
 </div>
-
-<ng-template #dropdownContentMore>
-  <tui-input
-    tuiAutoFocus
-    class="entry__search"
-    [formControl]="controlSearch"
-    tuiTextfieldSize="s"
-    tuiTextfieldIconLeft="@tui.search"
-    [tuiTextfieldCleaner]="true">
-    {{ constants.search }}
-    <input
-      tuiTextfieldLegacy
-      type="text"
-    />
-  </tui-input>
-</ng-template>
-
-<ng-template #content let-item>
-  <div class="filter-content" [title]="item.name">
-    {{ item.name }}
-  </div>
-</ng-template>
 
 <ng-template #type let-item>
   <div class="item">
@@ -181,4 +96,156 @@
   <div class="item">
     {{ item && item.currencySymbol }}
   </div>
+</ng-template>
+
+<ng-template #filter>
+  <form class="entry__form" [formGroup]="formGroup" (ngSubmit)="onSubmit($event)">
+    <div class="entry__close">
+      <button
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        iconStart="@tui.x"
+        size="m"
+        (click)="onClose($event)">
+      </button>
+    </div>
+    <tui-scrollbar class="entry__filter">
+      <div class="label">
+        <span>{{ constants.search }}</span>
+        <tui-textfield
+          [tuiTextfieldSize]="size"
+          iconStart="@tui.search">
+          <input
+            placeholder="Тикер"
+            tuiTextfield
+            autocomplete="off"
+            [formControl]="controlFilterSearch"
+          />
+        </tui-textfield>
+      </div>
+      <div class="label">
+        <span>{{ constants.type }}</span>
+        <tui-select
+          *ngIf="types$ | async as list"
+          [valueContent]="type"
+          [tuiTextfieldSize]="size"
+          formControlName="type"
+          [tuiTextfieldLabelOutside]="true">
+          {{ constants.type }}
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="type">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </div>
+      <div class="label">
+        <span>{{ constants.strategy }}</span>
+        <tui-select
+          *ngIf="strategy$ | async as list"
+          [valueContent]="strategy"
+          [tuiTextfieldSize]="size"
+          formControlName="strategy"
+          [tuiTextfieldLabelOutside]="true">
+          {{ constants.strategy }}
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="strategy">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </div>
+      <div class="label">
+        <span>{{ constants.currency }}</span>
+        <tui-select
+          *ngIf="currency$ | async as list"
+          [valueContent]="currency"
+          [tuiTextfieldSize]="size"
+          formControlName="currency"
+          [tuiTextfieldLabelOutside]="true">
+          {{ constants.currency }}
+          <tui-data-list-wrapper
+            *tuiDataList
+            size="s"
+            [items]="list"
+            [itemContent]="currency">
+          </tui-data-list-wrapper>
+        </tui-select>
+      </div>
+      <!--    <tui-multi-select-->
+      <!--      [formControl]="controlFilterStock"-->
+      <!--      [rows]="1"-->
+      <!--      [tuiTextfieldSize]="size"-->
+      <!--      [identityMatcher]="identityMatcher"-->
+      <!--      [stringify]="stringify"-->
+      <!--      [tuiTextfieldCleaner]="true"-->
+      <!--      [tuiTextfieldLabelOutside]="true">-->
+      <!--      Активы-->
+      <!--      <tui-data-list-wrapper-->
+      <!--        *tuiDataList-->
+      <!--        size="s"-->
+      <!--        tuiMultiSelectGroup-->
+      <!--        [items]="filterStock"-->
+      <!--        [disabledItemHandler]="disabledItemHandler"-->
+      <!--        [itemContent]="content"-->
+      <!--      />-->
+      <!--    </tui-multi-select>-->
+
+      <!--    <tui-multi-select-->
+      <!--      [formControl]="controlFilterStrategy"-->
+      <!--      [rows]="1"-->
+      <!--      [tuiTextfieldSize]="size"-->
+      <!--      [identityMatcher]="identityMatcher"-->
+      <!--      [stringify]="stringify"-->
+      <!--      [tuiTextfieldCleaner]="true"-->
+      <!--      [tuiTextfieldLabelOutside]="true">-->
+      <!--      Стратегии-->
+      <!--      <tui-data-list-wrapper-->
+      <!--        *tuiDataList-->
+      <!--        size="s"-->
+      <!--        tuiMultiSelectGroup-->
+      <!--        [items]="filterStrategy"-->
+      <!--        [disabledItemHandler]="disabledItemHandler"-->
+      <!--        [itemContent]="content"-->
+      <!--      />-->
+      <!--    </tui-multi-select>-->
+    </tui-scrollbar>
+    <div class="entry__actions">
+      <button
+        [size]="size"
+        tuiButton
+        appearance="secondary"
+        type="button"
+        (click)="onReset($event)">
+        Сбросить
+      </button>
+      <div class="space"></div>
+      <button
+        [size]="size"
+        tuiButton
+        appearance="secondary"
+        type="button"
+        (click)="onClose($event)">
+        Отменить
+      </button>
+      <button
+        [size]="size"
+        [disabled]="formGroup.pristine"
+        tuiButton
+        type="submit">
+        Применить
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #tooltip>
+  <ul>
+    <li>{{ constants.type }}: {{ this.formGroup.value.type.name }}</li>
+    <li>{{ constants.strategy }}: {{ this.formGroup.value.strategy.name }}</li>
+    <li>{{ constants.currency }}: {{ this.formGroup.value.currency.currencySymbol }}</li>
+  </ul>
 </ng-template>

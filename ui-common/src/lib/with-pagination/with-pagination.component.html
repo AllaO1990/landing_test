@@ -27,6 +27,6 @@
   </div>
 </div>
 
-<ng-template #load>
-  <ui-loader></ui-loader>
+<ng-template #load let-context>
+  <ui-loader *ngIf="context !== 0"></ui-loader>
 </ng-template>

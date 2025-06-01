@@ -68,12 +68,44 @@
 
     padding: var(--padding-1) var(--padding-2);
 
-    tui-multi-select, tui-select {
+
+  }
+
+  &__form {
+    height: 100%;
+  }
+
+  &__filter {
+    display: flex;
+    flex-direction: column;
+
+    .label {
       flex: 1;
 
-      &:not(:last-child) {
-        margin-right: var(--padding-2);
-      }
+      margin-bottom: var(--padding-4);
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  &__actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+
+    border-top: 1px solid var(--tui-border-normal);
+    width: 100%;
+    padding: var(--padding-2);
+
+    button:not(:last-child) {
+      margin-right: var(--padding-2);
     }
   }
 
@@ -99,4 +131,16 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.drawer {
+  top: 0;
+  border-radius: 0;
+  inline-size: 20rem;
+
+  ::ng-deep {
+    .t-content > .t-content {
+      padding: var(--padding-8) var(--padding-2) var(--padding-2);
+    }
+  }
 }
