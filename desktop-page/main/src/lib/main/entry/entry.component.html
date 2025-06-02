@@ -233,7 +233,7 @@
       </button>
       <button
         [size]="size"
-        [disabled]="formGroup.pristine"
+        [disabled]="formGroup.pristine && controlFilterSearch.pristine"
         tuiButton
         type="submit">
         Применить

@@ -20,7 +20,7 @@
     display: flex;
     align-items: center;
 
-    padding: var(--padding-1) var(--padding-2);
+    padding: var(--padding-2);
   }
 
   &__title {
@@ -60,15 +60,6 @@
     &[data-size=m] {
       font-weight: 400;
     }
-  }
-
-  &__strategy {
-    display: flex;
-    align-items: center;
-
-    padding: var(--padding-1) var(--padding-2);
-
-
   }
 
   &__form {
@@ -119,7 +110,7 @@
 
   &__search {
     width: 150px;
-    margin: var(--padding-2);
+    margin-right: var(--padding-2);
   }
 
   &__pagination {

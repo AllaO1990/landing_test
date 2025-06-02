@@ -71,7 +71,9 @@ export class MainComponent implements AfterViewInit {
     map((list: Positions | null) => list && list.items && this._service.sortIdeaList(list.items))
   );
 
-  public readonly positionList$: Observable<Position[] | null> = this._idea.positions$;
+  public readonly positionList$: Observable<Position[] | null> = this._idea.positions$.pipe(
+    map((list: Positions | null) => list && list.items)
+  );
 
   readonly tabs$: Observable<{ text: string; icon: string }[] | null> = this.breakpoint$.pipe(
     map((screen: string | null): { text: string; icon: string }[] | null => {
