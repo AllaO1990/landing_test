@@ -51,7 +51,7 @@
             {{ item.lastPrice | tuiFormatNumber: { precision: item.priceIncrement } | async }}
           </div>
           <div class="substring">
-            {{ item.inPositionTotalPrice | tuiFormatNumber: { precision: 2 } | async }}
+            {{ item.inPositionTotalPrice | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
           </div>
         </td>
 
@@ -119,7 +119,7 @@
             {{ item.entries[0].price | tuiFormatNumber: { precision: item.priceIncrement } | async }}
           </div>
           <div class="substring">
-            {{ (item.inPositionAccountingPrice) | tuiFormatNumber | async }}
+            {{ (item.inPositionAccountingPrice) | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
           </div>
         </td>
 
