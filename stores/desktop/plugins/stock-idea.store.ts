@@ -20,7 +20,7 @@ import { Params } from '@angular/router';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   readonly ideas$: Observable<Positions | null> = this.select((state: StockIdeaState) => state.ideas);
-  readonly positions$: Observable<Position[] | null> = this.select((state: StockIdeaState) => state.positions);
+  readonly positions$: Observable<Positions | null> = this.select((state: StockIdeaState) => state.positions);
   readonly idea$: Observable<StockPosition | null> = this.select((state: StockIdeaState) => state.idea);
   readonly instrument$: Observable<StockInstrument | null> = this.select((state: StockIdeaState) => state.instrument);
   readonly isLoading$: Observable<boolean> = this.select((state: StockIdeaState) => state.isLoading);
@@ -43,7 +43,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   );
 
   updatePositions = this.updater(
-    (state: StockIdeaState, positions: Position[] | null): StockIdeaState => ({
+    (state: StockIdeaState, positions: Positions | null): StockIdeaState => ({
       ...state,
       positions,
     })
@@ -102,7 +102,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       }
 
       return (
-        [...((state.ideas && state.ideas.items) || []), ...(state.positions || [])].find(
+        [...((state.ideas && state.ideas.items) || []), ...((state.positions && state.positions.items) || [])].find(
           (idea: Position) => idea.id === id
         ) || null
       );
@@ -127,21 +127,15 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     )
   );
 
-  readonly loadPositions = this.effect((stream$: Observable<unknown>) =>
+  readonly loadPositions = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
-      switchMap((_) =>
-        this._api.getPositionList().pipe(
-          catchError((err: Error) => {
-            console.error(err);
-            return of(null);
-          }),
-          map((response: Response<ResponsePositions> | null) => {
-            if (response && response.data && response.data.items === null) {
-              return [];
-            }
-            return response!.data!.items!.map((item: ResponsePosition) => new Position(item));
-          }),
-          tap((result: Position[] | null) => this.updatePositions(result))
+      switchMap((params: Params) =>
+        this._api.getPositionList(params).pipe(
+          map((response: ResponsePositions) => ({
+            ...response,
+            items: response.items && response.items.map((item: ResponsePosition) => new Position(item)),
+          })),
+          tap((result: Positions) => this.updatePositions(result))
         )
       )
     )

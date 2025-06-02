@@ -94,4 +94,10 @@ export const OUT_CONSTANTS: { [key in OutEnums]: string } = {
   [OutEnums.TITLE]: 'Сделки',
   [OutEnums.SEARCH]: 'Поиск',
   [OutEnums.ADD_IDEA]: '+ Новая сделка',
+  [OutEnums.TYPE]: 'Актив',
+  [OutEnums.STRATEGY]: 'Стратегия',
+  [OutEnums.CURRENCY]: 'Валюта',
+  [OutEnums.FILTER]: 'Фильтр',
+  [OutEnums.BROKER]: 'Брокер',
+  [OutEnums.PORTFOLIO]: 'Портфель',
 };

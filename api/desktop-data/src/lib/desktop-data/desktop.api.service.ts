@@ -159,8 +159,10 @@ export class DesktopApiService extends DesktopService {
       );
   }
 
-  getPositionList(): Observable<Response<ResponsePositions>> {
-    return this._http.get<Response<ResponsePositions>>(`${this.host}/api/v1/ideas/positions`).pipe();
+  getPositionList(params: Params): Observable<ResponsePositions> {
+    return this._http
+      .post<Response<ResponsePositions>>(`${this.host}/api/v1/ideas/positions`, { ...params })
+      .pipe(map((response: Response<ResponsePositions>) => response.data));
   }
 
   getCandles(selected: { source: any; index: number }): Observable<any> {

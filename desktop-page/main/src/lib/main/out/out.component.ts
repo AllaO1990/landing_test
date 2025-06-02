@@ -1,46 +1,60 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { OUT_CONSTANTS } from './out.constants';
 import { OutEnums } from './out.enums';
-import { MAIN_FILTER_STOCK } from '../main.constants';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
-import { Position } from 'types/position';
-import { BehaviorSubject, combineLatest, Observable, startWith, Subject, switchMap } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Position, Positions } from 'types/position';
 import {
-  TuiActiveZone,
-  TuiAutoFocus,
-  TuiBooleanHandler,
-  TuiContext,
-  TuiIdentityMatcher,
-  TuiObscured,
-  TuiStringHandler,
-} from '@taiga-ui/cdk';
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  Observable,
+  shareReplay,
+  startWith,
+  Subject,
+  timer,
+} from 'rxjs';
+import { map } from 'rxjs/operators';
 import { OutTableComponent } from './table/table.component';
-import { TuiDataListWrapperComponent } from '@taiga-ui/kit';
-import { TuiInputModule, TuiMultiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { TuiButton, TuiDropdown } from '@taiga-ui/core';
-import { AsyncPipe } from '@angular/common';
-import { searchPosition } from '../common/utils/search-position';
-import { AccountStrategy } from 'types/account';
+import { TuiDataListWrapperComponent, TuiDrawer } from '@taiga-ui/kit';
+import { TuiInputModule, TuiMultiSelectModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiButton, TuiHint, TuiPopup, TuiScrollbar, TuiTextfield, TuiTextfieldComponent } from '@taiga-ui/core';
+import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategy, AccountType } from 'types/account';
 import { EventSelected } from 'types/events';
-import { SelectFacade } from 'stores/facades/select.facade';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { StockInstrument } from 'types/stock';
+import { AccountFacade } from 'stores/facades/account.facade';
+import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
+import { IdeaFacade } from 'stores/facades/idea.facade';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-interface StockInstrumentWithMap {
-  id: string;
-  name: string;
-  map: string[];
-  disabled: boolean;
+interface PaginationValue {
+  limit: number;
+  page: number;
 }
 
-interface AccountStrategiesWithMap extends AccountStrategy {
-  map: string[];
-  disabled: boolean;
+interface FilterValue {
+  type: any;
+  strategy: any;
+  currency: any;
+  broker: any;
+  portfolio: any;
+  query: any;
 }
+
+const TIMER_INTERVAL = 60 * 1000;
 
 @Component({
   selector: 'vt-out',
@@ -51,101 +65,189 @@ interface AccountStrategiesWithMap extends AccountStrategy {
     TuiInputModule,
     TuiTextfieldControllerModule,
     TuiButton,
-    ...TuiDropdown,
-    TuiActiveZone,
-    TuiObscured,
     AsyncPipe,
-    TuiAutoFocus,
     TuiDataListWrapperComponent,
     TuiMultiSelectModule,
     SearchDialogDirective,
+    TuiDrawer,
+    TuiTextfieldComponent,
+    TuiTextfield,
+    NgTemplateOutlet,
+    TuiPopup,
+    TuiHint,
+    NgIf,
+    TuiScrollbar,
+    TuiSelectModule,
+    WithPaginationComponent,
   ],
   templateUrl: './out.component.html',
   styleUrls: ['./out.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OutComponent {
-  private readonly _cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  private readonly _data$: Subject<Position[] | null> = new BehaviorSubject<Position[] | null>(null);
-  readonly #store: SelectFacade = inject(SelectFacade);
+export class OutComponent implements AfterViewInit {
+  readonly #accountFacade: AccountFacade = inject(AccountFacade);
+  readonly #idea: IdeaFacade = inject(IdeaFacade);
+
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   public readonly constants: { [key in OutEnums]: string } = OUT_CONSTANTS;
 
-  readonly instrumentType = (d: Position) => d.instrument.type;
-  readonly mainFilterId = (d: StockInstrumentWithMap) => d.id;
-  readonly strategyType = (d: Position) => d.strategy.type;
-  readonly stockStrategyKey = (d: AccountStrategiesWithMap) => d.key;
+  readonly #valueDefaultCurrency = { currency: null, currencySymbol: 'Все', currencyId: null };
+  readonly #valueDefaultBroker = { broker: 'Все', brokerId: null };
+  readonly #valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
+  readonly #valueDefaultStrategy = { name: 'Все', key: 'all', id: null };
+  readonly #valueDefaultType = { name: 'Все', key: 'all', id: null };
 
-  public filterStock: StockInstrumentWithMap[] = this._updateFilterList(
-    MAIN_FILTER_STOCK,
-    null,
-    this.instrumentType,
-    this.mainFilterId
-  );
-  public filterStrategy: AccountStrategiesWithMap[] = this._updateFilterList(
-    STOCK_STRATEGY_LIST,
-    null,
-    this.strategyType,
-    this.stockStrategyKey
+  readonly strategy$: Observable<AccountStrategy[]> = this.#accountFacade.strategies$.pipe(
+    filter((list: AccountStrategy[] | null): list is AccountStrategy[] => list !== null),
+    map((list: AccountStrategy[]) => [this.#valueDefaultStrategy, ...list]),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  public readonly controlSearch: FormControl<string> = new FormControl('', { nonNullable: true });
-  public readonly controlFilterStock: FormControl<StockInstrumentWithMap[]> = new FormControl([], {
-    nonNullable: true,
+  readonly types$: Observable<AccountType[]> = this.#accountFacade.types$.pipe(
+    filter((list: AccountType[] | null): list is AccountType[] => list !== null),
+    map((list: AccountType[]) => [this.#valueDefaultType, ...list]),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly currency$: Observable<AccountCurrency[] | null> = this.#accountFacade.currencies$.pipe(
+    filter((list: AccountCurrency[] | null): list is AccountCurrency[] => list !== null),
+    map((list: AccountCurrency[]) => [this.#valueDefaultCurrency, ...list]),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly brokers$: Observable<null | AccountBroker[]> = this.#accountFacade.brokers$.pipe(
+    filter((list: null | AccountBroker[]): list is AccountBroker[] => list !== null),
+    map((list: AccountBroker[]) => [this.#valueDefaultBroker, ...list]),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly portfolios$: Observable<null | AccountPortfolio[]> = this.#accountFacade.portfolios$.pipe(
+    filter((list: null | AccountPortfolio[]): list is AccountPortfolio[] => list !== null),
+    map((list: AccountPortfolio[]) => [this.#valueDefaultPortfolio, ...list]),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly formGroup: FormGroup = new FormGroup({
+    type: new FormControl(this.#valueDefaultType),
+    strategy: new FormControl(this.#valueDefaultStrategy),
+    currency: new FormControl(this.#valueDefaultCurrency),
+    broker: new FormControl(this.#valueDefaultBroker),
+    portfolio: new FormControl(this.#valueDefaultPortfolio),
   });
-  public readonly controlFilterStrategy: FormControl<AccountStrategiesWithMap[]> = new FormControl([], {
-    nonNullable: true,
+
+  readonly openFilter: WritableSignal<boolean> = signal(false);
+  readonly listPagination = [10, 50, 100];
+  readonly controlPaginationIdea: FormControl<PaginationValue | null> = new FormControl({
+    limit: this.listPagination[2],
+    page: 0,
   });
+
+  readonly data$: Observable<Positions | null> = this.#idea.positions$.pipe(
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+  readonly list$: Observable<Position[] | null> = this.data$.pipe(map((data: Positions | null) => data && data.items));
+  readonly total$: Observable<number | null> = this.data$.pipe(
+    map((data: Positions | null) => (data !== null ? data.total : null))
+  );
+
+  readonly #params$: Subject<any> = new BehaviorSubject(this.formGroup.value);
+  templateValue = this.formGroup.value;
+
+  readonly controlSearch: FormControl<string | null> = new FormControl('', { nonNullable: true });
+  readonly controlFilterSearch: FormControl<string | null> = new FormControl('', { nonNullable: true });
+
   readonly size = 's';
-
-  public readonly data$: Observable<Position[] | null> = this._data$.asObservable().pipe(
-    switchMap((data: Position[] | null) =>
-      combineLatest([
-        this.controlSearch.valueChanges.pipe(
-          map((value: string) => value.trim().toLowerCase()),
-          startWith(this.controlSearch.value)
-        ),
-        this.controlFilterStock.valueChanges.pipe(startWith(this.controlFilterStock.value)),
-        this.controlFilterStrategy.valueChanges.pipe(startWith(this.controlFilterStrategy.value)),
-      ]).pipe(
-        map(([search, stock, strategy]: [string, StockInstrumentWithMap[], AccountStrategiesWithMap[]]) =>
-          this._filterData(searchPosition(data, search), stock, strategy)
-        )
-      )
+  readonly isActiveFilter$: Observable<boolean> = this.formGroup.valueChanges.pipe(
+    startWith(this.formGroup.value),
+    map(
+      (value: FilterValue) =>
+        value.currency.currencyId !== this.#valueDefaultCurrency.currencyId ||
+        value.strategy.id !== this.#valueDefaultStrategy.id ||
+        value.type.id !== this.#valueDefaultType.id ||
+        value.broker.brokerId !== this.#valueDefaultBroker.brokerId ||
+        value.portfolio.portfolioId !== this.#valueDefaultPortfolio.portfolioId
     )
   );
 
-  public openMore = false;
-
-  readonly stringify: TuiStringHandler<StockInstrumentWithMap | TuiContext<StockInstrumentWithMap>> = (item) =>
-    'name' in item ? item.name : item.$implicit.name;
-
-  readonly identityMatcher: TuiIdentityMatcher<StockInstrumentWithMap> = (a, b) => a.id === b.id;
-
-  disabledItemHandler: TuiBooleanHandler<{ disabled: boolean }> = (item: { disabled: boolean }) => item.disabled;
-
-  @Input()
-  set data(value: Position[] | null) {
-    this.filterStock = this._updateFilterList(MAIN_FILTER_STOCK, value, this.instrumentType, this.mainFilterId);
-    this.filterStrategy = this._updateFilterList(STOCK_STRATEGY_LIST, value, this.strategyType, this.stockStrategyKey);
-
-    this._data$.next(value);
-    this._cdr.markForCheck();
+  constructor() {
+    effect(() => {
+      if (this.openFilter()) {
+        this.templateValue = this.formGroup.value;
+      }
+    });
   }
 
-  public onOpenMore(): void {
-    this.openMore = !this.openMore;
+  ngAfterViewInit(): void {
+    this.controlSearch.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(500))
+      .subscribe((value: string | null) => {
+        this.controlFilterSearch.patchValue(value, { emitEvent: false });
+
+        this.#params$.next({
+          ...this.formGroup.value,
+          query: value,
+        });
+      });
+
+    combineLatest([
+      timer(0, TIMER_INTERVAL),
+      this.#params$.asObservable(),
+      this.controlPaginationIdea.valueChanges.pipe(
+        startWith(this.controlPaginationIdea.value),
+        filter((value: PaginationValue | null): value is PaginationValue => value !== null)
+      ),
+    ])
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        map(([_, value, pagination]: [number, FilterValue, PaginationValue]) => ({
+          currencyId: value.currency.currencyId,
+          instrumentType: value.type.id,
+          brokerId: value.broker.brokerId,
+          strategyId: value.strategy.id,
+          portfolioId: value.portfolio.portfolioId,
+          limit: pagination.limit,
+          page: pagination.page + 1,
+          query: value.query,
+        })),
+        debounceTime(0)
+      )
+      .subscribe((value) => {
+        this.#idea.loadPositions(value);
+      });
   }
 
-  public onObscuredMore(obscured: boolean): void {
-    if (obscured) {
-      this.openMore = false;
-    }
+  onClose(event: Event): void {
+    event.preventDefault();
+
+    this.openFilter.set(false);
+    this.formGroup.patchValue(this.templateValue);
   }
 
-  public onActiveZoneMore(active: boolean): void {
-    this.openMore = active && this.openMore;
+  onReset(event: Event): void {
+    event.preventDefault();
+
+    this.formGroup.patchValue({
+      type: this.#valueDefaultType,
+      strategy: this.#valueDefaultStrategy,
+      currency: this.#valueDefaultCurrency,
+      broker: this.#valueDefaultBroker,
+      portfolio: this.#valueDefaultPortfolio,
+    });
+
+    this.controlFilterSearch.patchValue('');
+  }
+
+  onSubmit(event: Event): void {
+    event.preventDefault();
+
+    this.openFilter.set(false);
+    this.#params$.next({
+      ...this.formGroup.value,
+      query: this.controlFilterSearch.value,
+    });
+
+    this.controlSearch.patchValue(this.controlFilterSearch.value, { emitEvent: false });
   }
 
   onOpenDialog(event: StockInstrument | null): void {
@@ -156,53 +258,5 @@ export class OutComponent {
         dialog: 'visible',
       });
     }
-  }
-
-  private _updateFilterList<T>(
-    list: any[],
-    data: Position[] | null,
-    fnType: (d: Position) => string,
-    fnKey: (d: T) => string
-  ): T[] {
-    const types: string[] = [...new Set((data || []).map((item: Position) => fnType(item)))];
-
-    return list.map((item: T) => {
-      const map: string[] = types.filter((type: string) => type.indexOf(fnKey(item)) !== -1);
-
-      return {
-        ...item,
-        map: [...map, fnKey(item)],
-        disabled: !map.length,
-      };
-    });
-  }
-
-  private _filterData(
-    data: Position[] | null,
-    valueStock: StockInstrumentWithMap[],
-    valueStrategy: AccountStrategiesWithMap[]
-  ): Position[] | null {
-    if (data === null) {
-      return data;
-    }
-    const mapStock = this._getObject(valueStock);
-    const mapStrategy = this._getObject(valueStrategy);
-
-    return data.filter((item: Position) => {
-      return (
-        (!valueStock.length || mapStock[item.instrument.type]) &&
-        (!valueStrategy.length || mapStrategy[item.strategy.type])
-      );
-    });
-  }
-
-  private _getObject(list: { map: string[] }[]): { [key: string]: boolean } {
-    return list.reduce(
-      (acc: { [key: string]: boolean }, item: { map: string[] }) => ({
-        ...acc,
-        ...item.map.reduce((common, uid: string) => ({ ...common, [uid]: true }), {}),
-      }),
-      {}
-    );
   }
 }
