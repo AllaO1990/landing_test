@@ -83,7 +83,7 @@
           </td>
 
           <td *tuiCell="'deposit'" tuiTd class="td td--number">
-            {{ item.entries[0].totalPrice | tuiFormatNumber | async }}
+            {{ item.entries[0].totalPrice | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
             <div class="substring">{{ item.entries[0].depositShare | tuiFormatNumber | async }}%</div>
           </td>
 
@@ -97,7 +97,9 @@
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number bold">
-            {{ item.entries[0].price | tuiFormatNumber | async }}
+            {{
+              item.entries[0].price | tuiFormatNumber | async
+            }}
             <div class="substring">{{ item.entries[0].quantity  | tuiFormatNumber | async }}</div>
           </td>
 

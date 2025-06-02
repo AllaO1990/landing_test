@@ -98,7 +98,7 @@
               {{ item.entry.amount | tuiFormatNumber | async }}
             </div>
             <div class="cost__price substring">
-              {{ item.entry.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+              {{ item.entry.totalPrice | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
             </div>
           </div>
         </td>
