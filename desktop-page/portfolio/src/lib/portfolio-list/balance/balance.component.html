@@ -9,7 +9,7 @@
     <div class="form__list" *ngIf="(transactions$ | async) as transactions; else load">
       <lib-list
         class="list"
-        [style.height.px]="10 * itemHeight"
+        [style.height.px]="11 * itemHeight"
         [list]="transactions.items"
         [header]="header"
         [itemSize]="itemHeight">

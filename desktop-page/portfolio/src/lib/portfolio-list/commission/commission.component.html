@@ -9,7 +9,7 @@
     <div class="form__list" *ngIf="(list$ | async) as list; else load">
       <lib-list
         class="list"
-        [style.height.px]="10 * itemHeight"
+        [style.height.px]="11 * itemHeight"
         [list]="list"
         [header]="header"
         [trackBy]="trackById"
