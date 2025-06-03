@@ -75,12 +75,12 @@
     flex-flow: row wrap;
 
     align-items: center;
+
+    margin-bottom: var(--padding-2);
   }
 
   &__chart {
     flex: 1;
-
-    margin: var(--padding-2) 0;
 
     overflow: hidden;
   }

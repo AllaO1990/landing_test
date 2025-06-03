@@ -11,15 +11,16 @@ export class ChartNumberFormatPipe implements PipeTransform {
   #format: TuiFormatNumberPipe = inject(TuiFormatNumberPipe);
 
   transform(value: number, ...args: any[]): Observable<string> {
+    const valueAbs = Math.abs(value);
     let numb = value;
     let unit = '';
 
-    if (value / 1000 >= 1 && value / 1000 <= 99) {
+    if (valueAbs / 1000 >= 1 && valueAbs / 1000 <= 99) {
       numb = value / 1000;
       unit = 'тыс.';
     }
 
-    if (value / 1000000 >= 0.1) {
+    if (valueAbs / 1000000 >= 0.1) {
       numb = value / 1000000;
       unit = 'млн.';
     }

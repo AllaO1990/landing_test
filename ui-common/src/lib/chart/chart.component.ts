@@ -170,18 +170,19 @@ export class ChartCandlestickComponent implements OnInit {
   );
 
   readonly figures$: Observable<ConsolidationZonesShape | null> = combineLatest([
-    this._store.figure$.pipe(
-      switchMap((figure: ConsolidationZonesShape | null) =>
-        this.controlTarget.valueChanges.pipe(
-          startWith(this.controlTarget.value),
-          map((value: boolean) => (value ? figure : null))
-        )
-      )
-    ),
+    this._store.figure$,
     this._store.figureUser$,
   ]).pipe(
     debounceTime(0),
-    map((list) => this._concatFigures(list)),
+    switchMap((list: [ConsolidationZonesShape | null, ConsolidationZonesShape | null]) =>
+      this.controlTarget.valueChanges.pipe(
+        startWith(this.controlTarget.value),
+        map((value: boolean) =>
+          value ? list : ([null, null] as [ConsolidationZonesShape | null, ConsolidationZonesShape | null])
+        )
+      )
+    ),
+    map((list: [ConsolidationZonesShape | null, ConsolidationZonesShape | null]) => this._concatFigures(list)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
