@@ -4,6 +4,27 @@
   </div>
   <div class="portfolio__container" *ngIf="(data$ | async) as data; else load">
     <div class="portfolio__info">
+      <div class="portfolio__actions">
+        <button
+          class="portfolio__action button button--balance"
+          tuiButton
+          appearance="secondary"
+          iconStart="@tui.banknote"
+          [size]="size"
+          (click)="openDialogBalance($event)"
+          type="button">Депозит
+        </button>
+        <button
+          class="portfolio__action button button--commission"
+          tuiButton
+          [disabled]="false"
+          appearance="secondary"
+          iconStart="@tui.circle-percent"
+          [size]="size"
+          (click)="openDialogCommission($event)"
+          type="button">Комиссии
+        </button>
+      </div>
       <ui-loader class="loader" *ngIf="isLoadInfo$ | async"></ui-loader>
       <div class="card card--default">
         <div class="card__title">{{ constants['deposit'] }}</div>
@@ -99,27 +120,6 @@
       </div>
     </div>
     <div class="portfolio__description">
-      <div class="portfolio__actions">
-        <button
-          class="portfolio__action button button--balance"
-          tuiButton
-          appearance="secondary"
-          iconStart="@tui.banknote"
-          [size]="size"
-          (click)="openDialogBalance($event)"
-          type="button">Депозит
-        </button>
-        <button
-          class="portfolio__action button button--commission"
-          tuiButton
-          [disabled]="false"
-          appearance="secondary"
-          iconStart="@tui.circle-percent"
-          [size]="size"
-          (click)="openDialogCommission($event)"
-          type="button">Комиссии
-        </button>
-      </div>
       <div class="portfolio__chart">
         <lib-portfolio-list-chart></lib-portfolio-list-chart>
       </div>
