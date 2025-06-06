@@ -30,7 +30,6 @@
       </svg:g>
     </svg:g>
 
-
     <svg:g
       [attr.transform]="'translate(' + chart.marginLeft + ',0)'"
       fill="none"
@@ -42,7 +41,7 @@
         class="tick"
         opacity="1"
         [attr.transform]="'translate(0,' + item.offset + ')'">
-        <line stroke="currentColor" x2="-6"></line>
+        <line stroke-opacity="0.1" stroke="currentColor" x2="-6"></line>
         <svg:line
           [attr.x2]="chart.yTicksLine"
           stroke="currentColor"

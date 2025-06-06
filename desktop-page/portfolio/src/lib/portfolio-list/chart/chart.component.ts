@@ -1,27 +1,18 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DestroyRef,
   ElementRef,
   inject,
+  Input,
   NgZone,
+  OnDestroy,
   ViewChild,
 } from '@angular/core';
-import { PortfolioFacade } from 'stores/facades/portfolio.facade';
-import { combineLatest, debounceTime, defer, filter, Observable, shareReplay, Subscriber, switchMap, take } from 'rxjs';
-import {
-  AccountBalanceHistory,
-  AccountBalanceHistoryItem,
-  AccountBroker,
-  AccountCurrency,
-  AccountPortfolio,
-  AccountRange,
-  AccountStrategy,
-} from 'types/account';
+import { BehaviorSubject, debounceTime, defer, Observable, Subject, Subscriber, switchMap, take, tap } from 'rxjs';
+import { AccountBalanceHistory, AccountBalanceHistoryItem } from 'types/account';
 import { map } from 'rxjs/operators';
-import { Params } from '@angular/router';
 import { LoaderComponent } from '@ui/components/loader';
 import * as d3 from 'd3';
 import { curveBumpX } from 'd3';
@@ -41,45 +32,17 @@ import { ChartNumberFormatPipe } from './chart.pipe';
   providers: [TuiFormatNumberPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartComponent implements AfterViewInit {
-  readonly #store: PortfolioFacade = inject(PortfolioFacade);
+export class ChartComponent implements OnDestroy {
   readonly #ngZone: NgZone = inject(NgZone);
-  readonly #cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  readonly #data$: Subject<AccountBalanceHistory | null> = new BehaviorSubject<AccountBalanceHistory | null>(null);
 
-  readonly portfolio$: Observable<AccountPortfolio> = this.#store.portfolio$.pipe(
-    filter((list: null | AccountPortfolio): list is AccountPortfolio => list !== null),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-  readonly broker$: Observable<AccountBroker> = this.#store.broker$.pipe(
-    filter((list: null | AccountBroker): list is AccountBroker => list !== null),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-  readonly currency$: Observable<AccountCurrency> = this.#store.currency$.pipe(
-    filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-  readonly strategy$: Observable<AccountStrategy> = this.#store.strategy$.pipe(
-    filter((list: null | AccountStrategy): list is AccountStrategy => list !== null),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-  readonly range$: Observable<AccountRange> = this.#store.range$.pipe(
-    filter((list: null | AccountRange): list is AccountRange => list !== null),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-  readonly leadToCurrency$: Observable<AccountCurrency> = this.#store.leadToCurrency$.pipe(
-    filter((list: null | AccountCurrency): list is AccountCurrency => list !== null),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-  readonly balanceHistory$: Observable<null | AccountBalanceHistory> = this.#store.balanceHistory$.pipe(
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
+  @Input() set data(data: AccountBalanceHistory | null) {
+    this.#data$.next(data);
+  }
 
-  readonly data$: Observable<AccountBalanceHistory | null> = this.balanceHistory$.pipe(
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-
-  readonly chart$: Observable<any> = this.data$.pipe(
+  readonly chart$: Observable<any> = this.#data$.asObservable().pipe(
     switchMap((data: AccountBalanceHistory | null) =>
       this.resize$.pipe(
         map((resize: ResizeObserverEntry) => {
@@ -88,7 +51,8 @@ export class ChartComponent implements AfterViewInit {
           return this._createChart(data, width, height);
         })
       )
-    )
+    ),
+    tap((_) => Promise.resolve().then(() => this.#cdr.detectChanges()))
   );
 
   @ViewChild('chart', { static: true }) chartElementRef: ElementRef<HTMLElement> | null = null;
@@ -114,29 +78,6 @@ export class ChartComponent implements AfterViewInit {
       switchMap((_) => this.resize$)
     );
   });
-
-  ngAfterViewInit(): void {
-    combineLatest([this.broker$, this.currency$, this.range$, this.portfolio$, this.strategy$, this.leadToCurrency$])
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        debounceTime(0),
-        map(
-          (
-            params: [AccountBroker, AccountCurrency, AccountRange, AccountPortfolio, AccountStrategy, AccountCurrency]
-          ) => ({
-            brokerId: params[0].brokerId,
-            currencyId: params[1].currencyId,
-            from: params[2].from,
-            portfolioId: params[3].portfolioId,
-            to: params[2].to,
-            strategyId: params[4].id,
-            leadToCurrency: params[5].currency,
-          })
-        )
-        // tap(() => this.#isLoadInfo$.next(true))
-      )
-      .subscribe((params: Params) => this.#store.loadBalanceHistory(params));
-  }
 
   private _createChart(data: AccountBalanceHistory | null, width = 300, height = 300): any {
     if (data === null) {
@@ -173,6 +114,9 @@ export class ChartComponent implements AfterViewInit {
       .y((d: any) => y(d.balance))
       .curve(curveBumpX);
 
+    const yTickCount = height / 50;
+    const yTicks = y.ticks(yTickCount > 10 ? 10 : yTickCount);
+
     return {
       items,
       currencySymbol: data.currencySymbol,
@@ -190,12 +134,16 @@ export class ChartComponent implements AfterViewInit {
       })),
       y,
       yTicksLine: x.range()[1] - marginLeft,
-      yTicks: y.ticks(height / 40).map((value: number) => ({
+      yTicks: yTicks.map((value: number) => ({
         value,
         offset: y(value),
       })),
       line,
       area,
     };
+  }
+
+  ngOnDestroy(): void {
+    this.#data$.complete();
   }
 }
