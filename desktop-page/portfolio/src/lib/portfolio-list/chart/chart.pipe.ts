@@ -13,19 +13,20 @@ export class ChartNumberFormatPipe implements PipeTransform {
 
   transform(value: number, ...args: any[]): Observable<string> {
     const valueAbs = Math.abs(value);
-    let settings: Partial<TuiNumberFormatSettings> = { precision: 0, decimalMode: 'always' };
+    let settings: Partial<TuiNumberFormatSettings> = { precision: undefined, decimalMode: 'always' };
     let numb = value;
     let unit = '';
 
-    if (valueAbs / 1000 >= 1 && valueAbs / 1000 <= 99) {
+    if (valueAbs / 1000 >= 1 && valueAbs / 1000 <= 999) {
+      settings = { ...settings, precision: 0 };
       numb = value / 1000;
-      unit = 'тыс.';
+      unit = ' тыс.';
     }
 
-    if (valueAbs / 1000000 >= 0.1) {
+    if (valueAbs / 1000000 >= 1) {
       settings = { ...settings, precision: 1 };
       numb = value / 1000000;
-      unit = 'млн.';
+      unit = ' млн.';
     }
 
     return this.#format.transform(numb, settings).pipe(map((value: string) => `${value}${unit}`));

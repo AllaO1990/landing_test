@@ -8,6 +8,8 @@
   [data-size=l] {
     font-weight: normal;
   }
+
+  --tui-border-normal: transporent;
 }
 
 .portfolio {
@@ -77,6 +79,19 @@
     align-items: center;
 
     margin-bottom: var(--padding-2);
+  }
+
+  &__controls {
+    width: 100%;
+
+    label {
+      font-size: var(--font-size-small);
+      justify-content: center;
+
+      tui-icon {
+        font-size: 1rem;
+      }
+    }
   }
 
   &__chart {

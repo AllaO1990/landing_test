@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
-import { TuiButton, TuiFormatNumberPipe, tuiNumberFormatProvider } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiGroup, TuiIcon, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
@@ -13,6 +13,7 @@ import {
   Observable,
   of,
   shareReplay,
+  startWith,
   Subject,
   switchMap,
   tap,
@@ -20,6 +21,7 @@ import {
 } from 'rxjs';
 import {
   AccountBalance,
+  AccountBalanceHistory,
   AccountBroker,
   AccountCurrency,
   AccountPortfolio,
@@ -37,6 +39,8 @@ import { ChartComponent } from './chart/chart.component';
 import { BalanceComponent } from './balance/balance.component';
 import { ColorPriceDirective } from '@ui/components/price';
 import { getNumberPrecision } from 'utils/get-number-precision';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TuiBlock } from '@taiga-ui/kit';
 
 type AccountBalanceCommon = AccountBalance & {
   inPositionCountPct: number;
@@ -55,6 +59,11 @@ type AccountBalanceCommon = AccountBalance & {
     NgIf,
     ChartComponent,
     ColorPriceDirective,
+    FormsModule,
+    TuiBlock,
+    TuiGroup,
+    ReactiveFormsModule,
+    TuiIcon,
   ],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
@@ -67,7 +76,6 @@ export class PortfolioListComponent implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
   readonly #isLoadInfo$: Subject<boolean> = new BehaviorSubject<boolean>(false);
-  readonly #today: Date = new Date(new Date().setUTCHours(0, 0, 0, 0));
 
   #dialogCommissionComponent: PolymorpheusComponent<CommissionComponent> | null = null;
   #dialogBalanceComponent: PolymorpheusComponent<BalanceComponent> | null = null;
@@ -115,6 +123,49 @@ export class PortfolioListComponent implements AfterViewInit {
   ];
   readonly listSecond: PortfolioInfoEnum[] = [PortfolioInfoEnum.IN_POSITION, PortfolioInfoEnum.SPARE];
   readonly constants: { [key: string]: string } = PORTFOLIO_LIST_CONSTANTS;
+  readonly chartTypes = [
+    {
+      value: '1',
+      icon: '@tui.landmark',
+      name: 'Общая',
+    },
+    {
+      value: '2',
+      icon: '@tui.hand-coins',
+      name: 'Реализованная',
+    },
+  ];
+  readonly controlType = new FormControl(this.chartTypes[0]);
+
+  readonly dataChart$: Observable<AccountBalanceHistory | null> = this._service.balanceHistory$.pipe(
+    switchMap((history: AccountBalanceHistory | null) =>
+      this.controlType.valueChanges.pipe(
+        startWith(this.controlType.value),
+        filter((control: { value: string } | null): control is { value: string } => control !== null),
+        switchMap((control: { value: string }) => {
+          if (control.value === '1') {
+            return of(history);
+          }
+
+          return this._service.balance$.pipe(
+            map((balance) => {
+              if (history !== null && balance !== null) {
+                const items = history.items.slice();
+                items[items.length - 1] = {
+                  date: items[items.length - 1].date,
+                  balance: getNumberPrecision(items[items.length - 1].balance + balance.inPositionProfit, 2),
+                };
+
+                return { ...history, items: [...items] };
+              }
+              return null;
+            })
+          );
+        })
+      )
+    ),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   readonly isLoadInfo$: Observable<boolean> = this.#isLoadInfo$.asObservable().pipe(
     switchMap((isLoad: boolean) => {
@@ -161,7 +212,10 @@ export class PortfolioListComponent implements AfterViewInit {
         })),
         tap(() => this.#isLoadInfo$.next(true))
       )
-      .subscribe((params: Params) => this._service.loadBalance(params));
+      .subscribe((params: Params) => {
+        this._service.loadBalance(params);
+        this._service.loadBalanceHistory(params);
+      });
   }
 
   private _openDialog(c: PolymorpheusComponent<any>, data: any = null, label: string | null = null): Observable<any> {
