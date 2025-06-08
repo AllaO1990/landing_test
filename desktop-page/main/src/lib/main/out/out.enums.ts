@@ -8,4 +8,5 @@ export enum OutEnums {
   FILTER = 'filter',
   BROKER = 'broker',
   PORTFOLIO = 'portfolio',
+  TRANSACTION = 'transaction',
 }
