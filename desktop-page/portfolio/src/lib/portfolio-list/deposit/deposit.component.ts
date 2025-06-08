@@ -3,7 +3,12 @@ import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiAutoFocus, TuiContext, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { TuiButton, TuiDataListComponent, TuiFormatNumberPipe, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
-import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import {
+  TuiInputDateTimeModule,
+  TuiSelectModule,
+  TuiTextareaModule,
+  TuiTextfieldControllerModule,
+} from '@taiga-ui/legacy';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
@@ -30,6 +35,7 @@ import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiInputNumberDirective } from '@taiga-ui/kit';
 import { StockId } from 'types/stock';
+import { getTuiDayTime } from 'utils/get-tui-day-time';
 
 @Component({
   selector: 'lib-deposit',
@@ -52,6 +58,7 @@ import { StockId } from 'types/stock';
     TuiTextareaModule,
     TuiInputNumberDirective,
     TuiTextfield,
+    TuiInputDateTimeModule,
   ],
   templateUrl: './deposit.component.html',
   styleUrls: ['../dialog.scss', './deposit.component.scss'],
@@ -72,6 +79,7 @@ export class DepositComponent extends PortfolioListDialog implements AfterViewIn
     brokerId: new FormControl(null, [Validators.required]),
     currencyId: new FormControl(null, [Validators.required]),
     portfolio: new FormControl(null, [Validators.required]),
+    date: new FormControl(getTuiDayTime(new Date().toISOString()), [Validators.required]),
     comment: new FormControl({ value: null, disabled: true }),
   });
 
@@ -127,11 +135,18 @@ export class DepositComponent extends PortfolioListDialog implements AfterViewIn
       const {
         amount,
         portfolio,
+        date,
         currency: { currencyId },
         broker: { brokerId },
       } = this.context.data;
 
-      this.form.patchValue({ amount, currencyId, brokerId, portfolio });
+      this.form.patchValue({
+        date: getTuiDayTime(date || new Date().toISOString()),
+        amount,
+        currencyId,
+        brokerId,
+        portfolio,
+      });
       this.controlCurrency.disable();
       this.controlBroker.disable();
       this.controlPortfolio.disable();
@@ -146,9 +161,10 @@ export class DepositComponent extends PortfolioListDialog implements AfterViewIn
       type === 'deposit'
         ? this.#api.addToAccountDeposit(params)
         : ((id: StockId) => this.#api.editAccountTransactions(id, params))(id);
-    const { portfolio, comment, ...other } = this.form.getRawValue();
+    const { portfolio, comment, date, ...other } = this.form.getRawValue();
     const params = {
       ...other,
+      date: new Date(date[0].toLocalNativeDate().valueOf() + date[1].valueOf()).toISOString(),
       portfolioId: portfolio.portfolioId,
     };
 

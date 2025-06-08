@@ -26,9 +26,15 @@ import { Params } from '@angular/router';
 import { Response } from 'types/response';
 import { PortfolioListDialog } from '../dialog';
 import { stringifyBroker, stringifyCurrency } from '../utils';
-import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import {
+  TuiInputDateTimeModule,
+  TuiSelectModule,
+  TuiTextareaModule,
+  TuiTextfieldControllerModule,
+} from '@taiga-ui/legacy';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiInputNumberDirective } from '@taiga-ui/kit';
+import { getTuiDayTime } from 'utils/get-tui-day-time';
 
 @Component({
   selector: 'lib-withdrawal',
@@ -48,6 +54,7 @@ import { TuiInputNumberDirective } from '@taiga-ui/kit';
     TuiTextareaModule,
     TuiInputNumberDirective,
     TuiTextfield,
+    TuiInputDateTimeModule,
   ],
   templateUrl: './withdrawal.component.html',
   styleUrls: ['../dialog.scss', './withdrawal.component.scss'],
@@ -68,6 +75,7 @@ export class WithdrawalComponent extends PortfolioListDialog {
     brokerId: new FormControl(null, [Validators.required]),
     currencyId: new FormControl(null, [Validators.required]),
     portfolio: new FormControl(null, [Validators.required]),
+    date: new FormControl(getTuiDayTime(new Date().toISOString()), [Validators.required]),
     comment: new FormControl({ value: null, disabled: true }),
   });
 
@@ -122,9 +130,10 @@ export class WithdrawalComponent extends PortfolioListDialog {
   onSubmit(event: SubmitEvent) {
     event.preventDefault();
 
-    const { portfolio, ...other } = this.form.value;
+    const { portfolio, date, ...other } = this.form.value;
     const params = {
       ...other,
+      date: new Date(date[0].toLocalNativeDate().valueOf() + date[1].valueOf()).toISOString(),
       portfolioId: portfolio.portfolioId,
     };
 
