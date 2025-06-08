@@ -104,7 +104,7 @@ export class ChartComponent implements OnDestroy {
     const area = d3
       .area()
       .x((d: any) => x(d.date))
-      .y0(y(0))
+      .y0(y(Math.min(...items.map((item) => item.balance))))
       .y1((d: any) => y(d.balance))
       .curve(curveBumpX);
 
