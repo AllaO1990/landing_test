@@ -7,12 +7,29 @@
     <!--      <lib-filter-closed-deals [formControl]="formControl"></lib-filter-closed-deals>-->
     <!--    </div>-->
     <div class="space"></div>
+    <div class="closed-deals__select">
+      <span>{{ constants.transaction }}</span>
+      <tui-select
+        *ngIf="transaction$ | async as list"
+        [valueContent]="transaction"
+        [tuiTextfieldSize]="size"
+        [formControl]="controlTransaction"
+        [tuiTextfieldLabelOutside]="true">
+        {{ constants.transaction }}
+        <tui-data-list-wrapper
+          *tuiDataList
+          size="s"
+          [items]="list"
+          [itemContent]="transaction">
+        </tui-data-list-wrapper>
+      </tui-select>
+    </div>
     <tui-textfield
       tuiTextfieldSize="s"
       iconStart="@tui.search"
       class="closed-deals__search">
       <input
-        placeholder="Поиск"
+        [placeholder]="constants.search"
         tuiTextfield
         autocomplete="off"
         [formControl]="controlSearch"
@@ -35,3 +52,9 @@
     <lib-wrapper-table [params]="controlSearch.value"></lib-wrapper-table>
   </div>
 </div>
+
+<ng-template #transaction let-item>
+  <div class="item">
+    {{ item.value }}
+  </div>
+</ng-template>

@@ -42,4 +42,18 @@
     min-width: 10rem;
     margin: 0 var(--padding-2);
   }
+
+  &__select {
+    display: inline-flex;
+    align-items: center;
+    margin-right: var(--padding-2);
+
+    span {
+      margin-right: var(--padding-2);
+    }
+
+    tui-select {
+      min-width: 7rem;
+    }
+  }
 }

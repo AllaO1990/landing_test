@@ -100,4 +100,5 @@ export const OUT_CONSTANTS: { [key in OutEnums]: string } = {
   [OutEnums.FILTER]: 'Фильтр',
   [OutEnums.BROKER]: 'Брокер',
   [OutEnums.PORTFOLIO]: 'Портфель',
+  [OutEnums.TRANSACTION]: 'Тип сделки',
 };

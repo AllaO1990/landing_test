@@ -143,7 +143,7 @@ export class PortfolioListComponent implements AfterViewInit {
         startWith(this.controlType.value),
         filter((control: { value: string } | null): control is { value: string } => control !== null),
         switchMap((control: { value: string }) => {
-          if (control.value === '1') {
+          if (control.value === '2') {
             return of(history);
           }
 

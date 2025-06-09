@@ -68,6 +68,14 @@
         formControlName="amount"
       />
     </tui-textfield>
+    <tui-input-date-time
+      [tuiTextfieldCleaner]="true"
+      [max]="maxDate"
+      class="form__control"
+      formControlName="date"
+      [tuiTextfieldSize]="size">
+      Выбрать дату
+    </tui-input-date-time>
     <tui-textarea
       class="form__control"
       formControlName="comment"
