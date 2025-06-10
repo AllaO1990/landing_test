@@ -158,7 +158,7 @@
                 {{ item.fixedResultPct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
               </div>
               <div class="profit-realized__price substring">
-                {{ item.fixedResult | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+                {{ item.fixedResult | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
               </div>
             </ng-container>
           </div>
@@ -173,7 +173,7 @@
               {{ item.inPosition.amount | tuiFormatNumber | async }}
             </div>
             <div class="remainder__price substring">
-              {{ item.inPosition.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+              {{ item.inPosition.totalPrice | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
             </div>
           </div>
         </td>
@@ -187,7 +187,7 @@
               {{ item.inPositionResultPct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
             </div>
             <div class="profit-not-realized__price substring">
-              {{ item.inPositionResult | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+              {{ item.inPositionResult | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
             </div>
           </div>
         </td>
@@ -201,7 +201,7 @@
               {{ item.resultPct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
             </div>
             <div class="result__price substring">
-              {{ item.result | tuiFormatNumber | async }}
+              {{ item.result | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
             </div>
           </div>
         </td>
