@@ -23,9 +23,21 @@ form {
 
   &__item {
     text-align: center;
+    white-space: nowrap;
 
     &:first-child {
       font-weight: 700;
+    }
+
+    tui-icon {
+      color: var(--tui-text-tertiary);
+      margin-left: var(--padding-1);
+      font: var(--tui-font-text-s);
+
+      &:after {
+        inline-size: .5rem;
+        block-size: .5rem;
+      }
     }
   }
 

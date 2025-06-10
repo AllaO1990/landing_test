@@ -10,7 +10,7 @@ import {
   NgZone,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
-import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiScrollbar } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import {
   StockPosition,
   StockPositionActionEntry,
@@ -56,6 +56,7 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { AddDividendComponent } from './add-dividend/add-dividend.component';
 import { AddCommissionComponent } from './add-commission/add-commission.component';
+import { TuiTooltip } from '@taiga-ui/kit';
 
 type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
@@ -76,6 +77,8 @@ type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
     ReactiveFormsModule,
     GetBrokerPipe,
     TuiHint,
+    TuiIcon,
+    TuiTooltip,
   ],
   templateUrl: './action.component.html',
   styleUrl: './action.component.scss',

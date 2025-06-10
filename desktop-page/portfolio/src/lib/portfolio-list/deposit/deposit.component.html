@@ -30,12 +30,6 @@
       </ng-template>
     </tui-select>
     <div class="form__control form__row">
-      <div class="form__value">
-        <ui-loader *ngIf="isLoadValue$ | async"></ui-loader>
-        <span *ngIf="(value$ | async) as value; else empty">
-          {{ value['balance'] | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-        </span>
-      </div>
       <tui-select
         *ngIf="(currencies$ | async) as items"
         class="form__cell form__cell--currency"
@@ -56,6 +50,12 @@
           </tui-data-list>
         </ng-template>
       </tui-select>
+      <div class="form__value">
+        <ui-loader *ngIf="isLoadValue$ | async"></ui-loader>
+        <span *ngIf="(value$ | async) as value; else empty">
+          {{ value['balance'] | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+        </span>
+      </div>
     </div>
     <tui-textfield
       [tuiTextfieldSize]="size"
