@@ -87,7 +87,7 @@ export class ChartComponent implements OnDestroy {
     const items = data.items.map((item: AccountBalanceHistoryItem) => ({ ...item, date: new Date(item.date) }));
     const yDomain = extent(items, (d) => d.balance);
     const yMax = Math.max(Math.abs(yDomain[1] as number), Math.abs(yDomain[0] as number));
-    const marginTop = 20;
+    const marginTop = 0;
     const marginRight = 30;
     const marginBottom = 30;
     const marginLeft = 40 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 7 : 0);

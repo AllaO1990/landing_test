@@ -1,5 +1,12 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
-import { TuiButton, TuiFormatNumberPipe, TuiGroup, TuiIcon, tuiNumberFormatProvider } from '@taiga-ui/core';
+import {
+  TuiAppearance,
+  TuiButton,
+  TuiDataList,
+  TuiFormatNumberPipe,
+  TuiIcon,
+  tuiNumberFormatProvider,
+} from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
@@ -40,7 +47,8 @@ import { BalanceComponent } from './balance/balance.component';
 import { ColorPriceDirective } from '@ui/components/price';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TuiBlock } from '@taiga-ui/kit';
+import { TuiMultiSelectModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiBlock, TuiChevron } from '@taiga-ui/kit';
 
 type AccountBalanceCommon = AccountBalance & {
   inPositionCountPct: number;
@@ -60,10 +68,15 @@ type AccountBalanceCommon = AccountBalance & {
     ChartComponent,
     ColorPriceDirective,
     FormsModule,
-    TuiBlock,
-    TuiGroup,
     ReactiveFormsModule,
     TuiIcon,
+    TuiDataList,
+    TuiSelectModule,
+    TuiTextfieldControllerModule,
+    TuiChevron,
+    TuiMultiSelectModule,
+    TuiBlock,
+    TuiAppearance,
   ],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
@@ -126,12 +139,12 @@ export class PortfolioListComponent implements AfterViewInit {
   readonly chartTypes = [
     {
       value: '1',
-      icon: '@tui.landmark',
+      icon: '@tui.refresh-ccw',
       name: 'Общая',
     },
     {
       value: '2',
-      icon: '@tui.hand-coins',
+      icon: '@tui.circle-check',
       name: 'Реализованная',
     },
   ];
@@ -176,6 +189,8 @@ export class PortfolioListComponent implements AfterViewInit {
     })
   );
 
+  protected open = false;
+
   ngAfterViewInit(): void {
     const params$: Observable<Params> = combineLatest([
       this.broker$,
@@ -216,6 +231,10 @@ export class PortfolioListComponent implements AfterViewInit {
         this._service.loadBalance(params);
         this._service.loadBalanceHistory(params);
       });
+  }
+
+  onClick(): void {
+    this.open = false;
   }
 
   private _openDialog(c: PolymorpheusComponent<any>, data: any = null, label: string | null = null): Observable<any> {
