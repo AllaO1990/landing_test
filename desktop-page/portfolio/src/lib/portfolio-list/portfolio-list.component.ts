@@ -1,12 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
-import {
-  TuiAppearance,
-  TuiButton,
-  TuiDataList,
-  TuiFormatNumberPipe,
-  TuiIcon,
-  tuiNumberFormatProvider,
-} from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiFormatNumberPipe, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { PORTFOLIO_LIST_CONSTANTS } from './portfolio-list.constants';
 import { PortfolioInfoEnum } from './portfolio-list.types';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
@@ -47,8 +40,8 @@ import { BalanceComponent } from './balance/balance.component';
 import { ColorPriceDirective } from '@ui/components/price';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TuiMultiSelectModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { TuiBlock, TuiChevron } from '@taiga-ui/kit';
+import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { STRUCTURE_CATEGORY } from '../structure/structure.constants';
 
 type AccountBalanceCommon = AccountBalance & {
   inPositionCountPct: number;
@@ -69,14 +62,9 @@ type AccountBalanceCommon = AccountBalance & {
     ColorPriceDirective,
     FormsModule,
     ReactiveFormsModule,
-    TuiIcon,
     TuiDataList,
     TuiSelectModule,
     TuiTextfieldControllerModule,
-    TuiChevron,
-    TuiMultiSelectModule,
-    TuiBlock,
-    TuiAppearance,
   ],
   templateUrl: './portfolio-list.component.html',
   styleUrl: './portfolio-list.component.scss',
@@ -140,12 +128,12 @@ export class PortfolioListComponent implements AfterViewInit {
     {
       value: '1',
       icon: '@tui.refresh-ccw',
-      name: 'Общая',
+      name: 'Общая прибыль',
     },
     {
       value: '2',
       icon: '@tui.circle-check',
-      name: 'Реализованная',
+      name: 'Реализованная прибыль',
     },
   ];
   readonly controlType = new FormControl(this.chartTypes[0]);
@@ -233,10 +221,6 @@ export class PortfolioListComponent implements AfterViewInit {
       });
   }
 
-  onClick(): void {
-    this.open = false;
-  }
-
   private _openDialog(c: PolymorpheusComponent<any>, data: any = null, label: string | null = null): Observable<any> {
     return this.#dialogService
       .open(c, {
@@ -300,4 +284,6 @@ export class PortfolioListComponent implements AfterViewInit {
 
     return getNumberPrecision((a / (a + b)) * 100, 2);
   }
+
+  protected readonly categories = STRUCTURE_CATEGORY;
 }

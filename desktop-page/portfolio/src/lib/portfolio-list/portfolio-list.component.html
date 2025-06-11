@@ -121,40 +121,24 @@
     </div>
     <div class="portfolio__description">
       <div class="portfolio__actions">
-        <!--        <div-->
-        <!--          tuiGroup-->
-        <!--          class="portfolio__controls">-->
-        <!--          <label-->
-        <!--            for="portfolio&#45;&#45;{{item.value}}"-->
-        <!--            *ngFor="let item of chartTypes"-->
-        <!--            tuiBlock="s"-->
-        <!--            [appearance]="item === controlType.value ? 'primary' : 'secondary'">-->
-        <!--            <input-->
-        <!--              id="portfolio&#45;&#45;{{item.value}}"-->
-        <!--              tuiBlock-->
-        <!--              type="radio"-->
-        <!--              [formControl]="controlType"-->
-        <!--              [value]="item" />-->
-        <!--            <tui-icon [icon]="item.icon"></tui-icon>-->
-        <!--            {{ item.name }}-->
-        <!--          </label>-->
-        <!--        </div>-->
-        <h4 *ngIf="controlType.value">
-          {{ controlType.value.name }} прибыль
-        </h4>
-        <div class="space"></div>
-        <button
-          appearance="primary"
-          tuiChevron
-          tuiIconButton
-          type="button"
-          [tuiAppearanceState]="open ? 'hover' : null"
-          [tuiDropdown]="content"
-          tuiDropdownAlign="right"
-          [tuiDropdownMaxHeight]="500"
-          [(tuiDropdownOpen)]="open">
-          Menu
-        </button>
+        <tui-select
+          [style.width.%]="100"
+          [valueContent]="valueTemplate"
+          [tuiTextfieldSize]="size"
+          [formControl]="controlType">
+          <input autocomplete="off" tuiTextfieldLegacy />
+          <ng-template tuiDataList>
+            <tui-data-list>
+              <button
+                *ngFor="let item of chartTypes"
+                tuiOption
+                type="button"
+                [value]="item">
+                {{ item.name }}
+              </button>
+            </tui-data-list>
+          </ng-template>
+        </tui-select>
       </div>
       <div class="portfolio__chart">
         <lib-portfolio-list-chart
@@ -169,30 +153,6 @@
   <ui-loader></ui-loader>
 </ng-template>
 
-<ng-template #content>
-  <tui-data-list size="s" [style.width.rem]="10">
-    <tui-opt-group>
-      <label
-        [tuiAppearance]="item === controlType.value ? 'secondary' : ''"
-        *ngFor="let item of chartTypes"
-        tuiOption>
-        <span>
-          <tui-icon [icon]="item.icon"></tui-icon>
-          {{ item.name }}
-        </span>
-        <input
-          tuiBlock="s"
-          appearance=""
-          type="radio"
-          [value]="item"
-          [formControl]="controlType"
-        />
-      </label>
-    </tui-opt-group>
-  </tui-data-list>
-</ng-template>
-
-<ng-template #item let-item>
-  <tui-icon [icon]="item.icon"></tui-icon>
+<ng-template #valueTemplate let-item>
   {{ item.name }}
 </ng-template>

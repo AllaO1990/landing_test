@@ -88,9 +88,9 @@ export class ChartComponent implements OnDestroy {
     const yDomain = extent(items, (d) => d.balance);
     const yMax = Math.max(Math.abs(yDomain[1] as number), Math.abs(yDomain[0] as number));
     const marginTop = 0;
-    const marginRight = 30;
+    const marginRight = 5;
     const marginBottom = 30;
-    const marginLeft = 40 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 7 : 0);
+    const marginLeft = 30 + (yMax !== undefined ? (Math.floor(yMax).toString().length - 2) * 7 : 0);
     const x = scaleUtc(extent(items, (d) => d.date) as any, [marginLeft, width - marginRight]);
     const distance =
       (Math.abs(yDomain[1] as number) - Math.abs(yDomain[0] as number)) *
