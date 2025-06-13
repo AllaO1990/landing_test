@@ -47,9 +47,9 @@
               tuiIconButton
               size="xs"
               type="button"
-              [disabled]="formArrayTargets.value.length !== 0"
-              (click)="onRemove($event, index, 'entries')"
+              (click)="onRemoveEntries($event, index)"
             ></button>
+            <!--              [disabled]="formArrayTargets.value.length !== 0"-->
           </div>
         </div>
       </lib-list-item>
