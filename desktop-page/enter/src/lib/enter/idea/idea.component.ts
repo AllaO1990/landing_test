@@ -99,7 +99,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
   readonly isEdit$: Subject<boolean> = new BehaviorSubject(false);
   readonly _controlValue: Subject<any | null> = new ReplaySubject(1);
-  readonly isEditStop$: Subject<boolean> = new BehaviorSubject(false);
 
   @Input() formGroup!: FormGroup;
 
@@ -107,7 +106,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
   minPriceIncrement = 1e-8;
   priceIncrement = getPriceIncrement(this.minPriceIncrement);
   multiplier = 1;
-  isCanEdit = false;
   inPositionQuantityValue = 0;
   isDisabled = false;
   value: any = null;
@@ -385,28 +383,36 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     this.isDisabled = isDisabled;
   }
 
+  onRemoveEntries(event: Event, index: number): void {
+    event.preventDefault();
+
+    const list = this.formArrayTargets.value;
+
+    if (list && list.length > 0) {
+      this._onConfirmDialog(
+        `<p class="tui-text_h6">Удалить строку?</p><p class="tui-text_body-l">Все строки из таблицы Цели, будут удалены</p>`
+      ).subscribe((result: boolean) => {
+        if (result) {
+          this.formArrayEntries.removeAt(index);
+          this.formArrayTargets.clear();
+        }
+      });
+    } else {
+      this.onRemove(event, index, 'entries');
+    }
+  }
+
   onRemove(event: Event, index: number, formName: string): void {
     event.preventDefault();
 
     const formArray = this.controlFormArray.get(formName);
 
     if (formArray !== null) {
-      this._dialogDefaultService
-        .open<boolean>(TUI_CONFIRM, {
-          appearance: 'dialog-confirm',
-          closeable: false,
-          size: 'auto',
-          data: {
-            content: '<p class="tui-text_h6">Удалить строку?</p>',
-            yes: 'Да',
-            no: 'Нет',
-          },
-        })
-        .subscribe((result: boolean) => {
-          if (result) {
-            (formArray as FormArray).removeAt(index);
-          }
-        });
+      this._onConfirmDialog('<p class="tui-text_h6">Удалить строку?</p>').subscribe((result: boolean) => {
+        if (result) {
+          (formArray as FormArray).removeAt(index);
+        }
+      });
     }
   }
 
@@ -644,5 +650,18 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
       status: false,
       list,
     };
+  }
+
+  private _onConfirmDialog(content: string): Observable<boolean> {
+    return this._dialogDefaultService.open<boolean>(TUI_CONFIRM, {
+      appearance: 'dialog-confirm',
+      closeable: false,
+      size: 'auto',
+      data: {
+        content,
+        yes: 'Да',
+        no: 'Нет',
+      },
+    });
   }
 }

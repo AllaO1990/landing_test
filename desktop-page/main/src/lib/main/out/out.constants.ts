@@ -48,8 +48,8 @@ export const OUT_HEADER: OutHeaderItem[] = [
   },
   {
     name: 'profit',
-    label: 'Приб. %',
-    title: 'Прибль',
+    label: 'Приб. нереал. %',
+    title: 'Прибыль нереализованная',
     sorter: (
       a: { profit: number },
       b: {
@@ -80,7 +80,7 @@ export const OUT_HEADER: OutHeaderItem[] = [
   // },
   {
     name: 'deposit',
-    label: 'Кол-во <br>% депо',
+    label: 'Кол-во остаток.<br>% депо',
     sorter: null,
   },
   {
