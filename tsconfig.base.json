@@ -36,6 +36,7 @@
       "storage/*": ["stores/local/*"],
       "stores/*": ["stores/desktop/*"],
       "tokens/*": ["tokens/*"],
+      "trade": ["desktop-page/trade/src/index.ts"],
       "types/*": ["types/*"],
       "ui-common/*": ["ui-common/src/*"],
       "utils/*": ["utils/*"]
