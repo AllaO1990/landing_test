@@ -1,0 +1,33 @@
+<form class="dialog" [formGroup]="formGroup">
+  <div class="dialog__title">
+    <h3>Подтверждение</h3>
+  </div>
+  <div class="dialog__container form">
+    <tui-textfield
+      [tuiTextfieldSize]="size">
+      <input
+        placeholder="Токен"
+        tuiTextfield
+      />
+    </tui-textfield>
+  </div>
+  <div class="dialog__actions">
+    <div class="space"></div>
+    <button
+      (click)="onCancel($event)"
+      appearance="secondary"
+      tuiButton>
+      Отменить
+    </button>
+    <button
+      appearance="primary"
+      type="submit"
+      tuiButton>
+      Подтвердить
+    </button>
+  </div>
+</form>
+
+<ng-template #valueItem let-item>
+  {{ item.name }}
+</ng-template>

@@ -1,5 +1,5 @@
 #STAGE 1
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 ENV NODE_OPTIONS=--max_old_space_size=1024

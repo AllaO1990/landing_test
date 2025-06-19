@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, INJECTOR, Injector, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
 import { CONTEXT_ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
@@ -22,6 +22,8 @@ import { ActionNewPosition } from '../common/plugins/action-new-position';
 import { ActionShowPosition } from '../common/plugins/action-show-position';
 import { ActionShowIdea } from '../common/plugins/action-show-idea';
 import { ActionCopyIdea } from '../common/plugins/action-copy-idea';
+import { TradeDialogService } from 'desktop-page/trade';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 @Component({
   selector: 'lib-lk',
@@ -66,31 +68,45 @@ import { ActionCopyIdea } from '../common/plugins/action-copy-idea';
       useClass: ActionCopyIdea,
       multi: true,
     },
+    {
+      provide: TradeDialogService,
+      useFactory: (dialog: DialogService, injector: Injector) => new TradeDialogService(dialog, injector),
+      deps: [DIALOG, INJECTOR],
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LkComponent implements OnInit {
-  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #dialogTrade: TradeDialogService = inject(TradeDialogService);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
   private readonly _injector: Injector = inject(Injector);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
-  private readonly _query$: Observable<Params> = this._queryParams.pipe(
-    takeUntilDestroyed(this._destroyRef),
+  private readonly _queryEnter$: Observable<Params> = this._queryParams.pipe(
+    takeUntilDestroyed(this.#destroyRef),
     startWith(this._queryParams.value()),
     distinctUntilChanged((a: Params, b: Params) => a['dialog'] === b['dialog']),
     filter((params: Params) => params['dialog'] === 'visible'),
     debounceTime(100),
     shareReplay({ refCount: false, bufferSize: 1 })
   );
+  private readonly _queryTrade$: Observable<Params> = this._queryParams.pipe(
+    takeUntilDestroyed(this.#destroyRef),
+    startWith(this._queryParams.value()),
+    distinctUntilChanged((a: Params, b: Params) => a['trade'] === b['trade']),
+    filter((params: Params) => params['trade'] === 'visible'),
+    debounceTime(100),
+    shareReplay({ refCount: false, bufferSize: 1 })
+  );
 
-  private _component: PolymorpheusComponent<VtEnterComponent> | null = null;
+  private _componentEnter: PolymorpheusComponent<VtEnterComponent> | null = null;
 
   ngOnInit(): void {
     this._queryParams
       .pipe(
-        takeUntilDestroyed(this._destroyRef),
+        takeUntilDestroyed(this.#destroyRef),
         shareReplay({
           bufferSize: 1,
           refCount: true,
@@ -112,13 +128,24 @@ export class LkComponent implements OnInit {
     });
 
     this.onOpenDialog();
+
+    this._queryParams
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        startWith(this._queryParams.value()),
+        distinctUntilChanged((a: Params, b: Params) => a['trade'] === b['trade']),
+        filter((params: Params) => params['trade'] === 'visible'),
+        debounceTime(100),
+        switchMap(() => this.#dialogTrade.openTradeDialog())
+      )
+      .subscribe(() => console.log('dialog service'));
   }
 
   async onOpenDialog() {
-    this._component = await import('desktop-page/enter')
+    this._componentEnter = await import('desktop-page/enter')
       .then((m) => m.VtEnterComponent)
       .then((c) => new PolymorpheusComponent(c, this._injector));
 
-    this._query$.pipe(switchMap(() => this._dialogEnterService.open(this._component))).subscribe();
+    this._queryEnter$.pipe(switchMap(() => this._dialogEnterService.open(this._componentEnter))).subscribe();
   }
 }

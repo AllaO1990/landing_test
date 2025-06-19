@@ -1,0 +1,87 @@
+<div class="dialog" [formGroup]="formGroup">
+  <div class="dialog__title">
+    <h3>Заявка</h3>
+  </div>
+  <div class="dialog__container form">
+    <tui-select
+      *ngIf="actions$ | async as items"
+      class="form__control"
+      [valueContent]="stringifyActions(items)"
+      [tuiTextfieldSize]="size"
+      formControlName="action">
+      Действия
+      <input autocomplete="off" tuiTextfieldLegacy />
+      <ng-template tuiDataList>
+        <tui-data-list>
+          <button
+            *ngFor="let item of items"
+            tuiOption
+            type="button"
+            [value]="item.id">
+            {{ item.name }}
+          </button>
+        </tui-data-list>
+      </ng-template>
+    </tui-select>
+
+    <tui-select
+      *ngIf="types$ | async as items"
+      class="form__control"
+      [valueContent]="stringifyTypes(items)"
+      [tuiTextfieldSize]="size"
+      formControlName="type">
+      Тип
+      <input autocomplete="off" tuiTextfieldLegacy />
+      <ng-template tuiDataList>
+        <tui-data-list>
+          <button
+            *ngFor="let item of items"
+            tuiOption
+            type="button"
+            [value]="item.id">
+            {{ item.name }}
+          </button>
+        </tui-data-list>
+      </ng-template>
+    </tui-select>
+
+    <tui-textfield
+      [tuiTextfieldSize]="size"
+      class="form__control">
+      <input
+        placeholder="Цена"
+        tuiInputNumber
+        formControlName="price"
+      />
+    </tui-textfield>
+
+    <tui-textfield
+      [tuiTextfieldSize]="size"
+      class="form__control">
+      <input
+        placeholder="Количество"
+        tuiInputNumber
+        formControlName="amount"
+      />
+    </tui-textfield>
+  </div>
+  <div class="dialog__actions">
+    <div class="space"></div>
+    <button
+      [size]="size"
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="onCancel($event)">
+      Отменить
+    </button>
+    <button
+      [size]="size"
+      tuiButton
+      appearance="primary"
+      type="button"
+      (click)="onSave($event)">
+      Сохранить
+    </button>
+  </div>
+</div>
