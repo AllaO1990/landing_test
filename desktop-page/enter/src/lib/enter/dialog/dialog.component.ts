@@ -1,9 +1,8 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { POLYMORPHEUS_CONTEXT, PolymorpheusOutlet, PolymorpheusTemplate } from '@taiga-ui/polymorpheus';
-import { JsonPipe } from '@angular/common';
+import { POLYMORPHEUS_CONTEXT, PolymorpheusOutlet } from '@taiga-ui/polymorpheus';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy } from '@angular/core';
 import { TuiPopover } from '@taiga-ui/cdk';
-import { TuiButton, TuiDialogCloseService } from '@taiga-ui/core';
+import { TuiDialogCloseService } from '@taiga-ui/core';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { filter } from 'rxjs';
@@ -14,7 +13,7 @@ import { Params } from '@angular/router';
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss',
   standalone: true,
-  imports: [PolymorpheusTemplate, PolymorpheusOutlet, TuiButton, JsonPipe],
+  imports: [PolymorpheusOutlet],
   providers: [TuiDialogCloseService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

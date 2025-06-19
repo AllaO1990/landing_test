@@ -41,7 +41,6 @@ import { ColorPriceDirective } from '@ui/components/price';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { STRUCTURE_CATEGORY } from '../structure/structure.constants';
 
 type AccountBalanceCommon = AccountBalance & {
   inPositionCountPct: number;
@@ -284,6 +283,4 @@ export class PortfolioListComponent implements AfterViewInit {
 
     return getNumberPrecision((a / (a + b)) * 100, 2);
   }
-
-  protected readonly categories = STRUCTURE_CATEGORY;
 }

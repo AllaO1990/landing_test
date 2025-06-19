@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TradeLayoutComponent } from './layout.component';
+import { DialogComponent } from './dialog.component';
 
-describe('LayoutComponent', () => {
-  let component: TradeLayoutComponent;
-  let fixture: ComponentFixture<TradeLayoutComponent>;
+describe('DialogComponent', () => {
+  let component: DialogComponent;
+  let fixture: ComponentFixture<DialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TradeLayoutComponent],
+      imports: [DialogComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TradeLayoutComponent);
+    fixture = TestBed.createComponent(DialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

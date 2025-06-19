@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TradeLayoutComponent } from './layout.component';
+import { ConfirmTradeComponent } from './confirm.component';
 
-describe('LayoutComponent', () => {
-  let component: TradeLayoutComponent;
-  let fixture: ComponentFixture<TradeLayoutComponent>;
+describe('ConfirmComponent', () => {
+  let component: ConfirmTradeComponent;
+  let fixture: ComponentFixture<ConfirmTradeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TradeLayoutComponent],
+      imports: [ConfirmTradeComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TradeLayoutComponent);
+    fixture = TestBed.createComponent(ConfirmTradeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
