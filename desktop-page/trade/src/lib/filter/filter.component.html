@@ -1,0 +1,30 @@
+<form class="form" [formGroup]="formGroup">
+
+  <label class="label" *ngIf="sources$ | async as list; else load">
+  <span class="label__text">
+    Источник
+  </span>
+    <tui-select
+      class="label__select filter__source"
+      [stringify]="stringifySource"
+      [tuiTextfieldSize]="size"
+      formControlName="source"
+      [tuiTextfieldLabelOutside]="true">
+      <tui-data-list-wrapper
+        *tuiDataList
+        [size]="size"
+        [items]="list"
+        [itemContent]="contentSource">
+      </tui-data-list-wrapper>
+    </tui-select>
+  </label>
+</form>
+
+
+<ng-template #contentSource let-item>
+  {{ item.name }}
+</ng-template>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>

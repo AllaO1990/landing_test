@@ -2,12 +2,16 @@
   <div class="trade__title">
     <h3>Брокерские заявки</h3>
   </div>
+  <div class="trade__filter">
+    <trade-filter [formControl]="controlFilter"></trade-filter>
+  </div>
   <div class="trade__container">
+
     <div class="entry">
       <lib-list
         [header]="header"
         [itemSize]="itemHeight"
-        [style.height.px]="itemHeight * listEntry.length + itemHeight"
+        [style.height.px]="itemHeight * 2 + itemHeight"
         [list]="listEntry">
         <div class="item row" *libListItem="let item; let index = index">
           <ng-container
@@ -30,7 +34,7 @@
       <lib-list
         [header]="header"
         [itemSize]="itemHeight"
-        [style.height.px]="itemHeight * listOut.length + itemHeight"
+        [style.height.px]="itemHeight * 3 + itemHeight"
         [list]="listOut">
         <div class="item row" *libListItem="let item; let index = index">
           <ng-container

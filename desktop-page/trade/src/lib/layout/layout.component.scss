@@ -8,7 +8,7 @@
 
   &__actions {
     display: flex;
-    margin: var(--padding-2) 0;
+    margin-top: var(--padding-2);
   }
 }
 
@@ -72,6 +72,9 @@
   }
 }
 
+.header {
+  background-color: var(--tui-background-base);
+}
 
 label {
   display: flex;
