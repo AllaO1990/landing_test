@@ -1,4 +1,4 @@
-import { TuiLoader } from "@taiga-ui/core";
+import { TuiLoader } from '@taiga-ui/core';
 import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 
 @Component({
@@ -12,4 +12,6 @@ import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@a
 })
 export class LoaderComponent {
   @Input() text = 'Загрузка...';
+
+  @Input() size: 'm' | 's' | 'xs' | 'l' | 'xl' | 'xxl' = 'm';
 }

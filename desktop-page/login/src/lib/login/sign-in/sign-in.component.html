@@ -1,35 +1,65 @@
-<mat-card class="gpn-auth-card">
-  <mat-card-header>
-    <mat-card-title>Авторизация</mat-card-title>
-  </mat-card-header>
-  <form>
-    <mat-card-content class="gpn-auth-card-content">
-      <mat-form-field class="gpn-auth-card-email-input-field">
+<form class="form" [formGroup]="formGroup" (ngSubmit)="onSubmit($event)">
+  <div class="form__title">Войти по email</div>
+  <ng-container [ngTemplateOutlet]="formType() === 'email' ? email : code"></ng-container>
+</form>
+
+<ng-template #email>
+  <div class="form__container" [formGroup]="formGroup">
+    @if (isLoad()) {
+      <ui-loader size="l" class="loader"></ui-loader>
+    }
+    <label class="form__control control">
+      <span class="control__text">Введите email</span>
+      <tui-textfield
+        @opacityAnimations
+        [tuiTextfieldSize]="size"
+        iconStart="@tui.mail">
         <input
-          matInput
-          type="email"
-          placeholder="Введите email"
-          [formControl]="emailFormControl"
-          [errorStateMatcher]="matcher"
+          placeholder="my@my.com"
+          tuiTextfield
+          formControlName="email"
         />
-        @if (emailFormControl.hasError('email') &&
-        !emailFormControl.hasError('required')) {
-        <mat-error>Пожалуйста, введите валидный email адрес</mat-error>
-        } @if (emailFormControl.hasError('required')) {
-        <mat-error>Требуется ввести <strong>email</strong></mat-error>
-        }
-      </mat-form-field>
-    </mat-card-content>
-    <mat-card-actions class="gpn-auth-card-action-field">
-      <button
-        mat-flat-button
-        color="primary"
-        [disabled]="!emailFormControl.valid"
-        (click)="login()"
-        type="submit"
-      >
-        Получить код
-      </button>
-    </mat-card-actions>
-  </form>
-</mat-card>
+      </tui-textfield>
+    </label>
+    <button
+      class="form__action"
+      [size]="size"
+      [disabled]="controlEmail.invalid"
+      tuiButton
+      type="submit">
+      Получить код
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #code>
+  <div class="form__container" [formGroup]="formGroup">
+    @if (isLoad()) {
+      <ui-loader size="l" class="loader"></ui-loader>
+    }
+    <label class="form__control control">
+      <span class="control__text">Введите пароль/код из Telegram</span>
+      <tui-textfield
+        @opacityAnimations
+        [tuiTextfieldSize]="size"
+        iconStart="@tui.key-round">
+        <input
+          placeholder="Telegram code"
+          tuiTextfield
+          formControlName="code"
+        />
+      </tui-textfield>
+    </label>
+    <button
+      class="form__action"
+      [size]="size"
+      [disabled]="controlCode.invalid"
+      tuiButton
+      type="submit">
+      Проверить код
+    </button>
+  </div>
+</ng-template>
+
+<p class="form__information">Нет учетной записи? <a tuiLink iconEnd="@tui.arrow-right" [routerLink]="['../sign-up']">Зарегистрироваться</a>
+</p>

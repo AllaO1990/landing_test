@@ -5,7 +5,9 @@ import { AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard } from './core/rout
 export const routes: Routes = [
   {
     path: 'login',
-    loadChildren: () => import('login').then((m) => m.LoginModule),
+    // loadComponent: () => import('login').then((m) => m.LoginComponent),
+    loadChildren: () => import('login').then((m) => m.ROUTES),
+    // loadChildren: () => import('login').then((m) => m.LoginComponent),
     canLoad: [AuthGuard],
     // canActivate: [AuthGuard],
     // outlet: 'login',

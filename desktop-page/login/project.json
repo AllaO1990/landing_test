@@ -2,8 +2,10 @@
   "name": "login",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "desktop-page/login/src",
-  "prefix": "lib",
-  "tags": ["trade"],
+  "prefix": "login",
+  "tags": [
+    "trade"
+  ],
   "projectType": "library",
   "targets": {}
 }
