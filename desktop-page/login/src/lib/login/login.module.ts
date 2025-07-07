@@ -14,16 +14,16 @@ const route: Route[] = [
     // outlet: 'app-login',
     children: [
       {
-        path: 'sign-in',
-        loadComponent: () => import('./sign-in/sign-in.component').then((c) => c.SignInComponent),
-        // outlet: 'sign-in',
+        path: 'sign-in-old',
+        loadComponent: () => import('./sign-in-old/sign-in.component').then((c) => c.SignInComponent),
+        // outlet: 'sign-in-old',
       },
       {
         path: 'tg-key',
         loadComponent: () => import('./tg-key/tg-key.component').then((c) => c.TgKeyComponent),
         // outlet: 'sign-up',
       },
-      { path: '', redirectTo: 'sign-in', pathMatch: 'full' },
+      { path: '', redirectTo: 'sign-in-old', pathMatch: 'full' },
     ],
   },
 ];

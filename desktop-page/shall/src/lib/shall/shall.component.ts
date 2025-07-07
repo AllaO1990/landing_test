@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'lib-shall',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './shall.component.html',
   styleUrl: './shall.component.css',
 })

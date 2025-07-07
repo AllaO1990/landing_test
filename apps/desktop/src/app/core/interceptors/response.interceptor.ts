@@ -25,7 +25,7 @@ export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
       if (
         _statusList.find((status: number) => status === error.status) &&
         error.url &&
-        error.url.indexOf('/auth/sign-up') === -1
+        error.url.indexOf('/auth/') === -1
       ) {
         _alerts
           .open(`<p><strong>${error.error.message}</strong></p> ${error.url}`, {
@@ -36,10 +36,11 @@ export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
           .subscribe();
       }
 
-      return throwError(() => {
-        const message = error.message;
-        return new Error(message);
-      });
+      return throwError(() => error);
+      // return throwError(() => {
+      //   const message = error.message;
+      //   return new Error(message);
+      // });
     })
   );
 };

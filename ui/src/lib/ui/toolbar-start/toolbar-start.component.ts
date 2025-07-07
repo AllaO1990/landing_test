@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 })
 export class ToolbarStartComponent {
   public readonly links: { path: string[]; name: string }[] = [
-    { name: 'Sign in', path: ['./sign-in'] },
+    { name: 'Sign in', path: ['./sign-in-old'] },
     // { name: 'Sign up', path: ['./sign-up'] },
   ];
 

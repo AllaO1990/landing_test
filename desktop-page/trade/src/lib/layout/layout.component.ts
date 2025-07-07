@@ -1,10 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { TuiCheckbox } from '@taiga-ui/kit';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe, TuiIcon } from '@taiga-ui/core';
 import { TradeDialogService } from '../dialog/dialog.service';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
+import { FilterComponent } from '../filter/filter.component';
+import { ApiService } from '../common/api.service';
+import { IdeaFacade } from 'stores/facades/idea.facade';
+import { Observable } from 'rxjs';
+import { StockPosition } from 'types/position';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'trade-layout',
@@ -21,16 +27,23 @@ import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
     NgIf,
     AsyncPipe,
     TuiFormatNumberPipe,
+    FilterComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
+  providers: [ApiService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TradeLayoutComponent {
+export class TradeLayoutComponent implements AfterViewInit {
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #service: TradeDialogService = inject(TradeDialogService);
+  readonly #idea: IdeaFacade = inject(IdeaFacade);
 
+  readonly controlFilter = new FormControl<any>(null);
   readonly controlAuto: FormControl<boolean> = new FormControl(true, { nonNullable: true });
   readonly itemHeight = 28;
+
+  readonly idea$: Observable<StockPosition> = this.#idea.idea$;
 
   listEntry = [
     {
@@ -103,6 +116,14 @@ export class TradeLayoutComponent {
       status: { name: 'АКТИВНА', id: '2' },
     },
   ];
+
+  ngAfterViewInit(): void {
+    this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) =>
+      this.controlFilter.patchValue({
+        instrument: position.idea.instrument,
+      })
+    );
+  }
 
   open(event: Event, list: string, data: any = null) {
     event.preventDefault();
