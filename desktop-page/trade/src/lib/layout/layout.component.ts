@@ -8,7 +8,7 @@ import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
 import { ApiService } from '../common/api.service';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { filter, map, Observable, startWith } from 'rxjs';
+import { distinctUntilChanged, filter, map, Observable, startWith, switchMap } from 'rxjs';
 import { StockPosition } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeSource } from '../common/api.types';
@@ -142,6 +142,7 @@ export class TradeLayoutComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.#store.loadSources();
+    this.#store.loadOrderTypes();
 
     this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) =>
       this.controlFilter.patchValue({
@@ -153,13 +154,14 @@ export class TradeLayoutComponent implements AfterViewInit {
       .pipe(startWith(this.controlFilter.value))
       .subscribe((filter) => console.log(filter));
 
-    // this.sourceId$
-    //   .pipe(switchMap((sourceId: number) => this.#api.getAccounts(sourceId)))
-    //   .subscribe((value: any) => console.log(value));
+    this.sourceId$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap((sourceId: number) => this.#api.getAccounts(sourceId))
+      )
+      .subscribe((value: any) => console.log(value));
     //
-    // this.sourceId$
-    //   .pipe(switchMap((sourceId: number) => this.#api.getToken(sourceId)))
-    //   .subscribe((value: any) => console.log(value));
+    // this.#api.getOrderTypes().subscribe((value: any) => console.log(value));
   }
 
   open(event: Event, list: string, data: any = null) {

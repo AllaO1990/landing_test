@@ -7,7 +7,7 @@ import {
   inject,
   Injector,
 } from '@angular/core';
-import { TuiButton, TuiDataList, TuiGroup, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiDialogService, TuiGroup, TuiTextfield } from '@taiga-ui/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
@@ -20,6 +20,7 @@ import { TradeStore } from '../common/store';
 import { TradeSource, TradeSources, TradeToken, TradeTokenSource } from '../common/api.types';
 import { TradeDialogService } from '../dialog/dialog.service';
 import { StockInstrument } from 'types/stock';
+import { TUI_CONFIRM } from '@taiga-ui/kit';
 
 interface FormValue {
   instrument: StockInstrument | null;
@@ -55,6 +56,7 @@ interface FormValue {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent implements ControlValueAccessor, AfterViewInit {
+  readonly #dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   readonly #injector: Injector = inject(Injector);
   readonly #dialog: TradeDialogService = inject(TradeDialogService);
   readonly #store: TradeStore = inject(TradeStore);
@@ -167,7 +169,23 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     const { token } = this.formGroup.value;
 
     if (token) {
-      this.#store.removeToken(token);
+      this.#dialogDefaultService
+        .open<boolean>(TUI_CONFIRM, {
+          appearance: 'dialog-confirm',
+          closeable: false,
+          size: 'auto',
+          data: {
+            content: '<p class="tui-text_h6">Удалить токен?</p>',
+            yes: 'Да',
+            no: 'Нет',
+          },
+        })
+        .pipe(takeUntilDestroyed(this.#destroyRef))
+        .subscribe((result: boolean) => {
+          if (result) {
+            this.#store.removeToken(token);
+          }
+        });
     }
   }
 }

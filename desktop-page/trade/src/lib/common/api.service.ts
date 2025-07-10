@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 import { Observable } from 'rxjs';
 import { Response } from 'types/response';
-import { TradeAccounts, TradeSources, TradeToken, TradeTokenSource } from './api.types';
+import { TradeAccounts, TradeOrderTypes, TradeSources, TradeToken, TradeTokenSource } from './api.types';
 
 @Injectable()
 export class ApiService {
@@ -37,5 +37,9 @@ export class ApiService {
         tokenId: data.tokenId,
       },
     });
+  }
+
+  getOrderTypes(): Observable<Response<TradeOrderTypes>> {
+    return this._http.get<Response<TradeOrderTypes>>(`${this.host}/api/v1/trades/order-types`);
   }
 }

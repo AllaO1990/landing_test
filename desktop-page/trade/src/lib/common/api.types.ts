@@ -32,3 +32,10 @@ export interface TradeToken {
   sourceId: number;
   tokenId: number;
 }
+
+export interface TradeOrderType {
+  id: number;
+  name: string;
+}
+
+export type TradeOrderTypes = TradeOrderType[];

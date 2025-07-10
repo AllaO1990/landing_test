@@ -7,6 +7,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TuiInputDateModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { Observable, of } from 'rxjs';
 import { TuiInputNumber } from '@taiga-ui/kit';
+import { TradeStore } from '../common/store';
+import { TradeOrderTypes } from '../common/api.types';
 
 @Component({
   selector: 'trade-request',
@@ -30,6 +32,7 @@ import { TuiInputNumber } from '@taiga-ui/kit';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequestTradeComponent implements AfterViewInit {
+  readonly #store: TradeStore = inject(TradeStore);
   readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   readonly size = 's';
@@ -40,13 +43,7 @@ export class RequestTradeComponent implements AfterViewInit {
     amount: new FormControl(null, Validators.required),
   });
 
-  types$: Observable<{ name: string; id: string }[]> = of([
-    { name: 'Лимитная цена', id: '1' },
-    { name: 'Лучшая цена', id: '2' },
-    { name: 'Рыночная', id: '3' },
-    { name: 'Тейк-профит', id: '4' },
-    { name: 'Стоп-лосс', id: '5' },
-  ]);
+  types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
 
   actions$: Observable<{ name: string; id: string }[]> = of([
     { name: 'Купить', id: '1' },
@@ -90,9 +87,9 @@ export class RequestTradeComponent implements AfterViewInit {
   }
 
   @tuiPure
-  protected stringifyTypes(items: readonly { name: string; id: string }[]): TuiStringHandler<TuiContext<string>> {
-    const map = new Map(items.map(({ name, id }) => [id, name] as [string, string]));
+  protected stringifyTypes(items: TradeOrderTypes): TuiStringHandler<TuiContext<number>> {
+    const map = new Map(items.map(({ name, id }) => [id, name] as [number, string]));
 
-    return ({ $implicit }: TuiContext<string>) => map.get($implicit) || '';
+    return ({ $implicit }: TuiContext<number>) => map.get($implicit) || '';
   }
 }
