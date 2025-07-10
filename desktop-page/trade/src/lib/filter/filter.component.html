@@ -1,11 +1,12 @@
 <form class="form" [formGroup]="formGroup">
-
-  <label class="label" *ngIf="sources$ | async as list; else load">
-  <span class="label__text">
-    Источник
-  </span>
+  <lib-instrument [data]="controlInstrument.value"></lib-instrument>
+  <div class="space"></div>
+  <label class="form__control label" *ngIf="sources$ | async as list; else load">
+    <span class="label__text">
+      Источник
+    </span>
     <tui-select
-      class="label__select filter__source"
+      class="label__action filter__source"
       [stringify]="stringifySource"
       [tuiTextfieldSize]="size"
       formControlName="source"
@@ -18,6 +19,35 @@
       </tui-data-list-wrapper>
     </tui-select>
   </label>
+  <div class="form__control label">
+    <span class="label__text">
+      Токен
+    </span>
+    <div tuiGroup class="label__action">
+      <button
+        *ngIf="controlToken.value === null; else buttonCheck"
+        [size]="size"
+        class="filter__token-action"
+        tuiButton
+        iconEnd="@tui.plus"
+        appearance="secondary"
+        [disabled]="isDisabledToken$ | async"
+        (click)="addToken($event)"
+        type="button">
+        <span>Добавить токен</span>
+      </button>
+      <button
+        class="filter__token-remove"
+        [size]="size"
+        tuiIconButton
+        iconEnd="@tui.x"
+        appearance="secondary"
+        [disabled]="isDisabledRemoveToken$ | async"
+        (click)="removeToken($event)"
+        type="button">
+      </button>
+    </div>
+  </div>
 </form>
 
 
@@ -27,4 +57,17 @@
 
 <ng-template #load>
   <ui-loader></ui-loader>
+</ng-template>
+
+<ng-template #buttonCheck>
+  <button
+    [size]="size"
+    class="filter__token-action"
+    tuiButton
+    iconEnd="@tui.check"
+    appearance="positive"
+    (click)="addToken($event)"
+    type="button">
+    <span>{{ controlToken.value.name }}</span>
+  </button>
 </ng-template>

@@ -23,7 +23,8 @@
     display: flex;
     align-items: center;
 
-    padding: var(--padding-2) 0;
+    padding: var(--padding-4) 0 var(--padding-2) 0;
+    margin-top: var(--padding-2);
     border-top: 1px solid var(--main-bg-color);
 
     button {

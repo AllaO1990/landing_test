@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
 import { TuiCheckbox } from '@taiga-ui/kit';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -8,9 +8,11 @@ import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
 import { ApiService } from '../common/api.service';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { Observable } from 'rxjs';
+import { filter, map, Observable, startWith } from 'rxjs';
 import { StockPosition } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TradeSource } from '../common/api.types';
+import { TradeStore } from '../common/store';
 
 @Component({
   selector: 'trade-layout',
@@ -31,19 +33,40 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
-  providers: [ApiService],
+  providers: [
+    ApiService,
+    {
+      provide: TradeStore,
+      useFactory: (api: ApiService) => new TradeStore(api),
+      deps: [ApiService],
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradeLayoutComponent implements AfterViewInit {
+  readonly #injector: Injector = inject(Injector);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #service: TradeDialogService = inject(TradeDialogService);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
+  readonly #api: ApiService = inject(ApiService);
+  readonly #store: TradeStore = inject(TradeStore);
 
   readonly controlFilter = new FormControl<any>(null);
   readonly controlAuto: FormControl<boolean> = new FormControl(true, { nonNullable: true });
   readonly itemHeight = 28;
 
   readonly idea$: Observable<StockPosition> = this.#idea.idea$;
+  readonly sourceId$: Observable<number> = this.controlFilter.valueChanges.pipe(
+    startWith(this.controlFilter.value),
+    map((value: null | { source: null | TradeSource }): null | number => {
+      if (value !== null && value.source !== null) {
+        return value.source.id;
+      }
+
+      return null;
+    }),
+    filter((value: null | number): value is number => value !== null)
+  );
 
   listEntry = [
     {
@@ -118,17 +141,31 @@ export class TradeLayoutComponent implements AfterViewInit {
   ];
 
   ngAfterViewInit(): void {
+    this.#store.loadSources();
+
     this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) =>
       this.controlFilter.patchValue({
         instrument: position.idea.instrument,
       })
     );
+
+    this.controlFilter.valueChanges
+      .pipe(startWith(this.controlFilter.value))
+      .subscribe((filter) => console.log(filter));
+
+    // this.sourceId$
+    //   .pipe(switchMap((sourceId: number) => this.#api.getAccounts(sourceId)))
+    //   .subscribe((value: any) => console.log(value));
+    //
+    // this.sourceId$
+    //   .pipe(switchMap((sourceId: number) => this.#api.getToken(sourceId)))
+    //   .subscribe((value: any) => console.log(value));
   }
 
   open(event: Event, list: string, data: any = null) {
     event.preventDefault();
 
-    this.#service.openTradeRequest(data).subscribe((value) => {
+    this.#service.openTradeRequest(this.#injector, data).subscribe((value) => {
       if (value) {
         if (list === 'out') {
           this.listOut = this.listOut.map((item) => {

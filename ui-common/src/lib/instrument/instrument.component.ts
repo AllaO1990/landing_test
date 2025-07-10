@@ -4,7 +4,7 @@ import { IconTickerComponent } from '@ui/components/icon-ticker';
 import { StockInstrument } from 'types/stock';
 
 @Component({
-  selector: 'lib-enter-sidebar-instrument',
+  selector: 'lib-instrument',
   standalone: true,
   imports: [NgIf, IconTickerComponent],
   templateUrl: './instrument.component.html',

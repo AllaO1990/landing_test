@@ -30,7 +30,7 @@ import { EnterActionComponent } from './action/action.component';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
 import { map } from 'rxjs/operators';
-import { InstrumentComponent } from './instrument/instrument.component';
+import { InstrumentComponent } from 'ui-common/lib/instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
 import { StockEvent } from 'types/stock-event';

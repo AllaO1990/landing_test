@@ -1,0 +1,11 @@
+.form {
+  &__control {
+    display: block;
+    margin-bottom: var(--padding-2);
+
+    span {
+      display: inline-block;
+      margin-bottom: var(--padding-1);
+    }
+  }
+}

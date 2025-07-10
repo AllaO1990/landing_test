@@ -10,11 +10,24 @@
 
 .form {
   display: flex;
+
+  width: 100%;
+
+  &__control {
+    flex: 1;
+    min-width: 200px;
+
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+  }
 }
 
 .label {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
 
   width: 100%;
 
@@ -22,7 +35,25 @@
     margin-right: var(--padding-2);
   }
 
-  &__select {
+  &__action {
     flex: 1;
+
+    width: 100%;
+  }
+}
+
+.filter {
+  &__token-action {
+    flex: 1;
+
+
+    span {
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  &__token-remove {
+    flex: 0 0 auto;
   }
 }

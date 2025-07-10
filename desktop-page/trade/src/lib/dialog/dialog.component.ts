@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  Injector,
+  OnDestroy,
+} from '@angular/core';
 import { TradeLayoutComponent } from '../layout/layout.component';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
@@ -20,6 +28,7 @@ import { TradeDialogService } from './dialog.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogTradeComponent implements AfterViewInit, OnDestroy {
+  readonly #injector: Injector = inject(Injector);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #dialog: TradeDialogService = inject(TradeDialogService);
@@ -48,7 +57,7 @@ export class DialogTradeComponent implements AfterViewInit, OnDestroy {
   onConfirm(event: Event): void {
     event.preventDefault();
 
-    this.#dialog.openTradeConfirm().subscribe((value) => console.log(value));
+    this.#dialog.openTradeConfirm(this.#injector).subscribe((value) => console.log(value));
     // this.context.$implicit.complete();
   }
 }
