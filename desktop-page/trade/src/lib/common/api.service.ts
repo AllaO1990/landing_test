@@ -3,7 +3,15 @@ import { inject, Injectable } from '@angular/core';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 import { Observable } from 'rxjs';
 import { Response } from 'types/response';
-import { TradeAccounts, TradeOrders, TradeOrderTypes, TradeSources, TradeToken, TradeTokenSource } from './api.types';
+import {
+  TradeAccounts,
+  TradeOperation,
+  TradeOrders,
+  TradeOrderTypes,
+  TradeSources,
+  TradeToken,
+  TradeTokenSource,
+} from './api.types';
 import { Params } from '@angular/router';
 
 @Injectable()
@@ -35,6 +43,10 @@ export class ApiService {
     return this._http.delete<Response<TradeToken | null>>(`${this.host}/api/v1/trades/token`, {
       body: { sourceId: data.sourceId, tokenId: data.tokenId },
     });
+  }
+
+  getOperations(params: Params): Observable<Response<TradeOperation>> {
+    return this._http.get<Response<TradeOperation>>(`${this.host}/api/v1/trades/operations`, { params });
   }
 
   getOrderTypes(): Observable<Response<TradeOrderTypes>> {

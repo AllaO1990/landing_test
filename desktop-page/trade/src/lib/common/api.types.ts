@@ -96,3 +96,37 @@ export interface TradeDirection {
 }
 
 export type TradeDirections = TradeDirection[];
+
+export interface TradeOperation {
+  cancelDate: string;
+  cancelReason: string;
+  comission: {
+    currency: string;
+    value: number;
+  };
+  currency: string;
+  date: string;
+  description: string;
+  instrumentUid: string;
+  name: string;
+  operationId: string;
+  payment: {
+    currency: string;
+    value: number;
+  };
+  positionUid: string;
+  price: {
+    currency: string;
+    value: number;
+  };
+  quantity: number;
+  quantityRest: number;
+  state: number;
+  stateText: string;
+  type: number;
+  typeText: string;
+  yield: {
+    currency: string;
+    value: number;
+  };
+}

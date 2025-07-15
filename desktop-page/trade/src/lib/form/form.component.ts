@@ -23,13 +23,14 @@ import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { distinctUntilChanged, filter, map, Observable, startWith, switchMap, timer } from 'rxjs';
-import { StockPosition } from 'types/position';
+import { StockPosition, StockPositionActionTarget, StockPositionTarget } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '../common/store';
 import { Params } from '@angular/router';
 import { DirectionTypePipe } from '../common/direction-type.pipe';
 import { OrderTypePipe } from '../common/order-type.pipe';
 import { TradeOrder } from '../common/api.types';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 interface ItemEntry {
   direction: boolean;
@@ -86,10 +87,15 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     entry: new FormArray([]),
     filter: new FormControl(null),
     auto: new FormControl(true, { nonNullable: true }),
+    out: new FormArray([]),
   });
 
   get formArrayEntry(): FormArray {
     return this.formGroup.get('entry') as FormArray;
+  }
+
+  get formArrayOut(): FormArray {
+    return this.formGroup.get('out') as FormArray;
   }
 
   get controlFilter(): FormControl {
@@ -105,52 +111,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     switchMap(() => this.formArrayEntry.valueChanges.pipe(startWith(this.formArrayEntry.value)))
   );
 
-  listOut = [
-    {
-      id: '3',
-      type: { name: 'Тейк-профит', id: '4' },
-      price: 1.5,
-      amount: 2000,
-      commission: 10,
-      total: 3010,
-      broker: 'Тинькофф',
-      action: { name: 'Купить', id: '1' },
-      status: { name: 'ИСПОЛНЕНО', id: '1' },
-    },
-    {
-      id: '4',
-      type: { name: 'Тейк-профит', id: '4' },
-      price: 1.46,
-      amount: 1000,
-      commission: null,
-      total: 1460,
-      broker: 'Тинькофф',
-      action: { name: 'Купить', id: '1' },
-      status: { name: 'АКТИВНА', id: '2' },
-    },
-    {
-      id: '5',
-      type: { name: 'Тейк-профит', id: '4' },
-      price: 1.37,
-      amount: 1000,
-      commission: null,
-      total: 1370,
-      broker: 'Тинькофф',
-      action: { name: 'Купить', id: '1' },
-      status: { name: 'АКТИВНА', id: '2' },
-    },
-    {
-      id: '6',
-      type: { name: 'Стоп-лосс', id: '5' },
-      price: 1.61,
-      amount: 4000,
-      commission: null,
-      total: 6440,
-      broker: 'Тинькофф',
-      action: { name: 'Купить', id: '1' },
-      status: { name: 'АКТИВНА', id: '2' },
-    },
-  ];
+  listOut$: Observable<ItemEntry[]> = timer(500).pipe(
+    switchMap(() => this.formArrayOut.valueChanges.pipe(startWith(this.formArrayOut.value)))
+  );
 
   ngAfterViewInit(): void {
     this.#store.loadSources();
@@ -164,8 +127,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       this._updateControls(position);
     });
 
-    // this.controlFilter.valueChanges.pipe().subscribe((filter) => console.log(filter));
-
     this.controlFilter.valueChanges
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
@@ -176,15 +137,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           instrumentId: value.instrument && value.instrument.id,
         })),
         filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
-        distinctUntilChanged()
+        distinctUntilChanged(this._distinct)
       )
-      .subscribe((params: Params) => this.#store.loadOrders(params));
+      .subscribe((params: Params) => {
+        this.#store.loadOrders(params);
+        this.#store.loadOperations(params);
+      });
 
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value))
       .subscribe((value) => this.#onChange(value));
-    //
-    // this.#api.getOrderTypes().subscribe((value: any) => console.log(value));
   }
 
   open(event: Event, list: string, data: any = null) {
@@ -223,12 +185,22 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     // }
   }
 
+  private _distinct(
+    a: { accountId: string; instrumentId: string; sourceId: string },
+    b: { accountId: string; instrumentId: string; sourceId: string }
+  ): boolean {
+    return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
+  }
+
   private _updateControls(position: StockPosition): void {
     const direction = position.idea.positionType === 'long';
-    let list = [];
+    let entry = [];
+    let out = [];
+
+    console.log(position);
 
     if (position.actions.entries && position.actions.entries.length === 0) {
-      list = position.idea.entries.map((item) => ({
+      entry = position.idea.entries.map((item) => ({
         price: item.price,
         quantity: item.quantity,
         total: item.totalPrice,
@@ -236,7 +208,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         orderType: 1,
       }));
     } else {
-      list = position.actions.entries.map((item) => ({
+      entry = position.actions.entries.map((item) => ({
         ...item,
         price: item.price,
         quantity: item.amount,
@@ -248,8 +220,32 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.formArrayEntry.clear();
 
-    list.forEach((item, index: number) => {
+    entry.forEach((item, index: number) => {
       this.formArrayEntry.setControl(index, new FormControl(item));
+    });
+
+    if (position.actions.outs && position.actions.outs.length > 0) {
+      out = position.actions.outs.map((item: StockPositionActionTarget) => ({
+        price: item.price,
+        quantity: item.amount,
+        total: getNumberPrecision(item.price * item.amount, 2),
+        direction: !direction,
+        orderType: 1,
+      }));
+    } else {
+      out = position.idea.targets.map((item: StockPositionTarget) => ({
+        price: item.price,
+        quantity: item.amount,
+        total: getNumberPrecision(item.price * item.amount, 2),
+        direction: !direction,
+        orderType: 1,
+      }));
+    }
+
+    this.formArrayOut.clear();
+
+    out.forEach((item, index: number) => {
+      this.formArrayOut.setControl(index, new FormControl(item));
     });
   }
 

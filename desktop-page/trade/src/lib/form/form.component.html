@@ -7,6 +7,7 @@
   </div>
   <tui-scrollbar class="trade__container">
     <div class="orders">
+      <div class="tui-text_h6">Активные заявки</div>
       <lib-list
         [header]="headerOrder"
         [itemSize]="itemHeight"
@@ -23,10 +24,11 @@
     <div class="space"></div>
 
     <div class="entry">
+      <div class="tui-text_h6">Вход</div>
       <lib-list
         [header]="header"
         [itemSize]="itemHeight"
-        [style.height.px]="itemHeight * 2 + itemHeight"
+        [style.height.px]="itemHeight * 1 + itemHeight"
         [list]="listEntry$ | async">
         <div class="item row" *libListItem="let item; let index = index">
           <ng-container
@@ -34,41 +36,42 @@
             [ngTemplateOutletContext]="{ $implicit: item, type: 'entry' }"></ng-container>
         </div>
       </lib-list>
-      <div class="trade__actions">
-        <button
-          (click)="open($event, 'entry')"
-          appearance="primary"
-          tuiButton
-          iconStart="@tui.plus">
-          Добавить заявку
-        </button>
-      </div>
+      <!--      <div class="trade__actions">-->
+      <!--        <button-->
+      <!--          (click)="open($event, 'entry')"-->
+      <!--          appearance="primary"-->
+      <!--          tuiButton-->
+      <!--          iconStart="@tui.plus">-->
+      <!--          Добавить заявку-->
+      <!--        </button>-->
+      <!--      </div>-->
     </div>
 
     <div class="space"></div>
 
-    <!--      <div class="out">-->
-    <!--        <lib-list-->
-    <!--          [header]="header"-->
-    <!--          [itemSize]="itemHeight"-->
-    <!--          [style.height.px]="itemHeight * 3 + itemHeight"-->
-    <!--          [list]="listOut">-->
-    <!--          <div class="item row" *libListItem="let item; let index = index">-->
-    <!--            <ng-container-->
-    <!--              [ngTemplateOutlet]="itemTemplate"-->
-    <!--              [ngTemplateOutletContext]="{ $implicit: item, type: 'out' }"></ng-container>-->
-    <!--          </div>-->
-    <!--        </lib-list>-->
-    <!--        <div class="trade__actions">-->
-    <!--          <button-->
-    <!--            (click)="open($event, 'out')"-->
-    <!--            appearance="primary"-->
-    <!--            tuiButton-->
-    <!--            iconStart="@tui.plus">-->
-    <!--            Добавить заявку-->
-    <!--          </button>-->
-    <!--        </div>-->
-    <!--      </div>-->
+    <div class="out">
+      <div class="tui-text_h6">Выход</div>
+      <lib-list
+        [header]="header"
+        [itemSize]="itemHeight"
+        [style.height.px]="itemHeight * 3 + itemHeight"
+        [list]="listOut$ | async">
+        <div class="item row" *libListItem="let item; let index = index">
+          <ng-container
+            [ngTemplateOutlet]="itemEntryTemplate"
+            [ngTemplateOutletContext]="{ $implicit: item, type: 'out' }"></ng-container>
+        </div>
+      </lib-list>
+      <!--      <div class="trade__actions">-->
+      <!--        <button-->
+      <!--          (click)="open($event, 'out')"-->
+      <!--          appearance="primary"-->
+      <!--          tuiButton-->
+      <!--          iconStart="@tui.plus">-->
+      <!--          Добавить заявку-->
+      <!--        </button>-->
+      <!--      </div>-->
+    </div>
   </tui-scrollbar>
   <div class="trade__actions">
     <div class="space"></div>

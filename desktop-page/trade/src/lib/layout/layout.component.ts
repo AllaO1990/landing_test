@@ -43,26 +43,31 @@ export class LayoutComponent {
 
     console.log(this.formGroup.value);
 
-    const { filter, entry } = this.formGroup.value.trade;
+    const { filter, entry, out } = this.formGroup.value.trade;
     const { account, instrument } = filter;
-    const { total, ...order } = entry[0];
 
-    this.#store.addOrder({
-      ...order,
-      accountId: account.accountId,
-      instrumentId: instrument.id,
+    const params = [...entry, ...out].map((item) => {
+      const { total, ...order } = item;
+
+      return {
+        ...order,
+        accountId: account.accountId,
+        instrumentId: instrument.id,
+      };
     });
 
-    // this.#api
-    //   .setOrder({
-    //     ...order,
-    //     accountId: account.accountId,
-    //     instrumentId: instrument.id,
-    //   })
-    //   .subscribe((res) => console.log(res));
-    // this.#dialog.openTradeConfirm(this.#injector).subscribe((value) => console.log(value));
-    // this.context.$implicit.complete({ re: 're' });
+    this.#store.addOrders(params);
   }
+
+  // this.#api
+  //   .setOrder({
+  //     ...order,
+  //     accountId: account.accountId,
+  //     instrumentId: instrument.id,
+  //   })
+  //   .subscribe((res) => console.log(res));
+  // this.#dialog.openTradeConfirm(this.#injector).subscribe((value) => console.log(value));
+  // this.context.$implicit.complete({ re: 're' });
 }
 
 // {
