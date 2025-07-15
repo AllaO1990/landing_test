@@ -1,10 +1,11 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { ApiService } from './api.service';
-import { catchError, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, forkJoin, Observable, of, switchMap, tap } from 'rxjs';
 import { Response } from 'types/response';
 import {
   TradeAccounts,
   TradeDirections,
+  TradeOperation,
   TradeOrders,
   TradeOrderTypes,
   TradeSources,
@@ -19,6 +20,7 @@ export interface TradeState {
   accounts: Response<TradeAccounts | null> | null;
   orderType: TradeOrderTypes | null;
   orders: TradeOrders | null;
+  operations: TradeOperation | null;
   directionTypes: TradeDirections | null;
 }
 
@@ -33,6 +35,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   );
   readonly orderTypes$: Observable<TradeOrderTypes | null> = this.select((state: TradeState) => state.orderType);
   readonly orders$: Observable<TradeOrders | null> = this.select((state: TradeState) => state.orders);
+  readonly operations$: Observable<TradeOperation | null> = this.select((state: TradeState) => state.operations);
 
   constructor(private _api: ApiService) {
     super({
@@ -41,6 +44,7 @@ export class TradeStore extends ComponentStore<TradeState> {
       accounts: null,
       orderType: null,
       orders: null,
+      operations: null,
       directionTypes: [
         { id: true, name: 'Купить' },
         { id: false, name: 'Продать' },
@@ -80,6 +84,13 @@ export class TradeStore extends ComponentStore<TradeState> {
     (state: TradeState, orders: null | TradeOrders): TradeState => ({
       ...state,
       orders,
+    })
+  );
+
+  readonly updateOperations = this.updater(
+    (state: TradeState, operations: null | TradeOperation): TradeState => ({
+      ...state,
+      operations,
     })
   );
 
@@ -131,6 +142,13 @@ export class TradeStore extends ComponentStore<TradeState> {
     )
   );
 
+  loadOperations = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) => this._api.getOperations(params)),
+      tap((response: Response<TradeOperation | null>) => response.success && this.updateOperations(response.data))
+    )
+  );
+
   loadOrders = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) => this._api.getOrders(params)),
@@ -144,6 +162,10 @@ export class TradeStore extends ComponentStore<TradeState> {
         this._api.setOrder(params).pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
       )
     )
+  );
+
+  addOrders = this.effect((stream$: Observable<Params[]>) =>
+    stream$.pipe(switchMap((params: Params[]) => forkJoin(params.map((item: Params) => this._api.setOrder(item)))))
   );
 
   removeOrder = this.effect((stream$: Observable<Params>) =>

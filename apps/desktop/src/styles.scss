@@ -134,21 +134,15 @@ lib-dialog[appearance="dialog-block"] {
 
 lib-dialog[appearance="medium-block"] {
   display: block;
-  margin: auto;
-  border: none;
-  border-radius: 0;
 
   max-width: 750px;
   width: 60vw;
   min-height: 500px;
-  height: 50vh;
+  height: 60vh;
 }
 
 lib-dialog[appearance="small-block"] {
   display: block;
-  margin: auto;
-  border: none;
-  border-radius: 0;
 
   width: 30vw;
 }
