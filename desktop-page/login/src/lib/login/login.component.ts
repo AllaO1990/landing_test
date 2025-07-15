@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { PromoComponent } from './promo/promo.component';
 
 @Component({
-  selector: 'login-layout',
+  selector: 'login-form',
   standalone: true,
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],

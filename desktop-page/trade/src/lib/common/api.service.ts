@@ -3,7 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 import { Observable } from 'rxjs';
 import { Response } from 'types/response';
-import { TradeAccounts, TradeOrderTypes, TradeSources, TradeToken, TradeTokenSource } from './api.types';
+import { TradeAccounts, TradeOrders, TradeOrderTypes, TradeSources, TradeToken, TradeTokenSource } from './api.types';
+import { Params } from '@angular/router';
 
 @Injectable()
 export class ApiService {
@@ -32,14 +33,29 @@ export class ApiService {
 
   removeToken(data: TradeToken): Observable<Response<any>> {
     return this._http.delete<Response<TradeToken | null>>(`${this.host}/api/v1/trades/token`, {
-      body: {
-        sourceId: data.sourceId,
-        tokenId: data.tokenId,
-      },
+      body: { sourceId: data.sourceId, tokenId: data.tokenId },
     });
   }
 
   getOrderTypes(): Observable<Response<TradeOrderTypes>> {
     return this._http.get<Response<TradeOrderTypes>>(`${this.host}/api/v1/trades/order-types`);
+  }
+
+  getOrders(params: Params): Observable<Response<TradeOrders>> {
+    return this._http.get<Response<TradeOrders>>(`${this.host}/api/v1/trades/orders`, { params });
+  }
+
+  setOrder(body: Params): Observable<Response<TradeOrders>> {
+    return this._http.post<Response<TradeOrders>>(`${this.host}/api/v1/trades/orders`, body);
+  }
+
+  removeOrder(data: Params): Observable<Response<any>> {
+    return this._http.delete<Response<any>>(`${this.host}/api/v1/trades/orders`, {
+      body: {
+        accountId: data['accountId'],
+        orderId: data['orderId'],
+        sourceId: data['sourceId'],
+      },
+    });
   }
 }

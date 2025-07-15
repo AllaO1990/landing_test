@@ -37,17 +37,17 @@ export class RequestTradeComponent implements AfterViewInit {
 
   readonly size = 's';
   readonly formGroup: FormGroup = new FormGroup({
-    action: new FormControl(null, Validators.required),
-    type: new FormControl(null, Validators.required),
+    direction: new FormControl(null, Validators.required),
+    orderType: new FormControl(null, Validators.required),
     price: new FormControl(null, Validators.required),
-    amount: new FormControl(null, Validators.required),
+    quantity: new FormControl(null, Validators.required),
   });
 
   types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
 
-  actions$: Observable<{ name: string; id: string }[]> = of([
-    { name: 'Купить', id: '1' },
-    { name: 'Продать', id: '2' },
+  actions$: Observable<{ name: string; id: boolean }[]> = of([
+    { name: 'Купить', id: true },
+    { name: 'Продать', id: false },
   ]);
 
   onCancel(event: Event): void {
@@ -68,22 +68,22 @@ export class RequestTradeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.#context) {
-      const { type, action, amount, price } = this.#context;
+      const { orderType, direction, quantity, price } = this.#context;
 
       this.formGroup.patchValue({
-        action: action && action.id,
-        amount,
-        type: type && type.id,
+        direction: direction !== undefined && direction,
+        quantity,
+        orderType: orderType && orderType.id,
         price,
       });
     }
   }
 
   @tuiPure
-  protected stringifyActions(items: readonly { name: string; id: string }[]): TuiStringHandler<TuiContext<string>> {
-    const map = new Map(items.map(({ name, id }) => [id, name] as [string, string]));
+  protected stringifyActions(items: readonly { name: string; id: boolean }[]): TuiStringHandler<TuiContext<boolean>> {
+    const map = new Map(items.map(({ name, id }) => [id, name] as [boolean, string]));
 
-    return ({ $implicit }: TuiContext<string>) => map.get($implicit) || '';
+    return ({ $implicit }: TuiContext<boolean>) => map.get($implicit) || '';
   }
 
   @tuiPure

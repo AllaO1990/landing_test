@@ -1,85 +1,10 @@
-.trade {
+:host {
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-flow: column nowrap;
 
-  &__container {
-    flex: 1 1;
-  }
-
-  &__actions {
-    display: flex;
-    margin-top: var(--padding-2);
-  }
+  height: 100%;
+  width: 100%;
 }
 
-.out {
-  margin-top: var(--padding-4);
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  height: 28px;
-
-  &__item {
-    flex: 0 0 calc(100% / 10 - var(--padding-4));
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    margin: 0 var(--padding-2);
-
-    &--actions {
-      min-width: 52px;
-    }
-
-    &--types {
-      min-width: 70px;
-    }
-
-    &--total {
-      min-width: 70px;
-    }
-
-    &--center {
-      text-align: center;
-    }
-  }
-}
-
-.item {
-  background-color: var(--tui-background-base-alt, #F6F7FB);
-
-  &__value {
-    &--number {
-      text-align: right;
-    }
-
-    button {
-      &:not(:last-child) {
-        margin-right: var(--padding-1);
-      }
-
-      &:before {
-        font-size: 0.8rem;
-      }
-    }
-
-    tui-icon {
-      font-size: 0.8rem;
-    }
-  }
-}
-
-.header {
-  background-color: var(--tui-background-base);
-}
-
-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  user-select: none;
-}

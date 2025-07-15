@@ -7,26 +7,37 @@ import {
   inject,
   Injector,
 } from '@angular/core';
-import { TuiButton, TuiDataList, TuiDialogService, TuiGroup, TuiTextfield } from '@taiga-ui/core';
+import {
+  TuiButton,
+  TuiDataList,
+  TuiDialogService,
+  TuiFormatNumberPipe,
+  TuiGroup,
+  TuiHint,
+  TuiTextfield,
+} from '@taiga-ui/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { distinctUntilChanged, filter, map, Observable, startWith, take } from 'rxjs';
+import { distinctUntilChanged, filter, map, Observable, startWith, take, tap } from 'rxjs';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InstrumentComponent } from 'ui-common/lib/instrument/instrument.component';
 import { TradeStore } from '../common/store';
-import { TradeSource, TradeSources, TradeToken, TradeTokenSource } from '../common/api.types';
+import {
+  TradeAccount,
+  TradeAccounts,
+  TradeSource,
+  TradeSources,
+  TradeToken,
+  TradeTokenSource,
+} from '../common/api.types';
 import { TradeDialogService } from '../dialog/dialog.service';
+import { TUI_CONFIRM, TuiChip } from '@taiga-ui/kit';
 import { StockInstrument } from 'types/stock';
-import { TUI_CONFIRM } from '@taiga-ui/kit';
-
-interface FormValue {
-  instrument: StockInstrument | null;
-  source: TradeSource | null;
-  token: TradeToken | null;
-}
+import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
+import { Response } from 'types/response';
 
 @Component({
   selector: 'trade-filter',
@@ -43,6 +54,13 @@ interface FormValue {
     InstrumentComponent,
     TuiButton,
     TuiGroup,
+    NgForOf,
+    TuiFormatNumberPipe,
+    TuiCurrencyPipe,
+    UpperCasePipe,
+    JsonPipe,
+    TuiChip,
+    TuiHint,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
@@ -66,14 +84,19 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
   #onTouched = () => {};
 
   readonly size = 's';
+  readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.#store.accounts$.pipe(
+    filter((data: Response<TradeAccounts | null> | null): data is Response<TradeAccounts | null> => data !== null),
+    tap((response: Response<TradeAccounts | null>) => response.data && this.controlAccount.setValue(response.data[0]))
+  );
   readonly token$: Observable<TradeToken | null> = this.#store.token$;
   readonly sources$: Observable<TradeSources> = this.#store.source$.pipe(
     filter((data: TradeSources | null): data is TradeSources => data !== null)
   );
   readonly formGroup: FormGroup = new FormGroup({
-    instrument: new FormControl(null),
+    instrument: new FormControl<StockInstrument | null>(null),
     source: new FormControl<TradeSource | null>(null),
     token: new FormControl<TradeToken | null>(null),
+    account: new FormControl<TradeAccount | null>(null),
   });
 
   get controlInstrument(): FormControl {
@@ -86,6 +109,10 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
   get controlToken(): FormControl {
     return this.formGroup.get('token') as FormControl;
+  }
+
+  get controlAccount(): FormControl {
+    return this.formGroup.get('account') as FormControl;
   }
 
   readonly isDisabledToken$: Observable<boolean> = this.controlSource.valueChanges.pipe(
@@ -135,7 +162,10 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
         map((value: TradeSource) => value.id),
         distinctUntilChanged()
       )
-      .subscribe((id: number) => this.#store.loadToken(id));
+      .subscribe((id: number) => {
+        this.#store.loadToken(id);
+        this.#store.loadAccounts(id);
+      });
 
     this.sources$
       .pipe(
@@ -187,5 +217,9 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
           }
         });
     }
+  }
+
+  trackByIndex(index: number): number {
+    return index;
   }
 }

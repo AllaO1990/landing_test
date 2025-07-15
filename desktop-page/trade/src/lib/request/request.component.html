@@ -8,7 +8,7 @@
       class="form__control"
       [valueContent]="stringifyActions(items)"
       [tuiTextfieldSize]="size"
-      formControlName="action">
+      formControlName="direction">
       Действия
       <input autocomplete="off" tuiTextfieldLegacy />
       <ng-template tuiDataList>
@@ -29,8 +29,8 @@
       class="form__control"
       [valueContent]="stringifyTypes(items)"
       [tuiTextfieldSize]="size"
-      formControlName="type">
-      Тип
+      formControlName="orderType">
+      Тип заявки
       <input autocomplete="off" tuiTextfieldLegacy />
       <ng-template tuiDataList>
         <tui-data-list>
@@ -61,7 +61,7 @@
       <input
         placeholder="Количество"
         tuiInputNumber
-        formControlName="amount"
+        formControlName="quantity"
       />
     </tui-textfield>
   </div>

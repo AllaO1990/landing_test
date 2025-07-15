@@ -26,6 +26,7 @@
     "@angular/router": "^17.3.12",
     "@ngrx/component-store": "^17.1.1",
     "@taiga-ui/addon-charts": "^4.32.0",
+    "@taiga-ui/addon-commerce": "^4.44.0",
     "@taiga-ui/addon-table": "^4.32.0",
     "@taiga-ui/cdk": "^4.32.0",
     "@taiga-ui/core": "^4.32.0",

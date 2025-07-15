@@ -1,21 +1,38 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { ApiService } from './api.service';
-import { Observable, switchMap, tap } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { Response } from 'types/response';
-import { TradeAccounts, TradeOrderTypes, TradeSources, TradeToken, TradeTokenSource } from './api.types';
+import {
+  TradeAccounts,
+  TradeDirections,
+  TradeOrders,
+  TradeOrderTypes,
+  TradeSources,
+  TradeToken,
+  TradeTokenSource,
+} from './api.types';
+import { Params } from '@angular/router';
 
 export interface TradeState {
   sources: TradeSources | null;
   token: TradeToken | null;
-  accounts: TradeAccounts | null;
+  accounts: Response<TradeAccounts | null> | null;
   orderType: TradeOrderTypes | null;
+  orders: TradeOrders | null;
+  directionTypes: TradeDirections | null;
 }
 
 export class TradeStore extends ComponentStore<TradeState> {
   readonly source$: Observable<TradeSources | null> = this.select((state: TradeState) => state.sources);
   readonly token$: Observable<TradeToken | null> = this.select((state: TradeState) => state.token);
-  readonly accounts$: Observable<TradeAccounts | null> = this.select((state: TradeState) => state.accounts);
+  readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.select(
+    (state: TradeState) => state.accounts
+  );
+  readonly directionTypes$: Observable<TradeDirections | null> = this.select(
+    (state: TradeState) => state.directionTypes
+  );
   readonly orderTypes$: Observable<TradeOrderTypes | null> = this.select((state: TradeState) => state.orderType);
+  readonly orders$: Observable<TradeOrders | null> = this.select((state: TradeState) => state.orders);
 
   constructor(private _api: ApiService) {
     super({
@@ -23,6 +40,11 @@ export class TradeStore extends ComponentStore<TradeState> {
       token: null,
       accounts: null,
       orderType: null,
+      orders: null,
+      directionTypes: [
+        { id: true, name: 'Купить' },
+        { id: false, name: 'Продать' },
+      ],
     });
   }
 
@@ -41,7 +63,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   );
 
   readonly updateAccounts = this.updater(
-    (state: TradeState, accounts: null | TradeAccounts): TradeState => ({
+    (state: TradeState, accounts: Response<TradeAccounts | null> | null): TradeState => ({
       ...state,
       accounts,
     })
@@ -54,9 +76,16 @@ export class TradeStore extends ComponentStore<TradeState> {
     })
   );
 
+  readonly updateOrders = this.updater(
+    (state: TradeState, orders: null | TradeOrders): TradeState => ({
+      ...state,
+      orders,
+    })
+  );
+
   loadSources = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
-      switchMap((_: void) => this._api.getSources()),
+      switchMap(() => this._api.getSources()),
       tap((response: Response<TradeSources>) => this.updateSources(response.data))
     )
   );
@@ -85,14 +114,45 @@ export class TradeStore extends ComponentStore<TradeState> {
   loadAccounts = this.effect((stream$: Observable<number>) =>
     stream$.pipe(
       switchMap((sourceId: number) => this._api.getAccounts(sourceId)),
-      tap((response: Response<TradeAccounts | null>) => response.success && this.updateAccounts(response.data))
+      catchError((error) =>
+        of({
+          data: null,
+          ...error.error,
+        })
+      ),
+      tap((response: Response<TradeAccounts | null>) => this.updateAccounts(response))
     )
   );
 
   loadOrderTypes = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
-      switchMap((_: void) => this._api.getOrderTypes()),
+      switchMap(() => this._api.getOrderTypes()),
       tap((response: Response<TradeOrderTypes>) => this.updateOrderTypes(response.data))
+    )
+  );
+
+  loadOrders = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) => this._api.getOrders(params)),
+      tap((response: Response<TradeOrders | null>) => response.success && this.updateOrders(response.data))
+    )
+  );
+
+  addOrder = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api.setOrder(params).pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
+      )
+    )
+  );
+
+  removeOrder = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api
+          .removeOrder(params)
+          .pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
+      )
     )
   );
 }

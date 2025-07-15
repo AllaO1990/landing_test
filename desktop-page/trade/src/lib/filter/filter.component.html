@@ -1,11 +1,14 @@
 <form class="form" [formGroup]="formGroup">
-  <lib-instrument [data]="controlInstrument.value"></lib-instrument>
+  <lib-instrument
+    class="form__instrument"
+    [data]="controlInstrument.value"></lib-instrument>
   <div class="space"></div>
-  <label class="form__control label" *ngIf="sources$ | async as list; else load">
+  <label class="form__control label">
     <span class="label__text">
       Источник
     </span>
     <tui-select
+      *ngIf="sources$ | async as list; else load"
       class="label__action filter__source"
       [stringify]="stringifySource"
       [tuiTextfieldSize]="size"
@@ -19,6 +22,41 @@
       </tui-data-list-wrapper>
     </tui-select>
   </label>
+
+  <label class="form__control label">
+    <span class="label__text">
+      Брокерский счёт
+    </span>
+    @if (accounts$ | async; as list) {
+      @if (list.data) {
+        <tui-select
+          class="label__action filter__source"
+          [stringify]="stringifySource"
+          [tuiTextfieldSize]="size"
+          formControlName="account"
+          [tuiTextfieldLabelOutside]="true">
+          <tui-data-list-wrapper
+            *tuiDataList
+            [size]="size"
+            [items]="list.data"
+            [itemContent]="contentAccount">
+          </tui-data-list-wrapper>
+        </tui-select>
+      } @else {
+        <tui-chip
+          [tuiHint]="list.message"
+          tuiHintAppearance="dark"
+          appearance="negative">
+          <span>
+          {{ list.message }}
+          </span>
+        </tui-chip>
+      }
+    } @else {
+      <ui-loader></ui-loader>
+    }
+  </label>
+
   <div class="form__control label">
     <span class="label__text">
       Токен
@@ -55,8 +93,31 @@
   {{ item.name }}
 </ng-template>
 
+<ng-template #contentAccount let-account>
+  <div class="account">
+    <div class="account__name">
+      {{ account.name }}
+    </div>
+    <div
+      class="account__money"
+      *ngFor="let item of account.availableMoney; trackBy: trackByIndex">
+      {{
+        item.value | tuiFormatNumber: {
+          precision: 2,
+          decimalMode: 'always'
+        } | async
+      }} {{ item.currency | uppercase | tuiCurrency }}
+    </div>
+  </div>
+
+</ng-template>
+
 <ng-template #load>
   <ui-loader></ui-loader>
+</ng-template>
+
+<ng-template #error let-error>
+  {{ error | json }}
 </ng-template>
 
 <ng-template #buttonCheck>
