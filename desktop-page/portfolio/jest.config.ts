@@ -3,7 +3,7 @@ export default {
   displayName: 'layout',
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../coverage/desktop-page/layout',
+  coverageDirectory: '../../coverage/desktop-page/form',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

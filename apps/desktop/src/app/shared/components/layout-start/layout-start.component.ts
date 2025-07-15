@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'vt-layout-start',
+  selector: 'vt-form-start',
   templateUrl: './layout-start.component.html',
   styleUrls: ['./layout-start.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

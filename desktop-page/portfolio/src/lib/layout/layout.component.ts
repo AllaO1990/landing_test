@@ -130,7 +130,7 @@ const INPUT_DATA_PORTFOLIO_PROFIT = {
 };
 
 @Component({
-  selector: 'lib-layout',
+  selector: 'lib-form',
   standalone: true,
   imports: [
     AsyncPipe,

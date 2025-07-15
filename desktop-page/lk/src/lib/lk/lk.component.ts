@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, INJECTOR, Injector, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
 import { CONTEXT_ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
@@ -70,19 +70,19 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
     },
     {
       provide: TradeDialogService,
-      useFactory: (dialog: DialogService, injector: Injector) => new TradeDialogService(dialog, injector),
-      deps: [DIALOG, INJECTOR],
+      useFactory: (dialog: DialogService) => new TradeDialogService(dialog),
+      deps: [DIALOG],
     },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LkComponent implements OnInit {
+  readonly #injector: Injector = inject(Injector);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #dialogTrade: TradeDialogService = inject(TradeDialogService);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
-  private readonly _injector: Injector = inject(Injector);
   private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
   private readonly _queryEnter$: Observable<Params> = this._queryParams.pipe(
     takeUntilDestroyed(this.#destroyRef),
@@ -136,7 +136,7 @@ export class LkComponent implements OnInit {
         distinctUntilChanged((a: Params, b: Params) => a['trade'] === b['trade']),
         filter((params: Params) => params['trade'] === 'visible'),
         debounceTime(100),
-        switchMap(() => this.#dialogTrade.openTradeDialog())
+        switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector))
       )
       .subscribe(() => console.log('dialog service'));
   }
@@ -144,7 +144,7 @@ export class LkComponent implements OnInit {
   async onOpenDialog() {
     this._componentEnter = await import('desktop-page/enter')
       .then((m) => m.VtEnterComponent)
-      .then((c) => new PolymorpheusComponent(c, this._injector));
+      .then((c) => new PolymorpheusComponent(c, this.#injector));
 
     this._queryEnter$.pipe(switchMap(() => this._dialogEnterService.open(this._componentEnter))).subscribe();
   }
