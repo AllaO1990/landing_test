@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TradeFormComponent } from '../form/form.component';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiPopover } from '@taiga-ui/cdk';
@@ -23,14 +23,17 @@ import { TradeStore } from '../common/store';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayoutComponent {
-  readonly #api: ApiService = inject(ApiService);
+export class LayoutComponent implements AfterViewInit {
   readonly #store: TradeStore = inject(TradeStore);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   readonly formGroup: FormGroup = new FormGroup({
     trade: new FormControl(null),
   });
+
+  ngAfterViewInit(): void {
+    this.#store.loadOrderTypes();
+  }
 
   onClose(event: Event): void {
     event.preventDefault();

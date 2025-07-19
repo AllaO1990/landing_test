@@ -1,25 +1,9 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  Injector,
-} from '@angular/core';
-import {
-  TuiButton,
-  TuiDataList,
-  TuiDialogService,
-  TuiFormatNumberPipe,
-  TuiGroup,
-  TuiHint,
-  TuiTextfield,
-} from '@taiga-ui/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
+import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield, TuiTitle } from '@taiga-ui/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { distinctUntilChanged, filter, map, Observable, startWith, take, tap } from 'rxjs';
+import { distinctUntilChanged, filter, map, Observable, pairwise, startWith, take, tap } from 'rxjs';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -28,16 +12,21 @@ import { TradeStore } from '../common/store';
 import {
   TradeAccount,
   TradeAccounts,
+  TradePortfolio,
+  TradePosition,
   TradeSource,
   TradeSources,
   TradeToken,
-  TradeTokenSource,
 } from '../common/api.types';
-import { TradeDialogService } from '../dialog/dialog.service';
-import { TUI_CONFIRM, TuiChip } from '@taiga-ui/kit';
+import { TuiChip } from '@taiga-ui/kit';
 import { StockInstrument } from 'types/stock';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { Response } from 'types/response';
+import { TuiCell } from '@taiga-ui/layout';
+import { Params } from '@angular/router';
+import { StockPosition } from 'types/position';
+import { IdeaFacade } from 'stores/facades/idea.facade';
+import { TokenButtonComponent } from '../token-button/token-button.component';
 
 @Component({
   selector: 'trade-filter',
@@ -52,8 +41,6 @@ import { Response } from 'types/response';
     AsyncPipe,
     LoaderComponent,
     InstrumentComponent,
-    TuiButton,
-    TuiGroup,
     NgForOf,
     TuiFormatNumberPipe,
     TuiCurrencyPipe,
@@ -61,6 +48,9 @@ import { Response } from 'types/response';
     JsonPipe,
     TuiChip,
     TuiHint,
+    TuiCell,
+    TuiTitle,
+    TokenButtonComponent,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
@@ -74,21 +64,24 @@ import { Response } from 'types/response';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent implements ControlValueAccessor, AfterViewInit {
-  readonly #dialogDefaultService: TuiDialogService = inject(TuiDialogService);
-  readonly #injector: Injector = inject(Injector);
-  readonly #dialog: TradeDialogService = inject(TradeDialogService);
   readonly #store: TradeStore = inject(TradeStore);
+  readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   #onChange = (_: any) => {};
   #onTouched = () => {};
 
   readonly size = 's';
+  readonly idea$: Observable<StockPosition> = this.#idea.idea$;
   readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.#store.accounts$.pipe(
     filter((data: Response<TradeAccounts | null> | null): data is Response<TradeAccounts | null> => data !== null),
-    tap((response: Response<TradeAccounts | null>) => response.data && this.controlAccount.setValue(response.data[0]))
+    tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
   );
-  readonly token$: Observable<TradeToken | null> = this.#store.token$;
+  readonly token$: Observable<Response<TradeToken | null> | null> = this.#store.token$;
+  readonly portfolio$: Observable<TradePosition | null> = this.#store.portfolio$.pipe(
+    filter((portfolio: TradePortfolio | null): portfolio is TradePortfolio => portfolio !== null),
+    map((portfolio: TradePortfolio): TradePosition | null => portfolio.positions[0] || null)
+  );
   readonly sources$: Observable<TradeSources> = this.#store.source$.pipe(
     filter((data: TradeSources | null): data is TradeSources => data !== null)
   );
@@ -115,14 +108,6 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     return this.formGroup.get('account') as FormControl;
   }
 
-  readonly isDisabledToken$: Observable<boolean> = this.controlSource.valueChanges.pipe(
-    map((value: null | TradeSource) => value === null),
-    distinctUntilChanged()
-  );
-  readonly isDisabledRemoveToken$: Observable<boolean> = this.controlToken.valueChanges.pipe(
-    map((value: null | TradeToken) => value === null),
-    distinctUntilChanged()
-  );
   readonly stringifySource: TuiStringHandler<TradeSource> = (item: TradeSource) => item.name;
 
   isDisabled = false;
@@ -154,6 +139,31 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
         this.#onChange(value);
       });
 
+    this.#store.loadSources();
+
+    this.idea$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
+      )
+      .subscribe((position: StockPosition) => this.controlInstrument.patchValue(position.idea.instrument));
+
+    this.formGroup.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        startWith(this.formGroup.value),
+        map((value) => ({
+          sourceId: value.source && value.source.id,
+          accountId: value.account && value.account.accountId,
+          instrumentId: value.instrument && value.instrument.id,
+        })),
+        filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
+        distinctUntilChanged(this._distinct)
+      )
+      .subscribe((params: Params) => {
+        this.#store.loadPortfolio(params);
+      });
+
     this.controlSource.valueChanges
       .pipe(
         startWith(this.controlSource.value),
@@ -164,7 +174,6 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
       )
       .subscribe((id: number) => {
         this.#store.loadToken(id);
-        this.#store.loadAccounts(id);
       });
 
     this.sources$
@@ -176,50 +185,35 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
       .subscribe((list: TradeSources) => this.controlSource.setValue(list[0]));
 
     this.token$
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe((value: TradeToken | null) => this.controlToken.setValue(value));
-  }
-
-  addToken(event: Event): void {
-    event.preventDefault();
-
-    this.#dialog
-      .openTradeToken(this.#injector, this.formGroup.value)
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe((value: null | TradeTokenSource) => {
-        if (value !== null) {
-          this.#store.changeToken(value);
-        }
-      });
-  }
-
-  removeToken(event: Event): void {
-    event.preventDefault();
-
-    const { token } = this.formGroup.value;
-
-    if (token) {
-      this.#dialogDefaultService
-        .open<boolean>(TUI_CONFIRM, {
-          appearance: 'dialog-confirm',
-          closeable: false,
-          size: 'auto',
-          data: {
-            content: '<p class="tui-text_h6">Удалить токен?</p>',
-            yes: 'Да',
-            no: 'Нет',
-          },
-        })
-        .pipe(takeUntilDestroyed(this.#destroyRef))
-        .subscribe((result: boolean) => {
-          if (result) {
-            this.#store.removeToken(token);
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        pairwise(),
+        map(([first, second]: [Response<TradeToken | null> | null, Response<TradeToken | null> | null]) => {
+          if ((first !== null && second === null) || (second && second.data === null)) {
+            this.#store.updateAccounts({
+              data: null,
+              message: 'Не добавлен токен источника tinkoff',
+              success: true,
+            });
           }
-        });
-    }
+
+          if ((first === null || first.data === null) && second !== null && second.data !== null) {
+            this.#store.loadAccounts(second.data.sourceId);
+          }
+          return second;
+        })
+      )
+      .subscribe((value: Response<TradeToken | null> | null) => this.controlToken.setValue(value && value.data));
   }
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  private _distinct(
+    a: { accountId: string; instrumentId: string; sourceId: string },
+    b: { accountId: string; instrumentId: string; sourceId: string }
+  ): boolean {
+    return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
   }
 }

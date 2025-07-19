@@ -6,6 +6,21 @@
     <trade-filter formControlName="filter"></trade-filter>
   </div>
   <tui-scrollbar class="trade__container">
+    <div class="operations">
+      <div class="tui-text_h6">Операции</div>
+      <lib-list
+        [header]="headerOrder"
+        [itemSize]="itemHeight"
+        [style.height.px]="itemHeight * 2 + itemHeight"
+        [list]="operations$ | async">
+        <div class="item row" *libListItem="let item; let index = index">
+          <ng-container
+            [ngTemplateOutlet]="itemOperationTemplate"
+            [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+        </div>
+      </lib-list>
+    </div>
+
     <div class="orders">
       <div class="tui-text_h6">Активные заявки</div>
       <lib-list
@@ -97,7 +112,7 @@
     <div class="header__item row__item">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
     <!--    <div class="header__item row__item">Брокер</div>-->
-    <!--    <div class="header__item row__item">Статус</div>-->
+    <div class="header__item row__item">Статус</div>
     <div class="header__item row__item row__item--actions"></div>
   </lib-list-header>
 </ng-template>
@@ -129,16 +144,16 @@
   <!--  <div class="item__value row__item">-->
   <!--    {{ item.broker }}-->
   <!--  </div>-->
-  <!--  <div class="item__value row__item row__item&#45;&#45;center">-->
-  <!--    <tui-icon-->
-  <!--      *ngIf="item.status.id === '2'"-->
-  <!--      style="color: var(&#45;&#45;tui-status-warning)"-->
-  <!--      icon="@tui.refresh-cw"></tui-icon>-->
-  <!--    <tui-icon-->
-  <!--      *ngIf="item.status.id === '1'"-->
-  <!--      style="color: var(&#45;&#45;tui-text-positive)"-->
-  <!--      icon="@tui.circle-check"></tui-icon>-->
-  <!--  </div>-->
+  <div class="item__value row__item row__item--center">
+    <!--      <tui-icon-->
+    <!--        *ngIf="item.status.id === '2'"-->
+    <!--        style="color: var(&#45;&#45;tui-status-warning)"-->
+    <!--        icon="@tui.refresh-cw"></tui-icon>-->
+    <!--      <tui-icon-->
+    <!--        *ngIf="item.status.id === '1'"-->
+    <!--        style="color: var(&#45;&#45;tui-text-positive)"-->
+    <!--        icon="@tui.circle-check"></tui-icon>-->
+  </div>
   <div class="item__value row__item row__item--actions">
     <!--    <button-->
     <!--      appearance="icon"-->
@@ -262,13 +277,15 @@
   <!--      icon="@tui.circle-check"></tui-icon>-->
   <!--  </div>-->
   <div class="item__value row__item row__item--actions">
-    <!--    <button-->
-    <!--      appearance="icon"-->
-    <!--      iconStart="@tui.pencil"-->
-    <!--      tuiIconButton-->
-    <!--      size="xs"-->
-    <!--      type="button"-->
-    <!--    ></button>-->
+    <button
+      appearance="icon"
+      iconStart="@tui.pencil"
+      tuiIconButton
+      size="xs"
+      type="button"
+      (click)="onChangeOrder($event, item)"
+      [loading]="item.change"
+    ></button>
     <button
       (click)="onRemoveOrder($event, item)"
       [loading]="item.removed"
@@ -278,5 +295,59 @@
       size="xs"
       type="button"
     ></button>
+  </div>
+</ng-template>
+
+<ng-template #itemOperationTemplate let-item>
+  <div class="item__value row__item">
+    <!--    {{ item.direction | tradeDirectionType | async }}-->
+  </div>
+  <div class="item__value row__item row__item--types">
+    <!--    {{ item.orderType | tradeOrderType | async }}-->
+  </div>
+  <div class="item__value item__value--number row__item">
+    {{ item.price.value | tuiFormatNumber | async }}
+  </div>
+  <div class="item__value item__value--number row__item">
+    {{ item.quantity }}
+  </div>
+  <div class="item__value item__value--number row__item">
+    {{
+      item.comission ? (item.comission.value | tuiFormatNumber: {
+        precision: 2,
+        decimalMode: 'always'
+      } | async) : '&mdash;'
+    }}
+  </div>
+  <div class="item__value item__value--number row__item row__item--total">
+    {{ item.payment.value | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+  </div>
+  <!--  <div class="item__value row__item row__item&#45;&#45;center">-->
+  <!--    <tui-icon-->
+  <!--      *ngIf="item.status.id === '2'"-->
+  <!--      style="color: var(&#45;&#45;tui-status-warning)"-->
+  <!--      icon="@tui.refresh-cw"></tui-icon>-->
+  <!--    <tui-icon-->
+  <!--      *ngIf="item.status.id === '1'"-->
+  <!--      style="color: var(&#45;&#45;tui-text-positive)"-->
+  <!--      icon="@tui.circle-check"></tui-icon>-->
+  <!--  </div>-->
+  <div class="item__value row__item row__item--actions">
+    <!--    <button-->
+    <!--      appearance="icon"-->
+    <!--      iconStart="@tui.pencil"-->
+    <!--      tuiIconButton-->
+    <!--      size="xs"-->
+    <!--      type="button"-->
+    <!--    ></button>-->
+    <!--    <button-->
+    <!--      (click)="onRemoveOrder($event, item)"-->
+    <!--      [loading]="item.removed"-->
+    <!--      appearance="icon"-->
+    <!--      iconStart="@tui.x"-->
+    <!--      tuiIconButton-->
+    <!--      size="xs"-->
+    <!--      type="button"-->
+    <!--    ></button>-->
   </div>
 </ng-template>

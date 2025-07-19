@@ -135,10 +135,10 @@ lib-dialog[appearance="dialog-block"] {
 lib-dialog[appearance="medium-block"] {
   display: block;
 
-  max-width: 750px;
-  width: 60vw;
-  min-height: 500px;
-  height: 60vh;
+  max-width: 100%;
+  width: 100%;
+  min-height: 100%;
+  height: 100vh;
 }
 
 lib-dialog[appearance="small-block"] {
@@ -154,4 +154,15 @@ lib-dialog[appearance="dialog-confirm"] {
 
 tui-dialog[data-appearance="dialog-confirm"] {
   border-radius: 0;
+}
+
+@media screen and (min-width: 768px) {
+  lib-dialog[appearance="medium-block"] {
+    display: block;
+
+    max-width: 750px;
+    width: 60vw;
+    min-height: 500px;
+    height: 60vh;
+  }
 }

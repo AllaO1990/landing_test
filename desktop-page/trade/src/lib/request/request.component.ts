@@ -10,6 +10,13 @@ import { TuiInputNumber } from '@taiga-ui/kit';
 import { TradeStore } from '../common/store';
 import { TradeOrderTypes } from '../common/api.types';
 
+export interface RequestFormValue {
+  direction: boolean;
+  orderType: number;
+  price: number;
+  quantity: number;
+}
+
 @Component({
   selector: 'trade-request',
   standalone: true,
@@ -73,7 +80,7 @@ export class RequestTradeComponent implements AfterViewInit {
       this.formGroup.patchValue({
         direction: direction !== undefined && direction,
         quantity,
-        orderType: orderType && orderType.id,
+        orderType,
         price,
       });
     }

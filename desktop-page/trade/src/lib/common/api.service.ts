@@ -5,9 +5,10 @@ import { Observable } from 'rxjs';
 import { Response } from 'types/response';
 import {
   TradeAccounts,
-  TradeOperation,
+  TradeOperations,
   TradeOrders,
   TradeOrderTypes,
+  TradePortfolio,
   TradeSources,
   TradeToken,
   TradeTokenSource,
@@ -39,34 +40,58 @@ export class ApiService {
     return this._http.post<Response<TradeToken | null>>(`${this.host}/api/v1/trades/token`, data);
   }
 
-  removeToken(data: TradeToken): Observable<Response<any>> {
+  removeToken(data: TradeToken): Observable<Response<TradeToken | null>> {
     return this._http.delete<Response<TradeToken | null>>(`${this.host}/api/v1/trades/token`, {
       body: { sourceId: data.sourceId, tokenId: data.tokenId },
     });
   }
 
-  getOperations(params: Params): Observable<Response<TradeOperation>> {
-    return this._http.get<Response<TradeOperation>>(`${this.host}/api/v1/trades/operations`, { params });
+  getOperations(params: Params): Observable<Response<TradeOperations>> {
+    return this._http.get<Response<TradeOperations>>(`${this.host}/api/v1/trades/operations`, { params });
   }
 
   getOrderTypes(): Observable<Response<TradeOrderTypes>> {
     return this._http.get<Response<TradeOrderTypes>>(`${this.host}/api/v1/trades/order-types`);
   }
 
+  getPortfolio(params: Params): Observable<Response<TradePortfolio>> {
+    return this._http.get<Response<TradePortfolio>>(`${this.host}/api/v1/trades/portfolio`, {
+      params: {
+        accountId: params['accountId'],
+        instrumentId: params['instrumentId'],
+        sourceId: params['sourceId'],
+      },
+    });
+  }
+
   getOrders(params: Params): Observable<Response<TradeOrders>> {
-    return this._http.get<Response<TradeOrders>>(`${this.host}/api/v1/trades/orders`, { params });
+    return this._http.get<Response<TradeOrders>>(`${this.host}/api/v1/trades/orders`, {
+      params: {
+        accountId: params['accountId'],
+        instrumentId: params['instrumentId'],
+        sourceId: params['sourceId'],
+      },
+    });
   }
 
-  setOrder(body: Params): Observable<Response<TradeOrders>> {
-    return this._http.post<Response<TradeOrders>>(`${this.host}/api/v1/trades/orders`, body);
+  addOrder(body: Params): Observable<Response<TradeOrders>> {
+    return this._http.post<Response<TradeOrders>>(`${this.host}/api/v1/trades/orders`, {
+      accountId: body['accountId'],
+      direction: body['direction'],
+      instrumentId: body['instrumentId'],
+      orderType: body['orderType'],
+      price: body['price'],
+      quantity: body['quantity'],
+      sourceId: body['sourceId'],
+    });
   }
 
-  removeOrder(data: Params): Observable<Response<any>> {
+  removeOrder(body: Params): Observable<Response<any>> {
     return this._http.delete<Response<any>>(`${this.host}/api/v1/trades/orders`, {
       body: {
-        accountId: data['accountId'],
-        orderId: data['orderId'],
-        sourceId: data['sourceId'],
+        accountId: body['accountId'],
+        orderId: body['orderId'],
+        sourceId: body['sourceId'],
       },
     });
   }

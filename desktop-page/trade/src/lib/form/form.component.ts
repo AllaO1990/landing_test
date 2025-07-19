@@ -22,15 +22,16 @@ import { TradeDialogService } from '../dialog/dialog.service';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { distinctUntilChanged, filter, map, Observable, startWith, switchMap, timer } from 'rxjs';
+import { combineLatest, distinctUntilChanged, filter, map, Observable, startWith, switchMap, timer } from 'rxjs';
 import { StockPosition, StockPositionActionTarget, StockPositionTarget } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '../common/store';
 import { Params } from '@angular/router';
 import { DirectionTypePipe } from '../common/direction-type.pipe';
 import { OrderTypePipe } from '../common/order-type.pipe';
-import { TradeOrder } from '../common/api.types';
+import { TradeOperations, TradeOrder, TradeOrders } from '../common/api.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
+import { RequestFormValue } from '../request/request.component';
 
 interface ItemEntry {
   direction: boolean;
@@ -105,7 +106,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly itemHeight = 28;
 
   readonly idea$: Observable<StockPosition> = this.#idea.idea$;
-  readonly orders$: Observable<any> = this.#store.orders$;
+  readonly orders$: Observable<TradeOrders | null> = this.#store.orders$;
+  readonly operations$: Observable<TradeOperations | null> = this.#store.operations$;
 
   listEntry$: Observable<ItemEntry[]> = timer(500).pipe(
     switchMap(() => this.formArrayEntry.valueChanges.pipe(startWith(this.formArrayEntry.value)))
@@ -116,16 +118,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   );
 
   ngAfterViewInit(): void {
-    this.#store.loadSources();
-    this.#store.loadOrderTypes();
-
-    this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) => {
-      this.controlFilter.patchValue({
-        instrument: position.idea.instrument,
+    combineLatest([
+      this.idea$,
+      this.operations$.pipe(
+        filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null)
+      ),
+    ])
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(([position, operations]: [StockPosition, TradeOperations]) => {
+        this._updateControls(position, operations);
       });
-
-      this._updateControls(position);
-    });
 
     this.controlFilter.valueChanges
       .pipe(
@@ -192,12 +194,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
   }
 
-  private _updateControls(position: StockPosition): void {
+  private _updateControls(position: StockPosition, operations: TradeOperations): void {
     const direction = position.idea.positionType === 'long';
     let entry = [];
     let out = [];
 
-    console.log(position);
+    console.log(position, operations);
 
     if (position.actions.entries && position.actions.entries.length === 0) {
       entry = position.idea.entries.map((item) => ({
@@ -278,5 +280,31 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       sourceId: source.id,
       instrumentId: instrument.id,
     });
+  }
+
+  onChangeOrder(event: Event, item: TradeOrder & { change: boolean }): void {
+    event.preventDefault();
+
+    item['change'] = true;
+
+    const { account, source, instrument } = this.controlFilter.value;
+
+    this.#service
+      .openTradeRequest(this.#injector, {
+        direction: !!item.direction,
+        orderType: item.orderType,
+        price: item.averagePositionPrice.value,
+        quantity: item.lotsRequested,
+      })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((value: RequestFormValue) => {
+        this.#store.changeOrder({
+          ...value,
+          instrumentId: instrument.id,
+          accountId: account.accountId,
+          orderId: item.orderId,
+          sourceId: source.id,
+        });
+      });
   }
 }
