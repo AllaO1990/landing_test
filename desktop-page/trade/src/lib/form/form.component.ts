@@ -17,7 +17,7 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { TradeDialogService } from '../dialog/dialog.service';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
@@ -41,6 +41,13 @@ interface ItemEntry {
   quantity: number;
 }
 
+/**
+ * 0 - не выставлена
+ * 1 = ожидает исполнения
+ * 2 = испольнена
+ */
+type OrderStatus = 0 | 1 | 2;
+
 @Component({
   selector: 'trade-form',
   standalone: true,
@@ -61,6 +68,7 @@ interface ItemEntry {
     DirectionTypePipe,
     OrderTypePipe,
     TuiButtonLoading,
+    TuiHint,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss',
@@ -120,13 +128,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   ngAfterViewInit(): void {
     combineLatest([
       this.idea$,
+      this.orders$.pipe(filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null)),
       this.operations$.pipe(
         filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null)
       ),
     ])
       .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(([position, operations]: [StockPosition, TradeOperations]) => {
-        this._updateControls(position, operations);
+      .subscribe(([position, orders, operations]: [StockPosition, TradeOrders, TradeOperations]) => {
+        this._updateControls(position, orders, operations);
       });
 
     this.controlFilter.valueChanges
@@ -194,21 +203,52 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
   }
 
-  private _updateControls(position: StockPosition, operations: TradeOperations): void {
+  private _updateControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
     const direction = position.idea.positionType === 'long';
     let entry = [];
     let out = [];
+    const operationType = direction ? 15 : 22;
 
-    console.log(position, operations);
+    console.log(position, orders, operations);
 
     if (position.actions.entries && position.actions.entries.length === 0) {
-      entry = position.idea.entries.map((item) => ({
-        price: item.price,
-        quantity: item.quantity,
-        total: item.totalPrice,
-        direction,
-        orderType: 1,
-      }));
+      entry = position.idea.entries.map((item) => {
+        let status: OrderStatus = 0;
+
+        if (orders && orders.length > 0) {
+          const order = orders.find((orderItem) => {
+            orderItem.direction === +direction && orderItem.totalOrderAmount.value === item.quantity;
+          });
+
+          if (order) {
+            status = 1;
+          }
+        }
+
+        if (status === 0 && operations && operations.length > 0) {
+          const operation = operations.find(
+            (operationItem) =>
+              operationItem.type === operationType &&
+              operationItem.state === 1 &&
+              item.quantity === operationItem.quantity
+          );
+
+          if (operation) {
+            status = 2;
+          }
+        }
+
+        console.log(status);
+
+        return {
+          price: item.price,
+          quantity: item.quantity,
+          total: item.totalPrice,
+          direction,
+          orderType: 1,
+          status,
+        };
+      });
     } else {
       entry = position.actions.entries.map((item) => ({
         ...item,
@@ -217,6 +257,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         total: item.totalPrice,
         direction,
         orderType: 1,
+        status: 'OPERATION_STATE_EXECUTED',
       }));
     }
 
