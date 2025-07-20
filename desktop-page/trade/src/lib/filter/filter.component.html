@@ -1,93 +1,116 @@
 <form class="form" [formGroup]="formGroup">
-  <lib-instrument
-    class="form__instrument"
-    [data]="controlInstrument.value"></lib-instrument>
-  <div class="space"></div>
-  <label class="form__control label">
+  <div class="form__row">
+    <div class="form__control label">
     <span class="label__text">
       Источник
     </span>
-    <tui-select
-      *ngIf="sources$ | async as list; else load"
-      class="label__action filter__source"
-      [stringify]="stringifySource"
-      [tuiTextfieldSize]="size"
-      formControlName="source"
-      [tuiTextfieldLabelOutside]="true">
-      <tui-data-list-wrapper
-        *tuiDataList
-        [size]="size"
-        [items]="list"
-        [itemContent]="contentSource">
-      </tui-data-list-wrapper>
-    </tui-select>
-  </label>
+      <tui-select
+        *ngIf="sources$ | async as list; else load"
+        class="label__action filter__source"
+        [stringify]="stringifySource"
+        [tuiTextfieldSize]="size"
+        formControlName="source"
+        [tuiTextfieldLabelOutside]="true">
+        <tui-data-list-wrapper
+          *tuiDataList
+          [size]="size"
+          [items]="list"
+          [itemContent]="contentSource">
+        </tui-data-list-wrapper>
+      </tui-select>
+    </div>
 
-  <label class="form__control label">
+    <div class="form__control label">
     <span class="label__text">
       Брокерский счёт
     </span>
-    @if (accounts$ | async; as list) {
-      @if (list.data) {
-        <tui-select
-          class="label__action filter__source"
-          [stringify]="stringifySource"
-          [tuiTextfieldSize]="size"
-          formControlName="account"
-          [tuiTextfieldLabelOutside]="true">
-          <tui-data-list-wrapper
-            *tuiDataList
-            [size]="size"
-            [items]="list.data"
-            [itemContent]="contentAccount">
-          </tui-data-list-wrapper>
-        </tui-select>
-      } @else {
-        <tui-chip
-          [tuiHint]="list.message"
-          tuiHintAppearance="dark"
-          appearance="negative">
+      @if (accounts$ | async; as list) {
+        @if (list.data) {
+          <tui-select
+            class="label__action filter__source"
+            [stringify]="stringifySource"
+            [tuiTextfieldSize]="size"
+            formControlName="account"
+            [tuiTextfieldLabelOutside]="true">
+            <tui-data-list-wrapper
+              *tuiDataList
+              [size]="size"
+              [items]="list.data"
+              [itemContent]="contentAccount">
+            </tui-data-list-wrapper>
+          </tui-select>
+        } @else {
+          <tui-chip
+            class="label__chip"
+            [tuiHint]="list.message"
+            tuiHintAppearance="dark"
+            appearance="negative">
           <span>
           {{ list.message }}
           </span>
-        </tui-chip>
+          </tui-chip>
+        }
+      } @else {
+        <ui-loader></ui-loader>
       }
-    } @else {
-      <ui-loader></ui-loader>
-    }
-  </label>
+    </div>
 
-  <div class="form__control label">
+    <div class="form__control label">
     <span class="label__text">
       Токен
     </span>
-    <div tuiGroup class="label__action">
-      <button
-        *ngIf="controlToken.value === null; else buttonCheck"
-        [size]="size"
-        class="filter__token-action"
-        tuiButton
-        iconEnd="@tui.plus"
-        appearance="secondary"
-        [disabled]="isDisabledToken$ | async"
-        (click)="addToken($event)"
-        type="button">
-        <span>Добавить токен</span>
-      </button>
-      <button
-        class="filter__token-remove"
-        [size]="size"
-        tuiIconButton
-        iconEnd="@tui.x"
-        appearance="secondary"
-        [disabled]="isDisabledRemoveToken$ | async"
-        (click)="removeToken($event)"
-        type="button">
-      </button>
+      <trade-token-button [value]="formGroup.value"></trade-token-button>
+      <!--      <div tuiGroup class="label__action">-->
+      <!--        <button-->
+      <!--          *ngIf="controlToken.value === null; else buttonCheck"-->
+      <!--          [size]="size"-->
+      <!--          class="filter__token-action"-->
+      <!--          tuiButton-->
+      <!--          iconEnd="@tui.plus"-->
+      <!--          appearance="secondary"-->
+      <!--          [disabled]="isDisabledToken$ | async"-->
+      <!--          (click)="addToken($event)"-->
+      <!--          type="button">-->
+      <!--          <span>Добавить токен</span>-->
+      <!--        </button>-->
+      <!--        <button-->
+      <!--          class="filter__token-remove"-->
+      <!--          [size]="size"-->
+      <!--          tuiIconButton-->
+      <!--          iconEnd="@tui.x"-->
+      <!--          appearance="secondary"-->
+      <!--          [disabled]="isDisabledRemoveToken$ | async"-->
+      <!--          (click)="removeToken($event)"-->
+      <!--          type="button">-->
+      <!--        </button>-->
+      <!--      </div>-->
     </div>
   </div>
+  @if (controlToken.value) {
+    <div class="form__row description">
+      <lib-instrument
+        class="form__instrument"
+        [data]="controlInstrument.value"></lib-instrument>
+      @if (portfolio$ | async; as position) {
+        <div class="form__column" [tuiCell]="size">
+          <div tuiSubtitle>Количество</div>
+          <div tuiTitle>{{ position.quantity }} шт.</div>
+        </div>
+        <div class="form__column" [tuiCell]="size">
+          <div tuiSubtitle>Цена за бумагу</div>
+          <div tuiTitle>
+            {{ position.averagePositionPrice.value }}
+            {{ position.averagePositionPrice.currency | uppercase | tuiCurrency }}
+          </div>
+        </div>
+      } @else {
+        <div style="width: 10rem">
+          <ui-loader></ui-loader>
+        </div>
+      }
+    </div>
+  }
 </form>
-
 
 <ng-template #contentSource let-item>
   {{ item.name }}
@@ -120,15 +143,15 @@
   {{ error | json }}
 </ng-template>
 
-<ng-template #buttonCheck>
-  <button
-    [size]="size"
-    class="filter__token-action"
-    tuiButton
-    iconEnd="@tui.check"
-    appearance="positive"
-    (click)="addToken($event)"
-    type="button">
-    <span>{{ controlToken.value.name }}</span>
-  </button>
-</ng-template>
+<!--<ng-template #buttonCheck>-->
+<!--  <button-->
+<!--    [size]="size"-->
+<!--    class="filter__token-action"-->
+<!--    tuiButton-->
+<!--    iconEnd="@tui.check"-->
+<!--    appearance="positive"-->
+<!--    (click)="addToken($event)"-->
+<!--    type="button">-->
+<!--    <span>{{ controlToken.value.name }}</span>-->
+<!--  </button>-->
+<!--</ng-template>-->

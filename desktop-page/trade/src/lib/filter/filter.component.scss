@@ -9,10 +9,18 @@
 }
 
 .form {
-  display: flex;
-  align-items: center;
-
   width: 100%;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    flex-flow: column;
+  }
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+  }
 
   &__instrument {
     min-width: 100px;
@@ -21,12 +29,20 @@
 
   &__control {
     flex: 1;
-    min-width: 180px;
+    min-width: 120px;
 
     &:not(:last-child) {
-      margin-right: var(--padding-2);
+      margin: 0 0 var(--padding-2) 0;
     }
   }
+}
+
+.description {
+  display: flex;
+  align-items: center;
+
+  height: 2rem;
+  margin: var(--padding-2) 0;
 }
 
 .label {
@@ -46,21 +62,9 @@
 
     width: 100%;
   }
-}
 
-.filter {
-  &__token-action {
-    flex: 1;
-
-
-    span {
-      width: 100%;
-      text-align: left;
-    }
-  }
-
-  &__token-remove {
-    flex: 0 0 auto;
+  &__chip {
+    width: 100%;
   }
 }
 
@@ -81,4 +85,18 @@ ui-loader {
 tui-chip span {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media screen and (min-width: 768px) {
+  .form {
+    &__row {
+      flex-flow: row;
+    }
+
+    &__control {
+      &:not(:last-child) {
+        margin: 0 var(--padding-2) 0 0;
+      }
+    }
+  }
 }

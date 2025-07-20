@@ -8,12 +8,7 @@ export type TradeSources = TradeSource[];
 export interface TradeAccount {
   accessLevel: string;
   accountId: string;
-  availableMoney: [
-    {
-      currency: string;
-      value: number;
-    }
-  ];
+  availableMoney: TradeValue[];
   name: string;
   status: string;
   type: string;
@@ -47,40 +42,16 @@ export interface TradeOrder {
   executionReportStatus: number;
   executionReportStatusText: string;
   lotsRequested: number;
-  initialOrderPrice: {
-    value: number;
-    currency: string;
-  };
-  executedOrderPrice: {
-    value: number;
-    currency: string;
-  };
-  totalOrderAmount: {
-    value: number;
-    currency: string;
-  };
-  averagePositionPrice: {
-    value: number;
-    currency: string;
-  };
-  initialComission: {
-    value: number;
-    currency: string;
-  };
-  executedComisiion: {
-    value: number;
-    currency: string;
-  };
+  initialOrderPrice: TradeValue;
+  executedOrderPrice: TradeValue;
+  totalOrderAmount: TradeValue;
+  averagePositionPrice: TradeValue;
+  initialComission: TradeValue;
+  executedComisiion: TradeValue;
   direction: number;
   directionText: string;
-  initialSecurityPrice: {
-    value: number;
-    currency: string;
-  };
-  serviceComission: {
-    value: number;
-    currency: string;
-  };
+  initialSecurityPrice: TradeValue;
+  serviceComission: TradeValue;
   currency: string;
   orderType: number;
   orderTypeText: string;
@@ -100,33 +71,59 @@ export type TradeDirections = TradeDirection[];
 export interface TradeOperation {
   cancelDate: string;
   cancelReason: string;
-  comission: {
-    currency: string;
-    value: number;
-  };
+  comission: { currency: string; value: number };
   currency: string;
   date: string;
   description: string;
   instrumentUid: string;
   name: string;
   operationId: string;
-  payment: {
-    currency: string;
-    value: number;
-  };
+  payment: { currency: string; value: number };
   positionUid: string;
-  price: {
-    currency: string;
-    value: number;
-  };
+  price: { currency: string; value: number };
   quantity: number;
   quantityRest: number;
   state: number;
   stateText: string;
   type: number;
   typeText: string;
-  yield: {
-    currency: string;
-    value: number;
-  };
+  yield: { currency: string; value: number };
+}
+
+export type TradeOperations = TradeOperation[];
+
+export interface TradePortfolio {
+  totalAmountShares: TradeValue;
+  totalAmountBonds: TradeValue;
+  totalAmountEtf: TradeValue;
+  totalAmountCurrencies: TradeValue;
+  totalAmountFutures: TradeValue;
+  expectedYield: number;
+  positions: TradePosition[];
+  accountId: string;
+  totalAmountOptions: TradeValue;
+  totalAmountSp: TradeValue;
+  totalAmountPortfolio: TradeValue;
+  virtualPositions: [];
+}
+
+export interface TradePosition {
+  instrumentType: string;
+  quantity: number;
+  averagePositionPrice: TradeValue;
+  expectedYield: number;
+  currentNkd: null;
+  currentPrice: TradeValue;
+  averagePositionPriceFifo: TradeValue;
+  blocked: boolean;
+  blockedLots: number;
+  positionUid: string;
+  instrumentUid: string;
+  varMargin: null;
+  expectedYieldFifo: number;
+}
+
+export interface TradeValue {
+  value: number;
+  currency: string;
 }
