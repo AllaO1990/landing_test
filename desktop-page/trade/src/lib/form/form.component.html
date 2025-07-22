@@ -48,7 +48,7 @@
         <div class="item row" *libListItem="let item; let index = index">
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, type: 'entry' }"></ng-container>
+            [ngTemplateOutletContext]="{ $implicit: item, index: index }"></ng-container>
         </div>
       </lib-list>
       <!--      <div class="trade__actions">-->
@@ -117,7 +117,7 @@
   </lib-list-header>
 </ng-template>
 
-<ng-template #itemEntryTemplate let-item>
+<ng-template #itemEntryTemplate let-item let-index=index>
   <div class="item__value row__item">
     {{ item.direction | tradeDirectionType | async }}
   </div>
@@ -128,7 +128,7 @@
     {{ item.price | tuiFormatNumber | async }}
   </div>
   <div class="item__value item__value--number row__item">
-    {{ item.quantity }}
+    <span>{{ (item.quantity * item.lot) | tuiFormatNumber | async }}</span> / {{ item.quantity }}
   </div>
   <div class="item__value item__value--number row__item">
     {{
@@ -151,7 +151,6 @@
         tuiHintAppearance="dark"
         style="color: var(--tui-status-warning)"
         icon="@tui.refresh-cw"></tui-icon>
-
     } @else if (item.status === 2) {
       <tui-icon
         tuiHint="Заявка исполнена"
@@ -167,13 +166,15 @@
     }
   </div>
   <div class="item__value row__item row__item--actions">
-    <!--    <button-->
-    <!--      appearance="icon"-->
-    <!--      iconStart="@tui.pencil"-->
-    <!--      tuiIconButton-->
-    <!--      size="xs"-->
-    <!--      type="button"-->
-    <!--    ></button>-->
+    <button
+      appearance="icon"
+      iconStart="@tui.pencil"
+      tuiIconButton
+      [loading]="item.change"
+      (click)="onEditEntry($event, item, index)"
+      size="xs"
+      type="button"
+    ></button>
     <!--    <button-->
     <!--      appearance="icon"-->
     <!--      iconStart="@tui.x"-->

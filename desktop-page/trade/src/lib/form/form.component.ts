@@ -32,12 +32,16 @@ import { OrderTypePipe } from '../common/order-type.pipe';
 import { TradeOperations, TradeOrder, TradeOrders } from '../common/api.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { RequestFormValue } from '../request/request.component';
+import { TradeFormService } from './form.service';
 
 interface ItemEntry {
   direction: boolean;
   instrumentId: string;
   orderType: number;
   price: number;
+  status: number;
+  orderId: string | null;
+  lot: number;
   quantity: number;
 }
 
@@ -78,15 +82,17 @@ type OrderStatus = 0 | 1 | 2;
       useExisting: forwardRef(() => TradeFormComponent),
       multi: true,
     },
+    TradeFormService,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly #injector: Injector = inject(Injector);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
-  readonly #service: TradeDialogService = inject(TradeDialogService);
+  readonly #dialog: TradeDialogService = inject(TradeDialogService);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #store: TradeStore = inject(TradeStore);
+  readonly #service: TradeFormService = inject(TradeFormService);
 
   #onChange = (_: any) => {};
   #onTouched = () => {};
@@ -148,7 +154,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           instrumentId: value.instrument && value.instrument.id,
         })),
         filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
-        distinctUntilChanged(this._distinct)
+        distinctUntilChanged(this._distinct),
+        switchMap((value: any) => timer(0, this.#store.TIMER).pipe(map(() => value)))
       )
       .subscribe((params: Params) => {
         this.#store.loadOrders(params);
@@ -163,7 +170,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   open(event: Event, list: string, data: any = null) {
     event.preventDefault();
 
-    this.#service.openTradeRequest(this.#injector, data).subscribe((value) => {
+    this.#dialog.openTradeRequest(this.#injector, data).subscribe((value) => {
       // if (value) {
       //   if (list === 'out') {
       //     this.listOut = this.listOut.map((item) => {
@@ -214,14 +221,18 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     if (position.actions.entries && position.actions.entries.length === 0) {
       entry = position.idea.entries.map((item) => {
         let status: OrderStatus = 0;
+        let orderId = null;
+        let price = item.price;
 
         if (orders && orders.length > 0) {
           const order = orders.find((orderItem) => {
-            orderItem.direction === +direction && orderItem.totalOrderAmount.value === item.quantity;
+            return orderItem.direction === +direction && orderItem.lotsRequested === item.quantity;
           });
 
           if (order) {
             status = 1;
+            orderId = order.orderId;
+            price = order.averagePositionPrice.value;
           }
         }
 
@@ -235,16 +246,23 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
           if (operation) {
             status = 2;
+
+            this._updateIdeaEntries(position, {
+              amount: operation.quantity,
+              date: operation.date,
+              brokerId: 1,
+              price: operation.price.value,
+            });
           }
         }
 
-        console.log(status);
-
         return {
-          price: item.price,
+          price,
           quantity: item.quantity,
           total: item.totalPrice,
           direction,
+          orderId,
+          lot: position.idea.instrument.lot,
           orderType: 1,
           status,
         };
@@ -256,8 +274,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         quantity: item.amount,
         total: item.totalPrice,
         direction,
+        lot: position.idea.instrument.lot,
         orderType: 1,
-        status: 'OPERATION_STATE_EXECUTED',
+        status: 2,
       }));
     }
 
@@ -330,11 +349,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     const { account, source, instrument } = this.controlFilter.value;
 
-    this.#service
+    this.#dialog
       .openTradeRequest(this.#injector, {
         direction: !!item.direction,
         orderType: item.orderType,
         price: item.averagePositionPrice.value,
+        log: instrument.lot,
         quantity: item.lotsRequested,
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
@@ -346,6 +366,62 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           orderId: item.orderId,
           sourceId: source.id,
         });
+      });
+  }
+
+  private _updateIdeaEntries(
+    position: StockPosition,
+    order: {
+      amount: number;
+      date: string;
+      brokerId: number;
+      price: number;
+    }
+  ): void {
+    this.#idea.editIdea({ id: position.idea.id!, body: this.#service.updateIdeaEntries(position, order) });
+  }
+
+  onEditEntry(event: Event, item: ItemEntry & { change: boolean }, index: number): void {
+    event.preventDefault();
+
+    item['change'] = true;
+
+    const { account, source, instrument } = this.controlFilter.value;
+
+    this.#dialog
+      .openTradeRequest(this.#injector, {
+        direction: item.direction,
+        orderType: item.orderType,
+        price: item.price,
+        lot: item.lot,
+        quantity: item.quantity,
+      })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((value: RequestFormValue | null) => {
+        let calcValue: any = { ...item, change: false };
+
+        if (value) {
+          calcValue = {
+            ...calcValue,
+            ...value,
+            total: getNumberPrecision(value.price * value.quantity, 2),
+          };
+
+          if (item.status === 1) {
+            this.#store.changeOrder({
+              direction: value.direction,
+              orderType: value.orderType,
+              price: value.price,
+              quantity: value.quantity,
+              instrumentId: instrument.id,
+              accountId: account.accountId,
+              orderId: item.orderId,
+              sourceId: source.id,
+            });
+          }
+        }
+
+        this.formArrayEntry.setControl(index, new FormControl(calcValue));
       });
   }
 }

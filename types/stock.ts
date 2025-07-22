@@ -30,6 +30,7 @@ export interface StockInstrument {
   source: string;
   ticker: string;
   name: string;
+  lot: number;
   type: string;
   exchange: string;
   realExchange: string;

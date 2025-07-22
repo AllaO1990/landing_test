@@ -31,7 +31,7 @@
   height: 28px;
 
   &__item {
-    flex: 0 0 calc(100% / 7 - var(--padding-4));
+    flex: 0 0 calc(100% / 8 - var(--padding-4));
 
     white-space: nowrap;
     overflow: hidden;
@@ -63,6 +63,10 @@
   &__value {
     &--number {
       text-align: right;
+    }
+
+    span {
+      color: var(--tui-text-secondary);
     }
 
     button {
