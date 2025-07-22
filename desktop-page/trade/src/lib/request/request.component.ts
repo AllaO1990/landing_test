@@ -1,14 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { TuiContext, TuiPopover, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { TuiButton, TuiDataListComponent, TuiDataListDirective, TuiTextfield } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiInputDateModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { Observable, of } from 'rxjs';
+import { distinctUntilChanged, Observable, of, startWith } from 'rxjs';
 import { TuiInputNumber } from '@taiga-ui/kit';
 import { TradeStore } from '../common/store';
 import { TradeOrderTypes } from '../common/api.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export interface RequestFormValue {
   direction: boolean;
@@ -39,16 +40,30 @@ export interface RequestFormValue {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequestTradeComponent implements AfterViewInit {
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
+  @tuiPure
+  get lot(): number {
+    return this.#context.lot;
+  }
+
   readonly size = 's';
   readonly formGroup: FormGroup = new FormGroup({
-    direction: new FormControl(null, Validators.required),
+    direction: new FormControl({ value: null, disabled: true }, Validators.required),
     orderType: new FormControl(null, Validators.required),
     price: new FormControl(null, Validators.required),
-    quantity: new FormControl(null, Validators.required),
+    quantity: new FormControl({ value: null, disabled: true }, Validators.required),
   });
+
+  get controlPrice(): FormControl {
+    return this.formGroup.get('price') as FormControl;
+  }
+
+  get controlOrderType(): FormControl {
+    return this.formGroup.get('orderType') as FormControl;
+  }
 
   types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
 
@@ -69,7 +84,7 @@ export class RequestTradeComponent implements AfterViewInit {
     event.preventDefault();
 
     if (this.#context) {
-      this.#context.completeWith(this.formGroup.value);
+      this.#context.completeWith(this.formGroup.getRawValue());
     }
   }
 
@@ -84,6 +99,12 @@ export class RequestTradeComponent implements AfterViewInit {
         price,
       });
     }
+
+    this.controlOrderType.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlOrderType.value), distinctUntilChanged())
+      .subscribe((value: number) => {
+        this.controlPrice[value !== 1 ? 'disable' : 'enable']();
+      });
   }
 
   @tuiPure

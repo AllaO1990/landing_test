@@ -72,6 +72,9 @@
           tuiInputNumber
           formControlName="quantity"
         />
+        @if (lot; as value) {
+          <span>1 лот: {{ value }} шт.</span>
+        }
       </tui-textfield>
     </div>
   </div>

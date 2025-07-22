@@ -47,19 +47,33 @@ export class LayoutComponent implements AfterViewInit {
     console.log(this.formGroup.value);
 
     const { filter, entry, out } = this.formGroup.value.trade;
-    const { account, instrument } = filter;
+    const { account, instrument, source } = filter;
 
-    const params = [...entry, ...out].map((item) => {
+    if (entry.some((item: { status: number }) => item.status === 0)) {
+      const params = this._getOrders(
+        entry.filter((item: { status: number }) => item.status === 0),
+        account.accountId,
+        instrument.id,
+        source.id
+      );
+
+      console.log(params);
+
+      this.#store.addOrders(params);
+    }
+  }
+
+  private _getOrders(orders: any[], accountId: string, instrumentId: string, sourceId: number): any[] {
+    return orders.map((item) => {
       const { total, ...order } = item;
 
       return {
         ...order,
-        accountId: account.accountId,
-        instrumentId: instrument.id,
+        accountId,
+        instrumentId,
+        sourceId,
       };
     });
-
-    this.#store.addOrders(params);
   }
 
   // this.#api

@@ -3,7 +3,7 @@ import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield, TuiTitle } fro
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { distinctUntilChanged, filter, map, Observable, pairwise, startWith, take, tap } from 'rxjs';
+import { distinctUntilChanged, filter, map, Observable, pairwise, startWith, switchMap, take, tap, timer } from 'rxjs';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -79,8 +79,18 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
   );
   readonly token$: Observable<Response<TradeToken | null> | null> = this.#store.token$;
   readonly portfolio$: Observable<TradePosition | null> = this.#store.portfolio$.pipe(
-    filter((portfolio: TradePortfolio | null): portfolio is TradePortfolio => portfolio !== null),
-    map((portfolio: TradePortfolio): TradePosition | null => portfolio.positions[0] || null)
+    map((portfolio: TradePortfolio | null): TradePosition | null => {
+      if (portfolio === null) {
+        return null;
+      }
+
+      return (
+        portfolio.positions[0] || {
+          quantity: 0,
+          averagePositionPrice: { value: 0, currency: 'rub' },
+        }
+      );
+    })
   );
   readonly sources$: Observable<TradeSources> = this.#store.source$.pipe(
     filter((data: TradeSources | null): data is TradeSources => data !== null)
@@ -158,7 +168,8 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
           instrumentId: value.instrument && value.instrument.id,
         })),
         filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
-        distinctUntilChanged(this._distinct)
+        distinctUntilChanged(this._distinct),
+        switchMap((value) => timer(0, this.#store.TIMER).pipe(map(() => value)))
       )
       .subscribe((params: Params) => {
         this.#store.loadPortfolio(params);

@@ -27,6 +27,8 @@ export interface TradeState {
 }
 
 export class TradeStore extends ComponentStore<TradeState> {
+  readonly TIMER = 1000 * 60 * 3;
+
   readonly source$: Observable<TradeSources | null> = this.select((state: TradeState) => state.sources);
   readonly token$: Observable<Response<TradeToken | null> | null> = this.select((state: TradeState) => state.token);
   readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.select(
@@ -205,7 +207,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   addOrders = this.effect((stream$: Observable<Params[]>) =>
     stream$.pipe(
       switchMap((params: Params[]) =>
-        forkJoin(params.map((item: Params) => this._api.addOrder(item))).pipe(tap(() => this.loadOrders(params)))
+        forkJoin(params.map((item: Params) => this._api.addOrder(item))).pipe(tap(() => this.loadOrders(params[0])))
       )
     )
   );
