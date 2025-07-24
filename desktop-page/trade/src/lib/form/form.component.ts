@@ -8,7 +8,7 @@ import {
   Injector,
 } from '@angular/core';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
-import { TuiButtonLoading, TuiCheckbox } from '@taiga-ui/kit';
+import { TuiAccordion, TuiButtonLoading, TuiCheckbox } from '@taiga-ui/kit';
 import {
   ControlValueAccessor,
   FormArray,
@@ -17,7 +17,7 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiButton, TuiExpand, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { TradeDialogService } from '../dialog/dialog.service';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
@@ -73,6 +73,8 @@ type OrderStatus = 0 | 1 | 2;
     OrderTypePipe,
     TuiButtonLoading,
     TuiHint,
+    TuiAccordion,
+    TuiExpand,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss',
@@ -292,13 +294,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         quantity: item.amount,
         total: getNumberPrecision(item.price * item.amount, 2),
         direction: !direction,
+        lot: position.idea.instrument.lot,
         orderType: 1,
+        status: 2,
       }));
     } else {
       out = position.idea.targets.map((item: StockPositionTarget) => ({
         price: item.price,
         quantity: item.amount,
         total: getNumberPrecision(item.price * item.amount, 2),
+        lot: position.idea.instrument.lot,
         direction: !direction,
         orderType: 1,
       }));
@@ -423,5 +428,24 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
         this.formArrayEntry.setControl(index, new FormControl(calcValue));
       });
+  }
+
+  onRemoveEntry(event: Event, item: ItemEntry & { removed: boolean }, index: number): void {
+    event.preventDefault();
+
+    if (item.status === 1) {
+      item['removed'] = true;
+
+      const { account, source, instrument } = this.controlFilter.value;
+
+      this.#store.removeOrder({
+        accountId: account.accountId,
+        orderId: item.orderId,
+        sourceId: source.id,
+        instrumentId: instrument.id,
+      });
+
+      this.formArrayEntry.at(index).disable();
+    }
   }
 }

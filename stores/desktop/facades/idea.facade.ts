@@ -37,6 +37,7 @@ export class IdeaFacade {
       }
       return of(idea);
     }),
+    // switchMap(() => ),
     tap((idea: StockPosition) => this._store.idea.updateInstrument(idea.idea.instrument)),
     shareReplay({ bufferSize: 1, refCount: true })
   );

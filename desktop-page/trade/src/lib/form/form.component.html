@@ -87,6 +87,17 @@
       <!--        </button>-->
       <!--      </div>-->
     </div>
+
+    <tui-accordion class="accordion">
+      <button
+        appearance=""
+        iconEnd=""
+        tuiAccordion
+      >
+        test
+      </button>
+      <tui-expand>sdfsdf</tui-expand>
+    </tui-accordion>
   </tui-scrollbar>
   <div class="trade__actions">
     <div class="space"></div>
@@ -166,22 +177,28 @@
     }
   </div>
   <div class="item__value row__item row__item--actions">
-    <button
-      appearance="icon"
-      iconStart="@tui.pencil"
-      tuiIconButton
-      [loading]="item.change"
-      (click)="onEditEntry($event, item, index)"
-      size="xs"
-      type="button"
-    ></button>
-    <!--    <button-->
-    <!--      appearance="icon"-->
-    <!--      iconStart="@tui.x"-->
-    <!--      tuiIconButton-->
-    <!--      size="xs"-->
-    <!--      type="button"-->
-    <!--    ></button>-->
+    @if (item.status !== 2) {
+      <button
+        appearance="icon"
+        iconStart="@tui.pencil"
+        tuiIconButton
+        [loading]="item.change"
+        (click)="onEditEntry($event, item, index)"
+        size="xs"
+        type="button"
+      ></button>
+    }
+    @if (item.status === 1) {
+      <button
+        (click)="onRemoveEntry($event, item, index)"
+        [loading]="item.removed"
+        appearance="icon"
+        iconStart="@tui.x"
+        tuiIconButton
+        size="xs"
+        type="button"
+      ></button>
+    }
   </div>
 </ng-template>
 
