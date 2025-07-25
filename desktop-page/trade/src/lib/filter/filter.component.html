@@ -60,30 +60,6 @@
       Токен
     </span>
       <trade-token-button [value]="formGroup.value"></trade-token-button>
-      <!--      <div tuiGroup class="label__action">-->
-      <!--        <button-->
-      <!--          *ngIf="controlToken.value === null; else buttonCheck"-->
-      <!--          [size]="size"-->
-      <!--          class="filter__token-action"-->
-      <!--          tuiButton-->
-      <!--          iconEnd="@tui.plus"-->
-      <!--          appearance="secondary"-->
-      <!--          [disabled]="isDisabledToken$ | async"-->
-      <!--          (click)="addToken($event)"-->
-      <!--          type="button">-->
-      <!--          <span>Добавить токен</span>-->
-      <!--        </button>-->
-      <!--        <button-->
-      <!--          class="filter__token-remove"-->
-      <!--          [size]="size"-->
-      <!--          tuiIconButton-->
-      <!--          iconEnd="@tui.x"-->
-      <!--          appearance="secondary"-->
-      <!--          [disabled]="isDisabledRemoveToken$ | async"-->
-      <!--          (click)="removeToken($event)"-->
-      <!--          type="button">-->
-      <!--        </button>-->
-      <!--      </div>-->
     </div>
   </div>
   @if (controlToken.value) {
@@ -100,6 +76,13 @@
           <div tuiSubtitle>Цена за бумагу</div>
           <div tuiTitle>
             {{ position.averagePositionPrice.value }}
+            {{ position.averagePositionPrice.currency | uppercase | tuiCurrency }}
+          </div>
+        </div>
+        <div class="form__column" [tuiCell]="size">
+          <div tuiSubtitle>Стоимость</div>
+          <div tuiTitle>
+            {{ position.total }}
             {{ position.averagePositionPrice.currency | uppercase | tuiCurrency }}
           </div>
         </div>

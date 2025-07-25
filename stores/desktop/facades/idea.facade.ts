@@ -5,6 +5,7 @@ import { StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import { Positions, StockPosition } from 'types/position';
 import { filter, map, shareReplay } from 'rxjs/operators';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
+import { AccountPortfolio } from 'types/account';
 
 @Injectable()
 export class IdeaFacade {
@@ -37,7 +38,20 @@ export class IdeaFacade {
       }
       return of(idea);
     }),
-    // switchMap(() => ),
+    switchMap((position: StockPosition) => {
+      if (position.idea.portfolioId === null) {
+        return this._store.account.portfolios$.pipe(
+          filter((list: null | AccountPortfolio[]): list is AccountPortfolio[] => list !== null),
+          map((list: AccountPortfolio[]) => {
+            position.idea.portfolioId = list[0].portfolioId;
+
+            return position;
+          })
+        );
+      }
+
+      return of(position);
+    }),
     tap((idea: StockPosition) => this._store.idea.updateInstrument(idea.idea.instrument)),
     shareReplay({ bufferSize: 1, refCount: true })
   );

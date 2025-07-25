@@ -77,6 +77,10 @@
   flex: 0 0 calc(100% / 6);
 }
 
+.orders .row__item {
+  flex: 0 0 calc(100% / 7);
+}
+
 .item {
   background-color: var(--tui-background-base-alt, #F6F7FB);
 
