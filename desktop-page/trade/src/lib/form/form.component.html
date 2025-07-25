@@ -6,38 +6,6 @@
     <trade-filter formControlName="filter"></trade-filter>
   </div>
   <tui-scrollbar class="trade__container">
-    <div class="operations">
-      <div class="tui-text_h6">Операции</div>
-      <lib-list
-        [header]="headerOrder"
-        [itemSize]="itemHeight"
-        [style.height.px]="itemHeight * 2 + itemHeight"
-        [list]="operations$ | async">
-        <div class="item row" *libListItem="let item; let index = index">
-          <ng-container
-            [ngTemplateOutlet]="itemOperationTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
-        </div>
-      </lib-list>
-    </div>
-
-    <div class="orders">
-      <div class="tui-text_h6">Активные заявки</div>
-      <lib-list
-        [header]="headerOrder"
-        [itemSize]="itemHeight"
-        [style.height.px]="itemHeight * 2 + itemHeight"
-        [list]="orders$ | async">
-        <div class="item row" *libListItem="let item; let index = index">
-          <ng-container
-            [ngTemplateOutlet]="itemOrderTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
-        </div>
-      </lib-list>
-    </div>
-
-    <div class="space"></div>
-
     <div class="entry">
       <div class="tui-text_h6">Вход</div>
       <lib-list
@@ -45,7 +13,7 @@
         [itemSize]="itemHeight"
         [style.height.px]="itemHeight * 2 + itemHeight"
         [list]="listEntry$ | async">
-        <div class="item row" *libListItem="let item; let index = index">
+        <div class="item row row--border" *libListItem="let item; let index = index">
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
             [ngTemplateOutletContext]="{ $implicit: item, index: index }"></ng-container>
@@ -71,10 +39,10 @@
         [itemSize]="itemHeight"
         [style.height.px]="itemHeight * 4 + itemHeight"
         [list]="listOut$ | async">
-        <div class="item row" *libListItem="let item; let index = index">
+        <div class="item row row--border" *libListItem="let item; let index = index">
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, type: 'out' }"></ng-container>
+            [ngTemplateOutletContext]="{ $implicit: item, index: index }"></ng-container>
         </div>
       </lib-list>
       <!--      <div class="trade__actions">-->
@@ -87,6 +55,51 @@
       <!--        </button>-->
       <!--      </div>-->
     </div>
+
+    <div class="space"></div>
+
+    <button
+      appearance="secondary-grayscale"
+      tuiButton
+      type="button"
+      [disabled]="(expandedDisabled$ | async)"
+      [tuiChevron]="expanded()"
+      (click)="onExpanded($event)">
+      Подробнее
+    </button>
+    <tui-expand [expanded]="expanded()">
+      <div class="trade__container" *tuiItem>
+        <div class="operations">
+          <div class="tui-text_h6">Операции</div>
+          <lib-list
+            [header]="headerOrder"
+            [itemSize]="itemHeight"
+            [style.height.px]="itemHeight * 4 + itemHeight"
+            [list]="operations$ | async">
+            <div class="item row row--border" *libListItem="let item; let index = index">
+              <ng-container
+                [ngTemplateOutlet]="itemOperationTemplate"
+                [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+            </div>
+          </lib-list>
+        </div>
+
+        <div class="orders">
+          <div class="tui-text_h6">Активные заявки</div>
+          <lib-list
+            [header]="headerOrder"
+            [itemSize]="itemHeight"
+            [style.height.px]="itemHeight * 4 + itemHeight"
+            [list]="orders$ | async">
+            <div class="item row row--border" *libListItem="let item; let index = index">
+              <ng-container
+                [ngTemplateOutlet]="itemOrderTemplate"
+                [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+            </div>
+          </lib-list>
+        </div>
+      </div>
+    </tui-expand>
   </tui-scrollbar>
   <div class="trade__actions">
     <div class="space"></div>
@@ -141,9 +154,6 @@
   <div class="item__value item__value--number row__item row__item--total">
     {{ item.total | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
   </div>
-  <!--  <div class="item__value row__item">-->
-  <!--    {{ item.broker }}-->
-  <!--  </div>-->
   <div class="item__value row__item row__item--center">
     @if (item.status === 1) {
       <tui-icon
@@ -166,22 +176,28 @@
     }
   </div>
   <div class="item__value row__item row__item--actions">
-    <button
-      appearance="icon"
-      iconStart="@tui.pencil"
-      tuiIconButton
-      [loading]="item.change"
-      (click)="onEditEntry($event, item, index)"
-      size="xs"
-      type="button"
-    ></button>
-    <!--    <button-->
-    <!--      appearance="icon"-->
-    <!--      iconStart="@tui.x"-->
-    <!--      tuiIconButton-->
-    <!--      size="xs"-->
-    <!--      type="button"-->
-    <!--    ></button>-->
+    @if (item.status !== 2) {
+      <button
+        appearance="icon"
+        iconStart="@tui.pencil"
+        tuiIconButton
+        [loading]="item.change"
+        (click)="onEditEntry($event, item, index)"
+        size="xs"
+        type="button"
+      ></button>
+    }
+    @if (item.status === 1) {
+      <button
+        (click)="onRemoveEntry($event, item, index)"
+        [loading]="item.removed"
+        appearance="icon"
+        iconStart="@tui.x"
+        tuiIconButton
+        size="xs"
+        type="button"
+      ></button>
+    }
   </div>
 </ng-template>
 
@@ -247,11 +263,11 @@
     <div class="header__item row__item">Действие</div>
     <div class="header__item row__item row__item--types">Тип</div>
     <div class="header__item row__item">Цена</div>
-    <div class="header__item row__item">Кол-во/лоты</div>
+    <div class="header__item row__item">Лоты</div>
     <div class="header__item row__item">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
     <!--    <div class="header__item row__item">Статус</div>-->
-    <div class="header__item row__item row__item--actions"></div>
+    <!--    <div class="header__item row__item row__item&#45;&#45;actions"></div>-->
   </lib-list-header>
 </ng-template>
 
@@ -313,10 +329,10 @@
 
 <ng-template #itemOperationTemplate let-item>
   <div class="item__value row__item">
-    <!--    {{ item.direction | tradeDirectionType | async }}-->
+    {{ mapOperationType[item.type] }}
   </div>
   <div class="item__value row__item row__item--types">
-    <!--    {{ item.orderType | tradeOrderType | async }}-->
+    {{ mapOperationState[item.state] }}
   </div>
   <div class="item__value item__value--number row__item">
     {{ item.price.value | tuiFormatNumber | async }}

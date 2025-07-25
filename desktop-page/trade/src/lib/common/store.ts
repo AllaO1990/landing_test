@@ -21,6 +21,7 @@ export interface TradeState {
   accounts: Response<TradeAccounts | null> | null;
   orderType: TradeOrderTypes | null;
   orders: TradeOrders | null;
+  stopOrders: any | null;
   portfolio: TradePortfolio | null;
   operations: TradeOperations | null;
   directionTypes: TradeDirections | null;
@@ -49,6 +50,7 @@ export class TradeStore extends ComponentStore<TradeState> {
       accounts: null,
       orderType: null,
       orders: null,
+      stopOrders: null,
       portfolio: null,
       operations: null,
       directionTypes: [
@@ -90,6 +92,13 @@ export class TradeStore extends ComponentStore<TradeState> {
     (state: TradeState, orders: null | TradeOrders): TradeState => ({
       ...state,
       orders,
+    })
+  );
+
+  readonly updateStopOrders = this.updater(
+    (state: TradeState, stopOrders: null | any): TradeState => ({
+      ...state,
+      stopOrders,
     })
   );
 
@@ -191,8 +200,26 @@ export class TradeStore extends ComponentStore<TradeState> {
 
   loadOrders = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
-      switchMap((params: Params) => this._api.getOrders(params)),
-      tap((response: Response<TradeOrders | null>) => response.success && this.updateOrders(response.data))
+      switchMap((params: Params) =>
+        forkJoin([
+          this._api.getOrders(params),
+          this._api.getStopOrders(params).pipe(
+            catchError((error: Error) => {
+              console.log(error);
+
+              return of({
+                data: null,
+                message: error.message,
+                success: false,
+              });
+            })
+          ),
+        ])
+      ),
+      tap(([orders, stopOrders]: [Response<TradeOrders | null>, Response<TradeOrders | null>]) => {
+        orders.success && this.updateOrders(orders.data);
+        stopOrders.success && this.updateStopOrders(stopOrders.data);
+      })
     )
   );
 

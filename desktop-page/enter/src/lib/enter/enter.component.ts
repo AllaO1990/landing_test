@@ -633,4 +633,12 @@ export class VtEnterComponent implements AfterViewInit {
       this.form.markAsDirty();
     }, 500);
   }
+
+  onTrade(event: MouseEvent): void {
+    event.preventDefault();
+
+    this._queryParams.update({
+      trade: 'visible',
+    });
+  }
 }

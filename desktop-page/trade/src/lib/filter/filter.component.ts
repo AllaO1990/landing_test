@@ -13,7 +13,6 @@ import {
   TradeAccount,
   TradeAccounts,
   TradePortfolio,
-  TradePosition,
   TradeSource,
   TradeSources,
   TradeToken,
@@ -27,6 +26,7 @@ import { Params } from '@angular/router';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TokenButtonComponent } from '../token-button/token-button.component';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 @Component({
   selector: 'trade-filter',
@@ -78,18 +78,26 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
   );
   readonly token$: Observable<Response<TradeToken | null> | null> = this.#store.token$;
-  readonly portfolio$: Observable<TradePosition | null> = this.#store.portfolio$.pipe(
-    map((portfolio: TradePortfolio | null): TradePosition | null => {
+  readonly portfolio$: Observable<any | null> = this.#store.portfolio$.pipe(
+    map((portfolio: TradePortfolio | null) => {
       if (portfolio === null) {
         return null;
       }
 
-      return (
-        portfolio.positions[0] || {
+      const position = portfolio.positions[0];
+
+      if (!position) {
+        return {
           quantity: 0,
+          total: 0,
           averagePositionPrice: { value: 0, currency: 'rub' },
-        }
-      );
+        };
+      }
+
+      return {
+        ...position,
+        total: getNumberPrecision(position.quantity * position.averagePositionPrice.value, 2),
+      };
     })
   );
   readonly sources$: Observable<TradeSources> = this.#store.source$.pipe(
