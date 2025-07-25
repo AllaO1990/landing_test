@@ -74,6 +74,16 @@ export class ApiService {
     });
   }
 
+  getStopOrders(params: Params): Observable<Response<TradeOrders>> {
+    return this._http.get<Response<TradeOrders>>(`${this.host}/api/v1/trades/stop-orders`, {
+      params: {
+        accountId: params['accountId'],
+        instrumentId: params['instrumentId'],
+        sourceId: params['sourceId'],
+      },
+    });
+  }
+
   addOrder(body: Params): Observable<Response<TradeOrders>> {
     return this._http.post<Response<TradeOrders>>(`${this.host}/api/v1/trades/orders`, {
       accountId: body['accountId'],
