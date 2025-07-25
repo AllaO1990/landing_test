@@ -6,9 +6,11 @@ import {
   forwardRef,
   inject,
   Injector,
+  signal,
+  WritableSignal,
 } from '@angular/core';
 import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
-import { TuiAccordion, TuiButtonLoading, TuiCheckbox } from '@taiga-ui/kit';
+import { TuiButtonLoading, TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
 import {
   ControlValueAccessor,
   FormArray,
@@ -17,7 +19,8 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { TuiButton, TuiExpand, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiExpand } from '@taiga-ui/experimental';
 import { TradeDialogService } from '../dialog/dialog.service';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
@@ -33,6 +36,7 @@ import { TradeOperations, TradeOrder, TradeOrders } from '../common/api.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { RequestFormValue } from '../request/request.component';
 import { TradeFormService } from './form.service';
+import { TuiItem } from '@taiga-ui/cdk';
 
 interface ItemEntry {
   direction: boolean;
@@ -73,8 +77,9 @@ type OrderStatus = 0 | 1 | 2;
     OrderTypePipe,
     TuiButtonLoading,
     TuiHint,
-    TuiAccordion,
     TuiExpand,
+    TuiChevron,
+    TuiItem,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss',
@@ -95,6 +100,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #service: TradeFormService = inject(TradeFormService);
+
+  readonly expanded: WritableSignal<boolean> = signal(false);
+  readonly expandedDisabled$: Observable<boolean> = combineLatest([
+    this.#store.operations$.pipe(),
+    this.#store.orders$.pipe(),
+  ]).pipe(
+    map(([operations, orders]: [TradeOperations | null, TradeOrders | null]) => !(orders || operations)),
+    distinctUntilChanged(),
+    startWith(true)
+  );
 
   #onChange = (_: any) => {};
   #onTouched = () => {};
@@ -447,5 +462,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
       this.formArrayEntry.at(index).disable();
     }
+  }
+
+  onExpanded(event: Event): void {
+    event.preventDefault();
+
+    this.expanded.update((status: boolean) => !status);
   }
 }
