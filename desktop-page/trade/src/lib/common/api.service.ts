@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Response } from 'types/response';
 import {
   TradeAccounts,
@@ -74,14 +74,20 @@ export class ApiService {
     });
   }
 
-  getStopOrders(params: Params): Observable<Response<TradeOrders>> {
-    return this._http.get<Response<TradeOrders>>(`${this.host}/api/v1/trades/stop-orders`, {
-      params: {
-        accountId: params['accountId'],
-        instrumentId: params['instrumentId'],
-        sourceId: params['sourceId'],
-      },
+  getStopOrders(params: Params): Observable<Response<TradeOrders | null>> {
+    return of({
+      data: null,
+      message: 'none',
+      success: false,
     });
+
+    // return this._http.get<Response<TradeOrders>>(`${this.host}/api/v1/trades/stop-orders`, {
+    //   params: {
+    //     accountId: params['accountId'],
+    //     instrumentId: params['instrumentId'],
+    //     sourceId: params['sourceId'],
+    //   },
+    // });
   }
 
   addOrder(body: Params): Observable<Response<TradeOrders>> {

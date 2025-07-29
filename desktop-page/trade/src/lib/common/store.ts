@@ -5,7 +5,9 @@ import { Response } from 'types/response';
 import {
   TradeAccounts,
   TradeDirections,
+  TradeOperation,
   TradeOperations,
+  TradeOrder,
   TradeOrders,
   TradeOrderTypes,
   TradePortfolio,
@@ -14,6 +16,7 @@ import {
   TradeTokenSource,
 } from './api.types';
 import { Params } from '@angular/router';
+import { sortNumber } from 'utils/sort-number';
 
 export interface TradeState {
   sources: TradeSources | null;
@@ -91,7 +94,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   readonly updateOrders = this.updater(
     (state: TradeState, orders: null | TradeOrders): TradeState => ({
       ...state,
-      orders,
+      orders: this._sortOrders(orders),
     })
   );
 
@@ -105,7 +108,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   readonly updateOperations = this.updater(
     (state: TradeState, operations: null | TradeOperations): TradeState => ({
       ...state,
-      operations,
+      operations: this._sortOperations(operations),
     })
   );
 
@@ -264,4 +267,24 @@ export class TradeStore extends ComponentStore<TradeState> {
       )
     )
   );
+
+  private _sortOrders(orders: null | TradeOrders): null | TradeOrders {
+    if (orders === null) {
+      return null;
+    }
+
+    return orders.sort((a: TradeOrder, b: TradeOrder) =>
+      sortNumber(new Date(a.orderDate).valueOf(), new Date(b.orderDate).valueOf())
+    );
+  }
+
+  private _sortOperations(operations: TradeOperations | null): null | TradeOperations {
+    if (operations === null) {
+      return null;
+    }
+
+    return operations.sort((a: TradeOperation, b: TradeOperation) =>
+      sortNumber(new Date(a.date).valueOf(), new Date(b.date).valueOf())
+    );
+  }
 }

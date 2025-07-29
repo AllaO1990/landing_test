@@ -49,15 +49,28 @@ export class LayoutComponent implements AfterViewInit {
     const { filter, entry, out } = this.formGroup.value.trade;
     const { account, instrument, source } = filter;
 
-    const params = this._getOrders(
+    const entryOrders = this._getOrders(
       entry.filter((item: { status: number }) => item.status === 0),
       account.accountId,
       instrument.id,
       source.id
     );
 
-    if (params.length > 0) {
-      this.#store.addOrders(params);
+    if (entryOrders.length > 0) {
+      this.#store.addOrders(entryOrders);
+
+      return;
+    }
+
+    const outOrders = this._getOrders(
+      out.filter((item: { status: number }) => item.status === 0),
+      account.accountId,
+      instrument.id,
+      source.id
+    );
+
+    if (outOrders.length > 0) {
+      this.#store.addOrders(outOrders);
     }
   }
 
