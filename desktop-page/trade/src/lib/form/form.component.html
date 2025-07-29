@@ -16,7 +16,7 @@
         <div class="item row row--border" *libListItem="let item; let index = index">
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, index: index }"></ng-container>
+            [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayEntry }"></ng-container>
         </div>
       </lib-list>
       <!--      <div class="trade__actions">-->
@@ -42,7 +42,7 @@
         <div class="item row row--border" *libListItem="let item; let index = index">
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, index: index }"></ng-container>
+            [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayOut }"></ng-container>
         </div>
       </lib-list>
       <!--      <div class="trade__actions">-->
@@ -124,13 +124,12 @@
     <div class="header__item row__item">Кол-во/лоты</div>
     <div class="header__item row__item">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
-    <!--    <div class="header__item row__item">Брокер</div>-->
     <div class="header__item row__item">Статус</div>
     <div class="header__item row__item row__item--actions"></div>
   </lib-list-header>
 </ng-template>
 
-<ng-template #itemEntryTemplate let-item let-index=index>
+<ng-template #itemEntryTemplate let-item let-index=index let-control=control>
   <div class="item__value row__item">
     {{ item.direction | tradeDirectionType | async }}
   </div>
@@ -182,14 +181,14 @@
         iconStart="@tui.pencil"
         tuiIconButton
         [loading]="item.change"
-        (click)="onEditEntry($event, item, index)"
+        (click)="onEdit($event, item, index, control)"
         size="xs"
         type="button"
       ></button>
     }
     @if (item.status === 1) {
       <button
-        (click)="onRemoveEntry($event, item, index)"
+        (click)="onRemove($event, item, index, control)"
         [loading]="item.removed"
         appearance="icon"
         iconStart="@tui.x"
@@ -201,63 +200,6 @@
   </div>
 </ng-template>
 
-<ng-template #itemTemplate let-item let-type='type'>
-  <div class="item__value row__item row__item--types" [title]="item.type.name">
-    {{ item.type.name }}
-  </div>
-  <div class="item__value item__value--number row__item">
-    {{ item.price | tuiFormatNumber | async }}
-  </div>
-  <div class="item__value item__value--number row__item">
-    {{ item.amount }}
-  </div>
-  <div class="item__value item__value--number row__item">
-    {{
-      item.commission ? (item.commission | tuiFormatNumber: {
-        precision: 2,
-        decimalMode: 'always'
-      } | async) : '&mdash;'
-    }}
-  </div>
-  <div class="item__value item__value--number row__item row__item--total">
-    {{ item.total | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-  </div>
-  <div class="item__value row__item">
-    {{ item.broker }}
-  </div>
-  <div class="item__value row__item">
-    {{ item.action.name }}
-  </div>
-  <div class="item__value row__item row__item--center">
-    <tui-icon
-      *ngIf="item.status.id === '2'"
-      style="color: var(--tui-status-warning)"
-      icon="@tui.refresh-cw"></tui-icon>
-    <tui-icon
-      *ngIf="item.status.id === '1'"
-      style="color: var(--tui-text-positive)"
-      icon="@tui.circle-check"></tui-icon>
-  </div>
-  <div class="item__value row__item row__item--actions">
-    <button
-      (click)="open($event, type, item)"
-      appearance="icon"
-      iconStart="@tui.pencil"
-      tuiIconButton
-      size="xs"
-      type="button"
-    ></button>
-    <button
-      (click)="remove($event, type, item)"
-      appearance="icon"
-      iconStart="@tui.x"
-      tuiIconButton
-      size="xs"
-      type="button"
-    ></button>
-  </div>
-</ng-template>
-
 <ng-template #headerOrder>
   <lib-list-header class="header row">
     <div class="header__item row__item">Действие</div>
@@ -266,8 +208,6 @@
     <div class="header__item row__item">Лоты</div>
     <div class="header__item row__item">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
-    <!--    <div class="header__item row__item">Статус</div>-->
-    <!--    <div class="header__item row__item row__item&#45;&#45;actions"></div>-->
   </lib-list-header>
 </ng-template>
 
@@ -295,26 +235,16 @@
   <div class="item__value item__value--number row__item row__item--total">
     {{ item.initialOrderPrice.value | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
   </div>
-  <!--  <div class="item__value row__item row__item&#45;&#45;center">-->
-  <!--    <tui-icon-->
-  <!--      *ngIf="item.status.id === '2'"-->
-  <!--      style="color: var(&#45;&#45;tui-status-warning)"-->
-  <!--      icon="@tui.refresh-cw"></tui-icon>-->
-  <!--    <tui-icon-->
-  <!--      *ngIf="item.status.id === '1'"-->
-  <!--      style="color: var(&#45;&#45;tui-text-positive)"-->
-  <!--      icon="@tui.circle-check"></tui-icon>-->
-  <!--  </div>-->
   <div class="item__value row__item row__item--actions">
-    <button
-      appearance="icon"
-      iconStart="@tui.pencil"
-      tuiIconButton
-      size="xs"
-      type="button"
-      (click)="onChangeOrder($event, item)"
-      [loading]="item.change"
-    ></button>
+    <!--    <button-->
+    <!--      appearance="icon"-->
+    <!--      iconStart="@tui.pencil"-->
+    <!--      tuiIconButton-->
+    <!--      size="xs"-->
+    <!--      type="button"-->
+    <!--      (click)="onChangeOrder($event, item)"-->
+    <!--      [loading]="item.change"-->
+    <!--    ></button>-->
     <button
       (click)="onRemoveOrder($event, item)"
       [loading]="item.removed"

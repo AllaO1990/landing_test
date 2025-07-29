@@ -81,6 +81,10 @@
   flex: 0 0 calc(100% / 7);
 }
 
+lib-list {
+  margin-top: var(--padding-2);
+}
+
 .item {
   background-color: var(--tui-background-base-alt, #F6F7FB);
 

@@ -28,6 +28,13 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TokenButtonComponent } from '../token-button/token-button.component';
 import { getNumberPrecision } from 'utils/get-number-precision';
 
+interface Position {
+  quantity: number;
+  currency: string;
+  price: number;
+  total: number;
+}
+
 @Component({
   selector: 'trade-filter',
   standalone: true,
@@ -78,7 +85,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
   );
   readonly token$: Observable<Response<TradeToken | null> | null> = this.#store.token$;
-  readonly portfolio$: Observable<any | null> = this.#store.portfolio$.pipe(
+  readonly portfolio$: Observable<Position | null> = this.#store.portfolio$.pipe(
     map((portfolio: TradePortfolio | null) => {
       if (portfolio === null) {
         return null;
@@ -90,13 +97,16 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
         return {
           quantity: 0,
           total: 0,
-          averagePositionPrice: { value: 0, currency: 'rub' },
+          price: 0,
+          currency: 'RUB',
         };
       }
 
       return {
-        ...position,
+        quantity: position.quantity,
         total: getNumberPrecision(position.quantity * position.averagePositionPrice.value, 2),
+        price: position.averagePositionPrice.value,
+        currency: position.averagePositionPrice.currency.toUpperCase(),
       };
     })
   );

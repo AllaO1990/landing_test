@@ -70,20 +70,20 @@
       @if (portfolio$ | async; as position) {
         <div class="form__column" [tuiCell]="size">
           <div tuiSubtitle>Количество</div>
-          <div tuiTitle>{{ position.quantity }} шт.</div>
+          <div class="springy" tuiTitle>{{ position.quantity }} шт.</div>
         </div>
         <div class="form__column" [tuiCell]="size">
           <div tuiSubtitle>Цена за бумагу</div>
           <div tuiTitle>
-            {{ position.averagePositionPrice.value }}
-            {{ position.averagePositionPrice.currency | uppercase | tuiCurrency }}
+            {{ position.price }}
+            {{ position.currency | tuiCurrency }}
           </div>
         </div>
         <div class="form__column" [tuiCell]="size">
           <div tuiSubtitle>Стоимость</div>
           <div tuiTitle>
             {{ position.total }}
-            {{ position.averagePositionPrice.currency | uppercase | tuiCurrency }}
+            {{ position.currency | tuiCurrency }}
           </div>
         </div>
       } @else {
