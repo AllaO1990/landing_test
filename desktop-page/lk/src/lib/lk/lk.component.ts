@@ -129,16 +129,17 @@ export class LkComponent implements OnInit {
 
     this.onOpenDialog();
 
-    this._queryParams
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        startWith(this._queryParams.value()),
-        distinctUntilChanged((a: Params, b: Params) => a['trade'] === b['trade']),
-        filter((params: Params) => params['trade'] === 'visible'),
-        debounceTime(100),
-        switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector))
-      )
+    this._queryTrade$
+      .pipe(switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector)))
       .subscribe(() => console.log('dialog service'));
+
+    // this._queryParams.pipe(
+    //   takeUntilDestroyed(this.#destroyRef),
+    //   startWith(this._queryParams.value()),
+    //   distinctUntilChanged((a: Params, b: Params) => a['trade'] === b['trade']),
+    //   filter((params: Params) => params['trade'] === 'visible'),
+    //   debounceTime(100)
+    // );
   }
 
   async onOpenDialog() {

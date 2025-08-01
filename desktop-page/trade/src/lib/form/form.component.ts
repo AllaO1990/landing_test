@@ -32,8 +32,11 @@ import {
   filter,
   map,
   Observable,
+  pairwise,
+  shareReplay,
   startWith,
   switchMap,
+  tap,
   timer,
 } from 'rxjs';
 import { StockPosition, StockPositionActionTarget, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
@@ -47,12 +50,17 @@ import { getNumberPrecision } from 'utils/get-number-precision';
 import { RequestFormValue } from '../request/request.component';
 import { TradeFormService } from './form.service';
 import { TuiItem } from '@taiga-ui/cdk';
+import { triggerHeightAnimations } from '@ui/animations/height.animations';
+import { ControlValue } from './form.types';
+import { sortNumber } from 'utils/sort-number';
 
 interface ItemEntry {
   direction: boolean;
   instrumentId: string;
-  orderType: number;
+  orderType: number | null;
   price: number;
+  total: number;
+  commission: number;
   status: number;
   orderId: string | null;
   lot: number;
@@ -100,6 +108,7 @@ type OrderStatus = 0 | 1 | 2;
     },
     TradeFormService,
   ],
+  animations: [triggerHeightAnimations],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
@@ -143,6 +152,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     return this.formGroup.get('filter') as FormControl;
   }
 
+  isDisabledButton$: Observable<boolean> = this.controlFilter.valueChanges.pipe(
+    map((value: null | { token: null | string }): boolean => !(value && value.token)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   readonly itemHeight = 28;
 
   readonly idea$: Observable<StockPosition> = this.#idea.idea$;
@@ -153,9 +167,21 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     switchMap(() => this.formArrayEntry.valueChanges.pipe(startWith(this.formArrayEntry.value)))
   );
 
+  readonly heightEntry$: Observable<number> = this.listEntry$.pipe(
+    map((list: ItemEntry[]) => ((list && list.length) || 0) + 1),
+    map((length) => (length > 3 ? 3 * this.itemHeight : length * this.itemHeight))
+  );
+
   readonly listOut$: Observable<ItemEntry[]> = timer(500).pipe(
     switchMap(() => this.formArrayOut.valueChanges.pipe(startWith(this.formArrayOut.value)))
   );
+
+  readonly heightOut$: Observable<number> = this.listOut$.pipe(
+    map((list: ItemEntry[]) => ((list && list.length) || 0) + 1),
+    map((length) => (length > 4 ? 4 * this.itemHeight : length * this.itemHeight))
+  );
+
+  direction = true;
 
   mapOperationType: any = {
     '22': 'Продажа',
@@ -169,6 +195,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   };
 
   ngAfterViewInit(): void {
+    this.idea$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        filter((position: StockPosition) => position !== null)
+      )
+      .subscribe((position: StockPosition) => {});
+
     combineLatest([
       this.idea$,
       this.orders$.pipe(
@@ -182,17 +215,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     ])
       .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(100))
       .subscribe(([position, orders, operations]: [StockPosition, TradeOrders, TradeOperations]) => {
-        const { source, account, instrument } = this.controlFilter.value;
+        // this._updateControls(position, orders, operations);
 
-        if (source && account && instrument) {
-          this.#store.loadPortfolio({
-            sourceId: source.id,
-            accountId: account.accountId,
-            instrumentId: instrument.id,
-          });
-        }
-
-        this._updateControls(position, orders, operations);
+        this._initControls(position, orders, operations);
       });
 
     this.controlFilter.valueChanges
@@ -213,19 +238,66 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         this.#store.loadOperations(params);
       });
 
+    this.idea$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((position: StockPosition) =>
+          this.orders$.pipe(
+            takeUntilDestroyed(this.#destroyRef),
+            filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
+            pairwise(),
+            tap((data) => console.log(data)),
+            filter(([first, second]: [TradeOrders, TradeOrders]) => first.length > second.length),
+            map(([first, second]: [TradeOrders, TradeOrders]): TradeOrders => this._getDifference(first, second)),
+            map((orders: TradeOrders) => ({ orders, position })),
+            switchMap((value) =>
+              this.operations$.pipe(
+                filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null),
+                map((operations: TradeOperations) => ({ ...value, operations }))
+              )
+            )
+          )
+        )
+      )
+      .subscribe(
+        ({
+          orders,
+          position,
+          operations,
+        }: {
+          position: StockPosition;
+          orders: TradeOrders;
+          operations: TradeOperations;
+        }) => {
+          // const operation = operations.find((item: TradeOperation) => item.quantity === orders[0].)
+
+          console.log(orders, position, operations);
+          // this._updateIdeaEntries(position, {
+          //   amount: operation[index].quantity,
+          //   date: operation[index].date,
+          //   brokerId: 1,
+          //   price: operation[index].price.value,
+          // });
+        }
+      );
+
+    this.controlFilter.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        startWith(this.controlFilter.value),
+        map((value: { token: null | string } | null): null | string => value && value.token),
+        pairwise()
+      )
+      .subscribe(([first, second]: [null | string, null | string]) => {
+        if (first !== null && second === null) {
+          this.formArrayEntry.clear();
+          this.formArrayOut.clear();
+        }
+      });
+
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value))
       .subscribe((value) => this.#onChange(value));
-  }
-
-  remove(event: Event, list: string, data: any): void {
-    event.preventDefault();
-
-    // if (list === 'out') {
-    //   this.listOut = this.listOut.filter((item) => item.id !== data.id);
-    // } else {
-    //   this.listEntry = this.listEntry.filter((item) => item.id !== data.id);
-    // }
   }
 
   private _distinct(
@@ -236,6 +308,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   private _updateControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
+    this.direction = position.idea.positionType === 'long';
     const entry = this._getEntryControlValues(position, orders, operations);
     const out = this._getOutControlValues(position, orders, operations);
 
@@ -247,9 +320,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.formArrayOut.clear();
 
-    out.forEach((item, index: number) => {
-      this.formArrayOut.setControl(index, new FormControl(item));
-    });
+    if (entry.every((item) => item.status === 0)) {
+      out.forEach((item, index: number) => {
+        this.formArrayOut.setControl(index, new FormControl(item));
+      });
+    }
   }
 
   writeValue(obj: any): void {
@@ -292,11 +367,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.#dialog
       .openTradeRequest(this.#injector, {
-        direction: !!item.direction,
-        orderType: item.orderType,
-        price: item.averagePositionPrice.value,
-        log: instrument.lot,
-        quantity: item.lotsRequested,
+        direction: { value: !!item.direction, disabled: true },
+        orderType: { value: item.orderType, disabled: true },
+        price: { value: item.averagePositionPrice.value, disabled: true },
+        log: { value: instrument.lot, disabled: true },
+        quantity: { value: item.lotsRequested, disabled: true },
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue) => {
@@ -312,14 +387,62 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   private _updateIdeaEntries(
     position: StockPosition,
-    order: {
+    orders: {
       amount: number;
       date: string;
       brokerId: number;
       price: number;
-    }
+    }[],
+    type: 'entries' | 'outs' = 'entries'
   ): void {
-    this.#idea.editIdea({ id: position.idea.id!, body: this.#service.updateIdeaEntries(position, order) });
+    let body = this.#service.updateIdeaEntries(position, orders);
+
+    if (type === 'outs') {
+      body = this.#service.updateIdeaOuts(position, orders);
+    }
+
+    this.#idea.editIdea({ id: position.idea.id!, body });
+  }
+
+  onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' = 'entry') {
+    event.preventDefault();
+
+    const { instrument } = this.controlFilter.value;
+
+    let max = null;
+
+    if (this.formArrayEntry.value && this.formArrayEntry.value.length > 0) {
+      max = this.formArrayEntry.value.reduce((acc: number, item: { quantity: number }) => {
+        return acc + item.quantity;
+      }, 0);
+    }
+
+    if (type === 'entry') {
+      max = null;
+    }
+
+    this.#dialog
+      .openTradeRequest(this.#injector, {
+        direction: { value: direction, disabled: true },
+        orderType: { value: null, disabled: false },
+        price: { value: null, disabled: false },
+        lot: { value: instrument.lot, disabled: false },
+        quantity: { value: null, disabled: false },
+        max,
+      })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((value: RequestFormValue | null) => {
+        if (value) {
+          const calcValue = {
+            ...value,
+            status: 0,
+            commission: 0,
+            lot: instrument.lot,
+            total: getNumberPrecision(value.price * value.quantity, 2),
+          };
+          control.setControl(control.controls.length, new FormControl(calcValue));
+        }
+      });
   }
 
   onEdit(event: Event, item: ItemEntry & { change: boolean }, index: number, control: FormArray): void {
@@ -331,15 +454,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.#dialog
       .openTradeRequest(this.#injector, {
-        direction: item.direction,
-        orderType: item.orderType,
-        price: item.price,
-        lot: item.lot,
-        quantity: item.quantity,
+        direction: { value: item.direction, disabled: true },
+        orderType: { value: item.orderType, disabled: false },
+        price: { value: item.price, disabled: false },
+        lot: { value: item.lot, disabled: false },
+        quantity: { value: item.quantity, disabled: true },
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue | null) => {
         let calcValue: any = { ...item, change: false };
+
+        console.log(value);
 
         if (value) {
           calcValue = {
@@ -382,7 +507,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       });
 
       control.at(index).disable();
+
+      return;
     }
+
+    control.removeAt(index);
   }
 
   onExpanded(event: Event): void {
@@ -428,12 +557,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           status = 2;
           commission = operation[index].comission.value;
 
-          this._updateIdeaEntries(position, {
-            amount: operation[index].quantity,
-            date: operation[index].date,
-            brokerId: 1,
-            price: operation[index].price.value,
-          });
+          this._updateIdeaEntries(position, [
+            {
+              amount: operation[index].quantity,
+              date: operation[index].date,
+              brokerId: 1,
+              price: operation[index].price.value,
+            },
+          ]);
         }
       }
 
@@ -445,7 +576,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         direction,
         orderId,
         lot: position.idea.instrument.lot,
-        orderType: 1,
+        orderType: status === 2 ? null : 1,
         status,
       };
     });
@@ -457,14 +588,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       );
 
       return {
-        ...item,
         commission: operation ? Math.abs(operation.comission.value) : 0,
         price: item.price,
         quantity: item.amount,
         total: item.totalPrice,
         direction,
         lot: position.idea.instrument.lot,
-        orderType: 1,
+        orderType: null,
         status: 2,
       };
     });
@@ -525,12 +655,18 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           status = 2;
           commission = Math.abs(operation.comission.value);
 
-          this._updateIdeaEntries(position, {
-            amount: operation.quantity,
-            date: operation.date,
-            brokerId: 1,
-            price: operation.price.value,
-          });
+          this._updateIdeaEntries(
+            position,
+            [
+              {
+                amount: operation.quantity,
+                date: operation.date,
+                brokerId: 1,
+                price: operation.price.value,
+              },
+            ],
+            'outs'
+          );
         }
       }
 
@@ -548,5 +684,232 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     });
 
     return [...actionOrders, ...targetOrders];
+  }
+
+  addFromIdea(event: Event): void {
+    event.preventDefault();
+
+    this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) => {
+      const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
+      this._getOutControlValues(position, [], []).forEach((item, index: number) => {
+        this.formArrayOut.setControl(index + length, new FormControl(item));
+      });
+    });
+  }
+
+  private _getDifference(first: TradeOrders, second: TradeOrders): TradeOrders {
+    const secondIds = second.map((item) => item.orderId);
+
+    return first.filter((firstItem: TradeOrder) => secondIds.includes(firstItem.orderId));
+  }
+
+  private _initControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
+    this.direction = position.idea.positionType === 'long';
+    const entry: ControlValue[] = this._initEntryControl(position, orders, operations);
+    const out: ControlValue[] = this._initOutControl(position, orders, operations);
+
+    this.formArrayEntry.clear();
+
+    entry.forEach((item, index: number) => {
+      this.formArrayEntry.setControl(index, new FormControl(item));
+    });
+
+    this.formArrayOut.clear();
+
+    out.forEach((item, index: number) => {
+      this.formArrayOut.setControl(index, new FormControl(item));
+    });
+  }
+
+  _getDefaultControlValue(position: StockPosition, positionType: 'direct' | 'reverse' = 'direct') {
+    const direction = position.idea.positionType === 'long';
+
+    return {
+      instrumentId: position.idea.instrument.id,
+      commission: 0,
+      direction: positionType === 'direct' ? direction : !direction,
+      orderId: null,
+      date: null,
+      lot: position.idea.instrument.lot,
+    };
+  }
+
+  private _initEntryControl(position: StockPosition, orders: TradeOrders, operations: TradeOperations): ControlValue[] {
+    const defaultItem = this._getDefaultControlValue(position);
+    const operationType = defaultItem.direction ? 15 : 22;
+    const actionQuantity = position.actions.entries.map((item) => item.amount);
+    const actions = position.actions.entries;
+    const ideas = position.idea.entries.filter((item) => !actionQuantity.includes(item.quantity));
+
+    const actionControlValues: ControlValue[] = actions.map((item): ControlValue => {
+      return {
+        ...defaultItem,
+        price: item.price,
+        quantity: item.amount,
+        total: item.totalPrice,
+        orderType: null,
+        status: 2,
+      };
+    });
+
+    const ideaControlValues: ControlValue[] = ideas.map((item) => {
+      let status = 0;
+      let commission = 0;
+      let price = item.price;
+      let orderId = null;
+      let orderType = 1;
+
+      if (orders && orders.length > 0) {
+        const findOrder =
+          orders.find((orderItem: TradeOrder) => {
+            return +orderItem.direction === +defaultItem.direction && orderItem.lotsRequested === item.quantity;
+          }) || null;
+
+        if (findOrder) {
+          status = 1;
+          orderId = findOrder.orderId;
+          commission = findOrder.initialComission.value;
+          price = findOrder.averagePositionPrice.value;
+          orderType = findOrder.orderType;
+        }
+      }
+
+      return {
+        ...defaultItem,
+        price,
+        commission,
+        orderId,
+        quantity: item.quantity,
+        total: getNumberPrecision(price * item.quantity, 2),
+        orderType,
+        status,
+      };
+    });
+
+    const operationControlValues: ControlValue[] = operations
+      .filter((item) => item.type === operationType && item.state === 1)
+      .filter((item) => actionControlValues.findIndex((action) => action.quantity === item.quantity) === -1)
+      .map((item) => {
+        return {
+          ...defaultItem,
+          price: item.price.value,
+          quantity: item.quantity,
+          date: item.date,
+          total: getNumberPrecision(item.price.value * item.quantity, 2),
+          orderType: null,
+          status: 2,
+        };
+      });
+
+    console.log(operationControlValues);
+
+    if (operationControlValues.length > 0) {
+      this._updateIdeaEntries(
+        position,
+        operationControlValues
+          .map((item) => ({
+            amount: item.quantity,
+            date: item.date as string,
+            brokerId: 1,
+            price: item.price,
+          }))
+          .sort((a: { date: string }, b: { date: string }) =>
+            sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+          )
+      );
+    }
+
+    return [...actionControlValues, ...ideaControlValues];
+  }
+
+  private _initOutControl(position: StockPosition, orders: TradeOrders, operations: TradeOperations): ControlValue[] {
+    const defaultItem = this._getDefaultControlValue(position, 'reverse');
+    const operationType = defaultItem.direction ? 15 : 22;
+    const actionQuantity = position.actions.outs.map((item) => item.amount);
+    const actions = position.actions.outs;
+    const ideas = position.idea.targets.filter((item) => !actionQuantity.includes(item.amount));
+
+    const actionControlValues: ControlValue[] = actions.map((item): ControlValue => {
+      return {
+        ...defaultItem,
+        price: item.price,
+        quantity: item.amount,
+        total: item.totalPrice,
+        orderType: null,
+        status: 2,
+      };
+    });
+
+    const ideaControlValues: ControlValue[] = ideas.map((item) => {
+      let status = 0;
+      let commission = 0;
+      let price = item.price;
+      let orderId = null;
+      let orderType = 1;
+
+      if (orders && orders.length > 0) {
+        const findOrder =
+          orders.find((orderItem: TradeOrder) => {
+            return +orderItem.direction === +defaultItem.direction && orderItem.lotsRequested === item.amount;
+          }) || null;
+
+        if (findOrder) {
+          status = 1;
+          orderId = findOrder.orderId;
+          commission = findOrder.initialComission.value;
+          price = findOrder.averagePositionPrice.value;
+          orderType = findOrder.orderType;
+        }
+      }
+
+      return {
+        ...defaultItem,
+        price,
+        commission,
+        orderId,
+        quantity: item.amount,
+        total: getNumberPrecision(price * item.amount, 2),
+        orderType,
+        status,
+      };
+    });
+
+    const operationControlValues: ControlValue[] = operations
+      .filter((item) => item.type === operationType && item.state === 1)
+      .filter((item) => actionControlValues.findIndex((action) => action.quantity === item.quantity) === -1)
+      .map((item) => {
+        return {
+          ...defaultItem,
+          price: item.price.value,
+          quantity: item.quantity,
+          date: item.date,
+          total: getNumberPrecision(item.price.value * item.quantity, 2),
+          orderType: null,
+          status: 2,
+        };
+      });
+
+    if (operationControlValues.length > 0) {
+      this._updateIdeaEntries(
+        position,
+        operationControlValues
+          .map((item) => ({
+            amount: item.quantity,
+            date: item.date as string,
+            brokerId: 1,
+            price: item.price,
+          }))
+          .sort((a: { date: string }, b: { date: string }) =>
+            sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+          ),
+        'outs'
+      );
+    }
+
+    if (position.actions.entries.length > 0) {
+      return [...actionControlValues, ...ideaControlValues.filter((item) => item.status === 1)];
+    }
+
+    return [...actionControlValues, ...ideaControlValues];
   }
 }

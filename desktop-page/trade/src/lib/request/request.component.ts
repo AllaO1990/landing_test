@@ -16,6 +16,7 @@ export interface RequestFormValue {
   orderType: number;
   price: number;
   quantity: number;
+  lot: number;
 }
 
 @Component({
@@ -45,17 +46,22 @@ export class RequestTradeComponent implements AfterViewInit {
   readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   @tuiPure
-  get lot(): number {
-    return this.#context.lot;
+  get max(): number | null {
+    return this.#context.max || null;
   }
 
   readonly size = 's';
   readonly formGroup: FormGroup = new FormGroup({
-    direction: new FormControl({ value: null, disabled: true }, Validators.required),
+    direction: new FormControl(null, Validators.required),
     orderType: new FormControl(null, Validators.required),
     price: new FormControl(null, Validators.required),
-    quantity: new FormControl({ value: null, disabled: true }, Validators.required),
+    quantity: new FormControl(null, Validators.required),
+    lot: new FormControl(null),
   });
+
+  get controlDirection(): FormControl {
+    return this.formGroup.get('direction') as FormControl;
+  }
 
   get controlPrice(): FormControl {
     return this.formGroup.get('price') as FormControl;
@@ -63,6 +69,14 @@ export class RequestTradeComponent implements AfterViewInit {
 
   get controlOrderType(): FormControl {
     return this.formGroup.get('orderType') as FormControl;
+  }
+
+  get controlQuantity(): FormControl {
+    return this.formGroup.get('quantity') as FormControl;
+  }
+
+  get controlLot(): FormControl {
+    return this.formGroup.get('lot') as FormControl;
   }
 
   types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
@@ -90,14 +104,13 @@ export class RequestTradeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.#context) {
-      const { orderType, direction, quantity, price } = this.#context;
+      const { orderType, direction, quantity, price, lot } = this.#context;
 
-      this.formGroup.patchValue({
-        direction: direction !== undefined && direction,
-        quantity,
-        orderType,
-        price,
-      });
+      this._updateControl(this.controlDirection, direction, { onlySelf: true });
+      this._updateControl(this.controlQuantity, quantity, { onlySelf: true });
+      this._updateControl(this.controlPrice, price, { onlySelf: true });
+      this._updateControl(this.controlOrderType, orderType, { onlySelf: true });
+      this._updateControl(this.controlLot, lot, { onlySelf: false });
     }
 
     this.controlOrderType.valueChanges
@@ -119,5 +132,19 @@ export class RequestTradeComponent implements AfterViewInit {
     const map = new Map(items.map(({ name, id }) => [id, name] as [number, string]));
 
     return ({ $implicit }: TuiContext<number>) => map.get($implicit) || '';
+  }
+
+  private _updateControl<T = any>(
+    control: FormControl,
+    controlState: { value: T; disabled: boolean },
+    options?: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      emitModelToViewChange?: boolean;
+      emitViewToModelChange?: boolean;
+    }
+  ): void {
+    control.setValue(controlState.value, options);
+    control[controlState.disabled ? 'disable' : 'enable'](options);
   }
 }

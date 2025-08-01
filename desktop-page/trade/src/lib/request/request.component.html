@@ -71,8 +71,9 @@
           placeholder="Количество"
           tuiInputNumber
           formControlName="quantity"
+          [max]="max"
         />
-        @if (lot; as value) {
+        @if (controlLot.value; as value) {
           <span>1 лот: {{ value }} шт.</span>
         }
       </tui-textfield>

@@ -31,7 +31,7 @@ export interface TradeState {
 }
 
 export class TradeStore extends ComponentStore<TradeState> {
-  readonly TIMER = 1000 * 60 * 3;
+  readonly TIMER = 1000 * 10 * 3;
 
   readonly source$: Observable<TradeSources | null> = this.select((state: TradeState) => state.sources);
   readonly token$: Observable<Response<TradeToken | null> | null> = this.select((state: TradeState) => state.token);

@@ -6,11 +6,13 @@ import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
+import { map, Observable } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'trade-layout',
   standalone: true,
-  imports: [TradeFormComponent, TuiButton, ReactiveFormsModule],
+  imports: [TradeFormComponent, TuiButton, ReactiveFormsModule, AsyncPipe],
   templateUrl: './layout.component.html',
   styleUrls: ['../common/dialog.scss', './layout.component.scss'],
   providers: [
@@ -31,6 +33,22 @@ export class LayoutComponent implements AfterViewInit {
     trade: new FormControl(null),
   });
 
+  readonly isDisabled$: Observable<boolean> = this.formGroup.valueChanges.pipe(
+    map((value) => value.trade),
+    map((value: { entry: { status: number }[]; out: { status: number }[] }) => {
+      const { entry, out } = value;
+
+      if (entry.length === 0 && out.length === 0) {
+        return true;
+      }
+
+      const entryIndex = entry.findIndex((item) => item.status === 0);
+      const outIndex = out.findIndex((item) => item.status === 0);
+
+      return entryIndex !== -1 && outIndex !== -1;
+    })
+  );
+
   ngAfterViewInit(): void {
     this.#store.loadOrderTypes();
   }
@@ -43,8 +61,6 @@ export class LayoutComponent implements AfterViewInit {
 
   onSubmit(event: Event): void {
     event.preventDefault();
-
-    console.log(this.formGroup.value);
 
     const { filter, entry, out } = this.formGroup.value.trade;
     const { account, instrument, source } = filter;

@@ -11,23 +11,24 @@
       <lib-list
         [header]="header"
         [itemSize]="itemHeight"
-        [style.height.px]="itemHeight * 2 + itemHeight"
+        [style.height.px]="heightEntry$ | async"
         [list]="listEntry$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index">
+        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
             [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayEntry }"></ng-container>
         </div>
       </lib-list>
-      <!--      <div class="trade__actions">-->
-      <!--        <button-->
-      <!--          (click)="open($event, 'entry')"-->
-      <!--          appearance="primary"-->
-      <!--          tuiButton-->
-      <!--          iconStart="@tui.plus">-->
-      <!--          Добавить заявку-->
-      <!--        </button>-->
-      <!--      </div>-->
+      <div class="trade__actions">
+        <button
+          [disabled]="isDisabledButton$ | async"
+          (click)="onOpen($event, formArrayEntry, direction, 'entry')"
+          appearance="primary"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить заявку
+        </button>
+      </div>
     </div>
 
     <div class="space"></div>
@@ -37,28 +38,41 @@
       <lib-list
         [header]="header"
         [itemSize]="itemHeight"
-        [style.height.px]="itemHeight * 4 + itemHeight"
+        [style.height.px]="heightOut$ | async"
         [list]="listOut$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index">
+        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
             [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayOut }"></ng-container>
         </div>
       </lib-list>
-      <!--      <div class="trade__actions">-->
-      <!--        <button-->
-      <!--          (click)="open($event, 'out')"-->
-      <!--          appearance="primary"-->
-      <!--          tuiButton-->
-      <!--          iconStart="@tui.plus">-->
-      <!--          Добавить заявку-->
-      <!--        </button>-->
-      <!--      </div>-->
+      <div class="trade__actions">
+        <button
+          [disabled]="isDisabledButton$ | async"
+          (click)="onOpen($event, formArrayOut, !direction, 'out')"
+          appearance="primary"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить заявку
+        </button>
+
+        <button
+          class="add-from-idea"
+          [disabled]="isDisabledButton$ | async"
+          (click)="addFromIdea($event)"
+          appearance="outline"
+          tuiAppearanceMode="checked"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить из идеи
+        </button>
+      </div>
     </div>
 
     <div class="space"></div>
 
     <button
+      class="more"
       appearance="secondary-grayscale"
       tuiButton
       type="button"
@@ -185,8 +199,6 @@
         size="xs"
         type="button"
       ></button>
-    }
-    @if (item.status === 1) {
       <button
         (click)="onRemove($event, item, index, control)"
         [loading]="item.removed"
