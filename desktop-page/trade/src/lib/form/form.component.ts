@@ -36,7 +36,6 @@ import {
   shareReplay,
   startWith,
   switchMap,
-  tap,
   timer,
 } from 'rxjs';
 import { StockPosition, StockPositionActionTarget, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
@@ -246,7 +245,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
             takeUntilDestroyed(this.#destroyRef),
             filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
             pairwise(),
-            tap((data) => console.log(data)),
             filter(([first, second]: [TradeOrders, TradeOrders]) => first.length > second.length),
             map(([first, second]: [TradeOrders, TradeOrders]): TradeOrders => this._getDifference(first, second)),
             map((orders: TradeOrders) => ({ orders, position })),
@@ -786,9 +784,37 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       };
     });
 
+    const orderIds = ideaControlValues.filter((item) => item.orderId !== null).map((item) => item.orderId);
+
+    const orderControlValues: ControlValue[] = orders
+      .filter((item) => +item.direction === +defaultItem.direction)
+      .filter((item) => !orderIds.includes(item.orderId))
+      .map((item) => ({
+        ...defaultItem,
+        orderId: item.orderId,
+        price: item.averagePositionPrice.value,
+        quantity: item.lotsRequested,
+        orderType: item.orderType,
+        direction: !!item.direction,
+        total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested, 2),
+        status: 1,
+      }));
+
+    const tempQuantity = actionControlValues.map((item) => item.quantity);
+
     const operationControlValues: ControlValue[] = operations
       .filter((item) => item.type === operationType && item.state === 1)
-      .filter((item) => actionControlValues.findIndex((action) => action.quantity === item.quantity) === -1)
+      .filter(
+        (item) =>
+          tempQuantity.findIndex((action: number, index: number) => {
+            if (action === item.quantity) {
+              tempQuantity.splice(index, 1);
+              return true;
+            }
+
+            return false;
+          }) === -1
+      )
       .map((item) => {
         return {
           ...defaultItem,
@@ -800,8 +826,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           status: 2,
         };
       });
-
-    console.log(operationControlValues);
 
     if (operationControlValues.length > 0) {
       this._updateIdeaEntries(
@@ -819,7 +843,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       );
     }
 
-    return [...actionControlValues, ...ideaControlValues];
+    return [...actionControlValues, ...orderControlValues, ...ideaControlValues];
   }
 
   private _initOutControl(position: StockPosition, orders: TradeOrders, operations: TradeOperations): ControlValue[] {
@@ -874,6 +898,22 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       };
     });
 
+    const orderIds = ideaControlValues.filter((item) => item.orderId !== null).map((item) => item.orderId);
+
+    const orderControlValues: ControlValue[] = orders
+      .filter((item) => +item.direction === +defaultItem.direction)
+      .filter((item) => !orderIds.includes(item.orderId))
+      .map((item) => ({
+        ...defaultItem,
+        orderId: item.orderId,
+        price: item.averagePositionPrice.value,
+        quantity: item.lotsRequested,
+        orderType: item.orderType,
+        direction: !!item.direction,
+        total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested, 2),
+        status: 1,
+      }));
+
     const operationControlValues: ControlValue[] = operations
       .filter((item) => item.type === operationType && item.state === 1)
       .filter((item) => actionControlValues.findIndex((action) => action.quantity === item.quantity) === -1)
@@ -907,9 +947,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     }
 
     if (position.actions.entries.length > 0) {
-      return [...actionControlValues, ...ideaControlValues.filter((item) => item.status === 1)];
+      return [...actionControlValues, ...orderControlValues, ...ideaControlValues.filter((item) => item.status === 1)];
     }
 
-    return [...actionControlValues, ...ideaControlValues];
+    return [...actionControlValues, ...orderControlValues, ...ideaControlValues];
   }
 }
