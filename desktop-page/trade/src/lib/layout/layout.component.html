@@ -8,10 +8,11 @@
       (click)="onClose($event)"
       appearance="secondary"
       tuiButton>
-      Отменить
+      Закрыть
     </button>
     <button
       type="submit"
+      [disabled]="isDisabled$ | async"
       (click)="onSubmit($event)"
       appearance="primary"
       tuiButton>

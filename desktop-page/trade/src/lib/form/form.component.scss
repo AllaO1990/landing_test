@@ -117,6 +117,14 @@ lib-list {
   background-color: var(--tui-background-base);
 }
 
+.more {
+  margin-top: var(--padding-4);
+}
+
+.add-from-idea {
+  margin-left: var(--padding-2);
+}
+
 label {
   display: flex;
   align-items: center;

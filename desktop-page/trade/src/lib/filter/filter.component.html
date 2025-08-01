@@ -75,16 +75,30 @@
         <div class="form__column" [tuiCell]="size">
           <div tuiSubtitle>Цена за бумагу</div>
           <div tuiTitle>
-            {{ position.price }}
+            {{ position.price | tuiFormatNumber | async }}
             {{ position.currency | tuiCurrency }}
           </div>
         </div>
         <div class="form__column" [tuiCell]="size">
           <div tuiSubtitle>Стоимость</div>
           <div tuiTitle>
-            {{ position.total }}
+            {{ position.total | tuiFormatNumber | async }}
             {{ position.currency | tuiCurrency }}
           </div>
+        </div>
+        <div class="space"></div>
+        <div class="form__column">
+          <button
+            (click)="onClosePosition($event, position)"
+            [loading]="position.loading"
+            [disabled]="position.quantity === 0"
+            class="add-from-idea"
+            appearance="icon"
+            tuiIconButton
+            tuiHint="Закрыть позицию"
+            tuiHintAppearance="dark"
+            iconStart="@tui.circle-x">
+          </button>
         </div>
       } @else {
         <div style="width: 10rem">

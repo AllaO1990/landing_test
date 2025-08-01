@@ -1,9 +1,22 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
-import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield, TuiTitle } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield, TuiTitle } from '@taiga-ui/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { distinctUntilChanged, filter, map, Observable, pairwise, startWith, switchMap, take, tap, timer } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  pairwise,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  timer,
+} from 'rxjs';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,7 +30,7 @@ import {
   TradeSources,
   TradeToken,
 } from '../common/api.types';
-import { TuiChip } from '@taiga-ui/kit';
+import { TuiButtonLoading, TuiChip } from '@taiga-ui/kit';
 import { StockInstrument } from 'types/stock';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { Response } from 'types/response';
@@ -29,6 +42,7 @@ import { TokenButtonComponent } from '../token-button/token-button.component';
 import { getNumberPrecision } from 'utils/get-number-precision';
 
 interface Position {
+  loading: boolean;
   quantity: number;
   currency: string;
   price: number;
@@ -58,6 +72,8 @@ interface Position {
     TuiCell,
     TuiTitle,
     TokenButtonComponent,
+    TuiButton,
+    TuiButtonLoading,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
@@ -95,6 +111,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
       if (!position) {
         return {
+          loading: false,
           quantity: 0,
           total: 0,
           price: 0,
@@ -103,6 +120,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
       }
 
       return {
+        loading: false,
         quantity: position.quantity,
         total: getNumberPrecision(position.quantity * position.averagePositionPrice.value, 2),
         price: position.averagePositionPrice.value,
@@ -187,7 +205,12 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
         })),
         filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
         distinctUntilChanged(this._distinct),
-        switchMap((value) => timer(0, this.#store.TIMER).pipe(map(() => value)))
+        switchMap((value) =>
+          combineLatest([this.#store.orders$, timer(0, this.#store.TIMER)]).pipe(
+            debounceTime(500),
+            map(() => value)
+          )
+        )
       )
       .subscribe((params: Params) => {
         this.#store.loadPortfolio(params);
@@ -244,5 +267,23 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     b: { accountId: string; instrumentId: string; sourceId: string }
   ): boolean {
     return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
+  }
+
+  onClosePosition(event: Event, position: Position): void {
+    event.preventDefault();
+
+    position.loading = true;
+
+    const { source, instrument, account } = this.formGroup.value;
+
+    this.#store.addOrder({
+      direction: !(position.quantity > 0),
+      orderType: 2,
+      price: position.price,
+      quantity: Math.abs(position.quantity),
+      accountId: account.accountId,
+      instrumentId: instrument.id,
+      sourceId: source.id,
+    });
   }
 }
