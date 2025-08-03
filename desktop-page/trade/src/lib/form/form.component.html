@@ -154,7 +154,8 @@
     {{ item.price | tuiFormatNumber | async }}
   </div>
   <div class="item__value item__value--number row__item">
-    <span>{{ (item.quantity * item.lot) | tuiFormatNumber | async }}</span> / {{ item.quantity }}
+    <span>{{ item.quantity | tuiFormatNumber | async }}</span>
+    / {{ (item.quantity / item.lot) | tuiFormatNumber | async }}
   </div>
   <div class="item__value item__value--number row__item">
     {{

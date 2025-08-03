@@ -280,7 +280,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
       direction: !(position.quantity > 0),
       orderType: 2,
       price: position.price,
-      quantity: Math.abs(position.quantity),
+      quantity: getNumberPrecision(Math.abs(position.quantity) / instrument.lot, 0),
       accountId: account.accountId,
       instrumentId: instrument.id,
       sourceId: source.id,

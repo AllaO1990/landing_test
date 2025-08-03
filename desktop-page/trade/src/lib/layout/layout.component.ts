@@ -8,6 +8,7 @@ import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
 import { map, Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 @Component({
   selector: 'trade-layout',
@@ -45,7 +46,7 @@ export class LayoutComponent implements AfterViewInit {
       const entryIndex = entry.findIndex((item) => item.status === 0);
       const outIndex = out.findIndex((item) => item.status === 0);
 
-      return entryIndex !== -1 && outIndex !== -1;
+      return false;
     })
   );
 
@@ -92,34 +93,16 @@ export class LayoutComponent implements AfterViewInit {
 
   private _getOrders(orders: any[], accountId: string, instrumentId: string, sourceId: number): any[] {
     return orders.map((item) => {
-      const { total, ...order } = item;
+      const { total, quantity, lot, ...order } = item;
 
       return {
         ...order,
+        quantity: getNumberPrecision(quantity / lot, 0),
+        lot,
         accountId,
         instrumentId,
         sourceId,
       };
     });
   }
-
-  // this.#api
-  //   .setOrder({
-  //     ...order,
-  //     accountId: account.accountId,
-  //     instrumentId: instrument.id,
-  //   })
-  //   .subscribe((res) => console.log(res));
-  // this.#dialog.openTradeConfirm(this.#injector).subscribe((value) => console.log(value));
-  // this.context.$implicit.complete({ re: 're' });
 }
-
-// {
-//   "accountId": "e5221fa7-c348-4f31-9fd0-72ec896f2103",
-//   "direction": true,
-//   "instrumentId": "72187db2-44d8-4b2e-8b43-c41fd30c4a39",
-//   "orderType": 1,
-//   "price": 110,
-//   "quantity": 10,
-//   "sourceId": 0
-// }

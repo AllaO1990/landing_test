@@ -38,7 +38,7 @@ import {
   switchMap,
   timer,
 } from 'rxjs';
-import { StockPosition, StockPositionActionTarget, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
+import { StockPosition } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '../common/store';
 import { Params } from '@angular/router';
@@ -305,25 +305,25 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
   }
 
-  private _updateControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
-    this.direction = position.idea.positionType === 'long';
-    const entry = this._getEntryControlValues(position, orders, operations);
-    const out = this._getOutControlValues(position, orders, operations);
-
-    this.formArrayEntry.clear();
-
-    entry.forEach((item, index: number) => {
-      this.formArrayEntry.setControl(index, new FormControl(item));
-    });
-
-    this.formArrayOut.clear();
-
-    if (entry.every((item) => item.status === 0)) {
-      out.forEach((item, index: number) => {
-        this.formArrayOut.setControl(index, new FormControl(item));
-      });
-    }
-  }
+  // private _updateControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
+  //   this.direction = position.idea.positionType === 'long';
+  //   const entry = this._getEntryControlValues(position, orders, operations);
+  //   const out = this._getOutControlValues(position, orders, operations);
+  //
+  //   this.formArrayEntry.clear();
+  //
+  //   entry.forEach((item, index: number) => {
+  //     this.formArrayEntry.setControl(index, new FormControl(item));
+  //   });
+  //
+  //   this.formArrayOut.clear();
+  //
+  //   if (entry.every((item) => item.status === 0)) {
+  //     out.forEach((item, index: number) => {
+  //       this.formArrayOut.setControl(index, new FormControl(item));
+  //     });
+  //   }
+  // }
 
   writeValue(obj: any): void {
     this.formGroup.patchValue(obj);
@@ -385,21 +385,20 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   private _updateIdeaEntries(
     position: StockPosition,
-    orders: {
+    entries: {
       amount: number;
       date: string;
       brokerId: number;
       price: number;
     }[],
-    type: 'entries' | 'outs' = 'entries'
+    outs: {
+      amount: number;
+      date: string;
+      brokerId: number;
+      price: number;
+    }[]
   ): void {
-    let body = this.#service.updateIdeaEntries(position, orders);
-
-    if (type === 'outs') {
-      body = this.#service.updateIdeaOuts(position, orders);
-    }
-
-    this.#idea.editIdea({ id: position.idea.id!, body });
+    this.#idea.editIdea({ id: position.idea.id!, body: this.#service.updateIdea(position, entries, outs) });
   }
 
   onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' = 'entry') {
@@ -518,178 +517,179 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.expanded.update((status: boolean) => !status);
   }
 
-  private _getEntryControlValues(position: StockPosition, orders: TradeOrders, operations: TradeOperations): any[] {
-    const direction = position.idea.positionType === 'long';
-    const operationType = direction ? 15 : 22;
-    const actions = position.actions.entries;
-    const entries = position.idea.entries.slice(actions.length);
+  // private _getEntryControlValues(position: StockPosition, orders: TradeOrders, operations: TradeOperations): any[] {
+  //   const direction = position.idea.positionType === 'long';
+  //   const operationType = direction ? 15 : 22;
+  //   const actions = position.actions.entries;
+  //   const entries = position.idea.entries.slice(actions.length);
+  //
+  //   const entryOrders = entries.map((item: StockPositionIdeaEntry, index: number) => {
+  //     let status: OrderStatus = 0;
+  //     let orderId = null;
+  //     let commission = 0;
+  //     let price = item.price;
+  //
+  //     if (orders && orders.length > 0) {
+  //       const order = orders.find((orderItem: TradeOrder) => {
+  //         return +orderItem.direction === +direction && orderItem.lotsRequested === item.quantity;
+  //       });
+  //
+  //       if (order) {
+  //         status = 1;
+  //         orderId = order.orderId;
+  //         commission = order.initialComission.value;
+  //         price = order.averagePositionPrice.value;
+  //       }
+  //     }
+  //
+  //     if (status === 0 && operations && operations.length > 0) {
+  //       const operation = operations.filter(
+  //         (operationItem) =>
+  //           operationItem.type === operationType &&
+  //           operationItem.state === 1 &&
+  //           item.quantity === operationItem.quantity
+  //       );
+  //
+  //       if (operation.length > 0 && operation[index]) {
+  //         status = 2;
+  //         commission = operation[index].comission.value;
+  //
+  //         this._updateIdeaEntries(position, [
+  //           {
+  //             amount: operation[index].quantity,
+  //             date: operation[index].date,
+  //             brokerId: 1,
+  //             price: operation[index].price.value,
+  //           },
+  //         ]);
+  //       }
+  //     }
+  //
+  //     return {
+  //       price,
+  //       quantity: item.quantity,
+  //       total: item.totalPrice,
+  //       commission,
+  //       direction,
+  //       orderId,
+  //       lot: position.idea.instrument.lot,
+  //       orderType: status === 2 ? null : 1,
+  //       status,
+  //     };
+  //   });
+  //
+  //   const actionOrders = position.actions.entries.map((item) => {
+  //     const operation = operations.find(
+  //       (operationItem) =>
+  //         operationItem.type === operationType && operationItem.state === 1 && item.amount === operationItem.quantity
+  //     );
+  //
+  //     return {
+  //       commission: operation ? Math.abs(operation.comission.value) : 0,
+  //       price: item.price,
+  //       quantity: item.amount,
+  //       total: item.totalPrice,
+  //       direction,
+  //       lot: position.idea.instrument.lot,
+  //       orderType: null,
+  //       status: 2,
+  //     };
+  //   });
+  //
+  //   return [...actionOrders, ...entryOrders];
+  // }
 
-    const entryOrders = entries.map((item: StockPositionIdeaEntry, index: number) => {
-      let status: OrderStatus = 0;
-      let orderId = null;
-      let commission = 0;
-      let price = item.price;
-
-      if (orders && orders.length > 0) {
-        const order = orders.find((orderItem: TradeOrder) => {
-          return +orderItem.direction === +direction && orderItem.lotsRequested === item.quantity;
-        });
-
-        if (order) {
-          status = 1;
-          orderId = order.orderId;
-          commission = order.initialComission.value;
-          price = order.averagePositionPrice.value;
-        }
-      }
-
-      if (status === 0 && operations && operations.length > 0) {
-        const operation = operations.filter(
-          (operationItem) =>
-            operationItem.type === operationType &&
-            operationItem.state === 1 &&
-            item.quantity === operationItem.quantity
-        );
-
-        if (operation.length > 0 && operation[index]) {
-          status = 2;
-          commission = operation[index].comission.value;
-
-          this._updateIdeaEntries(position, [
-            {
-              amount: operation[index].quantity,
-              date: operation[index].date,
-              brokerId: 1,
-              price: operation[index].price.value,
-            },
-          ]);
-        }
-      }
-
-      return {
-        price,
-        quantity: item.quantity,
-        total: item.totalPrice,
-        commission,
-        direction,
-        orderId,
-        lot: position.idea.instrument.lot,
-        orderType: status === 2 ? null : 1,
-        status,
-      };
-    });
-
-    const actionOrders = position.actions.entries.map((item) => {
-      const operation = operations.find(
-        (operationItem) =>
-          operationItem.type === operationType && operationItem.state === 1 && item.amount === operationItem.quantity
-      );
-
-      return {
-        commission: operation ? Math.abs(operation.comission.value) : 0,
-        price: item.price,
-        quantity: item.amount,
-        total: item.totalPrice,
-        direction,
-        lot: position.idea.instrument.lot,
-        orderType: null,
-        status: 2,
-      };
-    });
-
-    return [...actionOrders, ...entryOrders];
-  }
-
-  private _getOutControlValues(position: StockPosition, orders: TradeOrders, operations: TradeOperations): any[] {
-    const direction = position.idea.positionType !== 'long';
-    const operationType = direction ? 15 : 22;
-    const actions = position.actions.outs;
-    const targets = position.idea.targets.slice(actions.length);
-
-    const actionOrders = actions.map((item: StockPositionActionTarget) => {
-      const operation = operations.find(
-        (operationItem) =>
-          operationItem.type === operationType && operationItem.state === 1 && item.amount === operationItem.quantity
-      );
-
-      return {
-        price: item.price,
-        quantity: item.amount,
-        commission: operation ? Math.abs(operation.comission.value) : 0,
-        total: getNumberPrecision(item.price * item.amount, 2),
-        direction: direction,
-        lot: position.idea.instrument.lot,
-        orderType: 1,
-        status: 2,
-      };
-    });
-
-    const targetOrders = targets.map((item: StockPositionTarget, index) => {
-      let status: OrderStatus = 0;
-      let orderId = null;
-      let price = item.price;
-      let commission = 0;
-
-      if (orders && orders.length > 0) {
-        const order = orders.find((orderItem: TradeOrder) => {
-          return +orderItem.direction === +direction && orderItem.lotsRequested === item.amount;
-        });
-
-        if (order) {
-          status = 1;
-          orderId = order.orderId;
-          price = order.averagePositionPrice.value;
-          commission = order.initialComission.value;
-        }
-      }
-
-      if (status === 0 && operations && operations.length > 0) {
-        const operation = operations.find(
-          (operationItem) =>
-            operationItem.type === operationType && operationItem.state === 1 && item.amount === operationItem.quantity
-        );
-
-        if (operation) {
-          status = 2;
-          commission = Math.abs(operation.comission.value);
-
-          this._updateIdeaEntries(
-            position,
-            [
-              {
-                amount: operation.quantity,
-                date: operation.date,
-                brokerId: 1,
-                price: operation.price.value,
-              },
-            ],
-            'outs'
-          );
-        }
-      }
-
-      return {
-        price,
-        quantity: item.amount,
-        total: getNumberPrecision(item.price * item.amount, 2),
-        direction,
-        orderId,
-        commission,
-        lot: position.idea.instrument.lot,
-        orderType: 1,
-        status,
-      };
-    });
-
-    return [...actionOrders, ...targetOrders];
-  }
+  // private _getOutControlValues(position: StockPosition, orders: TradeOrders, operations: TradeOperations): any[] {
+  //   const direction = position.idea.positionType !== 'long';
+  //   const operationType = direction ? 15 : 22;
+  //   const actions = position.actions.outs;
+  //   const targets = position.idea.targets.slice(actions.length);
+  //
+  //   const actionOrders = actions.map((item: StockPositionActionTarget) => {
+  //     const operation = operations.find(
+  //       (operationItem) =>
+  //         operationItem.type === operationType && operationItem.state === 1 && item.amount === operationItem.quantity
+  //     );
+  //
+  //     return {
+  //       price: item.price,
+  //       quantity: item.amount,
+  //       commission: operation ? Math.abs(operation.comission.value) : 0,
+  //       total: getNumberPrecision(item.price * item.amount, 2),
+  //       direction: direction,
+  //       lot: position.idea.instrument.lot,
+  //       orderType: 1,
+  //       status: 2,
+  //     };
+  //   });
+  //
+  //   const targetOrders = targets.map((item: StockPositionTarget, index) => {
+  //     let status: OrderStatus = 0;
+  //     let orderId = null;
+  //     let price = item.price;
+  //     let commission = 0;
+  //
+  //     if (orders && orders.length > 0) {
+  //       const order = orders.find((orderItem: TradeOrder) => {
+  //         return +orderItem.direction === +direction && orderItem.lotsRequested === item.amount;
+  //       });
+  //
+  //       if (order) {
+  //         status = 1;
+  //         orderId = order.orderId;
+  //         price = order.averagePositionPrice.value;
+  //         commission = order.initialComission.value;
+  //       }
+  //     }
+  //
+  //     if (status === 0 && operations && operations.length > 0) {
+  //       const operation = operations.find(
+  //         (operationItem) =>
+  //           operationItem.type === operationType && operationItem.state === 1 && item.amount === operationItem.quantity
+  //       );
+  //
+  //       if (operation) {
+  //         status = 2;
+  //         commission = Math.abs(operation.comission.value);
+  //
+  //         this._updateIdeaEntries(
+  //           position,
+  //           [],
+  //           [
+  //             {
+  //               amount: operation.quantity,
+  //               date: operation.date,
+  //               brokerId: 1,
+  //               price: operation.price.value,
+  //             },
+  //           ]
+  //         );
+  //       }
+  //     }
+  //
+  //     return {
+  //       price,
+  //       quantity: item.amount,
+  //       total: getNumberPrecision(item.price * item.amount, 2),
+  //       direction,
+  //       orderId,
+  //       commission,
+  //       lot: position.idea.instrument.lot,
+  //       orderType: 1,
+  //       status,
+  //     };
+  //   });
+  //
+  //   return [...actionOrders, ...targetOrders];
+  // }
 
   addFromIdea(event: Event): void {
     event.preventDefault();
 
     this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) => {
       const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
-      this._getOutControlValues(position, [], []).forEach((item, index: number) => {
+
+      this._initOutControl(position, [], []).ideas.forEach((item, index: number) => {
         this.formArrayOut.setControl(index + length, new FormControl(item));
       });
     });
@@ -703,18 +703,60 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   private _initControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
     this.direction = position.idea.positionType === 'long';
-    const entry: ControlValue[] = this._initEntryControl(position, orders, operations);
-    const out: ControlValue[] = this._initOutControl(position, orders, operations);
+    const entry: {
+      orders: ControlValue[];
+      operations: ControlValue[];
+      actions: ControlValue[];
+      ideas: ControlValue[];
+    } = this._initEntryControl(position, orders, operations);
+    const out: {
+      orders: ControlValue[];
+      operations: ControlValue[];
+      actions: ControlValue[];
+      ideas: ControlValue[];
+    } = this._initOutControl(position, orders, operations);
+
+    if (entry.operations.length > 0 || out.operations.length > 0) {
+      this._updateIdeaEntries(
+        position,
+        entry.operations
+          .map((item) => ({
+            amount: item.quantity,
+            date: item.date as string,
+            brokerId: 1,
+            price: item.price,
+          }))
+          .sort((a: { date: string }, b: { date: string }) =>
+            sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+          ),
+        out.operations
+          .map((item) => ({
+            amount: item.quantity,
+            date: item.date as string,
+            brokerId: 1,
+            price: item.price,
+          }))
+          .sort((a: { date: string }, b: { date: string }) =>
+            sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+          )
+      );
+    }
 
     this.formArrayEntry.clear();
 
-    entry.forEach((item, index: number) => {
+    [...entry.actions, ...entry.orders, ...entry.ideas].forEach((item, index: number) => {
       this.formArrayEntry.setControl(index, new FormControl(item));
     });
 
     this.formArrayOut.clear();
 
-    out.forEach((item, index: number) => {
+    let outControlValues: ControlValue[] = [...out.actions, ...out.orders];
+
+    if (entry.actions.length === 0) {
+      outControlValues = [...outControlValues, ...out.ideas];
+    }
+
+    outControlValues.forEach((item, index: number) => {
       this.formArrayOut.setControl(index, new FormControl(item));
     });
   }
@@ -732,7 +774,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     };
   }
 
-  private _initEntryControl(position: StockPosition, orders: TradeOrders, operations: TradeOperations): ControlValue[] {
+  private _initEntryControl(
+    position: StockPosition,
+    orders: TradeOrders,
+    operations: TradeOperations
+  ): {
+    orders: ControlValue[];
+    operations: ControlValue[];
+    actions: ControlValue[];
+    ideas: ControlValue[];
+  } {
     const defaultItem = this._getDefaultControlValue(position);
     const operationType = defaultItem.direction ? 15 : 22;
     const actionQuantity = position.actions.entries.map((item) => item.amount);
@@ -827,26 +878,42 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         };
       });
 
-    if (operationControlValues.length > 0) {
-      this._updateIdeaEntries(
-        position,
-        operationControlValues
-          .map((item) => ({
-            amount: item.quantity,
-            date: item.date as string,
-            brokerId: 1,
-            price: item.price,
-          }))
-          .sort((a: { date: string }, b: { date: string }) =>
-            sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
-          )
-      );
-    }
+    // if (operationControlValues.length > 0) {
+    //   this._updateIdeaEntries(
+    //     position,
+    //     operationControlValues
+    //       .map((item) => ({
+    //         amount: item.quantity,
+    //         date: item.date as string,
+    //         brokerId: 1,
+    //         price: item.price,
+    //       }))
+    //       .sort((a: { date: string }, b: { date: string }) =>
+    //         sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+    //       )
+    //   );
+    // }
 
-    return [...actionControlValues, ...orderControlValues, ...ideaControlValues];
+    return {
+      actions: actionControlValues,
+      ideas: ideaControlValues,
+      orders: orderControlValues,
+      operations: operationControlValues,
+    };
+
+    // return [...actionControlValues, ...orderControlValues, ...ideaControlValues];
   }
 
-  private _initOutControl(position: StockPosition, orders: TradeOrders, operations: TradeOperations): ControlValue[] {
+  private _initOutControl(
+    position: StockPosition,
+    orders: TradeOrders,
+    operations: TradeOperations
+  ): {
+    orders: ControlValue[];
+    operations: ControlValue[];
+    actions: ControlValue[];
+    ideas: ControlValue[];
+  } {
     const defaultItem = this._getDefaultControlValue(position, 'reverse');
     const operationType = defaultItem.direction ? 15 : 22;
     const actionQuantity = position.actions.outs.map((item) => item.amount);
@@ -929,27 +996,32 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         };
       });
 
-    if (operationControlValues.length > 0) {
-      this._updateIdeaEntries(
-        position,
-        operationControlValues
-          .map((item) => ({
-            amount: item.quantity,
-            date: item.date as string,
-            brokerId: 1,
-            price: item.price,
-          }))
-          .sort((a: { date: string }, b: { date: string }) =>
-            sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
-          ),
-        'outs'
-      );
-    }
+    // if (operationControlValues.length > 0) {
+    //   this._updateIdeaEntries(
+    //     position,
+    //     operationControlValues
+    //       .map((item) => ({
+    //         amount: item.quantity,
+    //         date: item.date as string,
+    //         brokerId: 1,
+    //         price: item.price,
+    //       }))
+    //       .sort((a: { date: string }, b: { date: string }) =>
+    //         sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+    //       ),
+    //     'outs'
+    //   );
+    // }
 
-    if (position.actions.entries.length > 0) {
-      return [...actionControlValues, ...orderControlValues, ...ideaControlValues.filter((item) => item.status === 1)];
-    }
+    // if (position.actions.entries.length > 0) {
+    //   return [...actionControlValues, ...orderControlValues, ...ideaControlValues.filter((item) => item.status === 1)];
+    // }
 
-    return [...actionControlValues, ...orderControlValues, ...ideaControlValues];
+    return {
+      actions: actionControlValues,
+      ideas: ideaControlValues,
+      orders: orderControlValues,
+      operations: operationControlValues,
+    };
   }
 }
