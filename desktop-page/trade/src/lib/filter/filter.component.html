@@ -93,11 +93,10 @@
             [loading]="position.loading"
             [disabled]="position.quantity === 0"
             class="add-from-idea"
-            appearance="icon"
-            tuiIconButton
-            tuiHint="Закрыть позицию"
-            tuiHintAppearance="dark"
-            iconStart="@tui.circle-x">
+            appearance="outline"
+            tuiAppearanceMode="checked"
+            tuiButton>
+            Закрыть позицию
           </button>
         </div>
       } @else {

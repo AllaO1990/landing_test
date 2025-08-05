@@ -140,6 +140,35 @@ export class LkComponent implements OnInit {
     //   filter((params: Params) => params['trade'] === 'visible'),
     //   debounceTime(100)
     // );
+
+    // const dialogs = combineLatest([
+    //   this._queryParams.pipe(
+    //     startWith(this._queryParams.value()),
+    //     map((params: Params) => params['dialog'] === 'visible'),
+    //     distinctUntilChanged()
+    //   ),
+    //   this._queryParams.pipe(
+    //     startWith(this._queryParams.value()),
+    //     map((params: Params) => params['trade'] === 'visible'),
+    //     distinctUntilChanged()
+    //   ),
+    // ]).pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(100));
+    //
+    // dialogs
+    //   .pipe(
+    //     map((dialogs: [boolean, boolean]) => dialogs[0]),
+    //     filter((dialog: boolean) => dialog),
+    //     switchMap(() => from(this.getComponentEnter()).pipe(switchMap((c) => this._dialogEnterService.open(c))))
+    //   )
+    //   .subscribe();
+    //
+    // dialogs
+    //   .pipe(
+    //     map((dialogs: [boolean, boolean]) => dialogs[1]),
+    //     filter((dialog: boolean) => dialog),
+    //     switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector))
+    //   )
+    //   .subscribe();
   }
 
   async onOpenDialog() {
@@ -148,5 +177,15 @@ export class LkComponent implements OnInit {
       .then((c) => new PolymorpheusComponent(c, this.#injector));
 
     this._queryEnter$.pipe(switchMap(() => this._dialogEnterService.open(this._componentEnter))).subscribe();
+  }
+
+  async getComponentEnter(): Promise<PolymorpheusComponent<VtEnterComponent> | null> {
+    if (!this._componentEnter) {
+      this._componentEnter = await import('desktop-page/enter')
+        .then((m) => m.VtEnterComponent)
+        .then((c) => new PolymorpheusComponent(c, this.#injector));
+    }
+
+    return this._componentEnter;
   }
 }

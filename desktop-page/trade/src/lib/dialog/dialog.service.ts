@@ -20,7 +20,7 @@ export class TradeDialogService {
   }
 
   openTradeDialog(injector: Injector): Observable<any> {
-    return this.open(this.getComponentTradeDialog(injector), { closeable: false, appearance: 'medium-block' });
+    return this.open(this.getComponentTradeDialog(injector), { closeable: false, appearance: 'big-block' });
   }
 
   openTradeRequest(injector: Injector, data: any = null): Observable<any> {
