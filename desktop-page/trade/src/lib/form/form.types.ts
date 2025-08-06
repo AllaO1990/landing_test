@@ -8,6 +8,7 @@ export interface ControlValue {
   status: number;
   orderId: string | null;
   lot: number;
+  lots: number;
   quantity: number;
   date: string | null;
 }

@@ -178,7 +178,14 @@
 
   &__action {
     position: absolute;
-    right: var(--padding-1);
+
+    &--left {
+      left: var(--padding-1);
+    }
+
+    &--right {
+      right: var(--padding-1);
+    }
   }
 }
 

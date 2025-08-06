@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy } from '@angular/core';
 import { TradeFormComponent } from '../form/form.component';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiPopover } from '@taiga-ui/cdk';
@@ -6,9 +6,10 @@ import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
-import { map, Observable } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, pairwise, Subject, switchMap, take } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { getNumberPrecision } from 'utils/get-number-precision';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ControlValue } from '../form/form.types';
 
 @Component({
   selector: 'trade-layout',
@@ -26,8 +27,10 @@ import { getNumberPrecision } from 'utils/get-number-precision';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayoutComponent implements AfterViewInit {
+export class LayoutComponent implements AfterViewInit, OnDestroy {
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
+  readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(true);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   readonly formGroup: FormGroup = new FormGroup({
@@ -35,10 +38,13 @@ export class LayoutComponent implements AfterViewInit {
   });
 
   readonly isDisabled$: Observable<boolean> = this.formGroup.valueChanges.pipe(
-    map((value) => value.trade),
+    map((value) => ({ entry: value.trade.entry, out: value.trade.out })),
     map((value: { entry: { status: number }[]; out: { status: number }[] }) => {
       const { entry, out } = value;
 
+      if (!entry || !out) {
+        return true;
+      }
       if (entry.length === 0 && out.length === 0) {
         return true;
       }
@@ -46,12 +52,54 @@ export class LayoutComponent implements AfterViewInit {
       const entryIndex = entry.findIndex((item) => item.status === 0);
       const outIndex = out.findIndex((item) => item.status === 0);
 
-      return false;
+      return entryIndex === -1 && outIndex === -1;
     })
   );
 
   ngAfterViewInit(): void {
     this.#store.loadOrderTypes();
+
+    this.#isSubmitted$
+      .asObservable()
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        filter((isSubmitted: boolean) => isSubmitted),
+        switchMap(() =>
+          this.formGroup.valueChanges.pipe(
+            map((value: { trade: { entry: ControlValue[] } }): ControlValue[] => value.trade.entry),
+            pairwise(),
+            filter(
+              ([first, second]: [ControlValue[], ControlValue[]]) =>
+                first[0] && first[0].status === 0 && second[0] && second[0].status === 2
+            ),
+            map((data: [ControlValue[], ControlValue[]]) => data[1])
+          )
+        ),
+        take(1)
+      )
+      .subscribe(() => {
+        const {
+          filter: { account, instrument, source },
+          out,
+        } = this.formGroup.value.trade;
+
+        if (account && instrument && source) {
+          const outOrders = this._getOrders(
+            out.filter((item: { status: number }) => item.status === 0),
+            account.accountId,
+            instrument.id,
+            source.id
+          );
+
+          if (outOrders.length > 0) {
+            this.#store.addOrders(outOrders);
+          }
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.#isSubmitted$.complete();
   }
 
   onClose(event: Event): void {
@@ -63,6 +111,7 @@ export class LayoutComponent implements AfterViewInit {
   onSubmit(event: Event): void {
     event.preventDefault();
 
+    this.#isSubmitted$.next(true);
     const { filter, entry, out } = this.formGroup.value.trade;
     const { account, instrument, source } = filter;
 
@@ -93,11 +142,12 @@ export class LayoutComponent implements AfterViewInit {
 
   private _getOrders(orders: any[], accountId: string, instrumentId: string, sourceId: number): any[] {
     return orders.map((item) => {
-      const { total, quantity, lot, ...order } = item;
+      const { total, quantity, lots, lot, ...order } = item;
 
       return {
         ...order,
-        quantity: getNumberPrecision(quantity / lot, 0),
+        quantity: lots,
+        // quantity: getNumberPrecision(quantity / lot, 0),
         lot,
         accountId,
         instrumentId,

@@ -31,7 +31,7 @@ export interface TradeState {
 }
 
 export class TradeStore extends ComponentStore<TradeState> {
-  readonly TIMER = 1000 * 60 * 3;
+  readonly TIMER = 1000 * 10 * 3;
 
   readonly source$: Observable<TradeSources | null> = this.select((state: TradeState) => state.sources);
   readonly token$: Observable<Response<TradeToken | null> | null> = this.select((state: TradeState) => state.token);
@@ -229,7 +229,14 @@ export class TradeStore extends ComponentStore<TradeState> {
   addOrder = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>
-        this._api.addOrder(params).pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
+        this._api.addOrder(params).pipe(
+          tap((response: Response<any>) => {
+            if (response.success) {
+              this.loadOrders(params);
+              this.loadOperations(params);
+            }
+          })
+        )
       )
     )
   );
@@ -255,15 +262,18 @@ export class TradeStore extends ComponentStore<TradeState> {
   changeOrder = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>
-        this._api
-          .removeOrder(params)
-          .pipe(
-            switchMap((removed: Response<any>) =>
-              this._api
-                .addOrder(params)
-                .pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
+        this._api.removeOrder(params).pipe(
+          switchMap((removed: Response<any>) =>
+            this._api.addOrder(params).pipe(
+              tap((response: Response<any>) => {
+                if (response.success) {
+                  this.loadOperations(params);
+                  this.loadOrders(params);
+                }
+              })
             )
           )
+        )
       )
     )
   );

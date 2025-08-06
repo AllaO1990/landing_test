@@ -144,10 +144,9 @@
         </tui-notification>
         <div class="widget__header">
           <div class="header">
-            Идея
             <button
               *ngIf="isCanCopy$ | async"
-              class="header__action"
+              class="header__action header__action--left"
               tuiButton
               appearance="flat"
               tuiHint="Скопируйте идею для создания новой с возможностью редактирования"
@@ -157,6 +156,17 @@
               (click)="onCopy($event)"
               iconStart="@tui.copy">
               Скопировать идею
+            </button>
+            Идея
+            <button
+              class="header__action header__action--right"
+              tuiButton
+              appearance="primary"
+              size="xs"
+              type="button"
+              (click)="onTrade($event)"
+              iconStart="@tui.chart-candlestick">
+              Брокерские заявки
             </button>
           </div>
         </div>
