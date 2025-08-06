@@ -24,15 +24,15 @@ export class TradeDialogService {
   }
 
   openTradeRequest(injector: Injector, data: any = null): Observable<any> {
-    return this.open(this.getComponentTradeRequest(injector), { ...data, appearance: 'small-block' });
+    return this.open(this.getComponentTradeRequest(injector), this._getData('small-block', data));
   }
 
   openTradeConfirm(injector: Injector, data: any = null): Observable<any> {
-    return this.open(this.getComponentTradeConfirm(injector), { ...data, appearance: 'small-block' });
+    return this.open(this.getComponentTradeConfirm(injector), this._getData('small-block', data));
   }
 
   openTradeToken(injector: Injector, data: any = null): Observable<any> {
-    return this.open(this.getComponentTradeToken(injector), { ...data, appearance: 'small-block' });
+    return this.open(this.getComponentTradeToken(injector), this._getData('small-block', data));
   }
 
   protected open(component: Promise<PolymorpheusContent>, data: any = null) {
@@ -77,5 +77,13 @@ export class TradeDialogService {
     }
 
     return this.componentTradeToken;
+  }
+
+  private _getData(appearance: string, data: any = null): object {
+    if (!data) {
+      return { appearance };
+    }
+
+    return { ...data, appearance };
   }
 }

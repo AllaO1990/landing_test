@@ -15,8 +15,7 @@ import { MainStore } from 'stores/main.store';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
-import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
-import { EnterDialogService, VtEnterComponent } from 'desktop-page/enter';
+import { EnterDialogService, EnterFullScreenDialogService } from 'desktop-page/enter';
 import { ActionDeletePosition } from '../common/plugins/action-delete-position';
 import { ActionNewPosition } from '../common/plugins/action-new-position';
 import { ActionShowPosition } from '../common/plugins/action-show-position';
@@ -73,6 +72,11 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
       useFactory: (dialog: DialogService) => new TradeDialogService(dialog),
       deps: [DIALOG],
     },
+    {
+      provide: EnterDialogService,
+      useFactory: (dialog: EnterFullScreenDialogService) => new EnterDialogService(dialog),
+      deps: [EnterFullScreenDialogService],
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -80,10 +84,10 @@ export class LkComponent implements OnInit {
   readonly #injector: Injector = inject(Injector);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #dialogTrade: TradeDialogService = inject(TradeDialogService);
+  readonly #dialogEnter: EnterDialogService = inject(EnterDialogService);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
-  private readonly _dialogEnterService: EnterDialogService = inject(EnterDialogService);
   private readonly _queryEnter$: Observable<Params> = this._queryParams.pipe(
     takeUntilDestroyed(this.#destroyRef),
     startWith(this._queryParams.value()),
@@ -100,8 +104,6 @@ export class LkComponent implements OnInit {
     debounceTime(100),
     shareReplay({ refCount: false, bufferSize: 1 })
   );
-
-  private _componentEnter: PolymorpheusComponent<VtEnterComponent> | null = null;
 
   ngOnInit(): void {
     this._queryParams
@@ -127,65 +129,18 @@ export class LkComponent implements OnInit {
       to: new Date(new Date().setUTCHours(23, 59, 59, 0)).toISOString(),
     });
 
-    this.onOpenDialog();
+    this._queryEnter$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap(() => this.#dialogEnter.openEnterDialog(this.#injector))
+      )
+      .subscribe();
 
     this._queryTrade$
-      .pipe(switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector)))
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector))
+      )
       .subscribe(() => console.log('dialog service'));
-
-    // this._queryParams.pipe(
-    //   takeUntilDestroyed(this.#destroyRef),
-    //   startWith(this._queryParams.value()),
-    //   distinctUntilChanged((a: Params, b: Params) => a['trade'] === b['trade']),
-    //   filter((params: Params) => params['trade'] === 'visible'),
-    //   debounceTime(100)
-    // );
-
-    // const dialogs = combineLatest([
-    //   this._queryParams.pipe(
-    //     startWith(this._queryParams.value()),
-    //     map((params: Params) => params['dialog'] === 'visible'),
-    //     distinctUntilChanged()
-    //   ),
-    //   this._queryParams.pipe(
-    //     startWith(this._queryParams.value()),
-    //     map((params: Params) => params['trade'] === 'visible'),
-    //     distinctUntilChanged()
-    //   ),
-    // ]).pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(100));
-    //
-    // dialogs
-    //   .pipe(
-    //     map((dialogs: [boolean, boolean]) => dialogs[0]),
-    //     filter((dialog: boolean) => dialog),
-    //     switchMap(() => from(this.getComponentEnter()).pipe(switchMap((c) => this._dialogEnterService.open(c))))
-    //   )
-    //   .subscribe();
-    //
-    // dialogs
-    //   .pipe(
-    //     map((dialogs: [boolean, boolean]) => dialogs[1]),
-    //     filter((dialog: boolean) => dialog),
-    //     switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector))
-    //   )
-    //   .subscribe();
-  }
-
-  async onOpenDialog() {
-    this._componentEnter = await import('desktop-page/enter')
-      .then((m) => m.VtEnterComponent)
-      .then((c) => new PolymorpheusComponent(c, this.#injector));
-
-    this._queryEnter$.pipe(switchMap(() => this._dialogEnterService.open(this._componentEnter))).subscribe();
-  }
-
-  async getComponentEnter(): Promise<PolymorpheusComponent<VtEnterComponent> | null> {
-    if (!this._componentEnter) {
-      this._componentEnter = await import('desktop-page/enter')
-        .then((m) => m.VtEnterComponent)
-        .then((c) => new PolymorpheusComponent(c, this.#injector));
-    }
-
-    return this._componentEnter;
   }
 }
