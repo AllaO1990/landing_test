@@ -39,7 +39,7 @@ export class AuthService {
   constructor(private _router: Router, private _storage: VtLocalStorageService) {}
 
   onSignIn(email: string): Observable<Response<any>> {
-    return this._http.post<Response<any>>(`${this.host}/api/v1/auth/sign-in`, { email }).pipe(
+    return this._http.post<Response<any>>(`${this.host}/v1/auth/sign-in`, { email }).pipe(
       catchError((errorResponse: HttpErrorResponse, abc) => {
         return of(errorResponse.error);
       })
@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   onSignUp(email: string): Observable<Response<string>> {
-    return this._http.post<Response<string>>(`${this.host}/api/v1/auth/sign-up`, { email }).pipe(
+    return this._http.post<Response<string>>(`${this.host}/v1/auth/sign-up`, { email }).pipe(
       tap(
         (response: Response<string>) =>
           response.success && this.#document.defaultView && this.#document.defaultView.open(response.data)
@@ -66,7 +66,7 @@ export class AuthService {
 
   onLogin(email: string, code: string): Observable<Response<UserLogin>> {
     return this._http
-      .post<Response<UserLogin>>(`${this.host}/api/v1/auth/token`, {
+      .post<Response<UserLogin>>(`${this.host}/v1/auth/token`, {
         username: email,
         password: +code,
       })
@@ -85,11 +85,11 @@ export class AuthService {
 
   getKey(email: string) {
     this._http
-      .post<UserSignUpData>(`${this.host}/api/v1/auth/sign-up`, { email })
+      .post<UserSignUpData>(`${this.host}/v1/auth/sign-up`, { email })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
-          return this._http.post<UserData>(`${this.host}/api/v1/auth/sign-in`, { email });
+          return this._http.post<UserData>(`${this.host}/v1/auth/sign-in`, { email });
         })
       )
       .subscribe((data) => {
@@ -104,7 +104,7 @@ export class AuthService {
 
   login(email: string, password: string) {
     this._http
-      .post<UserData>(`${this.host}/api/v1/auth/token`, { username: email, password: +password })
+      .post<UserData>(`${this.host}/v1/auth/token`, { username: email, password: +password })
       .pipe(
         catchError((error, abc) => {
           this._router.navigate(['login']);
