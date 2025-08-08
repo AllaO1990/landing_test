@@ -321,7 +321,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         orderType: { value: item.orderType, disabled: true },
         price: { value: item.averagePositionPrice.value, disabled: true },
         log: { value: instrument.lot, disabled: true },
-        quantity: { value: item.lotsRequested, disabled: true },
+        quantity: { value: item.lotsRequested, disabled: false },
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue) => {
@@ -394,7 +394,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         orderType: { value: item.orderType, disabled: false },
         price: { value: item.price, disabled: false },
         lot: { value: item.lot, disabled: false },
-        quantity: { value: item.quantity, disabled: true },
+        quantity: { value: item.quantity, disabled: false },
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue | null) => {
