@@ -23,6 +23,10 @@ import { TimerInterval } from 'utils/timer-interval';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    {
+      provide: DESKTOP_ENVIRONMENT,
+      useValue: environment,
+    },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideEnvironmentNgxMask(),
@@ -39,10 +43,6 @@ export const appConfig: ApplicationConfig = {
     {
       provide: LOCAL_STORAGE,
       useClass: LocalStorage,
-    },
-    {
-      provide: DESKTOP_ENVIRONMENT,
-      useValue: environment,
     },
     {
       provide: DESKTOP_API,

@@ -66,7 +66,7 @@ export class SignInComponent implements AfterViewInit {
   }
 
   private _getCode(email: string): void {
-    this.isLoad.set(true);
+    this.isLoad.set(false);
     forkJoin([this.#auth.onSignIn(email), timer(500)])
       .pipe(map((response: [Response<any>, number]) => response[0]))
       .subscribe((result) => {
