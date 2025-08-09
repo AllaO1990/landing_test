@@ -33,16 +33,16 @@ import {
   AccountType,
 } from 'types/account';
 import { PortfolioPosition } from 'types/portfolio';
-import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 import { Commission } from 'types/commission';
+import { APP_CONFIG } from 'tokens/desktop/config';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {
   private readonly _http: HttpClient = inject(HttpClient);
-  private readonly _environment = inject(DESKTOP_ENVIRONMENT);
+  readonly #config = inject(APP_CONFIG);
 
   get host() {
-    return this._environment.host;
+    return this.#config.host;
   }
 
   public getIdeaList(params: Params): Observable<ResponsePositions> {

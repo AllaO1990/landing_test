@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { DESKTOP_ENVIRONMENT } from 'tokens/desktop';
 import { Observable, of } from 'rxjs';
 import { Response } from 'types/response';
 import { Params } from '@angular/router';
@@ -14,14 +13,15 @@ import {
   TradeToken,
   TradeTokenSource,
 } from './api.types';
+import { APP_CONFIG } from 'tokens/desktop/config';
 
 @Injectable()
 export class ApiService {
+  readonly #config = inject(APP_CONFIG);
   private readonly _http: HttpClient = inject(HttpClient);
-  private readonly _environment = inject(DESKTOP_ENVIRONMENT);
 
   get host() {
-    return this._environment.host;
+    return this.#config.host;
   }
 
   getSources(): Observable<Response<TradeSources>> {

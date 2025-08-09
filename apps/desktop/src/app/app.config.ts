@@ -1,6 +1,6 @@
 import { provideEventPlugins } from '@taiga-ui/event-plugins';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
@@ -20,12 +20,23 @@ import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { LocalStorage } from 'storage/local.storage';
 import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 import { TimerInterval } from 'utils/timer-interval';
+import { APP_CONFIG, AppConfig } from 'tokens/desktop/config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     {
       provide: DESKTOP_ENVIRONMENT,
       useValue: environment,
+    },
+    {
+      provide: APP_CONFIG,
+      useClass: AppConfig,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (config: AppConfig) => config.load(),
+      deps: [APP_CONFIG],
+      multi: true,
     },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
@@ -47,7 +58,6 @@ export const appConfig: ApplicationConfig = {
     {
       provide: DESKTOP_API,
       useFactory: (env: object) => new DesktopApiService(),
-      deps: [DESKTOP_ENVIRONMENT],
     },
     {
       provide: QUERY_PARAMS,
