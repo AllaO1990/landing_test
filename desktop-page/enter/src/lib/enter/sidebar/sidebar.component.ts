@@ -252,6 +252,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
             this.controlStrategy.patchValue(value.id);
           }
           this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
+          this.controlPositionType[position.idea.id !== null ? 'disable' : 'enable']();
+
           if (this.controlPortfolio.value === null) {
             this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
           }
