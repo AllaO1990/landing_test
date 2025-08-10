@@ -33,12 +33,11 @@ import { map } from 'rxjs/operators';
 import { InstrumentComponent } from 'ui-common/lib/instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
-import { StockEvent } from 'types/stock-event';
 import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
 import { SelectFacade } from 'stores/facades/select.facade';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
-import { StockId, StockInstrument } from 'types/stock';
+import { StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
@@ -145,19 +144,6 @@ export class VtEnterComponent implements AfterViewInit {
   readonly #injector: Injector = inject(Injector);
   readonly #dialog: DialogService = inject(DIALOG);
 
-  private readonly _ideaId$: Observable<StockId | null> = this._select.event$.pipe(
-    takeUntilDestroyed(this._destroyRef),
-    filter((event: StockEvent | null): event is StockEvent => event !== null),
-    map((event: StockEvent) =>
-      event.type === EventSelected.IDEA ||
-      event.type === EventSelected.POSITION ||
-      event.type === EventSelected.TRANSACTION
-        ? +event.id
-        : null
-    ),
-    distinctUntilChanged()
-  );
-
   #dialogFinish: PolymorpheusContent<EnterFinishComponent> | null = null;
 
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
@@ -255,8 +241,6 @@ export class VtEnterComponent implements AfterViewInit {
   activeItemIndex = 0;
 
   ngAfterViewInit(): void {
-    // this._idea.loadIdea(this._ideaId$);
-
     this.data$
       .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
       .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
@@ -294,6 +278,7 @@ export class VtEnterComponent implements AfterViewInit {
             result.actions.outs,
             result.idea.positionType === 'long' ? 1 : -1
           );
+
           const action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
 
           // if (result.actions.entries.length !== 0) {
@@ -482,7 +467,7 @@ export class VtEnterComponent implements AfterViewInit {
         strategyId: value.sidebar.strategyId,
         amount: value.idea.entries[0] ? value.idea.entries[0].quantity : null,
         entry: value.idea.entries[0] ? value.idea.entries[0].price : null,
-        stop: value.idea.stop[0] ? value.idea.stop[0].price : null,
+        stop: value.idea.stop[0] && value.idea.stop[0].price ? value.idea.stop[0].price : null,
         watch: value.watch || true,
       },
     };
@@ -491,15 +476,17 @@ export class VtEnterComponent implements AfterViewInit {
   private _getIdeaEntries(list: any[], actions: StockPositionActionEntry[]): StockPositionIdeaEntry[] {
     const check = !!(actions[0] && actions[0].date);
 
-    return list.map((item, index: number) => ({
-      check: index === 0 && check,
-      date: item.date || null,
-      depositShare: item.depositShare || null,
-      broker: null,
-      price: item.price,
-      quantity: item.quantity,
-      totalPrice: item.totalPrice,
-    }));
+    return list
+      .filter((item) => item.price !== 0)
+      .map((item, index: number) => ({
+        check: index === 0 && check,
+        date: item.date || null,
+        depositShare: item.depositShare || null,
+        broker: null,
+        price: item.price || null,
+        quantity: item.quantity || null,
+        totalPrice: item.totalPrice || null,
+      }));
   }
 
   private _getDialogFinishType(value: StockPosition | null): 'profit' | 'loss' | null {
@@ -581,8 +568,8 @@ export class VtEnterComponent implements AfterViewInit {
       }
 
       return {
-        price: item.price,
-        amount: item.amount,
+        price: item.price || null,
+        amount: item.amount || null,
         profit: item.profit || null,
         profitPercent: item.profitPercent || null,
         depositShare: item.depositShare || null,
@@ -595,32 +582,34 @@ export class VtEnterComponent implements AfterViewInit {
   }
 
   private _getIdeStop(list: any[], outs: any[] = [], direction: 1 | -1 = 1): StockPositionStop[] {
-    return list.map((item) => {
-      let stopDate = item.stopDate;
+    return list
+      .filter((item) => item.price !== 0)
+      .map((item) => {
+        let stopDate = item.stopDate;
 
-      if (stopDate === null) {
-        const findIndex = outs.findIndex((out) => {
-          if (direction === 1) {
-            return out.price * 0.995 <= item.price;
+        if (stopDate === null) {
+          const findIndex = outs.findIndex((out) => {
+            if (direction === 1) {
+              return out.price * 0.995 <= item.price;
+            }
+            return out.price * 1.005 >= item.price;
+          });
+
+          if (findIndex !== -1) {
+            stopDate = outs[findIndex].date;
           }
-          return out.price * 1.005 >= item.price;
-        });
-
-        if (findIndex !== -1) {
-          stopDate = outs[findIndex].date;
         }
-      }
 
-      return {
-        depositShare: item.depositShare || null,
-        lossPercent: item.lossPercent || null,
-        loss: item.loss || null,
-        price: item.price,
-        stopCandleDate: item.stopCandleDate || stopDate,
-        amount: item.amount || null,
-        amountPercent: item.amountPercent || null,
-      };
-    });
+        return {
+          depositShare: item.depositShare || null,
+          lossPercent: item.lossPercent || null,
+          loss: item.loss || null,
+          price: item.price || null,
+          stopCandleDate: item.stopCandleDate || stopDate,
+          amount: item.amount || null,
+          amountPercent: item.amountPercent || null,
+        };
+      });
   }
 
   onCopy(event: Event): void {

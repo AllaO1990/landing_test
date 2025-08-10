@@ -90,6 +90,11 @@ form {
     max-width: 100px;
   }
 
+  &__first {
+    flex: 0 0 50px;
+    min-width: 50px;
+  }
+
   &__right {
     text-align: right;
   }
