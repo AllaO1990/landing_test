@@ -65,8 +65,17 @@
         [disabled]="false"
         (click)="addEntry($event)"
         tuiButton
+        iconStart="@tui.plus"
         type="button">
-        + Добавить вход
+        Добавить вход
+      </button>
+      <button
+        class="button"
+        [disabled]="false"
+        (click)="onTrade($event)"
+        tuiButton
+        type="button">
+        Выставить заявку
       </button>
     </div>
   </div>
@@ -144,9 +153,18 @@
         class="button"
         [disabled]="formArrayEntries.value.length === 0"
         tuiButton
+        iconStart="@tui.plus"
         (click)="addTarget($event)"
         type="button">
-        + Добавить выход
+        Добавить выход
+      </button>
+      <button
+        class="button"
+        [disabled]="false"
+        (click)="onTrade($event)"
+        tuiButton
+        type="button">
+        Выставить заявку
       </button>
     </div>
   </div>
@@ -271,8 +289,9 @@
         [disabled]="formArrayEntries.value.length === 0"
         (click)="addDividend($event)"
         tuiButton
+        iconStart="@tui.plus"
         type="button">
-        + Добавить дивиденды
+        Добавить дивиденды
       </button>
     </div>
   </div>
@@ -338,8 +357,9 @@
         [disabled]="formArrayEntries.value.length === 0"
         (click)="addCommission($event)"
         tuiButton
+        iconStart="@tui.plus"
         type="button">
-        + Добавить комиссию
+        Добавить комиссию
       </button>
     </div>
   </div>

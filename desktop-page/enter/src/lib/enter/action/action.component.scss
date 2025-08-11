@@ -77,6 +77,14 @@ form {
 .action {
   height: 32px;
   margin: var(--padding-2);
+
+  .button {
+    min-width: 150px;
+  }
+
+  .button:not(:last-child) {
+    margin-right: var(--padding-2);
+  }
 }
 
 
