@@ -158,16 +158,6 @@
               Скопировать идею
             </button>
             Идея
-            <button
-              class="header__action header__action--right"
-              tuiButton
-              appearance="primary"
-              size="xs"
-              type="button"
-              (click)="onTrade($event)"
-              iconStart="@tui.chart-candlestick">
-              Брокерские заявки
-            </button>
           </div>
         </div>
         <div class="widget__content">
@@ -184,10 +174,18 @@
     </div>
     <div class="container__action container__widget">
       <div class="widget">
-        <div class="widget__header">
-          <div class="header" (click)="onTrade($event)">
-            Сделка
-          </div>
+        <div class="header widget__header">
+          Сделка
+          <button
+            class="header__action header__action--right"
+            tuiButton
+            appearance="primary"
+            size="xs"
+            type="button"
+            (click)="onTrade($event)"
+            iconStart="@tui.chart-candlestick">
+            Брокерские заявки
+          </button>
         </div>
         <div class="widget__content">
           <tui-scrollbar class="scrollbar" [hidden]="true">

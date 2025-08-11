@@ -57,6 +57,8 @@ import { getPriceIncrement } from 'utils/get-price-increment';
 import { AddDividendComponent } from './add-dividend/add-dividend.component';
 import { AddCommissionComponent } from './add-commission/add-commission.component';
 import { TuiTooltip } from '@taiga-ui/kit';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
 
 type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
@@ -93,6 +95,7 @@ type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterActionComponent implements ControlValueAccessor, AfterViewInit {
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _ideaFacade: IdeaFacade = inject(IdeaFacade);
   private readonly _service: ActionService = inject(ActionService);
@@ -362,6 +365,14 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
   setDisabledState(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
+  }
+
+  onTrade(event: Event): void {
+    event.preventDefault();
+
+    this.#queryParams.update({
+      trade: 'visible',
+    });
   }
 
   async addEntry(event: Event, data: any | null = null, index: number | null = null): Promise<void> {
