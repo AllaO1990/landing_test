@@ -274,6 +274,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
               id: number;
             }> => response.data.id !== null
           ),
+          tap(() => this.updateIsLoading(false)),
           tap((response: Response<{ id: number }>) => {
             this.loadIdeas(of({}));
             this.loadPositions(of(null));
