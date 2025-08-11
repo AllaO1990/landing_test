@@ -30,6 +30,13 @@
   }
 
   &__image {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+
+    width: 1300px;
+
     display: flex;
 
     justify-content: center;
