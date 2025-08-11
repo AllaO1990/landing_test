@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StockPosition } from 'types/position';
-import { TradeOperations } from '../common/api.types';
+import { TradeOperation, TradeOperations } from '../common/api.types';
 import { sortNumber } from 'utils/sort-number';
 
 @Injectable()
@@ -51,12 +51,20 @@ export class TradeFormService {
         date: item.date,
         size: item.size,
       })),
-      comissions: position.comissions.map((item: any) => ({
-        brokerId: item.brokerId,
-        comment: item.comment,
-        date: item.date,
-        size: item.size,
-      })),
+      comissions: [
+        ...position.comissions.map((item: any) => ({
+          brokerId: item.brokerId,
+          comment: item.comment,
+          date: item.date,
+          size: item.size,
+        })),
+        ...[...entries, ...outs].map((item: TradeOperation) => ({
+          brokerId: 1,
+          comment: item.description,
+          date: item.date,
+          size: Math.abs(item.comission.value),
+        })),
+      ],
       idea: {
         goals: position.idea.targets.map((item: any) => ({
           amount: item.amount,

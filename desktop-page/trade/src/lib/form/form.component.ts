@@ -206,10 +206,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     ])
       .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(100))
       .subscribe(([position, orders, operations]: [StockPosition, TradeOrders, TradeOperations]) => {
-        // this._updateControls(position, orders, operations);
-
-        console.log('_initControls', position, orders, operations);
-
         this._initControls(position, orders, operations);
       });
 
@@ -653,8 +649,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
       status: 1,
     }));
-
-    console.log(orders, operations, actionControlValues, ideaControlValues, orderControlValues);
 
     return {
       actions: actionControlValues,
