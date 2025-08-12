@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, inject, signal, Writ
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiAlertService, TuiButton, TuiLink, TuiTextfield } from '@taiga-ui/core';
 import { AuthService } from '@core/auth';
-import { NgTemplateOutlet } from '@angular/common';
+import { JsonPipe, NgTemplateOutlet } from '@angular/common';
 import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 import { LoaderComponent } from '@ui/components/loader';
 import { forkJoin, map, timer } from 'rxjs';
@@ -10,11 +10,23 @@ import { Response } from 'types/response';
 import { Router, RouterLink } from '@angular/router';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
+import { TuiBlock, TuiCheckbox } from '@taiga-ui/kit';
 
 @Component({
   selector: 'login-sign-in',
   standalone: true,
-  imports: [ReactiveFormsModule, TuiTextfield, TuiButton, NgTemplateOutlet, LoaderComponent, TuiLink, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    TuiTextfield,
+    TuiButton,
+    NgTemplateOutlet,
+    LoaderComponent,
+    TuiLink,
+    RouterLink,
+    TuiBlock,
+    TuiCheckbox,
+    JsonPipe,
+  ],
   templateUrl: './sign-in.component.html',
   styleUrls: ['../form.scss', './sign-in.component.scss'],
   animations: [triggerOpacityAnimations('1s cubic-bezier(0.4,0.0,0.2,1)')],
@@ -29,6 +41,7 @@ export class SignInComponent implements AfterViewInit {
   readonly size = 'm';
 
   readonly formGroup: FormGroup = new FormGroup({
+    agree: new FormControl(true),
     email: new FormControl(null, [Validators.required, Validators.email]),
     code: new FormControl(null, [Validators.required]),
   });
@@ -39,6 +52,10 @@ export class SignInComponent implements AfterViewInit {
 
   get controlCode(): FormControl {
     return this.formGroup.get('code') as FormControl;
+  }
+
+  get controlAgree(): FormControl {
+    return this.formGroup.get('agree') as FormControl;
   }
 
   readonly isLoad: WritableSignal<boolean> = signal(false);

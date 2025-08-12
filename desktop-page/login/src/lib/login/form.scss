@@ -32,9 +32,11 @@
   }
 
   &__information {
+    padding: 0;
     margin-top: 2rem;
 
-    text-align: center;
+    font: var(--tui-font-text-l);
+
     color: var(--tui-text-primary-on-accent-1);
   }
 }
