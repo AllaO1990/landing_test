@@ -188,7 +188,7 @@ export class ActionService {
 
       if (list.length - 1 === index) {
         value.size = getNumberPrecision(value.size, 2);
-        value.profitPct = (value.size / entry.totalPrice) * 100;
+        value.profitPct = entry.totalPrice && (value.size / entry.totalPrice) * 100;
       }
 
       return value;
