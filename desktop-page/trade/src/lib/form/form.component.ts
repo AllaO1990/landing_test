@@ -253,26 +253,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
   }
 
-  // private _updateControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
-  //   this.direction = position.idea.positionType === 'long';
-  //   const entry = this._getEntryControlValues(position, orders, operations);
-  //   const out = this._getOutControlValues(position, orders, operations);
-  //
-  //   this.formArrayEntry.clear();
-  //
-  //   entry.forEach((item, index: number) => {
-  //     this.formArrayEntry.setControl(index, new FormControl(item));
-  //   });
-  //
-  //   this.formArrayOut.clear();
-  //
-  //   if (entry.every((item) => item.status === 0)) {
-  //     out.forEach((item, index: number) => {
-  //       this.formArrayOut.setControl(index, new FormControl(item));
-  //     });
-  //   }
-  // }
-
   writeValue(obj: any): void {
     this.formGroup.patchValue(obj);
   }
@@ -304,35 +284,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     });
   }
 
-  onChangeOrder(event: Event, item: TradeOrder & { change: boolean }): void {
-    event.preventDefault();
-
-    item['change'] = true;
-
-    const { account, source, instrument } = this.controlFilter.value;
-
-    this.#dialog
-      .openTradeRequest(this.#injector, {
-        direction: { value: !!item.direction, disabled: true },
-        orderType: { value: item.orderType, disabled: true },
-        price: { value: item.averagePositionPrice.value, disabled: true },
-        log: { value: instrument.lot, disabled: true },
-        quantity: { value: item.lotsRequested, disabled: false },
-      })
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe((value: RequestFormValue) => {
-        this.#store.changeOrder({
-          ...value,
-          instrumentId: instrument.id,
-          accountId: account.accountId,
-          orderId: item.orderId,
-          sourceId: source.id,
-        });
-      });
-  }
-
-  private _updateIdeaEntries(position: StockPosition, entries: TradeOperations, outs: TradeOperations): void {
-    this.#idea.editIdea({ id: position.idea.id!, body: this.#service.updateIdea(position, entries, outs) });
+  private _updateIdeaEntries(
+    position: StockPosition,
+    entries: TradeOperations,
+    outs: TradeOperations,
+    commissions: TradeOperations
+  ): void {
+    this.#idea.editIdea({
+      id: position.idea.id!,
+      body: this.#service.updateIdea(position, entries, outs, commissions),
+    });
   }
 
   onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' = 'entry') {
@@ -474,23 +435,36 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   private _initControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
     this.direction = position.idea.positionType === 'long';
     const lot = position.idea.instrument.lot;
+    const { source } = this.controlFilter.value;
 
     const operationsEntry = this._getOperationControlValues(
-      position.actions.entries.map((item: StockPositionActionEntry) => Math.floor(item.amount / lot)),
+      position.actions.entries
+        .filter((item: StockPositionActionEntry) => item.brokerId === source.id)
+        .map((item: StockPositionActionEntry) => Math.floor(item.amount / lot)),
       operations,
       this.direction ? 15 : 22,
       lot
     );
 
     const operationsOut = this._getOperationControlValues(
-      position.actions.outs.map((item: StockPositionActionTarget) => Math.floor(item.amount / lot)),
+      position.actions.outs
+        .filter((item: StockPositionActionTarget) => item.brokerId === source.id)
+        .map((item: StockPositionActionTarget) => Math.floor(item.amount / lot)),
       operations,
       !this.direction ? 15 : 22,
       lot
     );
 
-    if (operationsEntry.length > 0 || operationsOut.length > 0) {
-      this._updateIdeaEntries(position, operationsEntry, operationsOut);
+    const commissions = [...operationsEntry, ...operationsOut].filter((item) => {
+      return (
+        position.comissions.findIndex(
+          (commission) => commission.date === item.date && Math.abs(commission.size) === Math.abs(item.comission.value)
+        ) === -1
+      );
+    });
+
+    if (operationsEntry.length > 0 || operationsOut.length > 0 || commissions.length > 0) {
+      this._updateIdeaEntries(position, operationsEntry, operationsOut, commissions);
 
       return;
     }

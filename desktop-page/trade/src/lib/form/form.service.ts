@@ -5,7 +5,7 @@ import { sortNumber } from 'utils/sort-number';
 
 @Injectable()
 export class TradeFormService {
-  updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations) {
+  updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {
     return {
       actions: {
         entries: [
@@ -58,7 +58,7 @@ export class TradeFormService {
           date: item.date,
           size: item.size,
         })),
-        ...[...entries, ...outs].map((item: TradeOperation) => ({
+        ...commissions.map((item: TradeOperation) => ({
           brokerId: 1,
           comment: item.description,
           date: item.date,
