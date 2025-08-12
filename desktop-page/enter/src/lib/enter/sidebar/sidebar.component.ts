@@ -264,7 +264,9 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
         }
       );
 
-    this.form.valueChanges.pipe(takeUntilDestroyed(this._destroyRef)).subscribe((res: FormValue) => this.onChange(res));
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((_: FormValue) => this.onChange(this.form.getRawValue()));
 
     this.formControlPortfolio.valueChanges
       .pipe(

@@ -366,8 +366,6 @@ export class VtEnterComponent implements AfterViewInit {
   onSubmit(event: Event, ideaId: number | null): void {
     event.preventDefault();
 
-    console.log('onSubmit');
-
     if (ideaId === null) {
       this._idea.createIdea(this._getValueToSubmit(this.form.getRawValue()));
     } else {
