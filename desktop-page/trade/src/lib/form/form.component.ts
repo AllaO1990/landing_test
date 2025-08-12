@@ -397,10 +397,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         let calcValue: any = { ...item, change: false };
 
         if (value) {
+          const lots = Math.floor(value.quantity / item.lot) || 1;
+
           calcValue = {
             ...calcValue,
             ...value,
-            total: getNumberPrecision(value.price * value.quantity, 2),
+            lots: lots,
+            total: getNumberPrecision(value.price * lots * item.lot, 2),
           };
 
           if (item.status === 1) {
@@ -408,7 +411,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
               direction: value.direction,
               orderType: value.orderType,
               price: value.price,
-              quantity: Math.floor(value.quantity / value.lot),
+              quantity: lots,
               instrumentId: instrument.id,
               accountId: account.accountId,
               orderId: item.orderId,

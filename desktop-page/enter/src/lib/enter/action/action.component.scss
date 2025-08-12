@@ -57,6 +57,8 @@ form {
   background-color: var(--tui-background-base-alt, #F6F7FB);
 
   &__value {
+    white-space: nowrap;
+
     &:not(:first-child):not(:last-child) {
       border-left: 1px solid var(--main-bg-color);
     }
@@ -72,6 +74,10 @@ form {
 .total {
   font-weight: 700;
   background-color: var(--block-bg-color);
+
+  &__item {
+    white-space: nowrap;
+  }
 }
 
 .action {
