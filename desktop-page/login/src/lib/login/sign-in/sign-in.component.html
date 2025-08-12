@@ -24,10 +24,10 @@
     <button
       class="form__action"
       [size]="size"
-      [disabled]="controlEmail.invalid"
+      [disabled]="controlEmail.invalid || !controlAgree.value"
       tuiButton
       type="submit">
-      Получить код
+      Войти
     </button>
   </div>
 </ng-template>
@@ -63,3 +63,16 @@
 
 <p class="form__information">Нет учетной записи? <a tuiLink iconEnd="@tui.arrow-right" [routerLink]="['../sign-up']">Зарегистрироваться</a>
 </p>
+
+<label tuiBlock [formGroup]="formGroup" class="form__information">
+  <input
+    size="s"
+    formControlName="agree"
+    tuiCheckbox
+    type="checkbox"
+    value="watermelons"
+  />
+  <span>
+  Нажимая на кнопку Войти, я даю свое согласие на обработку персональных данных в соответствии с Политикой обработки персональных данных и соглашаюсь с условиями Пользовательсткого соглашения
+        </span>
+</label>
