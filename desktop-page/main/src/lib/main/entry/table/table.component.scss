@@ -90,7 +90,7 @@
 
   &--date {
     white-space: nowrap;
-    width: 55px;
+    width: 70px;
   }
 
   &--direction {
@@ -120,7 +120,11 @@
   }
 
   &--idea {
-    width: 45px;
+    width: 80px;
+  }
+
+  &--actions {
+    width: 80px;
   }
 
   &--luck {
@@ -169,4 +173,21 @@
 
 thead th {
   color: var(--tui-text-primary);
+}
+
+.buttons {
+  [appearance="sell"], [appearance="buy"] {
+    width: 100%;
+    color: var(--tui-text-primary-on-accent-1);
+
+    --t-size: 24px;
+  }
+
+  [appearance="sell"] {
+    background: rgba(255, 16, 59, .5);
+  }
+
+  [appearance="buy"] {
+    background: rgba(3, 147, 34, .5);
+  }
 }

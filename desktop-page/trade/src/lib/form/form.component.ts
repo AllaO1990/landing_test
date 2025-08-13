@@ -419,8 +419,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) => {
       const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
+      const { source } = this.controlFilter.value;
 
-      this._initOutControl(position, [], []).ideas.forEach((item, index: number) => {
+      this._initOutControl(position, [], [], source.id).ideas.forEach((item, index: number) => {
         this.formArrayOut.setControl(index + length, new FormControl(item));
       });
     });
@@ -473,12 +474,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this._initEntryControl(position, orders, operations);
+    } = this._initEntryControl(position, orders, operations, source.id);
     const out: {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this._initOutControl(position, orders, operations);
+    } = this._initOutControl(position, orders, operations, source.id);
 
     // if (index === 0) {
     this.formArrayEntry.clear({ emitEvent: false });
@@ -551,7 +552,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   private _initEntryControl(
     position: StockPosition,
     orders: TradeOrders,
-    operations: TradeOperations
+    operations: TradeOperations,
+    sourceId: number
   ): {
     orders: ControlValue[];
     actions: ControlValue[];
@@ -559,13 +561,15 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   } {
     const defaultItem = this._getDefaultControlValue(position);
     const operationType = defaultItem.direction ? 15 : 22;
-    const actionQuantity = position.actions.entries.map((item) => Math.floor(item.amount / defaultItem.lot));
+    const entries = position.actions.entries.filter((item: StockPositionActionEntry) => item.brokerId === sourceId);
+
+    const actionQuantity = entries.map((item) => Math.floor(item.amount / defaultItem.lot));
     const operationsAction = operations.filter(
       (item: TradeOperation) => item.type === operationType && item.state === 1
     );
     const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
 
-    const actionControlValues: ControlValue[] = position.actions.entries.map((item): ControlValue => {
+    const actionControlValues: ControlValue[] = entries.map((item): ControlValue => {
       const lots = Math.floor(item.amount / defaultItem.lot);
 
       const findOperation =
@@ -637,7 +641,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   private _initOutControl(
     position: StockPosition,
     orders: TradeOrders,
-    operations: TradeOperations
+    operations: TradeOperations,
+    sourceId: number
   ): {
     orders: ControlValue[];
     operations: ControlValue[];
@@ -646,13 +651,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   } {
     const defaultItem = this._getDefaultControlValue(position, 'reverse');
     const operationType = defaultItem.direction ? 15 : 22;
-    const actionQuantity = position.actions.outs.map((item) => Math.floor(item.amount / defaultItem.lot));
+    const outs = position.actions.outs.filter((item: StockPositionActionTarget) => item.brokerId === sourceId);
+    const actionQuantity = outs.map((item) => Math.floor(item.amount / defaultItem.lot));
     const operationsAction = operations.filter(
       (item: TradeOperation) => item.type === operationType && item.state === 1
     );
     const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
 
-    const actionControlValues: ControlValue[] = position.actions.outs.map((item): ControlValue => {
+    const actionControlValues: ControlValue[] = outs.map((item): ControlValue => {
       const lots = Math.floor(item.amount / defaultItem.lot);
 
       const findOperation =

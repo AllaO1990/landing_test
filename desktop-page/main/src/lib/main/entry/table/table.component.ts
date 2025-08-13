@@ -3,6 +3,7 @@ import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import {
+  TuiButton,
   TuiDataList,
   TuiDataListComponent,
   TuiDropdown,
@@ -58,6 +59,7 @@ type ActionButton = {
     TuiDataListComponent,
     TuiDataList,
     TuiIcon,
+    TuiButton,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -67,8 +69,8 @@ type ActionButton = {
 export class EntryTableComponent {
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
 
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _store: SelectFacade = inject(SelectFacade);
-  private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #contextActionPlugins: ContextActionPlugin[] = inject(CONTEXT_ACTION_EVENTS);
   readonly #mapPlugins: Map<string, ContextAction> = new Map();
 
@@ -120,7 +122,7 @@ export class EntryTableComponent {
   public onDblclick(event: Event, item: Position): void {
     event.preventDefault();
 
-    this._queryParams.update({
+    this.#queryParams.update({
       type: EventSelected.IDEA,
       id: item.id,
       dialog: 'visible',
@@ -130,7 +132,7 @@ export class EntryTableComponent {
   public onClick(event: Event, item: Position): void {
     event.preventDefault();
 
-    this._queryParams.update({
+    this.#queryParams.update({
       type: EventSelected.IDEA,
       id: item.id,
     });
@@ -154,6 +156,14 @@ export class EntryTableComponent {
     }
 
     plugin.action(item);
+  }
+
+  onTrade(event: Event): void {
+    event.preventDefault();
+
+    this.#queryParams.update({
+      trade: 'visible',
+    });
   }
 
   // private _conditionActive(selected: StockEvent): string | null {

@@ -43,8 +43,21 @@
             [title]="item.createdAt | date : 'dd.MM.yyyy'"
             tuiTd
           >
-            {{ item.createdAt | date : 'dd.MM' }}
-            <div class="substring">{{ item.createdAt | datePassed }} дней</div>
+            <div class="td__row">
+              <div>
+                {{ item.createdAt | date : 'dd.MM' }}
+                <div class="substring">{{ item.createdAt | datePassed }} дней</div>
+              </div>
+              <div class="space"></div>
+              <div>
+                <img
+                  class="idea__icon"
+                  *ngIf="item.author === 'bot'; else user"
+                  src="/assets/icons/vanya.svg"
+                  alt="Идея"
+                />
+              </div>
+            </div>
           </td>
 
           <td *tuiCell="'cost'" tuiTd>
@@ -87,14 +100,27 @@
             <div class="substring">{{ item.entries[0].depositShare | tuiFormatNumber | async }}%</div>
           </td>
 
-          <td *tuiCell="'idea'" tuiTd class="td td--center">
-            <img
-              class="idea__icon"
-              *ngIf="item.author === 'bot'; else user"
-              src="/assets/icons/vanya.svg"
-              alt="Идея"
-            />
+          <td *tuiCell="'actions'" tuiTd class="td td--center buttons">
+            @if (item.positionType === 'long') {
+              <button
+                tuiButton
+                size="s"
+                (click)="onTrade($event)"
+                appearance="buy">
+                Купить
+              </button>
+            } @else {
+              <button
+                tuiButton
+                size="s"
+                (click)="onTrade($event)"
+                appearance="sell">
+                Продать
+              </button>
+            }
           </td>
+
+          <td *tuiCell="'idea'"></td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number bold">
             {{
