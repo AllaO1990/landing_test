@@ -56,7 +56,7 @@ interface FilterValue {
 }
 
 @Component({
-  selector: 'vt-entry',
+  selector: 'main-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
   standalone: true,

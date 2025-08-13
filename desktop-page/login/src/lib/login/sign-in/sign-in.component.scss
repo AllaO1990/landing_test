@@ -3,3 +3,16 @@
 
   width: 100%;
 }
+
+.form {
+  &__information [type='checkbox']:after {
+    display: block;
+    content: '';
+
+    width: 100%;
+    height: 100%;
+
+    background-color: #979797;
+    border-radius: var(--t-radius);
+  }
+}
