@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, inject, signal, Writ
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiAlertService, TuiButton, TuiLink, TuiTextfield } from '@taiga-ui/core';
 import { AuthService } from '@core/auth';
-import { JsonPipe, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 import { LoaderComponent } from '@ui/components/loader';
 import { forkJoin, map, timer } from 'rxjs';
@@ -25,7 +25,6 @@ import { TuiBlock, TuiCheckbox } from '@taiga-ui/kit';
     RouterLink,
     TuiBlock,
     TuiCheckbox,
-    JsonPipe,
   ],
   templateUrl: './sign-in.component.html',
   styleUrls: ['../form.scss', './sign-in.component.scss'],
@@ -41,7 +40,7 @@ export class SignInComponent implements AfterViewInit {
   readonly size = 'm';
 
   readonly formGroup: FormGroup = new FormGroup({
-    agree: new FormControl(true),
+    agree: new FormControl(false),
     email: new FormControl(null, [Validators.required, Validators.email]),
     code: new FormControl(null, [Validators.required]),
   });
