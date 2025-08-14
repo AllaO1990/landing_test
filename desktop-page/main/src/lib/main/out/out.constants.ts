@@ -88,6 +88,11 @@ export const OUT_HEADER: OutHeaderItem[] = [
     label: 'Рез-т <br> сделки',
     sorter: null,
   },
+  {
+    name: 'actions',
+    label: 'Действия',
+    sorter: null,
+  },
 ];
 
 export const OUT_CONSTANTS: { [key in OutEnums]: string } = {

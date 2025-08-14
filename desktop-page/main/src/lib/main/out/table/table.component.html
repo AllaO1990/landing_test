@@ -149,6 +149,26 @@
           </div>
         </td>
 
+        <td *tuiCell="'actions'" tuiTd class="td td--center buttons">
+          @if (item.positionType !== 'long') {
+            <button
+              tuiButton
+              size="s"
+              (click)="onTrade($event)"
+              appearance="buy">
+              Купить
+            </button>
+          } @else {
+            <button
+              tuiButton
+              size="s"
+              (click)="onTrade($event)"
+              appearance="sell">
+              Продать
+            </button>
+          }
+        </td>
+
         <ng-template #contextMenu let-close>
           <tui-data-list
             size="s"

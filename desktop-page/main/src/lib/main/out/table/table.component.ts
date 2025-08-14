@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core
 import { OUT_HEADER } from '../out.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
+  TuiButton,
   TuiDataList,
   TuiDataListComponent,
   TuiDialogService,
@@ -58,6 +59,7 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
     TuiDataList,
     TuiDropdown,
     TuiIcon,
+    TuiButton,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
@@ -67,6 +69,7 @@ export class OutTableComponent {
   protected getColorBackGround = (v: number) => getRGBA(getColor(v), 0.1);
   readonly #dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
 
   private readonly _store: SelectFacade = inject(SelectFacade);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
@@ -132,6 +135,14 @@ export class OutTableComponent {
     this._queryParams.update({
       type: EventSelected.POSITION,
       id: item.id,
+    });
+  }
+
+  onTrade(event: Event): void {
+    event.preventDefault();
+
+    this.#queryParams.update({
+      trade: 'visible',
     });
   }
 
