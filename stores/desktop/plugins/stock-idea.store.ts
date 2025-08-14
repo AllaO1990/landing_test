@@ -291,6 +291,12 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
               tap((position: Position) => {
                 // console.log(position);
 
+                const { trade } = this._queryParams.value();
+
+                if (trade === 'visible') {
+                  return;
+                }
+
                 this._queryParams.update({
                   type: data.body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,
                   id: response.data.id,
