@@ -154,6 +154,7 @@
             <button
               tuiButton
               size="s"
+              [disabled]="item.instrument.source !== 'tinkoff'"
               (click)="onTrade($event)"
               appearance="buy">
               Купить
@@ -162,6 +163,7 @@
             <button
               tuiButton
               size="s"
+              [disabled]="item.instrument.source !== 'tinkoff'"
               (click)="onTrade($event)"
               appearance="sell">
               Продать

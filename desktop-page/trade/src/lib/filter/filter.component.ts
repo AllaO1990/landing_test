@@ -10,6 +10,7 @@ import {
   filter,
   map,
   Observable,
+  of,
   pairwise,
   startWith,
   switchMap,
@@ -31,7 +32,7 @@ import {
   TradeToken,
 } from '../common/api.types';
 import { TuiButtonLoading, TuiChip } from '@taiga-ui/kit';
-import { StockInstrument } from 'types/stock';
+import { StockInstrument, WithLastPrice } from 'types/stock';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { Response } from 'types/response';
 import { TuiCell } from '@taiga-ui/layout';
@@ -96,6 +97,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
   readonly size = 's';
   readonly idea$: Observable<StockPosition> = this.#idea.idea$;
+  readonly lastPrice$: Observable<null | WithLastPrice> = this.#idea.lastPrice$;
   readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.#store.accounts$.pipe(
     filter((data: Response<TradeAccounts | null> | null): data is Response<TradeAccounts | null> => data !== null),
     tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
@@ -193,6 +195,18 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
         distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
       )
       .subscribe((position: StockPosition) => this.controlInstrument.patchValue(position.idea.instrument));
+
+    this.#idea.loadLastPrice(
+      this.#idea.instrument$.pipe(
+        switchMap((instrument: StockInstrument | null) => {
+          if (instrument === null) {
+            return of(null);
+          }
+
+          return timer(0, this.#store.TIMER).pipe(map(() => instrument.id));
+        })
+      )
+    );
 
     this.formGroup.valueChanges
       .pipe(

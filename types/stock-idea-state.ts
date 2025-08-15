@@ -1,5 +1,5 @@
 import { Positions, StockPosition } from './position';
-import { StockInstrument } from './stock';
+import { StockInstrument, WithLastPrice } from './stock';
 
 export interface StockIdeaState {
   ideas: null | Positions;
@@ -7,4 +7,5 @@ export interface StockIdeaState {
   idea: null | StockPosition;
   instrument: null | StockInstrument;
   isLoading: boolean;
+  lastPrice: null | WithLastPrice;
 }
