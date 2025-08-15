@@ -2,7 +2,7 @@ import { DesktopService } from '@desktop-data/desktop-data';
 import { ComponentStore } from '@ngrx/component-store';
 import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { StockIdeaState } from 'types/stock-idea-state';
-import { StockId, StockInstrument } from 'types/stock';
+import { StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import {
   Position,
   Positions,
@@ -22,6 +22,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
   readonly ideas$: Observable<Positions | null> = this.select((state: StockIdeaState) => state.ideas);
   readonly positions$: Observable<Positions | null> = this.select((state: StockIdeaState) => state.positions);
   readonly idea$: Observable<StockPosition | null> = this.select((state: StockIdeaState) => state.idea);
+  readonly lastPrice$: Observable<null | WithLastPrice> = this.select((state: StockIdeaState) => state.lastPrice);
   readonly instrument$: Observable<StockInstrument | null> = this.select((state: StockIdeaState) => state.instrument);
   readonly isLoading$: Observable<boolean> = this.select((state: StockIdeaState) => state.isLoading);
 
@@ -32,6 +33,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       idea: null,
       positions: null,
       isLoading: false,
+      lastPrice: null,
     });
   }
 
@@ -39,6 +41,13 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     (state: StockIdeaState, ideas: Positions | null): StockIdeaState => ({
       ...state,
       ideas,
+    })
+  );
+
+  updateLastPrice = this.updater(
+    (state: StockIdeaState, lastPrice: null | WithLastPrice): StockIdeaState => ({
+      ...state,
+      lastPrice,
     })
   );
 
@@ -56,12 +65,12 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     })
   );
 
-  updateInstrument = this.updater(
-    (state: StockIdeaState, instrument: StockInstrument | null): StockIdeaState => ({
+  updateInstrument = this.updater((state: StockIdeaState, instrument: StockInstrument | null): StockIdeaState => {
+    return {
       ...state,
       instrument,
-    })
-  );
+    };
+  });
 
   updateIsLoading = this.updater(
     (state: StockIdeaState, isLoading: boolean): StockIdeaState => ({
@@ -170,35 +179,6 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       tap((result: Response<StockPosition | null> | null) => result && this.updateIdea(this._copyIdea(result.data)))
     )
   );
-
-  // readonly create = this.effect((stream$: Observable<object>) =>
-  //   stream$.pipe(
-  //     tap(() => this.updateIsLoading(true)),
-  //     switchMap((body: object) =>
-  //       this._api.createIdea(body).pipe(tap((response: Response<{ id: number }>) => this.loadIdeas(of(null))))
-  //     ),
-  //     switchMap((response: Response<{ id: number }>) =>
-  //       this.selectIdea(response.data.id.toString()).pipe(
-  //         filter((position: Position | null): position is Position => position !== null),
-  //         take(1),
-  //         tap(() =>
-  //           this._queryParams.update({
-  //             type: EventSelected.IDEA,
-  //             id: response.data.id,
-  //             dialog: 'visible',
-  //           })
-  //         ),
-  //         tap(() => this.updateIsLoading(false))
-  //       )
-  //     ),
-  //     catchError((err: Error) => {
-  //       console.error(err);
-  //       this.updateIsLoading(false);
-  //
-  //       return of(null);
-  //     })
-  //   )
-  // );
 
   readonly create = this.effect((stream$: Observable<object>) =>
     stream$.pipe(
@@ -352,4 +332,19 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       },
     };
   }
+
+  readonly loadLastPrice = this.effect((stream$: Observable<string | null>) =>
+    stream$.pipe(
+      switchMap((id: string | null) => {
+        if (id === null) {
+          return of(null);
+        }
+
+        return this._api.getActiveStock([id]).pipe(
+          map((list: StockPrice<WithLastPrice>) => list[id]),
+          tap((lastPrice: WithLastPrice | null) => this.updateLastPrice(lastPrice))
+        );
+      })
+    )
+  );
 }

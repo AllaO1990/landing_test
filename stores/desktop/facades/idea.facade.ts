@@ -16,6 +16,7 @@ export class IdeaFacade {
   readonly ideas$: Observable<Positions | null> = this._store.idea.ideas$;
   readonly instrument$: Observable<StockInstrument | null> = this._store.idea.instrument$;
   readonly isLoading$: Observable<boolean> = this._store.idea.isLoading$;
+  readonly lastPrice$: Observable<null | WithLastPrice> = this._store.idea.lastPrice$;
   readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
     switchMap((idea: StockPosition | null) => {
       if (idea === null) {
@@ -59,6 +60,7 @@ export class IdeaFacade {
   readonly loadFigures = this._store.figures.load;
   readonly resetIdea = () => this._store.idea.updateIdea(null);
   readonly loadIdea = this._store.idea.loadIdea;
+  readonly loadLastPrice = this._store.idea.loadLastPrice;
   readonly loadIdeas = this._store.idea.loadIdeas;
   readonly loadPositions = this._store.idea.loadPositions;
   readonly loadAndCopyIdea = this._store.idea.loadAndCopyIdea;
