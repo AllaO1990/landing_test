@@ -95,7 +95,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
   #onTouched = () => {};
 
   readonly size = 's';
-  readonly idea$: Observable<StockPosition> = this.#idea.idea$;
+  readonly idea$: Observable<StockPosition> = this.#idea.idea$.pipe(tap((data) => console.log(data)));
   readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.#store.accounts$.pipe(
     filter((data: Response<TradeAccounts | null> | null): data is Response<TradeAccounts | null> => data !== null),
     tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
@@ -129,6 +129,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     })
   );
   readonly sources$: Observable<TradeSources> = this.#store.source$.pipe(
+    tap((data) => console.log(data)),
     filter((data: TradeSources | null): data is TradeSources => data !== null)
   );
   readonly formGroup: FormGroup = new FormGroup({
