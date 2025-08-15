@@ -74,6 +74,7 @@
         [disabled]="false"
         (click)="onTrade($event)"
         tuiButton
+        iconStart="@tui.chart-candlestick"
         type="button">
         Выставить заявку
       </button>
@@ -160,9 +161,10 @@
       </button>
       <button
         class="button"
-        [disabled]="false"
+        [disabled]="formArrayEntries.value.length === 0"
         (click)="onTrade($event)"
         tuiButton
+        iconStart="@tui.chart-candlestick"
         type="button">
         Выставить заявку
       </button>
