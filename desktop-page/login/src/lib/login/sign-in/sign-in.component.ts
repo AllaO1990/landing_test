@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, inject, signal, WritableSignal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiAlertService, TuiButton, TuiLink, TuiTextfield } from '@taiga-ui/core';
 import { AuthService } from '@core/auth';
@@ -59,6 +67,12 @@ export class SignInComponent implements AfterViewInit {
 
   readonly isLoad: WritableSignal<boolean> = signal(false);
   readonly formType: WritableSignal<'email' | 'code'> = signal('email');
+
+  constructor() {
+    effect(() => {
+      this.controlAgree[this.formType() === 'code' ? 'disable' : 'enable']();
+    });
+  }
 
   ngAfterViewInit(): void {
     const { email } = this.#queryParams.value();

@@ -27,7 +27,7 @@ export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
         error.url &&
         error.url.indexOf('/auth/') === -1
       ) {
-        const errorMessage = error.error ? error.error.message : error.message;
+        const errorMessage = error.error && error.error.message ? error.error.message : error.message;
 
         _alerts
           .open(`<p><strong>${errorMessage}</strong></p> ${error.url}`, {
