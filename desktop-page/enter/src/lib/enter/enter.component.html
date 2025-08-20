@@ -182,6 +182,7 @@
             appearance="primary"
             size="xs"
             type="button"
+            [disabled]="isDisableTrade$ | async"
             (click)="onTrade($event)"
             iconStart="@tui.chart-candlestick">
             Брокерские заявки

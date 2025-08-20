@@ -59,6 +59,7 @@ import { AddCommissionComponent } from './add-commission/add-commission.componen
 import { TuiTooltip } from '@taiga-ui/kit';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
+import { Params } from '@angular/router';
 
 type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
@@ -102,6 +103,13 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   private readonly _injector: Injector = inject(Injector);
   private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _ngZone: NgZone = inject(NgZone);
+
+  readonly isDisableTrade$: Observable<boolean> = this.#queryParams.pipe(
+    startWith(this.#queryParams.value()),
+    map((value: Params) => value['id'] && (value['type'] === 'position' || value['type'] === 'idea')),
+    map((value: boolean | null) => !value),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   readonly canAdd$: Observable<boolean> = this._ideaFacade.idea$.pipe(
     filter((idea: StockPosition | null): idea is StockPosition => idea !== null),

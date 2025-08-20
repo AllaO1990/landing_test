@@ -10,6 +10,7 @@ import { TuiChevron, TuiDataListDropdownManager, TuiInputNumber, TuiSelect } fro
 import { TradeStore } from '../common/store';
 import { TradeOrderTypes } from '../common/api.types';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 export interface RequestFormValue {
   direction: boolean;
@@ -68,7 +69,7 @@ export class RequestTradeComponent implements AfterViewInit {
     orderType: new FormControl(null, Validators.required),
     price: new FormControl(null, Validators.required),
     quantity: new FormControl({ value: null, disabled: true }, Validators.required),
-    lots: new FormControl<number | null>(null, Validators.required),
+    lots: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
     lot: new FormControl(null),
     total: new FormControl({ value: null, disabled: true }),
   });
@@ -139,7 +140,13 @@ export class RequestTradeComponent implements AfterViewInit {
     this.controlOrderType.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlOrderType.value), distinctUntilChanged())
       .subscribe((value: number) => {
-        this.controlPrice[value !== 1 ? 'disable' : 'enable']();
+        if (value !== 1) {
+          this.controlPrice.disable();
+          this.controlPrice.patchValue(this.lastPrice);
+        } else {
+          this.controlPrice.enable();
+          this.controlPrice.patchValue(this.price);
+        }
       });
 
     this.controlLots.valueChanges
@@ -149,10 +156,16 @@ export class RequestTradeComponent implements AfterViewInit {
       });
 
     combineLatest([
-      this.controlLots.valueChanges.pipe(filter((value: any) => value !== null)),
-      this.controlPrice.valueChanges.pipe(filter((value: any) => value !== null)),
+      this.controlLots.valueChanges.pipe(
+        startWith(this.controlLots.value),
+        filter((value: any) => value !== null)
+      ),
+      this.controlPrice.valueChanges.pipe(
+        startWith(this.controlPrice.value),
+        filter((value: any) => value !== null)
+      ),
     ])
-      .pipe(map(([lots, price]: [any, any]) => +lots * +price))
+      .pipe(map(([lots, price]: [any, any]) => getNumberPrecision(+lots * +price, 2)))
       .subscribe((value) => this.controlTotal.patchValue(value));
   }
 
