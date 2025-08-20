@@ -53,10 +53,10 @@
     <button
       class="form__action"
       [size]="size"
-      [disabled]="controlCode.invalid"
+      [disabled]="controlCode.invalid || !controlAgree.value"
       tuiButton
       type="submit">
-      Проверить код
+      Войти
     </button>
   </div>
 </ng-template>
