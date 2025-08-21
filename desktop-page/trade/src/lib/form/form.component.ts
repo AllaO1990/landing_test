@@ -290,12 +290,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     outs: TradeOperations,
     commissions: TradeOperations
   ): void {
-    console.log(position, entries, outs, commissions);
+    const id = position.idea.id;
 
-    this.#idea.editIdea({
-      id: position.idea.id!,
-      body: this.#service.updateIdea(position, entries, outs, commissions),
-    });
+    if (id) {
+      this.#idea.editIdea({
+        id,
+        body: this.#service.updateIdea(position, entries, outs, commissions),
+      });
+    }
   }
 
   onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' = 'entry') {
@@ -464,8 +466,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       return;
     }
 
-    console.log(operationsEntry, operationsOut, commissions);
-
     const entry: {
       orders: ControlValue[];
       actions: ControlValue[];
@@ -476,6 +476,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       actions: ControlValue[];
       ideas: ControlValue[];
     } = this._initOutControl(position, orders, operations, source.id);
+
+    // console.log(entry, out);
 
     // if (index === 0) {
     this.formArrayEntry.clear({ emitEvent: false });

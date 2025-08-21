@@ -70,7 +70,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
             pairwise(),
             filter(
               ([first, second]: [ControlValue[], ControlValue[]]) =>
-                first[0] && first[0].status === 0 && second[0] && second[0].status === 2
+                first[0] && first[0].status !== 2 && second[0] && second[0].status === 2
             ),
             map((data: [ControlValue[], ControlValue[]]) => data[1])
           )
