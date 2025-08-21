@@ -97,7 +97,9 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
   readonly size = 's';
   readonly idea$: Observable<StockPosition> = this.#idea.idea$;
-  readonly lastPrice$: Observable<null | WithLastPrice> = this.#idea.lastPrice$;
+  readonly lastPrice$: Observable<null | WithLastPrice> = this.#idea.lastPrice$.pipe(
+    tap((value: null | WithLastPrice) => this.controlLastPrice.patchValue(value))
+  );
   readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.#store.accounts$.pipe(
     filter((data: Response<TradeAccounts | null> | null): data is Response<TradeAccounts | null> => data !== null),
     tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
@@ -138,6 +140,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     source: new FormControl<TradeSource | null>(null),
     token: new FormControl<TradeToken | null>(null),
     account: new FormControl<TradeAccount | null>(null),
+    lastPrice: new FormControl<WithLastPrice | null>(null),
   });
 
   get controlInstrument(): FormControl {
@@ -154,6 +157,10 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
   get controlAccount(): FormControl {
     return this.formGroup.get('account') as FormControl;
+  }
+
+  get controlLastPrice(): FormControl {
+    return this.formGroup.get('lastPrice') as FormControl;
   }
 
   readonly stringifySource: TuiStringHandler<TradeSource> = (item: TradeSource) => item.name;

@@ -5,11 +5,12 @@ import { TuiButton, TuiDataListComponent, TuiTextfield } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiInputDateModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { distinctUntilChanged, Observable, of, startWith } from 'rxjs';
+import { combineLatest, distinctUntilChanged, filter, map, Observable, of, startWith } from 'rxjs';
 import { TuiChevron, TuiDataListDropdownManager, TuiInputNumber, TuiSelect } from '@taiga-ui/kit';
 import { TradeStore } from '../common/store';
 import { TradeOrderTypes } from '../common/api.types';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 export interface RequestFormValue {
   direction: boolean;
@@ -52,14 +53,25 @@ export class RequestTradeComponent implements AfterViewInit {
     return this.#context.max || null;
   }
 
+  @tuiPure
+  get price(): number | null {
+    return this.#context.price.value || null;
+  }
+
+  @tuiPure
+  get lastPrice(): number | null {
+    return this.#context.lastPrice.value || null;
+  }
+
   readonly size = 's';
   readonly formGroup: FormGroup = new FormGroup({
     direction: new FormControl(null, Validators.required),
     orderType: new FormControl(null, Validators.required),
     price: new FormControl(null, Validators.required),
     quantity: new FormControl({ value: null, disabled: true }, Validators.required),
-    lots: new FormControl<number | null>(null, Validators.required),
+    lots: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
     lot: new FormControl(null),
+    total: new FormControl({ value: null, disabled: true }),
   });
 
   get controlDirection(): FormControl {
@@ -84,6 +96,10 @@ export class RequestTradeComponent implements AfterViewInit {
 
   get controlLot(): FormControl {
     return this.formGroup.get('lot') as FormControl;
+  }
+
+  get controlTotal(): FormControl {
+    return this.formGroup.get('total') as FormControl;
   }
 
   types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
@@ -111,7 +127,7 @@ export class RequestTradeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.#context) {
-      const { orderType, direction, quantity, price, lot } = this.#context;
+      const { orderType, direction, quantity, lot, price } = this.#context;
       const lots = Math.floor(quantity.value / lot.value);
 
       this._updateControl(this.controlDirection, direction, { onlySelf: true });
@@ -124,7 +140,13 @@ export class RequestTradeComponent implements AfterViewInit {
     this.controlOrderType.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlOrderType.value), distinctUntilChanged())
       .subscribe((value: number) => {
-        this.controlPrice[value !== 1 ? 'disable' : 'enable']();
+        if (value !== 1) {
+          this.controlPrice.disable();
+          this.controlPrice.patchValue(this.lastPrice);
+        } else {
+          this.controlPrice.enable();
+          this.controlPrice.patchValue(this.price);
+        }
       });
 
     this.controlLots.valueChanges
@@ -132,6 +154,19 @@ export class RequestTradeComponent implements AfterViewInit {
       .subscribe((value: number) => {
         this.controlQuantity.patchValue(value * this.controlLot.value);
       });
+
+    combineLatest([
+      this.controlLots.valueChanges.pipe(
+        startWith(this.controlLots.value),
+        filter((value: any) => value !== null)
+      ),
+      this.controlPrice.valueChanges.pipe(
+        startWith(this.controlPrice.value),
+        filter((value: any) => value !== null)
+      ),
+    ])
+      .pipe(map(([lots, price]: [any, any]) => getNumberPrecision(+lots * +price, 2)))
+      .subscribe((value) => this.controlTotal.patchValue(value));
   }
 
   @tuiPure

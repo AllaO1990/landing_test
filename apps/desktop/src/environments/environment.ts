@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  // host: 'https://api.grintrade.com/api',
   host: 'https://api-dev.grintrade.com/api',
 };
 

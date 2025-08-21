@@ -290,10 +290,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     outs: TradeOperations,
     commissions: TradeOperations
   ): void {
-    this.#idea.editIdea({
-      id: position.idea.id!,
-      body: this.#service.updateIdea(position, entries, outs, commissions),
-    });
+    const id = position.idea.id;
+
+    if (id) {
+      this.#idea.editIdea({
+        id,
+        body: this.#service.updateIdea(position, entries, outs, commissions),
+      });
+    }
   }
 
   onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' = 'entry') {
@@ -343,7 +347,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     item['change'] = true;
 
-    const { account, source, instrument } = this.controlFilter.value;
+    const { account, source, instrument, lastPrice } = this.controlFilter.value;
 
     this.#dialog
       .openTradeRequest(this.#injector, {
@@ -352,6 +356,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         price: { value: item.price, disabled: false },
         lot: { value: item.lot, disabled: false },
         quantity: { value: item.quantity, disabled: false },
+        lastPrice: { value: lastPrice.last, disabled: true },
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue | null) => {
@@ -424,12 +429,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     });
   }
 
-  private _getDifference(first: TradeOrders, second: TradeOrders): TradeOrders {
-    const secondIds = second.map((item) => item.orderId);
-
-    return first.filter((firstItem: TradeOrder) => secondIds.includes(firstItem.orderId));
-  }
-
   private _initControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
     this.direction = position.idea.positionType === 'long';
     const lot = position.idea.instrument.lot;
@@ -477,6 +476,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       actions: ControlValue[];
       ideas: ControlValue[];
     } = this._initOutControl(position, orders, operations, source.id);
+
+    // console.log(entry, out);
 
     // if (index === 0) {
     this.formArrayEntry.clear({ emitEvent: false });

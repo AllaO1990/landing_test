@@ -71,7 +71,7 @@
       </button>
       <button
         class="button"
-        [disabled]="false"
+        [disabled]="isDisableTrade$ | async"
         (click)="onTrade($event)"
         tuiButton
         iconStart="@tui.chart-candlestick"
@@ -161,7 +161,7 @@
       </button>
       <button
         class="button"
-        [disabled]="formArrayEntries.value.length === 0"
+        [disabled]="formArrayEntries.value.length === 0 && (isDisableTrade$ | async)"
         (click)="onTrade($event)"
         tuiButton
         iconStart="@tui.chart-candlestick"

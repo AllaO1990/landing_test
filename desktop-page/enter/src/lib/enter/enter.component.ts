@@ -62,6 +62,7 @@ import { EnterIdeaSubscribeDirective } from './enter.directive';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { EnterFinishComponent } from './finish/finish.component';
 import { DIALOG, DialogService } from '@ui/components/dialog';
+import { Params } from '@angular/router';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -149,6 +150,13 @@ export class VtEnterComponent implements AfterViewInit {
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
     optional: true,
   });
+
+  readonly isDisableTrade$: Observable<boolean> = this._queryParams.pipe(
+    startWith(this._queryParams.value()),
+    map((value: Params) => value['id'] && (value['type'] === 'position' || value['type'] === 'idea')),
+    map((value: boolean | null) => !value),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   readonly form: FormGroup = new FormGroup({
     actions: new FormControl({ entries: [], dividends: [], commissions: [], outs: [], position: null }),
