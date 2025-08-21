@@ -19,6 +19,7 @@ import {
   filter,
   merge,
   Observable,
+  of,
   pairwise,
   shareReplay,
   startWith,
@@ -151,11 +152,19 @@ export class VtEnterComponent implements AfterViewInit {
     optional: true,
   });
 
-  readonly isDisableTrade$: Observable<boolean> = this._queryParams.pipe(
-    startWith(this._queryParams.value()),
-    map((value: Params) => value['id'] && (value['type'] === 'position' || value['type'] === 'idea')),
-    map((value: boolean | null) => !value),
-    shareReplay({ bufferSize: 1, refCount: true })
+  readonly isDisableTrade$: Observable<boolean> = this._idea.instrument$.pipe(
+    switchMap((instrument: StockInstrument | null) => {
+      if (instrument && instrument.source === 'binance') {
+        return of(true);
+      }
+
+      return this._queryParams.pipe(
+        startWith(this._queryParams.value()),
+        map((value: Params) => value['id'] && (value['type'] === 'position' || value['type'] === 'idea')),
+        map((value: boolean | null) => !value),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    })
   );
 
   readonly form: FormGroup = new FormGroup({
