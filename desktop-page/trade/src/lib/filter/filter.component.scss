@@ -38,11 +38,15 @@
 }
 
 .description {
-  display: flex;
-  align-items: center;
-
-  height: 2rem;
   margin: var(--padding-4) 0 var(--padding-2);
+  flex-flow: row wrap;
+}
+
+.tiles {
+  margin: var(--padding-4) 0;
+  flex-flow: row wrap;
+
+  white-space: nowrap;
 }
 
 .label {
@@ -98,6 +102,10 @@ tui-chip span {
         margin: 0 var(--padding-2) 0 0;
       }
     }
+  }
+
+  .description {
+    flex-wrap: wrap;
   }
 }
 

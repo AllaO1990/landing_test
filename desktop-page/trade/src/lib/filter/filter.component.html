@@ -68,33 +68,35 @@
         class="form__instrument"
         [data]="controlInstrument.value"></lib-instrument>
       @if (portfolio$ | async; as position) {
-        <div class="form__column" [tuiCell]="size">
-          <div tuiSubtitle>Количество</div>
-          <div class="springy" tuiTitle>{{ position.quantity }} шт.</div>
-        </div>
-        <div class="form__column" [tuiCell]="size">
-          <div tuiSubtitle>Цена за бумагу</div>
-          <div tuiTitle>
-            {{ position.price | tuiFormatNumber | async }}
-            {{ position.currency | tuiCurrency }}
-          </div>
-        </div>
-        <div class="form__column" [tuiCell]="size">
-          <div tuiSubtitle>Стоимость</div>
-          <div tuiTitle>
-            {{ position.total | tuiFormatNumber | async }}
-            {{ position.currency | tuiCurrency }}
-          </div>
-        </div>
-        @if (lastPrice$ | async; as price) {
+        <div class="form__row tiles">
           <div class="form__column" [tuiCell]="size">
-            <div tuiSubtitle>Текущая цена</div>
+            <div tuiSubtitle>Количество</div>
+            <div class="springy" tuiTitle>{{ position.quantity }} шт.</div>
+          </div>
+          <div class="form__column" [tuiCell]="size">
+            <div tuiSubtitle>Цена за бумагу</div>
             <div tuiTitle>
-              {{ price.last | tuiFormatNumber | async }}
+              {{ position.price | tuiFormatNumber | async }}
               {{ position.currency | tuiCurrency }}
             </div>
           </div>
-        }
+          <div class="form__column" [tuiCell]="size">
+            <div tuiSubtitle>Стоимость</div>
+            <div tuiTitle>
+              {{ position.total | tuiFormatNumber | async }}
+              {{ position.currency | tuiCurrency }}
+            </div>
+          </div>
+          @if (lastPrice$ | async; as price) {
+            <div class="form__column" [tuiCell]="size">
+              <div tuiSubtitle>Текущая цена</div>
+              <div tuiTitle>
+                {{ price.last | tuiFormatNumber | async }}
+                {{ position.currency | tuiCurrency }}
+              </div>
+            </div>
+          }
+        </div>
         <div class="space"></div>
         <div class="form__column">
           <button
