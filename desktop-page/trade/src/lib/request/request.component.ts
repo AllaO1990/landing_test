@@ -5,7 +5,7 @@ import { TuiButton, TuiDataListComponent, TuiTextfield } from '@taiga-ui/core';
 import { AsyncPipe, NgForOf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiInputDateModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { combineLatest, distinctUntilChanged, filter, map, Observable, of, startWith } from 'rxjs';
+import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith } from 'rxjs';
 import { TuiChevron, TuiDataListDropdownManager, TuiInputNumber, TuiSelect } from '@taiga-ui/kit';
 import { TradeStore } from '../common/store';
 import { TradeOrderTypes } from '../common/api.types';
@@ -156,8 +156,8 @@ export class RequestTradeComponent implements AfterViewInit {
       });
 
     combineLatest([
-      this.controlLots.valueChanges.pipe(
-        startWith(this.controlLots.value),
+      this.controlQuantity.valueChanges.pipe(
+        startWith(this.controlQuantity.value),
         filter((value: any) => value !== null)
       ),
       this.controlPrice.valueChanges.pipe(
@@ -165,7 +165,11 @@ export class RequestTradeComponent implements AfterViewInit {
         filter((value: any) => value !== null)
       ),
     ])
-      .pipe(map(([lots, price]: [any, any]) => getNumberPrecision(+lots * +price, 2)))
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        debounceTime(100),
+        map(([quantity, price]: [any, any]) => getNumberPrecision(+quantity * +price, 2))
+      )
       .subscribe((value) => this.controlTotal.patchValue(value));
   }
 

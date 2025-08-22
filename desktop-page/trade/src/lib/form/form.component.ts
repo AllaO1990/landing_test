@@ -629,6 +629,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       status: 1,
     }));
 
+    console.log(orderControlValues, ideaControlValues, actionControlValues);
+
     return {
       actions: actionControlValues,
       ideas: ideaControlValues,
