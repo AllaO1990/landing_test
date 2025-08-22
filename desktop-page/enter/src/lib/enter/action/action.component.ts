@@ -38,6 +38,7 @@ import {
   distinctUntilChanged,
   filter,
   Observable,
+  of,
   ReplaySubject,
   shareReplay,
   startWith,
@@ -60,6 +61,7 @@ import { TuiTooltip } from '@taiga-ui/kit';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { Params } from '@angular/router';
+import { StockInstrument } from 'types/stock';
 
 type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
@@ -104,11 +106,19 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   private readonly _dialogService: DialogService = inject(DIALOG);
   private readonly _ngZone: NgZone = inject(NgZone);
 
-  readonly isDisableTrade$: Observable<boolean> = this.#queryParams.pipe(
-    startWith(this.#queryParams.value()),
-    map((value: Params) => value['id'] && (value['type'] === 'position' || value['type'] === 'idea')),
-    map((value: boolean | null) => !value),
-    shareReplay({ bufferSize: 1, refCount: true })
+  readonly isDisableTrade$: Observable<boolean> = this._ideaFacade.instrument$.pipe(
+    switchMap((instrument: StockInstrument | null) => {
+      if (instrument && instrument.source === 'binance') {
+        return of(true);
+      }
+
+      return this.#queryParams.pipe(
+        startWith(this.#queryParams.value()),
+        map((value: Params) => value['id'] && (value['type'] === 'position' || value['type'] === 'idea')),
+        map((value: boolean | null) => !value),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    })
   );
 
   readonly canAdd$: Observable<boolean> = this._ideaFacade.idea$.pipe(
