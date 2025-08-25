@@ -71,7 +71,9 @@
         <div class="form__row tiles">
           <div class="form__column" [tuiCell]="size">
             <div tuiSubtitle>Количество</div>
-            <div class="springy" tuiTitle>{{ position.quantity }} шт.</div>
+            <div class="springy" tuiTitle>
+              {{ position.quantity | tuiFormatNumber | async }} шт.
+            </div>
           </div>
           <div class="form__column" [tuiCell]="size">
             <div tuiSubtitle>Цена за бумагу</div>

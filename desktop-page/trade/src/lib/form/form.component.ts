@@ -171,12 +171,15 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   );
 
   readonly listOut$: Observable<ItemEntry[]> = timer(500).pipe(
-    switchMap(() => this.formArrayOut.valueChanges.pipe(startWith(this.formArrayOut.value)))
+    switchMap(() => this.formArrayOut.valueChanges.pipe(startWith(this.formArrayOut.value))),
+    debounceTime(0),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly heightOut$: Observable<number> = this.listOut$.pipe(
     map((list: ItemEntry[]) => ((list && list.length) || 0) + 1),
-    map((length) => (length > 4 ? 4 * this.itemHeight : length * this.itemHeight))
+    map((length) => (length > 4 ? 4 * this.itemHeight : length * this.itemHeight)),
+    distinctUntilChanged()
   );
 
   direction = true;
@@ -253,6 +256,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
   }
 
+  trackBy(index: number, item: ItemEntry): ItemEntry {
+    return item;
+  }
+
   writeValue(obj: any): void {
     this.formGroup.patchValue(obj);
   }
@@ -303,7 +310,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' = 'entry') {
     event.preventDefault();
 
-    const { instrument } = this.controlFilter.value;
+    const { instrument, lastPrice } = this.controlFilter.value;
 
     let max = null;
 
@@ -324,6 +331,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         price: { value: null, disabled: false },
         lot: { value: instrument.lot, disabled: false },
         quantity: { value: null, disabled: false },
+        lastPrice: { value: lastPrice.last, disabled: true },
         max,
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
@@ -403,11 +411,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       });
 
       control.at(index).disable();
-
       return;
     }
 
-    control.removeAt(index);
+    control.removeAt(index, { emitEvent: true });
   }
 
   onExpanded(event: Event): void {
@@ -419,26 +426,35 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   addFromIdea(event: Event): void {
     event.preventDefault();
 
-    this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) => {
-      const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
-      const { source } = this.controlFilter.value;
+    this.idea$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
+      )
+      .subscribe((position: StockPosition) => {
+        const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
+        const { source } = this.controlFilter.value;
 
-      this._initOutControl(position, [], [], source.id).ideas.forEach((item, index: number) => {
-        this.formArrayOut.setControl(index + length, new FormControl(item));
+        this._initOutControl(position, [], [], source.id).ideas.forEach((item, index: number) => {
+          this.formArrayOut.setControl(index + length, new FormControl(item));
+        });
       });
-    });
   }
 
   private _initControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
     this.direction = position.idea.positionType === 'long';
     const lot = position.idea.instrument.lot;
     const { source } = this.controlFilter.value;
+    const createAt = position.idea.createdAt && new Date(position.idea.createdAt).valueOf();
+    const actualOperations = createAt
+      ? operations.filter((item: TradeOperation) => new Date(item.date).valueOf() > createAt)
+      : operations;
 
     const operationsEntry = this._getOperationControlValues(
       position.actions.entries
         .filter((item: StockPositionActionEntry) => item.brokerId === source.id)
         .map((item: StockPositionActionEntry) => Math.floor(item.amount / lot)),
-      operations,
+      actualOperations,
       this.direction ? 15 : 22,
       lot
     );
@@ -447,7 +463,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       position.actions.outs
         .filter((item: StockPositionActionTarget) => item.brokerId === source.id)
         .map((item: StockPositionActionTarget) => Math.floor(item.amount / lot)),
-      operations,
+      actualOperations,
       !this.direction ? 15 : 22,
       lot
     );
@@ -470,24 +486,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this._initEntryControl(position, orders, operations, source.id);
+    } = this._initEntryControl(position, orders, actualOperations, source.id);
     const out: {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this._initOutControl(position, orders, operations, source.id);
+    } = this._initOutControl(position, orders, actualOperations, source.id);
 
-    // console.log(entry, out);
+    const tempOut: ControlValue[] = this.formArrayOut.value ? this.formArrayOut.value.slice() : [];
 
-    // if (index === 0) {
-    this.formArrayEntry.clear({ emitEvent: false });
-
-    if (
-      this.formArrayOut.value &&
-      this.formArrayOut.value.findIndex((item: ControlValue) => item.status === 0) === -1
-    ) {
-      this.formArrayOut.clear({ emitEvent: false });
-    }
+    this.formArrayEntry.clear({ emitEvent: true });
+    this.formArrayOut.clear();
 
     [...entry.actions, ...entry.orders, ...entry.ideas].forEach((item, index: number) => {
       this.formArrayEntry.setControl(index, new FormControl(item));
@@ -500,38 +509,20 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     }
 
     outControlValues.forEach((item, index: number) => {
-      this.formArrayOut.setControl(index, new FormControl(item));
+      this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: true });
     });
 
-    // return;
-    // }
+    if (outControlValues.length > 0 && outControlValues.length !== tempOut.length) {
+      tempOut.forEach((item, index: number) => {
+        const findIndex = outControlValues.findIndex(
+          (control: ControlValue) => control.lots === item.lots && control.price === item.price
+        );
 
-    // [...entry.actions, ...entry.orders, ...entry.ideas].forEach((item: ControlValue) => {
-    //   const findIndex = (this.formArrayEntry.value as ControlValue[]).findIndex(
-    //     (entryItem: ControlValue) => entryItem.lots === item.lots && entryItem.price === item.price
-    //   );
-    //
-    //   if (findIndex !== -1) {
-    //     this.formArrayEntry.setControl(index, new FormControl(item));
-    //     if (item.lots === 1) {
-    //       console.log(findIndex, item, this.formArrayEntry);
-    //     }
-    //   } else {
-    //     this.formArrayEntry.push(new FormControl(item));
-    //   }
-    // });
-
-    // [...out.actions, ...out.orders, ...out.ideas].forEach((item: ControlValue) => {
-    //   const findIndex = (this.formArrayOut.value as ControlValue[]).findIndex(
-    //     (entryItem: ControlValue) => entryItem.quantity === item.quantity && entryItem.price === item.price
-    //   );
-    //
-    //   if (findIndex !== -1) {
-    //     this.formArrayOut.setControl(findIndex, new FormControl(item));
-    //   } else {
-    //     this.formArrayOut.push(new FormControl(item));
-    //   }
-    // });
+        if (findIndex === -1) {
+          this.formArrayOut.setControl(index, new FormControl(item));
+        }
+      });
+    }
   }
 
   _getDefaultControlValue(position: StockPosition, positionType: 'direct' | 'reverse' = 'direct') {
@@ -585,36 +576,39 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       };
     });
 
-    const ideaControlValues: ControlValue[] = position.idea.entries
-      .filter((item) => !actionQuantity.includes(Math.floor(item.quantity / defaultItem.lot)))
-      .reduce((acc: ControlValue[], item) => {
-        const lots = Math.floor(item.quantity / defaultItem.lot);
+    const ideaControlValues: ControlValue[] =
+      ordersDirection.length > 0 || actionControlValues.length > 0
+        ? []
+        : position.idea.entries
+            .filter((item) => !actionQuantity.includes(Math.floor(item.quantity / defaultItem.lot)))
+            .reduce((acc: ControlValue[], item) => {
+              const lots = Math.floor(item.quantity / defaultItem.lot);
 
-        if (ordersDirection.length > 0) {
-          const findOrder =
-            ordersDirection.find((orderItem: TradeOrder) => {
-              return orderItem.lotsRequested === lots;
-            }) || null;
+              if (ordersDirection.length > 0) {
+                const findOrder =
+                  ordersDirection.find((orderItem: TradeOrder) => {
+                    return orderItem.lotsRequested === lots;
+                  }) || null;
 
-          if (findOrder) {
-            return acc;
-          }
-        }
+                if (findOrder) {
+                  return acc;
+                }
+              }
 
-        acc.push({
-          ...defaultItem,
-          price: item.price,
-          commission: 0,
-          orderId: null,
-          quantity: item.quantity,
-          lots,
-          total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-          orderType: 1,
-          status: 0,
-        });
+              acc.push({
+                ...defaultItem,
+                price: item.price,
+                commission: 0,
+                orderId: null,
+                quantity: item.quantity,
+                lots,
+                total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
+                orderType: 1,
+                status: 0,
+              });
 
-        return acc;
-      }, []);
+              return acc;
+            }, []);
 
     const orderControlValues: ControlValue[] = ordersDirection.map((item) => ({
       ...defaultItem,
@@ -628,8 +622,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
       status: 1,
     }));
-
-    console.log(orderControlValues, ideaControlValues, actionControlValues);
 
     return {
       actions: actionControlValues,
@@ -677,7 +669,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     });
 
     const ideaControlValues: ControlValue[] = position.idea.targets
-      .filter((item) => !actionQuantity.includes(item.amount))
+      // .filter((item) => !actionQuantity.includes(item.amount))
       .reduce((acc: ControlValue[], item) => {
         const lots = Math.floor(item.amount / defaultItem.lot);
 

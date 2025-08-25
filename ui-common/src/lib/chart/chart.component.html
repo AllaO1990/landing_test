@@ -1,9 +1,8 @@
 <div
   class="container"
-  [class.container--update]="isUpdate$ | async"
-  *ngIf="(candles$ | async) as data; else loader">
+  [class.container--update]="isUpdate$ | async">
   <div class="column">
-    <div class="charts">
+    <div class="charts" *ngIf="(candles$ | async) as data; else loader">
       <vt-chart
         (event)="onEvent($event)"
         [data]="data"
