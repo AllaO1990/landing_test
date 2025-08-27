@@ -6,7 +6,7 @@ import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
-import { BehaviorSubject, filter, map, Observable, pairwise, Subject, switchMap, take } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, pairwise, Subject, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue } from '../form/form.types';
@@ -68,14 +68,18 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
           this.formGroup.valueChanges.pipe(
             map((value: { trade: { entry: ControlValue[] } }): ControlValue[] => value.trade.entry),
             pairwise(),
+            // tap(
+            //   ([first, second]: [ControlValue[], ControlValue[]]) =>
+            //     first[0] && second[0] && console.log(first[0].status, second[0].status)
+            // ),
             filter(
               ([first, second]: [ControlValue[], ControlValue[]]) =>
                 first[0] && first[0].status !== 2 && second[0] && second[0].status === 2
             ),
             map((data: [ControlValue[], ControlValue[]]) => data[1])
           )
-        ),
-        take(1)
+        )
+        // take(1)
       )
       .subscribe(() => {
         const {
@@ -90,6 +94,8 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
             instrument.id,
             source.id
           );
+
+          console.log(outOrders);
 
           if (outOrders.length > 0) {
             this.#store.addOrders(outOrders);

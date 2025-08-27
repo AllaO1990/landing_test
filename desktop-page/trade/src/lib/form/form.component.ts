@@ -493,7 +493,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       ideas: ControlValue[];
     } = this._initOutControl(position, orders, actualOperations, source.id);
 
-    const tempOut: ControlValue[] = this.formArrayOut.value ? this.formArrayOut.value.slice() : [];
+    const tempOut: ControlValue[] = this.formArrayOut.value
+      ? this.formArrayOut.value.slice().filter((item: ItemEntry) => item.status === 0)
+      : [];
 
     this.formArrayEntry.clear({ emitEvent: true });
     this.formArrayOut.clear();
@@ -512,7 +514,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: true });
     });
 
-    if (outControlValues.length > 0 && outControlValues.length !== tempOut.length) {
+    if (
+      (outControlValues.length > 0 && outControlValues.length !== tempOut.length) ||
+      (outControlValues.length === 0 && tempOut.length > 0)
+    ) {
       tempOut.forEach((item, index: number) => {
         const findIndex = outControlValues.findIndex(
           (control: ControlValue) => control.lots === item.lots && control.price === item.price

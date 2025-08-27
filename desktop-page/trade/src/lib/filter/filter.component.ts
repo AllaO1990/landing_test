@@ -8,6 +8,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   filter,
+  forkJoin,
   map,
   Observable,
   of,
@@ -26,6 +27,8 @@ import { TradeStore } from '../common/store';
 import {
   TradeAccount,
   TradeAccounts,
+  TradeOrder,
+  TradeOrders,
   TradePortfolio,
   TradeSource,
   TradeSources,
@@ -75,6 +78,7 @@ interface Position {
     TokenButtonComponent,
     TuiButton,
     TuiButtonLoading,
+    TuiTextfield,
   ],
   templateUrl: './filter.component.html',
   styleUrl: './filter.component.scss',
@@ -306,5 +310,27 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
       instrumentId: instrument.id,
       sourceId: source.id,
     });
+
+    this.#store.orders$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((orders: TradeOrders | null) => {
+          if (orders === null) {
+            return of(orders);
+          }
+
+          return forkJoin([
+            orders.map((item: TradeOrder) =>
+              this.#store.removeOrder({
+                accountId: account.accountId,
+                orderId: item.orderId,
+                sourceId: source.id,
+                instrumentId: instrument.id,
+              })
+            ),
+          ]);
+        })
+      )
+      .subscribe();
   }
 }

@@ -1,9 +1,10 @@
 <form class="form" [formGroup]="formGroup">
   <div class="form__row">
     <div class="form__control label">
-    <span class="label__text">
-      Источник
-    </span>
+      <span class="label__text">
+        Источник
+      </span>
+
       <tui-select
         *ngIf="sources$ | async as list; else load"
         class="label__action filter__source"
