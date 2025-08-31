@@ -5,6 +5,9 @@
   <div class="trade__filter">
     <trade-filter formControlName="filter"></trade-filter>
   </div>
+  <div class="trade__details">
+    <trade-details [data]="controlFilter.value"></trade-details>
+  </div>
   <tui-scrollbar class="trade__container">
     <div class="entry">
       <div class="tui-text_h6">Вход</div>

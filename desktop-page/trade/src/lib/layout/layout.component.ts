@@ -6,7 +6,7 @@ import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
-import { BehaviorSubject, filter, map, Observable, pairwise, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, pairwise, startWith, Subject, switchMap, timer } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue } from '../form/form.types';
@@ -30,7 +30,7 @@ import { ControlValue } from '../form/form.types';
 export class LayoutComponent implements AfterViewInit, OnDestroy {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
-  readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(true);
+  readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(false);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   readonly formGroup: FormGroup = new FormGroup({
@@ -66,16 +66,20 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         filter((isSubmitted: boolean) => isSubmitted),
         switchMap(() =>
           this.formGroup.valueChanges.pipe(
+            switchMap((value) => timer(100).pipe(map(() => value))),
+            startWith(this.formGroup.value),
             map((value: { trade: { entry: ControlValue[] } }): ControlValue[] => value.trade.entry),
             pairwise(),
-            // tap(
-            //   ([first, second]: [ControlValue[], ControlValue[]]) =>
-            //     first[0] && second[0] && console.log(first[0].status, second[0].status)
+            // tap(([first, second]: [ControlValue[], ControlValue[]]) =>
+            //   console.log(first, first[0] && first[0].status, second[0] && second[0].status)
             // ),
             filter(
               ([first, second]: [ControlValue[], ControlValue[]]) =>
-                first[0] && first[0].status !== 2 && second[0] && second[0].status === 2
+                (!first[0] || (first[0] && first[0].status !== 2)) && second[0] && second[0].status === 2
             ),
+            // tap(([first, second]: [ControlValue[], ControlValue[]]) =>
+            //   console.log('after filter', first[0] && first[0].status, second, second[0] && second[0].status)
+            // ),
             map((data: [ControlValue[], ControlValue[]]) => data[1])
           )
         )
@@ -94,8 +98,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
             instrument.id,
             source.id
           );
-
-          console.log(outOrders);
 
           if (outOrders.length > 0) {
             this.#store.addOrders(outOrders);

@@ -51,6 +51,7 @@ import { TradeFormService } from './form.service';
 import { TuiItem } from '@taiga-ui/cdk';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { ControlValue } from './form.types';
+import { DetailsComponent } from '../details/details.component';
 
 interface ItemEntry {
   direction: boolean;
@@ -95,6 +96,7 @@ type OrderStatus = 0 | 1 | 2;
     TuiExpand,
     TuiChevron,
     TuiItem,
+    DetailsComponent,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss',
@@ -497,8 +499,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       ? this.formArrayOut.value.slice().filter((item: ItemEntry) => item.status === 0)
       : [];
 
-    this.formArrayEntry.clear({ emitEvent: true });
-    this.formArrayOut.clear();
+    this.formArrayEntry.clear({ emitEvent: false });
+    this.formArrayOut.clear({ emitEvent: false });
 
     [...entry.actions, ...entry.orders, ...entry.ideas].forEach((item, index: number) => {
       this.formArrayEntry.setControl(index, new FormControl(item));
@@ -511,7 +513,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     }
 
     outControlValues.forEach((item, index: number) => {
-      this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: true });
+      this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
     });
 
     if (
@@ -524,10 +526,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         );
 
         if (findIndex === -1) {
-          this.formArrayOut.setControl(index, new FormControl(item));
+          this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
         }
       });
     }
+
+    this.formArrayEntry.patchValue([]);
+    this.formArrayOut.patchValue([]);
   }
 
   _getDefaultControlValue(position: StockPosition, positionType: 'direct' | 'reverse' = 'direct') {

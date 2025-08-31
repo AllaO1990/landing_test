@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
-import { TuiButton, TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield, TuiTitle } from '@taiga-ui/core';
+import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield } from '@taiga-ui/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
@@ -8,7 +8,6 @@ import {
   debounceTime,
   distinctUntilChanged,
   filter,
-  forkJoin,
   map,
   Observable,
   of,
@@ -22,28 +21,16 @@ import {
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { InstrumentComponent } from 'ui-common/lib/instrument/instrument.component';
 import { TradeStore } from '../common/store';
-import {
-  TradeAccount,
-  TradeAccounts,
-  TradeOrder,
-  TradeOrders,
-  TradePortfolio,
-  TradeSource,
-  TradeSources,
-  TradeToken,
-} from '../common/api.types';
-import { TuiButtonLoading, TuiChip } from '@taiga-ui/kit';
+import { TradeAccount, TradeAccounts, TradeSource, TradeSources, TradeToken } from '../common/api.types';
+import { TuiChip } from '@taiga-ui/kit';
 import { StockInstrument, WithLastPrice } from 'types/stock';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { Response } from 'types/response';
-import { TuiCell } from '@taiga-ui/layout';
 import { Params } from '@angular/router';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TokenButtonComponent } from '../token-button/token-button.component';
-import { getNumberPrecision } from 'utils/get-number-precision';
 
 interface Position {
   loading: boolean;
@@ -65,7 +52,6 @@ interface Position {
     NgIf,
     AsyncPipe,
     LoaderComponent,
-    InstrumentComponent,
     NgForOf,
     TuiFormatNumberPipe,
     TuiCurrencyPipe,
@@ -73,11 +59,7 @@ interface Position {
     JsonPipe,
     TuiChip,
     TuiHint,
-    TuiCell,
-    TuiTitle,
     TokenButtonComponent,
-    TuiButton,
-    TuiButtonLoading,
     TuiTextfield,
   ],
   templateUrl: './filter.component.html',
@@ -101,41 +83,11 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
   readonly size = 's';
   readonly idea$: Observable<StockPosition> = this.#idea.idea$;
-  readonly lastPrice$: Observable<null | WithLastPrice> = this.#idea.lastPrice$.pipe(
-    tap((value: null | WithLastPrice) => this.controlLastPrice.patchValue(value))
-  );
   readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.#store.accounts$.pipe(
     filter((data: Response<TradeAccounts | null> | null): data is Response<TradeAccounts | null> => data !== null),
     tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
   );
   readonly token$: Observable<Response<TradeToken | null> | null> = this.#store.token$;
-  readonly portfolio$: Observable<Position | null> = this.#store.portfolio$.pipe(
-    map((portfolio: TradePortfolio | null) => {
-      if (portfolio === null) {
-        return null;
-      }
-
-      const position = portfolio.positions[0];
-
-      if (!position) {
-        return {
-          loading: false,
-          quantity: 0,
-          total: 0,
-          price: 0,
-          currency: 'RUB',
-        };
-      }
-
-      return {
-        loading: false,
-        quantity: position.quantity,
-        total: getNumberPrecision(position.quantity * position.averagePositionPrice.value, 2),
-        price: position.averagePositionPrice.value,
-        currency: position.averagePositionPrice.currency.toUpperCase(),
-      };
-    })
-  );
   readonly sources$: Observable<TradeSources> = this.#store.source$.pipe(
     filter((data: TradeSources | null): data is TradeSources => data !== null)
   );
@@ -206,6 +158,10 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
         distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
       )
       .subscribe((position: StockPosition) => this.controlInstrument.patchValue(position.idea.instrument));
+
+    this.#idea.lastPrice$
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((value: null | WithLastPrice) => this.controlLastPrice.patchValue(value));
 
     this.#idea.loadLastPrice(
       this.#idea.instrument$.pipe(
@@ -292,45 +248,5 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
     b: { accountId: string; instrumentId: string; sourceId: string }
   ): boolean {
     return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
-  }
-
-  onClosePosition(event: Event, position: Position): void {
-    event.preventDefault();
-
-    position.loading = true;
-
-    const { source, instrument, account } = this.formGroup.value;
-
-    this.#store.addOrder({
-      direction: !(position.quantity > 0),
-      orderType: 2,
-      price: position.price,
-      quantity: getNumberPrecision(Math.abs(position.quantity) / instrument.lot, 0),
-      accountId: account.accountId,
-      instrumentId: instrument.id,
-      sourceId: source.id,
-    });
-
-    this.#store.orders$
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        switchMap((orders: TradeOrders | null) => {
-          if (orders === null) {
-            return of(orders);
-          }
-
-          return forkJoin([
-            orders.map((item: TradeOrder) =>
-              this.#store.removeOrder({
-                accountId: account.accountId,
-                orderId: item.orderId,
-                sourceId: source.id,
-                instrumentId: instrument.id,
-              })
-            ),
-          ]);
-        })
-      )
-      .subscribe();
   }
 }

@@ -63,63 +63,6 @@
       <trade-token-button [value]="formGroup.value"></trade-token-button>
     </div>
   </div>
-  @if (controlToken.value) {
-    <div class="form__row description">
-      <lib-instrument
-        class="form__instrument"
-        [data]="controlInstrument.value"></lib-instrument>
-      @if (portfolio$ | async; as position) {
-        <div class="form__row tiles">
-          <div class="form__column" [tuiCell]="size">
-            <div tuiSubtitle>Количество</div>
-            <div class="springy" tuiTitle>
-              {{ position.quantity | tuiFormatNumber | async }} шт.
-            </div>
-          </div>
-          <div class="form__column" [tuiCell]="size">
-            <div tuiSubtitle>Цена за бумагу</div>
-            <div tuiTitle>
-              {{ position.price | tuiFormatNumber | async }}
-              {{ position.currency | tuiCurrency }}
-            </div>
-          </div>
-          <div class="form__column" [tuiCell]="size">
-            <div tuiSubtitle>Стоимость</div>
-            <div tuiTitle>
-              {{ position.total | tuiFormatNumber | async }}
-              {{ position.currency | tuiCurrency }}
-            </div>
-          </div>
-          @if (lastPrice$ | async; as price) {
-            <div class="form__column" [tuiCell]="size">
-              <div tuiSubtitle>Текущая цена</div>
-              <div tuiTitle>
-                {{ price.last | tuiFormatNumber | async }}
-                {{ position.currency | tuiCurrency }}
-              </div>
-            </div>
-          }
-        </div>
-        <div class="space"></div>
-        <div class="form__column">
-          <button
-            (click)="onClosePosition($event, position)"
-            [loading]="position.loading"
-            [disabled]="position.quantity === 0"
-            class="add-from-idea"
-            appearance="outline"
-            tuiAppearanceMode="checked"
-            tuiButton>
-            Закрыть позицию
-          </button>
-        </div>
-      } @else {
-        <div style="width: 10rem">
-          <ui-loader></ui-loader>
-        </div>
-      }
-    </div>
-  }
 </form>
 
 <ng-template #contentSource let-item>
