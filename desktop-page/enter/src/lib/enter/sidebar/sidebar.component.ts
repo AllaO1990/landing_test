@@ -1,4 +1,3 @@
-import { TuiSelectModule, TuiTextareaModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -16,14 +15,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { TuiScrollbar } from '@taiga-ui/core';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { ValidDateComponent } from './valid-date/valid-date.component';
-import { TuiBlock, TuiDataListWrapperComponent } from '@taiga-ui/kit';
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
 import { SIDEBAR_CONSTANTS } from './sidebar.constants';
 import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
-import { TuiStringHandler } from '@taiga-ui/cdk';
 import { StockPosition } from 'types/position';
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
@@ -38,9 +32,14 @@ import {
   Subject,
 } from 'rxjs';
 import { AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
-import { ControlPortfolioComponent } from '../../../../../../ui-common/src/lib/portfolio';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
+import { TuiDataList, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
+import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { ValidDateComponent } from './valid-date/valid-date.component';
+import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
+import { tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 
 type Item = { id: string; name: string };
 
@@ -58,18 +57,19 @@ interface FormValue {
   selector: 'lib-enter-sidebar',
   standalone: true,
   imports: [
-    NgIf,
     ReactiveFormsModule,
-    TuiTextfieldControllerModule,
-    ValidDateComponent,
+    TuiTextarea,
     AsyncPipe,
-    TuiTextareaModule,
-    TuiScrollbar,
-    TuiBlock,
-    NgForOf,
-    TuiDataListWrapperComponent,
-    TuiSelectModule,
+    NgIf,
+    TuiDataListWrapper,
+    TuiSelect,
+    TuiChevron,
+    ValidDateComponent,
     ControlPortfolioComponent,
+    TuiScrollbar,
+    TuiTextfield,
+    TuiDataList,
+    NgForOf,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
@@ -117,7 +117,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   onTouched = () => {};
 
   form: FormGroup = new FormGroup({
-    positionType: new FormControl<null | string>(null),
+    author: new FormControl(null),
+    positionType: new FormControl<null | string>(null, Validators.required),
     expirationDate: new FormControl<null | string>(null),
     strategyId: new FormControl<null | number>(null),
     portfolioId: new FormControl<null | number>(null),
@@ -157,6 +158,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
 
   ngAfterViewInit(): void {
     this._init();
+
+    console.log(this.formGroup);
   }
 
   writeValue(obj: any): void {
@@ -181,7 +184,21 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     this.formControlStrategy[action]();
   }
 
-  readonly stringifyCurrency: TuiStringHandler<AccountCurrency> = (item: AccountCurrency) => item.currencySymbol;
+  readonly stringifyCurrency = (item: AccountCurrency) => item.currencySymbol;
+  readonly stringifyStrategy = (item: AccountStrategy) => item.name;
+
+  @tuiPure
+  stringifyPositionType(items: readonly Item[]): TuiStringHandler<string> {
+    const map = new Map(items.map(({ name, id }) => [id, name] as [string, string]));
+
+    return (d) => {
+      return map.get(d) || '';
+    };
+  }
+
+  readonly identityPositionType = (a: string, b: string) => {
+    return a === b;
+  };
 
   private _init(): void {
     this._controlValue$
@@ -190,7 +207,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
       .subscribe((result) => {
         if (result === null) {
           this.form.reset({
-            positionType: 'long',
+            author: null,
+            positionType: null,
             strategyId: 4,
             instrumentId: null,
             portfolioId: null,
@@ -252,7 +270,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
             this.controlStrategy.patchValue(value.id);
           }
           this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
-          this.controlPositionType[position.idea.id !== null ? 'disable' : 'enable']();
+          this.controlPositionType[position.idea.author === 'bot' ? 'disable' : 'enable']();
+          // this.controlPositionType[position.idea.id !== null ? 'disable' : 'enable']();
 
           if (this.controlPortfolio.value === null) {
             this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });

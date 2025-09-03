@@ -53,6 +53,7 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 import { TUI_CONFIRM } from '@taiga-ui/kit';
 import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
+import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
 
 @Component({
   selector: 'lib-enter-idea',
@@ -71,6 +72,7 @@ import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
     TuiFormatNumberPipe,
     ListComponent,
     LoaderComponent,
+    GetCryptoNumberPipe,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',

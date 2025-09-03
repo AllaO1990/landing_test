@@ -317,6 +317,7 @@ export class VtEnterComponent implements AfterViewInit {
               stop,
             },
             sidebar: {
+              author: result.idea.author,
               strategyId: null,
               positionType: result.idea.positionType,
               expirationDate: null,

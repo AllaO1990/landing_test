@@ -25,20 +25,44 @@
           <!--            [itemContent]="contentPortfolio">-->
           <!--          </tui-data-list-wrapper>-->
           <!--        </tui-select>-->
-          <tui-select
+
+          <!--          <tui-select-->
+          <!--            class="portfolio__currency"-->
+          <!--            *ngIf="currencies$ | async as list"-->
+          <!--            [stringify]="stringifyCurrency"-->
+          <!--            [tuiTextfieldSize]="size"-->
+          <!--            [formControl]="formControlCurrency"-->
+          <!--            [tuiTextfieldLabelOutside]="true">-->
+          <!--            <tui-data-list-wrapper-->
+          <!--              *tuiDataList-->
+          <!--              [size]="size"-->
+          <!--              [items]="list"-->
+          <!--              [itemContent]="contentCurrency">-->
+          <!--            </tui-data-list-wrapper>-->
+          <!--          </tui-select>-->
+
+          <tui-textfield
             class="portfolio__currency"
+            tuiChevron
             *ngIf="currencies$ | async as list"
             [stringify]="stringifyCurrency"
             [tuiTextfieldSize]="size"
-            [formControl]="formControlCurrency"
-            [tuiTextfieldLabelOutside]="true">
+            [tuiTextfieldCleaner]="false"
+          >
+            <input
+              [formControl]="formControlCurrency"
+              placeholder="Валюта"
+              tuiSelect
+            />
+
             <tui-data-list-wrapper
-              *tuiDataList
-              [size]="size"
+              *tuiTextfieldDropdown
+              new
               [items]="list"
-              [itemContent]="contentCurrency">
-            </tui-data-list-wrapper>
-          </tui-select>
+              [itemContent]="contentCurrency"
+            />
+
+          </tui-textfield>
         </div>
       </div>
       <div class="widget__valid-date widget__padding">
@@ -46,36 +70,84 @@
         </lib-enter-sidebar-valid-date>
       </div>
       <div class="widget__implementation widget__padding">
-        <div>
-          <label
-            *ngFor="let item of strategy"
-            class="item"
-            appearance=""
-            [tuiBlock]="size">
-            <input
-              size="s"
-              [formControl]="formControlStrategy"
-              tuiBlock
-              type="radio"
-              [value]="item" />
-            {{ item.name }}
-          </label>
-        </div>
+        <tui-textfield
+          class=""
+          tuiChevron
+          [stringify]="stringifyStrategy"
+          [tuiTextfieldSize]="size"
+          [tuiTextfieldCleaner]="false"
+        >
+          <input
+            [formControl]="formControlStrategy"
+            placeholder="Выбрать стратегию"
+            tuiSelect
+          />
+
+          <tui-data-list-wrapper
+            *tuiTextfieldDropdown
+            new
+            [items]="strategy"
+            [itemContent]="contentStrategy"
+          />
+
+        </tui-textfield>
+        <!--        <div>-->
+        <!--          <label-->
+        <!--            *ngFor="let item of strategy"-->
+        <!--            class="item"-->
+        <!--            appearance=""-->
+        <!--            [tuiBlock]="size">-->
+        <!--            <input-->
+        <!--              size="s"-->
+        <!--              [formControl]="formControlStrategy"-->
+        <!--              tuiBlock-->
+        <!--              type="radio"-->
+        <!--              [value]="item" />-->
+        <!--            {{ item.name }}-->
+        <!--          </label>-->
+        <!--        </div>-->
       </div>
       <div class="widget__strategy widget__padding">
-        <label
-          *ngFor="let item of positionType"
-          class="item"
-          appearance=""
-          [tuiBlock]="size">
+        <tui-textfield
+          class=""
+          tuiChevron
+          [stringify]="stringifyPositionType(positionType)"
+          [identityMatcher]="identityPositionType"
+          [tuiTextfieldSize]="size"
+          [tuiTextfieldCleaner]="false"
+        >
           <input
-            size="s"
             formControlName="positionType"
-            tuiBlock
-            type="radio"
-            [value]="item.id" />
-          {{ item.name }}
-        </label>
+            placeholder="Выбрать тип"
+            tuiSelect
+          />
+
+          <tui-data-list *tuiTextfieldDropdown>
+            <button
+              *ngFor="let item of positionType"
+              new
+              tuiOption
+              type="button"
+              [value]="item.id"
+            >
+              {{ item.name }}
+            </button>
+          </tui-data-list>
+
+        </tui-textfield>
+        <!--        <label-->
+        <!--          *ngFor="let item of positionType"-->
+        <!--          class="item"-->
+        <!--          appearance=""-->
+        <!--          [tuiBlock]="size">-->
+        <!--          <input-->
+        <!--            size="s"-->
+        <!--            formControlName="positionType"-->
+        <!--            tuiBlock-->
+        <!--            type="radio"-->
+        <!--            [value]="item.id" />-->
+        <!--          {{ item.name }}-->
+        <!--        </label>-->
       </div>
       <div class="widget__description description widget__padding">
         <!--        <div class="description__row">-->
@@ -104,9 +176,16 @@
           {{ constants.comment_label }}
         </div>
         <div class="comment__area">
-          <tui-textarea formControlName="comment" tuiTextfieldSize="s">
-            {{ constants.comment_area }}
-          </tui-textarea>
+          <tui-textfield [tuiTextfieldSize]="size" style="min-height: 4rem;">
+            <textarea
+              formControlName="comment"
+              [placeholder]="constants.comment_area"
+              tuiTextarea
+            ></textarea>
+          </tui-textfield>
+          <!--          <tui-textarea formControlName="comment" tuiTextfieldSize="s">-->
+          <!--            {{ constants.comment_area }}-->
+          <!--          </tui-textarea>-->
         </div>
       </div>
       <div class="widget__space"></div>
@@ -118,6 +197,10 @@
   {{ item.currencySymbol }}
 </ng-template>
 
-<ng-template #contentPortfolio let-item>
-  {{ item.portfolio }}
+<ng-template #contentStrategy let-item>
+  {{ item.name }}
+</ng-template>
+
+<ng-template #contentPositionType let-item>
+  {{ item.name }}
 </ng-template>
