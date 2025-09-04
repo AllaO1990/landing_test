@@ -1,0 +1,43 @@
+.form {
+  &__cell {
+    &--currency {
+      flex: 1
+    }
+  }
+
+  &__value {
+    position: relative;
+    flex: 2;
+
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    margin-left: var(--padding-2);
+
+    span {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 32px;
+    }
+
+    ui-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    ui-loader ~ span {
+      filter: blur(2px);
+    }
+  }
+
+  &__control {
+    &:not(:last-child) {
+      margin-bottom: var(--padding-2);
+    }
+  }
+}

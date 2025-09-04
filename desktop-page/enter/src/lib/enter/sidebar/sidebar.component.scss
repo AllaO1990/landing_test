@@ -94,6 +94,12 @@
   line-height: 32px;
 }
 
+.actions {
+  .button:not(:last-child) {
+    margin-right: var(--padding-2);
+  }
+}
+
 .trash {
   color: var(--tui-text-secondary);
 

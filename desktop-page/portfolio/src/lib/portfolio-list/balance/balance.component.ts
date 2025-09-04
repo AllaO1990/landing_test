@@ -8,8 +8,6 @@ import { LoaderComponent } from '@ui/components/loader';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { PortfolioListDialog } from '../dialog';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
-import { DepositComponent } from '../deposit/deposit.component';
-import { WithdrawalComponent } from '../withdrawal/withdrawal.component';
 import { debounceTime, filter, Observable, startWith } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG, DialogService } from '@ui/components/dialog';
@@ -21,6 +19,8 @@ import { TUI_CONFIRM, TuiButtonLoading } from '@taiga-ui/kit';
 import { AccountTransaction, AccountTransactions } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { distinctUntilChanged, map } from 'rxjs/operators';
+import { BalanceDepositService } from 'ui-common/lib/dialog/balance-deposit';
+import { BalanceWithdrawalService } from 'ui-common/lib/dialog/balance-withdrawal';
 
 @Component({
   selector: 'lib-portfolio-list-balance',
@@ -44,6 +44,16 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
   styleUrls: ['../dialog.scss', './balance.component.scss'],
   providers: [
     {
+      provide: BalanceDepositService,
+      useFactory: (dialog: DialogService) => new BalanceDepositService(dialog),
+      deps: [DIALOG],
+    },
+    {
+      provide: BalanceWithdrawalService,
+      useFactory: (dialog: DialogService) => new BalanceWithdrawalService(dialog),
+      deps: [DIALOG],
+    },
+    {
       provide: BalanceStore,
       useFactory: (api: DesktopService) => new BalanceStore(api),
       deps: [DESKTOP_API],
@@ -55,12 +65,11 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 export class BalanceComponent extends PortfolioListDialog implements AfterViewInit {
   readonly #injector: Injector = inject(Injector);
   readonly #dialogService: DialogService = inject(DIALOG);
+  readonly #balanceDepositService: BalanceDepositService = inject(BalanceDepositService);
+  readonly #balanceWithdrawalService: BalanceWithdrawalService = inject(BalanceWithdrawalService);
   readonly #tuiDialog: TuiDialogService = inject(TuiDialogService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: BalanceStore = inject(BalanceStore);
-
-  #dialogDepositComponent: PolymorpheusComponent<DepositComponent> | null = null;
-  #dialogWithdrawalComponent: PolymorpheusComponent<WithdrawalComponent> | null = null;
 
   readonly transactions$: Observable<AccountTransactions | null> = this.#store.list$;
   readonly itemHeight = 28;
@@ -107,33 +116,32 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
   async openDialogDeposit(event: Event): Promise<void> {
     event.preventDefault();
 
-    if (!this.#dialogDepositComponent) {
-      this.#dialogDepositComponent = await import('../deposit/deposit.component')
-        .then((m) => m.DepositComponent)
-        .then((c) => new PolymorpheusComponent(c, this.#injector));
-    }
+    const { broker, portfolio, currency } = this.controlFilter.value;
 
-    this._openDialog(
-      this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
-      { max: null, type: 'deposit' },
-      'Внести средства'
-    ).subscribe(() => this._updateList());
+    this.#balanceDepositService
+      .openDialog(this.#injector, {
+        max: null,
+        label: 'Внести средства',
+        action: 'Пополнить',
+        data: {
+          broker: broker.brokerId !== null ? broker : null,
+          portfolio: portfolio.portfolioId !== null ? portfolio : null,
+          currency: currency.currencyId !== null ? currency : null,
+          type: 'deposit',
+        },
+      })
+      .subscribe(() => this._updateList());
   }
 
   async openDialogExpense(event: Event): Promise<void> {
     event.preventDefault();
 
-    if (!this.#dialogWithdrawalComponent) {
-      this.#dialogWithdrawalComponent = await import('../withdrawal/withdrawal.component')
-        .then((m) => m.WithdrawalComponent)
-        .then((c) => new PolymorpheusComponent(c, this.#injector));
-    }
-
-    this._openDialog(
-      this.#dialogWithdrawalComponent as PolymorpheusComponent<WithdrawalComponent>,
-      { max: true },
-      'Вывести средства'
-    ).subscribe(() => this._updateList());
+    this.#balanceWithdrawalService
+      .openDialog(this.#injector, {
+        max: true,
+        label: 'Вывести средства',
+      })
+      .subscribe(() => this._updateList());
   }
 
   onDelete(event: Event, item: AccountTransaction & { loadingRemove: boolean }): void {
@@ -161,18 +169,17 @@ export class BalanceComponent extends PortfolioListDialog implements AfterViewIn
   async onEdit(event: Event, item: AccountTransaction): Promise<void> {
     event.preventDefault();
 
-    if (!this.#dialogDepositComponent) {
-      this.#dialogDepositComponent = await import('../deposit/deposit.component')
-        .then((m) => m.DepositComponent)
-        .then((c) => new PolymorpheusComponent(c, this.#injector));
-    }
-
-    this._openDialog(
-      this.#dialogDepositComponent as PolymorpheusComponent<DepositComponent>,
-      { max: null, ...item, type: 'edit' },
-      'Изменить',
-      'Обновить'
-    ).subscribe(() => this._updateList());
+    this.#balanceDepositService
+      .openDialog(this.#injector, {
+        data: {
+          ...item,
+          type: 'edit',
+        },
+        max: null,
+        label: 'Изменить',
+        action: 'Обновить',
+      })
+      .subscribe(() => this._updateList());
   }
 
   private _openDialog(

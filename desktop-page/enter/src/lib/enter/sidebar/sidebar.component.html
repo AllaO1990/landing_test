@@ -72,7 +72,31 @@
               Баланс
             </div>
             <div class="description__text deposit">
-              {{ balance.deposit }} {{ balance.currencySymbol }}
+              {{
+                balance.deposit | tuiFormatNumber: {
+                  precision: 2,
+                  decimalMode: 'always'
+                } | async
+              }} {{ balance.currencySymbol }}
+            </div>
+            <div class="space"></div>
+            <div class="actions">
+              <button
+                class="button button--in"
+                tuiButton
+                iconStart="@tui.circle-arrow-down"
+                [size]="size"
+                (click)="openDialogDeposit($event)"
+                type="button">Внести
+              </button>
+              <button
+                class="button button--out"
+                tuiButton
+                iconStart="@tui.circle-arrow-up"
+                [size]="size"
+                (click)="openDialogExpense($event)"
+                type="button">Вывести
+              </button>
             </div>
           </div>
         </div>

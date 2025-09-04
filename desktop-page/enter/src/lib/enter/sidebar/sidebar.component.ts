@@ -5,7 +5,9 @@ import {
   DestroyRef,
   forwardRef,
   inject,
+  Injector,
   Input,
+  OnDestroy,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -21,6 +23,7 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { StockPosition } from 'types/position';
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
+  BehaviorSubject,
   combineLatest,
   debounceTime,
   distinctUntilChanged,
@@ -34,7 +37,7 @@ import {
 import { AccountBalance, AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { TuiDataList, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { ValidDateComponent } from './valid-date/valid-date.component';
@@ -44,6 +47,9 @@ import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { endOfMonth } from 'date-fns/endOfMonth';
+import { BalanceDepositService } from 'ui-common/lib/dialog/balance-deposit';
+import { DIALOG, DialogService } from '@ui/components/dialog';
+import { BalanceWithdrawalService } from 'ui-common/lib/dialog/balance-withdrawal';
 
 type Item = { id: string; name: string };
 
@@ -74,6 +80,8 @@ interface FormValue {
     TuiTextfield,
     TuiDataList,
     NgForOf,
+    TuiFormatNumberPipe,
+    TuiButton,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
@@ -83,11 +91,25 @@ interface FormValue {
       useExisting: forwardRef(() => EnterSidebarComponent),
       multi: true,
     },
+    {
+      provide: BalanceDepositService,
+      useFactory: (dialog: DialogService) => new BalanceDepositService(dialog),
+      deps: [DIALOG],
+    },
+    {
+      provide: BalanceWithdrawalService,
+      useFactory: (dialog: DialogService) => new BalanceWithdrawalService(dialog),
+      deps: [DIALOG],
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnterSidebarComponent implements ControlValueAccessor, AfterViewInit {
+export class EnterSidebarComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
+  readonly #injector: Injector = inject(Injector);
+  readonly #balanceDepositService: BalanceDepositService = inject(BalanceDepositService);
+  readonly #balanceWithdrawalService: BalanceWithdrawalService = inject(BalanceWithdrawalService);
   readonly #servicePortfolioFacade: PortfolioFacade = inject(PortfolioFacade);
+  readonly #loadBalance$: Subject<void> = new BehaviorSubject<void>(void 0);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
@@ -166,12 +188,16 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   ngAfterViewInit(): void {
     this._init();
 
-    this.controlPortfolio.valueChanges
+    combineLatest([
+      this.controlPortfolio.valueChanges.pipe(
+        filter((value: null | number): value is number => value !== null),
+        distinctUntilChanged()
+      ),
+      this.#loadBalance$.asObservable(),
+    ])
       .pipe(
         takeUntilDestroyed(this._destroyRef),
-        filter((value: null | number): value is number => value !== null),
-        distinctUntilChanged(),
-        map((value: number) => {
+        map(([value]: [number, void]) => {
           const date = new Date();
           return {
             brokerId: null,
@@ -186,9 +212,12 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
         })
       )
       .subscribe((params: Params) => {
-        console.log(params);
         this.#servicePortfolioFacade.loadBalance(params);
       });
+  }
+
+  ngOnDestroy(): void {
+    this.#loadBalance$.complete();
   }
 
   writeValue(obj: any): void {
@@ -354,5 +383,45 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     }
 
     return list.find((item: AccountStrategy) => item.key === strategy.type) || null;
+  }
+
+  openDialogDeposit(event: Event): void {
+    event.preventDefault();
+
+    this.#balanceDepositService
+      .openDialog(this.#injector, {
+        data: {
+          type: 'deposit',
+          portfolio: this.formControlPortfolio.value,
+          currency: this.formControlCurrency.value,
+        },
+        max: null,
+        label: 'Внести средства',
+        action: 'Пополнить',
+      })
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((value) => {
+        if (value) {
+          this.#loadBalance$.next();
+        }
+        console.log(value);
+      });
+  }
+
+  openDialogExpense(event: Event): void {
+    event.preventDefault();
+
+    this.#balanceWithdrawalService
+      .openDialog(this.#injector, {
+        max: true,
+        label: 'Вывести средства',
+        data: {
+          type: 'deposit',
+          portfolio: this.formControlPortfolio.value,
+          currencySymbol: this.formControlCurrency.value,
+        },
+      })
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((value) => console.log(value));
   }
 }
