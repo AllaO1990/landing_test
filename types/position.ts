@@ -77,7 +77,7 @@ export interface StockPosition {
     lastPrice: number;
     portfolioId: null | number;
     minPriceIncrement: number;
-    positionType: string;
+    positionType: string | null;
     result: {
       profitPercent: number;
       profitPrice: number;

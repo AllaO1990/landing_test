@@ -65,6 +65,18 @@
           </tui-textfield>
         </div>
       </div>
+      @if (balance$ | async; as balance) {
+        <div class="widget__implementation description widget__padding">
+          <div class="description__row">
+            <div class="description__label">
+              Баланс
+            </div>
+            <div class="description__text deposit">
+              {{ balance.deposit }} {{ balance.currencySymbol }}
+            </div>
+          </div>
+        </div>
+      }
       <div class="widget__valid-date widget__padding">
         <lib-enter-sidebar-valid-date formControlName="expirationDate">
         </lib-enter-sidebar-valid-date>

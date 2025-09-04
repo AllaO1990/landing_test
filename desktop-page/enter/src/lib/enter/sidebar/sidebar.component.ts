@@ -31,7 +31,7 @@ import {
   startWith,
   Subject,
 } from 'rxjs';
-import { AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
+import { AccountBalance, AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TuiDataList, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
@@ -40,6 +40,10 @@ import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { ValidDateComponent } from './valid-date/valid-date.component';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
 import { tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
+import { PortfolioFacade } from 'stores/facades/portfolio.facade';
+import { Params } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { endOfMonth } from 'date-fns/endOfMonth';
 
 type Item = { id: string; name: string };
 
@@ -83,6 +87,7 @@ interface FormValue {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterSidebarComponent implements ControlValueAccessor, AfterViewInit {
+  readonly #servicePortfolioFacade: PortfolioFacade = inject(PortfolioFacade);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _accountStore: AccountFacade = inject(AccountFacade);
@@ -103,12 +108,14 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   );
   readonly portfolio$: Observable<AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
     filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null),
+    filter((portfolio: AccountPortfolio[]) => !!portfolio.length),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly idea$: Observable<StockPosition> = this._idea.idea$.pipe(
     filter((position: StockPosition | null): position is StockPosition => position !== null),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
+  readonly balance$: Observable<null | AccountBalance> = this.#servicePortfolioFacade.balance$;
 
   isDisabled = false;
   value: any = null;
@@ -120,8 +127,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     author: new FormControl(null),
     positionType: new FormControl<null | string>(null, Validators.required),
     expirationDate: new FormControl<null | string>(null),
-    strategyId: new FormControl<null | number>(null),
-    portfolioId: new FormControl<null | number>(null),
+    strategyId: new FormControl<null | number>(null, Validators.required),
+    portfolioId: new FormControl<null | number>(null, Validators.required),
     comment: new FormControl<string>(''),
     instrumentId: new FormControl<null | number>(null),
     parentId: new FormControl<null | number>(null),
@@ -159,7 +166,29 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
   ngAfterViewInit(): void {
     this._init();
 
-    console.log(this.formGroup);
+    this.controlPortfolio.valueChanges
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        filter((value: null | number): value is number => value !== null),
+        distinctUntilChanged(),
+        map((value: number) => {
+          const date = new Date();
+          return {
+            brokerId: null,
+            currencyId: 1,
+            from: new Date(new Date(date.getFullYear(), date.getMonth(), 1, 23).setUTCHours(0, 0, 0, 0)).toISOString(),
+            instrumentType: 0,
+            leadToCurrency: 'rub',
+            portfolioId: value,
+            strategyId: null,
+            to: new Date(endOfMonth(new Date()).setUTCHours(23, 59, 59, 0)).toISOString(),
+          };
+        })
+      )
+      .subscribe((params: Params) => {
+        console.log(params);
+        this.#servicePortfolioFacade.loadBalance(params);
+      });
   }
 
   writeValue(obj: any): void {

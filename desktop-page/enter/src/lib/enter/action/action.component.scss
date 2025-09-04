@@ -84,6 +84,10 @@ form {
   height: 32px;
   margin: var(--padding-2);
 
+  &--half {
+    height: 8px;
+  }
+
   .button {
     min-width: 150px;
   }

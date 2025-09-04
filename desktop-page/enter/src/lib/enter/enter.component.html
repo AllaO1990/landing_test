@@ -3,6 +3,32 @@
   <div class="container__toolbar">
     <div class="container__actions">
       <ng-container *ngIf="(data$ | async) as result; else load">
+        <lib-instrument
+          [data]="result.idea.instrument">
+        </lib-instrument>
+        <div class="date-start" *ngIf="result.idea.createdAt">
+          Идея от
+          <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
+        </div>
+        <tui-icon
+          class="author"
+          icon="@tui.{{ result.idea.author === 'bot' ? 'bot' : 'user' }}"></tui-icon>
+        <div class="space"></div>
+        <button
+          class="action bell"
+          tuiButton
+          appearance="primary"
+          libEnterSubscribe
+          [loading]="controlWatch.value === null"
+          [isSubscribe]="controlWatch.value"
+          (isSubscribeChanged)="onSubscribe($event)"
+          [ideaId]="result.idea.id"
+          [size]="size"
+          [disabled]="controlWatch.value === null"
+          type="button"
+          [iconStart]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'">
+          {{ controlWatch.value ? 'Отслеживать' : 'Не отслеживать' }}
+        </button>
         <button
           class="action"
           tuiIconButton
@@ -25,20 +51,6 @@
           iconStart="@tui.save"
         ></button>
         <button
-          class="action bell"
-          tuiIconButton
-          appearance="primary"
-          libEnterSubscribe
-          [loading]="controlWatch.value === null"
-          [isSubscribe]="controlWatch.value"
-          (isSubscribeChanged)="onSubscribe($event)"
-          [ideaId]="result.idea.id"
-          [size]="size"
-          [disabled]="controlWatch.value === null"
-          type="button"
-          [iconStart]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'"
-        ></button>
-        <button
           *ngIf="isShowSearch$ | async"
           class="search"
           tuiIconButton
@@ -52,17 +64,9 @@
           (selected)="onSearch($event)"
           iconStart="@tui.search"
         ></button>
-        <div class="container__space container__space--first"></div>
-        <lib-instrument
-          [data]="result.idea.instrument">
-        </lib-instrument>
-        <div class="container__space"></div>
-        <div class="date-start" *ngIf="result.idea.createdAt">
-          Идея от
-          <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
-        </div>
       </ng-container>
       <button
+        style="margin-left: var(--padding-4)"
         appearance="icon"
         iconStart="@tui.x"
         tuiIconButton
@@ -81,53 +85,6 @@
         [formGroup]="form"
         [formControl]="controlSidebar">
       </lib-enter-sidebar>
-    </div>
-    <div class="container__submit container__widget">
-      <div class="submit" *ngIf="(data$ | async) as result; else load">
-        <button
-          class="action subscribe"
-          appearance="secondary"
-          tuiButton
-          type="button"
-          libEnterSubscribe
-          [loading]="controlWatch.value === null"
-          [isSubscribe]="controlWatch.value"
-          (isSubscribeChanged)="onSubscribe($event)"
-          [ideaId]="result.idea.id"
-          [disabled]="controlWatch.value === null"
-          [size]="size">
-          <tui-icon [icon]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'"></tui-icon>
-          <span class="action__text">
-            {{ controlWatch.value ? 'Отслеживать' : 'Не отслеживать' }}
-          </span>
-        </button>
-        <button
-          class="action save"
-          [appearance]="form.pristine || (isDisabled$ | async)  ? 'secondary' : 'primary'"
-          tuiButton
-          type="button"
-          [disabled]="form.pristine || (isDisabled$ | async)"
-          [loading]="isLoading$ | async"
-          (click)="onSubmit($event, result.idea.id)"
-          [size]="size">
-          <tui-icon icon="@tui.save"></tui-icon>
-          <span class="action__text">
-          Сохранить
-          </span>
-        </button>
-        <button
-          class="action trash"
-          appearance="flat"
-          tuiButton
-          [size]="size"
-          (click)="onDelete($event, result.idea.id)"
-          type="button">
-          <tui-icon icon="@tui.trash"></tui-icon>
-          <span class="action__text">
-          Удалить идею
-          </span>
-        </button>
-      </div>
     </div>
     <div class="container__chart container__widget">
       <div class="widget">
@@ -179,7 +136,7 @@
           <button
             class="header__action header__action--right"
             tuiButton
-            appearance="primary"
+            appearance="secondary"
             size="xs"
             type="button"
             [disabled]="isDisableTrade$ | async"

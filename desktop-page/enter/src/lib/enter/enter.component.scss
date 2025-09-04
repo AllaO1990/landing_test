@@ -6,6 +6,10 @@
   background-color: var(--block-bg-color);
 }
 
+lib-instrument {
+  margin-right: var(--padding-4);
+}
+
 .container {
   display: flex;
   flex-flow: column nowrap;
@@ -71,10 +75,6 @@
     height: 60px;
 
     box-shadow: var(--tui-shadow-medium);
-  }
-
-  &__space {
-    flex: 1;
   }
 
   &__sidebar, &__chart, &__idea, &__action {
@@ -154,12 +154,35 @@
   }
 }
 
+.author {
+  font-size: 1rem;
+
+  color: var(--tui-text-secondary);
+}
+
 .date-start {
+  display: flex;
+  align-items: center;
+
   font-size: 11px;
   line-height: 13px;
   font-weight: 300;
 
   color: var(--tui-text-secondary);
+
+  span {
+    margin-left: var(--padding-1);
+  }
+
+  &:after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 2rem;
+
+    background-color: var(--main-bg-color);
+    margin: 0 var(--padding-2);
+  }
 }
 
 .header {
@@ -298,17 +321,6 @@
 @media screen and (min-width: 1440px) {
   .container {
 
-    &__actions {
-      .action {
-        display: none;
-      }
-    }
-
-    &__space--first {
-      flex: 0 0 auto;
-      width: var(--padding-2);
-    }
-
     &__widget-list {
       display: grid;
 
@@ -319,7 +331,7 @@
     }
 
     &__sidebar {
-      grid-row: 1 / 4;
+      grid-row: 1 / 5;
       grid-column: 1;
     }
 

@@ -44,7 +44,9 @@ export class IdeaFacade {
         return this._store.account.portfolios$.pipe(
           filter((list: null | AccountPortfolio[]): list is AccountPortfolio[] => list !== null),
           map((list: AccountPortfolio[]) => {
-            position.idea.portfolioId = list[0].portfolioId;
+            if (list.length) {
+              position.idea.portfolioId = list[0].portfolioId;
+            }
 
             return position;
           })
@@ -102,7 +104,7 @@ const DEFAULT_IDEA = {
     portfolioId: null,
     lastPrice: 0,
     minPriceIncrement: 0.00000001,
-    positionType: 'long',
+    positionType: null,
     result: {
       profitPercent: 0,
       profitPrice: 0,
