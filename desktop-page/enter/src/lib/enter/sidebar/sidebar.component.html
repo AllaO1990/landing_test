@@ -65,42 +65,45 @@
           </tui-textfield>
         </div>
       </div>
-      @if (balance$ | async; as balance) {
-        <div class="widget__implementation description widget__padding">
-          <div class="description__row">
-            <div class="description__label">
-              Баланс
-            </div>
-            <div class="description__text deposit">
+
+      <div class="widget__implementation description widget__padding">
+        <div class="description__row">
+          <div class="description__label">
+            Баланс
+          </div>
+          <div class="description__text deposit" @opacityAnimations>
+            @if (balance$ | async; as balance) {
               {{
                 balance.deposit | tuiFormatNumber: {
                   precision: 2,
                   decimalMode: 'always'
                 } | async
               }} {{ balance.currencySymbol }}
-            </div>
-            <div class="space"></div>
-            <div class="actions">
-              <button
-                class="button button--in"
-                tuiButton
-                iconStart="@tui.circle-arrow-down"
-                [size]="size"
-                (click)="openDialogDeposit($event)"
-                type="button">Внести
-              </button>
-              <button
-                class="button button--out"
-                tuiButton
-                iconStart="@tui.circle-arrow-up"
-                [size]="size"
-                (click)="openDialogExpense($event)"
-                type="button">Вывести
-              </button>
-            </div>
+            }
+          </div>
+          <div class="space"></div>
+          <div class="actions">
+            <button
+              class="button button--in"
+              tuiButton
+              iconStart="@tui.circle-arrow-down"
+              [size]="size"
+              [disabled]="!(balance$ | async)"
+              (click)="openDialogDeposit($event)"
+              type="button">Внести
+            </button>
+            <button
+              class="button button--out"
+              tuiButton
+              iconStart="@tui.circle-arrow-up"
+              [size]="size"
+              [disabled]="!(balance$ | async)"
+              (click)="openDialogExpense($event)"
+              type="button">Вывести
+            </button>
           </div>
         </div>
-      }
+      </div>
       <div class="widget__valid-date widget__padding">
         <lib-enter-sidebar-valid-date formControlName="expirationDate">
         </lib-enter-sidebar-valid-date>

@@ -123,7 +123,7 @@ export class WithdrawalComponent extends DialogCore implements AfterViewInit {
     map(([portfolio, brokerId, currencyId]: any[]) => ({ brokerId, currencyId, portfolioId: portfolio.portfolioId })),
     switchMap((params: Params) => this.getBalance(params)),
     tap(() => this.isLoadValue$.next(false)),
-    tap(() => this.form.patchValue({ amount: null })),
+    // tap(() => this.form.patchValue({ amount: null })),
     shareReplay({ bufferSize: 1, refCount: true })
   );
   readonly balance$: Observable<null | number> = this.value$.pipe(map((value: { balance: number }) => value.balance));
@@ -159,9 +159,12 @@ export class WithdrawalComponent extends DialogCore implements AfterViewInit {
     this.#api
       .subToAccountDeposit(params)
       .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe((_) => this.#updateBalance$.next(undefined));
+      .subscribe((value) => {
+        this.context.completeWith(value);
+        this.#updateBalance$.next(undefined);
+      });
 
-    this.form.patchValue({ amount: null });
+    // this.form.patchValue({ amount: null });
   }
 
   @tuiPure

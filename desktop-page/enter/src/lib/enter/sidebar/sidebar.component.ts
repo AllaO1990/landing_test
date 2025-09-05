@@ -50,6 +50,7 @@ import { endOfMonth } from 'date-fns/endOfMonth';
 import { BalanceDepositService } from 'ui-common/lib/dialog/balance-deposit';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { BalanceWithdrawalService } from 'ui-common/lib/dialog/balance-withdrawal';
+import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 
 type Item = { id: string; name: string };
 
@@ -102,6 +103,7 @@ interface FormValue {
       deps: [DIALOG],
     },
   ],
+  animations: [triggerOpacityAnimations()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterSidebarComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
@@ -137,7 +139,9 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     filter((position: StockPosition | null): position is StockPosition => position !== null),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
-  readonly balance$: Observable<null | AccountBalance> = this.#servicePortfolioFacade.balance$;
+  readonly balance$: Observable<null | AccountBalance> = this.#servicePortfolioFacade.balance$.pipe(
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   isDisabled = false;
   value: any = null;
@@ -418,10 +422,14 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
         data: {
           type: 'deposit',
           portfolio: this.formControlPortfolio.value,
-          currencySymbol: this.formControlCurrency.value,
+          currency: this.formControlCurrency.value,
         },
       })
       .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((value) => console.log(value));
+      .subscribe((value) => {
+        if (value) {
+          this.#loadBalance$.next();
+        }
+      });
   }
 }
