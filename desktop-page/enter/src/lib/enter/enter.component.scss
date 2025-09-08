@@ -174,24 +174,19 @@ lib-instrument {
 
   color: var(--tui-text-secondary);
 
+  padding-right: var(--padding-2);
+
   span {
     margin-left: var(--padding-1);
   }
 
-  &:after, &:before {
+  &:before {
     content: '';
     display: block;
     width: 1px;
     height: 2rem;
 
     background-color: var(--main-bg-color);
-  }
-
-  &:after {
-    margin: 0 var(--padding-2);
-  }
-
-  &:before {
     margin-right: var(--padding-2);
   }
 }
