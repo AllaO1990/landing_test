@@ -10,9 +10,19 @@
           Идея от
           <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
         </div>
-        <tui-icon
-          class="author"
-          icon="@tui.{{ result.idea.author === 'bot' ? 'bot' : 'user' }}"></tui-icon>
+        @if (result.idea.author === 'bot') {
+          <img
+            class="idea__icon"
+            src="/assets/icons/vanya.svg"
+            alt="Идея"
+          />
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        }
         <div class="space"></div>
         <button
           class="action bell"
@@ -27,7 +37,7 @@
           [disabled]="controlWatch.value === null"
           type="button"
           [iconStart]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'">
-          {{ controlWatch.value ? 'Отслеживать' : 'Не отслеживать' }}
+          {{ controlWatch.value ? 'Отслеживается' : 'Не отслеживается' }}
         </button>
         <button
           class="action"

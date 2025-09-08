@@ -200,12 +200,14 @@
         tuiIconButton
         [loading]="item.change"
         (click)="onEdit($event, item, index, control)"
+        [disabled]="item.change || item.removed"
         size="xs"
         type="button"
       ></button>
       <button
         (click)="onRemove($event, item, index, control)"
         [loading]="item.removed"
+        [disabled]="item.change || item.removed"
         appearance="icon"
         iconStart="@tui.x"
         tuiIconButton

@@ -152,6 +152,17 @@ export class VtEnterComponent implements AfterViewInit {
     optional: true,
   });
 
+  readonly subscribeButton = {
+    true: {
+      name: 'Отслеживается',
+      icon: '@tui.bell',
+    },
+    false: {
+      name: 'Не отслеживается',
+      icon: '@tui.bell-off',
+    },
+  };
+
   readonly isDisableTrade$: Observable<boolean> = this._idea.instrument$.pipe(
     switchMap((instrument: StockInstrument | null) => {
       if (instrument && instrument.source === 'binance') {

@@ -8,6 +8,10 @@
 
 lib-instrument {
   margin-right: var(--padding-4);
+
+  width: 317px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .container {
@@ -174,14 +178,21 @@ lib-instrument {
     margin-left: var(--padding-1);
   }
 
-  &:after {
+  &:after, &:before {
     content: '';
     display: block;
     width: 1px;
     height: 2rem;
 
     background-color: var(--main-bg-color);
+  }
+
+  &:after {
     margin: 0 var(--padding-2);
+  }
+
+  &:before {
+    margin-right: var(--padding-2);
   }
 }
 

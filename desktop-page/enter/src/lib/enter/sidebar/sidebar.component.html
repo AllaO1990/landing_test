@@ -11,35 +11,6 @@
             [items]="portfolio$ | async"
             [formControl]="formControlPortfolio">
           </lib-control-portfolio>
-          <!--        <tui-select-->
-          <!--          class="portfolio__select"-->
-          <!--          *ngIf="portfolio$ | async as list"-->
-          <!--          [stringify]="stringifyPortfolio"-->
-          <!--          [tuiTextfieldSize]="size"-->
-          <!--          [formControl]="formControlPortfolio"-->
-          <!--          [tuiTextfieldLabelOutside]="true">-->
-          <!--          <tui-data-list-wrapper-->
-          <!--            *tuiDataList-->
-          <!--            [size]="size"-->
-          <!--            [items]="list"-->
-          <!--            [itemContent]="contentPortfolio">-->
-          <!--          </tui-data-list-wrapper>-->
-          <!--        </tui-select>-->
-
-          <!--          <tui-select-->
-          <!--            class="portfolio__currency"-->
-          <!--            *ngIf="currencies$ | async as list"-->
-          <!--            [stringify]="stringifyCurrency"-->
-          <!--            [tuiTextfieldSize]="size"-->
-          <!--            [formControl]="formControlCurrency"-->
-          <!--            [tuiTextfieldLabelOutside]="true">-->
-          <!--            <tui-data-list-wrapper-->
-          <!--              *tuiDataList-->
-          <!--              [size]="size"-->
-          <!--              [items]="list"-->
-          <!--              [itemContent]="contentCurrency">-->
-          <!--            </tui-data-list-wrapper>-->
-          <!--          </tui-select>-->
 
           <tui-textfield
             class="portfolio__currency"
@@ -81,7 +52,9 @@
               }} {{ balance.currencySymbol }}
             }
           </div>
-          <div class="space"></div>
+        </div>
+        <div class="description__row">
+          <!--          <div class="space"></div>-->
           <div class="actions">
             <button
               class="button button--in"
@@ -130,21 +103,6 @@
           />
 
         </tui-textfield>
-        <!--        <div>-->
-        <!--          <label-->
-        <!--            *ngFor="let item of strategy"-->
-        <!--            class="item"-->
-        <!--            appearance=""-->
-        <!--            [tuiBlock]="size">-->
-        <!--            <input-->
-        <!--              size="s"-->
-        <!--              [formControl]="formControlStrategy"-->
-        <!--              tuiBlock-->
-        <!--              type="radio"-->
-        <!--              [value]="item" />-->
-        <!--            {{ item.name }}-->
-        <!--          </label>-->
-        <!--        </div>-->
       </div>
       <div class="widget__strategy widget__padding">
         <tui-textfield
@@ -174,19 +132,14 @@
           </tui-data-list>
 
         </tui-textfield>
-        <!--        <label-->
-        <!--          *ngFor="let item of positionType"-->
-        <!--          class="item"-->
-        <!--          appearance=""-->
-        <!--          [tuiBlock]="size">-->
-        <!--          <input-->
-        <!--            size="s"-->
-        <!--            formControlName="positionType"-->
-        <!--            tuiBlock-->
-        <!--            type="radio"-->
-        <!--            [value]="item.id" />-->
-        <!--          {{ item.name }}-->
-        <!--        </label>-->
+      </div>
+      <div class="widget__description description widget__padding">
+        <div class="description__row">
+          <div class="description__label">
+            Успешность
+          </div>
+          <div class="description__text">80%</div>
+        </div>
       </div>
       <div class="widget__description description widget__padding">
         <!--        <div class="description__row">-->

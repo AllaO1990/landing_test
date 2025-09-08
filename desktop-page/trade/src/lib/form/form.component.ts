@@ -160,7 +160,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly itemHeight = 28;
 
   readonly idea$: Observable<StockPosition> = this.#idea.idea$;
-  readonly orders$: Observable<TradeOrders | null> = this.#store.orders$;
+  readonly orders$: Observable<TradeOrders | null> = this.#store.orders$.pipe(
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
   readonly operations$: Observable<TradeOperations | null> = this.#store.operations$;
 
   readonly listEntry$: Observable<ItemEntry[]> = timer(500).pipe(
@@ -202,7 +204,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       this.idea$,
       this.orders$.pipe(
         filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
-        distinctUntilChanged((a, b) => a.length === b.length)
+        distinctUntilChanged((a, b) => this._distinctOrders(a, b))
       ),
       this.operations$.pipe(
         filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null),
@@ -376,6 +378,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           calcValue = {
             ...calcValue,
             ...value,
+            change: item.status === 1,
             total: getNumberPrecision(value.price * value.lots * item.lot, 2),
           };
 
@@ -747,6 +750,20 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       orders: orderControlValues,
       operations: operationControlValues,
     };
+  }
+
+  private _distinctOrders(a: TradeOrders, b: TradeOrders): boolean {
+    if (a.length !== b.length) {
+      return false;
+    }
+
+    return a.every((item: TradeOrder, index: number) => {
+      return (
+        item.lotsRequested === b[index].lotsRequested &&
+        item.orderType === b[index].orderType &&
+        item.averagePositionPrice.value === b[index].averagePositionPrice.value
+      );
+    });
   }
 
   private _getOperationControlValues(
