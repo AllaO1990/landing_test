@@ -64,6 +64,7 @@ import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { EnterFinishComponent } from './finish/finish.component';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { Params } from '@angular/router';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -101,7 +102,9 @@ function maxAmount(): ValidatorFn {
         0
       );
 
-    return entries[0].quantity !== targetsAmount ? { maxAmount: true } : null;
+    return getNumberPrecision(entries[0].quantity, 2) !== getNumberPrecision(targetsAmount, 2)
+      ? { maxAmount: true }
+      : null;
   };
 }
 
