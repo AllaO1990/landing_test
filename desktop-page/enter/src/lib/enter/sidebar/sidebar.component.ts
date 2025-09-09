@@ -331,15 +331,22 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
           if (this.controlStrategy.value === null) {
             this.controlStrategy.patchValue(value.id);
           }
+
           this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
           this.controlPositionType[position.idea.author === 'bot' ? 'disable' : 'enable']();
-          // this.controlPositionType[position.idea.id !== null ? 'disable' : 'enable']();
+
+          // this.controlStrategy[position.idea.parentId === null ? 'enable' : 'disable']({ onlySelf: true });          // this.controlPositionType[position.idea.id !== null ? 'disable' : 'enable']();
 
           if (this.controlPortfolio.value === null) {
             this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
           }
 
           this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
+
+          if (this.formControlStrategy.enabled && position.idea.parentId !== null) {
+            this.formControlStrategy.disable();
+          }
+
           this.formControlPortfolio.patchValue(portfolio, { emitEvent: false, onlySelf: true });
           this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
         }

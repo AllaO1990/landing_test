@@ -352,8 +352,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
               },
             ];
 
-            console.log(data);
-
             this._updateFormArray('stop', data, true);
           }
 
