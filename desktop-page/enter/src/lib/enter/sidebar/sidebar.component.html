@@ -82,27 +82,32 @@
         </lib-enter-sidebar-valid-date>
       </div>
       <div class="widget__implementation widget__padding">
-        <tui-textfield
-          class=""
-          tuiChevron
-          [stringify]="stringifyStrategy"
-          [tuiTextfieldSize]="size"
-          [tuiTextfieldCleaner]="false"
-        >
-          <input
-            [formControl]="formControlStrategy"
-            placeholder="Выбрать стратегию"
-            tuiSelect
-          />
+        <div class="comment__label">
+          Стратегия
+        </div>
+        <div class="comment__area">
+          <tui-textfield
+            class=""
+            tuiChevron
+            [stringify]="stringifyStrategy"
+            [tuiTextfieldSize]="size"
+            [tuiTextfieldCleaner]="false"
+          >
+            <input
+              [formControl]="formControlStrategy"
+              placeholder="Выбрать стратегию"
+              tuiSelect
+            />
 
-          <tui-data-list-wrapper
-            *tuiTextfieldDropdown
-            new
-            [items]="strategy"
-            [itemContent]="contentStrategy"
-          />
+            <tui-data-list-wrapper
+              *tuiTextfieldDropdown
+              new
+              [items]="strategy"
+              [itemContent]="contentStrategy"
+            />
 
-        </tui-textfield>
+          </tui-textfield>
+        </div>
       </div>
       <div class="widget__strategy widget__padding">
         <tui-textfield

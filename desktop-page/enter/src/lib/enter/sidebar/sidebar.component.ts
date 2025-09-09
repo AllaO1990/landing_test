@@ -10,11 +10,14 @@ import {
   OnDestroy,
 } from '@angular/core';
 import {
+  AbstractControl,
   ControlValueAccessor,
   FormControl,
   FormGroup,
+  NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
@@ -93,6 +96,11 @@ interface FormValue {
       multi: true,
     },
     {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => EnterSidebarComponent),
+      multi: true,
+    },
+    {
       provide: BalanceDepositService,
       useFactory: (dialog: DialogService) => new BalanceDepositService(dialog),
       deps: [DIALOG],
@@ -106,7 +114,7 @@ interface FormValue {
   animations: [triggerOpacityAnimations()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnterSidebarComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
+export class EnterSidebarComponent implements ControlValueAccessor, Validators, AfterViewInit, OnDestroy {
   readonly #injector: Injector = inject(Injector);
   readonly #balanceDepositService: BalanceDepositService = inject(BalanceDepositService);
   readonly #balanceWithdrawalService: BalanceWithdrawalService = inject(BalanceWithdrawalService);
@@ -244,6 +252,14 @@ export class EnterSidebarComponent implements ControlValueAccessor, AfterViewIni
     this.form[action]();
     // this.formControlPortfolio[action]();
     this.formControlStrategy[action]();
+  }
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    if (this.form.invalid) {
+      return { sidebar: 'invalid' };
+    }
+
+    return null;
   }
 
   readonly stringifyCurrency = (item: AccountCurrency) => item.currencySymbol;

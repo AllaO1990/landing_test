@@ -19,15 +19,17 @@
   <div
     class="actions"
     [class.actions--hide]="!toggleActions">
-    <button
-      class="toggle-action"
-      appearance="icon"
-      tuiIconButton
-      type="button"
-      [iconStart]="toggleActions ? '@tui.chevron-right' : '@tui.chevron-left'"
-      size="xs"
-      (click)="onToggleActions($event)">
-    </button>
+    <div class="actions__toggle">
+      <button
+        class="toggle-action"
+        appearance="icon"
+        tuiIconButton
+        type="button"
+        [iconStart]="toggleActions ? '@tui.chevron-right' : '@tui.chevron-left'"
+        size="xs"
+        (click)="onToggleActions($event)">
+      </button>
+    </div>
 
     <div class="actions__list">
       <lib-button-with-list

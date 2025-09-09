@@ -66,21 +66,35 @@
   position: relative;
   flex: 0 0 auto;
 
-  margin: var(--padding-2) var(--padding-2) var(--padding-2) var(--padding-6);
+  display: flex;
+  flex-flow: row nowrap;
 
-  &--hide {
-    width: 0;
+  margin: var(--padding-2);
+
+  &__toggle {
+    width: 24px;
   }
+
+  //&--hide {
+  //  width: 0;
+  //}
 
   &__list {
     display: flex;
     flex-flow: column nowrap;
 
     height: 100%;
+    width: 70px;
+
+    opacity: 1;
+
+    transition: opacity .125s ease-in-out, width .225s ease-in-out;
   }
 
   &--hide &__list {
     overflow: hidden;
+    width: 0;
+    opacity: 0;
   }
 }
 
@@ -107,9 +121,6 @@
 }
 
 .toggle-action {
-  position: absolute;
-  left: 0;
-  margin-left: -24px;
 }
 
 button.action[size="l"] {
