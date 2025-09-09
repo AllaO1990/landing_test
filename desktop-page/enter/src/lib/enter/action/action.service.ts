@@ -209,7 +209,10 @@ export class ActionService {
       return this._defaultTotalOut;
     }
 
-    const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice - commission.size, priceIncrement);
+    const totalPrice = getNumberPrecision(
+      target.totalPrice + remainder.totalPrice - commission.size * multiplier,
+      priceIncrement
+    );
     const profit = getNumberPrecision(
       (totalPrice - entry.totalPrice) * multiplier + (dividend.profit || 0),
       priceIncrement

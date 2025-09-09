@@ -1,3 +1,5 @@
+include .env
+
 ya-auth:
 	@echo $(YA_OAUTH_TOKEN)|docker login --username oauth --password-stdin cr.yandex
 
