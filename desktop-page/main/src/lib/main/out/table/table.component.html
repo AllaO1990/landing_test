@@ -145,7 +145,11 @@
             {{ item.stop.price | tuiFormatNumber: { precision: item.priceIncrement } | async }}
           </div>
           <div class="substring">
-            {{ item.stop.lossPercent | tuiFormatNumber | async }}%
+            @if (item.stop.lossPercent === -100) {
+              &mdash;
+            } @else {
+              {{ item.stop.lossPercent | tuiFormatNumber | async }}%
+            }
           </div>
         </td>
 
