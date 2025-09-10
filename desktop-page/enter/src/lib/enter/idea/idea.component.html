@@ -65,9 +65,10 @@
         *ngIf="formArrayEntries.value.length === 0 && !isDisabled"
         class="button"
         tuiButton
+        iconStart="@tui.plus"
         (click)="addEntry($event)"
         type="button">
-        + Добавить вход
+        Добавить вход
       </button>
     </div>
   </div>
@@ -158,9 +159,10 @@
         class="button"
         [disabled]="formArrayEntries.value.length === 0 && !isDisabled"
         tuiButton
+        iconStart="@tui.plus"
         (click)="addTarget($event)"
         type="button">
-        + Добавить цель
+        Добавить цель
       </button>
     </div>
   </div>
@@ -247,10 +249,11 @@
       <button
         class="button"
         tuiButton
+        [iconStart]="formArrayStop.value.length ? '@tui.edit' : '@tui.plus'"
         [disabled]="formArrayEntries.value.length === 0"
         (click)="addStop($event)"
         type="button">
-        + {{ formArrayStop.value.length ? 'Изменить стоп' : 'Добавить стоп' }}
+        {{ formArrayStop.value.length ? 'Изменить стоп' : 'Добавить стоп' }}
       </button>
     </div>
   </div>
