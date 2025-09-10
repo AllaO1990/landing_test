@@ -11,7 +11,7 @@
           <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
         </div>
 
-        @if (result.idea.author === 'bot') {
+        @if (result.idea.author === 'bot' || result.idea.parentId !== null) {
           <div class="date-start">
             <img
               class="idea__icon"

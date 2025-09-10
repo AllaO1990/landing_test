@@ -182,6 +182,10 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
     return this.form.get('positionType') as FormControl;
   }
 
+  get controlComment(): FormControl {
+    return this.form.get('comment') as FormControl;
+  }
+
   readonly formControlPortfolio: FormControl<AccountPortfolio | null> = new FormControl<AccountPortfolio | null>(
     null,
     Validators.required
@@ -252,6 +256,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
     this.form[action]();
     // this.formControlPortfolio[action]();
     this.formControlStrategy[action]();
+    this.controlComment.enable();
   }
 
   validate(control: AbstractControl): ValidationErrors | null {
@@ -349,20 +354,12 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
           }
 
           this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
-          this.controlPositionType[position.idea.author === 'bot' ? 'disable' : 'enable']();
-
-          // this.controlStrategy[position.idea.parentId === null ? 'enable' : 'disable']({ onlySelf: true });          // this.controlPositionType[position.idea.id !== null ? 'disable' : 'enable']();
 
           if (this.controlPortfolio.value === null) {
             this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
           }
 
           this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
-
-          if (this.formControlStrategy.enabled && position.idea.parentId !== null) {
-            this.formControlStrategy.disable();
-          }
-
           this.formControlPortfolio.patchValue(portfolio, { emitEvent: false, onlySelf: true });
           this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
         }

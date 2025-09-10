@@ -110,33 +110,38 @@
         </div>
       </div>
       <div class="widget__strategy widget__padding">
-        <tui-textfield
-          class=""
-          tuiChevron
-          [stringify]="stringifyPositionType(positionType)"
-          [identityMatcher]="identityPositionType"
-          [tuiTextfieldSize]="size"
-          [tuiTextfieldCleaner]="false"
-        >
-          <input
-            formControlName="positionType"
-            placeholder="Выбрать тип"
-            tuiSelect
-          />
+        <div class="comment__label">
+          Направление
+        </div>
+        <div class="comment__area">
+          <tui-textfield
+            class=""
+            tuiChevron
+            [stringify]="stringifyPositionType(positionType)"
+            [identityMatcher]="identityPositionType"
+            [tuiTextfieldSize]="size"
+            [tuiTextfieldCleaner]="false"
+          >
+            <input
+              formControlName="positionType"
+              placeholder="Выбрать направление"
+              tuiSelect
+            />
 
-          <tui-data-list *tuiTextfieldDropdown>
-            <button
-              *ngFor="let item of positionType"
-              new
-              tuiOption
-              type="button"
-              [value]="item.id"
-            >
-              {{ item.name }}
-            </button>
-          </tui-data-list>
+            <tui-data-list *tuiTextfieldDropdown>
+              <button
+                *ngFor="let item of positionType"
+                new
+                tuiOption
+                type="button"
+                [value]="item.id"
+              >
+                {{ item.name }}
+              </button>
+            </tui-data-list>
 
-        </tui-textfield>
+          </tui-textfield>
+        </div>
       </div>
       <div class="widget__description description widget__padding">
         <div class="description__row">
