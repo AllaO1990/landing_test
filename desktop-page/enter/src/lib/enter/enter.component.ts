@@ -310,7 +310,8 @@ export class VtEnterComponent implements AfterViewInit {
             result.idea.positionType === 'long' ? 1 : -1
           );
 
-          const action: 'disable' | 'enable' = result.idea.author === 'bot' ? 'disable' : 'enable';
+          const action: 'disable' | 'enable' =
+            result.idea.author === 'bot' || result.idea.parentId !== null ? 'disable' : 'enable';
 
           // if (result.actions.entries.length !== 0) {
           //   action = 'disable';
