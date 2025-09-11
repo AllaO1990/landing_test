@@ -62,6 +62,7 @@ import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { Params } from '@angular/router';
 import { StockInstrument } from 'types/stock';
+import { tuiPure } from '@taiga-ui/cdk';
 
 type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
@@ -141,6 +142,11 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   onTouched = () => {};
 
   @Input({ required: true }) formGroup!: FormGroup;
+
+  @tuiPure
+  get isCanAddEntry(): boolean {
+    return this.formGroup.value.sidebar.positionType !== null;
+  }
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
   private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
@@ -402,7 +408,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   async addEntry(event: Event, data: any | null = null, index: number | null = null): Promise<void> {
     event.preventDefault();
 
-    if ((this.formGroup.value as any).sidebar.positionType === null) {
+    if (this.isCanAddEntry) {
       return;
     }
 

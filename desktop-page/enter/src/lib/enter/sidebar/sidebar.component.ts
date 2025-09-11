@@ -350,6 +350,10 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
             this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
           }
 
+          if (this.controlPositionType.value === null) {
+            this.controlPositionType.patchValue(positionType);
+          }
+
           this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
           this.formControlPortfolio.patchValue(portfolio, { emitEvent: false, onlySelf: true });
           this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
@@ -381,7 +385,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
       });
 
     this.formControlPositionType.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
+      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.formControlPositionType.value))
       .subscribe((result: Item | null) => {
         this.controlPositionType.patchValue(result ? result.id : null);
       });
