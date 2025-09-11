@@ -40,12 +40,12 @@ import {
 import { AccountBalance, AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { TuiButton, TuiDataList, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { ValidDateComponent } from './valid-date/valid-date.component';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
-import { TuiAutoFocus, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -82,8 +82,6 @@ interface FormValue {
     ControlPortfolioComponent,
     TuiScrollbar,
     TuiTextfield,
-    TuiDataList,
-    NgForOf,
     TuiFormatNumberPipe,
     TuiButton,
     TuiAutoFocus,
@@ -199,6 +197,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
     null,
     Validators.required
   );
+  readonly formControlPositionType: FormControl<null | Item> = new FormControl<null | Item>(null, Validators.required);
 
   @Input({ required: true }) formGroup!: FormGroup;
 
@@ -257,6 +256,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
     this.form[action]();
     // this.formControlPortfolio[action]();
     this.formControlStrategy[action]();
+    this.formControlPositionType[action]();
     this.controlComment.enable();
   }
 
@@ -270,19 +270,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
 
   readonly stringifyCurrency = (item: AccountCurrency) => item.currencySymbol;
   readonly stringifyStrategy = (item: AccountStrategy) => item.name;
-
-  @tuiPure
-  stringifyPositionType(items: readonly Item[]): TuiStringHandler<string> {
-    const map = new Map(items.map(({ name, id }) => [id, name] as [string, string]));
-
-    return (d) => {
-      return map.get(d) || '';
-    };
-  }
-
-  readonly identityPositionType = (a: string, b: string) => {
-    return a === b;
-  };
+  readonly stringifyPositionType = (item: Item) => item.name;
 
   private _init(): void {
     this._controlValue$
@@ -340,6 +328,8 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
             currencies.find((item: AccountCurrency) => item.currency === position.idea.instrument.currency) ||
             currencies[0];
 
+          const positionType = this.positionType.find((item: Item) => item.id === position.idea.positionType) || null;
+
           let value = this._getControlStrategyUser();
           const strategy = this._getIdeaStrategy(strategies, position);
           const strategyDefault = this._getControlStrategy(strategy);
@@ -354,7 +344,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
             this.controlStrategy.patchValue(value.id);
           }
 
-          this.controlPositionType.patchValue(position.idea.positionType, { onlySelf: true });
+          this.controlPositionType.patchValue(position.idea.positionType);
 
           if (this.controlPortfolio.value === null) {
             this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
@@ -363,6 +353,9 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
           this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
           this.formControlPortfolio.patchValue(portfolio, { emitEvent: false, onlySelf: true });
           this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
+          this.formControlPositionType.patchValue(positionType);
+
+          this.form.patchValue({});
         }
       );
 
@@ -385,6 +378,12 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
       .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((result: AccountStrategy | null) => {
         this.controlStrategy.patchValue(result ? result.id : null);
+      });
+
+    this.formControlPositionType.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe((result: Item | null) => {
+        this.controlPositionType.patchValue(result ? result.id : null);
       });
   }
 

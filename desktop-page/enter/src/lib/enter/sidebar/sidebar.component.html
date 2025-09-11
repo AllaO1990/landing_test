@@ -105,7 +105,6 @@
               [items]="strategy"
               [itemContent]="contentStrategy"
             />
-
           </tui-textfield>
         </div>
       </div>
@@ -114,32 +113,27 @@
           Направление
         </div>
         <div class="comment__area">
+          <!--            -->
           <tui-textfield
             class=""
             tuiChevron
-            tuiAutoFocus
-            [stringify]="stringifyPositionType(positionType)"
-            [identityMatcher]="identityPositionType"
+            [tuiAutoFocus]="controlPositionType.value === null"
+            [stringify]="stringifyPositionType"
             [tuiTextfieldSize]="size"
             [tuiTextfieldCleaner]="false"
           >
             <input
-              formControlName="positionType"
+              [formControl]="formControlPositionType"
               placeholder="Выбрать направление"
               tuiSelect
             />
 
-            <tui-data-list *tuiTextfieldDropdown>
-              <button
-                *ngFor="let item of positionType"
-                new
-                tuiOption
-                type="button"
-                [value]="item.id"
-              >
-                {{ item.name }}
-              </button>
-            </tui-data-list>
+            <tui-data-list-wrapper
+              *tuiTextfieldDropdown
+              new
+              [items]="positionType"
+              [itemContent]="contentPositionType"
+            />
 
           </tui-textfield>
         </div>
