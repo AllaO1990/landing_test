@@ -10,7 +10,7 @@ import {
   NgZone,
 } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
+import { TuiButton, TuiDialogService, TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -73,6 +73,7 @@ import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
     ListComponent,
     LoaderComponent,
     GetCryptoNumberPipe,
+    TuiHint,
   ],
   templateUrl: './idea.component.html',
   styleUrl: './idea.component.scss',
@@ -151,6 +152,12 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
   readonly formGroupValueChanges$: Observable<any> = this._formGroupValueChanges$.asObservable().pipe(
     filter((value: any | null): value is any => value !== null),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+
+  readonly isCanAddEntry$: Observable<boolean> = this.formGroupValueChanges$.pipe(
+    map((value: { sidebar: { positionType: string | null } }) => value.sidebar.positionType !== null),
+    distinctUntilChanged(),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
@@ -430,6 +437,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
   async addEntry(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
     event.preventDefault();
+
+    if ((this.formGroup.value as any).sidebar.positionType === null) {
+      return;
+    }
 
     this._dialogEntryComponent = await import('./add-entry/add-entry.component')
       .then((m) => m.AddEntryComponent)

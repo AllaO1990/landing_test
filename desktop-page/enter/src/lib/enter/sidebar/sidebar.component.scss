@@ -125,6 +125,7 @@
 
 .comment {
   &__label {
+    color: var(--tui-text-secondary);
     margin-bottom: var(--padding-2);
   }
 }

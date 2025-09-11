@@ -65,7 +65,11 @@
         [disabled]="false"
         (click)="addEntry($event)"
         tuiButton
+        tuiHintAppearance="dark"
+        tuiHintDirection="bottom-right"
+        [tuiHint]="(isCanAddEntry$ | async) ? null : tooltip"
         iconStart="@tui.plus"
+        [appearance]="(isCanAddEntry$ | async) ? 'primary' : 'outline'"
         type="button">
         Добавить вход
       </button>
@@ -576,4 +580,8 @@
 
 <ng-template #load>
   <ui-loader></ui-loader>
+</ng-template>
+
+<ng-template #tooltip>
+  Необходимо заполнить поле "Направление"
 </ng-template>

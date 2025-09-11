@@ -65,7 +65,11 @@
         *ngIf="formArrayEntries.value.length === 0 && !isDisabled"
         class="button"
         tuiButton
+        tuiHintAppearance="dark"
+        tuiHintDirection="bottom-right"
+        [tuiHint]="(isCanAddEntry$ | async) ? null : tooltip"
         iconStart="@tui.plus"
+        [appearance]="(isCanAddEntry$ | async) ? 'primary' : 'outline'"
         (click)="addEntry($event)"
         type="button">
         Добавить вход
@@ -394,4 +398,8 @@
 
 <ng-template #none>
   <div style="text-align: center; width: 100%">&mdash;</div>
+</ng-template>
+
+<ng-template #tooltip>
+  Необходимо заполнить поле "Направление"
 </ng-template>

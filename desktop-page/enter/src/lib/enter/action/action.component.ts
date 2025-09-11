@@ -204,6 +204,12 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
     commissions: this.addCommission,
   };
 
+  readonly isCanAddEntry$: Observable<boolean> = this.formGroupValueChanges$.pipe(
+    map((value: { sidebar: { positionType: string | null } }) => value.sidebar.positionType !== null),
+    distinctUntilChanged(),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+
   multiplier$: Observable<number> = this.formGroupValueChanges$.pipe(
     map((data: { sidebar: { positionType: string } }) => data.sidebar && data.sidebar.positionType),
     distinctUntilChanged(),
