@@ -45,7 +45,7 @@ import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-u
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { ValidDateComponent } from './valid-date/valid-date.component';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
-import { tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiAutoFocus, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -86,6 +86,7 @@ interface FormValue {
     NgForOf,
     TuiFormatNumberPipe,
     TuiButton,
+    TuiAutoFocus,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',

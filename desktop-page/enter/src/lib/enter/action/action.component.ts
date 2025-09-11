@@ -402,6 +402,10 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   async addEntry(event: Event, data: any | null = null, index: number | null = null): Promise<void> {
     event.preventDefault();
 
+    if ((this.formGroup.value as any).sidebar.positionType === null) {
+      return;
+    }
+
     const value = this.formGroup.getRawValue();
     const entry = {
       price: null,

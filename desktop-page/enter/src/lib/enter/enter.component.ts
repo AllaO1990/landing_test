@@ -15,6 +15,7 @@ import {
 import { POLYMORPHEUS_CONTEXT, PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import {
   combineLatest,
+  debounceTime,
   distinctUntilChanged,
   filter,
   merge,
@@ -273,9 +274,11 @@ export class VtEnterComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.data$
-      .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise())
+      .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise(), debounceTime(0))
       .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
         // console.log(result);
+        this.form.patchValue({});
+
         if (last !== null && result !== null) {
           if (
             result.idea.id !== null &&
