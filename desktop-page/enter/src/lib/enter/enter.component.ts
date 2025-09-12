@@ -276,7 +276,7 @@ export class VtEnterComponent implements AfterViewInit {
     this.data$
       .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise(), debounceTime(0))
       .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
-        // console.log(result);
+        // console.log(last, result);
         this.form.patchValue({});
 
         if (last !== null && result !== null) {
@@ -363,6 +363,7 @@ export class VtEnterComponent implements AfterViewInit {
     event.preventDefault();
 
     if (this.form.pristine) {
+      this._idea.updateIdea(null);
       this.context.$implicit.complete();
 
       return;
@@ -381,6 +382,7 @@ export class VtEnterComponent implements AfterViewInit {
       })
       .subscribe((result: boolean) => {
         if (result) {
+          this._idea.updateIdea(null);
           this.context.$implicit.complete();
         }
       });

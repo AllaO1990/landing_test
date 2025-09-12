@@ -70,6 +70,7 @@ export class IdeaFacade {
   readonly editIdea = this._store.idea.edit;
   readonly deleteIdea = this._store.idea.delete;
   readonly updateIdeaUser = this._store.idea.updateIdeaUser;
+  readonly updateIdea = this._store.idea.updateIdea;
 
   private _getIdea(instrument: StockInstrument, lastPrice = 0): StockPosition {
     return {

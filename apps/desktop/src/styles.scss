@@ -144,8 +144,8 @@ lib-dialog[appearance="medium-block"] {
 lib-dialog[appearance="small-block"] {
   display: block;
 
-  width: 30vw;
-  height: auto;
+  width: 100vw;
+  height: 100vh;
 }
 
 lib-dialog[appearance="dialog-confirm"] {
@@ -158,6 +158,13 @@ tui-dialog[data-appearance="dialog-confirm"] {
 }
 
 @media screen and (min-width: 768px) {
+  lib-dialog[appearance="small-block"] {
+    display: block;
+
+    width: 30vw;
+    height: auto;
+  }
+
   lib-dialog[appearance="medium-block"] {
     display: block;
 
