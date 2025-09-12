@@ -145,7 +145,9 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
   @tuiPure
   get isCanAddEntry(): boolean {
-    return this.formGroup.value.sidebar.positionType !== null;
+    const { sidebar } = this.formGroup.getRawValue();
+
+    return sidebar && sidebar.positionType !== null;
   }
 
   private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
@@ -408,7 +410,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
   async addEntry(event: Event, data: any | null = null, index: number | null = null): Promise<void> {
     event.preventDefault();
 
-    if (this.isCanAddEntry) {
+    if (!this.isCanAddEntry) {
       return;
     }
 
