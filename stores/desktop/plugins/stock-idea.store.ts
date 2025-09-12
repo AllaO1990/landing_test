@@ -331,7 +331,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
         ...idea,
         author: 'user',
         id: null,
-        parentId: idea.id,
+        parentId: null,
         entries: idea.entries.map((item: StockPositionIdeaEntry) => ({ ...item, date: null })),
         targets: idea.targets.map((item: StockPositionTarget) => ({ ...item, stopDate: null })),
       },
