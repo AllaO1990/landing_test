@@ -101,7 +101,6 @@ export class ActionService {
 
     return list.reduce(
       (acc: StockPositionActionTarget, item: StockPositionActionTarget, index: number): StockPositionActionTarget => {
-        console.log(item);
         const value: StockPositionActionTarget = {
           ...acc,
           price: acc.price + item.price * item.amount,

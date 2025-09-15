@@ -1,8 +1,8 @@
 <div class="widget" [formGroup]="form">
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
-      <div class="widget__portfolio widget__padding portfolio">
-        <div class="portfolio__label">
+      <div class="widget__portfolio control widget__padding portfolio">
+        <div class="control__label portfolio__label">
           Портфель
         </div>
         <div class="portfolio__actions">
@@ -38,8 +38,8 @@
       </div>
 
       <div class="widget__implementation description widget__padding">
-        <div class="description__row">
-          <div class="description__label">
+        <div class="description__row control">
+          <div class="control__label description__label">
             Баланс
           </div>
           <div class="description__text deposit" @opacityAnimations>
@@ -81,8 +81,8 @@
         <lib-enter-sidebar-valid-date formControlName="expirationDate">
         </lib-enter-sidebar-valid-date>
       </div>
-      <div class="widget__implementation widget__padding">
-        <div class="comment__label">
+      <div class="widget__implementation control widget__padding">
+        <div class="control__label comment__label">
           Стратегия
         </div>
         <div class="comment__area">
@@ -108,8 +108,8 @@
           </tui-textfield>
         </div>
       </div>
-      <div class="widget__strategy widget__padding">
-        <div class="comment__label">
+      <div class="widget__strategy control widget__padding">
+        <div class="control__label comment__label">
           Направление
         </div>
         <div class="comment__area">
@@ -139,8 +139,8 @@
         </div>
       </div>
       <div class="widget__description description widget__padding">
-        <div class="description__row">
-          <div class="description__label">
+        <div class="description__row control">
+          <div class="description__label control__label">
             Успешность
           </div>
           <div class="description__text">80%</div>
@@ -159,8 +159,8 @@
         <!--            &lt;!&ndash;            {{ value.inPositionDepositShare  | tuiFormatNumber | async }}%&ndash;&gt;-->
         <!--          </div>-->
         <!--        </div>-->
-        <div class="description__row" *ngIf="(idea$ | async) as data">
-          <div class="description__label">Отрасль</div>
+        <div class="description__row control" *ngIf="(idea$ | async) as data">
+          <div class="description__label control__label">Отрасль</div>
           <div class="description__text">{{ data.idea.instrument.sector }}</div>
         </div>
         <!--        <div class="description__row">-->
@@ -168,8 +168,8 @@
         <!--          <div class="description__text">&mdash;</div>-->
         <!--        </div>-->
       </div>
-      <div class="widget__comment comment widget__padding">
-        <div class="comment__label">
+      <div class="widget__comment comment control widget__padding">
+        <div class="control__label comment__label">
           {{ constants.comment_label }}
         </div>
         <div class="comment__area">
