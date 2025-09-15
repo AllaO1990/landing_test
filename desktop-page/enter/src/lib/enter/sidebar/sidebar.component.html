@@ -42,16 +42,16 @@
           <div class="control__label description__label">
             Баланс
           </div>
-          <div class="description__text deposit" @opacityAnimations>
-            @if (balance$ | async; as balance) {
+          @if (balance$ | async; as balance) {
+            <div class="description__text deposit">
               {{
                 balance.deposit | tuiFormatNumber: {
                   precision: 2,
                   decimalMode: 'always'
                 } | async
               }} {{ balance.currencySymbol }}
-            }
-          </div>
+            </div>
+          }
         </div>
         <div class="description__row">
           <!--          <div class="space"></div>-->
@@ -113,16 +113,15 @@
           Направление
         </div>
         <div class="comment__area">
-          <!--            -->
           <tui-textfield
             class=""
             tuiChevron
-            [tuiAutoFocus]="controlPositionType.value === null"
             [stringify]="stringifyPositionType"
             [tuiTextfieldSize]="size"
             [tuiTextfieldCleaner]="false"
           >
             <input
+              [tuiAutoFocus]="controlPositionType.value === null"
               [formControl]="formControlPositionType"
               placeholder="Выбрать направление"
               tuiSelect

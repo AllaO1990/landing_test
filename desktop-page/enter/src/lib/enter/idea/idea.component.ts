@@ -296,6 +296,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
           const indicator: IndicatorAtr = result[2].data;
           const multiplier = result[3];
 
+          if (indicator === null) {
+            return;
+          }
+
           const priceEntry = entries[0].price;
           const quantityEntry = entries[0].quantity;
 

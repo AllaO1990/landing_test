@@ -45,7 +45,7 @@ import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-u
 import { AsyncPipe, NgIf } from '@angular/common';
 import { ValidDateComponent } from './valid-date/valid-date.component';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
-import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { TuiAutoFocus, tuiAutoFocusOptionsProvider } from '@taiga-ui/cdk';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -109,6 +109,10 @@ interface FormValue {
       useFactory: (dialog: DialogService) => new BalanceWithdrawalService(dialog),
       deps: [DIALOG],
     },
+    tuiAutoFocusOptionsProvider({
+      delay: 1000,
+      preventScroll: true,
+    }),
   ],
   animations: [triggerOpacityAnimations()],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -375,7 +379,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
         distinctUntilChanged((a, b) => a.portfolioId === b.portfolioId)
       )
       .subscribe((result: AccountPortfolio) => {
-        this.controlPortfolio.patchValue(result ? result.portfolioId : null);
+        this.controlPortfolio.patchValue(result ? result.portfolioId : null, { emitEvent: false });
       });
 
     this.formControlStrategy.valueChanges

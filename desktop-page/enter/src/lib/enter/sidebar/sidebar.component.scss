@@ -189,4 +189,15 @@
   font-weight: 700;
   font-size: 16px;
   line-height: 20px;
+
+  animation: 225ms ease-in-out init;
+}
+
+@keyframes init {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
