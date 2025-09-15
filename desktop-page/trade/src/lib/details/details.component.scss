@@ -4,7 +4,7 @@
   &__row {
     display: flex;
     align-items: center;
-    flex-flow: column;
+    flex-flow: row wrap;
   }
 
   &__column {

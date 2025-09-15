@@ -144,8 +144,8 @@ lib-dialog[appearance="medium-block"] {
 lib-dialog[appearance="small-block"] {
   display: block;
 
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 lib-dialog[appearance="dialog-confirm"] {

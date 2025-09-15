@@ -101,16 +101,18 @@ export class ActionService {
 
     return list.reduce(
       (acc: StockPositionActionTarget, item: StockPositionActionTarget, index: number): StockPositionActionTarget => {
+        console.log(item);
         const value: StockPositionActionTarget = {
           ...acc,
           price: acc.price + item.price * item.amount,
           amount: acc.amount + item.amount,
+          profit: (acc.profit || 0) + (item.profit || 0),
           depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
         };
 
         if (list.length - 1 === index) {
           value.totalPrice = value.price;
-          value.profit = getNumberPrecision((value.price - total.price * value.amount) * multiplier, 2);
+          value.profit = getNumberPrecision(value.profit || 0, 2);
           value.profitPercent = getNumberPrecision((value.profit / (total.price * value.amount)) * 100, 2);
           value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
         }
