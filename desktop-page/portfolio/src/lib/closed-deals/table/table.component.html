@@ -260,7 +260,7 @@
           tuiTd>
           <img
             class="idea__icon"
-            *ngIf="item.author === 'bot'; else user"
+            *ngIf="item.author === 'bot' || item.parentId !== null; else user"
             src="/assets/icons/vanya.svg"
             alt="Идея"
           />
