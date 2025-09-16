@@ -209,15 +209,16 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
     this._init();
 
     combineLatest([
-      this.controlPortfolio.valueChanges.pipe(
-        filter((value: null | number): value is number => value !== null),
+      this.formControlPortfolio.valueChanges.pipe(
+        startWith(this.formControlPortfolio.value),
+        filter((value: null | AccountPortfolio): value is AccountPortfolio => value !== null),
         distinctUntilChanged()
       ),
       this.#loadBalance$.asObservable(),
     ])
       .pipe(
         takeUntilDestroyed(this._destroyRef),
-        map(([value]: [number, void]) => {
+        map(([value]: [AccountPortfolio, void]) => {
           const date = new Date();
           return {
             brokerId: null,
@@ -225,7 +226,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
             from: new Date(new Date(date.getFullYear(), date.getMonth(), 1, 23).setUTCHours(0, 0, 0, 0)).toISOString(),
             instrumentType: 0,
             leadToCurrency: 'rub',
-            portfolioId: value,
+            portfolioId: value.portfolioId,
             strategyId: null,
             to: new Date(endOfMonth(new Date()).setUTCHours(23, 59, 59, 0)).toISOString(),
           };
@@ -359,7 +360,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
           }
 
           this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
-          this.formControlPortfolio.patchValue(portfolio, { emitEvent: false, onlySelf: true });
+          this.formControlPortfolio.patchValue(portfolio, { emitEvent: true });
           this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
           this.formControlPositionType.patchValue(positionType);
 
@@ -436,7 +437,6 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
         if (value) {
           this.#loadBalance$.next();
         }
-        console.log(value);
       });
   }
 
