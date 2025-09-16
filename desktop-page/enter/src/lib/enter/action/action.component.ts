@@ -62,7 +62,6 @@ import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { Params } from '@angular/router';
 import { StockInstrument } from 'types/stock';
-import { tuiPure } from '@taiga-ui/cdk';
 
 type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
@@ -143,7 +142,6 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 
   @Input({ required: true }) formGroup!: FormGroup;
 
-  @tuiPure
   get isCanAddEntry(): boolean {
     const { sidebar } = this.formGroup.getRawValue();
 
