@@ -315,6 +315,14 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
                 );
                 let amount = getNumberPrecision(quantityEntry * pct, priceIncrement === 8 ? priceIncrement : 0);
 
+                if (quantityEntry === 1) {
+                  if (index === 1) {
+                    amount = 1;
+                  } else {
+                    return acc;
+                  }
+                }
+
                 if (index === array.length - 1) {
                   amount = getNumberPrecision(quantityEntry - quantity, priceIncrement);
 
