@@ -153,8 +153,10 @@ lib-instrument {
   }
 
   &__content {
-    flex: 1 1;
+    flex: 1 1 auto;
     overflow: hidden;
+
+    transition: flex 1225ms ease-in-out;
   }
 }
 
@@ -367,5 +369,18 @@ lib-instrument {
       grid-row: 3 / 5;
       grid-column: 3 / 4;
     }
+  }
+}
+
+.notification {
+  animation: opacityVisible 1225ms ease-in-out;
+}
+
+@keyframes opacityVisible {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

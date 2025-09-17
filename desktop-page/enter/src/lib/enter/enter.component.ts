@@ -103,9 +103,22 @@ function maxAmount(): ValidatorFn {
         0
       );
 
-    return getNumberPrecision(entries[0].quantity, 2) !== getNumberPrecision(targetsAmount, 2)
-      ? { maxAmount: true }
-      : null;
+    const entry = getNumberPrecision(entries[0].quantity, 2);
+    const target = getNumberPrecision(targetsAmount, 2);
+
+    if (entry > target) {
+      return {
+        maxAmount: 'Количество в целях не соответствует количество входа',
+      };
+    }
+
+    if (entry < target) {
+      return {
+        maxAmount: 'Количество в целях не должно превышать количество входа в идее',
+      };
+    }
+
+    return null;
   };
 }
 
@@ -215,10 +228,10 @@ export class VtEnterComponent implements AfterViewInit {
     return this.form.get('watch') as FormControl;
   }
 
-  readonly maxAmount$: Observable<boolean> = this.controlIdea.statusChanges.pipe(
+  readonly maxAmount$: Observable<string> = this.controlIdea.statusChanges.pipe(
     takeUntilDestroyed(this._destroyRef),
     map((_) => this.controlIdea.errors),
-    map((value: ValidationErrors | null) => Boolean(value && value['maxAmount'])),
+    map((value: ValidationErrors | null) => value && value['maxAmount']),
     distinctUntilChanged()
   );
 

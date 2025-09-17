@@ -108,10 +108,10 @@
     </div>
     <div class="container__idea container__widget">
       <div class="widget">
-        <tui-notification appearance="negative" *ngIf="maxAmount$ | async" @heightAnimations>
-          Количество в целях не должно превышать количество входа в идее
+        <tui-notification class="notification" appearance="negative" *ngIf="(maxAmount$ | async) as text">
+          {{ text }}
         </tui-notification>
-        <tui-notification appearance="positive" *ngIf="isShowCopyNotify$ | async" @heightAnimations>
+        <tui-notification class="notification" appearance="positive" *ngIf="isShowCopyNotify$ | async">
           Идея бота скопирована
         </tui-notification>
         <div class="widget__header">

@@ -164,6 +164,6 @@ export class IdeaService {
 
     const amount = list.reduce((acc: number, item: StockPositionTarget) => (acc += item.stopDate ? 0 : item.amount), 0);
 
-    return amount !== quantity;
+    return amount < quantity;
   }
 }
