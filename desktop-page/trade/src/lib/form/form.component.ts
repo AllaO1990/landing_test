@@ -34,6 +34,7 @@ import {
   Observable,
   pairwise,
   shareReplay,
+  skip,
   startWith,
   switchMap,
   timer,
@@ -52,6 +53,7 @@ import { TuiItem } from '@taiga-ui/cdk';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { ControlValue } from './form.types';
 import { DetailsComponent } from '../details/details.component';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 interface ItemEntry {
   direction: boolean;
@@ -63,6 +65,7 @@ interface ItemEntry {
   status: number;
   orderId: string | null;
   lot: number;
+  lots: number;
   quantity: number;
 }
 
@@ -166,7 +169,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly operations$: Observable<TradeOperations | null> = this.#store.operations$;
 
   readonly listEntry$: Observable<ItemEntry[]> = timer(500).pipe(
-    switchMap(() => this.formArrayEntry.valueChanges.pipe(startWith(this.formArrayEntry.value)))
+    switchMap(() => this.formArrayEntry.valueChanges.pipe(startWith(this.formArrayEntry.value))),
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   readonly heightEntry$: Observable<number> = this.listEntry$.pipe(
@@ -247,6 +251,59 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           this.formArrayOut.clear();
         }
       });
+
+    combineLatest([
+      this.listEntry$.pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        filter((list: ItemEntry[]) => list.length === 1),
+        map((value: ItemEntry[]) => value[0].lots),
+        distinctUntilChanged(),
+        skip(1)
+      ),
+      this.idea$,
+    ]).subscribe(([entryLots, position]) => {
+      const outs = this._initOutControl(position, [], [], 0).ideas;
+      const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
+      let quantity = 0;
+
+      const data = [0.4, 0.3, 0.3].reduce((acc: any, pct: number, index: number, array) => {
+        let amount = getNumberPrecision(entryLots * pct, priceIncrement === 8 ? priceIncrement : 0);
+
+        if (entryLots === 1) {
+          if (index === 1) {
+            amount = 1;
+          } else {
+            return acc;
+          }
+        }
+
+        if (index === array.length - 1) {
+          amount = getNumberPrecision(entryLots - quantity, priceIncrement);
+
+          if (amount === 0) {
+            return acc;
+          }
+        }
+
+        quantity += amount;
+
+        const item = outs[index];
+
+        acc.push({
+          ...item,
+          lots: amount,
+          quantity: getNumberPrecision(amount * item.lot, priceIncrement === 8 ? priceIncrement : 0),
+          total: getNumberPrecision(amount * item.lot * item.price, 2),
+        });
+
+        return acc;
+      }, []);
+
+      this.formArrayOut.clear({ emitEvent: false });
+      data.forEach((value: any, index: number) => {
+        this.formArrayOut.setControl(index, new FormControl(value));
+      });
+    });
 
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value))
@@ -657,7 +714,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     const defaultItem = this._getDefaultControlValue(position, 'reverse');
     const operationType = defaultItem.direction ? 15 : 22;
     const outs = position.actions.outs.filter((item: StockPositionActionTarget) => item.brokerId === sourceId);
-    const actionQuantity = outs.map((item) => Math.floor(item.amount / defaultItem.lot));
     const operationsAction = operations.filter(
       (item: TradeOperation) => item.type === operationType && item.state === 1
     );
