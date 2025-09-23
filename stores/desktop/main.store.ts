@@ -231,11 +231,14 @@ export class MainStore extends ComponentStore<any> {
 
     return this.price.load(
       of(stream$).pipe(
-        switchMap(() => timer(0, TIMER_INTERVAL)),
-        takeUntil(this._destroyed$),
+        switchMap(() => timer(0, TIMER_INTERVAL).pipe(takeUntil(this._destroyed$))),
         map(() => stream$)
       )
     );
+  };
+
+  unLoadPrice = () => {
+    this._destroyed$.next();
   };
 
   // onChangeInstrument = this.effect((source$: Observable<null | StockEvent>) =>
@@ -257,7 +260,8 @@ export class MainStore extends ComponentStore<any> {
   onChangeQueryParams = this.effect((source$: Observable<null | StockEvent>) =>
     source$.pipe(
       filter((event: StockEvent | null): event is StockEvent => event !== null),
-      distinctUntilChanged((a, b) => a.id === b.id && a.dialog !== b.dialog),
+      distinctUntilChanged((a, b) => a.id === b.id && a.dialog !== b.dialog && a.trade === b.trade),
+      tap((data) => console.log(data)),
       switchMap((event: StockEvent) => {
         if (event.type === EventSelected.WATCH_LIST || event.type === EventSelected.STOCK_LIST) {
           return this.api.getStockInstrument(event.id.toString()).pipe(

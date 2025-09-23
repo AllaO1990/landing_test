@@ -1,5 +1,5 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { Observable, shareReplay } from 'rxjs';
+import { debounceTime, Observable, shareReplay } from 'rxjs';
 import { StockId, StockTransaction } from 'types/stock';
 import { StockEvent } from 'types/stock-event';
 import { map } from 'rxjs/operators';
@@ -19,6 +19,7 @@ export class SelectStore extends ComponentStore<SelectState> {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly event$: Observable<null | StockEvent> = this.select((state: SelectState) => state.event).pipe(
+    debounceTime(100),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
   readonly common$: Observable<StockTransaction | null> = this.select(

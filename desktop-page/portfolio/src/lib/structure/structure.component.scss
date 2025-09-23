@@ -112,9 +112,13 @@
     flex: 1 1 auto;
     width: 60%;
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    span {
+      width: 100%;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     tui-pin {
       transform: none;
@@ -127,6 +131,16 @@
     width: 40%;
 
     text-align: right;
+  }
+}
+
+.chart {
+  &__text {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
   }
 }
 

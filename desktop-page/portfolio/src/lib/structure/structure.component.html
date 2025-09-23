@@ -44,12 +44,13 @@
         <div
           class="list__item item"
           *libListItem="let item; index as i"
+          [title]="item.name"
           [class.item__active]="activeItemIndex === i"
           (mouseenter)="onMouseenter($event, i)"
           (mouseleave)="onMouseleave($event)">
           <div class="item__name item__cell">
             <tui-pin style="background: var(--tui-chart-categorical-0{{i}})" />
-            {{ item.name }}
+            <span>{{ item.name }}</span>
           </div>
           <div class="item__percentage item__cell">
             {{ item.portfolioSharePct | tuiFormatNumber | async }}% /

@@ -222,7 +222,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.controlFilter.valueChanges
       .pipe(
-        takeUntilDestroyed(this.#destroyRef),
         startWith(this.controlFilter.value),
         map((value) => ({
           sourceId: value.source && value.source.id,
@@ -231,7 +230,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         })),
         filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
         distinctUntilChanged(this._distinct),
-        switchMap((value: any) => timer(0, this.#store.TIMER).pipe(map(() => value)))
+        switchMap((value: any) =>
+          timer(0, this.#store.TIMER).pipe(
+            takeUntilDestroyed(this.#destroyRef),
+            map(() => value)
+          )
+        )
       )
       .subscribe((params: Params) => {
         this.#store.loadOrders(params);

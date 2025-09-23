@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  forwardRef,
+  inject,
+  OnDestroy,
+} from '@angular/core';
 import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield } from '@taiga-ui/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
@@ -73,7 +81,11 @@ interface Position {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FilterComponent implements ControlValueAccessor, AfterViewInit {
+export class FilterComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
+  ngOnDestroy(): void {
+    console.log('ngOnDestroy');
+  }
+
   readonly #store: TradeStore = inject(TradeStore);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
@@ -165,19 +177,22 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
     this.#idea.loadLastPrice(
       this.#idea.instrument$.pipe(
+        takeUntilDestroyed(this.#destroyRef),
         switchMap((instrument: StockInstrument | null) => {
           if (instrument === null) {
             return of(null);
           }
 
-          return timer(0, this.#store.TIMER).pipe(map(() => instrument.id));
+          return timer(0, this.#store.TIMER).pipe(
+            takeUntilDestroyed(this.#destroyRef),
+            map(() => instrument.id)
+          );
         })
       )
     );
 
     this.formGroup.valueChanges
       .pipe(
-        takeUntilDestroyed(this.#destroyRef),
         startWith(this.formGroup.value),
         map((value) => ({
           sourceId: value.source && value.source.id,
@@ -188,6 +203,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
         distinctUntilChanged(this._distinct),
         switchMap((value) =>
           combineLatest([this.#store.orders$, timer(0, this.#store.TIMER)]).pipe(
+            takeUntilDestroyed(this.#destroyRef),
             debounceTime(500),
             map(() => value)
           )

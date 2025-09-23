@@ -4,14 +4,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject }
 import { AsyncPipe, DOCUMENT, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { scaleLinear } from 'd3-scale';
-import {
-  TuiBreakpointService,
-  TuiDataListComponent,
-  TuiFormatNumberPipe,
-  TuiGroup,
-  tuiNumberFormatProvider,
-  TuiTextfield,
-} from '@taiga-ui/core';
+import { TuiBreakpointService, TuiFormatNumberPipe, TuiGroup, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { COLOR_LIST, STRUCTURE_CATEGORY } from './structure.constants';
 import {
@@ -41,7 +34,6 @@ import {
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TuiSelectModule } from '@taiga-ui/legacy';
 
 interface StructureControl {
   name: string;
@@ -71,9 +63,6 @@ let COLOR_LIMIT = 5;
     ListComponent,
     ItemDirective,
     TuiPin,
-    TuiDataListComponent,
-    TuiSelectModule,
-    TuiTextfield,
   ],
   templateUrl: './structure.component.html',
   styleUrl: './structure.component.scss',

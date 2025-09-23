@@ -1,5 +1,13 @@
 import { TuiInputModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  Injector,
+  OnDestroy,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TuiDataListWrapper } from '@taiga-ui/kit';
 import { TuiButton, TuiDataList } from '@taiga-ui/core';
@@ -60,7 +68,7 @@ export type StockListWithType = StockGroup & {
   providers: [StockService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StockComponent implements AfterViewInit {
+export class StockComponent implements AfterViewInit, OnDestroy {
   private readonly _injector: Injector = inject(Injector);
   private readonly _service: StockService = inject(StockService);
   private readonly _stock: StockListFacade = inject(StockListFacade);
@@ -112,6 +120,7 @@ export class StockComponent implements AfterViewInit {
   );
 
   public readonly list$: Observable<any> = this.controlGroup.valueChanges.pipe(
+    takeUntilDestroyed(this._destroyRef),
     startWith(this.controlGroup.value),
     filter((value: StockGroup | null): value is StockGroup => value !== null),
     tap((value: StockGroup) => (this.isDisabled = value.type.action === StockGroupType.DEFAULT)),
@@ -137,6 +146,10 @@ export class StockComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this._initGroupSelected();
+  }
+
+  ngOnDestroy(): void {
+    this._stock.unLoadPrice();
   }
 
   onSelect(value: { type: EventSelected; id: string }): void {
