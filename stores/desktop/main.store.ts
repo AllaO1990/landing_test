@@ -257,11 +257,15 @@ export class MainStore extends ComponentStore<any> {
   //   )
   // );
 
+  /**
+   *  distinctUntilChanged на id, но не обновляется, если дефолтные значения при создание
+   */
   onChangeQueryParams = this.effect((source$: Observable<null | StockEvent>) =>
     source$.pipe(
       filter((event: StockEvent | null): event is StockEvent => event !== null),
-      distinctUntilChanged((a, b) => a.id === b.id && a.dialog !== b.dialog && a.trade === b.trade),
-      tap((data) => console.log(data)),
+      distinctUntilChanged((a, b) => a.id === b.id),
+      // distinctUntilChanged((a, b) => a.id === b.id && a.dialog !== b.dialog && a.trade === b.trade),
+      // tap((data) => console.log(data)),
       switchMap((event: StockEvent) => {
         if (event.type === EventSelected.WATCH_LIST || event.type === EventSelected.STOCK_LIST) {
           return this.api.getStockInstrument(event.id.toString()).pipe(
