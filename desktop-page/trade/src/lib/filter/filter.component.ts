@@ -13,7 +13,6 @@ import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/comm
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import {
   combineLatest,
-  debounceTime,
   distinctUntilChanged,
   filter,
   map,
@@ -30,7 +29,7 @@ import { TuiStringHandler } from '@taiga-ui/cdk';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '../common/store';
-import { TradeAccount, TradeAccounts, TradeSource, TradeSources, TradeToken } from '../common/api.types';
+import { TradeAccount, TradeAccounts, TradeOrders, TradeSource, TradeSources, TradeToken } from '../common/api.types';
 import { TuiChip } from '@taiga-ui/kit';
 import { StockInstrument, WithLastPrice } from 'types/stock';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
@@ -157,7 +156,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit, OnD
 
   ngAfterViewInit(): void {
     this.formGroup.valueChanges
-      .pipe(startWith(this.formGroup.value), takeUntilDestroyed(this.#destroyRef))
+      .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value))
       .subscribe((value) => {
         this.#onChange(value);
       });
@@ -172,7 +171,10 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit, OnD
       .subscribe((position: StockPosition) => this.controlInstrument.patchValue(position.idea.instrument));
 
     this.#idea.lastPrice$
-      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        distinctUntilChanged((a: WithLastPrice | null, b: WithLastPrice | null) => !!(a && b && a.last === b.last))
+      )
       .subscribe((value: null | WithLastPrice) => this.controlLastPrice.patchValue(value));
 
     this.#idea.loadLastPrice(
@@ -191,8 +193,9 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit, OnD
       )
     );
 
-    this.formGroup.valueChanges
-      .pipe(
+    combineLatest([
+      this.formGroup.valueChanges.pipe(
+        takeUntilDestroyed(this.#destroyRef),
         startWith(this.formGroup.value),
         map((value) => ({
           sourceId: value.source && value.source.id,
@@ -200,14 +203,13 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit, OnD
           instrumentId: value.instrument && value.instrument.id,
         })),
         filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
-        distinctUntilChanged(this._distinct),
-        switchMap((value) =>
-          combineLatest([this.#store.orders$, timer(0, this.#store.TIMER)]).pipe(
-            takeUntilDestroyed(this.#destroyRef),
-            debounceTime(500),
-            map(() => value)
-          )
-        )
+        distinctUntilChanged(this._distinct)
+      ),
+      this.#store.orders$.pipe(filter((orders: TradeOrders | null) => orders !== null)),
+    ])
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        map(([value]) => value)
       )
       .subscribe((params: Params) => {
         this.#store.loadPortfolio(params);
@@ -263,6 +265,6 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit, OnD
     a: { accountId: string; instrumentId: string; sourceId: string },
     b: { accountId: string; instrumentId: string; sourceId: string }
   ): boolean {
-    return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
+    return a.accountId === b.accountId && a.instrumentId === b.instrumentId && a.sourceId === b.sourceId;
   }
 }

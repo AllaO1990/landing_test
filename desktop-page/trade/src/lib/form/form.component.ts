@@ -42,7 +42,6 @@ import {
 import { StockPosition, StockPositionActionEntry, StockPositionActionTarget } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '../common/store';
-import { Params } from '@angular/router';
 import { DirectionTypePipe } from '../common/direction-type.pipe';
 import { OrderTypePipe } from '../common/order-type.pipe';
 import { TradeOperation, TradeOperations, TradeOrder, TradeOrders } from '../common/api.types';
@@ -54,6 +53,7 @@ import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { ControlValue } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { getPriceIncrement } from 'utils/get-price-increment';
+import { Params } from '@angular/router';
 
 interface ItemEntry {
   direction: boolean;
@@ -222,6 +222,21 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.controlFilter.valueChanges
       .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        startWith(this.controlFilter.value),
+        map((value: { token: null | string } | null): null | string => value && value.token),
+        pairwise()
+      )
+      .subscribe(([first, second]: [null | string, null | string]) => {
+        if (first !== null && second === null) {
+          this.formArrayEntry.clear();
+          this.formArrayOut.clear();
+        }
+      });
+
+    this.controlFilter.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
         startWith(this.controlFilter.value),
         map((value) => ({
           sourceId: value.source && value.source.id,
@@ -240,20 +255,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       .subscribe((params: Params) => {
         this.#store.loadOrders(params);
         this.#store.loadOperations(params);
-      });
-
-    this.controlFilter.valueChanges
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        startWith(this.controlFilter.value),
-        map((value: { token: null | string } | null): null | string => value && value.token),
-        pairwise()
-      )
-      .subscribe(([first, second]: [null | string, null | string]) => {
-        if (first !== null && second === null) {
-          this.formArrayEntry.clear();
-          this.formArrayOut.clear();
-        }
       });
 
     combineLatest([
@@ -318,7 +319,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     a: { accountId: string; instrumentId: string; sourceId: string },
     b: { accountId: string; instrumentId: string; sourceId: string }
   ): boolean {
-    return a.accountId !== b.accountId && a.instrumentId !== b.instrumentId && a.sourceId !== b.sourceId;
+    return a.accountId === b.accountId && a.instrumentId === b.instrumentId && a.sourceId === b.sourceId;
   }
 
   trackBy(index: number, item: ItemEntry): ItemEntry {
