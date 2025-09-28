@@ -75,7 +75,10 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
             // ),
             filter(
               ([first, second]: [ControlValue[], ControlValue[]]) =>
-                (!first[0] || (first[0] && first[0].status !== 2)) && second[0] && second[0].status === 2
+                (!first || !first[0] || (first[0] && first[0].status !== 2)) &&
+                second &&
+                second[0] &&
+                second[0].status === 2
             ),
             // tap(([first, second]: [ControlValue[], ControlValue[]]) =>
             //   console.log('after filter', first[0] && first[0].status, second, second[0] && second[0].status)
@@ -120,7 +123,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     event.preventDefault();
 
     this.#isSubmitted$.next(true);
-    const { filter, entry, out } = this.formGroup.value.trade;
+    const { filter, entry, out } = this.formGroup.getRawValue().trade;
     const { account, instrument, source } = filter;
 
     const entryOrders = this._getOrders(

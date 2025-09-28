@@ -72,7 +72,7 @@ export class AddStopComponent extends AddForm implements OnInit {
 
   protected readonly getNumberFromE = getNumberFromE;
 
-  private _getDateTime(value: string | null): [TuiDay | null, TuiTime | null] {
+  private _getDateTime(value: string | null): [TuiDay, TuiTime] | [null, null] {
     if (value === null) {
       return [null, null];
     }

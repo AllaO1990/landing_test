@@ -141,6 +141,14 @@ lib-dialog[appearance="medium-block"] {
   height: 100vh;
 }
 
+lib-dialog[appearance="medium-block-flex"] {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}
+
+
 lib-dialog[appearance="small-block"] {
   display: block;
 
@@ -172,6 +180,13 @@ tui-dialog[data-appearance="dialog-confirm"] {
     width: 60vw;
     min-height: 500px;
     height: 60vh;
+  }
+
+  lib-dialog[appearance="medium-block-flex"] {
+    max-width: 750px;
+    width: 60vw;
+
+    height: auto;
   }
 
   lib-dialog[appearance="big-block"] {

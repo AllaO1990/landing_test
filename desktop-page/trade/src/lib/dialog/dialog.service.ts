@@ -24,7 +24,7 @@ export class TradeDialogService {
   }
 
   openTradeRequest(injector: Injector, data: any = null): Observable<any> {
-    return this.open(this.getComponentTradeRequest(injector), this._getData('small-block', data));
+    return this.open(this.getComponentTradeRequest(injector), this._getData('medium-block-flex', data));
   }
 
   openTradeConfirm(injector: Injector, data: any = null): Observable<any> {

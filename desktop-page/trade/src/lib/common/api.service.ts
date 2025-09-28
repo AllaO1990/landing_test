@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { Response } from 'types/response';
 import { Params } from '@angular/router';
 import {
@@ -75,19 +75,19 @@ export class ApiService {
   }
 
   getStopOrders(params: Params): Observable<Response<TradeOrders | null>> {
-    return of({
-      data: null,
-      message: 'none',
-      success: false,
-    });
-
-    // return this._http.get<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
-    //   params: {
-    //     accountId: params['accountId'],
-    //     instrumentId: params['instrumentId'],
-    //     sourceId: params['sourceId'],
-    //   },
+    // return of({
+    //   data: null,
+    //   message: 'none',
+    //   success: false,
     // });
+
+    return this._http.get<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
+      params: {
+        accountId: params['accountId'],
+        instrumentId: params['instrumentId'],
+        sourceId: params['sourceId'],
+      },
+    });
   }
 
   addOrder(body: Params): Observable<Response<TradeOrders>> {
@@ -95,11 +95,44 @@ export class ApiService {
       accountId: body['accountId'],
       direction: body['direction'],
       instrumentId: body['instrumentId'],
-      orderType: body['orderType'],
+      orderType: body['orderType']['id'],
       price: body['price'],
       quantity: body['quantity'],
       sourceId: body['sourceId'],
     });
+  }
+
+  addStopOrder(body: Params): Observable<Response<any>> {
+    return this._http
+      .post<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
+        accountId: body['accountId'],
+        direction: body['direction'],
+        exchangeOrderType: body['exchangeOrderType'],
+        expirationType: body['expirationType']['id'],
+        expireDate: body['expireDate'],
+        instrumentId: body['instrumentId'],
+        // orderType: body['orderType']['id'],
+        price: body['price'],
+        quantity: body['quantity'],
+        sourceId: body['sourceId'],
+        priceType: body['priceType'],
+        // stopOrderType: body['stopOrderType'],
+        stopOrderType: body['orderType']['id'],
+        stopPrice: body['stopPrice'],
+        takeProfitType: body['takeProfitType'],
+        trailingData: body['trailingData'],
+      })
+      .pipe(
+        catchError((error: Error) => {
+          console.warn(error);
+
+          return of({
+            data: null,
+            message: error.message,
+            success: false,
+          });
+        })
+      );
   }
 
   removeOrder(body: Params): Observable<Response<any>> {

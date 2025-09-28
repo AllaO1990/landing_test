@@ -1,7 +1,7 @@
 export interface ControlValue {
   direction: boolean;
   instrumentId: string;
-  orderType: number | null;
+  orderType: { id: number; type: string } | null;
   price: number;
   total: number;
   commission: number;

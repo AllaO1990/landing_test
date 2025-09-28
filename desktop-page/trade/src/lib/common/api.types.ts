@@ -30,6 +30,7 @@ export interface TradeToken {
 
 export interface TradeOrderType {
   id: number;
+  type: string;
   name: string;
 }
 

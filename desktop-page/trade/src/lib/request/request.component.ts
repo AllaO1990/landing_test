@@ -1,16 +1,35 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { TuiPopover, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiDay, TuiPopover, tuiPure, TuiStringHandler, TuiTime } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
-import { TuiButton, TuiDataListComponent, TuiTextfield } from '@taiga-ui/core';
+import {
+  TuiAppearance,
+  TuiButton,
+  TuiDataList,
+  TuiDataListComponent,
+  TuiScrollbar,
+  TuiTextfield,
+} from '@taiga-ui/core';
 import { AsyncPipe, NgForOf } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiInputDateModule, TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import { TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith } from 'rxjs';
-import { TuiChevron, TuiDataListDropdownManager, TuiInputNumber, TuiSelect } from '@taiga-ui/kit';
+import {
+  TuiChevron,
+  TuiDataListDropdownManager,
+  TuiDataListWrapper,
+  TuiInputDateTime,
+  TuiInputNumber,
+  TuiSelect,
+} from '@taiga-ui/kit';
 import { TradeStore } from '../common/store';
-import { TradeOrderTypes } from '../common/api.types';
+import { TradeOrderType, TradeOrderTypes, TradeSource, TradeSources } from '../common/api.types';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { getNumberPrecision } from 'utils/get-number-precision';
+import { TRADE_EXPIRATION_TYPES } from './request.constants';
+import { TuiCard } from '@taiga-ui/layout';
+import { endOfWeek } from 'date-fns/endOfWeek';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { TradeOrderTypeText } from '../common/order.types';
 
 export interface RequestFormValue {
   direction: boolean;
@@ -29,8 +48,6 @@ export interface RequestFormValue {
     NgForOf,
     ReactiveFormsModule,
     TuiDataListComponent,
-    TuiInputDateModule,
-    TuiSelectModule,
     TuiTextfieldControllerModule,
     AsyncPipe,
     TuiInputNumber,
@@ -38,6 +55,12 @@ export interface RequestFormValue {
     TuiChevron,
     TuiSelect,
     TuiDataListDropdownManager,
+    TuiDataList,
+    TuiDataListWrapper,
+    TuiInputDateTime,
+    TuiCard,
+    TuiAppearance,
+    TuiScrollbar,
   ],
   templateUrl: './request.component.html',
   styleUrls: ['../common/dialog.scss', './request.component.scss'],
@@ -47,6 +70,7 @@ export class RequestTradeComponent implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
+  readonly #today: Date = new Date();
 
   @tuiPure
   get max(): number | null {
@@ -63,10 +87,37 @@ export class RequestTradeComponent implements AfterViewInit {
     return this.#context.lastPrice.value || null;
   }
 
+  readonly dates: { name: string; date: [TuiDay, TuiTime] }[] = [
+    {
+      name: 'До конца дня',
+      date: [TuiDay.fromLocalNativeDate(this.#today), new TuiTime(23, 59, 59, 0)],
+    },
+    {
+      name: 'До конца недели',
+      date: [TuiDay.fromLocalNativeDate(endOfWeek(this.#today, { weekStartsOn: 1 })), new TuiTime(23, 59, 59, 0)],
+    },
+    {
+      name: 'До конца месяца',
+      date: [TuiDay.fromLocalNativeDate(endOfMonth(this.#today)), new TuiTime(23, 59, 59, 0)],
+    },
+  ];
   readonly size = 's';
   readonly formGroup: FormGroup = new FormGroup({
     direction: new FormControl(null, Validators.required),
     orderType: new FormControl(null, Validators.required),
+    expirationType: new FormControl({ value: null, disabled: true }, Validators.required),
+    expireDate: new FormControl({ value: this.dates[0].date, disabled: true }),
+    stopOrderType: new FormControl(null),
+    stopPrice: new FormControl({ value: null, disabled: true }, Validators.required),
+    trailingData: new FormGroup({
+      indent: new FormControl(0),
+      indent_type: new FormControl(0),
+      spread: new FormControl({ value: null, disabled: true }, Validators.required),
+      spread_type: new FormControl(0),
+    }),
+    exchangeOrderType: new FormControl(0),
+    takeProfitType: new FormControl(0),
+    priceType: new FormControl(0),
     price: new FormControl(null, Validators.required),
     quantity: new FormControl({ value: null, disabled: true }, Validators.required),
     lots: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
@@ -98,16 +149,51 @@ export class RequestTradeComponent implements AfterViewInit {
     return this.formGroup.get('lot') as FormControl;
   }
 
+  get controlExpireDate(): FormControl {
+    return this.formGroup.get('expireDate') as FormControl;
+  }
+
+  get controlExpirationType(): FormControl {
+    return this.formGroup.get('expirationType') as FormControl;
+  }
+
   get controlTotal(): FormControl {
     return this.formGroup.get('total') as FormControl;
   }
 
+  get groupTrailingData(): FormGroup {
+    return this.formGroup.get('trailingData') as FormGroup;
+  }
+
+  get controlStopPrice(): FormControl {
+    return this.formGroup.get('stopPrice') as FormControl;
+  }
+
+  get controlSpread(): FormControl {
+    return this.groupTrailingData.get('spread') as FormControl;
+  }
+
   types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
+
+  expirationTypes$: Observable<TradeSources> = of(TRADE_EXPIRATION_TYPES)
+    .pipe
+    // tap((types: TradeSources) => this.controlExpirationType.patchValue(types[0]))
+    ();
 
   actions$: Observable<{ name: string; id: boolean }[]> = of([
     { name: 'Купить', id: true },
     { name: 'Продать', id: false },
   ]);
+
+  readonly isStopOrderType$: Observable<boolean> = this.controlOrderType.valueChanges.pipe(
+    map((value: TradeOrderType | null) => {
+      if (value === null) {
+        return false;
+      }
+
+      return this.#store.isStopOrder(value.type);
+    })
+  );
 
   onCancel(event: Event): void {
     event.preventDefault();
@@ -121,7 +207,14 @@ export class RequestTradeComponent implements AfterViewInit {
     event.preventDefault();
 
     if (this.#context) {
-      this.#context.completeWith(this.formGroup.getRawValue());
+      const {
+        expireDate: [day, time],
+        ...value
+      } = this.formGroup.getRawValue();
+      this.#context.completeWith({
+        ...value,
+        expireDate: this._getDate(day, time).toISOString(),
+      });
     }
   }
 
@@ -139,13 +232,27 @@ export class RequestTradeComponent implements AfterViewInit {
 
     this.controlOrderType.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlOrderType.value), distinctUntilChanged())
-      .subscribe((value: number) => {
-        if (value !== 1) {
+      .subscribe((value: TradeOrderType | null) => {
+        if (
+          value === null ||
+          value.type === TradeOrderTypeText.ORDER_TYPE_MARKET ||
+          value.type === TradeOrderTypeText.ORDER_TYPE_BESTPRICE
+        ) {
           this.controlPrice.disable();
           this.controlPrice.patchValue(this.lastPrice);
         } else {
           this.controlPrice.enable();
-          this.controlPrice.patchValue(this.price);
+          this.controlPrice.patchValue(this.price || this.lastPrice);
+        }
+
+        if (value && this.#store.isStopOrder(value.type)) {
+          this.controlExpirationType.enable();
+          this.controlStopPrice.enable();
+          this.controlSpread.enable();
+        } else {
+          this.controlExpirationType.disable();
+          this.controlStopPrice.disable();
+          this.controlSpread.disable();
         }
       });
 
@@ -154,6 +261,16 @@ export class RequestTradeComponent implements AfterViewInit {
       .subscribe((value: number) => {
         this.controlQuantity.patchValue(value * this.controlLot.value);
       });
+
+    this.controlExpirationType.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        startWith(this.controlExpirationType.value),
+        filter((value: TradeSource | null): value is TradeSource => value !== null),
+        map((value: TradeSource) => this._getAction(value.id !== 2)),
+        distinctUntilChanged()
+      )
+      .subscribe((action) => this.controlExpireDate[action]());
 
     combineLatest([
       this.controlQuantity.valueChanges.pipe(
@@ -172,6 +289,8 @@ export class RequestTradeComponent implements AfterViewInit {
       )
       .subscribe((value) => this.controlTotal.patchValue(value));
   }
+
+  protected stringifySource: TuiStringHandler<TradeSource> = (item: TradeSource) => item.name;
 
   @tuiPure
   protected stringifyActions(items: readonly { name: string; id: boolean }[]): TuiStringHandler<boolean> {
@@ -199,5 +318,13 @@ export class RequestTradeComponent implements AfterViewInit {
   ): void {
     control.setValue(controlState.value, options);
     control[controlState.disabled ? 'disable' : 'enable'](options);
+  }
+
+  private _getAction(isDisable: boolean): 'disable' | 'enable' {
+    return isDisable ? 'disable' : 'enable';
+  }
+
+  private _getDate(day: TuiDay, time: TuiTime): Date {
+    return new Date(day.toLocalNativeDate().valueOf() + time.valueOf());
   }
 }

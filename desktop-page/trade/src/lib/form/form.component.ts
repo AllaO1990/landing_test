@@ -54,6 +54,7 @@ import { ControlValue } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { Params } from '@angular/router';
+import { TRADE_ORDERS } from '../common/order.constants';
 
 interface ItemEntry {
   direction: boolean;
@@ -678,7 +679,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
                 quantity: item.quantity,
                 lots,
                 total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-                orderType: 1,
+                orderType: TRADE_ORDERS[0],
                 status: 0,
               });
 
@@ -691,7 +692,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       price: item.averagePositionPrice.value,
       quantity: item.lotsRequested * defaultItem.lot,
       lots: item.lotsRequested,
-      orderType: item.orderType,
+      orderType: {
+        id: item.orderType,
+        type: item.orderTypeText,
+      },
       commission: item.initialComission.value,
       direction: !!item.direction,
       total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
@@ -766,7 +770,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           lots,
           quantity: item.amount,
           total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-          orderType: 1,
+          orderType: TRADE_ORDERS[0],
           status: 0,
         });
 
@@ -782,7 +786,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         quantity: item.lotsRequested * defaultItem.lot,
         lots: item.lotsRequested,
         commission: item.initialComission.value,
-        orderType: item.orderType,
+        orderType: {
+          id: item.orderType,
+          type: item.orderTypeText,
+        },
         direction: !!item.direction,
         total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
         status: 1,

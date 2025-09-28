@@ -2,128 +2,231 @@
   <div class="dialog__title">
     <h3>Заявка</h3>
   </div>
-  <div class="dialog__container form">
-    <div class="form__control">
-      @if (actions$ | async; as items) {
-        <span>Действия</span>
-        <tui-textfield
-          class="form__control"
-          tuiChevron
-          [stringify]="stringifyActions(items)"
-          [tuiTextfieldSize]="size"
-          [tuiTextfieldCleaner]="false">
-          <input
-            formControlName="direction"
-            placeholder="Действия"
-            autocomplete="off"
-            tuiSelect />
+  <tui-scrollbar class="dialog__container form">
+    <div class="form__controls">
+      <div class="form__control">
+        @if (actions$ | async; as items) {
+          <span>Действия</span>
+          <tui-textfield
+            class="form__control"
+            tuiChevron
+            [stringify]="stringifyActions(items)"
+            [tuiTextfieldSize]="size"
+            [tuiTextfieldCleaner]="false">
+            <input
+              formControlName="direction"
+              placeholder="Действия"
+              autocomplete="off"
+              tuiSelect />
 
-          <tui-data-list
-            *tuiTextfieldDropdown
-            tuiDataListDropdownManager>
-            <button
-              *ngFor="let item of items"
-              tuiOption
-              new
-              type="button"
-              [value]="item.id">
-              {{ item.name }}
-            </button>
-          </tui-data-list>
+            <tui-data-list
+              *tuiTextfieldDropdown
+              tuiDataListDropdownManager>
+              <button
+                *ngFor="let item of items"
+                tuiOption
+                new
+                type="button"
+                [value]="item.id">
+                {{ item.name }}
+              </button>
+            </tui-data-list>
 
-        </tui-textfield>
-      }
-    </div>
-
-    <div class="form__control">
-      @if (types$ | async; as items) {
-        <span>Тип заявки</span>
-
-        <tui-textfield
-          class="form__control"
-          tuiChevron
-          [stringify]="stringifyTypes(items)"
-          [tuiTextfieldSize]="size"
-          [tuiTextfieldCleaner]="false">
-          <input
-            formControlName="orderType"
-            placeholder="Тип заявки"
-            autocomplete="off"
-            tuiSelect />
-
-          <tui-data-list
-            *tuiTextfieldDropdown
-            tuiDataListDropdownManager>
-            <button
-              *ngFor="let item of items"
-              tuiOption
-              new
-              type="button"
-              [value]="item.id">
-              {{ item.name }}
-            </button>
-          </tui-data-list>
-
-        </tui-textfield>
-      }
-    </div>
-
-    <div class="form__control">
-      <span>Цена</span>
-      <tui-textfield
-        [tuiTextfieldSize]="size">
-        <input
-          placeholder="Цена"
-          tuiInputNumber
-          formControlName="price"
-        />
-      </tui-textfield>
-    </div>
-
-    <div class="form__control">
-      <span>Лоты</span>
-      <tui-textfield
-        [tuiTextfieldSize]="size"
-        class="form__control">
-        <input
-          placeholder="Лоты"
-          tuiInputNumber
-          formControlName="lots"
-          [max]="max"
-        />
-        @if (controlLot.value; as value) {
-          <span>1 лот: {{ value }} шт.</span>
+          </tui-textfield>
         }
-      </tui-textfield>
+      </div>
+
+      <div class="form__control">
+        @if (types$ | async; as items) {
+          <span>Тип заявки</span>
+
+          <tui-textfield
+            class="form__control"
+            tuiChevron
+            [stringify]="stringifySource"
+            [tuiTextfieldSize]="size"
+            [tuiTextfieldCleaner]="false">
+            <input
+              formControlName="orderType"
+              placeholder="Тип заявки"
+              autocomplete="off"
+              tuiSelect />
+
+            <tui-data-list
+              *tuiTextfieldDropdown
+              tuiDataListDropdownManager>
+              <button
+                *ngFor="let item of items"
+                tuiOption
+                new
+                type="button"
+                [value]="item">
+                {{ item.name }}
+              </button>
+            </tui-data-list>
+
+          </tui-textfield>
+        }
+      </div>
     </div>
 
-    <div class="form__control">
-      <span>Количество</span>
-      <tui-textfield
-        [tuiTextfieldSize]="size"
-        class="form__control">
-        <input
-          placeholder="Количество"
-          tuiInputNumber
-          formControlName="quantity"
-          [max]="max"
-        />
-      </tui-textfield>
+    @if (isStopOrderType$ | async) {
+      <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
+        <section class="form__controls">
+          <div class="form__control">
+            <span>Тип экспирации заявки</span>
+            <tui-textfield
+              class="form__control"
+              tuiChevron
+              [stringify]="stringifySource"
+              [tuiTextfieldSize]="size"
+              [tuiTextfieldCleaner]="false">
+              <input
+                formControlName="expirationType"
+                placeholder="Тип заявки"
+                autocomplete="off"
+                tuiSelect />
+
+              <tui-data-list-wrapper
+                *tuiTextfieldDropdown
+                new
+                [itemContent]="content"
+                [items]="expirationTypes$ | async"
+              />
+
+            </tui-textfield>
+          </div>
+
+          <div class="form__control">
+            <span>Дата и время окончания действия стоп-заявки</span>
+            <tui-textfield
+              class="calendar"
+              [tuiTextfieldSize]="size">
+              <input
+                [min]="dates[0].date"
+                tuiInputDateTime
+                formControlName="expireDate"
+                placeholder="Дата и время"
+                autocomplete="off"
+              />
+
+              <datalist id="dates">
+                <option
+                  *ngFor="let item of dates"
+                  [value]="item.date">
+                  {{ item.name }}
+                </option>
+              </datalist>
+
+              <section class="calendar__container" *tuiTextfieldDropdown>
+                <tui-calendar />
+
+                <tui-data-list class="calendar__list">
+                  <button
+                    *ngFor="let item of dates"
+                    [value]="item.date"
+                    new
+                    tuiOption>
+                    {{ item.name }}
+                  </button>
+
+                </tui-data-list>
+              </section>
+
+            </tui-textfield>
+          </div>
+
+          <div class="form__control">
+            <span>Стоп-цена</span>
+            <tui-textfield
+              [tuiTextfieldSize]="size">
+              <input
+                placeholder="Стоп-цена"
+                tuiInputNumber
+                formControlName="stopPrice"
+              />
+            </tui-textfield>
+          </div>
+
+          <div class="form__control" [formGroup]="groupTrailingData">
+            <span>Спред</span>
+            <tui-textfield
+              [tuiTextfieldSize]="size">
+              <input
+                placeholder="Спред"
+                tuiInputNumber
+                formControlName="spread"
+              />
+            </tui-textfield>
+          </div>
+        </section>
+      </div>
+    }
+
+    <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
+      <section class="form__controls">
+
+        <div class="form__control">
+          <span>Цена</span>
+          <tui-textfield
+            [tuiTextfieldSize]="size">
+            <input
+              placeholder="Цена"
+              tuiInputNumber
+              formControlName="price"
+            />
+          </tui-textfield>
+        </div>
+
+        <div class="form__control">
+          <span>Стоимость</span>
+          <tui-textfield
+            [tuiTextfieldSize]="size"
+            class="form__control">
+            <input
+              placeholder="Стоимость"
+              tuiInputNumber
+              formControlName="total"
+            />
+          </tui-textfield>
+        </div>
+
+        <div class="form__control">
+          <span>Лоты</span>
+          <tui-textfield
+            [tuiTextfieldSize]="size"
+            class="form__control">
+            <input
+              placeholder="Лоты"
+              tuiInputNumber
+              formControlName="lots"
+              [max]="max"
+            />
+            @if (controlLot.value; as value) {
+              <span>1 лот: {{ value }} шт.</span>
+            }
+          </tui-textfield>
+        </div>
+
+        <div class="form__control">
+          <span>Количество</span>
+          <tui-textfield
+            [tuiTextfieldSize]="size"
+            class="form__control">
+            <input
+              placeholder="Количество"
+              tuiInputNumber
+              formControlName="quantity"
+              [max]="max"
+            />
+          </tui-textfield>
+        </div>
+
+      </section>
     </div>
 
-    <div class="form__control">
-      <span>Стоимость</span>
-      <tui-textfield
-        [tuiTextfieldSize]="size"
-        class="form__control">
-        <input
-          placeholder="Стоимость"
-          tuiInputNumber
-          formControlName="total"
-        />
-      </tui-textfield>
-    </div>
-  </div>
+
+  </tui-scrollbar>
   <div class="dialog__actions">
     <div class="space"></div>
     <button
@@ -145,3 +248,7 @@
     </button>
   </div>
 </div>
+
+<ng-template #content let-item>
+  {{ item.name }}
+</ng-template>

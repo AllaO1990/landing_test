@@ -17,6 +17,8 @@ import {
 } from './api.types';
 import { Params } from '@angular/router';
 import { sortNumber } from 'utils/sort-number';
+import { TRADE_ORDERS } from './order.constants';
+import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
 
 export interface TradeState {
   sources: TradeSources | null;
@@ -31,7 +33,17 @@ export interface TradeState {
 }
 
 export class TradeStore extends ComponentStore<TradeState> {
-  readonly TIMER = 1000 * 10 * 2;
+  readonly #orderTypes: string[] = [
+    TradeOrderTypeText.ORDER_TYPE_LIMIT,
+    TradeOrderTypeText.ORDER_TYPE_MARKET,
+    TradeOrderTypeText.ORDER_TYPE_BESTPRICE,
+  ];
+  readonly #orderStopTypes: string[] = [
+    TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LIMIT,
+    TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS,
+    TradeStopOrderTypeText.STOP_ORDER_TYPE_TAKE_PROFIT,
+  ];
+  readonly TIMER = 1000 * 30 * 2;
 
   readonly source$: Observable<TradeSources | null> = this.select((state: TradeState) => state.sources);
   readonly token$: Observable<Response<TradeToken | null> | null> = this.select((state: TradeState) => state.token);
@@ -165,7 +177,15 @@ export class TradeStore extends ComponentStore<TradeState> {
 
   loadOrderTypes = this.effect((stream$: Observable<void>) =>
     stream$.pipe(
-      switchMap(() => this._api.getOrderTypes()),
+      switchMap(() => {
+        return of({
+          message: 'mocks',
+          success: true,
+          data: TRADE_ORDERS,
+        });
+
+        // return this._api.getOrderTypes();
+      }),
       tap((response: Response<TradeOrderTypes>) => this.updateOrderTypes(response.data))
     )
   );
@@ -243,14 +263,20 @@ export class TradeStore extends ComponentStore<TradeState> {
 
   addOrders = this.effect((stream$: Observable<Params[]>) =>
     stream$.pipe(
-      switchMap((params: Params[]) =>
-        forkJoin(params.map((item: Params) => this._api.addOrder(item))).pipe(
+      switchMap((params: Params[]) => {
+        const order = params.filter((item: Params) => this.isOrder(item['orderType']['type']));
+        const orderStop = params.filter((item: Params) => this.isStopOrder(item['orderType']['type']));
+
+        return forkJoin([
+          ...order.map((item: Params) => this._api.addOrder(item)),
+          ...orderStop.map((item: Params) => this._api.addStopOrder(item)),
+        ]).pipe(
           tap(() => {
             this.loadOrders(params[0]);
             this.loadOperations(params[0]);
           })
-        )
-      )
+        );
+      })
     )
   );
 
@@ -301,5 +327,13 @@ export class TradeStore extends ComponentStore<TradeState> {
     return operations.sort((a: TradeOperation, b: TradeOperation) =>
       sortNumber(new Date(a.date).valueOf(), new Date(b.date).valueOf())
     );
+  }
+
+  isOrder(type: string): boolean {
+    return this.#orderTypes.includes(type);
+  }
+
+  isStopOrder(type: string): boolean {
+    return this.#orderStopTypes.includes(type);
   }
 }

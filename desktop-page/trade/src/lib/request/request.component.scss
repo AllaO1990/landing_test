@@ -1,7 +1,45 @@
 .form {
+  &__controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--padding-4);
+
+    margin: 0 var(--padding-2);
+  }
+
   &__control {
     &:not(:last-child) {
       margin-bottom: var(--padding-2);
     }
+
+  }
+
+  &__card[tuiCardLarge][data-space][data-space=compact] {
+    --t-radius: 0;
+    --t-padding: var(--padding-4);
+    --t-space: 0;
+
+    margin: var(--padding-2);
+    animation: opacityControl 725ms ease-in;
+  }
+}
+
+.calendar {
+  &__container {
+    display: flex;
+  }
+
+  &__list {
+    inline-size: 12rem;
+    box-shadow: -1px 0 var(--tui-border-normal);
+  }
+}
+
+@keyframes opacityControl {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
