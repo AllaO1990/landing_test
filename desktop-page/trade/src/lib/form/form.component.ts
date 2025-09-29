@@ -425,12 +425,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     item['change'] = true;
 
     const { account, source, instrument, lastPrice } = this.controlFilter.value;
+    const minPriceIncrement = getNumberPrecision(instrument.minPriceIncrement * 3, 2);
 
     this.#dialog
       .openTradeRequest(this.#injector, {
         direction: { value: item.direction, disabled: true },
         orderType: { value: item.orderType, disabled: false },
         price: { value: item.price, disabled: false },
+        minPriceIncrement: { value: minPriceIncrement, disabled: false },
         lot: { value: item.lot, disabled: false },
         quantity: { value: item.quantity, disabled: false },
         lastPrice: { value: lastPrice.last, disabled: true },

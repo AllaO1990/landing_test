@@ -29,7 +29,7 @@ import { TRADE_EXPIRATION_TYPES } from './request.constants';
 import { TuiCard } from '@taiga-ui/layout';
 import { endOfWeek } from 'date-fns/endOfWeek';
 import { endOfMonth } from 'date-fns/endOfMonth';
-import { TradeOrderTypeText } from '../common/order.types';
+import { TradeOrderTypeText, TradeStopOrderTypeText } from '../common/order.types';
 
 export interface RequestFormValue {
   direction: boolean;
@@ -111,9 +111,9 @@ export class RequestTradeComponent implements AfterViewInit {
     stopPrice: new FormControl({ value: null, disabled: true }, Validators.required),
     trailingData: new FormGroup({
       indent: new FormControl(1),
-      indent_type: new FormControl(1),
+      indentType: new FormControl(1),
       spread: new FormControl({ value: null, disabled: true }, Validators.required),
-      spread_type: new FormControl(1),
+      spreadType: new FormControl(1),
     }),
     exchangeOrderType: new FormControl(0),
     takeProfitType: new FormControl(0),
@@ -175,10 +175,7 @@ export class RequestTradeComponent implements AfterViewInit {
 
   types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
 
-  expirationTypes$: Observable<TradeSources> = of(TRADE_EXPIRATION_TYPES)
-    .pipe
-    // tap((types: TradeSources) => this.controlExpirationType.patchValue(types[0]))
-    ();
+  expirationTypes$: Observable<TradeSources> = of(TRADE_EXPIRATION_TYPES);
 
   actions$: Observable<{ name: string; id: boolean }[]> = of([
     { name: 'Купить', id: true },
@@ -220,16 +217,21 @@ export class RequestTradeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.#context) {
-      const { orderType, direction, quantity, lot, price, minPriceIncrement } = this.#context;
+      const { orderType, direction, quantity, lot, price, minPriceIncrement, lastPrice } = this.#context;
       const lots = Math.floor(quantity.value / lot.value);
 
       this._updateControl(this.controlDirection, direction, { onlySelf: true });
       this._updateControl(this.controlLots, { value: lots, disabled: quantity.disabled }, { onlySelf: true });
       this._updateControl(this.controlPrice, price, { onlySelf: true });
+      this._updateControl(this.controlStopPrice, price.value ? price : lastPrice, { onlySelf: true });
       this._updateControl(this.controlOrderType, orderType, { onlySelf: true });
       this._updateControl(this.controlLot, lot, { onlySelf: false });
       this._updateControl(this.controlSpread, minPriceIncrement, { onlySelf: true });
     }
+
+    this.expirationTypes$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((types: TradeSources) => {
+      this.controlExpirationType.setValue(types[0]);
+    });
 
     this.controlOrderType.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlOrderType.value), distinctUntilChanged())
@@ -237,7 +239,8 @@ export class RequestTradeComponent implements AfterViewInit {
         if (
           value === null ||
           value.type === TradeOrderTypeText.ORDER_TYPE_MARKET ||
-          value.type === TradeOrderTypeText.ORDER_TYPE_BESTPRICE
+          value.type === TradeOrderTypeText.ORDER_TYPE_BESTPRICE ||
+          value.type === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS
         ) {
           this.controlPrice.disable();
           this.controlPrice.patchValue(this.lastPrice);
