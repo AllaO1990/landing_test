@@ -110,10 +110,10 @@ export class RequestTradeComponent implements AfterViewInit {
     stopOrderType: new FormControl(null),
     stopPrice: new FormControl({ value: null, disabled: true }, Validators.required),
     trailingData: new FormGroup({
-      indent: new FormControl(0),
-      indent_type: new FormControl(0),
+      indent: new FormControl(1),
+      indent_type: new FormControl(1),
       spread: new FormControl({ value: null, disabled: true }, Validators.required),
-      spread_type: new FormControl(0),
+      spread_type: new FormControl(1),
     }),
     exchangeOrderType: new FormControl(0),
     takeProfitType: new FormControl(0),
