@@ -220,7 +220,7 @@ export class RequestTradeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.#context) {
-      const { orderType, direction, quantity, lot, price } = this.#context;
+      const { orderType, direction, quantity, lot, price, minPriceIncrement } = this.#context;
       const lots = Math.floor(quantity.value / lot.value);
 
       this._updateControl(this.controlDirection, direction, { onlySelf: true });
@@ -228,6 +228,7 @@ export class RequestTradeComponent implements AfterViewInit {
       this._updateControl(this.controlPrice, price, { onlySelf: true });
       this._updateControl(this.controlOrderType, orderType, { onlySelf: true });
       this._updateControl(this.controlLot, lot, { onlySelf: false });
+      this._updateControl(this.controlSpread, minPriceIncrement, { onlySelf: true });
     }
 
     this.controlOrderType.valueChanges

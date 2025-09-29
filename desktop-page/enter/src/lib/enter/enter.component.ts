@@ -376,7 +376,6 @@ export class VtEnterComponent implements AfterViewInit {
     event.preventDefault();
 
     if (this.form.pristine) {
-      this._idea.updateIdea(null);
       this.context.$implicit.complete();
 
       return;

@@ -379,6 +379,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     const { instrument, lastPrice } = this.controlFilter.value;
 
+    const minPriceIncrement = getNumberPrecision(instrument.minPriceIncrement * 3, 2);
     let max = null;
 
     if (this.formArrayEntry.value && this.formArrayEntry.value.length > 0) {
@@ -397,6 +398,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         orderType: { value: null, disabled: false },
         price: { value: null, disabled: false },
         lot: { value: instrument.lot, disabled: false },
+        minPriceIncrement: { value: minPriceIncrement, disabled: false },
         quantity: { value: null, disabled: false },
         lastPrice: { value: lastPrice.last, disabled: true },
         max,
