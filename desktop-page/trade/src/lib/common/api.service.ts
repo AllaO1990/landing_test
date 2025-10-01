@@ -144,4 +144,14 @@ export class ApiService {
       },
     });
   }
+
+  removeStopOrder(body: Params): Observable<Response<any>> {
+    return this._http.delete<Response<any>>(`${this.host}/v1/trades/stop-orders`, {
+      body: {
+        accountId: body['accountId'],
+        orderId: body['orderId'],
+        sourceId: body['sourceId'],
+      },
+    });
+  }
 }

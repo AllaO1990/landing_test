@@ -60,6 +60,28 @@ export interface TradeOrder {
   instrumentUid: string;
 }
 
+export type TradeStopOrders = TradeStopOrder[];
+
+export interface TradeStopOrder {
+  stopOrderId: string;
+  lotsRequested: number;
+  direction: boolean;
+  directionText: string;
+  currency: string;
+  orderType: number;
+  orderTypeText: string;
+  createDate: string;
+  activationDateTime: string;
+  expirationTime: string;
+  price: TradeValue;
+  stopPrice: TradeValue;
+  takeProfitType: number;
+  takeProfitTypeText: string;
+  trailingData: string;
+  status: number;
+  statusText: string;
+}
+
 export type TradeOrders = TradeOrder[];
 
 export interface TradeDirection {
@@ -72,23 +94,23 @@ export type TradeDirections = TradeDirection[];
 export interface TradeOperation {
   cancelDate: string;
   cancelReason: string;
-  comission: { currency: string; value: number };
+  comission: TradeValue;
   currency: string;
   date: string;
   description: string;
   instrumentUid: string;
   name: string;
   operationId: string;
-  payment: { currency: string; value: number };
+  payment: TradeValue;
   positionUid: string;
-  price: { currency: string; value: number };
+  price: TradeValue;
   quantity: number;
   quantityRest: number;
   state: number;
   stateText: string;
   type: number;
   typeText: string;
-  yield: { currency: string; value: number };
+  yield: TradeValue;
 }
 
 export type TradeOperations = TradeOperation[];

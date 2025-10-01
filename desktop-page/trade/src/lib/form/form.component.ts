@@ -44,7 +44,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '../common/store';
 import { DirectionTypePipe } from '../common/direction-type.pipe';
 import { OrderTypePipe } from '../common/order-type.pipe';
-import { TradeOperation, TradeOperations, TradeOrder, TradeOrders } from '../common/api.types';
+import {
+  TradeOperation,
+  TradeOperations,
+  TradeOrder,
+  TradeOrders,
+  TradeStopOrder,
+  TradeStopOrders,
+} from '../common/api.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { RequestFormValue } from '../request/request.component';
 import { TradeFormService } from './form.service';
@@ -54,7 +61,7 @@ import { ControlValue } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { Params } from '@angular/router';
-import { TRADE_ORDERS } from '../common/order.constants';
+import { TRADE_ORDERS, TRADE_STOP_ORDER_TYPE_TAKE_PROFIT } from '../common/order.constants';
 
 interface ItemEntry {
   direction: boolean;
@@ -167,6 +174,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly orders$: Observable<TradeOrders | null> = this.#store.orders$.pipe(
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly stopOrders$: Observable<TradeStopOrders | null> = this.#store.stopOrders$;
   readonly operations$: Observable<TradeOperations | null> = this.#store.operations$;
 
   readonly listEntry$: Observable<ItemEntry[]> = timer(500).pipe(
@@ -211,15 +219,23 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
         distinctUntilChanged((a, b) => this._distinctOrders(a, b))
       ),
+      this.stopOrders$.pipe(filter((orders: TradeStopOrders | null): orders is TradeStopOrders => orders !== null)),
       this.operations$.pipe(
         filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null),
         distinctUntilChanged((a, b) => a.length === b.length)
       ),
     ])
       .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(100))
-      .subscribe(([position, orders, operations]: [StockPosition, TradeOrders, TradeOperations]) => {
-        this._initControls(position, orders, operations);
-      });
+      .subscribe(
+        ([position, orders, stopOrders, operations]: [
+          StockPosition,
+          TradeOrders,
+          TradeStopOrders,
+          TradeOperations
+        ]) => {
+          this._initControls(position, orders, stopOrders, operations);
+        }
+      );
 
     this.controlFilter.valueChanges
       .pipe(
@@ -268,7 +284,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       ),
       this.idea$,
     ]).subscribe(([entryLots, position]) => {
-      const outs = this._initOutControl(position, [], [], 0).ideas;
+      const outs = this._initOutControl(position, [], [], [], 0).ideas;
       const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
       let quantity = 0;
 
@@ -353,6 +369,21 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.#store.removeOrder({
       accountId: account.accountId,
       orderId: item.orderId,
+      sourceId: source.id,
+      instrumentId: instrument.id,
+    });
+  }
+
+  onRemoveStopOrder(event: Event, item: TradeStopOrder & { removed: boolean }): void {
+    event.preventDefault();
+
+    item['removed'] = true;
+
+    const { account, source, instrument } = this.controlFilter.value;
+
+    this.#store.removeStopOrder({
+      accountId: account.accountId,
+      orderId: item.stopOrderId,
       sourceId: source.id,
       instrumentId: instrument.id,
     });
@@ -507,13 +538,18 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
         const { source } = this.controlFilter.value;
 
-        this._initOutControl(position, [], [], source.id).ideas.forEach((item, index: number) => {
+        this._initOutControl(position, [], [], [], source.id).ideas.forEach((item, index: number) => {
           this.formArrayOut.setControl(index + length, new FormControl(item));
         });
       });
   }
 
-  private _initControls(position: StockPosition, orders: TradeOrders, operations: TradeOperations): void {
+  private _initControls(
+    position: StockPosition,
+    orders: TradeOrders,
+    stopOrders: TradeStopOrders,
+    operations: TradeOperations
+  ): void {
     this.direction = position.idea.positionType === 'long';
     const lot = position.idea.instrument.lot;
     const { source } = this.controlFilter.value;
@@ -558,12 +594,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this._initEntryControl(position, orders, actualOperations, source.id);
+    } = this._initEntryControl(position, orders, stopOrders, actualOperations, source.id);
     const out: {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this._initOutControl(position, orders, actualOperations, source.id);
+    } = this._initOutControl(position, orders, stopOrders, actualOperations, source.id);
 
     const tempOut: ControlValue[] = this.formArrayOut.value
       ? this.formArrayOut.value.slice().filter((item: ItemEntry) => item.status === 0)
@@ -621,6 +657,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   private _initEntryControl(
     position: StockPosition,
     orders: TradeOrders,
+    stopOrders: TradeStopOrders,
     operations: TradeOperations,
     sourceId: number
   ): {
@@ -637,6 +674,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       (item: TradeOperation) => item.type === operationType && item.state === 1
     );
     const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
+    const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
 
     const actionControlValues: ControlValue[] = entries.map((item): ControlValue => {
       const lots = Math.floor(item.amount / defaultItem.lot);
@@ -667,6 +705,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
               if (ordersDirection.length > 0) {
                 const findOrder =
                   ordersDirection.find((orderItem: TradeOrder) => {
+                    return orderItem.lotsRequested === lots;
+                  }) || null;
+
+                if (findOrder) {
+                  return acc;
+                }
+              }
+
+              if (stopOrdersDirection.length > 0) {
+                const findOrder =
+                  stopOrdersDirection.find((orderItem: TradeStopOrder) => {
                     return orderItem.lotsRequested === lots;
                   }) || null;
 
@@ -706,16 +755,33 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       status: 1,
     }));
 
+    const stopOrderControlValues: ControlValue[] = stopOrdersDirection.map((item: TradeStopOrder) => ({
+      ...defaultItem,
+      orderId: item.stopOrderId,
+      price: item.price.value,
+      quantity: item.lotsRequested * defaultItem.lot,
+      lots: item.lotsRequested,
+      orderType: {
+        id: item.orderType,
+        type: item.orderTypeText,
+      },
+      commission: 0,
+      direction: !!item.direction,
+      total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
+      status: 1,
+    }));
+
     return {
       actions: actionControlValues,
       ideas: ideaControlValues,
-      orders: orderControlValues,
+      orders: [...orderControlValues, ...stopOrderControlValues],
     };
   }
 
   private _initOutControl(
     position: StockPosition,
     orders: TradeOrders,
+    stopOrders: TradeStopOrders,
     operations: TradeOperations,
     sourceId: number
   ): {
@@ -731,6 +797,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       (item: TradeOperation) => item.type === operationType && item.state === 1
     );
     const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
+    const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
 
     const actionControlValues: ControlValue[] = outs.map((item): ControlValue => {
       const lots = Math.floor(item.amount / defaultItem.lot);
@@ -766,6 +833,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           }
         }
 
+        if (stopOrdersDirection.length > 0) {
+          const findOrder =
+            stopOrdersDirection.find((orderItem: TradeStopOrder) => {
+              return orderItem.lotsRequested === lots;
+            }) || null;
+
+          if (findOrder) {
+            return acc;
+          }
+        }
+
         acc.push({
           ...defaultItem,
           price: item.price,
@@ -774,7 +852,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           lots,
           quantity: item.amount,
           total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-          orderType: TRADE_ORDERS[0],
+          orderType: TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
           status: 0,
         });
 
@@ -799,6 +877,24 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         status: 1,
       }));
 
+    const stopOrderControlValues: ControlValue[] = stopOrders
+      .filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction)
+      .map((item) => ({
+        ...defaultItem,
+        orderId: item.stopOrderId,
+        price: item.price.value,
+        quantity: item.lotsRequested * defaultItem.lot,
+        lots: item.lotsRequested,
+        commission: 0,
+        orderType: {
+          id: item.orderType,
+          type: item.orderTypeText,
+        },
+        direction: !!item.direction,
+        total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
+        status: 1,
+      }));
+
     const operationControlValues: ControlValue[] = operations
       .filter((item) => item.type === operationType && item.state === 1)
       .filter((item) => actionControlValues.findIndex((action) => action.quantity === item.quantity) === -1)
@@ -819,7 +915,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     return {
       actions: actionControlValues,
       ideas: ideaControlValues,
-      orders: orderControlValues,
+      orders: [...orderControlValues, ...stopOrderControlValues],
       operations: operationControlValues,
     };
   }

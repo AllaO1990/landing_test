@@ -23,6 +23,7 @@ import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { LoaderComponent } from '@ui/components/loader';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TRADE_ORDER_TYPE_MARKET } from '../common/order.constants';
 
 interface DetailsData {
   instrument: StockInstrument | null;
@@ -137,7 +138,7 @@ export class DetailsComponent implements OnDestroy {
 
     this.#store.addOrder({
       direction: !(position.quantity > 0),
-      orderType: 2,
+      orderType: TRADE_ORDER_TYPE_MARKET,
       price: position.price,
       quantity: getNumberPrecision(Math.abs(position.quantity) / instrument.lot, 0),
       accountId: account.accountId,

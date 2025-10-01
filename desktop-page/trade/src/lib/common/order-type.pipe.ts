@@ -14,7 +14,7 @@ export class OrderTypePipe implements PipeTransform {
 
   readonly #orderTypes$ = this.#store.orderTypes$.pipe();
 
-  transform(value: { id: number; type: string } | null, ...args: any[]): Observable<string | null> {
+  transform(value: { id: number; type: string } | null | string, ...args: any[]): Observable<string | null> {
     return this.#orderTypes$.pipe(
       takeUntilDestroyed(this.#destroyRef),
       map((list: TradeOrderTypes | null) => {
@@ -24,6 +24,12 @@ export class OrderTypePipe implements PipeTransform {
 
         if (value === null) {
           return null;
+        }
+
+        if (typeof value === 'string') {
+          const type = list.find((item: TradeOrderType) => item.type === value);
+
+          return type ? type.name : `—`;
         }
 
         const type = list.find((item: TradeOrderType) => item.id === value.id && item.type === value.type);

@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  OnDestroy,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
 import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield } from '@taiga-ui/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
@@ -80,11 +72,7 @@ interface Position {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FilterComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
-  ngOnDestroy(): void {
-    console.log('ngOnDestroy');
-  }
-
+export class FilterComponent implements ControlValueAccessor, AfterViewInit {
   readonly #store: TradeStore = inject(TradeStore);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);

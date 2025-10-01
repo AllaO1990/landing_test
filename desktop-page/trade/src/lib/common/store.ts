@@ -12,6 +12,7 @@ import {
   TradeOrderTypes,
   TradePortfolio,
   TradeSources,
+  TradeStopOrders,
   TradeToken,
   TradeTokenSource,
 } from './api.types';
@@ -55,6 +56,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   );
   readonly orderTypes$: Observable<TradeOrderTypes | null> = this.select((state: TradeState) => state.orderType);
   readonly orders$: Observable<TradeOrders | null> = this.select((state: TradeState) => state.orders);
+  readonly stopOrders$: Observable<TradeStopOrders | null> = this.select((state: TradeState) => state.stopOrders);
   readonly portfolio$: Observable<TradePortfolio | null> = this.select((state: TradeState) => state.portfolio);
   readonly operations$: Observable<TradeOperations | null> = this.select((state: TradeState) => state.operations);
 
@@ -305,6 +307,16 @@ export class TradeStore extends ComponentStore<TradeState> {
             )
           )
         )
+      )
+    )
+  );
+
+  removeStopOrder = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api
+          .removeStopOrder(params)
+          .pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
       )
     )
   );
