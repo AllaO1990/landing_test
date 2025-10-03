@@ -552,7 +552,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         .filter((item: StockPositionActionEntry) => item.brokerId === source.id)
         .map((item: StockPositionActionEntry) => Math.floor(item.amount / lot)),
       actualOperations,
-      this.direction ? 15 : 22
+      this.#service.getOperationType(this.direction)
     );
 
     const operationsOut = this.#service.getFilteredOperations(
@@ -560,7 +560,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         .filter((item: StockPositionActionTarget) => item.brokerId === source.id)
         .map((item: StockPositionActionTarget) => Math.floor(item.amount / lot)),
       actualOperations,
-      !this.direction ? 15 : 22
+      this.#service.getOperationType(!this.direction)
     );
 
     const commissions = [...operationsEntry, ...operationsOut].filter((item) => {
@@ -587,6 +587,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       actions: ControlValue[];
       ideas: ControlValue[];
     } = this.#service.getOutControlValue(position, orders, stopOrders, actualOperations, source.id);
+
+    console.log(entry, out);
 
     const tempOut: ControlValue[] = this.formArrayOut.value
       ? this.formArrayOut.value.slice().filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
@@ -627,271 +629,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.formArrayEntry.patchValue([]);
     this.formArrayOut.patchValue([]);
   }
-
-  // private _initEntryControl(
-  //   position: StockPosition,
-  //   orders: TradeOrders,
-  //   stopOrders: TradeStopOrders,
-  //   operations: TradeOperations,
-  //   sourceId: number
-  // ): {
-  //   orders: ControlValue[];
-  //   actions: ControlValue[];
-  //   ideas: ControlValue[];
-  // } {
-  //   const defaultItem = this.#service.getDefaultControlValue(position);
-  //   const operationType = defaultItem.direction ? 15 : 22;
-  //   const entries = position.actions.entries.filter((item: StockPositionActionEntry) => item.brokerId === sourceId);
-  //
-  //   const actionQuantity = entries.map((item) => Math.floor(item.amount / defaultItem.lot));
-  //   const operationsAction = operations.filter(
-  //     (item: TradeOperation) => item.type === operationType && item.state === 1
-  //   );
-  //   const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
-  //   const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
-  //
-  //   const actionControlValues: ControlValue[] = entries.map((item): ControlValue => {
-  //     const lots = Math.floor(item.amount / defaultItem.lot);
-  //
-  //     const findOperation =
-  //       operationsAction.find((operation) => Math.floor(operation.quantity / defaultItem.lot) === lots) || null;
-  //
-  //     return {
-  //       ...defaultItem,
-  //       price: item.price,
-  //       quantity: item.amount,
-  //       commission: findOperation ? Math.abs(findOperation.comission.value) : 0,
-  //       lots,
-  //       total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-  //       orderType: null,
-  //       status: 2,
-  //     };
-  //   });
-  //
-  //   const ideaControlValues: ControlValue[] =
-  //     ordersDirection.length > 0 || actionControlValues.length > 0
-  //       ? []
-  //       : position.idea.entries
-  //           .filter((item) => !actionQuantity.includes(Math.floor(item.quantity / defaultItem.lot)))
-  //           .reduce((acc: ControlValue[], item) => {
-  //             const lots = Math.floor(item.quantity / defaultItem.lot);
-  //
-  //             if (ordersDirection.length > 0) {
-  //               const findOrder =
-  //                 ordersDirection.find((orderItem: TradeOrder) => {
-  //                   return orderItem.lotsRequested === lots;
-  //                 }) || null;
-  //
-  //               if (findOrder) {
-  //                 return acc;
-  //               }
-  //             }
-  //
-  //             if (stopOrdersDirection.length > 0) {
-  //               const findOrder =
-  //                 stopOrdersDirection.find((orderItem: TradeStopOrder) => {
-  //                   return orderItem.lotsRequested === lots;
-  //                 }) || null;
-  //
-  //               if (findOrder) {
-  //                 return acc;
-  //               }
-  //             }
-  //
-  //             acc.push({
-  //               ...defaultItem,
-  //               price: item.price,
-  //               commission: 0,
-  //               quantity: item.quantity,
-  //               lots,
-  //               total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-  //               orderType: TRADE_ORDERS[0],
-  //               status: 0,
-  //             });
-  //
-  //             return acc;
-  //           }, []);
-  //
-  //   const orderControlValues: ControlValue[] = ordersDirection.map((item) => ({
-  //     ...defaultItem,
-  //     orderId: item.orderId,
-  //     price: item.averagePositionPrice.value,
-  //     quantity: item.lotsRequested * defaultItem.lot,
-  //     lots: item.lotsRequested,
-  //     orderType: {
-  //       id: item.orderType,
-  //       type: item.orderTypeText,
-  //     },
-  //     commission: item.initialComission.value,
-  //     direction: !!item.direction,
-  //     total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
-  //     status: 1,
-  //   }));
-  //
-  //   const stopOrderControlValues: ControlValue[] = stopOrdersDirection.map((item: TradeStopOrder) => ({
-  //     ...defaultItem,
-  //     id: item.stopOrderId,
-  //     price: item.price.value,
-  //     quantity: item.lotsRequested * defaultItem.lot,
-  //     lots: item.lotsRequested,
-  //     orderType: {
-  //       id: item.orderType,
-  //       type: item.orderTypeText,
-  //     },
-  //     commission: 0,
-  //     direction: !!item.direction,
-  //     total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
-  //     status: 1,
-  //   }));
-  //
-  //   return {
-  //     actions: actionControlValues,
-  //     ideas: ideaControlValues,
-  //     orders: [...orderControlValues, ...stopOrderControlValues],
-  //   };
-  // }
-
-  // private _initOutControl(
-  //   position: StockPosition,
-  //   orders: TradeOrders,
-  //   stopOrders: TradeStopOrders,
-  //   operations: TradeOperations,
-  //   sourceId: number
-  // ): {
-  //   orders: ControlValue[];
-  //   operations: ControlValue[];
-  //   actions: ControlValue[];
-  //   ideas: ControlValue[];
-  // } {
-  //   const defaultItem = this.#service.getDefaultControlValue(position, 'reverse');
-  //   const operationType = defaultItem.direction ? 15 : 22;
-  //   const outs = position.actions.outs.filter((item: StockPositionActionTarget) => item.brokerId === sourceId);
-  //   const operationsAction = operations.filter(
-  //     (item: TradeOperation) => item.type === operationType && item.state === 1
-  //   );
-  //   const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
-  //   const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
-  //
-  //   const actionControlValues: ControlValue[] = outs.map((item): ControlValue => {
-  //     const lots = Math.floor(item.amount / defaultItem.lot);
-  //
-  //     const findOperation =
-  //       operationsAction.find((operation) => Math.floor(operation.quantity / defaultItem.lot) === lots) || null;
-  //
-  //     return {
-  //       ...defaultItem,
-  //       price: item.price,
-  //       lots,
-  //       commission: findOperation ? Math.abs(findOperation.comission.value) : 0,
-  //       quantity: item.amount,
-  //       total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-  //       orderType: null,
-  //       status: 2,
-  //     };
-  //   });
-  //
-  //   const ideaControlValues: ControlValue[] = position.idea.targets
-  //     // .filter((item) => !actionQuantity.includes(item.amount))
-  //     .reduce((acc: ControlValue[], item) => {
-  //       const lots = Math.floor(item.amount / defaultItem.lot);
-  //
-  //       if (ordersDirection.length > 0) {
-  //         const findOrder =
-  //           ordersDirection.find((orderItem: TradeOrder) => {
-  //             return orderItem.lotsRequested === lots;
-  //           }) || null;
-  //
-  //         if (findOrder) {
-  //           return acc;
-  //         }
-  //       }
-  //
-  //       if (stopOrdersDirection.length > 0) {
-  //         const findOrder =
-  //           stopOrdersDirection.find((orderItem: TradeStopOrder) => {
-  //             return orderItem.lotsRequested === lots;
-  //           }) || null;
-  //
-  //         if (findOrder) {
-  //           return acc;
-  //         }
-  //       }
-  //
-  //       acc.push({
-  //         ...defaultItem,
-  //         price: item.price,
-  //         commission: 0,
-  //         orderId: null,
-  //         lots,
-  //         quantity: item.amount,
-  //         total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-  //         orderType: TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
-  //         status: 0,
-  //       });
-  //
-  //       return acc;
-  //     }, []);
-  //
-  //   const orderControlValues: ControlValue[] = orders
-  //     .filter((item) => +item.direction === +defaultItem.direction)
-  //     .map((item) => ({
-  //       ...defaultItem,
-  //       orderId: item.orderId,
-  //       price: item.averagePositionPrice.value,
-  //       quantity: item.lotsRequested * defaultItem.lot,
-  //       lots: item.lotsRequested,
-  //       commission: item.initialComission.value,
-  //       orderType: {
-  //         id: item.orderType,
-  //         type: item.orderTypeText,
-  //       },
-  //       direction: !!item.direction,
-  //       total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
-  //       status: 1,
-  //     }));
-  //
-  //   const stopOrderControlValues: ControlValue[] = stopOrders
-  //     .filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction)
-  //     .map((item) => ({
-  //       ...defaultItem,
-  //       orderId: item.stopOrderId,
-  //       price: item.price.value,
-  //       quantity: item.lotsRequested * defaultItem.lot,
-  //       lots: item.lotsRequested,
-  //       commission: 0,
-  //       orderType: {
-  //         id: item.orderType,
-  //         type: item.orderTypeText,
-  //       },
-  //       direction: !!item.direction,
-  //       total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
-  //       status: 1,
-  //     }));
-  //
-  //   const operationControlValues: ControlValue[] = operations
-  //     .filter((item) => item.type === operationType && item.state === 1)
-  //     .filter((item) => actionControlValues.findIndex((action) => action.quantity === item.quantity) === -1)
-  //     .map((item) => {
-  //       return {
-  //         ...defaultItem,
-  //         price: item.price.value,
-  //         quantity: item.quantity * defaultItem.lot,
-  //         lots: item.quantity,
-  //         commission: item.comission.value,
-  //         date: item.date,
-  //         total: getNumberPrecision(item.price.value * item.quantity, 2),
-  //         orderType: null,
-  //         status: 2,
-  //       };
-  //     });
-  //
-  //   return {
-  //     actions: actionControlValues,
-  //     ideas: ideaControlValues,
-  //     orders: [...orderControlValues, ...stopOrderControlValues],
-  //     operations: operationControlValues,
-  //   };
-  // }
 
   private _getDataForRequestForm(item: ControlValue) {
     return {

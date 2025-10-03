@@ -21,7 +21,7 @@ import { TRADE_ORDER_TYPE_LIMIT, TRADE_STOP_ORDER_TYPE_TAKE_PROFIT } from '../co
 
 @Injectable()
 export class TradeFormService {
-  private _getOperationType(direction: boolean): 15 | 22 {
+  getOperationType(direction: boolean): 15 | 22 {
     return direction ? 15 : 22;
   }
 
@@ -82,84 +82,6 @@ export class TradeFormService {
             return false;
           }) === -1
       );
-  }
-
-  updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {
-    return {
-      actions: {
-        entries: [
-          ...position.actions.entries.map((item: any) => ({
-            amount: item.amount,
-            brokerId: item.brokerId,
-            date: item.date,
-            price: item.price,
-          })),
-          ...entries
-            .map((item) => ({
-              amount: item.quantity,
-              date: item.date,
-              brokerId: 1,
-              price: item.price.value,
-            }))
-            .sort((a: { date: string }, b: { date: string }) =>
-              sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
-            ),
-        ],
-        outs: [
-          ...position.actions.outs.map((item: any) => ({
-            amount: item.amount,
-            brokerId: item.brokerId,
-            date: item.date,
-            price: item.price,
-          })),
-          ...outs
-            .map((item) => ({
-              amount: item.quantity,
-              date: item.date as string,
-              brokerId: 1,
-              price: item.price.value,
-            }))
-            .sort((a: { date: string }, b: { date: string }) =>
-              sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
-            ),
-        ],
-      },
-      dividends: position.dividends.map((item: any) => ({
-        amount: item.amount,
-        brokerId: item.brokerId,
-        date: item.date,
-        size: item.size,
-      })),
-      comissions: [
-        ...position.comissions.map((item: any) => ({
-          brokerId: item.brokerId,
-          comment: item.comment,
-          date: item.date,
-          size: item.size,
-        })),
-        ...commissions.map((item: TradeOperation) => ({
-          brokerId: 1,
-          comment: item.description,
-          date: item.date,
-          size: Math.abs(item.comission.value),
-        })),
-      ],
-      idea: {
-        goals: position.idea.targets.map((item: any) => ({
-          amount: item.amount,
-          goal: item.price,
-        })),
-        instrumentId: position.idea.instrument.id,
-        parentId: position.idea.parentId,
-        portfolioId: position.idea.portfolioId,
-        positionType: position.idea.positionType,
-        strategyId: position.idea.strategy!.id,
-        amount: position.idea.entries.reduce((acc, item) => (acc += item.quantity), 0),
-        entry: position.idea.entries[0] ? position.idea.entries[0].price : null,
-        stop: position.idea.stop ? position.idea.stop.price : null,
-        watch: true,
-      },
-    };
   }
 
   getEntryControlValue(
@@ -399,6 +321,84 @@ export class TradeFormService {
       actions: executedControlValues,
       ideas: unloadingControlValues,
       orders: [...orderControlValues, ...stopOrderControlValues],
+    };
+  }
+
+  updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {
+    return {
+      actions: {
+        entries: [
+          ...position.actions.entries.map((item: any) => ({
+            amount: item.amount,
+            brokerId: item.brokerId,
+            date: item.date,
+            price: item.price,
+          })),
+          ...entries
+            .map((item) => ({
+              amount: item.quantity,
+              date: item.date,
+              brokerId: 1,
+              price: item.price.value,
+            }))
+            .sort((a: { date: string }, b: { date: string }) =>
+              sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+            ),
+        ],
+        outs: [
+          ...position.actions.outs.map((item: any) => ({
+            amount: item.amount,
+            brokerId: item.brokerId,
+            date: item.date,
+            price: item.price,
+          })),
+          ...outs
+            .map((item) => ({
+              amount: item.quantity,
+              date: item.date as string,
+              brokerId: 1,
+              price: item.price.value,
+            }))
+            .sort((a: { date: string }, b: { date: string }) =>
+              sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+            ),
+        ],
+      },
+      dividends: position.dividends.map((item: any) => ({
+        amount: item.amount,
+        brokerId: item.brokerId,
+        date: item.date,
+        size: item.size,
+      })),
+      comissions: [
+        ...position.comissions.map((item: any) => ({
+          brokerId: item.brokerId,
+          comment: item.comment,
+          date: item.date,
+          size: item.size,
+        })),
+        ...commissions.map((item: TradeOperation) => ({
+          brokerId: 1,
+          comment: item.description,
+          date: item.date,
+          size: Math.abs(item.comission.value),
+        })),
+      ],
+      idea: {
+        goals: position.idea.targets.map((item: any) => ({
+          amount: item.amount,
+          goal: item.price,
+        })),
+        instrumentId: position.idea.instrument.id,
+        parentId: position.idea.parentId,
+        portfolioId: position.idea.portfolioId,
+        positionType: position.idea.positionType,
+        strategyId: position.idea.strategy!.id,
+        amount: position.idea.entries.reduce((acc, item) => (acc += item.quantity), 0),
+        entry: position.idea.entries[0] ? position.idea.entries[0].price : null,
+        stop: position.idea.stop ? position.idea.stop.price : null,
+        watch: true,
+      },
     };
   }
 }

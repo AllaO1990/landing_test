@@ -343,7 +343,6 @@ export class TradeStore extends ComponentStore<TradeState> {
       switchMap((params: Params) =>
         this._api.removeStopOrder(params).pipe(
           switchMap((removed: Response<any>) => {
-            console.log(params);
             return this._api.addStopOrder(params).pipe(
               tap((response: Response<any>) => {
                 if (response.success) {
