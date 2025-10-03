@@ -22,7 +22,13 @@ import {
   TuiSelect,
 } from '@taiga-ui/kit';
 import { TradeStore } from '../common/store';
-import { TradeOrderType, TradeOrderTypes, TradeSource, TradeSources } from '../common/api.types';
+import {
+  TradeOrderType,
+  TradeOrderTypeDescription,
+  TradeOrderTypesDescription,
+  TradeSource,
+  TradeSources,
+} from '../common/api.types';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { TRADE_EXPIRATION_TYPES } from './request.constants';
@@ -33,7 +39,7 @@ import { TradeOrderTypeText, TradeStopOrderTypeText } from '../common/order.type
 
 export interface RequestFormValue {
   direction: boolean;
-  orderType: number;
+  orderType: TradeOrderType;
   price: number;
   quantity: number;
   lot: number;
@@ -74,17 +80,17 @@ export class RequestTradeComponent implements AfterViewInit {
 
   @tuiPure
   get max(): number | null {
-    return this.#context.max || null;
+    return this.#context.data.max || null;
   }
 
   @tuiPure
   get price(): number | null {
-    return this.#context.price.value || null;
+    return this.#context.data.price.value || null;
   }
 
   @tuiPure
   get lastPrice(): number | null {
-    return this.#context.lastPrice.value || null;
+    return this.#context.data.lastPrice.value || null;
   }
 
   readonly dates: { name: string; date: [TuiDay, TuiTime] }[] = [
@@ -107,7 +113,6 @@ export class RequestTradeComponent implements AfterViewInit {
     orderType: new FormControl(null, Validators.required),
     expirationType: new FormControl({ value: null, disabled: true }, Validators.required),
     expireDate: new FormControl({ value: this.dates[0].date, disabled: true }),
-    stopOrderType: new FormControl(null),
     stopPrice: new FormControl({ value: null, disabled: true }, Validators.required),
     trailingData: new FormGroup({
       indent: new FormControl(1),
@@ -115,9 +120,6 @@ export class RequestTradeComponent implements AfterViewInit {
       spread: new FormControl({ value: null, disabled: true }, Validators.required),
       spreadType: new FormControl(1),
     }),
-    exchangeOrderType: new FormControl(0),
-    takeProfitType: new FormControl(0),
-    priceType: new FormControl(0),
     price: new FormControl(null, Validators.required),
     quantity: new FormControl({ value: null, disabled: true }, Validators.required),
     lots: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
@@ -173,7 +175,7 @@ export class RequestTradeComponent implements AfterViewInit {
     return this.groupTrailingData.get('spread') as FormControl;
   }
 
-  types$: Observable<TradeOrderTypes | null> = this.#store.orderTypes$;
+  types$: Observable<TradeOrderTypesDescription | null> = this.#store.orderTypes$;
 
   expirationTypes$: Observable<TradeSources> = of(TRADE_EXPIRATION_TYPES);
 
@@ -216,21 +218,46 @@ export class RequestTradeComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.#context) {
-      const { orderType, direction, quantity, lot, price, minPriceIncrement, lastPrice } = this.#context;
+    if (this.#context && this.#context.data) {
+      const {
+        data: {
+          orderType,
+          direction,
+          quantity,
+          lot,
+          price,
+          minPriceIncrement,
+          lastPrice,
+          stopPrice,
+          expireDate,
+          trailingData,
+        },
+      } = this.#context;
       const lots = Math.floor(quantity.value / lot.value);
+      const stopPriceCalc = stopPrice.value ? stopPrice : price;
+      const date = expireDate ? this._getTuiDayTime(expireDate.value) : null;
 
-      this._updateControl(this.controlDirection, direction, { onlySelf: true });
-      this._updateControl(this.controlLots, { value: lots, disabled: quantity.disabled }, { onlySelf: true });
-      this._updateControl(this.controlPrice, price, { onlySelf: true });
-      this._updateControl(this.controlStopPrice, price.value ? price : lastPrice, { onlySelf: true });
-      this._updateControl(this.controlOrderType, orderType, { onlySelf: true });
+      this._updateControl(this.controlDirection, direction);
+      this._updateControl(this.controlLots, { value: lots, disabled: quantity.disabled });
+      this._updateControl(this.controlStopPrice, stopPriceCalc.value ? stopPriceCalc : lastPrice);
+      this._updateControl(this.controlPrice, price);
+      this._updateControl(this.controlOrderType, orderType);
       this._updateControl(this.controlLot, lot, { onlySelf: false });
-      this._updateControl(this.controlSpread, minPriceIncrement, { onlySelf: true });
+      this._updateControl(this.controlSpread, minPriceIncrement);
+
+      if (date !== null) {
+        this._updateControl(this.controlExpireDate, { value: date, disabled: expireDate.disabled });
+      }
+
+      if (trailingData.value && trailingData.value.spread) {
+        this.groupTrailingData.patchValue(trailingData.value);
+      }
     }
 
     this.expirationTypes$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((types: TradeSources) => {
-      this.controlExpirationType.setValue(types[0]);
+      if (this.controlExpirationType.value === null) {
+        this.controlExpirationType.setValue(types[0]);
+      }
     });
 
     this.controlOrderType.valueChanges
@@ -279,22 +306,33 @@ export class RequestTradeComponent implements AfterViewInit {
     combineLatest([
       this.controlQuantity.valueChanges.pipe(
         startWith(this.controlQuantity.value),
-        filter((value: any) => value !== null)
+        filter((value: number | null): value is number => value !== null)
       ),
       this.controlPrice.valueChanges.pipe(
         startWith(this.controlPrice.value),
-        filter((value: any) => value !== null)
+        filter((value: number | null): value is number => value !== null)
       ),
     ])
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
         debounceTime(100),
-        map(([quantity, price]: [any, any]) => getNumberPrecision(+quantity * +price, 2))
+        map(([quantity, price]: [number, number]) => getNumberPrecision(+quantity * +price, 2))
       )
       .subscribe((value) => this.controlTotal.patchValue(value));
   }
 
   protected stringifySource: TuiStringHandler<TradeSource> = (item: TradeSource) => item.name;
+
+  @tuiPure
+  protected stringifyOrderType(items: TradeOrderTypesDescription) {
+    return (item: TradeOrderTypeDescription) => {
+      const find =
+        items.find((desc: TradeOrderTypeDescription) => desc.type === item.type && desc.id === item.id) || null;
+      return find ? find.name : '';
+    };
+  }
+
+  protected identityMatcherOrderType = (a: TradeOrderType, b: TradeOrderType) => a.id === b.id && a.type === b.type;
 
   @tuiPure
   protected stringifyActions(items: readonly { name: string; id: boolean }[]): TuiStringHandler<boolean> {
@@ -304,21 +342,21 @@ export class RequestTradeComponent implements AfterViewInit {
   }
 
   @tuiPure
-  protected stringifyTypes(items: TradeOrderTypes): TuiStringHandler<number> {
+  protected stringifyTypes(items: TradeOrderTypesDescription): TuiStringHandler<number> {
     const map = new Map(items.map(({ name, id }) => [id, name] as [number, string]));
 
     return (value: number) => map.get(value) || '';
   }
 
-  private _updateControl<T = any>(
+  private _updateControl<T = unknown>(
     control: FormControl,
     controlState: { value: T; disabled: boolean },
-    options?: {
+    options: {
       onlySelf?: boolean;
       emitEvent?: boolean;
       emitModelToViewChange?: boolean;
       emitViewToModelChange?: boolean;
-    }
+    } = { onlySelf: true }
   ): void {
     control.setValue(controlState.value, options);
     control[controlState.disabled ? 'disable' : 'enable'](options);
@@ -330,5 +368,14 @@ export class RequestTradeComponent implements AfterViewInit {
 
   private _getDate(day: TuiDay, time: TuiTime): Date {
     return new Date(day.toLocalNativeDate().valueOf() + time.valueOf());
+  }
+
+  private _getTuiDayTime(dateString: string | null): [TuiDay, TuiTime] | null {
+    if (!dateString) {
+      return null;
+    }
+
+    const date = new Date(dateString);
+    return [TuiDay.fromLocalNativeDate(date), TuiTime.fromLocalNativeDate(date)];
   }
 }

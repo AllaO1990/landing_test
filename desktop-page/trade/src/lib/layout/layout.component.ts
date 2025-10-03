@@ -6,10 +6,21 @@ import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
-import { BehaviorSubject, filter, map, Observable, pairwise, startWith, Subject, switchMap, timer } from 'rxjs';
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  pairwise,
+  startWith,
+  Subject,
+  switchMap,
+  timer,
+} from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ControlValue } from '../form/form.types';
+import { ControlValue, ControlValueStatus } from '../form/form.types';
 
 @Component({
   selector: 'trade-layout',
@@ -39,7 +50,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
   readonly isDisabled$: Observable<boolean> = this.formGroup.valueChanges.pipe(
     map((value) => ({ entry: value.trade.entry, out: value.trade.out })),
-    map((value: { entry: { status: number }[]; out: { status: number }[] }) => {
+    map((value: { entry: { status: ControlValueStatus }[]; out: { status: ControlValueStatus }[] }) => {
       const { entry, out } = value;
 
       if (!entry || !out) {
@@ -49,11 +60,12 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         return true;
       }
 
-      const entryIndex = entry.findIndex((item) => item.status === 0);
-      const outIndex = out.findIndex((item) => item.status === 0);
+      const entryIndex = entry.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+      const outIndex = out.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
 
       return entryIndex === -1 && outIndex === -1;
-    })
+    }),
+    distinctUntilChanged()
   );
 
   ngAfterViewInit(): void {
@@ -75,10 +87,10 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
             // ),
             filter(
               ([first, second]: [ControlValue[], ControlValue[]]) =>
-                (!first || !first[0] || (first[0] && first[0].status !== 2)) &&
+                (!first || !first[0] || (first[0] && first[0].status !== ControlValueStatus.EXECUTED)) &&
                 second &&
                 second[0] &&
-                second[0].status === 2
+                second[0].status === ControlValueStatus.EXECUTED
             ),
             // tap(([first, second]: [ControlValue[], ControlValue[]]) =>
             //   console.log('after filter', first[0] && first[0].status, second, second[0] && second[0].status)
@@ -96,7 +108,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
         if (account && instrument && source) {
           const outOrders = this._getOrders(
-            out.filter((item: { status: number }) => item.status === 0),
+            out.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
             account.accountId,
             instrument.id,
             source.id
@@ -127,7 +139,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     const { account, instrument, source } = filter;
 
     const entryOrders = this._getOrders(
-      entry.filter((item: { status: number }) => item.status === 0),
+      entry.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
       account.accountId,
       instrument.id,
       source.id

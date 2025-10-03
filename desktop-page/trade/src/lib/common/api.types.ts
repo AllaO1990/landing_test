@@ -31,10 +31,15 @@ export interface TradeToken {
 export interface TradeOrderType {
   id: number;
   type: string;
-  name: string;
 }
 
 export type TradeOrderTypes = TradeOrderType[];
+
+export interface TradeOrderTypeDescription extends TradeOrderType {
+  name: string;
+}
+
+export type TradeOrderTypesDescription = TradeOrderTypeDescription[];
 
 export interface TradeOrder {
   orderId: string;
@@ -77,7 +82,7 @@ export interface TradeStopOrder {
   stopPrice: TradeValue;
   takeProfitType: number;
   takeProfitTypeText: string;
-  trailingData: string;
+  trailingData: any;
   status: number;
   statusText: string;
 }

@@ -9,7 +9,7 @@ import {
   TradeOperations,
   TradeOrder,
   TradeOrders,
-  TradeOrderTypes,
+  TradeOrderTypesDescription,
   TradePortfolio,
   TradeSources,
   TradeStopOrders,
@@ -25,9 +25,9 @@ export interface TradeState {
   sources: TradeSources | null;
   token: Response<TradeToken | null> | null;
   accounts: Response<TradeAccounts | null> | null;
-  orderType: TradeOrderTypes | null;
+  orderType: TradeOrderTypesDescription | null;
   orders: TradeOrders | null;
-  stopOrders: any | null;
+  stopOrders: TradeStopOrders | null;
   portfolio: TradePortfolio | null;
   operations: TradeOperations | null;
   directionTypes: TradeDirections | null;
@@ -54,7 +54,9 @@ export class TradeStore extends ComponentStore<TradeState> {
   readonly directionTypes$: Observable<TradeDirections | null> = this.select(
     (state: TradeState) => state.directionTypes
   );
-  readonly orderTypes$: Observable<TradeOrderTypes | null> = this.select((state: TradeState) => state.orderType);
+  readonly orderTypes$: Observable<TradeOrderTypesDescription | null> = this.select(
+    (state: TradeState) => state.orderType
+  );
   readonly orders$: Observable<TradeOrders | null> = this.select((state: TradeState) => state.orders);
   readonly stopOrders$: Observable<TradeStopOrders | null> = this.select((state: TradeState) => state.stopOrders);
   readonly portfolio$: Observable<TradePortfolio | null> = this.select((state: TradeState) => state.portfolio);
@@ -99,7 +101,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   );
 
   readonly updateOrderTypes = this.updater(
-    (state: TradeState, orderType: null | TradeOrderTypes): TradeState => ({
+    (state: TradeState, orderType: null | TradeOrderTypesDescription): TradeState => ({
       ...state,
       orderType,
     })
@@ -188,7 +190,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 
         // return this._api.getOrderTypes();
       }),
-      tap((response: Response<TradeOrderTypes>) => this.updateOrderTypes(response.data))
+      tap((response: Response<TradeOrderTypesDescription>) => this.updateOrderTypes(response.data))
     )
   );
 
@@ -311,12 +313,47 @@ export class TradeStore extends ComponentStore<TradeState> {
     )
   );
 
+  addStopOrder = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api.addStopOrder(params).pipe(
+          tap((response: Response<any>) => {
+            if (response.success) {
+              this.loadOrders(params);
+              this.loadOperations(params);
+            }
+          })
+        )
+      )
+    )
+  );
+
   removeStopOrder = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>
         this._api
           .removeStopOrder(params)
           .pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
+      )
+    )
+  );
+
+  changeStopOrder = this.effect((stream$: Observable<Params>) =>
+    stream$.pipe(
+      switchMap((params: Params) =>
+        this._api.removeStopOrder(params).pipe(
+          switchMap((removed: Response<any>) => {
+            console.log(params);
+            return this._api.addStopOrder(params).pipe(
+              tap((response: Response<any>) => {
+                if (response.success) {
+                  this.loadOperations(params);
+                  this.loadOrders(params);
+                }
+              })
+            );
+          })
+        )
       )
     )
   );

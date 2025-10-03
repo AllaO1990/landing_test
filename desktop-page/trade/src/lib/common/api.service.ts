@@ -107,19 +107,17 @@ export class ApiService {
       .post<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
         accountId: body['accountId'],
         direction: body['direction'],
-        exchangeOrderType: body['exchangeOrderType'],
+        exchangeOrderType: 0,
         expirationType: body['expirationType']['id'],
         expireDate: body['expireDate'],
         instrumentId: body['instrumentId'],
-        // orderType: body['orderType']['id'],
         price: body['price'],
         quantity: body['quantity'],
         sourceId: body['sourceId'],
-        priceType: body['priceType'],
-        // stopOrderType: body['stopOrderType'],
+        priceType: 0,
         stopOrderType: body['orderType']['id'],
         stopPrice: body['stopPrice'],
-        takeProfitType: body['takeProfitType'],
+        takeProfitType: 0,
         trailingData: body['trailingData'],
       })
       .pipe(
@@ -136,22 +134,46 @@ export class ApiService {
   }
 
   removeOrder(body: Params): Observable<Response<any>> {
-    return this._http.delete<Response<any>>(`${this.host}/v1/trades/orders`, {
-      body: {
-        accountId: body['accountId'],
-        orderId: body['orderId'],
-        sourceId: body['sourceId'],
-      },
-    });
+    return this._http
+      .delete<Response<any>>(`${this.host}/v1/trades/orders`, {
+        body: {
+          accountId: body['accountId'],
+          orderId: body['id'],
+          sourceId: body['sourceId'],
+        },
+      })
+      .pipe(
+        catchError((error: Error) => {
+          console.warn(error);
+
+          return of({
+            data: null,
+            message: error.message,
+            success: false,
+          });
+        })
+      );
   }
 
   removeStopOrder(body: Params): Observable<Response<any>> {
-    return this._http.delete<Response<any>>(`${this.host}/v1/trades/stop-orders`, {
-      body: {
-        accountId: body['accountId'],
-        orderId: body['orderId'],
-        sourceId: body['sourceId'],
-      },
-    });
+    return this._http
+      .delete<Response<any>>(`${this.host}/v1/trades/stop-orders`, {
+        body: {
+          accountId: body['accountId'],
+          orderId: body['id'],
+          sourceId: body['sourceId'],
+        },
+      })
+      .pipe(
+        catchError((error: Error) => {
+          console.warn(error);
+
+          return of({
+            data: body,
+            message: error.message,
+            success: false,
+          });
+        })
+      );
   }
 }

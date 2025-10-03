@@ -187,13 +187,13 @@
     {{ item.total | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
   </div>
   <div class="item__value row__item row__item--center">
-    @if (item.status === 1) {
+    @if (item.status === 'AWAITS') {
       <tui-icon
         tuiHint="Заявка выставлена и ожидает исполнения"
         tuiHintAppearance="dark"
         style="color: var(--tui-status-warning)"
         icon="@tui.refresh-cw"></tui-icon>
-    } @else if (item.status === 2) {
+    } @else if (item.status === 'EXECUTED') {
       <tui-icon
         tuiHint="Заявка исполнена"
         tuiHintAppearance="dark"
@@ -208,7 +208,7 @@
     }
   </div>
   <div class="item__value row__item row__item--actions">
-    @if (item.status !== 2) {
+    @if (item.status !== 'EXECUTED') {
       <button
         appearance="icon"
         iconStart="@tui.pencil"

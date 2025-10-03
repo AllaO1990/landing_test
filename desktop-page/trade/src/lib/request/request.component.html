@@ -43,7 +43,8 @@
           <tui-textfield
             class="form__control"
             tuiChevron
-            [stringify]="stringifySource"
+            [identityMatcher]="identityMatcherOrderType"
+            [stringify]="stringifyOrderType(items)"
             [tuiTextfieldSize]="size"
             [tuiTextfieldCleaner]="false">
             <input
