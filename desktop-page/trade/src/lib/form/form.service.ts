@@ -122,46 +122,50 @@ export class TradeFormService {
     const unloadingOrdersDirection = ordersDirection.slice();
     const unloadingStopOrdersDirection = stopOrdersDirection.slice();
 
-    const unloadingControlValues: ControlValue[] = position.idea.entries
-      .filter((item) => !actionQuantity.includes(Math.floor(item.quantity / defaultItem.lot)))
-      .reduce((acc: ControlValue[], item) => {
-        const lots = Math.floor(item.quantity / defaultItem.lot);
+    let unloadingControlValues: ControlValue[] = [];
 
-        if (unloadingOrdersDirection.length > 0) {
-          const findIndexOrder = unloadingOrdersDirection.findIndex((orderItem: TradeOrder) => {
-            return orderItem.lotsRequested === lots;
+    if (ordersDirection.length === 0 && stopOrdersDirection.length === 0 && executedControlValues.length === 0) {
+      unloadingControlValues = position.idea.entries
+        .filter((item) => !actionQuantity.includes(Math.floor(item.quantity / defaultItem.lot)))
+        .reduce((acc: ControlValue[], item) => {
+          const lots = Math.floor(item.quantity / defaultItem.lot);
+
+          if (unloadingOrdersDirection.length > 0) {
+            const findIndexOrder = unloadingOrdersDirection.findIndex((orderItem: TradeOrder) => {
+              return orderItem.lotsRequested === lots;
+            });
+
+            if (findIndexOrder !== -1) {
+              unloadingOrdersDirection[findIndexOrder].lotsRequested = -1;
+              return acc;
+            }
+          }
+
+          if (unloadingStopOrdersDirection.length > 0) {
+            const findIndexOrder = unloadingStopOrdersDirection.findIndex((orderItem: TradeStopOrder) => {
+              return orderItem.lotsRequested === lots;
+            });
+
+            if (findIndexOrder !== -1) {
+              unloadingStopOrdersDirection[findIndexOrder].lotsRequested = -1;
+              return acc;
+            }
+          }
+
+          acc.push({
+            ...defaultItem,
+            price: item.price,
+            commission: 0,
+            quantity: item.quantity,
+            lots,
+            total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
+            orderType: TRADE_ORDER_TYPE_LIMIT,
+            status: ControlValueStatus.UNLOADING,
           });
 
-          if (findIndexOrder !== -1) {
-            unloadingOrdersDirection[findIndexOrder].lotsRequested = -1;
-            return acc;
-          }
-        }
-
-        if (unloadingStopOrdersDirection.length > 0) {
-          const findIndexOrder = unloadingStopOrdersDirection.findIndex((orderItem: TradeStopOrder) => {
-            return orderItem.lotsRequested === lots;
-          });
-
-          if (findIndexOrder !== -1) {
-            unloadingStopOrdersDirection[findIndexOrder].lotsRequested = -1;
-            return acc;
-          }
-        }
-
-        acc.push({
-          ...defaultItem,
-          price: item.price,
-          commission: 0,
-          quantity: item.quantity,
-          lots,
-          total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-          orderType: TRADE_ORDER_TYPE_LIMIT,
-          status: ControlValueStatus.UNLOADING,
-        });
-
-        return acc;
-      }, []);
+          return acc;
+        }, []);
+    }
 
     const orderControlValues: ControlValue[] = ordersDirection.map((item: TradeOrder) => ({
       ...defaultItem,
@@ -400,5 +404,42 @@ export class TradeFormService {
         watch: true,
       },
     };
+  }
+
+  getCalcOutIdea(outIdea: ControlValue[], entryLots: number, priceIncrement: number): ControlValue[] {
+    let quantity = 0;
+
+    return [0.4, 0.3, 0.3].reduce((acc: ControlValue[], pct: number, index: number, array: number[]) => {
+      let amount = getNumberPrecision(entryLots * pct, priceIncrement === 8 ? priceIncrement : 0);
+
+      if (entryLots === 1) {
+        if (index === 1) {
+          amount = 1;
+        } else {
+          return acc;
+        }
+      }
+
+      if (index === array.length - 1) {
+        amount = getNumberPrecision(entryLots - quantity, priceIncrement);
+
+        if (amount === 0) {
+          return acc;
+        }
+      }
+
+      quantity += amount;
+
+      const item = outIdea[index];
+
+      acc.push({
+        ...item,
+        lots: amount,
+        quantity: getNumberPrecision(amount * item.lot, priceIncrement === 8 ? priceIncrement : 0),
+        total: getNumberPrecision(amount * item.lot * item.price, 2),
+      });
+
+      return acc;
+    }, []);
   }
 }

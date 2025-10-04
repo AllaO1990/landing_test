@@ -258,45 +258,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       ),
       this.idea$,
     ]).subscribe(([entryLots, position]) => {
-      const outs = this.#service.getOutControlValue(position, [], [], [], 0).ideas;
       const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
-      let quantity = 0;
-
-      const data = [0.4, 0.3, 0.3].reduce((acc: any, pct: number, index: number, array) => {
-        let amount = getNumberPrecision(entryLots * pct, priceIncrement === 8 ? priceIncrement : 0);
-
-        if (entryLots === 1) {
-          if (index === 1) {
-            amount = 1;
-          } else {
-            return acc;
-          }
-        }
-
-        if (index === array.length - 1) {
-          amount = getNumberPrecision(entryLots - quantity, priceIncrement);
-
-          if (amount === 0) {
-            return acc;
-          }
-        }
-
-        quantity += amount;
-
-        const item = outs[index];
-
-        acc.push({
-          ...item,
-          lots: amount,
-          quantity: getNumberPrecision(amount * item.lot, priceIncrement === 8 ? priceIncrement : 0),
-          total: getNumberPrecision(amount * item.lot * item.price, 2),
-        });
-
-        return acc;
-      }, []);
+      const outs = this.#service.getOutControlValue(position, [], [], [], 0).ideas;
+      const data = this.#service.getCalcOutIdea(outs, entryLots, priceIncrement);
 
       this.formArrayOut.clear({ emitEvent: false });
-      data.forEach((value: any, index: number) => {
+      data.forEach((value: ControlValue, index: number) => {
         this.formArrayOut.setControl(index, new FormControl(value));
       });
     });
@@ -387,26 +354,24 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     const minPriceIncrement = getNumberPrecision(instrument.minPriceIncrement * 3, 2);
     let max = null;
 
-    if (this.formArrayEntry.value && this.formArrayEntry.value.length > 0) {
-      max = this.formArrayEntry.value.reduce((acc: number, item: { quantity: number }) => {
-        return acc + item.quantity;
+    if (type === 'out' && this.formArrayEntry.value && this.formArrayEntry.value.length > 0) {
+      max = this.formArrayEntry.value.reduce((acc: number, item: { lots: number }) => {
+        return acc + item.lots;
       }, 0);
-    }
-
-    if (type === 'entry') {
-      max = null;
     }
 
     this.#dialog
       .openTradeRequest(this.#injector, {
-        direction: { value: direction, disabled: true },
-        orderType: { value: null, disabled: false },
-        price: { value: null, disabled: false },
-        lot: { value: instrument.lot, disabled: false },
-        minPriceIncrement: { value: minPriceIncrement, disabled: false },
-        quantity: { value: null, disabled: false },
-        lastPrice: { value: lastPrice.last, disabled: true },
-        max,
+        data: {
+          direction: { value: direction, disabled: true },
+          orderType: { value: null, disabled: false },
+          price: { value: null, disabled: false },
+          lot: { value: instrument.lot, disabled: false },
+          minPriceIncrement: { value: minPriceIncrement, disabled: false },
+          quantity: { value: null, disabled: false },
+          lastPrice: { value: lastPrice.last, disabled: true },
+          max,
+        },
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue | null) => {
@@ -588,8 +553,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       ideas: ControlValue[];
     } = this.#service.getOutControlValue(position, orders, stopOrders, actualOperations, source.id);
 
-    console.log(entry, out);
-
     const tempOut: ControlValue[] = this.formArrayOut.value
       ? this.formArrayOut.value.slice().filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
       : [];
@@ -597,14 +560,20 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.formArrayEntry.clear({ emitEvent: false });
     this.formArrayOut.clear({ emitEvent: false });
 
-    [...entry.actions, ...entry.orders, ...entry.ideas].forEach((item, index: number) => {
+    const commonEntry: ControlValue[] = [...entry.actions, ...entry.orders, ...entry.ideas];
+
+    commonEntry.forEach((item, index: number) => {
       this.formArrayEntry.setControl(index, new FormControl(item));
     });
 
     let outControlValues: ControlValue[] = [...out.actions, ...out.orders];
 
     if (entry.actions.length === 0) {
-      outControlValues = [...outControlValues, ...out.ideas];
+      const entryLots = commonEntry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
+      const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
+      const ideas = this.#service.getCalcOutIdea(out.ideas, entryLots, priceIncrement);
+
+      outControlValues = [...outControlValues, ...ideas];
     }
 
     outControlValues.forEach((item, index: number) => {

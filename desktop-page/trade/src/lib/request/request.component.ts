@@ -80,7 +80,7 @@ export class RequestTradeComponent implements AfterViewInit {
 
   @tuiPure
   get max(): number | null {
-    return this.#context.data.max || null;
+    return (this.#context.data && this.#context.data.max) || null;
   }
 
   @tuiPure
@@ -90,7 +90,7 @@ export class RequestTradeComponent implements AfterViewInit {
 
   @tuiPure
   get lastPrice(): number | null {
-    return this.#context.data.lastPrice.value || null;
+    return (this.#context.data && this.#context.data.lastPrice.value) || null;
   }
 
   readonly dates: { name: string; date: [TuiDay, TuiTime] }[] = [
@@ -234,7 +234,7 @@ export class RequestTradeComponent implements AfterViewInit {
         },
       } = this.#context;
       const lots = Math.floor(quantity.value / lot.value);
-      const stopPriceCalc = stopPrice.value ? stopPrice : price;
+      const stopPriceCalc = stopPrice && stopPrice.value ? stopPrice : price;
       const date = expireDate ? this._getTuiDayTime(expireDate.value) : null;
 
       this._updateControl(this.controlDirection, direction);
@@ -249,7 +249,7 @@ export class RequestTradeComponent implements AfterViewInit {
         this._updateControl(this.controlExpireDate, { value: date, disabled: expireDate.disabled });
       }
 
-      if (trailingData.value && trailingData.value.spread) {
+      if (trailingData && trailingData.value && trailingData.value.spread) {
         this.groupTrailingData.patchValue(trailingData.value);
       }
     }
