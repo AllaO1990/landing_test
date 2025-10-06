@@ -18,6 +18,7 @@ import {
 } from './form.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { TRADE_ORDER_TYPE_LIMIT, TRADE_STOP_ORDER_TYPE_TAKE_PROFIT } from '../common/order.constants';
+import { TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL } from '../request/request.constants';
 
 @Injectable()
 export class TradeFormService {
@@ -27,12 +28,13 @@ export class TradeFormService {
 
   getDefaultControlValue(position: StockPosition, positionType: 'direct' | 'reverse' = 'direct'): DefaultControlValue {
     const direction = position.idea.positionType === 'long';
+    const minPriceIncrement = position.idea.instrument.minPriceIncrement;
 
     return {
       removed: false,
       change: false,
       expireDate: null,
-      expirationType: null,
+      expirationType: TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL,
       orderType: null,
       instrumentId: position.idea.instrument.id,
       commission: 0,
@@ -44,7 +46,7 @@ export class TradeFormService {
       trailingData: {
         indent: 1,
         indentType: 1,
-        spread: null,
+        spread: getNumberPrecision(minPriceIncrement * 3, 2),
         spreadType: 1,
       },
     };
@@ -112,7 +114,7 @@ export class TradeFormService {
         ...defaultItem,
         price: item.price,
         quantity: item.amount,
-        commission: findOperation ? Math.abs(findOperation.comission.value) : 0,
+        commission: findOperation && findOperation.comission ? Math.abs(findOperation.comission.value) : 0,
         lots,
         total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
         status: ControlValueStatus.EXECUTED,
@@ -177,7 +179,7 @@ export class TradeFormService {
         id: item.orderType,
         type: item.orderTypeText,
       },
-      commission: item.initialComission.value,
+      commission: item.initialComission ? item.initialComission.value : 0,
       direction: !!item.direction,
       total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
       status: ControlValueStatus.AWAITS,
@@ -291,7 +293,7 @@ export class TradeFormService {
         price: item.averagePositionPrice.value,
         quantity: item.lotsRequested * defaultItem.lot,
         lots: item.lotsRequested,
-        commission: item.initialComission.value,
+        commission: item.initialComission ? item.initialComission.value : 0,
         orderType: {
           id: item.orderType,
           type: item.orderTypeText,
@@ -407,10 +409,25 @@ export class TradeFormService {
   }
 
   getCalcOutIdea(outIdea: ControlValue[], entryLots: number, priceIncrement: number): ControlValue[] {
+    const precision = priceIncrement === 8 ? priceIncrement : 0;
+    const ratio: number[][] = [[1], [0.6, 0.4], [0.4, 0.3, 0.3]];
+    let enterLotsIndex = 2;
     let quantity = 0;
 
-    return [0.4, 0.3, 0.3].reduce((acc: ControlValue[], pct: number, index: number, array: number[]) => {
-      let amount = getNumberPrecision(entryLots * pct, priceIncrement === 8 ? priceIncrement : 0);
+    if (entryLots <= 3) {
+      enterLotsIndex = (entryLots % 2) + 1;
+    }
+
+    if (outIdea.length === 2) {
+      enterLotsIndex = 1;
+    }
+
+    return ratio[enterLotsIndex].reduce((acc: ControlValue[], pct: number, index: number, array: number[]) => {
+      if (!outIdea[index]) {
+        return acc;
+      }
+
+      let amount = getNumberPrecision(entryLots * pct, precision);
 
       if (entryLots === 1) {
         if (index === 1) {
@@ -420,8 +437,8 @@ export class TradeFormService {
         }
       }
 
-      if (index === array.length - 1) {
-        amount = getNumberPrecision(entryLots - quantity, priceIncrement);
+      if (index === array.length - 1 || index === outIdea.length - 1) {
+        amount = getNumberPrecision(entryLots - quantity, precision);
 
         if (amount === 0) {
           return acc;
@@ -435,7 +452,7 @@ export class TradeFormService {
       acc.push({
         ...item,
         lots: amount,
-        quantity: getNumberPrecision(amount * item.lot, priceIncrement === 8 ? priceIncrement : 0),
+        quantity: getNumberPrecision(amount * item.lot, precision),
         total: getNumberPrecision(amount * item.lot * item.price, 2),
       });
 

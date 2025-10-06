@@ -172,13 +172,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   direction = true;
 
-  mapOperationType: any = {
+  mapOperationType: { [key: string]: string } = {
     '22': 'Продажа',
     '19': 'Комиссия',
     '15': 'Покупка',
   };
 
-  mapOperationState: any = {
+  mapOperationState: { [key: string]: string } = {
     2: 'Отмена',
     1: 'Исполнена',
   };
@@ -236,7 +236,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         })),
         filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
         distinctUntilChanged(this._distinct),
-        switchMap((value: any) =>
+        switchMap((value: Params) =>
           timer(0, this.#store.TIMER).pipe(
             takeUntilDestroyed(this.#destroyRef),
             map(() => value)
@@ -569,30 +569,38 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     let outControlValues: ControlValue[] = [...out.actions, ...out.orders];
 
     if (entry.actions.length === 0) {
-      const entryLots = commonEntry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
-      const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
-      const ideas = this.#service.getCalcOutIdea(out.ideas, entryLots, priceIncrement);
-
-      outControlValues = [...outControlValues, ...ideas];
+      outControlValues = [...outControlValues, ...out.ideas];
     }
 
-    outControlValues.forEach((item, index: number) => {
-      this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
-    });
+    if (tempOut.length === 0) {
+      outControlValues.forEach((item, index: number) => {
+        this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
+      });
+    }
 
-    if (
-      (outControlValues.length > 0 && outControlValues.length !== tempOut.length) ||
-      (outControlValues.length === 0 && tempOut.length > 0)
-    ) {
+    if (tempOut.length > 0) {
+      const copyOutControlValues: (ControlValue | null)[] = outControlValues.slice();
+
       tempOut.forEach((item, index: number) => {
         const findIndex = outControlValues.findIndex(
           (control: ControlValue) => control.lots === item.lots && control.price === item.price
         );
 
-        if (findIndex === -1) {
-          this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
+        let control = item;
+
+        if (findIndex !== -1) {
+          control = outControlValues[findIndex];
+          copyOutControlValues[findIndex] = null;
         }
+
+        this.formArrayOut.setControl(index, new FormControl(control), { emitEvent: false });
       });
+
+      copyOutControlValues
+        .filter((item: ControlValue | null) => item !== null)
+        .forEach((item, index: number) => {
+          this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
+        });
     }
 
     this.formArrayEntry.patchValue([]);

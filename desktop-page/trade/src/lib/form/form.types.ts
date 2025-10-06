@@ -1,4 +1,4 @@
-import { TradeOperation, TradeOrderType } from '../common/api.types';
+import { TradeOperation, TradeOrderType, TradeSource } from '../common/api.types';
 
 export enum ControlValueStatus {
   UNLOADING = 'UNLOADING', // не отправлена брокеру
@@ -22,7 +22,7 @@ export interface ControlValue {
   lots: number;
   quantity: number;
   expireDate: string | null;
-  expirationType: string | null;
+  expirationType: TradeSource | null;
   trailingData: {
     indent: number;
     indentType: number;
@@ -36,7 +36,7 @@ export interface DefaultControlValue {
   removed: boolean;
   change: boolean;
   expireDate: null;
-  expirationType: null;
+  expirationType: TradeSource;
   instrumentId: string;
   commission: number;
   orderType: null;
@@ -48,7 +48,7 @@ export interface DefaultControlValue {
   trailingData: {
     indent: number;
     indentType: number;
-    spread: null;
+    spread: number;
     spreadType: number;
   };
 }
