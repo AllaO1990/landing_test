@@ -50,9 +50,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
   readonly isDisabled$: Observable<boolean> = this.formGroup.valueChanges.pipe(
     map((value) => ({ entry: value.trade.entry, out: value.trade.out })),
-    map((value: { entry: { status: ControlValueStatus }[]; out: { status: ControlValueStatus }[] }) => {
-      const { entry, out } = value;
-
+    map(({ entry, out }: { entry: { status: ControlValueStatus }[]; out: { status: ControlValueStatus }[] }) => {
       if (!entry || !out) {
         return true;
       }

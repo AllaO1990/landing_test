@@ -89,7 +89,7 @@
         <div class="operations">
           <div class="tui-text_h6">Операции</div>
           <lib-list
-            [header]="headerOrder"
+            [header]="headerOperation"
             [itemSize]="itemHeight"
             [style.height.px]="itemHeight * 4 + itemHeight"
             [list]="operations$ | async">
@@ -233,6 +233,18 @@
   </div>
 </ng-template>
 
+<ng-template #headerOperation>
+  <lib-list-header class="header row">
+    <div class="header__item row__item row__item--date">Дата</div>
+    <div class="header__item row__item">Действие</div>
+    <div class="header__item row__item row__item--types">Тип</div>
+    <div class="header__item row__item">Цена</div>
+    <div class="header__item row__item">Лоты</div>
+    <div class="header__item row__item">Комиссия</div>
+    <div class="header__item row__item row__item--total">Стоимость</div>
+  </lib-list-header>
+</ng-template>
+
 <ng-template #headerOrder>
   <lib-list-header class="header row">
     <div class="header__item row__item">Действие</div>
@@ -337,6 +349,9 @@
 </ng-template>
 
 <ng-template #itemOperationTemplate let-item>
+  <div class="item__value row__item row__item--date">
+    {{ item.date | date: "dd.MM.yy HH:mm" }}
+  </div>
   <div class="item__value row__item">
     {{ mapOperationType[item.type] }}
   </div>
@@ -370,22 +385,22 @@
   <!--      style="color: var(&#45;&#45;tui-text-positive)"-->
   <!--      icon="@tui.circle-check"></tui-icon>-->
   <!--  </div>-->
-  <div class="item__value row__item row__item--actions">
-    <!--    <button-->
-    <!--      appearance="icon"-->
-    <!--      iconStart="@tui.pencil"-->
-    <!--      tuiIconButton-->
-    <!--      size="xs"-->
-    <!--      type="button"-->
-    <!--    ></button>-->
-    <!--    <button-->
-    <!--      (click)="onRemoveOrder($event, item)"-->
-    <!--      [loading]="item.removed"-->
-    <!--      appearance="icon"-->
-    <!--      iconStart="@tui.x"-->
-    <!--      tuiIconButton-->
-    <!--      size="xs"-->
-    <!--      type="button"-->
-    <!--    ></button>-->
-  </div>
+  <!--  <div class="item__value row__item row__item&#45;&#45;actions">-->
+  <!--    <button-->
+  <!--      appearance="icon"-->
+  <!--      iconStart="@tui.pencil"-->
+  <!--      tuiIconButton-->
+  <!--      size="xs"-->
+  <!--      type="button"-->
+  <!--    ></button>-->
+  <!--    <button-->
+  <!--      (click)="onRemoveOrder($event, item)"-->
+  <!--      [loading]="item.removed"-->
+  <!--      appearance="icon"-->
+  <!--      iconStart="@tui.x"-->
+  <!--      tuiIconButton-->
+  <!--      size="xs"-->
+  <!--      type="button"-->
+  <!--    ></button>-->
+  <!--  </div>-->
 </ng-template>

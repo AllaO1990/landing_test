@@ -52,8 +52,8 @@ export interface TradeOrder {
   executedOrderPrice: TradeValue;
   totalOrderAmount: TradeValue;
   averagePositionPrice: TradeValue;
-  initialComission: TradeValue;
-  executedComisiion: TradeValue;
+  initialCommission: TradeValue;
+  executedCommission: TradeValue;
   direction: number;
   directionText: string;
   initialSecurityPrice: TradeValue;

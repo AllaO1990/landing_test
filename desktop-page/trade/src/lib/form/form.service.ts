@@ -179,7 +179,7 @@ export class TradeFormService {
         id: item.orderType,
         type: item.orderTypeText,
       },
-      commission: item.initialComission ? item.initialComission.value : 0,
+      commission: item.initialCommission ? item.initialCommission.value : 0,
       direction: !!item.direction,
       total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
       status: ControlValueStatus.AWAITS,
@@ -235,6 +235,7 @@ export class TradeFormService {
       return {
         ...defaultItem,
         price: item.price,
+        stopPrice: item.price,
         lots,
         commission: findOperation ? Math.abs(findOperation.comission.value) : 0,
         quantity: item.amount,
@@ -274,6 +275,7 @@ export class TradeFormService {
       acc.push({
         ...defaultItem,
         price: item.price,
+        stopPrice: item.price,
         commission: 0,
         lots,
         quantity: item.amount,
@@ -293,7 +295,7 @@ export class TradeFormService {
         price: item.averagePositionPrice.value,
         quantity: item.lotsRequested * defaultItem.lot,
         lots: item.lotsRequested,
-        commission: item.initialComission ? item.initialComission.value : 0,
+        commission: item.initialCommission ? item.initialCommission.value : 0,
         orderType: {
           id: item.orderType,
           type: item.orderTypeText,
@@ -328,6 +330,17 @@ export class TradeFormService {
       ideas: unloadingControlValues,
       orders: [...orderControlValues, ...stopOrderControlValues],
     };
+  }
+
+  getStopLossControlValue(
+    position: StockPosition,
+    orders: TradeOrders,
+    stopOrders: TradeStopOrders,
+    operationsDirection: ActualTradeOperations,
+    sourceId: number,
+    lots: number
+  ): any {
+    const defaultItem = this.getDefaultControlValue(position, 'reverse');
   }
 
   updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {
@@ -377,12 +390,14 @@ export class TradeFormService {
         size: item.size,
       })),
       comissions: [
-        ...position.comissions.map((item: any) => ({
-          brokerId: item.brokerId,
-          comment: item.comment,
-          date: item.date,
-          size: item.size,
-        })),
+        ...position.comissions
+          .filter((item: any) => item.size !== 0)
+          .map((item: any) => ({
+            brokerId: item.brokerId,
+            comment: item.comment,
+            date: item.date,
+            size: item.size,
+          })),
         ...commissions.map((item: TradeOperation) => ({
           brokerId: 1,
           comment: item.description,

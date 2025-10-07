@@ -22,7 +22,7 @@ import {
 import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { TuiExpand } from '@taiga-ui/experimental';
 import { TradeDialogService } from '../dialog/dialog.service';
-import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
@@ -79,6 +79,7 @@ import { Params } from '@angular/router';
     TuiChevron,
     TuiItem,
     DetailsComponent,
+    DatePipe,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss',
@@ -553,6 +554,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       ideas: ControlValue[];
     } = this.#service.getOutControlValue(position, orders, stopOrders, actualOperations, source.id);
 
+    const tempEntry: ControlValue[] = this.formArrayEntry
+      ? this.formArrayEntry.value.slice().filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
+      : [];
     const tempOut: ControlValue[] = this.formArrayOut.value
       ? this.formArrayOut.value.slice().filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
       : [];
@@ -560,11 +564,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.formArrayEntry.clear({ emitEvent: false });
     this.formArrayOut.clear({ emitEvent: false });
 
-    const commonEntry: ControlValue[] = [...entry.actions, ...entry.orders, ...entry.ideas];
+    const entryControlValues: ControlValue[] = [...entry.actions, ...entry.orders, ...entry.ideas];
 
-    commonEntry.forEach((item, index: number) => {
-      this.formArrayEntry.setControl(index, new FormControl(item));
-    });
+    this._setControl(this.formArrayEntry, tempEntry, entryControlValues);
 
     let outControlValues: ControlValue[] = [...out.actions, ...out.orders];
 
@@ -572,36 +574,24 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       outControlValues = [...outControlValues, ...out.ideas];
     }
 
-    if (tempOut.length === 0) {
-      outControlValues.forEach((item, index: number) => {
-        this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
-      });
-    }
+    this._setControl(this.formArrayOut, tempOut, outControlValues);
 
-    if (tempOut.length > 0) {
-      const copyOutControlValues: (ControlValue | null)[] = outControlValues.slice();
+    const entryLots: number = (this.formArrayEntry.value || []).reduce(
+      (acc: number, item: ControlValue) => (acc += item.lots),
+      0
+    );
+    const outLots = (this.formArrayOut.value || [])
+      .filter((item: ControlValue) => item.status === ControlValueStatus.EXECUTED)
+      .reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
 
-      tempOut.forEach((item, index: number) => {
-        const findIndex = outControlValues.findIndex(
-          (control: ControlValue) => control.lots === item.lots && control.price === item.price
-        );
-
-        let control = item;
-
-        if (findIndex !== -1) {
-          control = outControlValues[findIndex];
-          copyOutControlValues[findIndex] = null;
-        }
-
-        this.formArrayOut.setControl(index, new FormControl(control), { emitEvent: false });
-      });
-
-      copyOutControlValues
-        .filter((item: ControlValue | null) => item !== null)
-        .forEach((item, index: number) => {
-          this.formArrayOut.setControl(index, new FormControl(item), { emitEvent: false });
-        });
-    }
+    const stopLoss = this.#service.getStopLossControlValue(
+      position,
+      orders,
+      stopOrders,
+      operationsEntry,
+      source.id,
+      entryLots - outLots
+    );
 
     this.formArrayEntry.patchValue([]);
     this.formArrayOut.patchValue([]);
@@ -647,5 +637,44 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         item.stopPrice.value === b[index].stopPrice.value
       );
     });
+  }
+
+  private _setControl(formArray: FormArray, tempControlValues: ControlValue[], controlValues: ControlValue[]): void {
+    if (tempControlValues.length === 0) {
+      controlValues.forEach((item, index: number) => {
+        formArray.setControl(index, new FormControl(item), { emitEvent: false });
+      });
+    }
+
+    if (tempControlValues.length > 0) {
+      const copyOutControlValues: (ControlValue | null)[] = controlValues.slice();
+
+      tempControlValues.forEach((item: ControlValue, index: number) => {
+        const findIndex = controlValues.findIndex(
+          (control: ControlValue) => control.lots === item.lots && control.price === item.price
+        );
+
+        let control = item;
+
+        if (findIndex !== -1) {
+          control = {
+            ...control,
+            id: controlValues[findIndex].id,
+            status: controlValues[findIndex].status,
+          };
+          copyOutControlValues[findIndex] = null;
+        }
+
+        formArray.setControl(index, new FormControl(control), { emitEvent: false });
+      });
+
+      if (tempControlValues.length !== copyOutControlValues.length) {
+        copyOutControlValues.forEach((item: ControlValue | null, index: number) => {
+          if (item !== null) {
+            formArray.setControl(index, new FormControl(item), { emitEvent: false });
+          }
+        });
+      }
+    }
   }
 }

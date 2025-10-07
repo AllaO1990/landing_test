@@ -12,7 +12,16 @@ import {
   Subject,
   switchMap,
 } from 'rxjs';
-import { TradeAccount, TradeOrder, TradeOrders, TradePortfolio, TradeSource, TradeToken } from '../common/api.types';
+import {
+  TradeAccount,
+  TradeOrder,
+  TradeOrders,
+  TradePortfolio,
+  TradeSource,
+  TradeStopOrder,
+  TradeStopOrders,
+  TradeToken,
+} from '../common/api.types';
 import { InstrumentComponent } from 'ui-common/lib/instrument/instrument.component';
 import { AsyncPipe } from '@angular/common';
 import { TuiCell } from '@taiga-ui/layout';
@@ -158,7 +167,29 @@ export class DetailsComponent implements OnDestroy {
             orders.map((item: TradeOrder) =>
               this.#store.removeOrder({
                 accountId: account.accountId,
-                orderId: item.orderId,
+                id: item.orderId,
+                sourceId: source.id,
+                instrumentId: instrument.id,
+              })
+            ),
+          ]);
+        })
+      )
+      .subscribe();
+
+    this.#store.stopOrders$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((orders: TradeStopOrders | null) => {
+          if (orders === null) {
+            return of(orders);
+          }
+
+          return forkJoin([
+            orders.map((item: TradeStopOrder) =>
+              this.#store.removeStopOrder({
+                accountId: account.accountId,
+                id: item.stopOrderId,
                 sourceId: source.id,
                 instrumentId: instrument.id,
               })
