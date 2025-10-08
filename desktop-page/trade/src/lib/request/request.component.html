@@ -243,7 +243,7 @@
       tuiButton
       appearance="primary"
       type="button"
-      [disabled]="formGroup.invalid"
+      [disabled]="formGroup.invalid || formGroup.pristine"
       (click)="onSave($event)">
       Сохранить
     </button>

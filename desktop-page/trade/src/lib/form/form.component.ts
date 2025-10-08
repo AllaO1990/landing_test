@@ -422,6 +422,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
             if (this.#store.isOrder(item.orderType.type)) {
               this.#store.changeOrder({
                 ...calcValue,
+                quantity: calcValue.lots,
                 instrumentId: instrument.id,
                 accountId: account.accountId,
                 sourceId: source.id,
@@ -431,6 +432,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
             if (this.#store.isStopOrder(item.orderType.type)) {
               this.#store.changeStopOrder({
                 ...calcValue,
+                quantity: calcValue.lots,
                 instrumentId: instrument.id,
                 accountId: account.accountId,
                 sourceId: source.id,
@@ -548,11 +550,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       actions: ControlValue[];
       ideas: ControlValue[];
     } = this.#service.getEntryControlValue(position, orders, stopOrders, operationsEntry, source.id);
+
     const out: {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this.#service.getOutControlValue(position, orders, stopOrders, actualOperations, source.id);
+    } = this.#service.getOutControlValue(position, orders, stopOrders, operationsOut, source.id);
 
     const tempEntry: ControlValue[] = this.formArrayEntry
       ? this.formArrayEntry.value.slice().filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
@@ -641,7 +644,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   private _setControl(formArray: FormArray, tempControlValues: ControlValue[], controlValues: ControlValue[]): void {
     if (tempControlValues.length === 0) {
-      controlValues.forEach((item, index: number) => {
+      controlValues.forEach((item: ControlValue, index: number) => {
         formArray.setControl(index, new FormControl(item), { emitEvent: false });
       });
     }

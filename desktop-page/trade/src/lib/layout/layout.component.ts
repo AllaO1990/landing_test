@@ -150,11 +150,13 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     }
 
     const outOrders = this._getOrders(
-      out.filter((item: { status: number }) => item.status === 0),
+      out.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
       account.accountId,
       instrument.id,
       source.id
     );
+
+    console.log(entryOrders, outOrders);
 
     if (outOrders.length > 0) {
       this.#store.addOrders(outOrders);

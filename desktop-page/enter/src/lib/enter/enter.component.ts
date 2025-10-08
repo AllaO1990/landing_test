@@ -495,12 +495,14 @@ export class VtEnterComponent implements AfterViewInit {
         date: item.date,
         size: item.size,
       })),
-      comissions: value.actions.commissions.map((item: any) => ({
-        brokerId: item.brokerId,
-        comment: item.comment,
-        date: item.date,
-        size: item.size,
-      })),
+      comissions: value.actions.commissions
+        .filter((item: any) => item.size !== 0)
+        .map((item: any) => ({
+          brokerId: item.brokerId,
+          comment: item.comment,
+          date: item.date,
+          size: item.size,
+        })),
       idea: {
         goals:
           value &&

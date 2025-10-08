@@ -121,8 +121,8 @@ export class TradeFormService {
       };
     });
 
-    const unloadingOrdersDirection = ordersDirection.slice();
-    const unloadingStopOrdersDirection = stopOrdersDirection.slice();
+    const unloadingOrdersDirection = ordersDirection.map((item) => ({ ...item }));
+    const unloadingStopOrdersDirection = stopOrdersDirection.map((item) => ({ ...item }));
 
     let unloadingControlValues: ControlValue[] = [];
 
@@ -244,8 +244,8 @@ export class TradeFormService {
       };
     });
 
-    const unloadingOrdersDirection = ordersDirection.slice();
-    const unloadingStopOrdersDirection = stopOrdersDirection.slice();
+    const unloadingOrdersDirection = ordersDirection.map((item: TradeOrder) => ({ ...item }));
+    const unloadingStopOrdersDirection = stopOrdersDirection.map((item: TradeStopOrder) => ({ ...item }));
 
     const unloadingControlValues: ControlValue[] = position.idea.targets.reduce((acc: ControlValue[], item) => {
       const lots = Math.floor(item.amount / defaultItem.lot);
@@ -287,43 +287,39 @@ export class TradeFormService {
       return acc;
     }, []);
 
-    const orderControlValues: ControlValue[] = orders
-      .filter((item) => +item.direction === +defaultItem.direction)
-      .map((item) => ({
-        ...defaultItem,
-        id: item.orderId,
-        price: item.averagePositionPrice.value,
-        quantity: item.lotsRequested * defaultItem.lot,
-        lots: item.lotsRequested,
-        commission: item.initialCommission ? item.initialCommission.value : 0,
-        orderType: {
-          id: item.orderType,
-          type: item.orderTypeText,
-        },
-        direction: !!item.direction,
-        total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
-        status: ControlValueStatus.AWAITS,
-      }));
+    const orderControlValues: ControlValue[] = ordersDirection.map((item) => ({
+      ...defaultItem,
+      id: item.orderId,
+      price: item.averagePositionPrice.value,
+      quantity: item.lotsRequested * defaultItem.lot,
+      lots: item.lotsRequested,
+      commission: item.initialCommission ? item.initialCommission.value : 0,
+      orderType: {
+        id: item.orderType,
+        type: item.orderTypeText,
+      },
+      direction: !!item.direction,
+      total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
+      status: ControlValueStatus.AWAITS,
+    }));
 
-    const stopOrderControlValues: ControlValue[] = stopOrders
-      .filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction)
-      .map((item) => ({
-        ...defaultItem,
-        id: item.stopOrderId,
-        price: item.price.value,
-        quantity: item.lotsRequested * defaultItem.lot,
-        lots: item.lotsRequested,
-        commission: 0,
-        orderType: {
-          id: item.orderType,
-          type: item.orderTypeText,
-        },
-        stopPrice: item.stopPrice.value,
-        trailingData: item.trailingData,
-        direction: !!item.direction,
-        total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
-        status: ControlValueStatus.AWAITS,
-      }));
+    const stopOrderControlValues: ControlValue[] = stopOrdersDirection.map((item) => ({
+      ...defaultItem,
+      id: item.stopOrderId,
+      price: item.price.value,
+      quantity: item.lotsRequested * defaultItem.lot,
+      lots: item.lotsRequested,
+      commission: 0,
+      orderType: {
+        id: item.orderType,
+        type: item.orderTypeText,
+      },
+      stopPrice: item.stopPrice.value,
+      trailingData: item.trailingData,
+      direction: !!item.direction,
+      total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
+      status: ControlValueStatus.AWAITS,
+    }));
 
     return {
       actions: executedControlValues,
