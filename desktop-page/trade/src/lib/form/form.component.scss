@@ -25,10 +25,6 @@
   }
 }
 
-.out {
-  margin-top: var(--padding-4);
-}
-
 .row {
   display: flex;
   align-items: center;
@@ -77,8 +73,8 @@
   }
 }
 
-.operations, .orders {
-  margin-top: var(--padding-2);
+.operations, .orders, .stop, .out {
+  margin-top: var(--padding-4);
 }
 
 .operations .row__item {

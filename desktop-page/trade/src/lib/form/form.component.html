@@ -74,6 +74,33 @@
 
     <div class="space"></div>
 
+    <div class="stop">
+      <div class="tui-text_h6">Стоп заявка</div>
+      <lib-list
+        [header]="header"
+        [itemSize]="itemHeight"
+        [style.height.px]="heightStop$ | async"
+        [list]="listStop$ | async">
+        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
+          <ng-container
+            [ngTemplateOutlet]="itemEntryTemplate"
+            [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayStop }"></ng-container>
+        </div>
+      </lib-list>
+      <div class="trade__actions">
+        <button
+          [disabled]="isDisabledButton$ | async"
+          (click)="onOpen($event, formArrayStop, !direction, 'stop')"
+          appearance="primary"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить заявку
+        </button>
+      </div>
+    </div>
+
+    <div class="space"></div>
+
     <button
       class="more"
       appearance="secondary-grayscale"
@@ -215,14 +242,14 @@
         tuiIconButton
         [loading]="item.change"
         (click)="onEdit($event, item, index, control)"
-        [disabled]="item.change || item.removed"
+        [disabled]="item.change || item.removed || item.disabled"
         size="xs"
         type="button"
       ></button>
       <button
         (click)="onRemove($event, item, index, control)"
         [loading]="item.removed"
-        [disabled]="item.change || item.removed"
+        [disabled]="item.change || item.removed || item.disabled"
         appearance="icon"
         iconStart="@tui.x"
         tuiIconButton

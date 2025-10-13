@@ -49,20 +49,34 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   });
 
   readonly isDisabled$: Observable<boolean> = this.formGroup.valueChanges.pipe(
-    map((value) => ({ entry: value.trade.entry, out: value.trade.out })),
-    map(({ entry, out }: { entry: { status: ControlValueStatus }[]; out: { status: ControlValueStatus }[] }) => {
-      if (!entry || !out) {
-        return true;
-      }
-      if (entry.length === 0 && out.length === 0) {
-        return true;
-      }
+    startWith(this.formGroup.value),
+    map((value) => value.trade),
+    filter((value) => value !== null),
+    map((value) => ({ entry: value.entry, out: value.out, stop: value.stop })),
+    map(
+      ({
+        entry,
+        out,
+        stop,
+      }: {
+        entry: { status: ControlValueStatus }[];
+        out: { status: ControlValueStatus }[];
+        stop: { status: ControlValueStatus }[];
+      }) => {
+        if (!entry || !out || !stop) {
+          return true;
+        }
+        if (entry.length === 0 && out.length === 0 && stop.length === 0) {
+          return true;
+        }
 
-      const entryIndex = entry.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
-      const outIndex = out.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+        const entryIndex = entry.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+        const outIndex = out.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+        const stopIndex = stop.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
 
-      return entryIndex === -1 && outIndex === -1;
-    }),
+        return entryIndex === -1 && outIndex === -1 && stopIndex === -1;
+      }
+    ),
     distinctUntilChanged()
   );
 
@@ -104,6 +118,8 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
           out,
         } = this.formGroup.value.trade;
 
+        console.log('subscribe');
+
         if (account && instrument && source) {
           const outOrders = this._getOrders(
             out.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
@@ -133,7 +149,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     event.preventDefault();
 
     this.#isSubmitted$.next(true);
-    const { filter, entry, out } = this.formGroup.getRawValue().trade;
+    const { filter, entry, out, stop } = this.formGroup.getRawValue().trade;
     const { account, instrument, source } = filter;
 
     const entryOrders = this._getOrders(
@@ -156,10 +172,17 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
       source.id
     );
 
-    console.log(entryOrders, outOrders);
+    const stopOrders = this._getOrders(
+      stop.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+      account.accountId,
+      instrument.id,
+      source.id
+    );
 
-    if (outOrders.length > 0) {
-      this.#store.addOrders(outOrders);
+    const common = [...outOrders, ...stopOrders];
+
+    if (common.length > 0) {
+      this.#store.addOrders(common);
     }
   }
 

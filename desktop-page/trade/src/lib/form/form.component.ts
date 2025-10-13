@@ -121,6 +121,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     filter: new FormControl(null),
     auto: new FormControl(true, { nonNullable: true }),
     out: new FormArray([]),
+    stop: new FormArray([]),
   });
 
   get formArrayEntry(): FormArray {
@@ -129,6 +130,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   get formArrayOut(): FormArray {
     return this.formGroup.get('out') as FormArray;
+  }
+
+  get formArrayStop(): FormArray {
+    return this.formGroup.get('stop') as FormArray;
   }
 
   get controlFilter(): FormControl {
@@ -171,6 +176,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     distinctUntilChanged()
   );
 
+  readonly listStop$: Observable<ControlValue[]> = timer(500).pipe(
+    switchMap(() => this.formArrayStop.valueChanges.pipe(startWith(this.formArrayStop.value))),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly heightStop$: Observable<number> = this.listStop$.pipe(
+    map((list: ControlValue[]) => ((list && list.length) || 0) + 1),
+    map((length) => (length > 4 ? 4 * this.itemHeight : length * this.itemHeight)),
+    distinctUntilChanged()
+  );
+
   direction = true;
 
   mapOperationType: { [key: string]: string } = {
@@ -208,6 +224,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           TradeStopOrders,
           TradeOperations
         ]) => {
+          // console.log('_initControls', position, orders, stopOrders, operations);
           this._initControls(position, orders, stopOrders, operations);
         }
       );
@@ -267,6 +284,23 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       data.forEach((value: ControlValue, index: number) => {
         this.formArrayOut.setControl(index, new FormControl(value));
       });
+
+      const stopControlValue: ControlValue | null = this.formArrayStop.value[0] || null;
+
+      if (stopControlValue) {
+        this.formArrayStop.setControl(
+          0,
+          new FormControl({
+            ...stopControlValue,
+            quantity: entryLots * stopControlValue.lot,
+            lots: entryLots,
+            total: getNumberPrecision(
+              (stopControlValue.stopPrice || stopControlValue.price) * entryLots * stopControlValue.lot,
+              2
+            ),
+          })
+        );
+      }
     });
 
     this.formGroup.valueChanges
@@ -347,7 +381,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     }
   }
 
-  onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' = 'entry') {
+  onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' | 'stop' = 'entry') {
     event.preventDefault();
 
     const { instrument, lastPrice } = this.controlFilter.value;
@@ -531,13 +565,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       this.#service.getOperationType(!this.direction)
     );
 
-    const commissions = [...operationsEntry, ...operationsOut].filter((item) => {
-      return (
-        position.comissions.findIndex(
-          (commission) => commission.date === item.date && Math.abs(commission.size) === Math.abs(item.comission.value)
-        ) === -1
-      );
-    });
+    const commissions = [...operationsEntry, ...operationsOut]
+      .filter((item) => item.comission.value !== 0)
+      .filter((item) => {
+        return (
+          position.comissions.findIndex(
+            (commission) =>
+              commission.date === item.date && Math.abs(commission.size) === Math.abs(item.comission.value)
+          ) === -1
+        );
+      });
 
     if (operationsEntry.length > 0 || operationsOut.length > 0 || commissions.length > 0) {
       this._updateIdeaEntries(position, operationsEntry, operationsOut, commissions);
@@ -558,43 +595,28 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     } = this.#service.getOutControlValue(position, orders, stopOrders, operationsOut, source.id);
 
     const tempEntry: ControlValue[] = this.formArrayEntry
-      ? this.formArrayEntry.value.slice().filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
+      ? this.formArrayEntry.value.filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
       : [];
     const tempOut: ControlValue[] = this.formArrayOut.value
-      ? this.formArrayOut.value.slice().filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
+      ? this.formArrayOut.value.filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
       : [];
 
     this.formArrayEntry.clear({ emitEvent: false });
     this.formArrayOut.clear({ emitEvent: false });
 
-    const entryControlValues: ControlValue[] = [...entry.actions, ...entry.orders, ...entry.ideas];
-
-    this._setControl(this.formArrayEntry, tempEntry, entryControlValues);
-
-    let outControlValues: ControlValue[] = [...out.actions, ...out.orders];
-
-    if (entry.actions.length === 0) {
-      outControlValues = [...outControlValues, ...out.ideas];
-    }
-
-    this._setControl(this.formArrayOut, tempOut, outControlValues);
-
-    const entryLots: number = (this.formArrayEntry.value || []).reduce(
-      (acc: number, item: ControlValue) => (acc += item.lots),
-      0
-    );
-    const outLots = (this.formArrayOut.value || [])
-      .filter((item: ControlValue) => item.status === ControlValueStatus.EXECUTED)
-      .reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
+    this._setControl(this.formArrayEntry, tempEntry, entry);
+    this._setControl(this.formArrayOut, tempOut, out, entry.actions.length === 0);
 
     const stopLoss = this.#service.getStopLossControlValue(
       position,
+      this.formArrayEntry.value || [],
+      this.formArrayOut.value || [],
       orders,
       stopOrders,
-      operationsEntry,
-      source.id,
-      entryLots - outLots
+      operationsOut
     );
+
+    this.formArrayStop.setControl(0, new FormControl(stopLoss), { emitEvent: true });
 
     this.formArrayEntry.patchValue([]);
     this.formArrayOut.patchValue([]);
@@ -642,37 +664,53 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     });
   }
 
-  private _setControl(formArray: FormArray, tempControlValues: ControlValue[], controlValues: ControlValue[]): void {
+  private _setControl(
+    formArray: FormArray,
+    tempControlValues: ControlValue[],
+    controlValues: {
+      orders: ControlValue[];
+      actions: ControlValue[];
+      ideas: ControlValue[];
+    },
+    compose = true
+  ): void {
     if (tempControlValues.length === 0) {
-      controlValues.forEach((item: ControlValue, index: number) => {
+      let concatControlValues = [...controlValues.orders, ...controlValues.actions];
+
+      if (compose) {
+        concatControlValues = [...concatControlValues, ...controlValues.ideas];
+      }
+
+      concatControlValues.forEach((item: ControlValue, index: number) => {
         formArray.setControl(index, new FormControl(item), { emitEvent: false });
       });
     }
 
     if (tempControlValues.length > 0) {
-      const copyOutControlValues: (ControlValue | null)[] = controlValues.slice();
+      const concatControlValues = [...controlValues.actions, ...controlValues.orders];
+      const copyControlValues: (ControlValue | null)[] = concatControlValues.map((item) => ({ ...item }));
 
       tempControlValues.forEach((item: ControlValue, index: number) => {
-        const findIndex = controlValues.findIndex(
-          (control: ControlValue) => control.lots === item.lots && control.price === item.price
-        );
+        const findIndex = concatControlValues.findIndex((control: ControlValue) => control.lots === item.lots);
 
         let control = item;
 
         if (findIndex !== -1) {
           control = {
             ...control,
-            id: controlValues[findIndex].id,
-            status: controlValues[findIndex].status,
+            change: false,
+            id: concatControlValues[findIndex].id,
+            status: concatControlValues[findIndex].status,
           };
-          copyOutControlValues[findIndex] = null;
+          copyControlValues[findIndex] = null;
+          concatControlValues[findIndex].lot = -1;
         }
 
         formArray.setControl(index, new FormControl(control), { emitEvent: false });
       });
 
-      if (tempControlValues.length !== copyOutControlValues.length) {
-        copyOutControlValues.forEach((item: ControlValue | null, index: number) => {
+      if (tempControlValues.length !== copyControlValues.length) {
+        copyControlValues.forEach((item: ControlValue | null, index: number) => {
           if (item !== null) {
             formArray.setControl(index, new FormControl(item), { emitEvent: false });
           }

@@ -17,8 +17,13 @@ import {
   DefaultControlValue,
 } from './form.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
-import { TRADE_ORDER_TYPE_LIMIT, TRADE_STOP_ORDER_TYPE_TAKE_PROFIT } from '../common/order.constants';
+import {
+  TRADE_ORDER_TYPE_LIMIT,
+  TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+  TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
+} from '../common/order.constants';
 import { TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL } from '../request/request.constants';
+import { TradeStopOrderTypeText } from '../common/order.types';
 
 @Injectable()
 export class TradeFormService {
@@ -172,7 +177,7 @@ export class TradeFormService {
     const orderControlValues: ControlValue[] = ordersDirection.map((item: TradeOrder) => ({
       ...defaultItem,
       id: item.orderId,
-      price: item.averagePositionPrice.value,
+      price: item.initialSecurityPrice.value,
       quantity: item.lotsRequested * defaultItem.lot,
       lots: item.lotsRequested,
       orderType: {
@@ -181,7 +186,7 @@ export class TradeFormService {
       },
       commission: item.initialCommission ? item.initialCommission.value : 0,
       direction: !!item.direction,
-      total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
+      total: getNumberPrecision(item.initialSecurityPrice.value * item.lotsRequested * defaultItem.lot, 2),
       status: ControlValueStatus.AWAITS,
     }));
 
@@ -303,23 +308,25 @@ export class TradeFormService {
       status: ControlValueStatus.AWAITS,
     }));
 
-    const stopOrderControlValues: ControlValue[] = stopOrdersDirection.map((item) => ({
-      ...defaultItem,
-      id: item.stopOrderId,
-      price: item.price.value,
-      quantity: item.lotsRequested * defaultItem.lot,
-      lots: item.lotsRequested,
-      commission: 0,
-      orderType: {
-        id: item.orderType,
-        type: item.orderTypeText,
-      },
-      stopPrice: item.stopPrice.value,
-      trailingData: item.trailingData,
-      direction: !!item.direction,
-      total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
-      status: ControlValueStatus.AWAITS,
-    }));
+    const stopOrderControlValues: ControlValue[] = stopOrdersDirection
+      .filter((item: TradeStopOrder) => item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_TAKE_PROFIT)
+      .map((item) => ({
+        ...defaultItem,
+        id: item.stopOrderId,
+        price: item.price.value,
+        quantity: item.lotsRequested * defaultItem.lot,
+        lots: item.lotsRequested,
+        commission: 0,
+        orderType: {
+          id: item.orderType,
+          type: item.orderTypeText,
+        },
+        stopPrice: item.stopPrice.value,
+        trailingData: item.trailingData,
+        direction: !!item.direction,
+        total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
+        status: ControlValueStatus.AWAITS,
+      }));
 
     return {
       actions: executedControlValues,
@@ -330,13 +337,95 @@ export class TradeFormService {
 
   getStopLossControlValue(
     position: StockPosition,
+    entry: ControlValue[],
+    out: ControlValue[],
     orders: TradeOrders,
     stopOrders: TradeStopOrders,
-    operationsDirection: ActualTradeOperations,
-    sourceId: number,
-    lots: number
-  ): any {
+    operations: TradeOperations
+  ): ControlValue & { disabled: boolean } {
     const defaultItem = this.getDefaultControlValue(position, 'reverse');
+    const entryControlValue = entry.filter((item: ControlValue) => item.status !== ControlValueStatus.UNLOADING);
+    const outControlValue = out.filter((item: ControlValue) => item.status !== ControlValueStatus.UNLOADING);
+
+    const stopPrice = position.idea.stop ? position.idea.stop.price : 0;
+    const entryQuantity = entryControlValue.reduce((acc: number, item: ControlValue) => {
+      if (item.status === ControlValueStatus.EXECUTED) {
+        acc += item.lots;
+      }
+
+      return acc;
+    }, 0);
+    const outQuantity = outControlValue.reduce((acc: number, item: ControlValue) => {
+      if (item.status === ControlValueStatus.EXECUTED) {
+        acc += item.lots;
+      }
+
+      return acc;
+    }, 0);
+    const lots = Math.abs(entryQuantity)
+      ? Math.abs(entryQuantity)
+      : entry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
+
+    const control = {
+      ...defaultItem,
+      disabled: false,
+      price: stopPrice,
+      quantity: lots * defaultItem.lot,
+      lots: lots,
+      total: getNumberPrecision(stopPrice * lots * defaultItem.lot, 2),
+      commission: 0,
+      stopPrice: stopPrice,
+      orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+      status: ControlValueStatus.UNLOADING,
+    };
+
+    if (operations.length > 0) {
+      const findIndex = operations.findIndex(
+        (item: TradeOperation) => item.quantity === lots && item.price.value === stopPrice
+      );
+
+      if (findIndex !== -1) {
+        return {
+          ...control,
+          status: ControlValueStatus.EXECUTED,
+        };
+      }
+    }
+
+    if (orders.length > 0) {
+      const findIndex = orders.findIndex(
+        (item: TradeOrder) => item.lotsRequested === lots && item.initialSecurityPrice.value === stopPrice
+      );
+
+      if (findIndex !== -1) {
+        return {
+          ...control,
+          id: orders[findIndex].orderId,
+          status: ControlValueStatus.AWAITS,
+        };
+      }
+    }
+
+    if (stopOrders.length > 0) {
+      const findIndex = stopOrders.findIndex(
+        (item: TradeStopOrder) => item.lotsRequested === lots && item.stopPrice.value === stopPrice
+      );
+
+      if (findIndex !== -1) {
+        return {
+          ...control,
+          id: stopOrders[findIndex].stopOrderId,
+          status: ControlValueStatus.AWAITS,
+        };
+      }
+    }
+
+    console.log(outQuantity, entryQuantity);
+
+    return {
+      ...control,
+      disabled: outQuantity === entryQuantity,
+    };
   }
 
   updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {
@@ -386,20 +475,20 @@ export class TradeFormService {
         size: item.size,
       })),
       comissions: [
-        ...position.comissions
-          .filter((item: any) => item.size !== 0)
-          .map((item: any) => ({
-            brokerId: item.brokerId,
-            comment: item.comment,
-            date: item.date,
-            size: item.size,
-          })),
-        ...commissions.map((item: TradeOperation) => ({
-          brokerId: 1,
-          comment: item.description,
+        ...position.comissions.map((item: any) => ({
+          brokerId: item.brokerId,
+          comment: item.comment,
           date: item.date,
-          size: Math.abs(item.comission.value),
+          size: item.size,
         })),
+        ...commissions
+          .filter((item: any) => item.comission.value !== 0)
+          .map((item: TradeOperation) => ({
+            brokerId: 1,
+            comment: item.description,
+            date: item.date,
+            size: Math.abs(item.comission.value),
+          })),
       ],
       idea: {
         goals: position.idea.targets.map((item: any) => ({
