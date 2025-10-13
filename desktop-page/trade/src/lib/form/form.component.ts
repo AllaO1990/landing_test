@@ -616,7 +616,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       operationsOut
     );
 
-    this.formArrayStop.setControl(0, new FormControl(stopLoss), { emitEvent: true });
+    if (stopLoss) {
+      this.formArrayStop.setControl(0, new FormControl(stopLoss), { emitEvent: true });
+    }
 
     this.formArrayEntry.patchValue([]);
     this.formArrayOut.patchValue([]);

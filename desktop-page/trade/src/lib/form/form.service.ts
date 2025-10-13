@@ -342,12 +342,17 @@ export class TradeFormService {
     orders: TradeOrders,
     stopOrders: TradeStopOrders,
     operations: TradeOperations
-  ): ControlValue & { disabled: boolean } {
+  ): (ControlValue & { disabled: boolean }) | null {
+    const stopPrice = position.idea.stop ? position.idea.stop.price : 0;
+
+    if (position.idea.stop && stopPrice === 0) {
+      return null;
+    }
+
     const defaultItem = this.getDefaultControlValue(position, 'reverse');
     const entryControlValue = entry.filter((item: ControlValue) => item.status !== ControlValueStatus.UNLOADING);
     const outControlValue = out.filter((item: ControlValue) => item.status !== ControlValueStatus.UNLOADING);
 
-    const stopPrice = position.idea.stop ? position.idea.stop.price : 0;
     const entryQuantity = entryControlValue.reduce((acc: number, item: ControlValue) => {
       if (item.status === ControlValueStatus.EXECUTED) {
         acc += item.lots;
@@ -419,8 +424,6 @@ export class TradeFormService {
         };
       }
     }
-
-    console.log(outQuantity, entryQuantity);
 
     return {
       ...control,
