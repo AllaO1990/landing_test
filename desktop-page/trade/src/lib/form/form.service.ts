@@ -5,6 +5,8 @@ import {
   TradeOperations,
   TradeOrder,
   TradeOrders,
+  TradeOrderType,
+  TradeSource,
   TradeStopOrder,
   TradeStopOrders,
 } from '../common/api.types';
@@ -19,11 +21,13 @@ import {
 import { getNumberPrecision } from 'utils/get-number-precision';
 import {
   TRADE_ORDER_TYPE_LIMIT,
+  TRADE_ORDER_TYPE_MARKET,
   TRADE_STOP_ORDER_TYPE_STOP_LOSS,
   TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
 } from '../common/order.constants';
 import { TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL } from '../request/request.constants';
 import { TradeStopOrderTypeText } from '../common/order.types';
+import { WithLastPrice } from 'types/stock';
 
 @Injectable()
 export class TradeFormService {
@@ -69,24 +73,27 @@ export class TradeFormService {
     }));
   }
 
+  /**
+   * Фильтр операций, которых ещё нет в сделке
+   * */
   getFilteredOperations(
-    lots: number[],
+    lotsInPosition: number[],
     operations: ActualTradeOperations,
     operationType: 15 | 22
   ): ActualTradeOperations {
-    const tempLots = lots.slice();
+    const tempLots = lotsInPosition.slice();
 
     return operations
       .filter((item: ActualTradeOperation) => item.type === operationType && item.state === 1)
       .filter(
         (item: ActualTradeOperation) =>
-          tempLots.findIndex((lots: number, index: number) => {
-            if (lots === item.lots) {
+          tempLots.findIndex((itemLots: number, index: number) => {
+            if (itemLots === item.lots) {
               tempLots[index] = -1;
-              return true;
+              return -1;
             }
 
-            return false;
+            return index;
           }) === -1
       );
   }
@@ -96,14 +103,15 @@ export class TradeFormService {
     orders: TradeOrders,
     stopOrders: TradeStopOrders,
     operationsDirection: ActualTradeOperations,
-    sourceId: number
+    filter: { lastPrice: WithLastPrice; source: TradeSource }
   ): {
     orders: ControlValue[];
     actions: ControlValue[];
     ideas: ControlValue[];
   } {
+    const { lastPrice, source } = filter;
     const defaultItem = this.getDefaultControlValue(position);
-    const entries = position.actions.entries.filter((item: StockPositionActionEntry) => item.brokerId === sourceId);
+    const entries = position.actions.entries.filter((item: StockPositionActionEntry) => item.brokerId === source.id);
 
     const actionQuantity = entries.map((item) => Math.floor(item.amount / defaultItem.lot));
     const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
@@ -113,7 +121,9 @@ export class TradeFormService {
       const lots = Math.floor(item.amount / defaultItem.lot);
 
       const findOperation =
-        operationsDirection.find((operation: ActualTradeOperation) => operation.lots === lots) || null;
+        operationsDirection.find((operation: ActualTradeOperation) => {
+          return operation.lots === lots;
+        }) || null;
 
       return {
         ...defaultItem,
@@ -159,6 +169,8 @@ export class TradeFormService {
             }
           }
 
+          const percent = this._getPriceToTarget(lastPrice.last, item.price);
+
           acc.push({
             ...defaultItem,
             price: item.price,
@@ -166,7 +178,7 @@ export class TradeFormService {
             quantity: item.quantity,
             lots,
             total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-            orderType: TRADE_ORDER_TYPE_LIMIT,
+            orderType: this._getOrderType(percent === null ? 1 : percent),
             status: ControlValueStatus.UNLOADING,
           });
 
@@ -220,14 +232,15 @@ export class TradeFormService {
     orders: TradeOrders,
     stopOrders: TradeStopOrders,
     operationsDirection: ActualTradeOperations,
-    sourceId: number
+    filter: { source: TradeSource }
   ): {
     orders: ControlValue[];
     actions: ControlValue[];
     ideas: ControlValue[];
   } {
+    const { source } = filter;
     const defaultItem = this.getDefaultControlValue(position, 'reverse');
-    const outs = position.actions.outs.filter((item: StockPositionActionTarget) => item.brokerId === sourceId);
+    const outs = position.actions.outs.filter((item: StockPositionActionTarget) => item.brokerId === source.id);
     const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
     const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
 
@@ -235,7 +248,7 @@ export class TradeFormService {
       const lots = Math.floor(item.amount / defaultItem.lot);
 
       const findOperation =
-        operationsDirection.find((operation: ActualTradeOperation) => operation.lots === lots) || null;
+        operationsDirection.find((operation: ActualTradeOperation) => operation.quantity === lots) || null;
 
       return {
         ...defaultItem,
@@ -323,7 +336,7 @@ export class TradeFormService {
         },
         stopPrice: item.stopPrice.value,
         trailingData: item.trailingData,
-        direction: !!item.direction,
+        direction: item.direction,
         total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
         status: ControlValueStatus.AWAITS,
       }));
@@ -337,46 +350,49 @@ export class TradeFormService {
 
   getStopLossControlValue(
     position: StockPosition,
-    entry: ControlValue[],
-    out: ControlValue[],
+    temp: ControlValue[],
     orders: TradeOrders,
     stopOrders: TradeStopOrders,
-    operations: TradeOperations
+    operations: ActualTradeOperations
   ): (ControlValue & { disabled: boolean }) | null {
-    const stopPrice = position.idea.stop ? position.idea.stop.price : 0;
+    let stopPrice = position.idea.stop ? position.idea.stop.price : 0;
 
-    if (position.idea.stop && stopPrice === 0) {
+    if (stopPrice === 0) {
+      return null;
+    }
+
+    const entryLots = position.actions.entries.reduce(
+      (acc: number, item: StockPositionActionEntry) => (acc += item.amount),
+      0
+    );
+    const outLots = position.actions.outs.reduce(
+      (acc: number, item: StockPositionActionTarget) => (acc += item.amount),
+      0
+    );
+
+    if (entryLots === outLots && entryLots !== 0) {
       return null;
     }
 
     const defaultItem = this.getDefaultControlValue(position, 'reverse');
-    const entryControlValue = entry.filter((item: ControlValue) => item.status !== ControlValueStatus.UNLOADING);
-    const outControlValue = out.filter((item: ControlValue) => item.status !== ControlValueStatus.UNLOADING);
+    const precision = position.idea.instrument.source === 'tinkoff' ? 0 : 8;
+    const lots = getNumberPrecision(position.idea.inPositionQuantity / defaultItem.lot, precision);
 
-    const entryQuantity = entryControlValue.reduce((acc: number, item: ControlValue) => {
-      if (item.status === ControlValueStatus.EXECUTED) {
-        acc += item.lots;
+    if (position.actions.outs.length) {
+      if (position.actions.outs.length === 1) {
+        stopPrice = position.actions.entries[0].price;
       }
-
-      return acc;
-    }, 0);
-    const outQuantity = outControlValue.reduce((acc: number, item: ControlValue) => {
-      if (item.status === ControlValueStatus.EXECUTED) {
-        acc += item.lots;
+      if (position.actions.outs.length > 1) {
+        stopPrice = position.actions.outs[position.actions.outs.length - 2].price;
       }
-
-      return acc;
-    }, 0);
-    const lots = Math.abs(entryQuantity)
-      ? Math.abs(entryQuantity)
-      : entry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
+    }
 
     const control = {
       ...defaultItem,
       disabled: false,
       price: stopPrice,
-      quantity: lots * defaultItem.lot,
       lots: lots,
+      quantity: getNumberPrecision(lots * defaultItem.lot, precision),
       total: getNumberPrecision(stopPrice * lots * defaultItem.lot, 2),
       commission: 0,
       stopPrice: stopPrice,
@@ -385,50 +401,65 @@ export class TradeFormService {
     };
 
     if (operations.length > 0) {
-      const findIndex = operations.findIndex(
-        (item: TradeOperation) => item.quantity === lots && item.price.value === stopPrice
-      );
+      if (temp.length === 1) {
+        const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === temp[0].lots);
+
+        if (findIndex !== -1) {
+          return {
+            ...temp[0],
+            disabled: true,
+            status: ControlValueStatus.EXECUTED,
+          };
+        }
+      }
+
+      const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === lots);
 
       if (findIndex !== -1) {
         return {
           ...control,
+          disabled: true,
           status: ControlValueStatus.EXECUTED,
         };
       }
     }
 
-    if (orders.length > 0) {
-      const findIndex = orders.findIndex(
-        (item: TradeOrder) => item.lotsRequested === lots && item.initialSecurityPrice.value === stopPrice
-      );
+    const filterStopOrder =
+      stopOrders.find(
+        (item: TradeStopOrder) =>
+          item.direction === defaultItem.direction &&
+          item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS &&
+          item.lotsRequested === control.lots
+      ) || null;
 
-      if (findIndex !== -1) {
-        return {
-          ...control,
-          id: orders[findIndex].orderId,
-          status: ControlValueStatus.AWAITS,
-        };
-      }
+    if (filterStopOrder !== null) {
+      return {
+        ...control,
+        id: filterStopOrder.stopOrderId,
+        price: filterStopOrder.price.value,
+        stopPrice: filterStopOrder.stopPrice.value,
+        orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+        status: ControlValueStatus.AWAITS,
+      };
     }
 
-    if (stopOrders.length > 0) {
-      const findIndex = stopOrders.findIndex(
-        (item: TradeStopOrder) => item.lotsRequested === lots && item.stopPrice.value === stopPrice
-      );
+    const filterOrder =
+      orders.find(
+        (item: TradeOrder) => !!item.direction === defaultItem.direction && item.lotsRequested === control.lots
+      ) || null;
 
-      if (findIndex !== -1) {
-        return {
-          ...control,
-          id: stopOrders[findIndex].stopOrderId,
-          status: ControlValueStatus.AWAITS,
-        };
-      }
+    if (filterOrder !== null) {
+      return {
+        ...control,
+        id: filterOrder.orderId,
+        price: filterOrder.initialSecurityPrice.value,
+        stopPrice: filterOrder.initialSecurityPrice.value,
+        orderType: { type: filterOrder.orderTypeText, id: filterOrder.orderType },
+        status: ControlValueStatus.AWAITS,
+      };
     }
 
-    return {
-      ...control,
-      disabled: outQuantity === entryQuantity,
-    };
+    return control;
   }
 
   updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {
@@ -561,5 +592,17 @@ export class TradeFormService {
 
       return acc;
     }, []);
+  }
+
+  private _getPriceToTarget(lastPrice: number, price: number | null): number | null {
+    if (price === null) {
+      return null;
+    }
+
+    return Math.abs(((lastPrice - price) / price) * 100);
+  }
+
+  private _getOrderType(percent: number): TradeOrderType {
+    return percent <= 0.5 ? TRADE_ORDER_TYPE_MARKET : TRADE_ORDER_TYPE_LIMIT;
   }
 }

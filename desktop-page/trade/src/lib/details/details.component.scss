@@ -22,14 +22,8 @@
 }
 
 
-@media screen and (min-width: 768px) {
-  .details {
-    &__row {
-      flex-flow: row;
-    }
-  }
-
-  .description {
-    flex-wrap: wrap;
+@media screen and (max-width: 768px) {
+  .tiles {
+    order: 1;
   }
 }

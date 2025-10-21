@@ -14,6 +14,8 @@ import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 import { AuthService } from '@core/auth';
 import { forkJoin, map, timer } from 'rxjs';
 import { Response } from 'types/response';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
 
 @Component({
   selector: 'login-sign-up',
@@ -38,11 +40,18 @@ export class SignUpComponent {
   readonly #auth: AuthService = inject(AuthService);
   readonly #router: Router = inject(Router);
   readonly #alerts: TuiAlertService = inject(TuiAlertService);
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
+
+  get email(): string {
+    const value = this.#queryParams.value();
+
+    return value['email'] ? value['email'] : '';
+  }
 
   readonly size = 'm';
 
   readonly formGroup: FormGroup = new FormGroup({
-    email: new FormControl('yazvyazda@mail1.ru', [Validators.required, Validators.email]),
+    email: new FormControl(this.email, [Validators.required, Validators.email]),
   });
 
   get controlEmail(): FormControl {

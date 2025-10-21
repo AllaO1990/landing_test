@@ -54,6 +54,7 @@ import { ControlValue, ControlValueStatus } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { Params } from '@angular/router';
+import { TradeStopOrderTypeText } from '../common/order.types';
 
 @Component({
   selector: 'trade-form',
@@ -277,7 +278,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       this.idea$,
     ]).subscribe(([entryLots, position]) => {
       const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
-      const outs = this.#service.getOutControlValue(position, [], [], [], 0).ideas;
+      const outs = this.#service.getOutControlValue(position, [], [], [], this.controlFilter.value).ideas;
       const data = this.#service.getCalcOutIdea(outs, entryLots, priceIncrement);
 
       this.formArrayOut.clear({ emitEvent: false });
@@ -335,22 +336,31 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.formGroup[isDisabled ? 'disable' : 'enable']();
   }
 
-  onRemoveOrder(event: Event, item: TradeOrder & { removed: boolean }): void {
+  onRemove(event: Event, item: any): void {
+    if (this.#store.isOrder(item.orderTypeText)) {
+      this.onRemoveOrder(event, { ...item, id: item.orderId });
+    }
+
+    if (this.#store.isStopOrder(item.orderTypeText)) {
+      this.onRemoveStopOrder(event, { ...item, id: item.stopOrderId });
+    }
+  }
+
+  onRemoveOrder(event: Event, item: { id: string | null; removed: boolean }): void {
     event.preventDefault();
+    const { account, source, instrument } = this.controlFilter.value;
 
     item['removed'] = true;
 
-    const { account, source, instrument } = this.controlFilter.value;
-
     this.#store.removeOrder({
       accountId: account.accountId,
-      id: item.orderId,
+      id: item.id,
       sourceId: source.id,
       instrumentId: instrument.id,
     });
   }
 
-  onRemoveStopOrder(event: Event, item: TradeStopOrder & { removed: boolean }): void {
+  onRemoveStopOrder(event: Event, item: { id: string | null; removed: boolean }): void {
     event.preventDefault();
 
     item['removed'] = true;
@@ -359,7 +369,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
     this.#store.removeStopOrder({
       accountId: account.accountId,
-      orderId: item.stopOrderId,
+      id: item.id,
       sourceId: source.id,
       instrumentId: instrument.id,
     });
@@ -479,31 +489,43 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       });
   }
 
-  onRemove(event: Event, item: ControlValue, index: number, control: FormArray): void {
+  onRemoveWithControl(event: Event, item: ControlValue, index: number, control: FormArray): void {
     event.preventDefault();
 
+    if (item.orderType && item.orderType.type === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS) {
+      this.#idea.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) => {
+        let stop = position.idea.stop;
+
+        if (stop) {
+          stop = {
+            ...stop,
+            price: 0,
+          };
+        }
+
+        const updatePosition: StockPosition = {
+          ...position,
+          idea: {
+            ...position.idea,
+            stop,
+          },
+        };
+
+        this.#idea.editIdea({
+          id: position.idea.id!,
+          body: this.#service.updateIdea(updatePosition, [], [], []),
+        });
+      });
+    }
+
     if (item.status === ControlValueStatus.AWAITS) {
-      item['removed'] = true;
-
-      const { account, source, instrument } = this.controlFilter.value;
-
       if (item.orderType) {
         if (this.#store.isOrder(item.orderType.type)) {
-          this.#store.removeOrder({
-            ...item,
-            accountId: account.accountId,
-            sourceId: source.id,
-            instrumentId: instrument.id,
-          });
+          this.onRemoveOrder(event, item);
         }
 
         if (this.#store.isStopOrder(item.orderType.type)) {
-          this.#store.removeStopOrder({
-            ...item,
-            accountId: account.accountId,
-            sourceId: source.id,
-            instrumentId: instrument.id,
-          });
+          this.onRemoveStopOrder(event, item);
         }
       }
 
@@ -530,11 +552,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       )
       .subscribe((position: StockPosition) => {
         const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
-        const { source } = this.controlFilter.value;
 
-        this.#service.getOutControlValue(position, [], [], [], source.id).ideas.forEach((item, index: number) => {
-          this.formArrayOut.setControl(index + length, new FormControl(item));
-        });
+        this.#service
+          .getOutControlValue(position, [], [], [], this.controlFilter.value)
+          .ideas.forEach((item, index: number) => {
+            this.formArrayOut.setControl(index + length, new FormControl(item));
+          });
       });
   }
 
@@ -547,25 +570,28 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.direction = position.idea.positionType === 'long';
     const lot = position.idea.instrument.lot;
     const { source } = this.controlFilter.value;
+
+    const operationTypeEntry = this.#service.getOperationType(this.direction);
+    const operationTypeOut = this.#service.getOperationType(!this.direction);
     const actualOperations = this.#service.getActualOperations(position, operations);
 
-    const operationsEntry = this.#service.getFilteredOperations(
+    const operationsEntryPosition = this.#service.getFilteredOperations(
       position.actions.entries
         .filter((item: StockPositionActionEntry) => item.brokerId === source.id)
         .map((item: StockPositionActionEntry) => Math.floor(item.amount / lot)),
       actualOperations,
-      this.#service.getOperationType(this.direction)
+      operationTypeEntry
     );
 
-    const operationsOut = this.#service.getFilteredOperations(
+    const operationsOutPosition = this.#service.getFilteredOperations(
       position.actions.outs
         .filter((item: StockPositionActionTarget) => item.brokerId === source.id)
         .map((item: StockPositionActionTarget) => Math.floor(item.amount / lot)),
       actualOperations,
-      this.#service.getOperationType(!this.direction)
+      operationTypeOut
     );
 
-    const commissions = [...operationsEntry, ...operationsOut]
+    const commissions = [...operationsEntryPosition, ...operationsOutPosition]
       .filter((item) => item.comission.value !== 0)
       .filter((item) => {
         return (
@@ -576,8 +602,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         );
       });
 
-    if (operationsEntry.length > 0 || operationsOut.length > 0 || commissions.length > 0) {
-      this._updateIdeaEntries(position, operationsEntry, operationsOut, commissions);
+    if (operationsEntryPosition.length > 0 || operationsOutPosition.length > 0 || commissions.length > 0) {
+      this._updateIdeaEntries(position, operationsEntryPosition, operationsOutPosition, commissions);
 
       return;
     }
@@ -586,13 +612,25 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this.#service.getEntryControlValue(position, orders, stopOrders, operationsEntry, source.id);
+    } = this.#service.getEntryControlValue(
+      position,
+      orders,
+      stopOrders,
+      actualOperations.filter((item) => item.type === operationTypeEntry),
+      this.controlFilter.value
+    );
 
     const out: {
       orders: ControlValue[];
       actions: ControlValue[];
       ideas: ControlValue[];
-    } = this.#service.getOutControlValue(position, orders, stopOrders, operationsOut, source.id);
+    } = this.#service.getOutControlValue(
+      position,
+      orders,
+      stopOrders,
+      actualOperations.filter((item) => item.type === operationTypeOut),
+      this.controlFilter.value
+    );
 
     const tempEntry: ControlValue[] = this.formArrayEntry
       ? this.formArrayEntry.value.filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
@@ -600,20 +638,28 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     const tempOut: ControlValue[] = this.formArrayOut.value
       ? this.formArrayOut.value.filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
       : [];
+    const tempStop: ControlValue[] = this.formArrayStop.value
+      ? this.formArrayStop.value.filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
+      : [];
 
     this.formArrayEntry.clear({ emitEvent: false });
     this.formArrayOut.clear({ emitEvent: false });
+    this.formArrayStop.clear({ emitEvent: false });
 
-    this._setControl(this.formArrayEntry, tempEntry, entry);
-    this._setControl(this.formArrayOut, tempOut, out, entry.actions.length === 0);
+    this._setControl(this.formArrayEntry, tempEntry, entry, this.direction);
+
+    const compose = this.formArrayEntry.value.filter(
+      (item: ControlValue) => item.status !== ControlValueStatus.UNLOADING
+    );
+
+    this._setControl(this.formArrayOut, tempOut, out, !this.direction, compose.length === 0);
 
     const stopLoss = this.#service.getStopLossControlValue(
       position,
-      this.formArrayEntry.value || [],
-      this.formArrayOut.value || [],
+      tempStop,
       orders,
       stopOrders,
-      operationsOut
+      actualOperations.filter((item) => item.type === operationTypeOut)
     );
 
     if (stopLoss) {
@@ -674,6 +720,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       actions: ControlValue[];
       ideas: ControlValue[];
     },
+    direction: boolean,
     compose = true
   ): void {
     if (tempControlValues.length === 0) {
@@ -683,7 +730,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         concatControlValues = [...concatControlValues, ...controlValues.ideas];
       }
 
-      concatControlValues.forEach((item: ControlValue, index: number) => {
+      const sortFn = (direction: boolean) =>
+        direction
+          ? (a: ControlValue, b: ControlValue) => b.price - a.price
+          : (a: ControlValue, b: ControlValue) => a.price - b.price;
+
+      concatControlValues.sort(sortFn(direction)).forEach((item: ControlValue, index: number) => {
         formArray.setControl(index, new FormControl(item), { emitEvent: false });
       });
     }

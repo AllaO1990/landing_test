@@ -11,13 +11,13 @@
             {{ position.quantity | tuiFormatNumber | async }} шт.
           </div>
         </div>
-        <div class="details__column" [tuiCell]="size">
-          <div tuiSubtitle>Цена за бумагу</div>
-          <div tuiTitle>
-            {{ position.price | tuiFormatNumber | async }}
-            {{ position.currency | tuiCurrency }}
-          </div>
-        </div>
+        <!--        <div class="details__column" [tuiCell]="size">-->
+        <!--          <div tuiSubtitle>Цена за бумагу</div>-->
+        <!--          <div tuiTitle>-->
+        <!--            {{ position.price | tuiFormatNumber | async }}-->
+        <!--            {{ position.currency | tuiCurrency }}-->
+        <!--          </div>-->
+        <!--        </div>-->
         <div class="details__column" [tuiCell]="size">
           <div tuiSubtitle>Стоимость</div>
           <div tuiTitle>
@@ -26,6 +26,13 @@
           </div>
         </div>
         @if (lastPrice$ | async; as price) {
+          <!--          <div class="details__column" [tuiCell]="size">-->
+            <!--            <div tuiSubtitle>Прибыль</div>-->
+            <!--            <div tuiTitle>-->
+            <!--              {{ (price.last * position.quantity - position.total) | tuiFormatNumber | async }}-->
+            <!--              {{ position.currency | tuiCurrency }}-->
+            <!--            </div>-->
+            <!--          </div>-->
           <div class="details__column" [tuiCell]="size">
             <div tuiSubtitle>Текущая цена</div>
             <div tuiTitle>
@@ -36,7 +43,7 @@
         }
       </div>
       <div class="space"></div>
-      <div class="details__column">
+      <div class="details__column action">
         @if (close$ | async; as close) {
           <button
             (click)="onClosePosition($event, position, close)"

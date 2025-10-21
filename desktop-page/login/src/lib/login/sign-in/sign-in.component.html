@@ -61,7 +61,9 @@
   </div>
 </ng-template>
 
-<p class="form__information">Нет учетной записи? <a tuiLink iconEnd="@tui.arrow-right" [routerLink]="['../sign-up']">Зарегистрироваться</a>
+<p class="form__information">Нет учетной записи?
+  <a tuiLink iconEnd="@tui.arrow-right"
+     [routerLink]="['../sign-up']" [queryParams]="{ email: controlEmail.value }">Зарегистрироваться</a>
 </p>
 
 <label tuiBlock [formGroup]="formGroup" class="form__information">

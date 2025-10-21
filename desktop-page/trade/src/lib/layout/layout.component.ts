@@ -13,6 +13,7 @@ import {
   map,
   Observable,
   pairwise,
+  ReplaySubject,
   startWith,
   Subject,
   switchMap,
@@ -21,6 +22,8 @@ import {
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue, ControlValueStatus } from '../form/form.types';
+import { TradeStopOrder, TradeStopOrders } from '../common/api.types';
+import { TradeStopOrderTypeText } from '../common/order.types';
 
 @Component({
   selector: 'trade-layout',
@@ -42,6 +45,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(false);
+  readonly #updateStop$: Subject<void> = new ReplaySubject<void>(1);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   readonly formGroup: FormGroup = new FormGroup({
@@ -80,6 +84,25 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     distinctUntilChanged()
   );
 
+  #isStop$: Observable<ControlValue> = this.formGroup.valueChanges.pipe(
+    takeUntilDestroyed(this.#destroyRef),
+    map((value: { trade: { entry: ControlValue[]; stop: ControlValue[] } }) => ({
+      entry: value.trade.entry,
+      stop: value.trade.stop,
+    })),
+    filter(
+      ({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) =>
+        entry && entry.length > 0 && stop && stop.length > 0
+    ),
+    filter(
+      ({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) =>
+        entry[0].status === ControlValueStatus.EXECUTED && stop[0].status === ControlValueStatus.UNLOADING
+    ),
+    map(({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) => ({ entry: entry[0], stop: stop[0] })),
+    distinctUntilChanged((a, b) => this._distinct(a, b)),
+    map(({ stop }: { stop: ControlValue }) => stop)
+  );
+
   ngAfterViewInit(): void {
     this.#store.loadOrderTypes();
 
@@ -116,13 +139,16 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         const {
           filter: { account, instrument, source },
           out,
+          stop,
         } = this.formGroup.value.trade;
 
         console.log('subscribe');
 
         if (account && instrument && source) {
           const outOrders = this._getOrders(
-            out.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+            [...out, ...stop].filter(
+              (item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING
+            ),
             account.accountId,
             instrument.id,
             source.id
@@ -133,6 +159,75 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
           }
         }
       });
+
+    this.#isStop$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((value: ControlValue) =>
+          this.#store.stopOrders$.pipe(
+            filter((list: TradeStopOrders | null): list is TradeStopOrders => list !== null),
+            map((list: TradeStopOrders) =>
+              list.filter(
+                (item: TradeStopOrder) => item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS
+              )
+            ),
+            filter(
+              (list: TradeStopOrders) =>
+                list.length > 0 && list.findIndex((item: TradeStopOrder) => item.lotsRequested !== value.lots) !== -1
+            )
+          )
+        )
+      )
+      .subscribe((orders: TradeStopOrders) => {
+        console.log(orders);
+        const {
+          filter: { account, instrument, source },
+        } = this.formGroup.value.trade;
+
+        this.#store.removeStopOrder({
+          accountId: account.accountId,
+          id: orders[0].stopOrderId,
+          sourceId: source.id,
+          instrumentId: instrument.id,
+        });
+      });
+
+    this.#isStop$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((controlValue: ControlValue) => {
+      const {
+        filter: { account, instrument, source },
+      } = this.formGroup.value.trade;
+
+      this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
+    });
+
+    // this.#store.stopOrders$
+    //   .pipe(
+    //     filter((list: TradeStopOrders | null): list is TradeStopOrders => list !== null),
+    //     filter((list: TradeStopOrders) => list.length > 0),
+    //     map((list) => list[1])
+    //     // switchMap((list) =>
+    //     //   timer(2000).pipe(
+    //     //     takeWhile((orders) => orders !== list.length),
+    //     //     tap((data) => console.log(data)),
+    //     //     tap((index) => {
+    //     //
+    //     //     })
+    //     //   )
+    //     // )
+    //   )
+    //   .subscribe((order: TradeStopOrder) => {
+    //     console.log(order);
+    //     const {
+    //       filter: { account, instrument, source },
+    //     } = this.formGroup.value.trade;
+    //
+    //     this.#store.removeStopOrder({
+    //       accountId: account.accountId,
+    //       id: order.stopOrderId,
+    //       sourceId: source.id,
+    //       instrumentId: instrument.id,
+    //     });
+    //   });
   }
 
   ngOnDestroy(): void {
@@ -186,19 +281,46 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private _getOrders(orders: any[], accountId: string, instrumentId: string, sourceId: number): any[] {
-    return orders.map((item) => {
-      const { total, quantity, lots, lot, ...order } = item;
+  private _getOrder(controlValue: ControlValue, accountId: string, instrumentId: string, sourceId: number): any {
+    const { total, quantity, lots, lot, ...order } = controlValue;
 
-      return {
-        ...order,
-        quantity: lots,
-        // quantity: getNumberPrecision(quantity / lot, 0),
-        lot,
-        accountId,
-        instrumentId,
-        sourceId,
-      };
-    });
+    return {
+      ...order,
+      quantity: lots,
+      // quantity: getNumberPrecision(quantity / lot, 0),
+      lot,
+      accountId,
+      instrumentId,
+      sourceId,
+    };
+  }
+
+  private _getOrders(orders: any[], accountId: string, instrumentId: string, sourceId: number): any[] {
+    return orders.map((item: ControlValue) => this._getOrder(item, accountId, instrumentId, sourceId));
+  }
+
+  private _distinct(
+    a: { entry: ControlValue; stop: ControlValue },
+    b: {
+      entry: ControlValue;
+      stop: ControlValue;
+    }
+  ): boolean {
+    if (!this._distinctControlValue(a.entry, b.entry)) {
+      return false;
+    }
+
+    return this._distinctControlValue(a.stop, b.stop);
+  }
+
+  private _distinctControlValue(a: ControlValue, b: ControlValue): boolean {
+    return (
+      a.status === b.status &&
+      a.price === b.price &&
+      a.stopPrice === b.stopPrice &&
+      a.lots === b.lots &&
+      a.expirationType?.id === b.expirationType?.id &&
+      a.orderType?.id === b.orderType?.id
+    );
   }
 }

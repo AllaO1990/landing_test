@@ -247,7 +247,7 @@
         type="button"
       ></button>
       <button
-        (click)="onRemove($event, item, index, control)"
+        (click)="onRemoveWithControl($event, item, index, control)"
         [loading]="item.removed"
         [disabled]="item.change || item.removed || item.disabled"
         appearance="icon"
@@ -318,7 +318,7 @@
     <!--      [loading]="item.change"-->
     <!--    ></button>-->
     <button
-      (click)="onRemoveOrder($event, item)"
+      (click)="onRemove($event, item)"
       [loading]="item.removed"
       appearance="icon"
       iconStart="@tui.x"
@@ -364,8 +364,9 @@
     <!--      [loading]="item.change"-->
     <!--    ></button>-->
     <button
-      (click)="onRemoveStopOrder($event, item)"
+      (click)="onRemove($event, item)"
       [loading]="item.removed"
+      [disabled]="item.removed"
       appearance="icon"
       iconStart="@tui.x"
       tuiIconButton

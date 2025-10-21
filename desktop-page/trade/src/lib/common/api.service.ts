@@ -75,12 +75,6 @@ export class ApiService {
   }
 
   getStopOrders(params: Params): Observable<Response<TradeOrders | null>> {
-    // return of({
-    //   data: null,
-    //   message: 'none',
-    //   success: false,
-    // });
-
     return this._http.get<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
       params: {
         accountId: params['accountId'],

@@ -124,7 +124,7 @@ export class DetailsComponent implements OnDestroy {
         quantity: position.quantity,
         total: getNumberPrecision(position.quantity * position.averagePositionPrice.value, 2),
         price: position.averagePositionPrice.value,
-        currency: position.averagePositionPrice.currency.toUpperCase(),
+        currency: position.currentPrice.currency.toUpperCase(),
       };
     })
   );

@@ -353,7 +353,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
             this._updateFormArray('targets', data, true);
           }
 
-          if (this.formArrayStop.value.length === 0 && this.formArrayStop.pristine) {
+          if (this.formArrayStop.value.length === 0 || this.formArrayStop.pristine) {
             const priceStop = getNumberPrecision(priceEntry - indicator.atr * multiplier, priceIncrement);
 
             const data: StockPositionStop[] = [

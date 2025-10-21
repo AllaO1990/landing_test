@@ -323,7 +323,8 @@ export class VtEnterComponent implements AfterViewInit {
           const stop = this._getIdeStop(
             result.idea.stop ? [result.idea.stop] : [],
             result.actions.outs,
-            result.idea.positionType === 'long' ? 1 : -1
+            result.idea.positionType === 'long' ? 1 : -1,
+            result.idea.entries
           );
 
           const action: 'disable' | 'enable' =
@@ -631,7 +632,12 @@ export class VtEnterComponent implements AfterViewInit {
     });
   }
 
-  private _getIdeStop(list: any[], outs: any[] = [], direction: 1 | -1 = 1): StockPositionStop[] {
+  private _getIdeStop(
+    list: any[],
+    outs: any[] = [],
+    direction: 1 | -1 = 1,
+    entries: StockPositionIdeaEntry[]
+  ): StockPositionStop[] {
     return list
       .filter((item) => item.price !== 0)
       .map((item) => {
@@ -656,8 +662,8 @@ export class VtEnterComponent implements AfterViewInit {
           loss: item.loss || null,
           price: item.price || null,
           stopCandleDate: item.stopCandleDate || stopDate,
-          amount: item.amount || null,
-          amountPercent: item.amountPercent || null,
+          amount: item.amount || entries.reduce((acc: number, item) => (acc += item.quantity), 0),
+          amountPercent: item.amountPercent || 100,
         };
       });
   }
