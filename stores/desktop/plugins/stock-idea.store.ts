@@ -118,10 +118,13 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     });
   }
 
-  readonly loadIdeas = this.effect((stream$: Observable<Params>) =>
-    stream$.pipe(
-      switchMap((params: Params) =>
-        this._api.getIdeaList(params).pipe(
+  readonly loadIdeas = this.effect((stream$: Observable<Params>) => {
+    let cacheParam = {};
+
+    return stream$.pipe(
+      tap((params) => (cacheParam = params !== null ? params : cacheParam)),
+      switchMap(() =>
+        this._api.getIdeaList(cacheParam).pipe(
           map((response: ResponsePositions) => ({
             ...response,
             items: response.items && response.items.map((item: ResponsePosition) => new Position(item)),
@@ -133,8 +136,8 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
         console.error(err);
         return of(null);
       })
-    )
-  );
+    );
+  });
 
   readonly loadPositions = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
@@ -203,7 +206,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
             }> => response.data.id !== null
           ),
           tap((response: Response<{ id: number }>) => {
-            this.loadIdeas(of({}));
+            this.loadIdeas(of(null));
             this.loadPositions(of(null));
 
             // if (+response.data.id !== null) {
@@ -256,7 +259,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
           ),
           tap(() => this.updateIsLoading(false)),
           tap((response: Response<{ id: number }>) => {
-            this.loadIdeas(of({}));
+            this.loadIdeas(of(null));
             this.loadPositions(of(null));
 
             if (+response.data.id === +data.id) {
@@ -302,7 +305,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
       switchMap((id: StockId) =>
         this._api.deleteIdea(id).pipe(
           tap((response: number | null) => {
-            this.loadIdeas(of({}));
+            this.loadIdeas(of(null));
             this.loadPositions(of(null));
             this._queryParams.update({}, '');
           }),
