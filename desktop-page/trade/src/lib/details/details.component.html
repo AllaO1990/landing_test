@@ -3,64 +3,66 @@
     <lib-instrument
       class="details__instrument"
       [data]="instrument$ | async"></lib-instrument>
-    @if (portfolio$ | async; as position) {
-      <div class="details__row tiles">
-        <div class="details__column" [tuiCell]="size">
-          <div tuiSubtitle>Количество</div>
-          <div tuiTitle>
-            {{ position.quantity | tuiFormatNumber | async }} шт.
-          </div>
-        </div>
-        <!--        <div class="details__column" [tuiCell]="size">-->
-        <!--          <div tuiSubtitle>Цена за бумагу</div>-->
-        <!--          <div tuiTitle>-->
-        <!--            {{ position.price | tuiFormatNumber | async }}-->
-        <!--            {{ position.currency | tuiCurrency }}-->
-        <!--          </div>-->
-        <!--        </div>-->
-        <div class="details__column" [tuiCell]="size">
-          <div tuiSubtitle>Стоимость</div>
-          <div tuiTitle>
-            {{ position.total | tuiFormatNumber | async }}
-            {{ position.currency | tuiCurrency }}
-          </div>
-        </div>
-        @if (lastPrice$ | async; as price) {
-          <!--          <div class="details__column" [tuiCell]="size">-->
-            <!--            <div tuiSubtitle>Прибыль</div>-->
-            <!--            <div tuiTitle>-->
-            <!--              {{ (price.last * position.quantity - position.total) | tuiFormatNumber | async }}-->
-            <!--              {{ position.currency | tuiCurrency }}-->
-            <!--            </div>-->
-            <!--          </div>-->
+    @if (portfolio$ | async; as value) {
+      @if (value.data; as position) {
+        <div class="details__row tiles">
           <div class="details__column" [tuiCell]="size">
-            <div tuiSubtitle>Текущая цена</div>
+            <div tuiSubtitle>Количество</div>
             <div tuiTitle>
-              {{ price.last | tuiFormatNumber | async }}
+              {{ position.quantity | tuiFormatNumber | async }} шт.
+            </div>
+          </div>
+          <!--        <div class="details__column" [tuiCell]="size">-->
+          <!--          <div tuiSubtitle>Цена за бумагу</div>-->
+          <!--          <div tuiTitle>-->
+          <!--            {{ position.price | tuiFormatNumber | async }}-->
+          <!--            {{ position.currency | tuiCurrency }}-->
+          <!--          </div>-->
+          <!--        </div>-->
+          <div class="details__column" [tuiCell]="size">
+            <div tuiSubtitle>Стоимость</div>
+            <div tuiTitle>
+              {{ position.total | tuiFormatNumber | async }}
               {{ position.currency | tuiCurrency }}
             </div>
           </div>
-        }
-      </div>
-      <div class="space"></div>
-      <div class="details__column action">
-        @if (close$ | async; as close) {
-          <button
-            (click)="onClosePosition($event, position, close)"
-            [loading]="position.loading"
-            [disabled]="position.quantity === 0"
-            class="add-from-idea"
-            appearance="outline"
-            tuiAppearanceMode="checked"
-            tuiButton>
-            Закрыть позицию
-          </button>
-        }
-      </div>
-    } @else {
-      <div class="space"></div>
-      <ui-loader></ui-loader>
-      <div class="space"></div>
+          @if (lastPrice$ | async; as price) {
+            <!--          <div class="details__column" [tuiCell]="size">-->
+              <!--            <div tuiSubtitle>Прибыль</div>-->
+              <!--            <div tuiTitle>-->
+              <!--              {{ (price.last * position.quantity - position.total) | tuiFormatNumber | async }}-->
+              <!--              {{ position.currency | tuiCurrency }}-->
+              <!--            </div>-->
+              <!--          </div>-->
+            <div class="details__column" [tuiCell]="size">
+              <div tuiSubtitle>Текущая цена</div>
+              <div tuiTitle>
+                {{ price.last | tuiFormatNumber | async }}
+                {{ position.currency | tuiCurrency }}
+              </div>
+            </div>
+          }
+        </div>
+        <div class="space"></div>
+        <div class="details__column action">
+          @if (close$ | async; as close) {
+            <button
+              (click)="onClosePosition($event, position, close)"
+              [loading]="position.loading"
+              [disabled]="position.quantity === 0"
+              class="add-from-idea"
+              appearance="outline"
+              tuiAppearanceMode="checked"
+              tuiButton>
+              Закрыть позицию
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="space"></div>
+        <ui-loader></ui-loader>
+        <div class="space"></div>
+      }
     }
   </div>
 </div>

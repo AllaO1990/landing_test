@@ -28,7 +28,7 @@ export interface TradeState {
   orderType: TradeOrderTypesDescription | null;
   orders: TradeOrders | null;
   stopOrders: TradeStopOrders | null;
-  portfolio: TradePortfolio | null;
+  portfolio: Response<TradePortfolio> | null;
   operations: TradeOperations | null;
   directionTypes: TradeDirections | null;
 }
@@ -59,7 +59,9 @@ export class TradeStore extends ComponentStore<TradeState> {
   );
   readonly orders$: Observable<TradeOrders | null> = this.select((state: TradeState) => state.orders);
   readonly stopOrders$: Observable<TradeStopOrders | null> = this.select((state: TradeState) => state.stopOrders);
-  readonly portfolio$: Observable<TradePortfolio | null> = this.select((state: TradeState) => state.portfolio);
+  readonly portfolio$: Observable<Response<TradePortfolio> | null> = this.select(
+    (state: TradeState) => state.portfolio
+  );
   readonly operations$: Observable<TradeOperations | null> = this.select((state: TradeState) => state.operations);
 
   constructor(private _api: ApiService) {
@@ -129,7 +131,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   );
 
   readonly updatePortfolio = this.updater(
-    (state: TradeState, portfolio: null | TradePortfolio): TradeState => ({
+    (state: TradeState, portfolio: null | Response<TradePortfolio>): TradeState => ({
       ...state,
       portfolio,
     })
@@ -221,7 +223,7 @@ export class TradeStore extends ComponentStore<TradeState> {
   loadPortfolio = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) => this._api.getPortfolio(params)),
-      tap((response: Response<TradePortfolio | null>) => response.success && this.updatePortfolio(response.data))
+      tap((response: Response<TradePortfolio> | null) => response && this.updatePortfolio(response))
     )
   );
 

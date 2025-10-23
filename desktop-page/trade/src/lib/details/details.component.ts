@@ -11,6 +11,7 @@ import {
   shareReplay,
   Subject,
   switchMap,
+  tap,
 } from 'rxjs';
 import {
   TradeAccount,
@@ -33,6 +34,7 @@ import { LoaderComponent } from '@ui/components/loader';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TRADE_ORDER_TYPE_MARKET } from '../common/order.constants';
+import { Response } from 'types/response';
 
 interface DetailsData {
   instrument: StockInstrument | null;
@@ -101,32 +103,41 @@ export class DetailsComponent implements OnDestroy {
     filter((data): data is DetailsClose => data.instrument !== null && data.account !== null && data.source !== null),
     distinctUntilChanged()
   );
-  readonly portfolio$: Observable<DetailsPosition | null> = this.#store.portfolio$.pipe(
-    map((portfolio: TradePortfolio | null) => {
+  readonly portfolio$: Observable<{ data: DetailsPosition | null } | null> = this.#store.portfolio$.pipe(
+    map((portfolio: Response<TradePortfolio> | null) => {
       if (portfolio === null) {
         return null;
       }
 
-      const position = portfolio.positions[0];
+      if (portfolio.data === null) {
+        return { data: null };
+      }
+
+      const position = portfolio.data.positions[0];
 
       if (!position) {
         return {
-          loading: false,
-          quantity: 0,
-          total: 0,
-          price: 0,
-          currency: 'RUB',
+          data: {
+            loading: false,
+            quantity: 0,
+            total: 0,
+            price: 0,
+            currency: 'RUB',
+          },
         };
       }
 
       return {
-        loading: false,
-        quantity: position.quantity,
-        total: getNumberPrecision(position.quantity * position.averagePositionPrice.value, 2),
-        price: position.averagePositionPrice.value,
-        currency: position.currentPrice.currency.toUpperCase(),
+        data: {
+          loading: false,
+          quantity: position.quantity,
+          total: getNumberPrecision(position.quantity * position.averagePositionPrice.value, 2),
+          price: position.averagePositionPrice.value,
+          currency: position.currentPrice.currency.toUpperCase(),
+        },
       };
-    })
+    }),
+    tap((data) => console.log(data))
   );
 
   @Input()
