@@ -244,7 +244,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
     this._controlValue
       .asObservable()
-      .pipe(debounceTime(100), takeUntilDestroyed(this._destroyRef))
+      .pipe(debounceTime(0), takeUntilDestroyed(this._destroyRef))
       .subscribe((result) => {
         if (result === null) {
           this.controlFormArray.reset({ entries: [], targets: [], stop: [] });
@@ -350,7 +350,9 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
               []
             );
 
-            this._updateFormArray('targets', data, true);
+            if (this.formArrayEntries.value.length) {
+              this._updateFormArray('targets', data, true);
+            }
           }
 
           if (this.formArrayStop.value.length === 0 || this.formArrayStop.pristine) {
@@ -623,6 +625,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
     const formArray: FormArray = this.controlFormArray.get(formArrayName) as FormArray;
     if (formArray) {
       formArray.clear();
+
       data.forEach((_: T, index: number) => {
         formArray.setControl(index, new FormControl(), { emitEvent: false });
       });
