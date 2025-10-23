@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+  width: 100%;
+
+  background: var(--tui-background-base);
+}
+
+.payment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -24,6 +24,10 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        path: 'payment',
+        loadComponent: () => import('payment').then((m) => m.PaymentComponent),
+      },
+      {
         path: 'main-v2',
         canActivate: [PermissionGuard],
         children: [
@@ -76,10 +80,6 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
-  },
-  {
-    path: 'payment',
-    loadChildren: () => import('login').then((m) => m.ROUTES),
   },
   {
     path: '**',
