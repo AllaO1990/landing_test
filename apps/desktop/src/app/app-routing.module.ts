@@ -78,6 +78,10 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'payment',
+    loadChildren: () => import('login').then((m) => m.ROUTES),
+  },
+  {
     path: '**',
     loadChildren: () => import('page-404').then((m) => m.Page404Module),
   },

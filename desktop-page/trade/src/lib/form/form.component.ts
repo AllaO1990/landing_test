@@ -493,29 +493,34 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     event.preventDefault();
 
     if (item.orderType && item.orderType.type === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS) {
-      this.#idea.idea$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((position: StockPosition) => {
-        let stop = position.idea.stop;
+      this.#idea.idea$
+        .pipe(
+          takeUntilDestroyed(this.#destroyRef)
+          // take(1)
+        )
+        .subscribe((position: StockPosition) => {
+          let stop = position.idea.stop;
 
-        if (stop) {
-          stop = {
-            ...stop,
-            price: 0,
+          if (stop) {
+            stop = {
+              ...stop,
+              price: 0,
+            };
+          }
+
+          const updatePosition: StockPosition = {
+            ...position,
+            idea: {
+              ...position.idea,
+              stop,
+            },
           };
-        }
 
-        const updatePosition: StockPosition = {
-          ...position,
-          idea: {
-            ...position.idea,
-            stop,
-          },
-        };
-
-        this.#idea.editIdea({
-          id: position.idea.id!,
-          body: this.#service.updateIdea(updatePosition, [], [], []),
+          this.#idea.editIdea({
+            id: position.idea.id!,
+            body: this.#service.updateIdea(updatePosition, [], [], []),
+          });
         });
-      });
     }
 
     if (item.status === ControlValueStatus.AWAITS) {

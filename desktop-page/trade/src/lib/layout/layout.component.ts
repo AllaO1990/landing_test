@@ -95,8 +95,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         entry && entry.length > 0 && stop && stop.length > 0
     ),
     filter(
-      ({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) =>
-        entry[0].status === ControlValueStatus.EXECUTED && stop[0].status === ControlValueStatus.UNLOADING
+      ({ entry }: { entry: ControlValue[]; stop: ControlValue[] }) => entry[0].status === ControlValueStatus.EXECUTED
     ),
     map(({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) => ({ entry: entry[0], stop: stop[0] })),
     distinctUntilChanged((a, b) => this._distinct(a, b)),
@@ -192,13 +191,18 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         });
       });
 
-    this.#isStop$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((controlValue: ControlValue) => {
-      const {
-        filter: { account, instrument, source },
-      } = this.formGroup.value.trade;
+    this.#isStop$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING)
+      )
+      .subscribe((controlValue: ControlValue) => {
+        const {
+          filter: { account, instrument, source },
+        } = this.formGroup.value.trade;
 
-      this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
-    });
+        this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
+      });
 
     // this.#store.stopOrders$
     //   .pipe(
