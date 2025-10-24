@@ -54,7 +54,6 @@ import { ControlValue, ControlValueStatus } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { Params } from '@angular/router';
-import { TradeStopOrderTypeText } from '../common/order.types';
 
 @Component({
   selector: 'trade-form',
@@ -304,6 +303,51 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       }
     });
 
+    this.#idea.idea$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((position: StockPosition) =>
+          this.formArrayStop.valueChanges.pipe(
+            takeUntilDestroyed(this.#destroyRef),
+            startWith(this.formArrayStop.value),
+            pairwise(),
+            filter(([prev, curr]: [ControlValue[], ControlValue[]]) => prev.length > 0 && curr.length === 0),
+            map(() => position)
+          )
+        )
+      )
+      .subscribe((position: StockPosition) => {
+        this.#idea.editIdea({
+          id: position.idea.id!,
+          body: this.#service.updateIdea(this.#service.getIdeaStopLossToStop(position), [], [], []),
+        });
+      });
+
+    this.#idea.idea$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((position: StockPosition) =>
+          this.formArrayStop.valueChanges.pipe(
+            startWith(this.formArrayStop.value),
+            pairwise(),
+            filter(([prev, curr]: [ControlValue[], ControlValue[]]) => prev.length === 0 && curr.length > 0),
+            map(() => position),
+            filter((position: StockPosition) => {
+              const stopPrice = position.idea.stop?.price;
+              const stopPriceService = this.#service.getIdeaStopLossToTarget(position).idea.stop?.price;
+
+              return stopPrice !== stopPriceService;
+            })
+          )
+        )
+      )
+      .subscribe((position: StockPosition) => {
+        this.#idea.editIdea({
+          id: position.idea.id!,
+          body: this.#service.updateIdea(this.#service.getIdeaStopLossToTarget(position), [], [], []),
+        });
+      });
+
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value))
       .subscribe((value) => this.#onChange(value));
@@ -421,10 +465,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue | null) => {
         if (value) {
-          const calcValue = {
+          const calcValue: Partial<ControlValue> = {
             ...value,
-            status: 0,
+            status: ControlValueStatus.UNLOADING,
             commission: 0,
+            change: false,
+            removed: false,
             lot: instrument.lot,
             lots: Math.floor(value.quantity / instrument.lot),
             total: getNumberPrecision(value.price * value.quantity, 2),
@@ -491,37 +537,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   onRemoveWithControl(event: Event, item: ControlValue, index: number, control: FormArray): void {
     event.preventDefault();
-
-    if (item.orderType && item.orderType.type === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS) {
-      this.#idea.idea$
-        .pipe(
-          takeUntilDestroyed(this.#destroyRef)
-          // take(1)
-        )
-        .subscribe((position: StockPosition) => {
-          let stop = position.idea.stop;
-
-          if (stop) {
-            stop = {
-              ...stop,
-              price: 0,
-            };
-          }
-
-          const updatePosition: StockPosition = {
-            ...position,
-            idea: {
-              ...position.idea,
-              stop,
-            },
-          };
-
-          this.#idea.editIdea({
-            id: position.idea.id!,
-            body: this.#service.updateIdea(updatePosition, [], [], []),
-          });
-        });
-    }
 
     if (item.status === ControlValueStatus.AWAITS) {
       if (item.orderType) {
@@ -666,6 +681,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       stopOrders,
       actualOperations.filter((item) => item.type === operationTypeOut)
     );
+
+    // console.log(stopLoss);
 
     if (stopLoss) {
       this.formArrayStop.setControl(0, new FormControl(stopLoss), { emitEvent: true });

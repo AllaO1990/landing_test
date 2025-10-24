@@ -11,7 +11,6 @@ import {
   shareReplay,
   Subject,
   switchMap,
-  tap,
 } from 'rxjs';
 import {
   TradeAccount,
@@ -136,8 +135,7 @@ export class DetailsComponent implements OnDestroy {
           currency: position.currentPrice.currency.toUpperCase(),
         },
       };
-    }),
-    tap((data) => console.log(data))
+    })
   );
 
   @Input()

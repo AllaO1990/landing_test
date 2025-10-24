@@ -141,8 +141,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
           stop,
         } = this.formGroup.value.trade;
 
-        console.log('subscribe');
-
         if (account && instrument && source) {
           const outOrders = this._getOrders(
             [...out, ...stop].filter(
@@ -191,15 +189,21 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         });
       });
 
-    this.#isStop$
+    this.#isSubmitted$
+      .asObservable()
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
-        filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING)
+        filter((isSubmitted: boolean) => isSubmitted),
+        switchMap(() =>
+          this.#isStop$.pipe(filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING))
+        )
       )
       .subscribe((controlValue: ControlValue) => {
         const {
           filter: { account, instrument, source },
         } = this.formGroup.value.trade;
+
+        console.log(controlValue);
 
         this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
       });

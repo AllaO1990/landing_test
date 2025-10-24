@@ -248,7 +248,7 @@ export class TradeFormService {
       const lots = Math.floor(item.amount / defaultItem.lot);
 
       const findOperation =
-        operationsDirection.find((operation: ActualTradeOperation) => operation.quantity === lots) || null;
+        operationsDirection.find((operation: ActualTradeOperation) => operation.lots === lots) || null;
 
       return {
         ...defaultItem,
@@ -355,7 +355,7 @@ export class TradeFormService {
     stopOrders: TradeStopOrders,
     operations: ActualTradeOperations
   ): (ControlValue & { disabled: boolean }) | null {
-    let stopPrice = position.idea.stop ? position.idea.stop.price : 0;
+    const stopPrice = position.idea.stop ? position.idea.stop.price : 0;
 
     if (stopPrice === 0) {
       return null;
@@ -378,14 +378,15 @@ export class TradeFormService {
     const precision = position.idea.instrument.source === 'tinkoff' ? 0 : 8;
     const lots = getNumberPrecision(position.idea.inPositionQuantity / defaultItem.lot, precision);
 
-    if (position.actions.outs.length) {
-      if (position.actions.outs.length === 1) {
-        stopPrice = position.actions.entries[0].price;
-      }
-      if (position.actions.outs.length > 1) {
-        stopPrice = position.actions.outs[position.actions.outs.length - 2].price;
-      }
-    }
+    // if (position.idea.targets.length) {
+    //   if (position.idea.targets.length === 1) {
+    //     stopPrice = position.idea.targets[0].price;
+    //   }
+    //   if (position.idea.targets.length > 1) {
+    //     stopPrice = position.idea.targets[position.idea.targets.length - 2].price;
+    //     console.log(position, position.idea.targets[position.idea.targets.length - 2].price);
+    //   }
+    // }
 
     const control = {
       ...defaultItem,
@@ -399,30 +400,6 @@ export class TradeFormService {
       orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS,
       status: ControlValueStatus.UNLOADING,
     };
-
-    if (operations.length > 0) {
-      if (temp.length === 1) {
-        const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === temp[0].lots);
-
-        if (findIndex !== -1) {
-          return {
-            ...temp[0],
-            disabled: true,
-            status: ControlValueStatus.EXECUTED,
-          };
-        }
-      }
-
-      const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === lots);
-
-      if (findIndex !== -1) {
-        return {
-          ...control,
-          disabled: true,
-          status: ControlValueStatus.EXECUTED,
-        };
-      }
-    }
 
     const filterStopOrder =
       stopOrders.find(
@@ -457,6 +434,30 @@ export class TradeFormService {
         orderType: { type: filterOrder.orderTypeText, id: filterOrder.orderType },
         status: ControlValueStatus.AWAITS,
       };
+    }
+
+    if (operations.length > 0 && entryLots === outLots) {
+      if (temp.length === 1) {
+        const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === temp[0].lots);
+
+        if (findIndex !== -1) {
+          return {
+            ...temp[0],
+            disabled: true,
+            status: ControlValueStatus.EXECUTED,
+          };
+        }
+      }
+
+      const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === lots);
+
+      if (findIndex !== -1) {
+        return {
+          ...control,
+          disabled: true,
+          status: ControlValueStatus.EXECUTED,
+        };
+      }
     }
 
     return control;
@@ -592,6 +593,52 @@ export class TradeFormService {
 
       return acc;
     }, []);
+  }
+
+  getIdeaStopLossToStop(position: StockPosition): StockPosition {
+    let stop = position.idea.stop;
+
+    if (stop) {
+      stop = {
+        ...stop,
+        price: 0,
+      };
+    }
+
+    return {
+      ...position,
+      idea: {
+        ...position.idea,
+        stop,
+      },
+    };
+  }
+
+  getIdeaStopLossToTarget(position: StockPosition): StockPosition {
+    let stopPrice = position.idea.stop;
+
+    if (position.actions.outs.length) {
+      if (position.actions.outs.length === 1 && stopPrice) {
+        stopPrice = {
+          ...stopPrice,
+          price: position.actions.outs[0].price,
+        };
+      }
+      if (position.actions.outs.length > 1 && stopPrice) {
+        stopPrice = {
+          ...stopPrice,
+          price: position.actions.outs[position.actions.outs.length - 2].price,
+        };
+      }
+    }
+
+    return {
+      ...position,
+      idea: {
+        ...position.idea,
+        stop: stopPrice,
+      },
+    };
   }
 
   private _getPriceToTarget(lastPrice: number, price: number | null): number | null {

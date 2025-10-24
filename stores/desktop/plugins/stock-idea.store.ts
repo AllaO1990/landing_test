@@ -122,16 +122,17 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     let cacheParam = {};
 
     return stream$.pipe(
-      tap((params) => (cacheParam = params !== null ? params : cacheParam)),
-      switchMap(() =>
-        this._api.getIdeaList(cacheParam).pipe(
+      switchMap((params: Params) => {
+        cacheParam = params !== null ? params : cacheParam;
+
+        return this._api.getIdeaList(cacheParam).pipe(
           map((response: ResponsePositions) => ({
             ...response,
             items: response.items && response.items.map((item: ResponsePosition) => new Position(item)),
           })),
           tap((result: Positions) => this.updateIdeas(result))
-        )
-      ),
+        );
+      }),
       catchError((err: Error) => {
         console.error(err);
         return of(null);
@@ -139,19 +140,23 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
     );
   });
 
-  readonly loadPositions = this.effect((stream$: Observable<Params>) =>
-    stream$.pipe(
-      switchMap((params: Params) =>
-        this._api.getPositionList(params).pipe(
+  readonly loadPositions = this.effect((stream$: Observable<Params>) => {
+    let cacheParam = {};
+
+    return stream$.pipe(
+      switchMap((params: Params) => {
+        cacheParam = params !== null ? params : cacheParam;
+
+        return this._api.getPositionList(cacheParam).pipe(
           map((response: ResponsePositions) => ({
             ...response,
             items: response.items && response.items.map((item: ResponsePosition) => new Position(item)),
           })),
           tap((result: Positions) => this.updatePositions(result))
-        )
-      )
-    )
-  );
+        );
+      })
+    );
+  });
 
   readonly loadIdea = this.effect((stream$: Observable<number | null>) =>
     stream$.pipe(
@@ -237,6 +242,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
   readonly edit = this.effect((stream$: Observable<{ id: StockId; body: object }>) =>
     stream$.pipe(
+      tap((_) => console.log('asdasdadasd')),
       tap(() => this.updateIsLoading(true)),
       switchMap((data: { id: StockId; body: any }) =>
         this._api.editIdea(data.id, data.body).pipe(
