@@ -32,6 +32,7 @@ export class AuthService {
   #document: Document = inject(DOCUMENT);
   private readonly _http: HttpClient = inject(HttpClient);
   readonly #config = inject(APP_CONFIG);
+  readonly #router: Router = inject(Router);
 
   get host() {
     return this.#config.host;
@@ -44,6 +45,12 @@ export class AuthService {
   }
 
   getUrl(): string {
+    const url = this._getFromFragment();
+
+    if (url) {
+      return url;
+    }
+
     return this.#url;
   }
 
@@ -140,5 +147,20 @@ export class AuthService {
 
   private _saveToken(token: string) {
     this._storage.setObject('user', { token });
+  }
+
+  private _getFromFragment(): string | null {
+    const urlTree = this.#router.parseUrl(this.#router.url);
+    const reg = /path="([/?-\w+\d+=&]+)"/;
+
+    if (urlTree.fragment) {
+      const matchResult = urlTree.fragment.match(reg);
+
+      if (matchResult) {
+        return matchResult[1];
+      }
+    }
+
+    return null;
   }
 }
