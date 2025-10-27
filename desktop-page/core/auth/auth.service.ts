@@ -28,6 +28,7 @@ interface UserSignUpData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  #url = '';
   #document: Document = inject(DOCUMENT);
   private readonly _http: HttpClient = inject(HttpClient);
   readonly #config = inject(APP_CONFIG);
@@ -37,6 +38,18 @@ export class AuthService {
   }
 
   constructor(private _router: Router, private _storage: VtLocalStorageService) {}
+
+  setUrl(url: string) {
+    this.#url = url;
+  }
+
+  getUrl(): string {
+    return this.#url;
+  }
+
+  resetUrl(): void {
+    this.#url = '';
+  }
 
   onSignIn(email: string): Observable<Response<any>> {
     return this._http.post<Response<any>>(`${this.host}/v1/auth/sign-in`, { email }).pipe(
@@ -102,20 +115,14 @@ export class AuthService {
       });
   }
 
-  login(email: string, password: string) {
-    this._http
-      .post<UserData>(`${this.host}/v1/auth/token`, { username: email, password: +password })
-      .pipe(
-        catchError((error, abc) => {
-          this._router.navigate(['login']);
-          return EMPTY;
-        })
-      )
-      .subscribe((data) => {
-        this._saveToken(data['data']['access_token']);
-
-        this._router.navigate(['lk']);
-      });
+  login(email: string, password: string): Observable<UserData> {
+    return this._http.post<UserData>(`${this.host}/v1/auth/token`, { username: email, password: +password }).pipe(
+      tap((data: UserData) => this._saveToken(data['data']['access_token'])),
+      catchError((error, abc) => {
+        this._router.navigate(['login']);
+        return EMPTY;
+      })
+    );
   }
 
   logout() {

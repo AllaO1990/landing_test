@@ -3,16 +3,20 @@ import {
   ActivatedRouteSnapshot,
   CanActivate,
   CanLoad,
+  CanMatch,
+  GuardResult,
+  MaybeAsync,
   Route,
   Router,
   RouterStateSnapshot,
+  UrlSegment,
   UrlTree,
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '@core/auth';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanLoad, CanActivate {
+export class AuthGuard implements CanLoad, CanActivate, CanMatch {
   constructor(private _authService: AuthService, private _router: Router) {}
 
   canLoad(route: Route): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
@@ -38,5 +42,14 @@ export class AuthGuard implements CanLoad, CanActivate {
     } */
 
     return true;
+  }
+
+  canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult> {
+    if (!this._authService.isLoggedIn) {
+      return true;
+    }
+
+    this._router.navigate(['lk']);
+    return false;
   }
 }

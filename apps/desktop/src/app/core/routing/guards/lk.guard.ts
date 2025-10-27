@@ -27,6 +27,7 @@ export class LkGuard implements CanActivate, CanActivateChild {
       return true;
     }
 
+    this._auth.setUrl(state.url);
     return this._router.parseUrl('/');
   }
 

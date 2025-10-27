@@ -8,7 +8,7 @@ export const routes: Routes = [
     // loadComponent: () => import('login').then((m) => m.LoginComponent),
     loadChildren: () => import('login').then((m) => m.ROUTES),
     // loadChildren: () => import('login').then((m) => m.LoginComponent),
-    canLoad: [AuthGuard],
+    canMatch: [AuthGuard],
     // canActivate: [AuthGuard],
     // outlet: 'login',
   },

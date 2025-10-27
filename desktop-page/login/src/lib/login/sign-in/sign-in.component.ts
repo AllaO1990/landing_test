@@ -121,7 +121,12 @@ export class SignInComponent implements AfterViewInit {
         this.isLoad.set(false);
 
         if (result.success) {
-          this.#router.navigate(['lk']);
+          if (this.#auth.getUrl()) {
+            this.#router.navigateByUrl(this.#auth.getUrl());
+            this.#auth.resetUrl();
+          } else {
+            this.#router.navigate(['lk']);
+          }
         }
 
         if (!result.success) {
