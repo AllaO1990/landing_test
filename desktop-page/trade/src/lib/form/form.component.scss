@@ -136,3 +136,14 @@ label {
 
   user-select: none;
 }
+
+@media screen and (max-width: 767px) {
+  .row {
+    &__item {
+      &.commission {
+        flex-basis: 0;
+        padding: 0;
+      }
+    }
+  }
+}

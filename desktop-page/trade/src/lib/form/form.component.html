@@ -195,7 +195,7 @@
     <div class="header__item row__item row__item--types">Тип</div>
     <div class="header__item row__item">Цена</div>
     <div class="header__item row__item">Кол-во/лоты</div>
-    <div class="header__item row__item">Комиссия</div>
+    <div class="header__item row__item commission">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
     <div class="header__item row__item">Статус</div>
     <div class="header__item row__item row__item--actions"></div>
@@ -216,7 +216,7 @@
     <span>{{ item.quantity | tuiFormatNumber | async }}</span>
     / {{ item.lots | tuiFormatNumber | async }}
   </div>
-  <div class="item__value item__value--number row__item">
+  <div class="item__value item__value--number row__item commission">
     {{
       item.commission ? (item.commission | tuiFormatNumber: {
         precision: 2,
