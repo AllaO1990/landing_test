@@ -19,7 +19,7 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { TuiExpand } from '@taiga-ui/experimental';
 import { TradeDialogService } from '../dialog/dialog.service';
 import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
@@ -44,7 +44,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '../common/store';
 import { DirectionTypePipe } from '../common/direction-type.pipe';
 import { OrderTypePipe } from '../common/order-type.pipe';
-import { TradeOperations, TradeOrder, TradeOrders, TradeStopOrder, TradeStopOrders } from '../common/api.types';
+import {
+  TradeOperations,
+  TradeOrder,
+  TradeOrders,
+  TradeStopOrder,
+  TradeStopOrders,
+  TradeToken,
+} from '../common/api.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { RequestFormValue } from '../request/request.component';
 import { TradeFormService } from './form.service';
@@ -54,6 +61,7 @@ import { ControlValue, ControlValueStatus } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { Params } from '@angular/router';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 
 @Component({
   selector: 'trade-form',
@@ -95,12 +103,20 @@ import { Params } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
+  readonly #breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   readonly #injector: Injector = inject(Injector);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #dialog: TradeDialogService = inject(TradeDialogService);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #service: TradeFormService = inject(TradeFormService);
+
+  readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
+    map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile')
+  );
+
+  readonly expandedFilter: WritableSignal<boolean> = signal(false);
+  readonly expandedFilterDisabled: WritableSignal<boolean> = signal(false);
 
   readonly expanded: WritableSignal<boolean> = signal(false);
   readonly expandedDisabled$: Observable<boolean> = combineLatest([
@@ -229,19 +245,43 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         }
       );
 
-    this.controlFilter.valueChanges
+    const token$: Observable<TradeToken | null> = this.controlFilter.valueChanges.pipe(
+      takeUntilDestroyed(this.#destroyRef),
+      startWith(this.controlFilter.value),
+      map((value: { token: null | TradeToken } | null): TradeToken | null => value && value.token),
+      distinctUntilChanged(),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.isMobile$
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
-        startWith(this.controlFilter.value),
-        map((value: { token: null | string } | null): null | string => value && value.token),
-        pairwise()
+        filter((isMobile: boolean) => !isMobile)
       )
-      .subscribe(([first, second]: [null | string, null | string]) => {
-        if (first !== null && second === null) {
-          this.formArrayEntry.clear();
-          this.formArrayOut.clear();
-        }
+      .subscribe(() => this.expandedFilter.update(() => true));
+
+    this.isMobile$
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        filter((isMobile: boolean) => isMobile),
+        switchMap(() =>
+          token$.pipe(
+            map((token: TradeToken | null) => token === null),
+            distinctUntilChanged()
+          )
+        )
+      )
+      .subscribe((isNoToken: boolean) => {
+        this.expandedFilterDisabled.update(() => isNoToken);
+        this.expandedFilter.update(() => isNoToken);
       });
+
+    token$.pipe(pairwise()).subscribe(([first, second]: [null | TradeToken, null | TradeToken]) => {
+      if (first !== null && second === null) {
+        this.formArrayEntry.clear();
+        this.formArrayOut.clear();
+      }
+    });
 
     this.controlFilter.valueChanges
       .pipe(
@@ -560,6 +600,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     event.preventDefault();
 
     this.expanded.update((status: boolean) => !status);
+  }
+
+  onExpandedFilter(event: Event): void {
+    event.preventDefault();
+
+    this.expandedFilter.update((status: boolean) => !status);
   }
 
   addFromIdea(event: Event): void {

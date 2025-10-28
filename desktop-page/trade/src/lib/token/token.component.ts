@@ -43,6 +43,10 @@ export class TradeTokenComponent implements AfterViewInit {
 
       if (source) {
         this.formGroup.patchValue({ source: source.name, sourceId: source.id });
+
+        if (!token) {
+          this.formGroup.patchValue({ name: source.name });
+        }
       }
 
       if (token) {

@@ -3,7 +3,21 @@
     <h3>Брокерские заявки</h3>
   </div>
   <div class="trade__filter">
-    <trade-filter formControlName="filter"></trade-filter>
+    @if (isMobile$ | async) {
+      <button
+        class="more"
+        [appearance]="expandedFilterDisabled() ? 'negative' : 'secondary-grayscale'"
+        tuiButton
+        type="button"
+        [disabled]="expandedFilterDisabled()"
+        [tuiChevron]="expandedFilter()"
+        (click)="onExpandedFilter($event)">
+        Информация о брокере
+      </button>
+    }
+    <tui-expand [expanded]="expandedFilter()">
+      <trade-filter formControlName="filter"></trade-filter>
+    </tui-expand>
   </div>
   <div class="trade__details">
     <trade-details [data]="controlFilter.value"></trade-details>
