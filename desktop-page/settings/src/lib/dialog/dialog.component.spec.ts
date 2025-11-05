@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DialogTradeComponent } from './dialog.component';
+import { DialogComponent } from './dialog.component';
 
 describe('DialogComponent', () => {
-  let component: DialogTradeComponent;
-  let fixture: ComponentFixture<DialogTradeComponent>;
+  let component: DialogComponent;
+  let fixture: ComponentFixture<DialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DialogTradeComponent],
+      imports: [DialogComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DialogTradeComponent);
+    fixture = TestBed.createComponent(DialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

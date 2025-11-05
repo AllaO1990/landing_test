@@ -34,6 +34,7 @@
       "portfolio": ["desktop-page/portfolio/src/index.ts"],
       "registration": ["desktop-page/registration/src/index.ts"],
       "sale": ["desktop-page/sale/src/index.ts"],
+      "settings": ["desktop-page/settings/src/index.ts"],
       "shall": ["desktop-page/shall/src/index.ts"],
       "storage/*": ["stores/local/*"],
       "stores/*": ["stores/desktop/*"],

@@ -1,0 +1,22 @@
+{
+  "name": "settings",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "desktop-page/settings/src",
+  "prefix": "settings",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "desktop-page/settings/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
