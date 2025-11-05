@@ -25,17 +25,31 @@
   <tui-scrollbar class="trade__container">
     <div class="entry">
       <div class="tui-text_h6">Вход</div>
-      <lib-list
-        [header]="header"
-        [itemSize]="itemHeight"
-        [style.height.px]="heightEntry$ | async"
-        [list]="listEntry$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
-          <ng-container
-            [ngTemplateOutlet]="itemEntryTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayEntry }"></ng-container>
-        </div>
-      </lib-list>
+      @if (isMobile$ | async) {
+        <lib-list
+          [header]="headerMobile"
+          [itemSize]="itemHeight * 1.5"
+          [style.height.px]="heightEntry$ | async"
+          [list]="listEntry$ | async">
+          <div class="item row row--mobile row--border" *libListItem="let item; let index = index" @heightAnimations>
+            <ng-container
+              [ngTemplateOutlet]="itemEntryTemplateMobile"
+              [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayEntry }"></ng-container>
+          </div>
+        </lib-list>
+      } @else {
+        <lib-list
+          [header]="header"
+          [itemSize]="itemHeight"
+          [style.height.px]="heightEntry$ | async"
+          [list]="listEntry$ | async">
+          <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
+            <ng-container
+              [ngTemplateOutlet]="itemEntryTemplate"
+              [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayEntry }"></ng-container>
+          </div>
+        </lib-list>
+      }
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
@@ -52,17 +66,31 @@
 
     <div class="out">
       <div class="tui-text_h6">Выход</div>
-      <lib-list
-        [header]="header"
-        [itemSize]="itemHeight"
-        [style.height.px]="heightOut$ | async"
-        [list]="listOut$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
-          <ng-container
-            [ngTemplateOutlet]="itemEntryTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayOut }"></ng-container>
-        </div>
-      </lib-list>
+      @if (isMobile$ | async) {
+        <lib-list
+          [header]="headerMobile"
+          [itemSize]="itemHeight * 1.5"
+          [style.height.px]="heightOut$ | async"
+          [list]="listOut$ | async">
+          <div class="item row row--mobile row--border" *libListItem="let item; let index = index" @heightAnimations>
+            <ng-container
+              [ngTemplateOutlet]="itemEntryTemplateMobile"
+              [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayOut }"></ng-container>
+          </div>
+        </lib-list>
+      } @else {
+        <lib-list
+          [header]="header"
+          [itemSize]="itemHeight"
+          [style.height.px]="heightOut$ | async"
+          [list]="listOut$ | async">
+          <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
+            <ng-container
+              [ngTemplateOutlet]="itemEntryTemplate"
+              [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayOut }"></ng-container>
+          </div>
+        </lib-list>
+      }
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
@@ -90,17 +118,31 @@
 
     <div class="stop">
       <div class="tui-text_h6">Стоп заявка</div>
-      <lib-list
-        [header]="header"
-        [itemSize]="itemHeight"
-        [style.height.px]="heightStop$ | async"
-        [list]="listStop$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
-          <ng-container
-            [ngTemplateOutlet]="itemEntryTemplate"
-            [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayStop }"></ng-container>
-        </div>
-      </lib-list>
+      @if (isMobile$ | async) {
+        <lib-list
+          [header]="headerMobile"
+          [itemSize]="itemHeight * 1.5"
+          [style.height.px]="heightStop$ | async"
+          [list]="listStop$ | async">
+          <div class="item row row--mobile row--border" *libListItem="let item; let index = index" @heightAnimations>
+            <ng-container
+              [ngTemplateOutlet]="itemEntryTemplateMobile"
+              [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayStop }"></ng-container>
+          </div>
+        </lib-list>
+      } @else {
+        <lib-list
+          [header]="header"
+          [itemSize]="itemHeight"
+          [style.height.px]="heightStop$ | async"
+          [list]="listStop$ | async">
+          <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
+            <ng-container
+              [ngTemplateOutlet]="itemEntryTemplate"
+              [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayStop }"></ng-container>
+          </div>
+        </lib-list>
+      }
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
@@ -195,8 +237,19 @@
     <div class="header__item row__item row__item--types">Тип</div>
     <div class="header__item row__item">Цена</div>
     <div class="header__item row__item">Кол-во/лоты</div>
-    <div class="header__item row__item commission">Комиссия</div>
+    <div class="header__item row__item">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
+    <div class="header__item row__item">Статус</div>
+    <div class="header__item row__item row__item--actions"></div>
+  </lib-list-header>
+</ng-template>
+
+<ng-template #headerMobile>
+  <lib-list-header class="header row row--mobile">
+    <div class="header__item row__item">Действие / Тип</div>
+    <div class="header__item row__item">Цена</div>
+    <div class="header__item row__item">Кол-во/лоты</div>
+    <!--    <div class="header__item row__item row__item&#45;&#45;total">Стоимость</div>-->
     <div class="header__item row__item">Статус</div>
     <div class="header__item row__item row__item--actions"></div>
   </lib-list-header>
@@ -226,6 +279,70 @@
   </div>
   <div class="item__value item__value--number row__item row__item--total">
     {{ item.total | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+  </div>
+  <div class="item__value row__item row__item--center">
+    @if (item.status === 'AWAITS') {
+      <tui-icon
+        tuiHint="Заявка выставлена и ожидает исполнения"
+        tuiHintAppearance="dark"
+        style="color: var(--tui-status-warning)"
+        icon="@tui.refresh-cw"></tui-icon>
+    } @else if (item.status === 'EXECUTED') {
+      <tui-icon
+        tuiHint="Заявка исполнена"
+        tuiHintAppearance="dark"
+        style="color: var(--tui-text-positive)"
+        icon="@tui.circle-check"></tui-icon>
+    } @else {
+      <tui-icon
+        tuiHint="Заявка не выставлена"
+        tuiHintAppearance="dark"
+        style="color: var(--tui-text-secondary)"
+        icon="@tui.timer"></tui-icon>
+    }
+  </div>
+  <div class="item__value row__item row__item--actions">
+    @if (item.status !== 'EXECUTED') {
+      <button
+        appearance="icon"
+        iconStart="@tui.pencil"
+        tuiIconButton
+        [loading]="item.change"
+        (click)="onEdit($event, item, index, control)"
+        [disabled]="item.change || item.removed || item.disabled"
+        size="xs"
+        type="button"
+      ></button>
+      <button
+        (click)="onRemoveWithControl($event, item, index, control)"
+        [loading]="item.removed"
+        [disabled]="item.change || item.removed || item.disabled"
+        appearance="icon"
+        iconStart="@tui.x"
+        tuiIconButton
+        size="xs"
+        type="button"
+      ></button>
+    }
+  </div>
+</ng-template>
+
+<ng-template #itemEntryTemplateMobile let-item let-index=index let-control=control>
+  <div class="item__value row__item">
+    {{ item.direction | tradeDirectionType | async }}<br>
+    {{ item.orderType | tradeOrderType | async }}
+  </div>
+  <div class="item__value row__item row__item--double cell">
+    <div class="cell--half">
+      {{ item.price | tuiFormatNumber | async }}
+    </div>
+    <div class="cell--half">
+      <span>{{ item.quantity | tuiFormatNumber | async }}</span>
+      / {{ item.lots | tuiFormatNumber | async }}
+    </div>
+    <div class="cell--full">
+      {{ item.total | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+    </div>
   </div>
   <div class="item__value row__item row__item--center">
     @if (item.status === 'AWAITS') {

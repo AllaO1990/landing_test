@@ -112,7 +112,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly #service: TradeFormService = inject(TradeFormService);
 
   readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
-    map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile')
+    map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
+    shareReplay({ refCount: true, bufferSize: 1 })
   );
 
   readonly expandedFilter: WritableSignal<boolean> = signal(false);
@@ -175,9 +176,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly heightEntry$: Observable<number> = this.listEntry$.pipe(
-    map((list: ControlValue[]) => ((list && list.length) || 0) + 1),
-    map((length) => (length > 3 ? 3 * this.itemHeight : length * this.itemHeight))
+  readonly heightEntry$: Observable<number> = combineLatest([this.listEntry$, this.isMobile$]).pipe(
+    map(([list, isMobile]: [ControlValue[], boolean]) => {
+      const length = ((list && list.length) || 0) + 1;
+      const rate = isMobile ? 1.5 : 1;
+
+      return (length > 3 ? 3 : length) * this.itemHeight * rate;
+    }),
+    distinctUntilChanged()
   );
 
   readonly listOut$: Observable<ControlValue[]> = timer(500).pipe(
@@ -186,9 +192,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly heightOut$: Observable<number> = this.listOut$.pipe(
-    map((list: ControlValue[]) => ((list && list.length) || 0) + 1),
-    map((length) => (length > 4 ? 4 * this.itemHeight : length * this.itemHeight)),
+  readonly heightOut$: Observable<number> = combineLatest([this.listOut$, this.isMobile$]).pipe(
+    map(([list, isMobile]: [ControlValue[], boolean]) => {
+      const length = ((list && list.length) || 0) + 1;
+      const rate = isMobile ? 1.5 : 1;
+
+      return (length > 4 ? 4 : length) * this.itemHeight * rate;
+    }),
     distinctUntilChanged()
   );
 
@@ -197,9 +207,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly heightStop$: Observable<number> = this.listStop$.pipe(
-    map((list: ControlValue[]) => ((list && list.length) || 0) + 1),
-    map((length) => (length > 4 ? 4 * this.itemHeight : length * this.itemHeight)),
+  readonly heightStop$: Observable<number> = combineLatest([this.listStop$, this.isMobile$]).pipe(
+    map(([list, isMobile]: [ControlValue[], boolean]) => {
+      const length = ((list && list.length) || 0) + 1;
+      const rate = isMobile ? 1.5 : 1;
+
+      return (length > 4 ? 4 : length) * this.itemHeight * rate;
+    }),
     distinctUntilChanged()
   );
 
@@ -269,7 +283,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
             map((token: TradeToken | null) => token === null),
             distinctUntilChanged()
           )
-        )
+        ),
+        debounceTime(100)
       )
       .subscribe((isNoToken: boolean) => {
         this.expandedFilterDisabled.update(() => isNoToken);
