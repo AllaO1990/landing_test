@@ -37,6 +37,7 @@ import {
   skip,
   startWith,
   switchMap,
+  take,
   timer,
 } from 'rxjs';
 import { StockPosition, StockPositionActionEntry, StockPositionActionTarget } from 'types/position';
@@ -59,7 +60,6 @@ import { TuiItem } from '@taiga-ui/cdk';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
 import { ControlValue, ControlValueStatus } from './form.types';
 import { DetailsComponent } from '../details/details.component';
-import { getPriceIncrement } from 'utils/get-price-increment';
 import { Params } from '@angular/router';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 
@@ -333,12 +333,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       ),
       this.idea$,
     ]).subscribe(([entryLots, position]) => {
-      const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
-      const outs = this.#service.getOutControlValue(position, [], [], [], this.controlFilter.value).ideas;
-      const data = this.#service.getCalcOutIdea(outs, entryLots, priceIncrement);
+      const outs = this.#service.getOutControlValue(position, [], [], [], this.controlFilter.value, entryLots);
 
       this.formArrayOut.clear({ emitEvent: false });
-      data.forEach((value: ControlValue, index: number) => {
+      outs.ideas.forEach((value: ControlValue, index: number) => {
         this.formArrayOut.setControl(index, new FormControl(value));
       });
 
@@ -631,16 +629,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     this.idea$
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
+        take(1),
         distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
       )
       .subscribe((position: StockPosition) => {
         const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
+        const maxLots = this.formArrayEntry.value.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
+        const outs = this.#service.getOutControlValue(position, [], [], [], this.controlFilter.value, maxLots);
 
-        this.#service
-          .getOutControlValue(position, [], [], [], this.controlFilter.value)
-          .ideas.forEach((item, index: number) => {
-            this.formArrayOut.setControl(index + length, new FormControl(item));
-          });
+        outs.ideas.forEach((item, index: number) => {
+          this.formArrayOut.setControl(index + length, new FormControl(item));
+        });
       });
   }
 
