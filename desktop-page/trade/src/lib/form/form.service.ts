@@ -111,7 +111,7 @@ export class TradeFormService {
     stopOrders: TradeStopOrders,
     operationsDirection: ActualTradeOperations,
     filter: { lastPrice: WithLastPrice; source: TradeSource },
-    limit: number | null = 10000
+    limit: number | null = null
   ): {
     orders: ControlValue[];
     actions: ControlValue[];
