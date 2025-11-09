@@ -46,6 +46,7 @@ import { TradeStore } from '../common/store';
 import { DirectionTypePipe } from '../common/direction-type.pipe';
 import { OrderTypePipe } from '../common/order-type.pipe';
 import {
+  TradeLimit,
   TradeOperations,
   TradeOrder,
   TradeOrders,
@@ -62,6 +63,8 @@ import { ControlValue, ControlValueStatus } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { Params } from '@angular/router';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { ApiService } from '../common/api.service';
+import { Response } from 'types/response';
 
 @Component({
   selector: 'trade-form',
@@ -110,6 +113,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #service: TradeFormService = inject(TradeFormService);
+  readonly #api: ApiService = inject(ApiService);
 
   readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
     map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
@@ -232,7 +236,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
   ngAfterViewInit(): void {
     combineLatest([
-      this.idea$,
+      this.idea$.pipe(
+        switchMap((position: StockPosition) =>
+          this.#api.getLimitForCurrency(position.idea.instrument.currencyId).pipe(
+            map((response: Response<TradeLimit>) => ({
+              limit: response.data,
+              position,
+            }))
+          )
+        )
+      ),
       this.orders$.pipe(
         filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
         distinctUntilChanged((a, b) => this._distinctOrders(a, b))
@@ -248,16 +261,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     ])
       .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(100))
       .subscribe(
-        ([position, orders, stopOrders, operations]: [
-          StockPosition,
+        ([{ position, limit }, orders, stopOrders, operations]: [
+          { position: StockPosition; limit: TradeLimit },
           TradeOrders,
           TradeStopOrders,
           TradeOperations
         ]) => {
           // console.log('_initControls', position, orders, stopOrders, operations);
-          this._initControls(position, orders, stopOrders, operations);
-
-          // this._createControls(position, orders, stopOrders, operations);
+          this._initControls(position, orders, stopOrders, operations, limit.limit);
         }
       );
 
@@ -647,7 +658,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     position: StockPosition,
     orders: TradeOrders,
     stopOrders: TradeStopOrders,
-    operations: TradeOperations
+    operations: TradeOperations,
+    limit: number | null = null
   ): void {
     this.direction = position.idea.positionType === 'long';
     const lot = position.idea.instrument.lot;
@@ -699,7 +711,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       orders,
       stopOrders,
       actualOperations.filter((item) => item.type === operationTypeEntry),
-      this.controlFilter.value
+      this.controlFilter.value,
+      limit
     );
 
     const tempEntry: ControlValue[] = this.formArrayEntry
