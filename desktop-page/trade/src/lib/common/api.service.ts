@@ -5,6 +5,8 @@ import { Response } from 'types/response';
 import { Params } from '@angular/router';
 import {
   TradeAccounts,
+  TradeLimit,
+  TradeLimitList,
   TradeOperations,
   TradeOrders,
   TradeOrderTypes,
@@ -44,6 +46,14 @@ export class ApiService {
     return this._http.delete<Response<TradeToken | null>>(`${this.host}/v1/trades/token`, {
       body: { sourceId: data.sourceId, tokenId: data.tokenId },
     });
+  }
+
+  getLimitForCurrency(currencyId: number): Observable<Response<TradeLimit>> {
+    return this._http.get<Response<TradeLimit>>(`${this.host}/v1/trades/limit`, { params: { currencyId } });
+  }
+
+  getLimitList(): Observable<Response<TradeLimitList>> {
+    return this._http.get<Response<TradeLimitList>>(`${this.host}/v1/trades/limit/list`);
   }
 
   getOperations(params: Params): Observable<Response<TradeOperations>> {

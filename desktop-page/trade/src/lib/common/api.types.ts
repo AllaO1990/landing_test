@@ -155,3 +155,11 @@ export interface TradeValue {
   value: number;
   currency: string;
 }
+
+export interface TradeLimit {
+  currencyId: number;
+  currencySymbol: string;
+  limit: null | number;
+}
+
+export type TradeLimitList = TradeLimit[];

@@ -256,6 +256,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
         ]) => {
           // console.log('_initControls', position, orders, stopOrders, operations);
           this._initControls(position, orders, stopOrders, operations);
+
+          // this._createControls(position, orders, stopOrders, operations);
         }
       );
 
@@ -701,18 +703,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       this.controlFilter.value
     );
 
-    const out: {
-      orders: ControlValue[];
-      actions: ControlValue[];
-      ideas: ControlValue[];
-    } = this.#service.getOutControlValue(
-      position,
-      orders,
-      stopOrders,
-      actualOperations.filter((item) => item.type === operationTypeOut),
-      this.controlFilter.value
-    );
-
     const tempEntry: ControlValue[] = this.formArrayEntry
       ? this.formArrayEntry.value.filter((item: ControlValue) => item.status === ControlValueStatus.UNLOADING)
       : [];
@@ -733,14 +723,34 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       (item: ControlValue) => item.status !== ControlValueStatus.UNLOADING
     );
 
+    const maxLots: number = this.formArrayEntry.value.reduce(
+      (acc: number, item: ControlValue) => (acc += item.lots),
+      0
+    );
+    const outOperations = actualOperations.filter((item) => item.type === operationTypeOut);
+
+    const out: {
+      orders: ControlValue[];
+      actions: ControlValue[];
+      ideas: ControlValue[];
+    } = this.#service.getOutControlValue(
+      position,
+      orders,
+      stopOrders,
+      outOperations,
+      this.controlFilter.value,
+      maxLots
+    );
+
     this._setControl(this.formArrayOut, tempOut, out, !this.direction, compose.length === 0);
 
     const stopLoss = this.#service.getStopLossControlValue(
       position,
+      maxLots,
       tempStop,
       orders,
       stopOrders,
-      actualOperations.filter((item) => item.type === operationTypeOut)
+      outOperations
     );
 
     // console.log(stopLoss);

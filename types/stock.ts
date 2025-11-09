@@ -37,7 +37,8 @@ export interface StockInstrument {
   inSub: boolean;
   sector: string;
   currency: string;
-  currencySymbol?: string;
+  currencyId: number;
+  currencySymbol: string;
   minPriceIncrement: number;
   subscriptionStatus: number;
 }
