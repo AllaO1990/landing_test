@@ -263,7 +263,7 @@
     {{ item.orderType | tradeOrderType | async }}
   </div>
   <div class="item__value item__value--number row__item">
-    {{ item.price | tuiFormatNumber | async }}
+    {{ (item.price || item.stopPrice) | tuiFormatNumber | async }}
   </div>
   <div class="item__value item__value--number row__item">
     <span>{{ item.quantity | tuiFormatNumber | async }}</span>
@@ -408,6 +408,7 @@
     <div class="header__item row__item">Действие</div>
     <div class="header__item row__item row__item--types">Тип</div>
     <div class="header__item row__item">Цена</div>
+    <div class="header__item row__item">Стоп цена</div>
     <div class="header__item row__item">Лоты</div>
     <div class="header__item row__item">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
@@ -419,7 +420,7 @@
     {{ item.direction | tradeDirectionType | async }}
   </div>
   <div class="item__value row__item row__item--types">
-    {{ item.orderType | tradeOrderType | async }}
+    {{ item.orderTypeText | tradeOrderType | async }}
   </div>
   <div class="item__value item__value--number row__item">
     {{ item.initialSecurityPrice.value | tuiFormatNumber | async }}
@@ -469,6 +470,9 @@
   </div>
   <div class="item__value item__value--number row__item">
     {{ item.price.value | tuiFormatNumber | async }}
+  </div>
+  <div class="item__value item__value--number row__item">
+    {{ item.stopPrice ? (item.stopPrice.value | tuiFormatNumber | async) : '&mdash;' }}
   </div>
   <div class="item__value item__value--number row__item">
     {{ item.lotsRequested }}
@@ -563,3 +567,4 @@
   <!--    ></button>-->
   <!--  </div>-->
 </ng-template>
+

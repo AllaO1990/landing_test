@@ -1,6 +1,6 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { ApiService } from './api.service';
-import { catchError, forkJoin, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { Response } from 'types/response';
 import {
   TradeAccounts,
@@ -277,10 +277,14 @@ export class TradeStore extends ComponentStore<TradeState> {
           ...order.map((item: Params) => this._api.addOrder(item)),
           ...orderStop.map((item: Params) => this._api.addStopOrder(item)),
         ]).pipe(
-          tap(() => {
-            this.loadOrders(params[0]);
-            this.loadOperations(params[0]);
-          })
+          switchMap(() =>
+            timer(3000).pipe(
+              tap(() => {
+                this.loadOrders(params[0]);
+                this.loadOperations(params[0]);
+              })
+            )
+          )
         );
       })
     )
@@ -299,9 +303,10 @@ export class TradeStore extends ComponentStore<TradeState> {
   changeOrder = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       switchMap((params: Params) =>
-        this._api.removeOrder(params).pipe(
-          switchMap((removed: Response<any>) =>
-            this._api.addOrder(params).pipe(
+        this._getRemoveOrder(params).pipe(
+          switchMap(() =>
+            this._getAddOrder(params).pipe(
+              switchMap((response: Response<any>) => timer(3000).pipe(map(() => response))),
               tap((response: Response<any>) => {
                 if (response.success) {
                   this.loadOperations(params);
@@ -314,6 +319,41 @@ export class TradeStore extends ComponentStore<TradeState> {
       )
     )
   );
+
+  private _getRemoveOrder(params: Params): Observable<Response<any>> {
+    if (this.isOrder(params['orderTypePrev'].type)) {
+      return this._api.removeOrder({ ...params, orderType: params['orderTypePrev'] });
+    }
+
+    return this._api.removeStopOrder({ ...params, orderType: params['orderTypePrev'] });
+  }
+
+  private _getAddOrder(params: Params): Observable<Response<any>> {
+    if (this.isOrder(params['orderType'].type)) {
+      return this._api.addOrder(params);
+    }
+
+    return this._api.addStopOrder(params);
+  }
+
+  // changeOrder = this.effect((stream$: Observable<Params>) =>
+  //   stream$.pipe(
+  //     switchMap((params: Params) =>
+  //       this._api.removeOrder(params).pipe(
+  //         switchMap((removed: Response<any>) =>
+  //           this._api.addOrder(params).pipe(
+  //             tap((response: Response<any>) => {
+  //               if (response.success) {
+  //                 this.loadOperations(params);
+  //                 this.loadOrders(params);
+  //               }
+  //             })
+  //           )
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
 
   addStopOrder = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
@@ -342,8 +382,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 
   changeStopOrder = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
-      switchMap((params: Params) =>
-        this._api.removeStopOrder(params).pipe(
+      switchMap((params: Params) => {
+        console.log(params);
+
+        return this._api.removeStopOrder(params).pipe(
           switchMap((removed: Response<any>) => {
             return this._api.addStopOrder(params).pipe(
               tap((response: Response<any>) => {
@@ -354,8 +396,8 @@ export class TradeStore extends ComponentStore<TradeState> {
               })
             );
           })
-        )
-      )
+        );
+      })
     )
   );
 

@@ -8,15 +8,16 @@ import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
 import {
   BehaviorSubject,
+  combineLatest,
   distinctUntilChanged,
   filter,
   map,
   Observable,
   pairwise,
-  ReplaySubject,
   startWith,
   Subject,
   switchMap,
+  tap,
   timer,
 } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -24,11 +25,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue, ControlValueStatus } from '../form/form.types';
 import { TradeStopOrder, TradeStopOrders } from '../common/api.types';
 import { TradeStopOrderTypeText } from '../common/order.types';
+import { TuiButtonLoading } from '@taiga-ui/kit';
 
 @Component({
   selector: 'trade-layout',
   standalone: true,
-  imports: [TradeFormComponent, TuiButton, ReactiveFormsModule, AsyncPipe],
+  imports: [TradeFormComponent, TuiButton, ReactiveFormsModule, AsyncPipe, TuiButtonLoading],
   templateUrl: './layout.component.html',
   styleUrls: ['../common/dialog.scss', './layout.component.scss'],
   providers: [
@@ -45,14 +47,16 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(false);
-  readonly #updateStop$: Subject<void> = new ReplaySubject<void>(1);
+  readonly #isLoadingButton$: Subject<boolean> = new BehaviorSubject<boolean>(false);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
+
+  loading = false;
 
   readonly formGroup: FormGroup = new FormGroup({
     trade: new FormControl(null),
   });
 
-  readonly isDisabled$: Observable<boolean> = this.formGroup.valueChanges.pipe(
+  readonly isUnloading$: Observable<boolean> = this.formGroup.valueChanges.pipe(
     startWith(this.formGroup.value),
     map((value) => value.trade),
     filter((value) => value !== null),
@@ -81,6 +85,17 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         return entryIndex === -1 && outIndex === -1 && stopIndex === -1;
       }
     ),
+    distinctUntilChanged(),
+    tap((flag) => {
+      if (flag) {
+        this.loading = false;
+      }
+      console.log('isUnloading$', flag);
+    })
+  );
+
+  readonly isDisabled$: Observable<boolean> = combineLatest([this.isUnloading$]).pipe(
+    map(([isUnloading]: [boolean]) => isUnloading),
     distinctUntilChanged()
   );
 
@@ -143,9 +158,10 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
         if (account && instrument && source) {
           const outOrders = this._getOrders(
-            [...out, ...stop].filter(
-              (item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING
-            ),
+            [
+              ...out,
+              //, ...stop
+            ].filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
             account.accountId,
             instrument.id,
             source.id
@@ -159,7 +175,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
     this.#isStop$
       .pipe(
-        takeUntilDestroyed(this.#destroyRef),
         switchMap((value: ControlValue) =>
           this.#store.stopOrders$.pipe(
             filter((list: TradeStopOrders | null): list is TradeStopOrders => list !== null),
@@ -176,7 +191,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         )
       )
       .subscribe((orders: TradeStopOrders) => {
-        console.log(orders);
+        console.log('this.#isStop$ removeStopOrder');
         const {
           filter: { account, instrument, source },
         } = this.formGroup.value.trade;
@@ -189,24 +204,35 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         });
       });
 
-    this.#isSubmitted$
-      .asObservable()
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        filter((isSubmitted: boolean) => isSubmitted),
-        switchMap(() =>
-          this.#isStop$.pipe(filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING))
-        )
-      )
+    this.#isStop$
+      .pipe(filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING))
       .subscribe((controlValue: ControlValue) => {
+        console.log('this.#isStop$ addStopOrder');
         const {
           filter: { account, instrument, source },
         } = this.formGroup.value.trade;
 
-        console.log(controlValue);
-
         this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
       });
+
+    // this.#isSubmitted$
+    //   .asObservable()
+    //   .pipe(
+    //     takeUntilDestroyed(this.#destroyRef),
+    //     filter((isSubmitted: boolean) => isSubmitted),
+    //     switchMap(() =>
+    //       this.#isStop$.pipe(filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING))
+    //     )
+    //   )
+    //   .subscribe((controlValue: ControlValue) => {
+    //     const {
+    //       filter: { account, instrument, source },
+    //     } = this.formGroup.value.trade;
+    //
+    //     console.log(controlValue);
+    //
+    //     this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
+    //   });
 
     // this.#store.stopOrders$
     //   .pipe(
@@ -250,6 +276,14 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
   onSubmit(event: Event): void {
     event.preventDefault();
+
+    if (this.loading) {
+      return;
+    }
+
+    this.loading = true;
+
+    console.log('onSubmit loading', this.loading);
 
     this.#isSubmitted$.next(true);
     const { filter, entry, out, stop } = this.formGroup.getRawValue().trade;

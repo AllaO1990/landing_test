@@ -84,25 +84,33 @@ export class TradeFormService {
    * Фильтр операций, которых ещё нет в сделке
    * */
   getFilteredOperations(
-    lotsInPosition: number[],
+    lotsInPosition: { lots: number; date: string | null }[],
     operations: ActualTradeOperations,
     operationType: 15 | 22
   ): ActualTradeOperations {
-    const tempLots = lotsInPosition.slice();
-
     return operations
       .filter((item: ActualTradeOperation) => item.type === operationType && item.state === 1)
-      .filter(
-        (item: ActualTradeOperation) =>
-          tempLots.findIndex((itemLots: number, index: number) => {
-            if (itemLots === item.lots) {
-              tempLots[index] = -1;
-              return -1;
-            }
+      .filter((item: ActualTradeOperation) => {
+        if (lotsInPosition.length === 0) {
+          return true;
+        }
 
-            return index;
-          }) === -1
-      );
+        const findIndex = lotsInPosition.findIndex((itemLots: { lots: number; date: string | null }) => {
+          if (itemLots.lots === item.lots) {
+            if (itemLots.date && item.date) {
+              return new Date(itemLots.date).valueOf() === new Date(item.date).valueOf();
+            }
+          }
+
+          return false;
+        });
+
+        if (findIndex !== -1) {
+          lotsInPosition[findIndex].lots = -1;
+        }
+
+        return findIndex === -1;
+      });
   }
 
   getEntryControlValue(
@@ -282,6 +290,10 @@ export class TradeFormService {
       (acc: ControlValue[], item, index: number) => {
         const lots = getLotItem(item, index);
 
+        if (lots === null) {
+          return acc;
+        }
+
         if (this._findOrders(unloadingOrdersDirection, lots)) {
           return acc;
         }
@@ -335,7 +347,7 @@ export class TradeFormService {
     const orderControlValues: ControlValue[] = ordersDirection.map((item) => ({
       ...defaultItem,
       id: item.orderId,
-      price: item.averagePositionPrice.value,
+      price: item.initialSecurityPrice.value,
       quantity: item.lotsRequested * defaultItem.lot,
       lots: item.lotsRequested,
       commission: item.initialCommission ? item.initialCommission.value : 0,
@@ -344,7 +356,7 @@ export class TradeFormService {
         type: item.orderTypeText,
       },
       direction: !!item.direction,
-      total: getNumberPrecision(item.averagePositionPrice.value * item.lotsRequested * defaultItem.lot, 2),
+      total: getNumberPrecision(item.initialSecurityPrice.value * item.lotsRequested * defaultItem.lot, 2),
       status: ControlValueStatus.AWAITS,
     }));
 
@@ -386,7 +398,15 @@ export class TradeFormService {
     stopOrders: TradeStopOrders,
     operations: ActualTradeOperations
   ): (ControlValue & { disabled: boolean }) | null {
-    const stopPrice = position.idea.stop ? position.idea.stop.price : 0;
+    let stopPrice = 0;
+
+    if (position.idea.stop) {
+      stopPrice = position.idea.stop.price;
+    }
+
+    if (temp[0]) {
+      stopPrice = temp[0].price;
+    }
 
     if (stopPrice === 0) {
       return null;
@@ -400,6 +420,10 @@ export class TradeFormService {
       (acc: number, item: StockPositionActionTarget) => (acc += item.amount),
       0
     );
+
+    if (entryLots === outLots && entryLots !== 0) {
+      return null;
+    }
 
     if (maxLots === outLots && maxLots !== 0) {
       return null;
@@ -507,17 +531,15 @@ export class TradeFormService {
             date: item.date,
             price: item.price,
           })),
-          ...entries
-            .map((item) => ({
-              amount: item.quantity,
-              date: item.date,
-              brokerId: 1,
-              price: item.price.value,
-            }))
-            .sort((a: { date: string }, b: { date: string }) =>
-              sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
-            ),
-        ],
+          ...entries.map((item) => ({
+            amount: item.quantity,
+            date: item.date,
+            brokerId: 1,
+            price: item.price.value,
+          })),
+        ].sort((a: { date: string }, b: { date: string }) =>
+          sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+        ),
         outs: [
           ...position.actions.outs.map((item: any) => ({
             amount: item.amount,
@@ -525,17 +547,15 @@ export class TradeFormService {
             date: item.date,
             price: item.price,
           })),
-          ...outs
-            .map((item) => ({
-              amount: item.quantity,
-              date: item.date as string,
-              brokerId: 1,
-              price: item.price.value,
-            }))
-            .sort((a: { date: string }, b: { date: string }) =>
-              sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
-            ),
-        ],
+          ...outs.map((item) => ({
+            amount: item.quantity,
+            date: item.date as string,
+            brokerId: 1,
+            price: item.price.value,
+          })),
+        ].sort((a: { date: string }, b: { date: string }) =>
+          sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+        ),
       },
       dividends: position.dividends.map((item: any) => ({
         amount: item.amount,
@@ -713,19 +733,27 @@ export class TradeFormService {
     lot: number,
     precision: number,
     maxLots: number | null
-  ): (item: StockPositionTarget, index: number) => number {
+  ): (item: StockPositionTarget, index: number) => number | null {
     if (maxLots === null) {
       return (item: StockPositionTarget, _: number) => this._getLot(item.amount / lot, precision);
     }
 
-    const ratio: number[][] = [[1], [0.6, 0.4], [0.4, 0.3, 0.3]];
-    let enterLotsIndex = 2;
+    const ratio: number[][] = [[0.4, 0.3, 0.3], [1], [0.6, 0.4]];
+    let enterLotsIndex = 0;
 
     if (maxItems <= 3) {
-      enterLotsIndex = (maxItems % 2) + 1;
+      enterLotsIndex = maxItems % 3;
+    }
+
+    if (maxLots < maxItems && precision === 0) {
+      enterLotsIndex = maxLots % 3;
     }
 
     return (_: StockPositionTarget, index: number) => {
+      if (ratio[enterLotsIndex][index] === undefined) {
+        return null;
+      }
+
       if (maxItems - 1 === index) {
         return ratio[enterLotsIndex].reduce((acc: number, pct: number, currentIndex: number) => {
           if (currentIndex === index) {

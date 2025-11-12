@@ -50,6 +50,7 @@ import {
   TradeOperations,
   TradeOrder,
   TradeOrders,
+  TradeOrderType,
   TradeStopOrder,
   TradeStopOrders,
   TradeToken,
@@ -267,7 +268,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           TradeStopOrders,
           TradeOperations
         ]) => {
-          // console.log('_initControls', position, orders, stopOrders, operations);
+          console.log('_initControls', position, orders, stopOrders, operations);
           this._initControls(position, orders, stopOrders, operations, limit.limit);
         }
       );
@@ -564,7 +565,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
       })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: RequestFormValue | null) => {
-        let calcValue: Partial<ControlValue> = { ...item, change: false };
+        let calcValue: Partial<ControlValue & { orderTypePrev: TradeOrderType | null }> = {
+          ...item,
+          change: false,
+          orderTypePrev: item.orderType,
+        };
 
         if (value) {
           calcValue = {
@@ -575,25 +580,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           };
 
           if (item.status === ControlValueStatus.AWAITS && item.orderType) {
-            if (this.#store.isOrder(item.orderType.type)) {
-              this.#store.changeOrder({
-                ...calcValue,
-                quantity: calcValue.lots,
-                instrumentId: instrument.id,
-                accountId: account.accountId,
-                sourceId: source.id,
-              });
-            }
-
-            if (this.#store.isStopOrder(item.orderType.type)) {
-              this.#store.changeStopOrder({
-                ...calcValue,
-                quantity: calcValue.lots,
-                instrumentId: instrument.id,
-                accountId: account.accountId,
-                sourceId: source.id,
-              });
-            }
+            this.#store.changeOrder({
+              ...calcValue,
+              quantity: calcValue.lots,
+              instrumentId: instrument.id,
+              accountId: account.accountId,
+              sourceId: source.id,
+            });
           }
         }
 
@@ -672,7 +665,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     const operationsEntryPosition = this.#service.getFilteredOperations(
       position.actions.entries
         .filter((item: StockPositionActionEntry) => item.brokerId === source.id)
-        .map((item: StockPositionActionEntry) => Math.floor(item.amount / lot)),
+        .map((item: StockPositionActionEntry) => ({
+          lots: Math.floor(item.amount / lot),
+          date: item.date,
+        })),
       actualOperations,
       operationTypeEntry
     );
@@ -680,7 +676,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     const operationsOutPosition = this.#service.getFilteredOperations(
       position.actions.outs
         .filter((item: StockPositionActionTarget) => item.brokerId === source.id)
-        .map((item: StockPositionActionTarget) => Math.floor(item.amount / lot)),
+        .map((item: StockPositionActionTarget) => ({
+          lots: Math.floor(item.amount / lot),
+          date: item.date,
+        })),
       actualOperations,
       operationTypeOut
     );
@@ -695,6 +694,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
           ) === -1
         );
       });
+
+    console.log(operationsOutPosition);
 
     if (operationsEntryPosition.length > 0 || operationsOutPosition.length > 0 || commissions.length > 0) {
       this._updateIdeaEntries(position, operationsEntryPosition, operationsOutPosition, commissions);

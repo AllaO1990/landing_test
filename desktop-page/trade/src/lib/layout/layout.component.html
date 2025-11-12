@@ -12,7 +12,8 @@
     </button>
     <button
       type="submit"
-      [disabled]="isDisabled$ | async"
+      [loading]="loading"
+      [disabled]="loading || (isDisabled$ | async)"
       (click)="onSubmit($event)"
       appearance="primary"
       tuiButton>
