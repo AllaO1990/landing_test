@@ -3,17 +3,14 @@ import { from, Observable, switchMap } from 'rxjs';
 import { PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { DialogService } from '@ui/components/dialog';
 import { DialogTradeComponent } from './dialog.component';
-import { RequestTradeComponent } from '../request/request.component';
 import { ConfirmTradeComponent } from '../confirm/confirm.component';
-import { TradeTokenComponent } from '../token/token.component';
+import { concatProperties } from 'utils/concat-properties';
 
 export class TradeDialogService {
   readonly #dialog: DialogService;
 
   componentTradeDialog: PolymorpheusContent<DialogTradeComponent> | null = null;
-  componentTradeRequest: PolymorpheusContent<RequestTradeComponent> | null = null;
   componentTradeConfirm: PolymorpheusContent<ConfirmTradeComponent> | null = null;
-  componentTradeToken: PolymorpheusContent<TradeTokenComponent> | null = null;
 
   constructor(dialog: DialogService) {
     this.#dialog = dialog;
@@ -23,16 +20,8 @@ export class TradeDialogService {
     return this.open(this.getComponentTradeDialog(injector), { closeable: false, appearance: 'big-block' });
   }
 
-  openTradeRequest(injector: Injector, data: any = null): Observable<any> {
-    return this.open(this.getComponentTradeRequest(injector), this._getData('medium-block-flex', data));
-  }
-
   openTradeConfirm(injector: Injector, data: any = null): Observable<any> {
-    return this.open(this.getComponentTradeConfirm(injector), this._getData('small-block', data));
-  }
-
-  openTradeToken(injector: Injector, data: any = null): Observable<any> {
-    return this.open(this.getComponentTradeToken(injector), this._getData('small-block', data));
+    return this.open(this.getComponentTradeConfirm(injector), concatProperties('small-block', data));
   }
 
   protected open(component: Promise<PolymorpheusContent>, data: any = null) {
@@ -49,16 +38,6 @@ export class TradeDialogService {
     return this.componentTradeDialog;
   }
 
-  protected async getComponentTradeRequest(injector: Injector): Promise<PolymorpheusContent<RequestTradeComponent>> {
-    if (this.componentTradeRequest === null) {
-      this.componentTradeRequest = await import('../request/request.component')
-        .then((c) => c.RequestTradeComponent)
-        .then((c) => new PolymorpheusComponent(c, injector));
-    }
-
-    return this.componentTradeRequest;
-  }
-
   protected async getComponentTradeConfirm(injector: Injector): Promise<PolymorpheusContent<ConfirmTradeComponent>> {
     if (this.componentTradeConfirm === null) {
       this.componentTradeConfirm = await import('../confirm/confirm.component')
@@ -67,23 +46,5 @@ export class TradeDialogService {
     }
 
     return this.componentTradeConfirm;
-  }
-
-  protected async getComponentTradeToken(injector: Injector): Promise<PolymorpheusContent<TradeTokenComponent>> {
-    if (this.componentTradeToken === null) {
-      this.componentTradeToken = await import('../token/token.component')
-        .then((c) => c.TradeTokenComponent)
-        .then((c) => new PolymorpheusComponent(c, injector));
-    }
-
-    return this.componentTradeToken;
-  }
-
-  private _getData(appearance: string, data: any = null): object {
-    if (!data) {
-      return { appearance };
-    }
-
-    return { ...data, appearance };
   }
 }

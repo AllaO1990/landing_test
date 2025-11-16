@@ -5,8 +5,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeTokenSource } from '../common/api.types';
 import { TUI_CONFIRM } from '@taiga-ui/kit';
 import { TradeStore } from '../common/store';
-
-import { TradeDialogService } from '../dialog/dialog.service';
+import { TradeTokenButtonDialogService } from './token-button.dialog.service';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 @Component({
   selector: 'trade-token-button',
@@ -14,12 +14,19 @@ import { TradeDialogService } from '../dialog/dialog.service';
   imports: [TuiGroup, TuiButton, NgIf],
   templateUrl: './token-button.component.html',
   styleUrl: './token-button.component.scss',
+  providers: [
+    {
+      provide: TradeTokenButtonDialogService,
+      useFactory: (dialog: DialogService) => new TradeTokenButtonDialogService(dialog),
+      deps: [DIALOG],
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TokenButtonComponent {
   readonly #dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   readonly #injector: Injector = inject(Injector);
-  readonly #dialog: TradeDialogService = inject(TradeDialogService);
+  readonly #dialog: TradeTokenButtonDialogService = inject(TradeTokenButtonDialogService);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
 

@@ -21,7 +21,6 @@ import {
 } from '@angular/forms';
 import { TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import { TuiExpand } from '@taiga-ui/experimental';
-import { TradeDialogService } from '../dialog/dialog.service';
 import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { FilterComponent } from '../filter/filter.component';
 import { IdeaFacade } from 'stores/facades/idea.facade';
@@ -66,6 +65,8 @@ import { Params } from '@angular/router';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { ApiService } from '../common/api.service';
 import { Response } from 'types/response';
+import { TradeFormDialogService } from './form.dialog.service';
+import { DIALOG, DialogService } from '@ui/components/dialog';
 
 @Component({
   selector: 'trade-form',
@@ -101,6 +102,11 @@ import { Response } from 'types/response';
       useExisting: forwardRef(() => TradeFormComponent),
       multi: true,
     },
+    {
+      provide: TradeFormDialogService,
+      useFactory: (dialog: DialogService) => new TradeFormDialogService(dialog),
+      deps: [DIALOG],
+    },
     TradeFormService,
   ],
   animations: [triggerHeightAnimations],
@@ -110,7 +116,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
   readonly #breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   readonly #injector: Injector = inject(Injector);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
-  readonly #dialog: TradeDialogService = inject(TradeDialogService);
+  readonly #dialog: TradeFormDialogService = inject(TradeFormDialogService);
   readonly #idea: IdeaFacade = inject(IdeaFacade);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #service: TradeFormService = inject(TradeFormService);

@@ -28,6 +28,7 @@ import { getNumberPrecision } from 'utils/get-number-precision';
 import {
   TRADE_ORDER_TYPE_LIMIT,
   TRADE_ORDER_TYPE_MARKET,
+  TRADE_STOP_ORDER_TYPE_STOP_LIMIT,
   TRADE_STOP_ORDER_TYPE_STOP_LOSS,
   TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
 } from '../common/order.constants';
@@ -463,7 +464,8 @@ export class TradeFormService {
       stopOrders.find(
         (item: TradeStopOrder) =>
           item.direction === defaultItem.direction &&
-          item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS &&
+          (item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS ||
+            item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LIMIT) &&
           item.lotsRequested === control.lots
       ) || null;
 
@@ -473,7 +475,7 @@ export class TradeFormService {
         id: filterStopOrder.stopOrderId,
         price: filterStopOrder.price.value,
         stopPrice: filterStopOrder.stopPrice.value,
-        orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+        orderType: this._getStopOrderByName(filterStopOrder.orderTypeText),
         status: ControlValueStatus.AWAITS,
       };
     }
@@ -494,29 +496,31 @@ export class TradeFormService {
       };
     }
 
-    if (operations.length > 0 && entryLots === outLots) {
-      if (temp.length === 1) {
-        const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === temp[0].lots);
-
-        if (findIndex !== -1) {
-          return {
-            ...temp[0],
-            disabled: true,
-            status: ControlValueStatus.EXECUTED,
-          };
-        }
-      }
-
-      const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === lots);
-
-      if (findIndex !== -1) {
-        return {
-          ...control,
-          disabled: true,
-          status: ControlValueStatus.EXECUTED,
-        };
-      }
-    }
+    // if (operations.length > 0 && entryLots === outLots) {
+    //   if (temp.length === 1) {
+    //     const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === temp[0].lots);
+    //
+    //     if (findIndex !== -1) {
+    //       return {
+    //         ...temp[0],
+    //         disabled: true,
+    //         status: ControlValueStatus.EXECUTED,
+    //       };
+    //     }
+    //   }
+    //
+    //   const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === lots);
+    //
+    //   if (findIndex !== -1) {
+    //     return {
+    //       ...control,
+    //       disabled: true,
+    //       status: ControlValueStatus.EXECUTED,
+    //     };
+    //   }
+    //
+    //   return null;
+    // }
 
     return control;
   }
@@ -784,5 +788,11 @@ export class TradeFormService {
     }
 
     return false;
+  }
+
+  private _getStopOrderByName(name: string): TradeOrderType | null {
+    const list = [TRADE_STOP_ORDER_TYPE_STOP_LOSS, TRADE_STOP_ORDER_TYPE_STOP_LIMIT];
+
+    return list.find((item: TradeOrderType) => item.type === name) || null;
   }
 }

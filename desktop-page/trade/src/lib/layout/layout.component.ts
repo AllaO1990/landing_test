@@ -47,7 +47,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(false);
-  readonly #isLoadingButton$: Subject<boolean> = new BehaviorSubject<boolean>(false);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   loading = false;
