@@ -218,7 +218,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly heightStop$: Observable<number> = combineLatest([this.listStop$, this.isMobile$]).pipe(
+  heightStop$: Observable<number> = combineLatest([this.listStop$, this.isMobile$]).pipe(
     map(([list, isMobile]: [ControlValue[], boolean]) => {
       const length = ((list && list.length) || 0) + 1;
       const rate = isMobile ? 1.5 : 1;

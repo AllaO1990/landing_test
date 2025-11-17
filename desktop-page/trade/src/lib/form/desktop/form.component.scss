@@ -16,6 +16,9 @@
   }
 
   &__details {
+    display: flex;
+    align-items: center;
+
     margin: var(--padding-4) 0;
   }
 
@@ -30,37 +33,17 @@
   align-items: center;
   height: 28px;
 
-  &--mobile {
-    height: 42px;
-  }
-
-  &--mobile &__item {
-    flex: 0 0 calc(100% / 5);
-  }
-
-  &--mobile &__item--double {
-    flex: 0 0 calc(100% / 2.5);
-  }
-
-  &--mobile &__item--icon {
-    flex: 0 0 calc(100% / 8);
-  }
-
-  &--mobile &__item--actions {
-    flex: 1 1;
-  }
-
-  &:not(&--mobile) &__item {
-    flex: 0 0 calc(100% / 7);
-  }
-
   &__item {
+    flex: 0 0 calc(100% / 8);
+
     position: relative;
 
     display: flex;
     align-items: center;
 
     height: 100%;
+
+    white-space: nowrap;
     overflow: hidden;
 
     padding: 0 var(--padding-2);
@@ -70,6 +53,7 @@
 
     &--actions {
       min-width: 90px;
+      flex: 1 1;
     }
 
     &--types {
@@ -78,6 +62,7 @@
 
     &--total {
       min-width: 70px;
+      flex: 1 1;
     }
 
     &--center {
@@ -99,34 +84,6 @@
     height: 100%;
     width: 1px;
     background-color: var(--main-bg-color);
-  }
-}
-
-.cell {
-  display: flex;
-  align-items: center;
-  flex-flow: row wrap;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  width: 100%;
-
-  &--half {
-    flex: 0 0 50%;
-  }
-
-  &--full {
-    flex: 0 0 100%;
-  }
-
-  &--number {
-    justify-content: flex-end;
-  }
-
-  &--center {
-    justify-content: center;
   }
 }
 
@@ -152,6 +109,8 @@ lib-list {
   &__value {
     &--number {
       text-align: right;
+
+      justify-content: flex-end;
     }
 
     span {
@@ -180,6 +139,14 @@ lib-list {
 
 .more {
   margin-top: var(--padding-4);
+}
+
+.direction {
+  flex: 0 0 60px;
+}
+
+.status {
+  flex: 0 0 50px;
 }
 
 .add-from-idea {

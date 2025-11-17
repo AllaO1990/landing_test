@@ -1,0 +1,17 @@
+@if (closeButton$ | async; as close) {
+  <button
+    (click)="onClosePosition($event, close)"
+    [loading]="loading"
+    [disabled]="close.quantity === 0"
+    class="add-from-idea"
+    appearance="outline"
+    tuiAppearanceMode="checked"
+    tuiButton>
+    Закрыть позицию
+  </button>
+} @else {
+  <button
+    [tuiSkeleton]="true" tuiButton>
+    Закрыть позицию
+  </button>
+}

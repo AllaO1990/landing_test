@@ -1,6 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy } from '@angular/core';
-import { TradeFormComponent } from '../form/form.component';
-import { TuiButton } from '@taiga-ui/core';
+import { TuiBreakpointService, TuiButton } from '@taiga-ui/core';
 import { TuiPopover } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -14,6 +13,7 @@ import {
   map,
   Observable,
   pairwise,
+  shareReplay,
   startWith,
   Subject,
   switchMap,
@@ -26,11 +26,21 @@ import { ControlValue, ControlValueStatus } from '../form/form.types';
 import { TradeStopOrder, TradeStopOrders } from '../common/api.types';
 import { TradeStopOrderTypeText } from '../common/order.types';
 import { TuiButtonLoading } from '@taiga-ui/kit';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { TradeMobileFormComponent } from '../form/mobile/form.component';
+import { TradeDesktopFormComponent } from '../form/desktop/form.component';
 
 @Component({
   selector: 'trade-layout',
   standalone: true,
-  imports: [TradeFormComponent, TuiButton, ReactiveFormsModule, AsyncPipe, TuiButtonLoading],
+  imports: [
+    TuiButton,
+    ReactiveFormsModule,
+    AsyncPipe,
+    TuiButtonLoading,
+    TradeMobileFormComponent,
+    TradeDesktopFormComponent,
+  ],
   templateUrl: './layout.component.html',
   styleUrls: ['../common/dialog.scss', './layout.component.scss'],
   providers: [
@@ -44,12 +54,18 @@ import { TuiButtonLoading } from '@taiga-ui/kit';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit, OnDestroy {
+  readonly #breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #store: TradeStore = inject(TradeStore);
   readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(false);
   readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
   loading = false;
+
+  readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
+    map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   readonly formGroup: FormGroup = new FormGroup({
     trade: new FormControl(null),

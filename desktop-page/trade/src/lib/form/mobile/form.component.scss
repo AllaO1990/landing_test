@@ -19,6 +19,16 @@
     margin: var(--padding-4) 0;
   }
 
+  &__filter {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+
+    tui-expand {
+      width: 100%;
+    }
+  }
+
   &__actions {
     display: flex;
     margin-top: var(--padding-2);
@@ -28,33 +38,13 @@
 .row {
   display: flex;
   align-items: center;
-  height: 28px;
-
-  &--mobile {
-    height: 42px;
-  }
-
-  &--mobile &__item {
-    flex: 0 0 calc(100% / 5);
-  }
-
-  &--mobile &__item--double {
-    flex: 0 0 calc(100% / 2.5);
-  }
-
-  &--mobile &__item--icon {
-    flex: 0 0 calc(100% / 8);
-  }
-
-  &--mobile &__item--actions {
-    flex: 1 1;
-  }
-
-  &:not(&--mobile) &__item {
-    flex: 0 0 calc(100% / 7);
-  }
+  height: 48px;
+  border-radius: var(--tui-radius-s);
+  margin-bottom: var(--padding-1);
 
   &__item {
+    flex: 0 0 calc(100% / 4);
+
     position: relative;
 
     display: flex;
@@ -65,8 +55,6 @@
 
     padding: 0 var(--padding-2);
 
-
-    border-bottom: 1px solid var(--main-bg-color);
 
     &--actions {
       min-width: 90px;
@@ -81,7 +69,6 @@
     }
 
     &--center {
-      //text-align: center;
       justify-content: center;
     }
 
@@ -90,43 +77,30 @@
     }
   }
 
-  &--border &__item:not(:last-child):after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    content: "";
-    display: block;
-    height: 100%;
-    width: 1px;
-    background-color: var(--main-bg-color);
+  &__item--double {
+    flex: 0 0 calc(100% / 2.5);
+  }
+
+  &__item--icon {
+    flex: 0 0 calc(100% / 8);
+  }
+
+  &__item--actions {
+    flex: 1 1;
   }
 }
 
 .cell {
   display: flex;
-  align-items: center;
-  flex-flow: row wrap;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
+  flex-flow: column nowrap;
   width: 100%;
 
-  &--half {
-    flex: 0 0 50%;
-  }
-
-  &--full {
-    flex: 0 0 100%;
-  }
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 
   &--number {
-    justify-content: flex-end;
-  }
-
-  &--center {
-    justify-content: center;
+    text-align: right;
   }
 }
 
@@ -178,12 +152,12 @@ lib-list {
   background-color: var(--tui-background-base);
 }
 
-.more {
-  margin-top: var(--padding-4);
-}
-
 .add-from-idea {
   margin-left: var(--padding-2);
+}
+
+.more-description {
+  margin-top: var(--padding-4);
 }
 
 label {

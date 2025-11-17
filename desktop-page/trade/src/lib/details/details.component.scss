@@ -10,6 +10,7 @@
   &__column {
     display: flex;
     flex-direction: column;
+    flex: 1 1;
   }
 
   &__instrument {
@@ -21,9 +22,14 @@
   }
 }
 
-
 @media screen and (max-width: 768px) {
   .tiles {
-    order: 1;
+    width: 100%;
+  }
+
+  .details {
+    &__instrument {
+      margin-bottom: var(--padding-4);
+    }
   }
 }

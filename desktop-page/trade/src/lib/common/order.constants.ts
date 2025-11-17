@@ -21,19 +21,19 @@ export const TRADE_ORDER_TYPE_BESTPRICE: TradeOrderTypeDescription = {
 
 export const TRADE_STOP_ORDER_TYPE_TAKE_PROFIT: TradeOrderTypeDescription = {
   id: 1,
-  name: 'Take-profit заявка',
+  name: 'Take-profit',
   type: TradeStopOrderTypeText.STOP_ORDER_TYPE_TAKE_PROFIT,
 };
 
 export const TRADE_STOP_ORDER_TYPE_STOP_LOSS: TradeOrderTypeDescription = {
   id: 2,
-  name: 'Stop-loss заявка',
+  name: 'Stop-loss',
   type: TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS,
 };
 
 export const TRADE_STOP_ORDER_TYPE_STOP_LIMIT: TradeOrderTypeDescription = {
   id: 3,
-  name: 'Stop-limit заявка',
+  name: 'Stop-limit',
   type: TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LIMIT,
 };
 

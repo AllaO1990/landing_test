@@ -1,6 +1,11 @@
 <form class="dialog" [formGroup]="formGroup" (ngSubmit)="onSubmit($event)">
   <div class="dialog__container">
-    <trade-form formControlName="trade"></trade-form>
+    @if (isMobile$ | async) {
+      <trade-mobile-form formControlName="trade"></trade-mobile-form>
+    } @else {
+      <trade-desktop-form formControlName="trade"></trade-desktop-form>
+    }
+    <!--    <trade-form formControlName="trade"></trade-form>-->
   </div>
   <div class="dialog__actions">
     <div class="space"></div>
