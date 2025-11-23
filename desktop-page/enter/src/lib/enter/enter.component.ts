@@ -41,7 +41,7 @@ import { SelectFacade } from 'stores/facades/select.facade';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
-import { QUERY_PARAMS } from 'tokens/desktop';
+import { DESKTOP_API, QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import {
   StockPosition,
@@ -66,6 +66,7 @@ import { EnterFinishComponent } from './finish/finish.component';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { Params } from '@angular/router';
 import { getNumberPrecision } from 'utils/get-number-precision';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -162,6 +163,7 @@ export class VtEnterComponent implements AfterViewInit {
   private readonly _isShowCopyNotify$: Subject<void> = new Subject<void>();
   readonly #injector: Injector = inject(Injector);
   readonly #dialog: DialogService = inject(DIALOG);
+  readonly #api = inject(DESKTOP_API);
 
   #dialogFinish: PolymorpheusContent<EnterFinishComponent> | null = null;
 
@@ -240,6 +242,8 @@ export class VtEnterComponent implements AfterViewInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  readonly limit$: Observable<any> = of(3000);
+
   readonly isShowSearch$: Observable<boolean> = this.data$.pipe(
     map((data: StockPosition) => data.idea.id === null),
     distinctUntilChanged(),
@@ -287,86 +291,119 @@ export class VtEnterComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.data$
-      .pipe(startWith(null), takeUntilDestroyed(this._destroyRef), pairwise(), debounceTime(0))
-      .subscribe(([last, result]: [StockPosition | null, StockPosition | null]) => {
-        // console.log(last, result);
-        this.form.patchValue({});
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        startWith(null),
+        pairwise(),
+        debounceTime(0),
+        switchMap((position: [StockPosition | null, StockPosition | null]) => {
+          const current = position[1];
 
-        if (last !== null && result !== null) {
-          if (
-            result.idea.id !== null &&
-            last.idea.id === result.idea.id &&
-            last.idea.instrument.id === result.idea.instrument.id
-          ) {
-            this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
-            // this._idea.loadFigures(result.idea.id);
-            this._idea.loadFigures({
-              ideaId: result.idea.id,
-              instrumentId: result.idea.instrument.id,
-            });
+          if (current === null) {
+            return of({ position, limit: null });
+          }
 
-            const params = this._getDialogFinishType(result);
+          return this.#api.getLimitForCurrency(current.idea.instrument.currencyId).pipe(
+            map((limit: null | number) => ({
+              position,
+              limit,
+            }))
+          );
+        })
+      )
+      .subscribe(
+        ({
+          position: [last, result],
+          limit,
+        }: {
+          position: [StockPosition | null, StockPosition | null];
+          limit: number | null;
+        }) => {
+          // console.log(last, result);
+          this.form.patchValue({});
 
-            if (params !== null) {
-              this._showDialogFinish(params);
+          if (last !== null && result !== null) {
+            if (
+              result.idea.id !== null &&
+              last.idea.id === result.idea.id &&
+              last.idea.instrument.id === result.idea.instrument.id
+            ) {
+              this._alerts.open(null, { appearance: 'positive', label: 'Данные Обновлены' }).subscribe();
+              // this._idea.loadFigures(result.idea.id);
+              this._idea.loadFigures({
+                ideaId: result.idea.id,
+                instrumentId: result.idea.instrument.id,
+              });
+
+              const params = this._getDialogFinishType(result);
+
+              if (params !== null) {
+                this._showDialogFinish(params);
+              }
             }
           }
+
+          if (result) {
+            const precision = getPriceIncrement(result.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
+
+            const entries = this._getIdeaEntries(result.idea.entries, result.actions.entries, precision, limit);
+
+            const targets = this._getIdeaTargets(
+              result.idea.targets,
+              result.actions.outs,
+              result.idea.positionType === 'long' ? 1 : -1,
+              precision,
+              entries.reduce((acc, item) => (acc += item.quantity), 0)
+            );
+
+            const stop = this._getIdeStop(
+              result.idea.stop ? [result.idea.stop] : [],
+              result.actions.outs,
+              result.idea.positionType === 'long' ? 1 : -1,
+              entries
+            );
+
+            const action: 'disable' | 'enable' =
+              result.idea.author === 'bot' || result.idea.parentId !== null ? 'disable' : 'enable';
+
+            // if (result.actions.entries.length !== 0) {
+            //   action = 'disable';
+            // }
+
+            this.form.patchValue({
+              actions: {
+                ...result.actions,
+                dividends: result.dividends,
+                commissions: result.comissions.map((item) => ({
+                  ...item,
+                  profitPct: item.profitPct && Math.abs(item.profitPct as number),
+                })),
+              },
+              idea: {
+                entries,
+                targets,
+                stop,
+              },
+              sidebar: {
+                author: result.idea.author,
+                strategyId: null,
+                positionType: result.idea.positionType,
+                expirationDate: null,
+                instrumentId: result.idea.instrument.id,
+                parentId: result.idea.parentId,
+                portfolioId: result.idea.portfolioId,
+                comment: '',
+              },
+              lastPrice: result.idea.lastPrice,
+              minPriceIncrement: result.idea.instrument.minPriceIncrement,
+            });
+
+            this.controlIdea[action]();
+            // this.controlActions[action]();
+            this.controlSidebar[action]();
+          }
         }
-
-        if (result) {
-          const targets = this._getIdeaTargets(
-            result.idea.targets,
-            result.actions.outs,
-            result.idea.positionType === 'long' ? 1 : -1
-          );
-          const entries = this._getIdeaEntries(result.idea.entries, result.actions.entries);
-          const stop = this._getIdeStop(
-            result.idea.stop ? [result.idea.stop] : [],
-            result.actions.outs,
-            result.idea.positionType === 'long' ? 1 : -1,
-            result.idea.entries
-          );
-
-          const action: 'disable' | 'enable' =
-            result.idea.author === 'bot' || result.idea.parentId !== null ? 'disable' : 'enable';
-
-          // if (result.actions.entries.length !== 0) {
-          //   action = 'disable';
-          // }
-
-          this.form.patchValue({
-            actions: {
-              ...result.actions,
-              dividends: result.dividends,
-              commissions: result.comissions.map((item) => ({
-                ...item,
-                profitPct: item.profitPct && Math.abs(item.profitPct as number),
-              })),
-            },
-            idea: {
-              entries,
-              targets,
-              stop,
-            },
-            sidebar: {
-              author: result.idea.author,
-              strategyId: null,
-              positionType: result.idea.positionType,
-              expirationDate: null,
-              instrumentId: result.idea.instrument.id,
-              parentId: result.idea.parentId,
-              portfolioId: result.idea.portfolioId,
-              comment: '',
-            },
-            lastPrice: result.idea.lastPrice,
-            minPriceIncrement: result.idea.instrument.minPriceIncrement,
-          });
-
-          this.controlIdea[action]();
-          // this.controlActions[action]();
-          this.controlSidebar[action]();
-        }
-      });
+      );
   }
 
   trackByIndex(index: number): number {
@@ -524,20 +561,40 @@ export class VtEnterComponent implements AfterViewInit {
     };
   }
 
-  private _getIdeaEntries(list: any[], actions: StockPositionActionEntry[]): StockPositionIdeaEntry[] {
+  private _getIdeaEntries(
+    list: any[],
+    actions: StockPositionActionEntry[],
+    precision: number,
+    limit: number | null = null
+  ): StockPositionIdeaEntry[] {
     const check = !!(actions[0] && actions[0].date);
+
+    const part = limit && limit / list.length;
 
     return list
       .filter((item) => item.price !== 0)
-      .map((item, index: number) => ({
-        check: index === 0 && check,
-        date: item.date || null,
-        depositShare: item.depositShare || null,
-        broker: null,
-        price: item.price || null,
-        quantity: item.quantity || null,
-        totalPrice: item.totalPrice || null,
-      }));
+      .map((item, index: number) => {
+        const quantity = item.price && part ? this._getLot(part / item.price, precision) : null;
+        const total = item.price && quantity ? getNumberPrecision(item.price * quantity, 2) : null;
+
+        return {
+          check: index === 0 && check,
+          date: item.date || null,
+          depositShare: quantity ? null : item.depositShare || null,
+          broker: null,
+          price: item.price || null,
+          quantity: quantity || item.quantity || null,
+          totalPrice: total || item.totalPrice || null,
+        };
+      });
+  }
+
+  private _getLot(lot: number, precision: number): number {
+    if (precision === 0) {
+      return Math.floor(lot);
+    }
+
+    return getNumberPrecision(lot, precision);
   }
 
   private _getDialogFinishType(value: StockPosition | null): 'profit' | 'loss' | null {
@@ -601,8 +658,17 @@ export class VtEnterComponent implements AfterViewInit {
       .subscribe();
   }
 
-  private _getIdeaTargets(list: any[], outs: any[] = [], direction: 1 | -1 = 1): StockPositionTarget[] {
-    return list.map((item) => {
+  private _getIdeaTargets(
+    list: any[],
+    outs: any[] = [],
+    direction: 1 | -1 = 1,
+    precision: number,
+    quantity: number
+  ): StockPositionTarget[] {
+    const rate = [0.4, 0.3, 0.3];
+    let remainder = quantity;
+
+    return list.map((item, index: number) => {
       let stopDate = item.stopDate;
 
       if (stopDate === null) {
@@ -618,13 +684,21 @@ export class VtEnterComponent implements AfterViewInit {
         }
       }
 
+      let amount = this._getLot(quantity * rate[index], precision);
+
+      if (index === list.length - 1) {
+        amount = remainder;
+      }
+
+      remainder -= amount;
+
       return {
         price: item.price || null,
-        amount: item.amount || null,
+        amount: amount,
         profit: item.profit || null,
         profitPercent: item.profitPercent || null,
         depositShare: item.depositShare || null,
-        totalPrice: item.price * item.amount,
+        totalPrice: getNumberPrecision(item.price * amount, 2),
         reached: false,
         stopDate: stopDate || null,
         broker: null,
@@ -638,6 +712,8 @@ export class VtEnterComponent implements AfterViewInit {
     direction: 1 | -1 = 1,
     entries: StockPositionIdeaEntry[]
   ): StockPositionStop[] {
+    const quantity = entries.reduce((acc: number, item) => (acc += item.quantity), 0);
+
     return list
       .filter((item) => item.price !== 0)
       .map((item) => {
@@ -659,10 +735,10 @@ export class VtEnterComponent implements AfterViewInit {
         return {
           depositShare: item.depositShare || null,
           lossPercent: item.lossPercent || null,
-          loss: item.loss || null,
+          loss: getNumberPrecision(quantity * item.price, 2) || item.loss || null,
           price: item.price || null,
           stopCandleDate: item.stopCandleDate || stopDate,
-          amount: item.amount || entries.reduce((acc: number, item) => (acc += item.quantity), 0),
+          amount: item.amount || quantity,
           amountPercent: item.amountPercent || 100,
         };
       });

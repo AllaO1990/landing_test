@@ -382,4 +382,34 @@ export class DesktopApiService extends DesktopService {
   deleteCommission(id: number): Observable<Response<any>> {
     return this._http.delete<Response<any>>(`${this.host}/v1/comission/${id}`);
   }
+
+  getLimitForCurrency(currencyId: number): Observable<null | number> {
+    return this._http
+      .get<
+        Response<{
+          currencyId: number;
+          currencySymbol: string;
+          limit: null | number;
+        }>
+      >(`${this.host}/v1/trades/limit`, { params: { currencyId } })
+      .pipe(
+        map(
+          (
+            response: Response<{
+              currencyId: number;
+              currencySymbol: string;
+              limit: null | number;
+            }>
+          ) => {
+            const data = response && response.data;
+
+            if (!data) {
+              return null;
+            }
+
+            return data.limit;
+          }
+        )
+      );
+  }
 }

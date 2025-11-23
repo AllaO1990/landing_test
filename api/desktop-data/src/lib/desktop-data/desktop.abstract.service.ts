@@ -145,4 +145,6 @@ export abstract class DesktopService {
   abstract updateCommission(id: number, params: Params): Observable<Response<any>>;
 
   abstract deleteCommission(id: number): Observable<Response<any>>;
+
+  abstract getLimitForCurrency(currencyId: number): Observable<null | number>;
 }

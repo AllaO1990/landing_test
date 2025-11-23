@@ -192,7 +192,7 @@
 </div>
 
 <ng-template #itemEntryTemplateMobile let-item let-index=index let-control=control>
-  <div class="item__value row__item">
+  <div class="item__value row__item row__item--direction">
     <div class="cell">
       {{ item.direction | tradeDirectionType | async }}<br>
       {{ item.orderType | tradeOrderType | async }}
@@ -240,7 +240,7 @@
         [loading]="item.change"
         (click)="onEdit($event, item, index, control)"
         [disabled]="item.change || item.removed || item.disabled"
-        size="xs"
+        size="s"
         type="button"
       ></button>
       <button
@@ -248,9 +248,9 @@
         [loading]="item.removed"
         [disabled]="item.change || item.removed || item.disabled"
         appearance="outline-grayscale"
-        iconStart="@tui.x"
+        iconStart="@tui.trash-2"
         tuiIconButton
-        size="xs"
+        size="s"
         type="button"
       ></button>
     }
