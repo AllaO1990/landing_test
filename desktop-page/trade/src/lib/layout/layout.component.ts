@@ -105,7 +105,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
       if (flag) {
         this.loading = false;
       }
-      console.log('isUnloading$', flag);
     })
   );
 
@@ -206,7 +205,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
         )
       )
       .subscribe((orders: TradeStopOrders) => {
-        console.log('this.#isStop$ removeStopOrder');
         const {
           filter: { account, instrument, source },
         } = this.formGroup.value.trade;
@@ -222,61 +220,12 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     this.#isStop$
       .pipe(filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING))
       .subscribe((controlValue: ControlValue) => {
-        console.log('this.#isStop$ addStopOrder');
         const {
           filter: { account, instrument, source },
         } = this.formGroup.value.trade;
 
         this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
       });
-
-    // this.#isSubmitted$
-    //   .asObservable()
-    //   .pipe(
-    //     takeUntilDestroyed(this.#destroyRef),
-    //     filter((isSubmitted: boolean) => isSubmitted),
-    //     switchMap(() =>
-    //       this.#isStop$.pipe(filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING))
-    //     )
-    //   )
-    //   .subscribe((controlValue: ControlValue) => {
-    //     const {
-    //       filter: { account, instrument, source },
-    //     } = this.formGroup.value.trade;
-    //
-    //     console.log(controlValue);
-    //
-    //     this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
-    //   });
-
-    // this.#store.stopOrders$
-    //   .pipe(
-    //     filter((list: TradeStopOrders | null): list is TradeStopOrders => list !== null),
-    //     filter((list: TradeStopOrders) => list.length > 0),
-    //     map((list) => list[1])
-    //     // switchMap((list) =>
-    //     //   timer(2000).pipe(
-    //     //     takeWhile((orders) => orders !== list.length),
-    //     //     tap((data) => console.log(data)),
-    //     //     tap((index) => {
-    //     //
-    //     //     })
-    //     //   )
-    //     // )
-    //   )
-    //   .subscribe((order: TradeStopOrder) => {
-    //     console.log(order);
-    //     const {
-    //       filter: { account, instrument, source },
-    //     } = this.formGroup.value.trade;
-    //
-    //     this.#store.removeStopOrder({
-    //       accountId: account.accountId,
-    //       id: order.stopOrderId,
-    //       sourceId: source.id,
-    //       instrumentId: instrument.id,
-    //     });
-    //   });
   }
 
   ngOnDestroy(): void {

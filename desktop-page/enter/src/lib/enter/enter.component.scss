@@ -191,6 +191,11 @@ lib-instrument {
     background-color: var(--main-bg-color);
     margin-right: var(--padding-2);
   }
+
+  .create {
+    display: flex;
+    flex-flow: column nowrap;
+  }
 }
 
 .header {

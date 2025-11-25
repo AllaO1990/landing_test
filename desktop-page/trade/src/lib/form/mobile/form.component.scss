@@ -81,7 +81,7 @@
   }
 
   &__item--double {
-    flex: 0 0 calc(100% / 2.5);
+    flex: 1 1 calc(100% / 2.5);
   }
 
   &__item--icon {
@@ -137,6 +137,7 @@ lib-list {
     }
 
     button {
+
       &:not(:last-child) {
         margin-right: var(--padding-3);
       }

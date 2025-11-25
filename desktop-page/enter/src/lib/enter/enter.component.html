@@ -7,8 +7,10 @@
           [data]="result.idea.instrument">
         </lib-instrument>
         <div class="date-start" *ngIf="result.idea.createdAt">
-          Идея от
-          <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
+          <div class="create">
+            <span>Идея от</span>
+            <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
+          </div>
         </div>
 
         @if (result.idea.author === 'bot' || result.idea.parentId !== null) {
@@ -29,21 +31,38 @@
           </div>
         }
         <div class="space"></div>
-        <button
-          class="action bell"
-          tuiButton
-          appearance="primary"
-          libEnterSubscribe
-          [loading]="controlWatch.value === null"
-          [isSubscribe]="controlWatch.value"
-          (isSubscribeChanged)="onSubscribe($event)"
-          [ideaId]="result.idea.id"
-          [size]="size"
-          [disabled]="controlWatch.value === null"
-          type="button"
-          [iconStart]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'">
-          {{ controlWatch.value ? 'Отслеживается' : 'Не отслеживается' }}
-        </button>
+        @if (isMobile$ | async) {
+          <button
+            class="action bell"
+            tuiIconButton
+            appearance="primary"
+            libEnterSubscribe
+            [loading]="controlWatch.value === null"
+            [isSubscribe]="controlWatch.value"
+            (isSubscribeChanged)="onSubscribe($event)"
+            [ideaId]="result.idea.id"
+            [size]="size"
+            [disabled]="controlWatch.value === null"
+            type="button"
+            [iconStart]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'">
+          </button>
+        } @else {
+          <button
+            class="action bell"
+            tuiButton
+            appearance="primary"
+            libEnterSubscribe
+            [loading]="controlWatch.value === null"
+            [isSubscribe]="controlWatch.value"
+            (isSubscribeChanged)="onSubscribe($event)"
+            [ideaId]="result.idea.id"
+            [size]="size"
+            [disabled]="controlWatch.value === null"
+            type="button"
+            [iconStart]="controlWatch.value ? '@tui.bell' : '@tui.bell-off'">
+            {{ controlWatch.value ? 'Отслеживается' : 'Не отслеживается' }}
+          </button>
+        }
         <button
           class="action"
           tuiIconButton

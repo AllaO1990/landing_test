@@ -37,7 +37,6 @@ import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.servic
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
 import { EventSelected } from 'types/events';
 import { LoaderComponent } from '@ui/components/loader';
-import { SelectFacade } from 'stores/facades/select.facade';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
@@ -154,9 +153,9 @@ function maxAmount(): ValidatorFn {
   animations: [triggerHeightAnimations],
 })
 export class VtEnterComponent implements AfterViewInit {
+  readonly #breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
   private readonly _dialogDefaultService: TuiDialogService = inject(TuiDialogService);
   private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _select: SelectFacade = inject(SelectFacade);
   private readonly _idea: IdeaFacade = inject(IdeaFacade);
   private readonly _alerts = inject(TuiAlertService);
   private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
@@ -181,6 +180,11 @@ export class VtEnterComponent implements AfterViewInit {
       icon: '@tui.bell-off',
     },
   };
+
+  readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
+    map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   readonly isDisableTrade$: Observable<boolean> = this._idea.instrument$.pipe(
     switchMap((instrument: StockInstrument | null) => {
@@ -344,23 +348,29 @@ export class VtEnterComponent implements AfterViewInit {
           }
 
           if (result) {
-            const precision = getPriceIncrement(result.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
+            const minPriceIncrement = getPriceIncrement(result.idea.instrument.minPriceIncrement);
+            const precision = minPriceIncrement === 8 ? 8 : 0;
 
             const entries = this._getIdeaEntries(result.idea.entries, result.actions.entries, precision, limit);
+            const entriesQuantity = entries.reduce((acc, item) => (acc += item.quantity), 0);
+            const entriesPrice =
+              entries.reduce((acc, item) => (acc += item.quantity * item.price), 0) / entriesQuantity;
 
             const targets = this._getIdeaTargets(
               result.idea.targets,
               result.actions.outs,
               result.idea.positionType === 'long' ? 1 : -1,
               precision,
-              entries.reduce((acc, item) => (acc += item.quantity), 0)
+              entriesQuantity,
+              getNumberPrecision(entriesPrice, minPriceIncrement)
             );
 
             const stop = this._getIdeStop(
               result.idea.stop ? [result.idea.stop] : [],
               result.actions.outs,
               result.idea.positionType === 'long' ? 1 : -1,
-              entries
+              entries,
+              entriesPrice
             );
 
             const action: 'disable' | 'enable' =
@@ -663,7 +673,8 @@ export class VtEnterComponent implements AfterViewInit {
     outs: any[] = [],
     direction: 1 | -1 = 1,
     precision: number,
-    quantity: number
+    quantity: number,
+    price: number
   ): StockPositionTarget[] {
     const rate = [0.4, 0.3, 0.3];
     let remainder = quantity;
@@ -695,7 +706,7 @@ export class VtEnterComponent implements AfterViewInit {
       return {
         price: item.price || null,
         amount: amount,
-        profit: item.profit || null,
+        profit: getNumberPrecision(Math.abs(item.price - price) * amount, 2) || null,
         profitPercent: item.profitPercent || null,
         depositShare: item.depositShare || null,
         totalPrice: getNumberPrecision(item.price * amount, 2),
@@ -710,7 +721,8 @@ export class VtEnterComponent implements AfterViewInit {
     list: any[],
     outs: any[] = [],
     direction: 1 | -1 = 1,
-    entries: StockPositionIdeaEntry[]
+    entries: StockPositionIdeaEntry[],
+    price: number
   ): StockPositionStop[] {
     const quantity = entries.reduce((acc: number, item) => (acc += item.quantity), 0);
 
@@ -735,7 +747,7 @@ export class VtEnterComponent implements AfterViewInit {
         return {
           depositShare: item.depositShare || null,
           lossPercent: item.lossPercent || null,
-          loss: getNumberPrecision(quantity * item.price, 2) || item.loss || null,
+          loss: getNumberPrecision(-1 * quantity * Math.abs(item.price - price), 2) || null,
           price: item.price || null,
           stopCandleDate: item.stopCandleDate || stopDate,
           amount: item.amount || quantity,
