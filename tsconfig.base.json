@@ -17,11 +17,13 @@
     "paths": {
       "@core/*": ["desktop-page/core/*"],
       "@desktop-data/*": ["api/desktop-data/src/lib/*"],
+      "@feat-structure": ["desktop-page/structure/feat-structure/src/index.ts"],
       "@ui/animations/*": ["ui/src/lib/animations/*"],
       "@ui/components/*": ["ui/src/lib/ui/*"],
       "@ui/pipes/*": ["ui/src/lib/pipe/*"],
       "constants/*": ["constants/*"],
       "dashboard": ["desktop-page/dashboard/src/index.ts"],
+      "data-access": ["desktop-page/structure/data-access/src/index.ts"],
       "desktop-page/enter": ["desktop-page/enter/src/index.ts"],
       "desktop-page/trade": ["desktop-page/trade/src/index.ts"],
       "lk": ["desktop-page/lk/src/index.ts"],

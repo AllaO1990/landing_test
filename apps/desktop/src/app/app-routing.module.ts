@@ -66,6 +66,15 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'light',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('main').then((m) => m.LightComponent),
+          },
+        ],
+      },
+      {
         path: '403',
         loadChildren: () => import('page-403').then((m) => m.Page403Module),
         canActivate: [ForbiddenGuard],
