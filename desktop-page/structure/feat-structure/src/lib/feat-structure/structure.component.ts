@@ -1,18 +1,31 @@
 import { TuiRingChart } from '@taiga-ui/addon-charts';
 import { TuiBlock, TuiPin, TuiSkeleton } from '@taiga-ui/kit';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input } from '@angular/core';
-import { AsyncPipe, DOCUMENT, NgIf, NgTemplateOutlet } from '@angular/common';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  input,
+  InputSignal,
+  Output,
+  Signal,
+} from '@angular/core';
+import { AsyncPipe, DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import { StructureIsNaNPipe, StructureListValuePipe } from './structure.pipe';
 import { TuiBreakpointService, TuiFormatNumberPipe, TuiGroup, tuiNumberFormatProvider } from '@taiga-ui/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { COLOR_LIST, STRUCTURE_CATEGORY } from './structure.constants';
-import { BehaviorSubject, Observable, shareReplay, Subject, tap } from 'rxjs';
+import { Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoaderComponent } from '@ui/components/loader';
 import { ItemDirective, ListComponent } from '@ui/components/list';
-import { AccountStructure, AccountStructureItem } from 'types/account';
+import { AccountStructureItem } from 'types/account';
 import { StructureService } from './structure.service';
-import { Response } from 'types/response';
+import { DataAccessStructureState } from '@data-access-structure';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface StructureControl {
   name: string;
@@ -29,7 +42,6 @@ let COLOR_LIMIT = 5;
   imports: [
     TuiRingChart,
     LoaderComponent,
-    NgIf,
     StructureListValuePipe,
     StructureIsNaNPipe,
     TuiFormatNumberPipe,
@@ -48,16 +60,13 @@ let COLOR_LIMIT = 5;
   providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' }), StructureService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Structure {
+export class Structure implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #service: StructureService = inject(StructureService);
-  readonly #list$: Subject<Response<AccountStructure> | null> = new BehaviorSubject<Response<AccountStructure> | null>(
-    null
-  );
 
   private readonly _doc: Document = inject(DOCUMENT);
   private readonly _styleId: string = 'structure';
-  private readonly _ringChartSizeMapper: { [key: string]: RingChartSize } = {
+  readonly #ringChartSizeMapper: { [key: string]: RingChartSize } = {
     mobile: 'xl',
     desktopSmall: 'm',
     desktopLarge: 'm',
@@ -69,42 +78,53 @@ export class Structure {
   readonly controlCategories: FormControl = new FormControl(this.categories[0], Validators.required);
 
   readonly ringChartSize$: Observable<RingChartSize> = inject(TuiBreakpointService).pipe(
-    map((desktopSize) => {
-      if (desktopSize !== null) {
-        return this._ringChartSizeMapper[desktopSize];
-      }
-      return 'xl';
-    })
+    map((desktopSize) => this._getSize(desktopSize))
   );
-
-  readonly isLoad$: Subject<boolean> = new BehaviorSubject(false);
 
   activeItemIndex = Number.NaN;
-  summary = 0;
   summaryCurrencySymbol = '';
 
-  @Input() set list(value: Response<AccountStructure> | null) {
-    this.#list$.next(value);
+  @Output() selectedCategory: EventEmitter<{ name: string; value: string }> = new EventEmitter();
+
+  data: InputSignal<DataAccessStructureState> = input.required();
+  isLoaded: Signal<boolean> = computed(() => this.data().isLoaded);
+  isLoading: Signal<boolean> = computed(() => this.data().isLoading);
+  list: Signal<AccountStructureItem[] | null> = computed(() => {
+    const structure = this.data().data;
+    if (!structure) {
+      return null;
+    }
+
+    if (structure.items.length > COLOR_LIMIT) {
+      COLOR_LIMIT = structure.items.length;
+      this._generateColorList(COLOR_LIMIT);
+    }
+
+    return structure.items;
+  });
+  summary: Signal<number | null> = computed(() => {
+    const list = this.list();
+    if (!list) {
+      return null;
+    }
+
+    return list.reduce((acc: number, item: AccountStructureItem) => (acc += item.totalPrice), 0);
+  });
+  currencySymbol: Signal<string> = computed(() => {
+    const structure = this.data().data;
+
+    if (!structure) {
+      return '';
+    }
+
+    return structure.totalPortfolio.currencySymbol;
+  });
+
+  ngAfterViewInit(): void {
+    this.controlCategories.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlCategories.value))
+      .subscribe((value) => this.selectedCategory.emit(value));
   }
-
-  list$: Observable<AccountStructureItem[] | null> = this.#list$.asObservable().pipe(
-    map((response: Response<AccountStructure> | null) => response && response.data),
-    tap((structure: null | AccountStructure) => {
-      this.isLoad$.next(false);
-
-      if (structure !== null && structure.items) {
-        if (structure.items.length > COLOR_LIMIT) {
-          COLOR_LIMIT = structure.items.length;
-          this._generateColorList(COLOR_LIMIT);
-        }
-
-        this.summaryCurrencySymbol = structure.totalPortfolio.currencySymbol;
-        this.summary = structure.items.reduce((acc: number, item: AccountStructureItem) => (acc += item.totalPrice), 0);
-      }
-    }),
-    map((structure: null | AccountStructure) => structure && structure.items),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
 
   getNumber = (item: AccountStructureItem): number => item.portfolioSharePct;
 
@@ -125,6 +145,13 @@ export class Structure {
 
   private _getStyleTag(): HTMLElement {
     return this.#service.getStyleTag(this._doc, this._styleId);
+  }
+
+  private _getSize(desktopSize: null | string): RingChartSize {
+    if (desktopSize !== null) {
+      return this.#ringChartSizeMapper[desktopSize];
+    }
+    return 'xl';
   }
 
   onMouseenter(event: Event, i: number): void {

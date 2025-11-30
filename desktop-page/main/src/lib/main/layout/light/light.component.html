@@ -1,7 +1,10 @@
-<div class="layout" [class.layout--with-chart]="chart">
+<div class="layout" [class.layout--with-chart]="false">
   <div class="layout__portfolio widget"></div>
   <div class="layout__structure widget">
-    <structure></structure>
+    <structure
+      [data]="(dataStructure$ | async) || defaultDataStructure"
+      (selectedCategory)="onSelectCategory($event)"
+    ></structure>
   </div>
   <div class="layout__chart widget"></div>
   <div class="layout__idea widget"></div>

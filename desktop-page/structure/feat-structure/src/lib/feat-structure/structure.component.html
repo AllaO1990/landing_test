@@ -1,49 +1,55 @@
 <div class="structure">
+  @if (isLoaded() && !isLoading()) {
+    <div class="structure__loader">
+      <ui-loader></ui-loader>
+    </div>
+  }
+
   <div class="structure__title">
     <h3>
-      <span [tuiSkeleton]="true">Структура</span>
+      <span [tuiSkeleton]="!isLoaded()">Структура</span>
     </h3>
   </div>
-  <div class="structure__content">
-      <div class="structure__container">
-        <div class="structure__switcher">
-          <div tuiGroup class="structure__controls">
-            @for (item of categories; track item) {
-              <label
-                [tuiSkeleton]="true"
-                for="structure--{{item.value}}"
-                tuiBlock="s"
-                [appearance]="item === controlCategories.value ? 'primary' : 'secondary-grayscale'">
-                <input
-                  id="structure--{{item.value}}"
-                  tuiBlock
-                  type="radio"
-                  [formControl]="controlCategories"
-                  [value]="item" />
-                {{ item.name }}
-              </label>
-            }
-          </div>
-        </div>
 
-        <div class="structure__chart" [tuiSkeleton]="true">
-          <tui-ring-chart
-            [size]="(ringChartSize$ | async) || 'xl'"
-            [value]="(list$ | async) || [] | getListValue: getNumber"
-            [(activeItemIndex)]="activeItemIndex">
-            <ng-container
-              *ngIf="(list$ | async) as structures"
-              [ngTemplateOutlet]="(activeItemIndex | getIsNaN) ? full : item"
-              [ngTemplateOutletContext]="{ $implicit:  structures[activeItemIndex] }"
-            ></ng-container>
-          </tui-ring-chart>
-        </div>
-      </div>
-      <div class="structure__list">
-        @if (list$ | async; as structures) {
-          <lib-list
+  <div class="structure__switcher">
+    <div class="structure__controls" tuiGroup>
+      @for (item of categories; track item) {
+        <label
+          [tuiSkeleton]="!isLoaded()"
+          for="structure--{{item.value}}"
+          tuiBlock="s"
+          [appearance]="item === controlCategories.value ? 'primary' : 'secondary-grayscale'">
+          <input
+            id="structure--{{item.value}}"
+            tuiBlock
+            type="radio"
+            [formControl]="controlCategories"
+            [value]="item" />
+          {{ item.name }}
+        </label>
+      }
+    </div>
+  </div>
+
+  <div class="structure__chart">
+    <tui-ring-chart
+      [(activeItemIndex)]="activeItemIndex"
+      [size]="(ringChartSize$ | async) || 'xl'"
+      [value]="list() || [] | getListValue: getNumber">
+      @if(list(); as structures) {
+        <ng-container
+          [ngTemplateOutletContext]="{ $implicit:  structures[activeItemIndex] }"
+          [ngTemplateOutlet]="(activeItemIndex | getIsNaN) ? full : item"
+        ></ng-container>
+      }
+    </tui-ring-chart>
+  </div>
+
+  <div class="structure__list">
+    @if (isLoaded()) {
+      <lib-list
           class="list"
-          [list]="structures"
+          [list]="list() || []"
           [itemSize]="32">
           <div
             class="list__item item"
@@ -64,24 +70,22 @@
         </lib-list>
     } @else {
       <div class="list">
-        <div class="list__item skeleton">
+        <div class="list__item skeleton__item">
           <div [tuiSkeleton]="true"></div>
         </div>
-        <div class="list__item skeleton">
+        <div class="list__item skeleton__item">
           <div [tuiSkeleton]="true"></div>
         </div>
-        <div class="list__item skeleton">
+        <div class="list__item skeleton__item">
+          <div [tuiSkeleton]="true"></div>
+        </div>
+        <div class="list__item skeleton__item">
           <div [tuiSkeleton]="true"></div>
         </div>
       </div>
     }
-      </div>
   </div>
 </div>
-
-<ng-template #load>
-  <ui-loader></ui-loader>
-</ng-template>
 
 <ng-template #full>
   <div class="chart__info">
@@ -89,7 +93,9 @@
       Всего:
     </div>
     <div class="chart__value">
-      {{ summary | tuiFormatNumber | async }}{{summaryCurrencySymbol}}
+      @if (summary(); as sum) {
+      {{ sum | tuiFormatNumber | async }}{{summaryCurrencySymbol}}
+      }
     </div>
   </div>
 </ng-template>

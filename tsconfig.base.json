@@ -23,7 +23,7 @@
       "@ui/pipes/*": ["ui/src/lib/pipe/*"],
       "constants/*": ["constants/*"],
       "dashboard": ["desktop-page/dashboard/src/index.ts"],
-      "data-access": ["desktop-page/structure/data-access/src/index.ts"],
+      "@data-access-structure": ["desktop-page/structure/data-access/src/index.ts"],
       "desktop-page/enter": ["desktop-page/enter/src/index.ts"],
       "desktop-page/trade": ["desktop-page/trade/src/index.ts"],
       "lk": ["desktop-page/lk/src/index.ts"],

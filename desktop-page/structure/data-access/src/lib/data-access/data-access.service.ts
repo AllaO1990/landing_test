@@ -1,0 +1,21 @@
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Params } from '@angular/router';
+import { Observable } from 'rxjs';
+import { Response } from 'types/response';
+import { AccountStructure } from 'types/account';
+import { APP_CONFIG } from 'tokens/desktop/config';
+
+@Injectable()
+export class DataAccessStructureService {
+  #http: HttpClient = inject(HttpClient);
+  readonly #config = inject(APP_CONFIG);
+
+  get host() {
+    return this.#config.host;
+  }
+
+  getAccountStructure(params: Params): Observable<Response<AccountStructure>> {
+    return this.#http.post<Response<AccountStructure>>(`${this.host}/v1/account/portfolios/structure`, params);
+  }
+}
