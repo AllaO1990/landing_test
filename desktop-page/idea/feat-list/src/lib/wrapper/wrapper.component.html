@@ -1,1 +1,4 @@
-<idea-layout></idea-layout>
+<idea-layout
+  [list]="list$ | async"
+  (submitted)="onSubmit($event)">
+</idea-layout>

@@ -47,6 +47,7 @@
           <button
             [size]="size"
             [disabled]="filterControl.pristine"
+            (click)="onSubmit($event)"
             tuiButton
             appearance="primary"
             type="submit">
@@ -92,10 +93,12 @@
       </button>
     </div>
   </div>
-  <div class="idea__table">
+  <div class="idea__list list">
     <!--    <vt-entry-table [data]="list$ | async"></vt-entry-table>-->
-    <ui-lib-list [itemSize]="40">
-      <div class="item" *uiLibListItem="let item"></div>
+    <ui-lib-list [itemSize]="28" [list]="list ? list.items : []">
+      <div class="item" *uiLibListItem="let item">
+        {{ item.createdAt }}
+      </div>
     </ui-lib-list>
   </div>
   <div class="idea__pagination">

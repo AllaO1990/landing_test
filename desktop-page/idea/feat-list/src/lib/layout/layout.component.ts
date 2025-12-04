@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
@@ -14,6 +24,7 @@ import { TuiDrawer } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
+import { ResponsePositions } from 'types/position';
 
 interface FilterValue {
   type: AccountType;
@@ -41,7 +52,7 @@ interface FilterValue {
   styleUrl: './layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayoutComponent {
+export class LayoutComponent implements AfterViewInit {
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #valueDefault = {
     search: '',
@@ -66,6 +77,19 @@ export class LayoutComponent {
     )
   );
 
+  @Output() submitted = new EventEmitter<{
+    search: string;
+    type: AccountType;
+    strategy: AccountStrategy;
+    currency: AccountCurrency;
+  }>();
+
+  @Input() list: ResponsePositions | null = null;
+
+  ngAfterViewInit(): void {
+    this.submitted.emit(this.#valueDefault);
+  }
+
   onClose(event: Event): void {
     event.preventDefault();
 
@@ -87,5 +111,12 @@ export class LayoutComponent {
     event.preventDefault();
 
     this.filterControl.reset(this.#valueDefault);
+  }
+
+  onSubmit(event: Event): void {
+    event.preventDefault();
+
+    this.openFilter.set(false);
+    this.submitted.emit(this.filterControl.value);
   }
 }

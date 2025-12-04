@@ -24,6 +24,8 @@ import { ActionCopyIdea } from '../common/plugins/action-copy-idea';
 import { TradeDialogService } from 'desktop-page/trade';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { ApiStructureService, DataAccessStructureStore } from '@data-access-structure';
+import { DataAccessIdeaStore } from '@data-access-idea/store';
+import { ApiIdeaService } from '@data-access-idea/api.service';
 
 @Component({
   selector: 'lib-lk',
@@ -48,6 +50,12 @@ import { ApiStructureService, DataAccessStructureStore } from '@data-access-stru
       provide: DataAccessStructureStore,
       useFactory: (api: ApiStructureService) => new DataAccessStructureStore(api),
       deps: [ApiStructureService],
+    },
+    ApiIdeaService,
+    {
+      provide: DataAccessIdeaStore,
+      useFactory: (api: ApiIdeaService) => new DataAccessIdeaStore(api),
+      deps: [ApiIdeaService],
     },
     {
       provide: CONTEXT_ACTION_EVENTS,

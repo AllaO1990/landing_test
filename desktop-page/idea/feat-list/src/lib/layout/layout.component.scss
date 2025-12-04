@@ -1,6 +1,15 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
 .idea {
   display: flex;
   flex-flow: column nowrap;
+
+  height: 100%;
+  width: 100%;
 
   &__header {
     flex: 0 0;
@@ -12,7 +21,7 @@
     padding: var(--padding-2);
   }
 
-  &__table {
+  &__list {
     flex: 1;
   }
 
@@ -44,7 +53,6 @@
   }
 }
 
-
 .filter {
   top: 0;
   border-radius: 0;
@@ -72,4 +80,16 @@
       padding: var(--padding-8) var(--padding-2) var(--padding-2);
     }
   }
+}
+
+.list {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  
+  height: 28px;
 }
