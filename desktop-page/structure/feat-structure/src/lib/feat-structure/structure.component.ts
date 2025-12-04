@@ -21,7 +21,7 @@ import { COLOR_LIST, STRUCTURE_CATEGORY } from './structure.constants';
 import { Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoaderComponent } from '@ui/components/loader';
-import { ItemDirective, ListComponent } from '@ui/components/list';
+import { UiList, UiListItem } from '@ui/components/list';
 import { AccountStructureItem } from 'types/account';
 import { StructureService } from './structure.service';
 import { DataAccessStructureState } from '@data-access-structure';
@@ -50,8 +50,8 @@ let COLOR_LIMIT = 5;
     TuiGroup,
     ReactiveFormsModule,
     AsyncPipe,
-    ListComponent,
-    ItemDirective,
+    UiList,
+    UiListItem,
     TuiPin,
     TuiSkeleton,
   ],

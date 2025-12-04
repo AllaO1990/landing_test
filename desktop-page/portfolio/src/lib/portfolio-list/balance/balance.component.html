@@ -7,13 +7,13 @@
   </div>
   <div class="form__content">
     <div class="form__list" *ngIf="(transactions$ | async) as transactions; else load">
-      <lib-list
+      <ui-lib-list
         class="list"
         [style.height.px]="11 * itemHeight"
         [list]="transactions.items"
         [header]="header"
         [itemSize]="itemHeight">
-        <div class="item" *libListItem="let item; let index = index" @heightAnimations>
+        <div class="item" *uiLibListItem="let item; let index = index" @heightAnimations>
           <div class="item__value row__item row__date">
             {{ item.date | date: 'dd.MM.yy' }}
           </div>
@@ -62,7 +62,7 @@
             ></button>
           </div>
         </div>
-      </lib-list>
+      </ui-lib-list>
     </div>
     <lib-with-pagination
       class="form__pagination"

@@ -37,13 +37,13 @@
       </div>
     </div>
     <div class="structure__list">
-      <lib-list
+      <ui-lib-list
         class="list"
         [list]="list"
         [itemSize]="32">
         <div
           class="list__item item"
-          *libListItem="let item; index as i"
+          *uiLibListItem="let item; index as i"
           [title]="item.name"
           [class.item__active]="activeItemIndex === i"
           (mouseenter)="onMouseenter($event, i)"
@@ -57,7 +57,7 @@
             {{ item.totalPrice | tuiFormatNumber | async }}{{ item.currencySymbol }}
           </div>
         </div>
-      </lib-list>
+      </ui-lib-list>
     </div>
   </div>
 </div>

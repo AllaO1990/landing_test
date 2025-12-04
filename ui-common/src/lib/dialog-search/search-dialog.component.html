@@ -60,7 +60,7 @@
         Ничего не найдено
       </div>
 
-      <lib-list
+      <ui-lib-list
         class="viewport"
         [list]="list.total === 0 ? [] : list.items"
         [trackBy]="trackById"
@@ -70,7 +70,7 @@
         <div
           class="item row"
           [class.unsubscription]="item | searchDialogItemCondition"
-          *libListItem="let item"
+          *uiLibListItem="let item"
           (click)="onClick($event, item)">
           <div class="cell item__ticker">
             <div class="item__img">
@@ -97,7 +97,7 @@
             </lib-action>
           </div>
         </div>
-      </lib-list>
+      </ui-lib-list>
 
       <div class="actions">
         <tui-pagination

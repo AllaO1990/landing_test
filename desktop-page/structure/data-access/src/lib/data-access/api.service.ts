@@ -7,7 +7,7 @@ import { AccountStructure } from 'types/account';
 import { APP_CONFIG } from 'tokens/desktop/config';
 
 @Injectable()
-export class DataAccessStructureService {
+export class ApiStructureService {
   #http: HttpClient = inject(HttpClient);
   readonly #config = inject(APP_CONFIG);
 

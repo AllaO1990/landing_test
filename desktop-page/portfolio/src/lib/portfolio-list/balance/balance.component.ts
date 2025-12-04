@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, 
 import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
 import { DialogFilterComponent } from '../dialog-filter/dialog-filter.component';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
 import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import { LoaderComponent } from '@ui/components/loader';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
@@ -33,8 +33,8 @@ import { BalanceWithdrawalService } from 'ui-common/lib/dialog/balance-withdrawa
     LoaderComponent,
     HeaderComponent,
     TuiButtonLoading,
-    ListComponent,
-    ItemDirective,
+    UiList,
+    UiListItem,
     TuiFormatNumberPipe,
     DatePipe,
     AsyncPipe,

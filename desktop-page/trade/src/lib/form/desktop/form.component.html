@@ -13,17 +13,17 @@
   <tui-scrollbar class="trade__container">
     <div class="entry">
       <div class="tui-text_h6">Вход</div>
-      <lib-list
+      <ui-lib-list
         [header]="header"
         [itemSize]="itemHeight"
         [style.height.px]="heightEntry$ | async"
         [list]="listEntry$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
+        <div class="item row row--border" *uiLibListItem="let item; let index = index" @heightAnimations>
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
             [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayEntry }"></ng-container>
         </div>
-      </lib-list>
+      </ui-lib-list>
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
@@ -40,17 +40,17 @@
 
     <div class="out">
       <div class="tui-text_h6">Выход</div>
-      <lib-list
+      <ui-lib-list
         [header]="header"
         [itemSize]="itemHeight"
         [style.height.px]="heightOut$ | async"
         [list]="listOut$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
+        <div class="item row row--border" *uiLibListItem="let item; let index = index" @heightAnimations>
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
             [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayOut }"></ng-container>
         </div>
-      </lib-list>
+      </ui-lib-list>
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
@@ -78,17 +78,17 @@
 
     <div class="stop">
       <div class="tui-text_h6">Стоп заявка</div>
-      <lib-list
+      <ui-lib-list
         [header]="header"
         [itemSize]="itemHeight"
         [style.height.px]="heightStop$ | async"
         [list]="listStop$ | async">
-        <div class="item row row--border" *libListItem="let item; let index = index" @heightAnimations>
+        <div class="item row row--border" *uiLibListItem="let item; let index = index" @heightAnimations>
           <ng-container
             [ngTemplateOutlet]="itemEntryTemplate"
             [ngTemplateOutletContext]="{ $implicit: item, index: index, control: formArrayStop }"></ng-container>
         </div>
-      </lib-list>
+      </ui-lib-list>
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
@@ -117,47 +117,47 @@
       <div class="trade__container" *tuiItem>
         <div class="operations">
           <div class="tui-text_h6">Операции</div>
-          <lib-list
+          <ui-lib-list
             [header]="headerOperation"
             [itemSize]="itemHeight"
             [style.height.px]="itemHeight * 4 + itemHeight"
             [list]="operations$ | async">
-            <div class="item row row--border" *libListItem="let item; let index = index">
+            <div class="item row row--border" *uiLibListItem="let item; let index = index">
               <ng-container
                 [ngTemplateOutlet]="itemOperationTemplate"
                 [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
             </div>
-          </lib-list>
+          </ui-lib-list>
         </div>
 
         <div class="orders">
           <div class="tui-text_h6">Активные заявки</div>
-          <lib-list
+          <ui-lib-list
             [header]="headerOrder"
             [itemSize]="itemHeight"
             [style.height.px]="itemHeight * 4 + itemHeight"
             [list]="orders$ | async">
-            <div class="item row row--border" *libListItem="let item; let index = index">
+            <div class="item row row--border" *uiLibListItem="let item; let index = index">
               <ng-container
                 [ngTemplateOutlet]="itemOrderTemplate"
                 [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
             </div>
-          </lib-list>
+          </ui-lib-list>
         </div>
 
         <div class="orders">
           <div class="tui-text_h6">Активные отложенные заявки</div>
-          <lib-list
+          <ui-lib-list
             [header]="headerOrder"
             [itemSize]="itemHeight"
             [style.height.px]="itemHeight * 4 + itemHeight"
             [list]="stopOrders$ | async">
-            <div class="item row row--border" *libListItem="let item; let index = index">
+            <div class="item row row--border" *uiLibListItem="let item; let index = index">
               <ng-container
                 [ngTemplateOutlet]="itemStopOrderTemplate"
                 [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
             </div>
-          </lib-list>
+          </ui-lib-list>
         </div>
       </div>
     </tui-expand>

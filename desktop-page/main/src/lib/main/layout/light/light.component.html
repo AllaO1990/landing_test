@@ -1,12 +1,11 @@
 <div class="layout" [class.layout--with-chart]="false">
   <div class="layout__portfolio widget"></div>
   <div class="layout__structure widget">
-    <structure
-      [data]="(dataStructure$ | async) || defaultDataStructure"
-      (selectedCategory)="onSelectCategory($event)"
-    ></structure>
+    <structure-wrapper></structure-wrapper>
   </div>
   <div class="layout__chart widget"></div>
-  <div class="layout__idea widget"></div>
   <div class="layout__out widget"></div>
+  <div class="layout__idea widget">
+    <idea-list-wrapper></idea-list-wrapper>
+  </div>
 </div>

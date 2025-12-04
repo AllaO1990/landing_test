@@ -9,7 +9,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
 import { TuiButtonLoading, TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
 import {
   ControlValueAccessor,
@@ -72,9 +72,9 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
   selector: 'trade-form',
   standalone: true,
   imports: [
-    ListComponent,
+    UiList,
     HeaderComponent,
-    ItemDirective,
+    UiListItem,
     TuiCheckbox,
     ReactiveFormsModule,
     TuiButton,

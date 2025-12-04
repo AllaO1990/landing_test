@@ -21,7 +21,7 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommissionAddComponent } from './add/add.component';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
 import { LoaderComponent } from '@ui/components/loader';
 import { Params } from '@angular/router';
 import { CommissionItem } from 'types/commission';
@@ -51,8 +51,8 @@ type Loading = {
     TuiSelectModule,
     TuiTextfieldControllerModule,
     DatePipe,
-    ItemDirective,
-    ListComponent,
+    UiListItem,
+    UiList,
     LoaderComponent,
     HeaderComponent,
     TuiFormatNumberPipe,

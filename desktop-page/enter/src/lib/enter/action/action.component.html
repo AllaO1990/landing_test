@@ -1,13 +1,13 @@
 <form class="form">
   <div class="entry" *ngIf="(entriesList$ | async) as list; else load">
-    <lib-list
+    <ui-lib-list
       class="list"
       [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
       [list]="list"
       [header]="entryHeader"
       [footer]="entryFooter"
       [itemSize]="itemHeight">
-      <div class="item" *libListItem="let item; let index = index">
+      <div class="item" *uiLibListItem="let item; let index = index">
         <div class="item__value row__item row__date">
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
@@ -58,7 +58,7 @@
           ></button>
         </div>
       </div>
-    </lib-list>
+    </ui-lib-list>
     <div class="action">
       <button
         class="button"
@@ -88,14 +88,14 @@
   <div class="space"></div>
 
   <div class="out" *ngIf="(targetsList$ | async) as list; else load">
-    <lib-list
+    <ui-lib-list
       class="list"
       [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
       [list]="list"
       [header]="outHeader"
       [footer]="outFooter"
       [itemSize]="itemHeight">
-      <div class="item" *libListItem="let item; let index = index">
+      <div class="item" *uiLibListItem="let item; let index = index">
         <div class="item__value row__item row__date">
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
@@ -150,7 +150,7 @@
           ></button>
         </div>
       </div>
-    </lib-list>
+    </ui-lib-list>
 
     <div
       class="action">
@@ -229,14 +229,14 @@
   <div class="space"></div>
 
   <div class="dividend" *ngIf="(dividendsList$ | async) as list; else load">
-    <lib-list
+    <ui-lib-list
       class="list"
       [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
       [list]="list"
       [header]="dividendHeader"
       [footer]="dividendFooter"
       [itemSize]="itemHeight">
-      <div class="item" *libListItem="let item; let index = index">
+      <div class="item" *uiLibListItem="let item; let index = index">
         <div class="item__value row__item row__date">
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
@@ -288,7 +288,7 @@
           ></button>
         </div>
       </div>
-    </lib-list>
+    </ui-lib-list>
     <div class="action">
       <button
         class="button"
@@ -305,14 +305,14 @@
   <div class="space"></div>
 
   <div class="commission" *ngIf="(commissionList$ | async) as list; else load">
-    <lib-list
+    <ui-lib-list
       class="list"
       [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
       [list]="list"
       [header]="commissionHeader"
       [footer]="commissionFooter"
       [itemSize]="itemHeight">
-      <div class="item" *libListItem="let item; let index = index">
+      <div class="item" *uiLibListItem="let item; let index = index">
         <div class="item__value row__item row__date">
           {{ item.date | date: 'dd.MM.yy' }}
         </div>
@@ -356,7 +356,7 @@
           ></button>
         </div>
       </div>
-    </lib-list>
+    </ui-lib-list>
     <div class="action">
       <button
         class="button"

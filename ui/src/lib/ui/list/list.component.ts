@@ -12,7 +12,7 @@ import {
   TrackByFunction,
   ViewChild,
 } from '@angular/core';
-import { ItemDirective } from './item/item.directive';
+import { UiListItem } from './item/item.directive';
 import {
   CdkFixedSizeVirtualScroll,
   CdkVirtualForOf,
@@ -27,7 +27,7 @@ import { BehaviorSubject, defer, filter, Observable, of, Subject, switchMap, tak
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'lib-list[itemSize]',
+  selector: 'ui-lib-list[itemSize]',
   standalone: true,
   imports: [
     CdkVirtualScrollViewport,
@@ -44,7 +44,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListComponent<T> implements AfterViewInit {
+export class UiList<T> implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #ngZone: NgZone = inject(NgZone);
   readonly #scrollToTop: Subject<boolean> = new BehaviorSubject(false);
@@ -69,8 +69,8 @@ export class ListComponent<T> implements AfterViewInit {
 
   @Input() trackBy: TrackByFunction<T> | undefined = undefined;
 
-  @ContentChild(ItemDirective)
-  public readonly item: ItemDirective | null = null;
+  @ContentChild(UiListItem)
+  public readonly item: UiListItem | null = null;
 
   @ViewChild('simple', { static: true })
   public readonly simple!: TemplateRef<CdkVirtualForOfContext<{ id: StockId }>>;

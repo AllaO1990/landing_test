@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, forwardRef } from '@angular/core';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
 import { TuiButtonLoading, TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
 import { NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
@@ -23,9 +23,9 @@ import { ControlValue } from '../form.types';
   selector: 'trade-mobile-form',
   standalone: true,
   imports: [
-    ListComponent,
+    UiList,
     HeaderComponent,
-    ItemDirective,
+    UiListItem,
     TuiCheckbox,
     ReactiveFormsModule,
     TuiButton,

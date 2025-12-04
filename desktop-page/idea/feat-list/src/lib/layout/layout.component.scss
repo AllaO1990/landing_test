@@ -1,0 +1,75 @@
+.idea {
+  display: flex;
+  flex-flow: column nowrap;
+
+  &__header {
+    flex: 0 0;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    padding: var(--padding-2);
+  }
+
+  &__table {
+    flex: 1;
+  }
+
+  &__pagination {
+    flex: 0 0;
+
+    height: 32px;
+  }
+
+  &__title {
+    flex: 1;
+
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+  }
+
+  &__action:not(:last-child) {
+    margin-right: var(--padding-2);
+  }
+
+  &__search {
+    min-width: 100px;
+    flex: 1;
+  }
+}
+
+
+.filter {
+  top: 0;
+  border-radius: 0;
+  inline-size: 20rem;
+
+  &__actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+
+    border-top: 1px solid var(--tui-border-normal);
+    width: 100%;
+    padding: var(--padding-2);
+
+    button:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+  }
+
+  ::ng-deep {
+    .t-content > .t-content {
+      padding: var(--padding-8) var(--padding-2) var(--padding-2);
+    }
+  }
+}

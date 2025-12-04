@@ -1,6 +1,6 @@
 <form [formGroup]="controlFormArray">
   <div class="entry table" formArrayName="entries" *ngIf="(entriesList$ | async) as list; else load">
-    <lib-list
+    <ui-lib-list
       class="list"
       [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
       [list]="list"
@@ -9,7 +9,7 @@
       [itemSize]="itemHeight">
       <lib-list-item
         class="row"
-        *libListItem="let item; let index = index">
+        *uiLibListItem="let item; let index = index">
         <div class="item">
           <div class="item__value row__item row__first">
             <lib-check [value]="item.check"></lib-check>
@@ -58,7 +58,7 @@
           </div>
         </div>
       </lib-list-item>
-    </lib-list>
+    </ui-lib-list>
 
     <div class="action">
       <button
@@ -80,7 +80,7 @@
   <div class="space"></div>
 
   <div class="target table" formArrayName="targets" *ngIf="(targetsList$ | async) as list; else load">
-    <lib-list
+    <ui-lib-list
       class="list"
       [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
       [list]="list"
@@ -90,7 +90,7 @@
       <lib-list-item
         class="row"
         [style.background-color]="!!item.stopDate ? null : list | colorForPriceEntry: index :  'price' : (multiplier$ | async) : (lastPrice$ | async)"
-        *libListItem="let item; let index = index">
+        *uiLibListItem="let item; let index = index">
         <div class="item">
           <div class="item__value row__item row__first">
             <lib-check [value]="!!item.stopDate"></lib-check>
@@ -155,7 +155,7 @@
           </div>
         </div>
       </lib-list-item>
-    </lib-list>
+    </ui-lib-list>
 
     <div class="action">
       <button
@@ -174,7 +174,7 @@
   <div class="space"></div>
 
   <div class="stop table" formArrayName="stop" *ngIf="(stopList$ | async) as list; else load">
-    <lib-list
+    <ui-lib-list
       class="list"
       [style.height.px]="list.length > 2 ? 3 * itemHeight : list.length * itemHeight + 28"
       [list]="list"
@@ -183,7 +183,7 @@
       <lib-list-item
         class="row"
         [style.background-color]="item.amount === null || item.amount === 0 ? null : item.price | colorForPriceStop: (lastPrice$ | async) : (multiplier$ | async)"
-        *libListItem="let item">
+        *uiLibListItem="let item">
         <div class="item">
           <div class="item__value row__item row__first">
             <lib-check
@@ -247,7 +247,7 @@
           </div>
         </div>
       </lib-list-item>
-    </lib-list>
+    </ui-lib-list>
 
     <div class="action" *ngIf="formArrayStop.value.length === 0 && !isDisabled">
       <button

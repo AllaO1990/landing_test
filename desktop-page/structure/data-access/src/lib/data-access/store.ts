@@ -4,7 +4,7 @@ import { ComponentStore } from '@ngrx/component-store';
 import { forkJoin, map, Observable, switchMap, tap, timer } from 'rxjs';
 import { Params } from '@angular/router';
 import { Response } from 'types/response';
-import { DataAccessStructureService } from './data-access.service';
+import { ApiStructureService } from './api.service';
 
 export interface DataAccessStructureState {
   isLoaded: boolean;
@@ -20,7 +20,7 @@ export class DataAccessStructureStore extends ComponentStore<DataAccessStructure
     data: null,
   };
 
-  constructor(private api: DataAccessStructureService) {
+  constructor(private api: ApiStructureService) {
     super(DataAccessStructureStore.defaultState);
 
     console.log('DataAccessStructureStore constructor called');

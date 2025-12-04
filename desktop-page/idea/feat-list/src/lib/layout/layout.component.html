@@ -1,0 +1,117 @@
+<div class="idea">
+  <div class="idea__header">
+    <div class="idea__title">
+      {{ constants.title }}
+    </div>
+
+    <div class="idea__actions">
+      <button
+        tuiHintAppearance="dark"
+        tuiHintDirection="right"
+        [tuiHint]="tooltip"
+        tuiButton
+        [appearance]="(isActiveFilter$ | async) ? 'primary' : 'secondary'"
+        type="button"
+        [size]="size"
+        iconStart="@tui.filter"
+        class="idea__action idea__add-idea"
+        (click)="openFilter.set(true)">
+        {{ constants.filter }}
+      </button>
+
+      <tui-drawer
+        *tuiPopup="openFilter()"
+        direction="left"
+        class="filter"
+        [overlay]="true"
+        (click.self)="onClose($event)">
+        <idea-filter [formControl]="filterControl"></idea-filter>
+        <div class="filter__actions">
+          <button
+            [size]="size"
+            tuiButton
+            appearance="secondary"
+            type="button"
+            (click)="onReset($event)">
+            Сбросить
+          </button>
+          <div class="space"></div>
+          <button
+            [size]="size"
+            tuiButton
+            appearance="secondary"
+            type="button"
+            (click)="onClose($event)">
+            Отменить
+          </button>
+          <button
+            [size]="size"
+            [disabled]="filterControl.pristine"
+            tuiButton
+            appearance="primary"
+            type="submit">
+            Применить
+          </button>
+        </div>
+      </tui-drawer>
+
+      <button
+        tuiButton
+        type="button"
+        [size]="size"
+        appearance="secondary"
+        class="idea__action idea__add-idea"
+        iconStart="@tui.plus"
+        searchDialog
+        #dialog=SearchDialog
+        (click)="dialog.onSearch($event)"
+        (selected)="onOpenDialog($event)">
+        {{ constants.add_idea }}
+      </button>
+
+      <tui-textfield
+        [tuiTextfieldSize]="size"
+        iconStart="@tui.search"
+        class="idea__action idea__search">
+        <input
+          [placeholder]="constants.search"
+          tuiTextfield
+          autocomplete="off"
+          [formControl]="searchControl"
+        />
+      </tui-textfield>
+
+      <button
+        [disabled]="true"
+        iconStart="@tui.ellipsis-vertical"
+        tuiIconButton
+        type="button"
+        appearance="outline-grayscale"
+        [size]="size"
+        class="idea__action idea__action-more">
+      </button>
+    </div>
+  </div>
+  <div class="idea__table">
+    <!--    <vt-entry-table [data]="list$ | async"></vt-entry-table>-->
+    <ui-lib-list [itemSize]="40">
+      <div class="item" *uiLibListItem="let item"></div>
+    </ui-lib-list>
+  </div>
+  <div class="idea__pagination">
+    <!--    <lib-with-pagination-->
+    <!--      [total]="(total$ | async)"-->
+    <!--      [formControl]="controlPaginationIdea"-->
+    <!--      [items]="listPagination">-->
+    <!--    </lib-with-pagination>-->
+
+  </div>
+</div>
+
+<ng-template #tooltip>
+  <ul>
+    <li>{{ constants.type }}: {{ filterControl.value.type.name }}</li>
+    <li>{{ constants.strategy }}: {{ filterControl.value.strategy.name }}</li>
+    <li>{{ constants.currency }}: {{ filterControl.value.currency.currencySymbol }}</li>
+  </ul>
+</ng-template>

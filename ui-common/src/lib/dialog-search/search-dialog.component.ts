@@ -30,7 +30,7 @@ import { Stock, StockInstrument } from 'types/stock';
 import { map, tap } from 'rxjs/operators';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
 import { IconTickerComponent } from '@ui/components/icon-ticker';
 import { StockSearchInstrumentsStore } from 'stores/plugins/stock-search-instruments.store';
 import { DesktopService } from '@desktop-data/desktop-data';
@@ -60,8 +60,8 @@ const debounceTimeWithCondition =
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
     AsyncPipe,
-    ListComponent,
-    ItemDirective,
+    UiList,
+    UiListItem,
     HeaderComponent,
     TuiAutoFocus,
     TuiButton,

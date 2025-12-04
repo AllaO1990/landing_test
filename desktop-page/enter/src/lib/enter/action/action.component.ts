@@ -20,7 +20,7 @@ import {
   StockPositionTarget,
 } from 'types/position';
 import { ActionService } from './action.service';
-import { HeaderComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
 import { LoaderComponent } from '@ui/components/loader';
 import {
   AbstractControl,
@@ -76,8 +76,8 @@ type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
     TuiButton,
     TuiFormatNumberPipe,
     TuiScrollbar,
-    ListComponent,
-    ItemDirective,
+    UiList,
+    UiListItem,
     LoaderComponent,
     ReactiveFormsModule,
     GetBrokerPipe,

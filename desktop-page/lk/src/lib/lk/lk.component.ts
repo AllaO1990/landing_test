@@ -23,7 +23,7 @@ import { ActionShowIdea } from '../common/plugins/action-show-idea';
 import { ActionCopyIdea } from '../common/plugins/action-copy-idea';
 import { TradeDialogService } from 'desktop-page/trade';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { DataAccessStructureService, DataAccessStructureStore } from '@data-access-structure';
+import { ApiStructureService, DataAccessStructureStore } from '@data-access-structure';
 
 @Component({
   selector: 'lib-lk',
@@ -43,11 +43,11 @@ import { DataAccessStructureService, DataAccessStructureStore } from '@data-acce
     ChartFacade,
     AccountFacade,
     PortfolioFacade,
-    DataAccessStructureService,
+    ApiStructureService,
     {
       provide: DataAccessStructureStore,
-      useFactory: (api: DataAccessStructureService) => new DataAccessStructureStore(api),
-      deps: [DataAccessStructureService],
+      useFactory: (api: ApiStructureService) => new DataAccessStructureStore(api),
+      deps: [ApiStructureService],
     },
     {
       provide: CONTEXT_ACTION_EVENTS,

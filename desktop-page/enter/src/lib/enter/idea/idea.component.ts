@@ -22,7 +22,7 @@ import {
 } from '@angular/forms';
 import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
 import { IdeaService } from './idea.service';
-import { HeaderComponent, ItemComponent, ItemDirective, ListComponent } from '@ui/components/list';
+import { HeaderComponent, ItemComponent, UiList, UiListItem } from '@ui/components/list';
 import { CheckComponent } from '@ui/components/check';
 import { LoaderComponent } from '@ui/components/loader';
 import { AddTargetComponent } from './add-target/add-target.component';
@@ -61,7 +61,7 @@ import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
   imports: [
     AsyncPipe,
     ItemComponent,
-    ItemDirective,
+    UiListItem,
     HeaderComponent,
     TuiButton,
     ReactiveFormsModule,
@@ -70,7 +70,7 @@ import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
     ColorForPriceStopPipe,
     CheckComponent,
     TuiFormatNumberPipe,
-    ListComponent,
+    UiList,
     LoaderComponent,
     GetCryptoNumberPipe,
     TuiHint,
