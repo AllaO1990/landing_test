@@ -1,0 +1,122 @@
+<form class="form" [formGroup]="formGroup">
+  <tui-scrollbar class="form__filter">
+    <div class="form__label">
+      <span>{{ constants.search }}</span>
+      <tui-textfield
+        [tuiTextfieldSize]="size"
+        iconStart="@tui.search">
+        <input
+          placeholder="Тикер"
+          tuiTextfield
+          autocomplete="off"
+          formControlName="search"
+        />
+      </tui-textfield>
+    </div>
+    <div class="form__label">
+      <span>{{ constants.type }}</span>
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherOrderType()"
+        [stringify]="stringifyOrderType()"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="type"
+          placeholder="Тип заявки"
+          autocomplete="off"
+          tuiSelect />
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="types$ | async"
+        />
+      </tui-textfield>
+    </div>
+    <div class="form__label">
+      <span>{{ constants.strategy }}</span>
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherStrategy()"
+        [stringify]="stringifyStrategy()"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="strategy"
+          placeholder="Стратегия"
+          autocomplete="off"
+          tuiSelect />
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="strategy$ | async"
+        />
+      </tui-textfield>
+    </div>
+    <div class="form__label">
+      <span>{{ constants.currency }}</span>
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherCurrency()"
+        [stringify]="stringifyCurrency()"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="currency"
+          placeholder="Валюта"
+          autocomplete="off"
+          tuiSelect />
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="currency$ | async"
+        />
+      </tui-textfield>
+    </div>
+    <div class="form__label">
+      <span>{{ constants.broker }}</span>
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherBroker()"
+        [stringify]="stringifyBroker()"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="broker"
+          placeholder="Брокер"
+          autocomplete="off"
+          tuiSelect />
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="brokers$ | async"
+        />
+      </tui-textfield>
+    </div>
+    <div class="form__label">
+      <span>{{ constants.portfolio }}</span>
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherPortfolio()"
+        [stringify]="stringifyPortfolio()"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="portfolio"
+          placeholder="Портфель"
+          autocomplete="off"
+          tuiSelect />
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="portfolios$ | async"
+        />
+      </tui-textfield>
+    </div>
+  </tui-scrollbar>
+</form>

@@ -26,6 +26,8 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { ApiStructureService, DataAccessStructureStore } from '@data-access-structure';
 import { DataAccessIdeaStore } from '@data-access-idea/store';
 import { ApiIdeaService } from '@data-access-idea/api.service';
+import { DataAccessDealStore } from '@data-access-deal/store';
+import { ApiDealService } from '@data-access-deal/api.service';
 
 @Component({
   selector: 'lib-lk',
@@ -56,6 +58,12 @@ import { ApiIdeaService } from '@data-access-idea/api.service';
       provide: DataAccessIdeaStore,
       useFactory: (api: ApiIdeaService) => new DataAccessIdeaStore(api),
       deps: [ApiIdeaService],
+    },
+    ApiDealService,
+    {
+      provide: DataAccessDealStore,
+      useFactory: (api: ApiDealService) => new DataAccessDealStore(api),
+      deps: [ApiDealService],
     },
     {
       provide: CONTEXT_ACTION_EVENTS,

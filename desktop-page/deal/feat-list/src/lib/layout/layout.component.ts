@@ -15,9 +15,8 @@ import {
 import { AsyncPipe } from '@angular/common';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
-import { IDEA_CONSTANTS } from '@data-access-idea/constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { FilterIdeaListComponent } from '../filter/filter.component';
+import { FilterDealListComponent } from '../filter/filter.component';
 import { debounceTime, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
@@ -30,7 +29,7 @@ import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataAccessIdeaState } from '@data-access-idea/store';
-import { LoaderComponent } from '@ui/components/loader';
+import { DEAL_CONSTANTS } from '../../../../data-access/src/lib/data-access/constants';
 
 interface FilterValue {
   type: AccountType;
@@ -39,7 +38,7 @@ interface FilterValue {
 }
 
 @Component({
-  selector: 'idea-layout',
+  selector: 'deal-layout',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -48,14 +47,13 @@ interface FilterValue {
     TuiDrawer,
     TuiPopup,
     SearchDialogDirective,
-    FilterIdeaListComponent,
+    FilterDealListComponent,
     TuiTextfield,
     AsyncPipe,
     UiList,
     UiListItem,
     WithPaginationComponent,
     TuiSkeleton,
-    LoaderComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -66,14 +64,14 @@ export class LayoutComponent implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #valueDefault = {
     search: '',
-    type: FilterIdeaListComponent.valueDefaultType,
-    strategy: FilterIdeaListComponent.valueDefaultStrategy,
-    currency: FilterIdeaListComponent.valueDefaultCurrency,
+    type: FilterDealListComponent.valueDefaultType,
+    strategy: FilterDealListComponent.valueDefaultStrategy,
+    currency: FilterDealListComponent.valueDefaultCurrency,
   };
 
   protected readonly size = 's';
   protected readonly listPagination = [10, 50, 100];
-  protected readonly constants = IDEA_CONSTANTS;
+  protected readonly constants = DEAL_CONSTANTS;
   protected readonly filterControl: FormControl = new FormControl(this.#valueDefault);
   protected readonly searchControl: FormControl<string | null> = new FormControl('', { nonNullable: true });
   protected readonly paginationControl: FormControl = new FormControl({
@@ -86,9 +84,9 @@ export class LayoutComponent implements AfterViewInit {
     startWith(this.filterControl.value),
     map(
       (value: FilterValue) =>
-        value.currency.currencyId !== FilterIdeaListComponent.valueDefaultCurrency.currencyId ||
-        value.strategy.id !== FilterIdeaListComponent.valueDefaultStrategy.id ||
-        value.type.id !== FilterIdeaListComponent.valueDefaultType.id
+        value.currency.currencyId !== FilterDealListComponent.valueDefaultCurrency.currencyId ||
+        value.strategy.id !== FilterDealListComponent.valueDefaultStrategy.id ||
+        value.type.id !== FilterDealListComponent.valueDefaultType.id
     )
   );
 
@@ -103,7 +101,7 @@ export class LayoutComponent implements AfterViewInit {
 
   readonly data: InputSignal<DataAccessIdeaState> = input.required();
   readonly isLoaded = computed(() => !this.data().isLoaded);
-  readonly isLoading = computed(() => this.data().isLoaded && !this.data().isLoading);
+  readonly isLoading = computed(() => !this.data().isLoading);
   readonly list = computed(() => {
     const data = this.data().data;
 

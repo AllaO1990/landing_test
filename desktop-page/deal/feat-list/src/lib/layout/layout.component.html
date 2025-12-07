@@ -1,10 +1,10 @@
-<div class="idea">
-  <div class="idea__header">
-    <div class="idea__title">
+<div class="deal">
+  <div class="deal__header">
+    <div class="deal__title">
       <span [tuiSkeleton]="isLoaded()">{{ constants.title }}</span>
     </div>
 
-    <div class="idea__actions" [tuiSkeleton]="isLoaded()">
+    <div class="deal__actions" [tuiSkeleton]="isLoaded()">
       <button
         tuiHintAppearance="dark"
         tuiHintDirection="right"
@@ -14,7 +14,7 @@
         type="button"
         [size]="size"
         iconStart="@tui.filter"
-        class="idea__action idea__add-idea"
+        class="deal__action deal__add-deal"
         (click)="openFilter.set(true)">
         {{ constants.filter }}
       </button>
@@ -25,7 +25,7 @@
         class="filter"
         [overlay]="true"
         (click.self)="onClose($event)">
-        <idea-filter [formControl]="filterControl"></idea-filter>
+        <deal-filter [formControl]="filterControl"></deal-filter>
         <div class="filter__actions">
           <button
             [size]="size"
@@ -61,19 +61,19 @@
         type="button"
         [size]="size"
         appearance="secondary"
-        class="idea__action idea__add-idea"
+        class="deal__action deal__add-deal"
         iconStart="@tui.plus"
         searchDialog
         #dialog=SearchDialog
         (click)="dialog.onSearch($event)"
         (selected)="onOpenDialog($event)">
-        {{ constants.add_idea }}
+        {{ constants.add_deal }}
       </button>
 
       <tui-textfield
         [tuiTextfieldSize]="size"
         iconStart="@tui.search"
-        class="idea__action idea__search">
+        class="deal__action deal__search">
         <input
           [placeholder]="constants.search"
           tuiTextfield
@@ -89,16 +89,11 @@
         type="button"
         appearance="outline-grayscale"
         [size]="size"
-        class="idea__action idea__action-more">
+        class="deal__action deal__action-more">
       </button>
     </div>
   </div>
-  <div class="idea__list list">
-    @if (isLoading()) {
-      <div class="list__loader">
-        <ui-loader></ui-loader>
-      </div>
-    }
+  <div class="deal__list list">
     @if (isLoaded()) {
       @for (item of [0, 1, 2, 3, 4]; track item) {
         <div class="item item--skeleton">
@@ -113,7 +108,7 @@
       </ui-lib-list>
     }
   </div>
-  <div class="idea__pagination" [tuiSkeleton]="isLoaded()">
+  <div class="deal__pagination" [tuiSkeleton]="isLoaded()">
     <lib-with-pagination
       [total]="total()"
       [formControl]="paginationControl"

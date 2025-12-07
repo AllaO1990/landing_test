@@ -1,0 +1,6 @@
+@if (response$ | async; as data) {
+  <deal-layout
+    [data]="data"
+    (submitted)="onSubmit($event)">
+  </deal-layout>
+}

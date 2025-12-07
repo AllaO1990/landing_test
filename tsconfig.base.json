@@ -17,9 +17,11 @@
     "paths": {
       "@core/*": ["desktop-page/core/*"],
       "@data-access-idea/*": ["desktop-page/idea/data-access/src/lib/data-access/*"],
+      "@data-access-deal/*": ["desktop-page/deal/data-access/src/lib/data-access/*"],
       "@data-access-structure": ["desktop-page/structure/data-access/src/index.ts"],
       "@desktop-data/*": ["api/desktop-data/src/lib/*"],
       "@feat-idea-list": ["desktop-page/idea/feat-list/src/index.ts"],
+      "@feat-deal-list": ["desktop-page/deal/feat-list/src/index.ts"],
       "@feat-structure": ["desktop-page/structure/feat-structure/src/index.ts"],
       "@ui/animations/*": ["ui/src/lib/animations/*"],
       "@ui/components/*": ["ui/src/lib/ui/*"],
