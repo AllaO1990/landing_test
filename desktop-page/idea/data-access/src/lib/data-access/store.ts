@@ -4,12 +4,12 @@ import { ApiIdeaService } from './api.service';
 import { forkJoin, map, Observable, switchMap, tap, timer } from 'rxjs';
 import { Params } from '@angular/router';
 import { Response } from 'types/response';
-import { ResponsePositions } from 'types/position';
+import { Position, Positions, ResponsePositions } from 'types/position';
 
 export interface DataAccessIdeaState {
   isLoaded: boolean;
   isLoading: boolean;
-  data: ResponsePositions | null;
+  data: Positions | null;
 }
 
 @Injectable()
@@ -32,12 +32,26 @@ export class DataAccessIdeaStore extends ComponentStore<DataAccessIdeaState> {
   );
 
   readonly updateData = this.updater(
-    (state: DataAccessIdeaState, data: null | ResponsePositions): DataAccessIdeaState => ({
-      ...state,
-      data,
-      isLoaded: true,
-      isLoading: true,
-    })
+    (state: DataAccessIdeaState, data: null | ResponsePositions): DataAccessIdeaState => {
+      if (data) {
+        return {
+          ...state,
+          data: {
+            total: data.total,
+            items: (data.items || []).map((item) => new Position(item)),
+          },
+          isLoaded: true,
+          isLoading: true,
+        };
+      }
+
+      return {
+        ...state,
+        data: null,
+        isLoaded: true,
+        isLoading: true,
+      };
+    }
   );
 
   readonly loadIdaes = this.effect((stream$: Observable<Params>) =>

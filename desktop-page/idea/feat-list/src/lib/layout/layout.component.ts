@@ -12,7 +12,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { IDEA_CONSTANTS } from '@data-access-idea/constants';
@@ -22,7 +22,7 @@ import { debounceTime, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
-import { TuiButton, TuiHint, TuiPopup, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiPopup, TuiTextfield } from '@taiga-ui/core';
 import { TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
@@ -31,6 +31,8 @@ import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataAccessIdeaState } from '@data-access-idea/store';
 import { LoaderComponent } from '@ui/components/loader';
+import { ResponsePosition } from 'types/position';
+import { ColorToPositionPipe } from '../../../../../main/src/lib/main/entry/table/color.pipe';
 
 interface FilterValue {
   type: AccountType;
@@ -56,6 +58,10 @@ interface FilterValue {
     WithPaginationComponent,
     TuiSkeleton,
     LoaderComponent,
+    DatePipe,
+    NgTemplateOutlet,
+    TuiFormatNumberPipe,
+    ColorToPositionPipe,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -153,5 +159,15 @@ export class LayoutComponent implements AfterViewInit {
 
     this.openFilter.set(false);
     this.submitted.emit(this.filterControl.value);
+  }
+
+  onTrade(event: Event, item: ResponsePosition): void {
+    event.preventDefault();
+
+    this.#queryParams.update({
+      trade: 'visible',
+      type: 'position',
+      id: item.id,
+    });
   }
 }

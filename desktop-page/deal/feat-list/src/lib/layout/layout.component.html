@@ -101,10 +101,49 @@
         </div>
       }
     } @else {
-      <ui-lib-list [itemSize]="28" [list]="list()">
+      <ui-lib-list
+        [itemSize]="28"
+        [list]="list()"
+        [header]="header">
         <div class="item" *uiLibListItem="let item">
-          {{ item.createdAt }}
+          <div class="item__cell item__date">
+            {{ item.entries[0].date | date : 'dd.MM' }}
+            <div class="substring">{{ item.entries[0].date | datePassed }} дней</div>
+          </div>
+          <div class="item__cell item__cell--center item__direction">
+            <ng-container *ngTemplateOutlet="direction; context: { $implicit: item.positionType }"></ng-container>
+          </div>
+          <div class="item__cell item__ticker">
+            {{ item.instrument.ticker }}
+            <span class="substring">{{ item.instrument.name }}</span>
+          </div>
+          <div class="item__cell item__cell--center item__quantity">
+            {{ item.inPositionQuantity }}
+          </div>
+          <div class="item__cell item__cell--number item__total">
+            {{ item.inPositionTotalPrice }}
+          </div>
+          <div class="item__cell item__cell--number item__result" [uiPriceColor]="item.inPositionProfitPercent">
+            {{ item.inPositionResult | tuiFormatNumber | async }}
+            <div class="substring">
+              {{ item.inPositionProfitPercent | tuiFormatNumber | async }}%
+            </div>
+          </div>
+          <div class="item__cell item__action">
+            <button
+              [disabled]="item.instrument.source !== 'tinkoff'"
+              (click)="onTrade($event, item)"
+              class="action"
+              tuiButton
+              appearance="primary"
+              size="xs"
+              type="button">
+              Выйти
+            </button>
+          </div>
         </div>
+
+
       </ui-lib-list>
     }
   </div>
@@ -123,4 +162,40 @@
     <li>{{ constants.strategy }}: {{ filterControl.value.strategy.name }}</li>
     <li>{{ constants.currency }}: {{ filterControl.value.currency.currencySymbol }}</li>
   </ul>
+</ng-template>
+
+<ng-template #header>
+  <div class="header item">
+    <div class="item__cell item__date">
+      Дата входа <br>
+      Дата выхода
+    </div>
+    <div class="item__cell item__direction">
+      Напр
+    </div>
+    <div class="item__cell item__ticker">
+      Тикер
+    </div>
+    <div class="item__cell item__quantity">
+      Кол-во в<br>
+      сделке
+    </div>
+    <div class="item__cell item__total">
+      Стоимость
+    </div>
+    <div class="item__cell item__result">
+      Результат
+    </div>
+    <div class="item__cell item__action">
+      Действия
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #direction let-type>
+  @if (type === 'long') {
+    <span class="long">▲</span>
+  } @else {
+    <span class="short">▼</span>
+  }
 </ng-template>

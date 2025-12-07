@@ -12,7 +12,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -21,15 +21,18 @@ import { debounceTime, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
-import { TuiButton, TuiHint, TuiPopup, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiPopup, TuiTextfield } from '@taiga-ui/core';
 import { TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DataAccessIdeaState } from '@data-access-idea/store';
-import { DEAL_CONSTANTS } from '../../../../data-access/src/lib/data-access/constants';
+import { DatePassedPipe } from '../../../../../main/src/lib/main/common/pipe/date-passed.pipe';
+import { ColorPriceDirective } from '@ui/components/price';
+import { ResponsePosition } from 'types/position';
+import { DataAccessDealState } from '@data-access-deal/store';
+import { DEAL_CONSTANTS } from '@data-access-deal/constants';
 
 interface FilterValue {
   type: AccountType;
@@ -54,6 +57,11 @@ interface FilterValue {
     UiListItem,
     WithPaginationComponent,
     TuiSkeleton,
+    DatePassedPipe,
+    DatePipe,
+    NgTemplateOutlet,
+    TuiFormatNumberPipe,
+    ColorPriceDirective,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -99,7 +107,7 @@ export class LayoutComponent implements AfterViewInit {
     page: number;
   }>();
 
-  readonly data: InputSignal<DataAccessIdeaState> = input.required();
+  readonly data: InputSignal<DataAccessDealState> = input.required();
   readonly isLoaded = computed(() => !this.data().isLoaded);
   readonly isLoading = computed(() => !this.data().isLoading);
   readonly list = computed(() => {
@@ -151,5 +159,15 @@ export class LayoutComponent implements AfterViewInit {
 
     this.openFilter.set(false);
     this.submitted.emit(this.filterControl.value);
+  }
+
+  onTrade(event: Event, item: ResponsePosition): void {
+    event.preventDefault();
+
+    this.#queryParams.update({
+      trade: 'visible',
+      type: 'position',
+      id: item.id,
+    });
   }
 }

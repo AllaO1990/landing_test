@@ -106,9 +106,41 @@
         </div>
       }
     } @else {
-      <ui-lib-list [itemSize]="28" [list]="list()">
-        <div class="item" *uiLibListItem="let item">
-          {{ item.createdAt }}
+      <ui-lib-list
+        [header]="header"
+        [itemSize]="28"
+        [list]="list()">
+        <div class="item" *uiLibListItem="let item" [style.background-color]="item | colorToPosition">
+          <div class="item__cell item__date">
+            <div class="item__row">
+              <ng-container *ngTemplateOutlet="avatar; context: { $implicit: item.author }"></ng-container>
+              {{ item.createdAt | date : 'dd.MM' }}
+            </div>
+          </div>
+          <div class="item__cell item__cell--center item__direction">
+            <ng-container *ngTemplateOutlet="direction; context: { $implicit: item.positionType }"></ng-container>
+          </div>
+          <div class="item__cell item__ticker">
+            {{ item.instrument.ticker }}
+            <span class="substring">{{ item.instrument.name }}</span>
+          </div>
+          <div class="item__cell item__cell--number item__entry">
+            {{ item.entries[0].price | tuiFormatNumber | async }}
+          </div>
+          <div class="item__cell item__cell--number item__result">&mdash;</div>
+          <div class="item__cell item__cell--number item__luck">&mdash;</div>
+          <div class="item__cell item__action">
+            <button
+              [disabled]="item.instrument.source !== 'tinkoff'"
+              (click)="onTrade($event, item)"
+              class="action"
+              tuiButton
+              appearance="primary"
+              size="xs"
+              type="button">
+              Выйти
+            </button>
+          </div>
         </div>
       </ui-lib-list>
     }
@@ -128,4 +160,41 @@
     <li>{{ constants.strategy }}: {{ filterControl.value.strategy.name }}</li>
     <li>{{ constants.currency }}: {{ filterControl.value.currency.currencySymbol }}</li>
   </ul>
+</ng-template>
+
+<ng-template #header>
+  <div class="header item">
+    <div class="item__cell item__date">Дата идеи</div>
+    <div class="item__cell item__direction">Напр</div>
+    <div class="item__cell item__ticker">Тикер</div>
+    <div class="item__cell item__entry">Цена входа</div>
+    <div class="item__cell item__result">Прибыль %</div>
+    <div class="item__cell item__luck">Успех %</div>
+    <div class="item__cell item__action">Действия</div>
+  </div>
+</ng-template>
+
+<ng-template #avatar let-author>
+  <div class="avatar">
+    @if (author === 'bot') {
+      <img
+        src="/assets/icons/vanya.svg"
+        alt="Идея"
+      />
+    } @else {
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    }
+  </div>
+</ng-template>
+
+<ng-template #direction let-type>
+  @if (type === 'long') {
+    <span class="long">▲</span>
+  } @else {
+    <span class="short">▼</span>
+  }
 </ng-template>
