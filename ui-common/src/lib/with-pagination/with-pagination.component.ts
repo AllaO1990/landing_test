@@ -7,7 +7,7 @@ import {
   inject,
   Input,
 } from '@angular/core';
-import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { TuiPagination } from '@taiga-ui/kit';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TuiTextfield } from '@taiga-ui/core';
@@ -40,7 +40,6 @@ export type EventPagination = { page: number; limit: number };
     ReactiveFormsModule,
     TuiTextfieldControllerModule,
     LoaderComponent,
-    JsonPipe,
   ],
   templateUrl: './with-pagination.component.html',
   styleUrl: './with-pagination.component.scss',

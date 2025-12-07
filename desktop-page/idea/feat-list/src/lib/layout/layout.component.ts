@@ -2,9 +2,12 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
+  DestroyRef,
   EventEmitter,
   inject,
-  Input,
+  input,
+  InputSignal,
   Output,
   signal,
   WritableSignal,
@@ -15,16 +18,18 @@ import { QUERY_PARAMS } from 'tokens/desktop';
 import { IDEA_CONSTANTS } from '@data-access-idea/constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FilterIdeaListComponent } from '../filter/filter.component';
-import { Observable, startWith } from 'rxjs';
+import { debounceTime, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { TuiButton, TuiHint, TuiPopup, TuiTextfield } from '@taiga-ui/core';
-import { TuiDrawer } from '@taiga-ui/kit';
+import { TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
-import { ResponsePositions } from 'types/position';
+import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DataAccessIdeaState } from '@data-access-idea/store';
 
 interface FilterValue {
   type: AccountType;
@@ -47,6 +52,8 @@ interface FilterValue {
     AsyncPipe,
     UiList,
     UiListItem,
+    WithPaginationComponent,
+    TuiSkeleton,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -54,6 +61,7 @@ interface FilterValue {
 })
 export class LayoutComponent implements AfterViewInit {
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #valueDefault = {
     search: '',
     type: FilterIdeaListComponent.valueDefaultType,
@@ -62,9 +70,14 @@ export class LayoutComponent implements AfterViewInit {
   };
 
   protected readonly size = 's';
+  protected readonly listPagination = [10, 50, 100];
   protected readonly constants = IDEA_CONSTANTS;
   protected readonly filterControl: FormControl = new FormControl(this.#valueDefault);
   protected readonly searchControl: FormControl<string | null> = new FormControl('', { nonNullable: true });
+  protected readonly paginationControl: FormControl = new FormControl({
+    limit: this.listPagination[1],
+    page: 0,
+  });
   protected readonly openFilter: WritableSignal<boolean> = signal(false);
 
   readonly isActiveFilter$: Observable<boolean> = this.filterControl.valueChanges.pipe(
@@ -82,19 +95,39 @@ export class LayoutComponent implements AfterViewInit {
     type: AccountType;
     strategy: AccountStrategy;
     currency: AccountCurrency;
+    limit: number;
+    page: number;
   }>();
 
-  @Input() list: ResponsePositions | null = null;
+  readonly data: InputSignal<DataAccessIdeaState> = input.required();
+  readonly isLoaded = computed(() => !this.data().isLoaded);
+  readonly isLoading = computed(() => !this.data().isLoading);
+  readonly list = computed(() => {
+    const data = this.data().data;
+
+    return data ? data.items : [];
+  });
+  readonly total = computed(() => {
+    const data = this.data().data;
+
+    return data ? data.total : 0;
+  });
 
   ngAfterViewInit(): void {
-    this.submitted.emit(this.#valueDefault);
+    this.paginationControl.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(150))
+      .subscribe((value) =>
+        this.submitted.emit({
+          ...this.filterControl.value,
+          ...value,
+        })
+      );
   }
 
   onClose(event: Event): void {
     event.preventDefault();
 
     this.openFilter.set(false);
-    // this.formGroup.patchValue(this.templateValue);
   }
 
   onOpenDialog(event: StockInstrument | null): void {

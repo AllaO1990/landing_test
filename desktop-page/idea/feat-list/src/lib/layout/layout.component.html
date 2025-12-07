@@ -1,10 +1,10 @@
 <div class="idea">
   <div class="idea__header">
     <div class="idea__title">
-      {{ constants.title }}
+      <span [tuiSkeleton]="isLoaded()">{{ constants.title }}</span>
     </div>
 
-    <div class="idea__actions">
+    <div class="idea__actions" [tuiSkeleton]="isLoaded()">
       <button
         tuiHintAppearance="dark"
         tuiHintDirection="right"
@@ -94,20 +94,26 @@
     </div>
   </div>
   <div class="idea__list list">
-    <!--    <vt-entry-table [data]="list$ | async"></vt-entry-table>-->
-    <ui-lib-list [itemSize]="28" [list]="list ? list.items : []">
-      <div class="item" *uiLibListItem="let item">
-        {{ item.createdAt }}
-      </div>
-    </ui-lib-list>
+    @if (isLoaded()) {
+      @for (item of [0, 1, 2, 3, 4]; track item) {
+        <div class="item item--skeleton">
+          <div class="item__skeleton" [tuiSkeleton]="true"></div>
+        </div>
+      }
+    } @else {
+      <ui-lib-list [itemSize]="28" [list]="list()">
+        <div class="item" *uiLibListItem="let item">
+          {{ item.createdAt }}
+        </div>
+      </ui-lib-list>
+    }
   </div>
-  <div class="idea__pagination">
-    <!--    <lib-with-pagination-->
-    <!--      [total]="(total$ | async)"-->
-    <!--      [formControl]="controlPaginationIdea"-->
-    <!--      [items]="listPagination">-->
-    <!--    </lib-with-pagination>-->
-
+  <div class="idea__pagination" [tuiSkeleton]="isLoaded()">
+    <lib-with-pagination
+      [total]="total()"
+      [formControl]="paginationControl"
+      [items]="listPagination">
+    </lib-with-pagination>
   </div>
 </div>
 

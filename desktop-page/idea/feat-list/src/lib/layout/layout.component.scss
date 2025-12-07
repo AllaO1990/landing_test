@@ -21,6 +21,11 @@
     padding: var(--padding-2);
   }
 
+  &__title {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
   &__list {
     flex: 1;
   }
@@ -28,7 +33,7 @@
   &__pagination {
     flex: 0 0;
 
-    height: 32px;
+    margin: var(--padding-2);
   }
 
   &__title {
@@ -90,6 +95,17 @@
 .item {
   display: flex;
   align-items: center;
-  
+
   height: 28px;
+  overflow: hidden;
+
+  &--skeleton {
+    padding: var(--padding-1) var(--padding-2);
+  }
+
+  &__skeleton {
+    flex: 1;
+
+    height: 100%;
+  }
 }

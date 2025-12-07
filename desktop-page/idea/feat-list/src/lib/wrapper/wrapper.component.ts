@@ -3,7 +3,15 @@ import { LayoutComponent } from '../layout/layout.component';
 import { DataAccessIdeaStore } from '@data-access-idea/store';
 import { AsyncPipe } from '@angular/common';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
-import { map } from 'rxjs/operators';
+
+interface ValueSubmit {
+  search: string;
+  type: AccountType;
+  strategy: AccountStrategy;
+  currency: AccountCurrency;
+  page: number;
+  limit: number;
+}
 
 @Component({
   selector: 'idea-list-wrapper',
@@ -16,16 +24,16 @@ import { map } from 'rxjs/operators';
 export class IdeaListWrapper {
   readonly #dataAccessIdeaStore: DataAccessIdeaStore = inject(DataAccessIdeaStore);
 
-  readonly list$ = this.#dataAccessIdeaStore.state$.pipe(map((result) => result.data));
+  readonly response$ = this.#dataAccessIdeaStore.state$;
 
-  onSubmit(value: { search: string; type: AccountType; strategy: AccountStrategy; currency: AccountCurrency }): void {
-    const { currency, type, strategy } = value;
+  onSubmit(value: ValueSubmit): void {
+    const { currency, type, strategy, limit, page } = value;
 
     this.#dataAccessIdeaStore.loadIdaes({
       currencyId: currency.currencyId,
       instrumentType: type.id,
-      limit: 100,
-      page: 1,
+      limit,
+      page: page + 1,
       strategyId: strategy.id,
     });
   }

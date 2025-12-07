@@ -1,4 +1,6 @@
-<idea-layout
-  [list]="list$ | async"
-  (submitted)="onSubmit($event)">
-</idea-layout>
+@if (response$ | async; as data) {
+  <idea-layout
+    [data]="data"
+    (submitted)="onSubmit($event)">
+  </idea-layout>
+}
