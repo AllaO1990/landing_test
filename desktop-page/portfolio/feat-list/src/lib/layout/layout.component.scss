@@ -1,0 +1,110 @@
+.portfolio {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+
+  &__item {
+    padding: 0 var(--padding-2);
+
+    &:not(:last-child) {
+      margin-bottom: var(--padding-2);
+    }
+  }
+
+  &__header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    height: 32px;
+
+    margin: var(--padding-2);
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &__loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  &__loader ~ &__item {
+    filter: blur(2px);
+  }
+}
+
+.card {
+  display: flex;
+  flex-flow: column nowrap;
+
+  border-radius: var(--tui-radius);
+
+  padding: var(--padding-2);
+
+  &--primary {
+    color: var(--tui-text-primary-on-accent-1);
+    background: linear-gradient(var(--tui-background-accent-1-hover) 25%, var(--tui-background-accent-1));
+
+    [data-appearance='icon'] {
+      --tui-text-tertiary: var(--tui-text-primary-on-accent-1);
+    }
+  }
+
+  &--default {
+    background-color: var(--tui-background-neutral-1);
+  }
+
+  &__header {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    height: 28px;
+
+    margin-bottom: var(--padding-2);
+  }
+
+  &__title {
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 12px;
+  }
+
+  &__select {
+    margin-left: var(--padding-4);
+    min-width: 120px;
+  }
+
+  &__content {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    min-height: 40px;
+  }
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+
+    span {
+      font-weight: 500;
+    }
+  }
+
+  &__percent {
+    margin-left: var(--padding-4);
+
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+}

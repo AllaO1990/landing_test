@@ -109,7 +109,7 @@ export class LayoutComponent implements AfterViewInit {
 
   readonly data: InputSignal<DataAccessDealState> = input.required();
   readonly isLoaded = computed(() => !this.data().isLoaded);
-  readonly isLoading = computed(() => !this.data().isLoading);
+  readonly isLoading = computed(() => this.data().isLoaded && !this.data().isLoading);
   readonly list = computed(() => {
     const data = this.data().data;
 

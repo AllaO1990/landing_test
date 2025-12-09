@@ -2,11 +2,12 @@ import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core
 import { IdeaListWrapper } from '@feat-idea-list';
 import { StructureWrapper } from '@feat-structure';
 import { DialListWrapper } from '@feat-deal-list';
+import { PortfolioListWrapper } from '@feat-portfolio-list';
 
 @Component({
   selector: 'main-light',
   standalone: true,
-  imports: [StructureWrapper, IdeaListWrapper, DialListWrapper],
+  imports: [StructureWrapper, IdeaListWrapper, DialListWrapper, PortfolioListWrapper],
   templateUrl: './light.component.html',
   styleUrl: './light.component.scss',
   providers: [],

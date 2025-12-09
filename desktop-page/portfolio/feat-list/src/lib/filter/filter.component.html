@@ -1,0 +1,54 @@
+<div class="filter" [formGroup]="formGroup">
+  <div class="filter__item filter__select">
+    <span>{{ constants.title }}</span>
+    <tui-textfield
+      class="form__control"
+      tuiChevron
+      [identityMatcher]="identityMatcherPortfolio()"
+      [stringify]="stringifyPortfolio()"
+      [tuiTextfieldSize]="size"
+      [tuiTextfieldCleaner]="false">
+      <input
+        formControlName="portfolio"
+        [placeholder]="constants.portfolio"
+        autocomplete="off"
+        tuiSelect />
+      <tui-data-list-wrapper
+        *tuiTextfieldDropdown
+        new
+        [items]="portfolios$ | async"
+      />
+    </tui-textfield>
+  </div>
+  <div class="filter__item">
+    <button
+      tuiButton
+      appearance="secondary"
+      [size]="size"
+      iconStart="@tui.plus"
+      type="button">
+      {{ constants.portfolio }}
+    </button>
+  </div>
+  <div class="filter__item filter__select">
+    <span>{{ constants.currency }}</span>
+    <tui-textfield
+      class="form__control"
+      tuiChevron
+      [identityMatcher]="identityMatcherCurrency()"
+      [stringify]="stringifyCurrency()"
+      [tuiTextfieldSize]="size"
+      [tuiTextfieldCleaner]="false">
+      <input
+        formControlName="currency"
+        [placeholder]="constants.currency"
+        autocomplete="off"
+        tuiSelect />
+      <tui-data-list-wrapper
+        *tuiTextfieldDropdown
+        new
+        [items]="currency$ | async"
+      />
+    </tui-textfield>
+  </div>
+</div>

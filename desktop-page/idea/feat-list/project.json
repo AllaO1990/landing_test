@@ -1,5 +1,5 @@
 {
-  "name": "feat-list",
+  "name": "feat-idea-list",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "desktop-page/idea/feat-list/src",
   "prefix": "idea",

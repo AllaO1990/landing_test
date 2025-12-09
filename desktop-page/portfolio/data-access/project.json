@@ -1,11 +1,11 @@
 {
-  "name": "feat-deal-list",
+  "name": "data-access-portfolio",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "desktop-page/deal/feat-list/src",
-  "prefix": "deal",
+  "sourceRoot": "desktop-page/portfolio/data-access/src",
+  "prefix": "lib",
   "projectType": "library",
   "tags": [
-    "deal"
+    "data-access"
   ],
   "targets": {
     "test": {
@@ -14,7 +14,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "desktop-page/deal/feat-list/jest.config.ts"
+        "jestConfig": "desktop-page/portfolio/data-access/jest.config.ts"
       }
     },
     "lint": {

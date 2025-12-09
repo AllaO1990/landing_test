@@ -1,11 +1,11 @@
 {
-  "name": "feat-deal-list",
+  "name": "feat-portfolio-list",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "desktop-page/deal/feat-list/src",
-  "prefix": "deal",
+  "sourceRoot": "desktop-page/portfolio/feat-list/src",
+  "prefix": "portfolio",
   "projectType": "library",
   "tags": [
-    "deal"
+    "portfolio"
   ],
   "targets": {
     "test": {
@@ -14,7 +14,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "desktop-page/deal/feat-list/jest.config.ts"
+        "jestConfig": "desktop-page/portfolio/feat-list/jest.config.ts"
       }
     },
     "lint": {

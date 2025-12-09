@@ -28,6 +28,8 @@ import { DataAccessIdeaStore } from '@data-access-idea/store';
 import { ApiIdeaService } from '@data-access-idea/api.service';
 import { DataAccessDealStore } from '@data-access-deal/store';
 import { ApiDealService } from '@data-access-deal/api.service';
+import { DataAccessPortfolioStore } from '@data-access-portfolio/store';
+import { ApiPortfolioService } from '@data-access-portfolio/api.service';
 
 @Component({
   selector: 'lib-lk',
@@ -47,6 +49,12 @@ import { ApiDealService } from '@data-access-deal/api.service';
     ChartFacade,
     AccountFacade,
     PortfolioFacade,
+    ApiPortfolioService,
+    {
+      provide: DataAccessPortfolioStore,
+      useFactory: (api: ApiPortfolioService) => new DataAccessPortfolioStore(api),
+      deps: [ApiPortfolioService],
+    },
     ApiStructureService,
     {
       provide: DataAccessStructureStore,
