@@ -108,7 +108,7 @@
         <div class="item" *uiLibListItem="let item">
           <div class="item__cell item__date">
             {{ item.entries[0].date | date : 'dd.MM' }}
-            <div class="substring">{{ item.entries[0].date | datePassed }} дней</div>
+            <div class="substring">{{ item.entries[0].date | getDatePassed }} дней</div>
           </div>
           <div class="item__cell item__cell--center item__direction">
             <ng-container *ngTemplateOutlet="direction; context: { $implicit: item.positionType }"></ng-container>
@@ -138,7 +138,7 @@
               appearance="primary"
               size="xs"
               type="button">
-              Выйти
+              {{ constants.buttonAction }}
             </button>
           </div>
         </div>

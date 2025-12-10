@@ -15,7 +15,7 @@
       [columns]="columns">
       <thead>
       <tr tuiThGroup>
-        <ng-container *ngFor="let item of header; trackBy: trackByIndex">
+        @for (item of header; track item.name) {
           <th
             *tuiHead="item.name"
             tuiTh
@@ -25,7 +25,7 @@
             [style.top.px]="-viewport['_renderedContentOffset']">
             <span [innerHTML]="item.text"></span>
           </th>
-        </ng-container>
+        }
       </tr>
       </thead>
       <tbody tuiTbody>
@@ -42,14 +42,18 @@
           tuiTd>
           <div class="date">
             <div class="date__open">
-              <ng-container *ngIf="item.entry && item.entry.date; else none">
-                {{ item.entry.date | date: 'dd.MM.yy' }}
-              </ng-container>
+              @if (item.entry && item.entry.date; as date) {
+                {{ date | date: 'dd.MM.yy' }}
+              } @else {
+              &mdash;
+            }
             </div>
             <div class="date__close">
-              <ng-container *ngIf="item.out && item.out.date; else none">
-                {{ item.out.date | date: 'dd.MM.yy' }}
-              </ng-container>
+              @if (item.out && item.out.date; as date) {
+                {{ date | date: 'dd.MM.yy' }}
+              } @else {
+              &mdash;
+            }
             </div>
           </div>
         </td>
@@ -94,12 +98,15 @@
           *tuiCell="'entryPosition'"
           tuiTd>
           <div class="cost">
-            <div class="cost__quantity">
-              {{ item.entry.amount | tuiFormatNumber | async }}
-            </div>
+            @if (item.entry.amount; as amount) {
+              <div class="cost__quantity">
+                {{ amount | tuiFormatNumber | async }}
+              </div>
+            } @if (item.entry && item.entry.totalPrice; as total) {
             <div class="cost__price substring">
-              {{ item.entry.totalPrice | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
+              {{ total | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
             </div>
+          }
           </div>
         </td>
 
@@ -210,20 +217,22 @@
           class="td td--number"
           *tuiCell="'deposit'"
           tuiTd>
-          <ng-container *ngIf="item.depositSharePct; else none">
+          @if (item.depositSharePct) {
             {{ item.depositSharePct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
-          </ng-container>
+          } @else {
+          &mdash;
+        }
         </td>
 
         <td
           class="td"
           *tuiCell="'strategy'"
-          [tuiHint]="item.strategy.type | getStrategyName | async"
+          [tuiHint]="(item.strategy && item.strategy.type || null)  | getStrategyName | async"
           tuiHintAppearance="dark"
           tuiTd>
           <div class="ticker">
         <span class="ellipsis">
-         {{ item.strategy.type | getStrategyName | async }}
+         {{ item?.strategy?.type | getStrategyName | async }}
         </span>
           </div>
         </td>

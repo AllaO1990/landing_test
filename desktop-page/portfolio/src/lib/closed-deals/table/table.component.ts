@@ -1,6 +1,6 @@
 import { TuiTable } from '@taiga-ui/addon-table';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit } from '@angular/core';
-import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, DatePipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { WRAPPER_TABLE_HEADER } from './table.constants';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollable, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
@@ -42,7 +42,6 @@ import { getPriceIncrement } from 'utils/get-price-increment';
   standalone: true,
   imports: [
     TuiTable,
-    NgForOf,
     CdkFixedSizeVirtualScroll,
     CdkVirtualScrollViewport,
     AsyncPipe,

@@ -9,7 +9,7 @@ import { AccountFacade } from 'stores/facades/account.facade';
 import { TuiButton, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DataAccessPortfolioService } from '@data-access-portfolio/data.access.service';
+import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 import { Params } from '@angular/router';
 
 interface FilterValue {

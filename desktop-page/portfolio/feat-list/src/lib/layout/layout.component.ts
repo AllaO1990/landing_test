@@ -19,7 +19,7 @@ import { TuiChevron, TuiDataListWrapperComponent, TuiSelect, TuiSkeleton } from 
 import { getListOfRange } from 'utils/get-list-of-range';
 import { Observable, of, startWith } from 'rxjs';
 import { TuiDayRange } from '@taiga-ui/cdk';
-import { DataAccessPortfolioService } from '@data-access-portfolio/data.access.service';
+import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { getParamsFromRange } from 'utils/get-params-from-range';
 import { Params } from '@angular/router';
@@ -80,7 +80,7 @@ export class LayoutComponent implements AfterViewInit {
         map((value: CalendarRangeItem) => getParamsFromRange(value.range))
       )
       .subscribe((value: { from: string | null; to: string | null }) =>
-        this.#dataAccess.params.update((params: Params) => ({ ...params, ...value }))
+        this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value }))
       );
   }
 

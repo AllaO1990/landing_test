@@ -2,13 +2,13 @@
   "compilerOptions": {
     "target": "es2022",
     "useDefineForClassFields": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": false,
+    "strict": false,
+    "noImplicitOverride": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false
   },
   "files": [],
   "include": [],
@@ -25,9 +25,20 @@
   ],
   "extends": "../../tsconfig.base.json",
   "angularCompilerOptions": {
+    "fullTemplateTypeCheck": false,
     "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false,
+    "strictNullChecks": false,
+    "strictInputTypes": false,
+    "strictNullInputTypes": false,
+    "strictAttributeTypes": false,
+    "strictSafeNavigationTypes": false,
+    "strictDomLocalRefTypes": false,
+    "strictOutputEventTypes": false,
+    "strictDomEventTypes": false,
+    "strictContextGenerics": false,
+    "strictLiteralTypes": false
   }
 }

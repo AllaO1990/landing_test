@@ -51,12 +51,12 @@
           <div
             class="stock-item__price stock-item__last"
             *ngIf="item.price !== null; else skeleton">
-            {{ item.price | tuiFormatNumber : { precision: item.increment } | async }}
+            {{ item.price | tuiFormatNumber : { precision: item.increment || 2 } | async }}
           </div>
           <div
             class="stock-item__price stock-item__change"
             *ngIf="item.change !== null; else skeleton">
-            {{ item.change | tuiFormatNumber : { precision: item.increment } | async }}
+            {{ item.change | tuiFormatNumber : { precision: item.increment || 2 } | async }}
           </div>
           <div
             class="stock-item__percent stock-item__change-percent"

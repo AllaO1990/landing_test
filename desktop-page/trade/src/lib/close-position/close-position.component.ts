@@ -31,7 +31,6 @@ import {
 import { TradeStore } from '../common/store';
 import { StockInstrument, WithLastPrice } from 'types/stock';
 import { Response } from 'types/response';
-import { LoaderComponent } from '@ui/components/loader';
 
 interface DetailsData {
   instrument: StockInstrument | null;
@@ -49,7 +48,7 @@ interface TradePortfolioData {
 @Component({
   selector: 'trade-close-position',
   standalone: true,
-  imports: [AsyncPipe, TuiButton, TuiButtonLoading, LoaderComponent, TuiSkeleton],
+  imports: [AsyncPipe, TuiButton, TuiButtonLoading, TuiSkeleton],
   templateUrl: './close-position.component.html',
   styleUrl: './close-position.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

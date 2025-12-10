@@ -110,7 +110,7 @@
         [header]="header"
         [itemSize]="28"
         [list]="list()">
-        <div class="item" *uiLibListItem="let item" [style.background-color]="item | colorToPosition">
+        <div class="item" *uiLibListItem="let item" [style.background-color]="item | getColorToPosition">
           <div class="item__cell item__date">
             <div class="item__row">
               <ng-container *ngTemplateOutlet="avatar; context: { $implicit: item.author }"></ng-container>
@@ -138,7 +138,7 @@
               appearance="primary"
               size="xs"
               type="button">
-              Выйти
+              {{ constants.buttonAction }}
             </button>
           </div>
         </div>

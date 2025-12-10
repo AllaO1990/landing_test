@@ -8,4 +8,5 @@ export const IDEA_CONSTANTS: { [key in IdeaEnums]: string } = {
   [IdeaEnums.STRATEGY]: 'Стратегия',
   [IdeaEnums.CURRENCY]: 'Валюта',
   [IdeaEnums.FILTER]: 'Фильтр',
+  [IdeaEnums.BUTTON_ACTION]: 'Войти',
 };

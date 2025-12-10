@@ -1,7 +1,12 @@
 import { provideEventPlugins } from '@taiga-ui/event-plugins';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  inject,
+  provideAppInitializer,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { DesktopApiService } from '@desktop-data/desktop-data';
@@ -12,8 +17,6 @@ import { QueryParams } from 'utils/query-params';
 import { environment } from '../environments/environment';
 import { routes } from './app-routing.module';
 import { httpInterceptors } from './core/interceptors';
-import { TUI_LANGUAGE, TUI_RUSSIAN_LANGUAGE } from '@taiga-ui/i18n';
-import { of } from 'rxjs';
 import { WINDOW } from 'tokens/desktop/window';
 import { DOCUMENT } from '@angular/common';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
@@ -32,12 +35,7 @@ export const appConfig: ApplicationConfig = {
       provide: APP_CONFIG,
       useClass: AppConfig,
     },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (config: AppConfig) => config.load(),
-      deps: [APP_CONFIG],
-      multi: true,
-    },
+    provideAppInitializer(() => inject(APP_CONFIG).load()),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideEnvironmentNgxMask(),
@@ -69,10 +67,6 @@ export const appConfig: ApplicationConfig = {
       useClass: TimerInterval,
     },
     {
-      provide: MAT_DATE_LOCALE,
-      useValue: 'ru-RU',
-    },
-    {
       provide: TUI_BUTTON_OPTIONS,
       useValue: {
         appearance: 'primary',
@@ -95,10 +89,10 @@ export const appConfig: ApplicationConfig = {
         desktopLargest: 1920,
       },
     },
-    {
-      provide: TUI_LANGUAGE,
-      useValue: of(TUI_RUSSIAN_LANGUAGE),
-    },
+    // {
+    //   provide: TUI_LANGUAGE,
+    //   useValue: of(TUI_RUSSIAN_LANGUAGE),
+    // },
     GlobalDateRangeService,
   ],
 };

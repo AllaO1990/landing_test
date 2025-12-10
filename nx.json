@@ -60,5 +60,6 @@
       "unitTestRunner": "jest"
     }
   },
-  "defaultBase": "master"
+  "defaultBase": "master",
+  "useLegacyCache": true
 }

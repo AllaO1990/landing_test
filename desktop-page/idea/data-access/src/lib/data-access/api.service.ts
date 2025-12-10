@@ -16,6 +16,13 @@ export class ApiIdeaService {
   }
 
   public getIdeaList(params: Params): Observable<Response<ResponsePositions>> {
-    return this.#http.post<Response<ResponsePositions>>(`${this.host}/v1/ideas`, { ...params });
+    return this.#http.post<Response<ResponsePositions>>(`${this.host}/v1/ideas`, {
+      currencyId: params['currencyId'] || null,
+      instrumentType: params['instrumentType'] || null,
+      limit: params['limit'] || null,
+      page: params['page'] || null,
+      query: params['query'] || null,
+      strategyId: params['strategyId'] || null,
+    });
   }
 }

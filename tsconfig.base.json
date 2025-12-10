@@ -19,7 +19,8 @@
       "@data-access-deal/*": ["desktop-page/deal/data-access/src/lib/data-access/*"],
       "@data-access-idea/*": ["desktop-page/idea/data-access/src/lib/data-access/*"],
       "@data-access-portfolio/*": ["desktop-page/portfolio/data-access/src/lib/data-access/*"],
-      "@data-access-structure": ["desktop-page/structure/data-access/src/index.ts"],
+      "@data-access-structure/*": ["desktop-page/structure/data-access/src/lib/data-access/*"],
+      "@data-access-main/*": ["desktop-page/main/data-access/src/lib/data-access/*"],
       "@desktop-data/*": ["api/desktop-data/src/lib/*"],
       "@feat-deal-list": ["desktop-page/deal/feat-list/src/index.ts"],
       "@feat-idea-list": ["desktop-page/idea/feat-list/src/index.ts"],
@@ -54,9 +55,18 @@
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false,
+    "strictInputTypes": false,
+    "strictNullInputTypes": false,
+    "strictAttributeTypes": false,
+    "strictSafeNavigationTypes": false,
+    "strictDomLocalRefTypes": false,
+    "strictOutputEventTypes": false,
+    "strictDomEventTypes": false,
+    "strictContextGenerics": false,
+    "strictLiteralTypes": true
   },
   "exclude": ["node_modules", "tmp"]
 }

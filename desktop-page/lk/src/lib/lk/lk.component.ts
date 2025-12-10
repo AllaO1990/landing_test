@@ -23,13 +23,14 @@ import { ActionShowIdea } from '../common/plugins/action-show-idea';
 import { ActionCopyIdea } from '../common/plugins/action-copy-idea';
 import { TradeDialogService } from 'desktop-page/trade';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { ApiStructureService, DataAccessStructureStore } from '@data-access-structure';
 import { DataAccessIdeaStore } from '@data-access-idea/store';
 import { ApiIdeaService } from '@data-access-idea/api.service';
 import { DataAccessDealStore } from '@data-access-deal/store';
 import { ApiDealService } from '@data-access-deal/api.service';
 import { DataAccessPortfolioStore } from '@data-access-portfolio/store';
 import { ApiPortfolioService } from '@data-access-portfolio/api.service';
+import { DataAccessStructureStore } from '@data-access-structure/store';
+import { ApiStructureService } from '@data-access-structure/api.service';
 
 @Component({
   selector: 'lib-lk',

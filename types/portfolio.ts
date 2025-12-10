@@ -34,4 +34,5 @@ export interface PortfolioPositionEntry {
   amount: number;
   price: number;
   totalPrice: number;
+  date: string;
 }

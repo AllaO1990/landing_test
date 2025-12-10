@@ -71,7 +71,6 @@ export class FilterIdeaListComponent implements ControlValueAccessor, AfterViewI
   protected onTouched = () => {};
 
   readonly formGroup: FormGroup = new FormGroup({
-    search: new FormControl('', { nonNullable: true }),
     type: new FormControl(FilterIdeaListComponent.valueDefaultType),
     strategy: new FormControl(FilterIdeaListComponent.valueDefaultStrategy),
     currency: new FormControl(FilterIdeaListComponent.valueDefaultCurrency),

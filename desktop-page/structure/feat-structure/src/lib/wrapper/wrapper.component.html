@@ -1,4 +1,6 @@
-<structure
-  [data]="(dataStructure$ | async) || defaultDataStructure"
-  (selectedCategory)="onSelectCategory($event)"
-></structure>
+@if (data$ | async; as data) {
+  <structure
+    [data]="data"
+    (selectedCategory)="onSelectCategory($event)"
+  ></structure>
+}

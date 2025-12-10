@@ -16,6 +16,13 @@ export class ApiStructureService {
   }
 
   getAccountStructure(params: Params): Observable<Response<AccountStructure>> {
-    return this.#http.post<Response<AccountStructure>>(`${this.host}/v1/account/portfolios/structure`, params);
+    return this.#http.post<Response<AccountStructure>>(`${this.host}/v1/account/portfolios/structure`, {
+      brokerId: params['brokerId'] || null,
+      currencyId: params['currencyId'] || null,
+      portfolioId: params['portfolioId'] || null,
+      strategyId: params['strategyId'] || null,
+      date: params['date'] || null,
+      groupBy: params['groupBy'] || null,
+    });
   }
 }

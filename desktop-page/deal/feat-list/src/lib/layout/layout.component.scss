@@ -33,7 +33,7 @@
   }
 
   &__pagination {
-    flex: 0 0;
+    flex: 0 0 32px;
 
     margin: var(--padding-2);
   }
@@ -50,9 +50,16 @@
     align-items: center;
   }
 
-  &__action:not(:last-child) {
-    margin-right: var(--padding-2);
+  &__action {
+    &[tuibutton] {
+      min-width: 120px;
+    }
+
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
   }
+
 
   &__search {
     min-width: 100px;

@@ -28,11 +28,11 @@ import { UiList, UiListItem } from '@ui/components/list';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePassedPipe } from '../../../../../main/src/lib/main/common/pipe/date-passed.pipe';
 import { ColorPriceDirective } from '@ui/components/price';
 import { ResponsePosition } from 'types/position';
 import { DataAccessDealState } from '@data-access-deal/store';
 import { DEAL_CONSTANTS } from '@data-access-deal/constants';
+import { GetDatePassedPipe } from '@ui/pipes/get-date-passed.pipe';
 
 interface FilterValue {
   type: AccountType;
@@ -57,7 +57,7 @@ interface FilterValue {
     UiListItem,
     WithPaginationComponent,
     TuiSkeleton,
-    DatePassedPipe,
+    GetDatePassedPipe,
     DatePipe,
     NgTemplateOutlet,
     TuiFormatNumberPipe,

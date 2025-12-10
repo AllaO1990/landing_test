@@ -111,15 +111,15 @@
                 Купить
               </button>
             } @else {
-              <button
-                tuiButton
-                size="s"
-                [disabled]="item.instrument.source !== 'tinkoff'"
-                (click)="onTrade($event)"
-                appearance="sell">
-                Продать
-              </button>
-            }
+            <button
+              tuiButton
+              size="s"
+              [disabled]="item.instrument.source !== 'tinkoff'"
+              (click)="onTrade($event)"
+              appearance="sell">
+              Продать
+            </button>
+          }
           </td>
 
           <td *tuiCell="'enter'" tuiTd class="td td--number bold">
@@ -134,10 +134,14 @@
               {{ item.stop.price | tuiFormatNumber | async }}
             </span>
             <div class="substring">
-              <span class="short">
-                {{ item.stop.lossPercent | tuiFormatNumber | async }}%
-              </span> /
-              {{ item.stop.depositShare | tuiFormatNumber | async }}%
+              @if (item.stop.lossPercent; as lossPercent) {
+                <span class="short">
+                {{ lossPercent | tuiFormatNumber | async }}%
+              </span>
+              } @if (item.stop.depositShare; as depositShare) {
+              /
+              {{ depositShare | tuiFormatNumber | async }}%
+            }
             </div>
           </td>
 

@@ -24,8 +24,8 @@ import { LoaderComponent } from '@ui/components/loader';
 import { UiList, UiListItem } from '@ui/components/list';
 import { AccountStructureItem } from 'types/account';
 import { StructureService } from './structure.service';
-import { DataAccessStructureState } from '@data-access-structure';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DataAccessStructureState } from '@data-access-structure/store';
 
 interface StructureControl {
   name: string;

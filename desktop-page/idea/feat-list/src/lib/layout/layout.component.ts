@@ -4,11 +4,9 @@ import {
   Component,
   computed,
   DestroyRef,
-  EventEmitter,
   inject,
   input,
   InputSignal,
-  Output,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -32,7 +30,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataAccessIdeaState } from '@data-access-idea/store';
 import { LoaderComponent } from '@ui/components/loader';
 import { ResponsePosition } from 'types/position';
-import { ColorToPositionPipe } from '../../../../../main/src/lib/main/entry/table/color.pipe';
+import { GetColorToPositionPipe } from '@ui/pipes/get-color-to-position.pipe';
+import { Params } from '@angular/router';
+import { DataAccessIdeaService } from '@data-access-idea/data-access.service';
 
 interface FilterValue {
   type: AccountType;
@@ -61,17 +61,17 @@ interface FilterValue {
     DatePipe,
     NgTemplateOutlet,
     TuiFormatNumberPipe,
-    ColorToPositionPipe,
+    GetColorToPositionPipe,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {
-  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
+  readonly #dataAccess: DataAccessIdeaService = inject(DataAccessIdeaService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #valueDefault = {
-    search: '',
     type: FilterIdeaListComponent.valueDefaultType,
     strategy: FilterIdeaListComponent.valueDefaultStrategy,
     currency: FilterIdeaListComponent.valueDefaultCurrency,
@@ -98,14 +98,14 @@ export class LayoutComponent implements AfterViewInit {
     )
   );
 
-  @Output() submitted = new EventEmitter<{
-    search: string;
-    type: AccountType;
-    strategy: AccountStrategy;
-    currency: AccountCurrency;
-    limit: number;
-    page: number;
-  }>();
+  // @Output() submitted = new EventEmitter<{
+  //   search: string;
+  //   type: AccountType;
+  //   strategy: AccountStrategy;
+  //   currency: AccountCurrency;
+  //   limit: number;
+  //   page: number;
+  // }>();
 
   readonly data: InputSignal<DataAccessIdeaState> = input.required();
   readonly isLoaded = computed(() => !this.data().isLoaded);
@@ -123,13 +123,16 @@ export class LayoutComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.paginationControl.valueChanges
-      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(150))
-      .subscribe((value) =>
-        this.submitted.emit({
-          ...this.filterControl.value,
-          ...value,
-        })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(({ limit, page }: Params) =>
+        this.#dataAccess.params.update((params: Params | null) => ({ ...params, limit, page: page + 1 }))
       );
+
+    this.searchControl.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(250))
+      .subscribe((value: string | null) => {
+        this.#dataAccess.params.update((params: Params | null) => ({ ...params, query: value }));
+      });
   }
 
   onClose(event: Event): void {
@@ -151,14 +154,29 @@ export class LayoutComponent implements AfterViewInit {
   onReset(event: Event): void {
     event.preventDefault();
 
+    this.openFilter.set(false);
     this.filterControl.reset(this.#valueDefault);
+
+    this.#dataAccess.params.update((params: Params | null) => ({
+      ...params,
+      currencyId: this.#valueDefault.currency.currencyId,
+      instrumentType: this.#valueDefault.type.id,
+      strategyId: this.#valueDefault.strategy.id,
+    }));
   }
 
   onSubmit(event: Event): void {
     event.preventDefault();
 
     this.openFilter.set(false);
-    this.submitted.emit(this.filterControl.value);
+
+    const { type, strategy, currency } = this.filterControl.value;
+    this.#dataAccess.params.update((params: Params | null) => ({
+      ...params,
+      currencyId: currency.currencyId,
+      instrumentType: type.id,
+      strategyId: strategy.id,
+    }));
   }
 
   onTrade(event: Event, item: ResponsePosition): void {

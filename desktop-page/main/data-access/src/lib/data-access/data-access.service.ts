@@ -2,6 +2,6 @@ import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Params } from '@angular/router';
 
 @Injectable()
-export class DataAccessPortfolioService {
+export class DataAccessMainService {
   readonly params: WritableSignal<Params> = signal({});
 }

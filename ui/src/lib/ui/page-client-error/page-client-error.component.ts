@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'vt-page-client-error',
   templateUrl: './page-client-error.component.html',
   styleUrls: ['./page-client-error.component.scss'],
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageClientErrorComponent {}

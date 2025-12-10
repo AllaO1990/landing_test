@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'lib-list-item',
   exportAs: '[libListItem]',
   standalone: true,
-  imports: [NgIf],
+  imports: [],
   templateUrl: './item.component.html',
   styleUrl: './item.component.scss',
   host: {},

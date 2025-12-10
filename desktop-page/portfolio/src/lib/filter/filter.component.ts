@@ -9,7 +9,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiChip, TuiDataListWrapper, TuiDrawer } from '@taiga-ui/kit';
+import { TuiDataListWrapper, TuiDrawer } from '@taiga-ui/kit';
 import { TuiDayRange } from '@taiga-ui/cdk';
 import { TuiBreakpointService, TuiButton, TuiPopup, TuiScrollbar } from '@taiga-ui/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -42,7 +42,6 @@ import { getListOfRange } from 'utils/get-list-of-range';
     RangeWithListComponent,
     TuiDrawer,
     TuiPopup,
-    TuiChip,
     TuiScrollbar,
     ChipComponent,
   ],

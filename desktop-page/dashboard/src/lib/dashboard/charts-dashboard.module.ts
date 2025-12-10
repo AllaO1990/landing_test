@@ -7,12 +7,7 @@ import { VtCandleChartModule } from '../../../../../apps/desktop/src/app/pages/s
 
 @NgModule({
   declarations: [ChartsDashboardComponent],
-  imports: [
-    CommonModule,
-    SharedModule,
-    SecondRoutingModule,
-    VtCandleChartModule,
-  ],
+  imports: [CommonModule, SharedModule, SecondRoutingModule, VtCandleChartModule],
   exports: [ChartsDashboardComponent],
   providers: [],
 })

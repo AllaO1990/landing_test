@@ -11,7 +11,6 @@ import { TradeStore } from '../common/store';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { LoaderComponent } from '@ui/components/loader';
 import { Response } from 'types/response';
-import { TuiSkeleton } from '@taiga-ui/kit';
 
 interface DetailsData {
   instrument: StockInstrument | null;
@@ -38,16 +37,7 @@ interface DetailsPosition {
 @Component({
   selector: 'trade-details',
   standalone: true,
-  imports: [
-    InstrumentComponent,
-    AsyncPipe,
-    TuiCell,
-    TuiTitle,
-    TuiFormatNumberPipe,
-    TuiCurrencyPipe,
-    LoaderComponent,
-    TuiSkeleton,
-  ],
+  imports: [InstrumentComponent, AsyncPipe, TuiCell, TuiTitle, TuiFormatNumberPipe, TuiCurrencyPipe, LoaderComponent],
   templateUrl: './details.component.html',
   styleUrl: './details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

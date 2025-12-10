@@ -8,4 +8,5 @@ export const DEAL_CONSTANTS: { [key in DealEnums]: string } = {
   [DealEnums.STRATEGY]: 'Стратегия',
   [DealEnums.CURRENCY]: 'Валюта',
   [DealEnums.FILTER]: 'Фильтр',
+  [DealEnums.BUTTON_ACTION]: 'Выйти',
 };
