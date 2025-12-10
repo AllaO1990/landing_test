@@ -17,7 +17,7 @@ import {
 } from '@angular/forms';
 import { TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapperComponent, TuiSelect } from '@taiga-ui/kit';
-import { debounceTime, filter, Observable, shareReplay } from 'rxjs';
+import { filter, Observable, shareReplay } from 'rxjs';
 import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategy, AccountType } from 'types/account';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
@@ -77,7 +77,6 @@ export class FilterDealListComponent implements ControlValueAccessor, AfterViewI
   protected onTouched = () => {};
 
   readonly formGroup: FormGroup = new FormGroup({
-    search: new FormControl('', { nonNullable: true }),
     type: new FormControl(FilterDealListComponent.valueDefaultType),
     strategy: new FormControl(FilterDealListComponent.valueDefaultStrategy),
     currency: new FormControl(FilterDealListComponent.valueDefaultCurrency),
@@ -117,7 +116,7 @@ export class FilterDealListComponent implements ControlValueAccessor, AfterViewI
 
   ngAfterViewInit(): void {
     this.formGroup.valueChanges
-      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(150))
+      .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: unknown) => this.onChange(value));
   }
 

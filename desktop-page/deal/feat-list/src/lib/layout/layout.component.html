@@ -107,8 +107,17 @@
         [header]="header">
         <div class="item" *uiLibListItem="let item">
           <div class="item__cell item__date">
-            {{ item.entries[0].date | date : 'dd.MM' }}
-            <div class="substring">{{ item.entries[0].date | getDatePassed }} дней</div>
+            @if (item.entry && item.entry.date; as date) {
+              {{ date | date: 'dd.MM.yy' }}
+            } @else {
+              &mdash;
+            }
+
+            @if (item.out && item.out.date; as date) {
+              <div>{{ date | date: 'dd.MM.yy' }}</div>
+            } @else {
+              <div class="substring">{{ item.entry.date | getDatePassed }} дней</div>
+            }
           </div>
           <div class="item__cell item__cell--center item__direction">
             <ng-container *ngTemplateOutlet="direction; context: { $implicit: item.positionType }"></ng-container>
@@ -118,15 +127,23 @@
             <span class="substring">{{ item.instrument.name }}</span>
           </div>
           <div class="item__cell item__cell--center item__quantity">
-            {{ item.inPositionQuantity }}
+            @if (item.inPosition.amount; as amount) {
+              {{ amount }}
+            } @else {
+              &mdash;
+            }
           </div>
           <div class="item__cell item__cell--number item__total">
-            {{ item.inPositionTotalPrice }}
+            @if (item.inPositionResult) {
+              {{ item.inPositionResult | tuiFormatNumber | async }}
+            } @else {
+              &mdash;
+            }
           </div>
-          <div class="item__cell item__cell--number item__result" [uiPriceColor]="item.inPositionProfitPercent">
-            {{ item.inPositionResult | tuiFormatNumber | async }}
+          <div class="item__cell item__cell--number item__result" [uiPriceColor]="item.resultPct">
+            {{ item.result | tuiFormatNumber | async }}
             <div class="substring">
-              {{ item.inPositionProfitPercent | tuiFormatNumber | async }}%
+              {{ item.resultPct | tuiFormatNumber | async }}%
             </div>
           </div>
           <div class="item__cell item__action">

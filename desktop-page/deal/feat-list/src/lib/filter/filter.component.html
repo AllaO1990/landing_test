@@ -1,19 +1,6 @@
 <form class="form" [formGroup]="formGroup">
   <tui-scrollbar class="form__filter">
     <div class="form__label">
-      <span>{{ constants.search }}</span>
-      <tui-textfield
-        [tuiTextfieldSize]="size"
-        iconStart="@tui.search">
-        <input
-          placeholder="Тикер"
-          tuiTextfield
-          autocomplete="off"
-          formControlName="search"
-        />
-      </tui-textfield>
-    </div>
-    <div class="form__label">
       <span>{{ constants.type }}</span>
       <tui-textfield
         class="form__control"

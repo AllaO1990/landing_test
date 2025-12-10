@@ -8,6 +8,9 @@ import {
   inject,
   Signal,
 } from '@angular/core';
+import { combineLatest, debounceTime, Observable } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
 import { IdeaListWrapper } from '@feat-idea-list';
 import { StructureWrapper } from '@feat-structure';
 import { DialListWrapper } from '@feat-deal-list';
@@ -19,9 +22,8 @@ import { DataAccessStructureStore } from '@data-access-structure/store';
 import { DataAccessStructureService } from '@data-access-structure/data-access.service';
 import { DataAccessIdeaService } from '@data-access-idea/data-access.service';
 import { DataAccessIdeaStore } from '@data-access-idea/store';
-import { combineLatest, debounceTime, Observable } from 'rxjs';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { filter, map } from 'rxjs/operators';
+import { DataAccessDealService } from '@data-access-deal/data-access.service';
+import { DataAccessDealStore } from '@data-access-deal/store';
 
 @Component({
   selector: 'main-light',
@@ -29,7 +31,7 @@ import { filter, map } from 'rxjs/operators';
   imports: [StructureWrapper, IdeaListWrapper, DialListWrapper, PortfolioListWrapper],
   templateUrl: './light.component.html',
   styleUrl: './light.component.scss',
-  providers: [DataAccessPortfolioService, DataAccessStructureService, DataAccessIdeaService],
+  providers: [DataAccessPortfolioService, DataAccessStructureService, DataAccessIdeaService, DataAccessDealService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightComponent implements AfterViewInit {
@@ -40,6 +42,8 @@ export class LightComponent implements AfterViewInit {
   readonly #storeStructure: DataAccessStructureStore = inject(DataAccessStructureStore);
   readonly #dataAccessIdea: DataAccessIdeaService = inject(DataAccessIdeaService);
   readonly #storeIdea: DataAccessIdeaStore = inject(DataAccessIdeaStore);
+  readonly #dataAccessDeal: DataAccessDealService = inject(DataAccessDealService);
+  readonly #storeDeal: DataAccessDealStore = inject(DataAccessDealStore);
 
   readonly paramsPortfolio: Signal<Params | null> = computed(() => this.#dataAccessPortfolio.params());
   readonly paramsStructure: Signal<Params | null> = computed(() =>
@@ -56,6 +60,19 @@ export class LightComponent implements AfterViewInit {
   ]).pipe(
     takeUntilDestroyed(this.#destroyRef),
     map(([portfolio, idea]: [Params, Params]) => Object.assign({}, portfolio, idea)),
+    debounceTime(250)
+  );
+
+  readonly paramsDeal$: Observable<Params> = combineLatest([
+    toObservable(this.#dataAccessPortfolio.params).pipe(
+      filter((params: Params | null): params is Params => params !== null)
+    ),
+    toObservable(this.#dataAccessDeal.params).pipe(
+      filter((params: Params | null): params is Params => params !== null)
+    ),
+  ]).pipe(
+    takeUntilDestroyed(this.#destroyRef),
+    map(([portfolio, deal]: [Params, Params]) => Object.assign({}, portfolio, deal)),
     debounceTime(250)
   );
 
@@ -78,6 +95,7 @@ export class LightComponent implements AfterViewInit {
     console.log('ngAfterViewInit');
 
     this.paramsIdea$.subscribe((params: Params) => this.#storeIdea.loadIdaes(params));
+    this.paramsDeal$.subscribe((params: Params) => this.#storeDeal.load(params));
   }
 
   private _getParamsStructure(paramsStructure: Params | null, paramsPortfolio: Params | null): Params | null {

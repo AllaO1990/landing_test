@@ -200,4 +200,7 @@
 .substring {
   font-size: 7px;
   line-height: 9px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

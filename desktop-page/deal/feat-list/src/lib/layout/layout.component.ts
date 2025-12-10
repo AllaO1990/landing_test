@@ -4,11 +4,10 @@ import {
   Component,
   computed,
   DestroyRef,
-  EventEmitter,
   inject,
   input,
   InputSignal,
-  Output,
+  Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -21,7 +20,14 @@ import { debounceTime, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
-import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiPopup, TuiTextfield } from '@taiga-ui/core';
+import {
+  TuiButton,
+  TuiFormatNumberPipe,
+  TuiHint,
+  tuiNumberFormatProvider,
+  TuiPopup,
+  TuiTextfield,
+} from '@taiga-ui/core';
 import { TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
@@ -33,6 +39,9 @@ import { ResponsePosition } from 'types/position';
 import { DataAccessDealState } from '@data-access-deal/store';
 import { DEAL_CONSTANTS } from '@data-access-deal/constants';
 import { GetDatePassedPipe } from '@ui/pipes/get-date-passed.pipe';
+import { DataAccessDealService } from '@data-access-deal/data-access.service';
+import { Params } from '@angular/router';
+import { PortfolioPosition } from 'types/portfolio';
 
 interface FilterValue {
   type: AccountType;
@@ -65,13 +74,14 @@ interface FilterValue {
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
+  providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' })],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #dataAccess: DataAccessDealService = inject(DataAccessDealService);
   readonly #valueDefault = {
-    search: '',
     type: FilterDealListComponent.valueDefaultType,
     strategy: FilterDealListComponent.valueDefaultStrategy,
     currency: FilterDealListComponent.valueDefaultCurrency,
@@ -98,19 +108,10 @@ export class LayoutComponent implements AfterViewInit {
     )
   );
 
-  @Output() submitted = new EventEmitter<{
-    search: string;
-    type: AccountType;
-    strategy: AccountStrategy;
-    currency: AccountCurrency;
-    limit: number;
-    page: number;
-  }>();
-
   readonly data: InputSignal<DataAccessDealState> = input.required();
   readonly isLoaded = computed(() => !this.data().isLoaded);
   readonly isLoading = computed(() => this.data().isLoaded && !this.data().isLoading);
-  readonly list = computed(() => {
+  readonly list: Signal<PortfolioPosition[]> = computed(() => {
     const data = this.data().data;
 
     return data ? data.items : [];
@@ -123,12 +124,18 @@ export class LayoutComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.paginationControl.valueChanges
-      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(150))
-      .subscribe((value) =>
-        this.submitted.emit({
-          ...this.filterControl.value,
-          ...value,
-        })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((value: Params) =>
+        this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value }))
+      );
+
+    this.searchControl.valueChanges
+      .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(250))
+      .subscribe((value: string | null) =>
+        this.#dataAccess.params.update((params: Params | null) => ({
+          ...params,
+          query: value,
+        }))
       );
   }
 
@@ -151,14 +158,16 @@ export class LayoutComponent implements AfterViewInit {
   onReset(event: Event): void {
     event.preventDefault();
 
+    this.openFilter.set(false);
     this.filterControl.reset(this.#valueDefault);
+    this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this.filterControl.value }));
   }
 
   onSubmit(event: Event): void {
     event.preventDefault();
 
     this.openFilter.set(false);
-    this.submitted.emit(this.filterControl.value);
+    this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this.filterControl.value }));
   }
 
   onTrade(event: Event, item: ResponsePosition): void {
