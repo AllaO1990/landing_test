@@ -175,9 +175,10 @@
 
 <ng-template #tooltip>
   <ul>
+    <li>{{ constants.deal }}: {{ filterControl.value.dealType.name }}</li>
     <li>{{ constants.type }}: {{ filterControl.value.type.name }}</li>
     <li>{{ constants.strategy }}: {{ filterControl.value.strategy.name }}</li>
-    <li>{{ constants.currency }}: {{ filterControl.value.currency.currencySymbol }}</li>
+    <li>{{ constants.broker }}: {{ filterControl.value.broker.broker }}</li>
   </ul>
 </ng-template>
 

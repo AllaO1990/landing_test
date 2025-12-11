@@ -17,12 +17,12 @@ import {
 } from '@angular/forms';
 import { TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapperComponent, TuiSelect } from '@taiga-ui/kit';
-import { filter, Observable, shareReplay } from 'rxjs';
-import { AccountBroker, AccountCurrency, AccountPortfolio, AccountStrategy, AccountType } from 'types/account';
+import { filter, Observable, of, shareReplay } from 'rxjs';
+import { AccountBroker, AccountDealType, AccountDealTypes, AccountStrategy, AccountType } from 'types/account';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { AsyncPipe } from '@angular/common';
-import { DELA_LIST_FILTER_CONSTANTS } from './filter.constants';
+import { DEAL_TYPES, DELA_LIST_FILTER_CONSTANTS } from './filter.constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -50,11 +50,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterDealListComponent implements ControlValueAccessor, AfterViewInit {
-  static valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
   static valueDefaultStrategy = { name: 'Все', key: 'all', id: null };
   static valueDefaultType = { name: 'Все', key: 'all', id: null };
   static valueDefaultBroker = { broker: 'Все', brokerId: null };
-  static valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
+  static valueDefaultDealType = { name: 'Открытые', id: 'open' };
 
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #accountFacade: AccountFacade = inject(AccountFacade);
@@ -66,29 +65,22 @@ export class FilterDealListComponent implements ControlValueAccessor, AfterViewI
   identityMatcherOrderType = signal((a: AccountType, b: AccountType) => a.id === b.id);
   stringifyStrategy = signal((x: AccountStrategy) => x.name);
   identityMatcherStrategy = signal((a: AccountStrategy, b: AccountStrategy) => a.id === b.id);
-  stringifyCurrency = signal((x: AccountCurrency) => x.currencySymbol || '');
-  identityMatcherCurrency = signal((a: AccountCurrency, b: AccountCurrency) => a.currencyId === b.currencyId);
   stringifyBroker = signal((x: AccountBroker) => x.broker);
   identityMatcherBroker = signal((a: AccountBroker, b: AccountBroker) => a.brokerId === b.brokerId);
-  stringifyPortfolio = signal((x: AccountPortfolio) => x.portfolio);
-  identityMatcherPortfolio = signal((a: AccountPortfolio, b: AccountPortfolio) => a.portfolioId === b.portfolioId);
+  stringifyDealType = signal((x: AccountDealType) => x.name);
+  identityMatcherDealType = signal((a: AccountDealType, b: AccountDealType) => a.id === b.id);
 
   protected onChange = (_: any) => {};
   protected onTouched = () => {};
 
   readonly formGroup: FormGroup = new FormGroup({
+    dealType: new FormControl(FilterDealListComponent.valueDefaultDealType),
     type: new FormControl(FilterDealListComponent.valueDefaultType),
     strategy: new FormControl(FilterDealListComponent.valueDefaultStrategy),
-    currency: new FormControl(FilterDealListComponent.valueDefaultCurrency),
     broker: new FormControl(FilterDealListComponent.valueDefaultBroker),
-    portfolio: new FormControl(FilterDealListComponent.valueDefaultPortfolio),
   });
 
-  readonly currency$: Observable<AccountCurrency[] | null> = this.#accountFacade.currencies$.pipe(
-    filter((list: AccountCurrency[] | null): list is AccountCurrency[] => list !== null),
-    map((list: AccountCurrency[]) => [FilterDealListComponent.valueDefaultCurrency, ...list]),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
+  readonly dealTypes$: Observable<AccountDealTypes> = of(DEAL_TYPES);
 
   readonly strategy$: Observable<AccountStrategy[]> = this.#accountFacade.strategies$.pipe(
     filter((list: AccountStrategy[] | null): list is AccountStrategy[] => list !== null),
@@ -108,16 +100,12 @@ export class FilterDealListComponent implements ControlValueAccessor, AfterViewI
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly portfolios$: Observable<AccountPortfolio[]> = this.#accountFacade.portfolios$.pipe(
-    filter((list: null | AccountPortfolio[]): list is AccountPortfolio[] => list !== null),
-    map((list: AccountPortfolio[]) => [FilterDealListComponent.valueDefaultPortfolio, ...list]),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-
   ngAfterViewInit(): void {
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: unknown) => this.onChange(value));
+
+    console.log(this.formGroup.value);
   }
 
   writeValue(obj: any): void {

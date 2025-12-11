@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { combineLatest, debounceTime, Observable } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { IdeaListWrapper } from '@feat-idea-list';
 import { StructureWrapper } from '@feat-structure';
 import { DialListWrapper } from '@feat-deal-list';
@@ -72,6 +72,7 @@ export class LightComponent implements AfterViewInit {
     ),
   ]).pipe(
     takeUntilDestroyed(this.#destroyRef),
+    tap((data) => console.log(data)),
     map(([portfolio, deal]: [Params, Params]) => Object.assign({}, portfolio, deal)),
     debounceTime(250)
   );

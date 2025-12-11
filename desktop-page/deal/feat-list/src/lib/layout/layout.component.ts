@@ -31,7 +31,7 @@ import {
 import { TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
-import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
+import { AccountBroker, AccountDealType, AccountStrategy, AccountType } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ColorPriceDirective } from '@ui/components/price';
@@ -46,7 +46,8 @@ import { PortfolioPosition } from 'types/portfolio';
 interface FilterValue {
   type: AccountType;
   strategy: AccountStrategy;
-  currency: AccountCurrency;
+  dealType: AccountDealType;
+  broker: AccountBroker;
 }
 
 @Component({
@@ -82,9 +83,10 @@ export class LayoutComponent implements AfterViewInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #dataAccess: DataAccessDealService = inject(DataAccessDealService);
   readonly #valueDefault = {
+    dealType: FilterDealListComponent.valueDefaultDealType,
     type: FilterDealListComponent.valueDefaultType,
     strategy: FilterDealListComponent.valueDefaultStrategy,
-    currency: FilterDealListComponent.valueDefaultCurrency,
+    broker: FilterDealListComponent.valueDefaultBroker,
   };
 
   protected readonly size = 's';
@@ -102,9 +104,10 @@ export class LayoutComponent implements AfterViewInit {
     startWith(this.filterControl.value),
     map(
       (value: FilterValue) =>
-        value.currency.currencyId !== FilterDealListComponent.valueDefaultCurrency.currencyId ||
+        value.dealType.id !== FilterDealListComponent.valueDefaultDealType.id ||
         value.strategy.id !== FilterDealListComponent.valueDefaultStrategy.id ||
-        value.type.id !== FilterDealListComponent.valueDefaultType.id
+        value.type.id !== FilterDealListComponent.valueDefaultType.id ||
+        value.broker.brokerId !== FilterDealListComponent.valueDefaultBroker.brokerId
     )
   );
 
@@ -126,7 +129,7 @@ export class LayoutComponent implements AfterViewInit {
     this.paginationControl.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: Params) =>
-        this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value }))
+        this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value, ...this._getParams() }))
       );
 
     this.searchControl.valueChanges
@@ -160,14 +163,14 @@ export class LayoutComponent implements AfterViewInit {
 
     this.openFilter.set(false);
     this.filterControl.reset(this.#valueDefault);
-    this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this.filterControl.value }));
+    this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this._getParams() }));
   }
 
   onSubmit(event: Event): void {
     event.preventDefault();
 
     this.openFilter.set(false);
-    this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this.filterControl.value }));
+    this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this._getParams() }));
   }
 
   onTrade(event: Event, item: ResponsePosition): void {
@@ -178,5 +181,16 @@ export class LayoutComponent implements AfterViewInit {
       type: 'position',
       id: item.id,
     });
+  }
+
+  private _getParams(): Params {
+    const { dealType, type, strategy, broker } = this.filterControl.value;
+
+    return {
+      brokerId: broker.brokerId,
+      dealType: dealType.id,
+      instrumentType: type.id,
+      strategyId: strategy.id,
+    };
   }
 }

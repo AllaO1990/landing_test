@@ -1,4 +1,5 @@
 import { DealListFilterEnums } from './filter.enums';
+import { AccountDealTypes } from 'types/account';
 
 export const DELA_LIST_FILTER_CONSTANTS: { [key in DealListFilterEnums]: string } = {
   [DealListFilterEnums.TITLE]: 'Идеи',
@@ -10,4 +11,11 @@ export const DELA_LIST_FILTER_CONSTANTS: { [key in DealListFilterEnums]: string 
   [DealListFilterEnums.FILTER]: 'Фильтр',
   [DealListFilterEnums.BROKER]: 'Брокер',
   [DealListFilterEnums.PORTFOLIO]: 'Портфель',
+  [DealListFilterEnums.DEAL]: 'Сделка',
 };
+
+export const DEAL_TYPES: AccountDealTypes = [
+  { name: 'Все', id: 'all' },
+  { name: 'Открытые', id: 'open' },
+  { name: 'Закрытые', id: 'closed' },
+];

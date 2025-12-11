@@ -116,3 +116,10 @@ export interface AccountTransaction {
   };
   transactionType: string;
 }
+
+export interface AccountDealType {
+  id: string;
+  name: string;
+}
+
+export type AccountDealTypes = AccountDealType[];

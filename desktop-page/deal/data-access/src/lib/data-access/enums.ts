@@ -7,4 +7,6 @@ export enum DealEnums {
   CURRENCY = 'currency',
   FILTER = 'filter',
   BUTTON_ACTION = 'buttonAction',
+  DEAL = 'deal',
+  BROKER = 'broker',
 }

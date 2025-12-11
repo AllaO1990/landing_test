@@ -1,6 +1,27 @@
 <form class="form" [formGroup]="formGroup">
   <tui-scrollbar class="form__filter">
     <div class="form__label">
+      <span>{{ constants.deal }}</span>
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherDealType()"
+        [stringify]="stringifyDealType()"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="dealType"
+          placeholder="Тип сделки"
+          autocomplete="off"
+          tuiSelect />
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="dealTypes$ | async"
+        />
+      </tui-textfield>
+    </div>
+    <div class="form__label">
       <span>{{ constants.type }}</span>
       <tui-textfield
         class="form__control"
@@ -43,27 +64,6 @@
       </tui-textfield>
     </div>
     <div class="form__label">
-      <span>{{ constants.currency }}</span>
-      <tui-textfield
-        class="form__control"
-        tuiChevron
-        [identityMatcher]="identityMatcherCurrency()"
-        [stringify]="stringifyCurrency()"
-        [tuiTextfieldSize]="size"
-        [tuiTextfieldCleaner]="false">
-        <input
-          formControlName="currency"
-          placeholder="Валюта"
-          autocomplete="off"
-          tuiSelect />
-        <tui-data-list-wrapper
-          *tuiTextfieldDropdown
-          new
-          [items]="currency$ | async"
-        />
-      </tui-textfield>
-    </div>
-    <div class="form__label">
       <span>{{ constants.broker }}</span>
       <tui-textfield
         class="form__control"
@@ -81,27 +81,6 @@
           *tuiTextfieldDropdown
           new
           [items]="brokers$ | async"
-        />
-      </tui-textfield>
-    </div>
-    <div class="form__label">
-      <span>{{ constants.portfolio }}</span>
-      <tui-textfield
-        class="form__control"
-        tuiChevron
-        [identityMatcher]="identityMatcherPortfolio()"
-        [stringify]="stringifyPortfolio()"
-        [tuiTextfieldSize]="size"
-        [tuiTextfieldCleaner]="false">
-        <input
-          formControlName="portfolio"
-          placeholder="Портфель"
-          autocomplete="off"
-          tuiSelect />
-        <tui-data-list-wrapper
-          *tuiTextfieldDropdown
-          new
-          [items]="portfolios$ | async"
         />
       </tui-textfield>
     </div>

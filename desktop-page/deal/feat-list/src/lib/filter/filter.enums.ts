@@ -8,4 +8,5 @@ export enum DealListFilterEnums {
   FILTER = 'filter',
   BROKER = 'broker',
   PORTFOLIO = 'portfolio',
+  DEAL = 'deal',
 }
