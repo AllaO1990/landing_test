@@ -21,7 +21,7 @@ import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiPopup, TuiTextfield } from '@taiga-ui/core';
-import { TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiBadgedContent, TuiBadgeNotification, TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
@@ -62,6 +62,8 @@ interface FilterValue {
     NgTemplateOutlet,
     TuiFormatNumberPipe,
     GetColorToPositionPipe,
+    TuiBadgeNotification,
+    TuiBadgedContent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -91,21 +93,9 @@ export class LayoutComponent implements AfterViewInit {
   readonly isActiveFilter$: Observable<boolean> = this.filterControl.valueChanges.pipe(
     startWith(this.filterControl.value),
     map(
-      (value: FilterValue) =>
-        value.currency.currencyId !== FilterIdeaListComponent.valueDefaultCurrency.currencyId ||
-        value.strategy.id !== FilterIdeaListComponent.valueDefaultStrategy.id ||
-        value.type.id !== FilterIdeaListComponent.valueDefaultType.id
+      (value: FilterValue) => value.currency.currencyId !== null || value.strategy.id !== null || value.type.id !== null
     )
   );
-
-  // @Output() submitted = new EventEmitter<{
-  //   search: string;
-  //   type: AccountType;
-  //   strategy: AccountStrategy;
-  //   currency: AccountCurrency;
-  //   limit: number;
-  //   page: number;
-  // }>();
 
   readonly data: InputSignal<DataAccessIdeaState> = input.required();
   readonly isLoaded = computed(() => !this.data().isLoaded);

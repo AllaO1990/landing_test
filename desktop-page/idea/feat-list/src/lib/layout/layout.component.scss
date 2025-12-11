@@ -240,3 +240,7 @@
     object-fit: contain;
   }
 }
+
+tui-badge-notification[appearance="primary"] {
+  background: var(--tui-background-accent-1);
+}

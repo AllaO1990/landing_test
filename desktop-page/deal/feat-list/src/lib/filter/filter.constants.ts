@@ -15,7 +15,7 @@ export const DELA_LIST_FILTER_CONSTANTS: { [key in DealListFilterEnums]: string 
 };
 
 export const DEAL_TYPES: AccountDealTypes = [
-  { name: 'Все', id: 'all' },
+  { name: 'Все', id: null },
   { name: 'Открытые', id: 'open' },
   { name: 'Закрытые', id: 'closed' },
 ];

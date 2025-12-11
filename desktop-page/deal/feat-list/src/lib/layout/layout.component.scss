@@ -97,8 +97,22 @@
 }
 
 .list {
+  position: relative;
   display: flex;
   flex-flow: column nowrap;
+
+  &__loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  &__loader ~ ui-lib-list {
+    filter: blur(2px);
+  }
 }
 
 .item {
@@ -203,4 +217,8 @@
 
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+tui-badge-notification[appearance="primary"] {
+  background: var(--tui-background-accent-1);
 }

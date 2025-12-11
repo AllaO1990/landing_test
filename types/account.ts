@@ -118,7 +118,7 @@ export interface AccountTransaction {
 }
 
 export interface AccountDealType {
-  id: string;
+  id: string | null;
   name: string;
 }
 

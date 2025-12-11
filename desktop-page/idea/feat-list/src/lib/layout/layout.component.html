@@ -5,19 +5,29 @@
     </div>
 
     <div class="idea__actions" [tuiSkeleton]="isLoaded()">
-      <button
-        tuiHintAppearance="dark"
-        tuiHintDirection="right"
-        [tuiHint]="tooltip"
-        tuiButton
-        [appearance]="(isActiveFilter$ | async) ? 'primary' : 'secondary'"
-        type="button"
-        [size]="size"
-        iconStart="@tui.filter"
-        class="idea__action idea__add-idea"
-        (click)="openFilter.set(true)">
-        {{ constants.filter }}
-      </button>
+      <div class="idea__action">
+        <tui-badged-content>
+          @if (isActiveFilter$ | async) {
+            <tui-badge-notification
+              appearance="primary"
+              size="xs"
+              tuiSlot="top" />
+          }
+          <button
+            tuiHintAppearance="dark"
+            tuiHintDirection="right"
+            [tuiHint]="tooltip"
+            tuiButton
+            appearance="secondary"
+            type="button"
+            [size]="size"
+            iconStart="@tui.filter"
+            class=" idea__add-idea"
+            (click)="openFilter.set(true)">
+            {{ constants.filter }}
+          </button>
+        </tui-badged-content>
+      </div>
 
       <tui-drawer
         *tuiPopup="openFilter()"
@@ -56,41 +66,47 @@
         </div>
       </tui-drawer>
 
-      <button
-        tuiButton
-        type="button"
-        [size]="size"
-        appearance="secondary"
-        class="idea__action idea__add-idea"
-        iconStart="@tui.plus"
-        searchDialog
-        #dialog=SearchDialog
-        (click)="dialog.onSearch($event)"
-        (selected)="onOpenDialog($event)">
-        {{ constants.add_idea }}
-      </button>
+      <div class="idea__action">
+        <button
+          tuiButton
+          type="button"
+          [size]="size"
+          appearance="secondary"
+          class=" idea__add-idea"
+          iconStart="@tui.plus"
+          searchDialog
+          #dialog=SearchDialog
+          (click)="dialog.onSearch($event)"
+          (selected)="onOpenDialog($event)">
+          {{ constants.add_idea }}
+        </button>
+      </div>
 
-      <tui-textfield
-        [tuiTextfieldSize]="size"
-        iconStart="@tui.search"
-        class="idea__action idea__search">
-        <input
-          [placeholder]="constants.search"
-          tuiTextfield
-          autocomplete="off"
-          [formControl]="searchControl"
-        />
-      </tui-textfield>
+      <div class="idea__action">
+        <tui-textfield
+          [tuiTextfieldSize]="size"
+          iconStart="@tui.search"
+          class=" idea__search">
+          <input
+            [placeholder]="constants.search"
+            tuiTextfield
+            autocomplete="off"
+            [formControl]="searchControl"
+          />
+        </tui-textfield>
+      </div>
 
-      <button
-        [disabled]="true"
-        iconStart="@tui.ellipsis-vertical"
-        tuiIconButton
-        type="button"
-        appearance="outline-grayscale"
-        [size]="size"
-        class="idea__action idea__action-more">
-      </button>
+      <div class="idea__action">
+        <button
+          [disabled]="true"
+          iconStart="@tui.ellipsis-vertical"
+          tuiIconButton
+          type="button"
+          appearance="outline-grayscale"
+          [size]="size"
+          class=" idea__action-more">
+        </button>
+      </div>
     </div>
   </div>
   <div class="idea__list list">

@@ -16,7 +16,7 @@ import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FilterDealListComponent } from '../filter/filter.component';
-import { debounceTime, Observable, startWith } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
@@ -28,7 +28,7 @@ import {
   TuiPopup,
   TuiTextfield,
 } from '@taiga-ui/core';
-import { TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiBadgedContent, TuiBadgeNotification, TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
 import { AccountBroker, AccountDealType, AccountStrategy, AccountType } from 'types/account';
@@ -42,6 +42,7 @@ import { GetDatePassedPipe } from '@ui/pipes/get-date-passed.pipe';
 import { DataAccessDealService } from '@data-access-deal/data-access.service';
 import { Params } from '@angular/router';
 import { PortfolioPosition } from 'types/portfolio';
+import { LoaderComponent } from '@ui/components/loader';
 
 interface FilterValue {
   type: AccountType;
@@ -72,6 +73,9 @@ interface FilterValue {
     NgTemplateOutlet,
     TuiFormatNumberPipe,
     ColorPriceDirective,
+    TuiBadgeNotification,
+    TuiBadgedContent,
+    LoaderComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -104,11 +108,12 @@ export class LayoutComponent implements AfterViewInit {
     startWith(this.filterControl.value),
     map(
       (value: FilterValue) =>
-        value.dealType.id !== FilterDealListComponent.valueDefaultDealType.id ||
-        value.strategy.id !== FilterDealListComponent.valueDefaultStrategy.id ||
-        value.type.id !== FilterDealListComponent.valueDefaultType.id ||
-        value.broker.brokerId !== FilterDealListComponent.valueDefaultBroker.brokerId
-    )
+        value.dealType.id !== null ||
+        value.strategy.id !== null ||
+        value.type.id !== null ||
+        value.broker.brokerId !== null
+    ),
+    distinctUntilChanged()
   );
 
   readonly data: InputSignal<DataAccessDealState> = input.required();
