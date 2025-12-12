@@ -104,8 +104,6 @@ export class FilterDealListComponent implements ControlValueAccessor, AfterViewI
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: unknown) => this.onChange(value));
-
-    console.log(this.formGroup.value);
   }
 
   writeValue(obj: any): void {

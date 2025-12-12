@@ -24,9 +24,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { getParamsFromRange } from 'utils/get-params-from-range';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { DataAccessPortfolioState } from '@data-access-portfolio/store';
 import { LoaderComponent } from '@ui/components/loader';
 import { AccountBalance } from 'types/account';
+import { ChartPortfolioButtonDirective } from './layout.directive';
+import { PortfolioData } from '@data-access-portfolio/types';
 
 interface CalendarRangeItem {
   text: string;
@@ -48,6 +49,7 @@ interface CalendarRangeItem {
     TuiSelect,
     TuiSkeleton,
     LoaderComponent,
+    ChartPortfolioButtonDirective,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -64,7 +66,7 @@ export class LayoutComponent implements AfterViewInit {
   protected readonly controlCalendar: FormControl = new FormControl(this.#rangeList[0]);
   protected readonly calendar$: Observable<CalendarRangeItem[]> = of(this.#rangeList);
 
-  data: InputSignal<DataAccessPortfolioState> = input.required();
+  data: InputSignal<PortfolioData<AccountBalance>> = input.required();
   readonly isLoaded = computed(() => !this.data().isLoaded);
   readonly isLoading = computed(() => this.data().isLoaded && !this.data().isLoading);
   readonly balance: Signal<AccountBalance | null> = computed(() => this.data().data);
@@ -82,9 +84,5 @@ export class LayoutComponent implements AfterViewInit {
       .subscribe((value: { from: string | null; to: string | null }) =>
         this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value }))
       );
-  }
-
-  onShowChart(event: Event): void {
-    event.preventDefault();
   }
 }

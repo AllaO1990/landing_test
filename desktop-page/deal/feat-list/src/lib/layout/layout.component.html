@@ -169,7 +169,7 @@
           </div>
           <div class="item__cell item__action">
             <button
-              [disabled]="item.instrument.source !== 'tinkoff'"
+              [disabled]="item.instrument.source !== 'tinkoff' || (item.out && item.out.date)"
               (click)="onTrade($event, item)"
               class="action"
               tuiButton

@@ -1,11 +1,15 @@
-<div class="layout" [class.layout--with-chart]="false">
+<div class="layout" [class.layout--with-chart]="isChart$ | async">
   <div class="layout__portfolio widget">
     <portfolio-list-wrapper></portfolio-list-wrapper>
   </div>
   <div class="layout__structure widget">
     <structure-wrapper></structure-wrapper>
   </div>
-  <div class="layout__chart widget"></div>
+  <div class="layout__chart widget">
+    @if (isShowPortfolioChart$ | async) {
+      <portfolio-chart-wrapper></portfolio-chart-wrapper>
+    }
+  </div>
   <div class="layout__out widget">
     <deal-list-wrapper></deal-list-wrapper>
   </div>

@@ -1,0 +1,24 @@
+{
+  "name": "feat-chart",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "desktop-page/portfolio/feat-chart/feat-chart/src",
+  "prefix": "portfolio",
+  "projectType": "library",
+  "tags": [
+    "portfolio-chart"
+  ],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "desktop-page/portfolio/feat-chart/feat-chart/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { ApiIdeaService } from './api.service';
 import { forkJoin, map, Observable, switchMap, tap, timer } from 'rxjs';
@@ -12,7 +11,6 @@ export interface DataAccessIdeaState {
   data: Positions | null;
 }
 
-@Injectable()
 export class DataAccessIdeaStore extends ComponentStore<DataAccessIdeaState> {
   static defaultState: DataAccessIdeaState = {
     isLoaded: false,

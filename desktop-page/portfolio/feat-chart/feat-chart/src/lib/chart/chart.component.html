@@ -1,0 +1,100 @@
+<div class="chart-line" #chart>
+  @if (chart$ | async; as chart) {
+    <svg
+      xmlns:svg="http://www.w3.org/1999/html"
+      [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height"
+      preserveAspectRatio="xMinYMin meet">
+      <defs>
+        <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
+          <stop class="start" offset="0%" />
+          <stop class="stop" offset="100%" />
+        </linearGradient>
+      </defs>
+      <svg:g
+        [attr.transform]="'translate(0,' + (chart.height - chart.marginBottom) + ')'"
+        fill="none"
+        font-size="10"
+        font-family="sans-serif"
+        text-anchor="middle">
+        <svg:path
+          class="domain"
+          stroke="currentColor"
+          [attr.d]="chart.xTicksLine" />
+        @for (item of chart.xTicks; track item.offset) {
+          <svg:g
+            class="tick"
+            opacity="1"
+            [attr.transform]="'translate(' + item.offset + ',0)'">
+            <svg:line stroke="currentColor" y2="6"></svg:line>
+            <svg:text fill="currentColor" y="9" dy="0.71em">{{ item.value | date: 'dd.MM' }}</svg:text>
+          </svg:g>
+        }
+      </svg:g>
+
+      <svg:g
+        [attr.transform]="'translate(' + chart.marginLeft + ',0)'"
+        fill="none"
+        font-size="10"
+        font-family="sans-serif"
+        text-anchor="end">
+        @for (item of chart.yTicks; track item.offset) {
+          <g
+            class="tick"
+            opacity="1"
+            [attr.transform]="'translate(0,' + item.offset + ')'">
+            <line stroke-opacity="0.1" stroke="currentColor" x2="-6"></line>
+            <svg:line
+              [attr.x2]="chart.yTicksLine"
+              stroke="currentColor"
+              stroke-opacity="0.1" />
+            <svg:text fill="currentColor" x="-9" dy="0.32em">
+              {{ item.value | chartNumberFormat | async }} {{ chart.currencySymbol }}
+            </svg:text>
+          </g>
+        }
+      </svg:g>
+
+      <svg:path
+        class="chart-area__path"
+        fill="url(#area)"
+        [attr.d]="chart.area(chart.items)" />
+
+      <svg:path
+        class="chart-line__path"
+        [attr.d]="chart.line(chart.items)" />
+
+      @for (item of chart.items; track item.date) {
+        <svg:g>
+          <svg:circle
+            class="chart-line__circle"
+            r="3"
+            [attr.cx]="chart.x(item.date)"
+            [attr.cy]="chart.y(item.balance)"
+            [tuiHint]="tooltip"
+            [tuiHintContext]="{ $implicit: { balance: item.balance, date: item.date, currency: chart.currencySymbol } }"
+            tuiHintAppearance="dark"
+          />
+        </svg:g>
+      }
+    </svg>
+  }
+
+  @if (isEmpty) {
+    <div class="chart-line__empty">
+      Нет данных
+    </div>
+  }
+</div>
+
+<ng-template #tooltip let-item>
+  <div class="tooltip">
+    <div class="tooltip__balance">
+      {{ item.balance | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }} {{ item.currency }}
+    </div>
+    <div class="tooltip__date">
+      {{ item.date | date: 'dd.MM.yyyy' }}
+    </div>
+  </div>
+</ng-template>
+
+
