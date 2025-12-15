@@ -27,8 +27,8 @@ import { DataAccessDealStore } from '@data-access-deal/store';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
 import { AsyncPipe } from '@angular/common';
-import { PortfolioChartWrapper } from '@feat-portfolio-chart';
 import { TuiFormatNumberPipe } from '@taiga-ui/core';
+import { PortfolioChartWrapper } from '@feat-portfolio-chart';
 
 @Component({
   selector: 'main-light',

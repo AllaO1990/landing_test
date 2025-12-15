@@ -1,0 +1,29 @@
+<div class="layout">
+  <div class="layout__header">
+    <div class="layout__title" [tuiSkeleton]="!data().isLoaded">
+      График прибыли
+    </div>
+
+    <div class="space"></div>
+    <div class="layout__action" [tuiSkeleton]="!data().isLoaded">
+      <button
+        tuiIconButton
+        type="button"
+        appearance="icon"
+        iconStart="@tui.x"
+        size="xs"
+        (click)="onClose($event)">
+      </button>
+    </div>
+  </div>
+
+  <div class="layout__chart">
+    @if (data().isLoaded && !data().isLoading) {
+      <div class="layout__loader">
+        <ui-loader></ui-loader>
+      </div>
+    }
+
+    <portfolio-chart [tuiSkeleton]="!data().isLoaded" [data]="data().data"></portfolio-chart>
+  </div>
+</div>
