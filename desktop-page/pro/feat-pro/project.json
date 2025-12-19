@@ -1,0 +1,24 @@
+{
+  "name": "feat-pro",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "desktop-page/pro/feat-pro/src",
+  "prefix": "pro",
+  "projectType": "library",
+  "tags": [
+    "pro"
+  ],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "desktop-page/pro/feat-pro/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

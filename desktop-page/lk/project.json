@@ -2,8 +2,10 @@
   "name": "lk",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "desktop-page/lk/src",
-  "prefix": "lib",
-  "tags": ["lk"],
+  "prefix": "lk",
+  "tags": [
+    "lk"
+  ],
   "projectType": "library",
   "targets": {}
 }

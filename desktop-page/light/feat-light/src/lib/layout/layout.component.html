@@ -9,6 +9,10 @@
     @if (isShowPortfolioChart$ | async) {
       <portfolio-chart-wrapper></portfolio-chart-wrapper>
     }
+
+    @if (isShowCandlestickChart$ | async) {
+      <stock-candlestick-wrapper></stock-candlestick-wrapper>
+    }
   </div>
   <div class="layout__out widget">
     <deal-list-wrapper></deal-list-wrapper>

@@ -20,7 +20,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'main-v2',
+        redirectTo: 'light',
         pathMatch: 'full',
       },
       {
@@ -28,20 +28,64 @@ export const routes: Routes = [
         loadComponent: () => import('payment').then((m) => m.PaymentComponent),
       },
       {
-        path: 'main-v2',
-        canActivate: [PermissionGuard],
+        path: 'light',
         children: [
           {
             path: '',
-            outlet: 'toolbar-main',
-            loadComponent: () => import('main').then((m) => m.ToolbarSearchComponent),
+            outlet: 'toolbar-right',
+            loadComponent: () => import('light').then((m) => m.ToolbarComponent),
           },
           {
             path: '',
-            loadComponent: () => import('main').then((m) => m.MainComponent),
+            loadComponent: () => import('light').then((m) => m.LightLayoutComponent),
           },
         ],
       },
+      {
+        path: 'pro',
+        children: [
+          {
+            path: '',
+            outlet: 'toolbar-right',
+            loadComponent: () => import('pro').then((m) => m.ToolbarProComponent),
+          },
+          {
+            path: '',
+            redirectTo: 'main-v2',
+            pathMatch: 'full',
+          },
+          {
+            path: 'main-v2',
+            canActivate: [PermissionGuard],
+            children: [
+              {
+                path: '',
+                outlet: 'toolbar-left',
+                loadComponent: () => import('main').then((m) => m.ToolbarSearchComponent),
+              },
+              {
+                path: '',
+                loadComponent: () => import('main').then((m) => m.MainComponent),
+              },
+            ],
+          },
+          {
+            path: 'portfolio',
+            children: [
+              {
+                path: '',
+                outlet: 'toolbar-left',
+                loadComponent: () => import('portfolio').then((m) => m.FilterComponent),
+              },
+              {
+                path: '',
+                loadComponent: () => import('portfolio').then((m) => m.LayoutComponent),
+              },
+            ],
+          },
+        ],
+      },
+
       //   {
       //     path: 'main',
       //     loadChildren: () => import('./pages/main/main.module').then((m) => m.MainModule),
@@ -51,29 +95,7 @@ export const routes: Routes = [
       //   //   loadChildren: () => import('dashboard').then((m) => m.ChartsDashboardModule),
       //   //   canActivate: [PermissionGuard],
       //   // },
-      {
-        path: 'portfolio',
-        children: [
-          {
-            path: '',
-            outlet: 'toolbar-main',
-            loadComponent: () => import('portfolio').then((m) => m.FilterComponent),
-          },
-          {
-            path: '',
-            loadComponent: () => import('portfolio').then((m) => m.LayoutComponent),
-          },
-        ],
-      },
-      {
-        path: 'light',
-        children: [
-          {
-            path: '',
-            loadComponent: () => import('main').then((m) => m.LightComponent),
-          },
-        ],
-      },
+
       {
         path: '403',
         loadChildren: () => import('page-403').then((m) => m.Page403Module),

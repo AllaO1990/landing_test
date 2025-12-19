@@ -17,7 +17,7 @@ export class LocalStorage implements Storage {
     try {
       return value && JSON.parse(value);
     } catch (ex) {
-      return new Function(`return ${value}`)();
+      return value;
     }
   }
 

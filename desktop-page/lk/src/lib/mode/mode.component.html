@@ -1,0 +1,11 @@
+<div tuiGroup [collapsed]="true">
+  @for (item of list; track item.value) {
+    <a
+      tuiButton
+      routerLinkActive
+      #rla="routerLinkActive"
+      [appearance]="rla.isActive ? 'primary' : 'outline-grayscale'"
+      [routerLink]="item.path"
+    >{{ item.name }}</a>
+  }
+</div>

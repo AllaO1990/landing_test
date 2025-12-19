@@ -1,0 +1,4 @@
+[tuiGroup] > *:has([tuiBlock]:checked) {
+  color: var(--tui-text-primary-on-accent-1);
+  background-color: var(--tui-background-accent-1);
+}

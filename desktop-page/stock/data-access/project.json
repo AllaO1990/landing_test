@@ -1,0 +1,24 @@
+{
+  "name": "data-access-stock",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "desktop-page/stock/data-access/src",
+  "prefix": "stock",
+  "projectType": "library",
+  "tags": [
+    "data-access"
+  ],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "desktop-page/stock/data-access/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

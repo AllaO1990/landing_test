@@ -35,7 +35,7 @@ import { AccountBroker, AccountDealType, AccountStrategy, AccountType } from 'ty
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ColorPriceDirective } from '@ui/components/price';
-import { ResponsePosition } from 'types/position';
+import { Position, ResponsePosition } from 'types/position';
 import { DataAccessDealState } from '@data-access-deal/store';
 import { DEAL_CONSTANTS } from '@data-access-deal/constants';
 import { GetDatePassedPipe } from '@ui/pipes/get-date-passed.pipe';
@@ -183,8 +183,20 @@ export class LayoutComponent implements AfterViewInit {
 
     this.#queryParams.update({
       trade: 'visible',
-      type: 'position',
+      type: 'transaction',
+      id: item.id || (item as any).ideaId,
+    });
+  }
+
+  public onDblclick(event: Event, item: Position): void {
+    event.preventDefault();
+
+    console.log(item);
+
+    this.#queryParams.update({
+      type: EventSelected.IDEA,
       id: item.id,
+      dialog: 'visible',
     });
   }
 

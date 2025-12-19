@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LightComponent } from './light.component';
+import { ModeComponent } from './mode.component';
 
-describe('LightComponent', () => {
-  let component: LightComponent;
-  let fixture: ComponentFixture<LightComponent>;
+describe('ModeComponent', () => {
+  let component: ModeComponent;
+  let fixture: ComponentFixture<ModeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LightComponent],
+      imports: [ModeComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LightComponent);
+    fixture = TestBed.createComponent(ModeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

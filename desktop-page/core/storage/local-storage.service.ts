@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { inject, Injectable, InjectionToken } from '@angular/core';
 
 export const LOCAL_STORAGE = new InjectionToken('localStorage', {
   providedIn: 'root',
@@ -7,17 +7,14 @@ export const LOCAL_STORAGE = new InjectionToken('localStorage', {
 
 @Injectable({ providedIn: 'root' })
 export class VtLocalStorageService {
-  constructor(@Inject(LOCAL_STORAGE) private _storage: Storage) {}
+  private readonly _storage: Storage = inject(LOCAL_STORAGE);
 
   setObject(key: string, object: { [key: string]: any }): void {
     const stringifyObject = JSON.stringify(object);
     this._storage.setItem(key, stringifyObject);
   }
 
-  addOrUpdateObjectProperty(
-    storageKey: string,
-    dataObject: { [prop: string]: any }
-  ): void {
+  addOrUpdateObjectProperty(storageKey: string, dataObject: { [prop: string]: any }): void {
     const currentObject = JSON.parse(this._storage.getItem(storageKey) || '{}');
 
     const stringifyObject = JSON.stringify({ ...currentObject, ...dataObject });

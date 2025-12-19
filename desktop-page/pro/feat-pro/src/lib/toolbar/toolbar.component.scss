@@ -1,0 +1,13 @@
+:host {
+  flex: 1;
+}
+
+.toolbar {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  &__nav {
+    margin: 0 var(--padding-4);
+  }
+}

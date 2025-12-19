@@ -4,7 +4,6 @@ import { CONTEXT_ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAM
 import { QueryParams } from 'utils/query-params';
 import { debounceTime, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavComponent } from '../nav';
 import { LogoComponent } from '@ui/components/logo';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { SelectFacade } from 'stores/facades/select.facade';
@@ -31,11 +30,13 @@ import { DataAccessPortfolioStore } from '@data-access-portfolio/store';
 import { ApiPortfolioService } from '@data-access-portfolio/api.service';
 import { DataAccessStructureStore } from '@data-access-structure/store';
 import { ApiStructureService } from '@data-access-structure/api.service';
+import { UserComponent } from '../user/user.component';
+import { ModeComponent } from '../mode/mode.component';
 
 @Component({
   selector: 'lib-lk',
   standalone: true,
-  imports: [RouterOutlet, NavComponent, LogoComponent],
+  imports: [RouterOutlet, LogoComponent, UserComponent, ModeComponent],
   templateUrl: './lk.component.html',
   styleUrl: './lk.component.scss',
   providers: [

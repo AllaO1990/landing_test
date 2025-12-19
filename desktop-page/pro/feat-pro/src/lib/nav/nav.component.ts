@@ -19,7 +19,7 @@ interface NavItem {
 type NavList = NavItem[];
 
 @Component({
-  selector: 'lk-nav',
+  selector: 'pro-nav',
   standalone: true,
   imports: [
     NgForOf,
@@ -45,8 +45,8 @@ export class NavComponent {
 
   readonly size = 's';
   readonly links$: Observable<NavList> = of([
-    { name: 'Терминал', path: '/lk/main-v2', icon: '@tui.trello', disabled: false, params: null },
-    { name: 'Портфель', path: '/lk/portfolio', icon: '@tui.briefcase-business', disabled: false, params: null },
+    { name: 'Терминал', path: '/lk/pro/main-v2', icon: '@tui.trello', disabled: false, params: null },
+    { name: 'Портфель', path: '/lk/pro/portfolio', icon: '@tui.briefcase-business', disabled: false, params: null },
   ]);
 
   isDropdownOpen = false;
