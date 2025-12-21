@@ -9,4 +9,5 @@ export enum DealEnums {
   BUTTON_ACTION = 'buttonAction',
   DEAL = 'deal',
   BROKER = 'broker',
+  RANGE = 'range',
 }

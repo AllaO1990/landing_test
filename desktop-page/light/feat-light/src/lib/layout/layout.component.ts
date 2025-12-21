@@ -8,7 +8,7 @@ import {
   inject,
   Signal,
 } from '@angular/core';
-import { combineLatest, debounceTime, Observable, startWith } from 'rxjs';
+import { Observable, startWith } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { IdeaListWrapper } from '@feat-idea-list';
@@ -21,9 +21,7 @@ import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.s
 import { DataAccessStructureStore } from '@data-access-structure/store';
 import { DataAccessStructureService } from '@data-access-structure/data-access.service';
 import { DataAccessIdeaService } from '@data-access-idea/data-access.service';
-import { DataAccessIdeaStore } from '@data-access-idea/store';
 import { DataAccessDealService } from '@data-access-deal/data-access.service';
-import { DataAccessDealStore } from '@data-access-deal/store';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
 import { AsyncPipe } from '@angular/common';
@@ -61,41 +59,12 @@ export class LightLayoutComponent implements AfterViewInit {
   readonly #storePortfolio: DataAccessPortfolioStore = inject(DataAccessPortfolioStore);
   readonly #dataAccessStructure: DataAccessStructureService = inject(DataAccessStructureService);
   readonly #storeStructure: DataAccessStructureStore = inject(DataAccessStructureStore);
-  readonly #dataAccessIdea: DataAccessIdeaService = inject(DataAccessIdeaService);
-  readonly #storeIdea: DataAccessIdeaStore = inject(DataAccessIdeaStore);
-  readonly #dataAccessDeal: DataAccessDealService = inject(DataAccessDealService);
-  readonly #storeDeal: DataAccessDealStore = inject(DataAccessDealStore);
 
   readonly paramsPortfolio: Signal<Params | null> = computed(() => this.#dataAccessPortfolio.params());
   readonly paramsStructure: Signal<Params | null> = computed(() =>
     this._getParamsStructure(this.#dataAccessStructure.params(), this.#dataAccessPortfolio.params())
   );
   readonly paramsPortfolio$ = toObservable(this.#dataAccessPortfolio.params).pipe(filter((params) => !!params));
-  readonly paramsIdea$: Observable<Params> = combineLatest([
-    toObservable(this.#dataAccessPortfolio.params).pipe(
-      filter((params: Params | null): params is Params => params !== null),
-      map((params: Params) => ({ currencyId: params['currencyId'] }))
-    ),
-    toObservable(this.#dataAccessIdea.params).pipe(
-      filter((params: Params | null): params is Params => params !== null)
-    ),
-  ]).pipe(
-    takeUntilDestroyed(this.#destroyRef),
-    map(([portfolio, idea]: [Params, Params]) => Object.assign({}, portfolio, idea)),
-    debounceTime(250)
-  );
-  readonly paramsDeal$: Observable<Params> = combineLatest([
-    toObservable(this.#dataAccessPortfolio.params).pipe(
-      filter((params: Params | null): params is Params => params !== null)
-    ),
-    toObservable(this.#dataAccessDeal.params).pipe(
-      filter((params: Params | null): params is Params => params !== null)
-    ),
-  ]).pipe(
-    takeUntilDestroyed(this.#destroyRef),
-    map(([portfolio, deal]: [Params, Params]) => Object.assign({}, portfolio, deal)),
-    debounceTime(250)
-  );
   readonly isChart$: Observable<boolean> = this.#queryParams.pipe(
     takeUntilDestroyed(this.#destroyRef),
     startWith(this.#queryParams.value()),
@@ -136,8 +105,6 @@ export class LightLayoutComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.paramsIdea$.subscribe((params: Params) => this.#storeIdea.loadIdaes(params));
-    this.paramsDeal$.subscribe((params: Params) => this.#storeDeal.load(params));
     this.chartPortfolio$.subscribe((params: Params) => this.#storePortfolio.loadHistory(params));
   }
 

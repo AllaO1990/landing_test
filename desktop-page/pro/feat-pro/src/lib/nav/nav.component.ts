@@ -1,12 +1,10 @@
 import { TuiItemsWithMore } from '@taiga-ui/kit';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { TuiAppearance, TuiButton, TuiDataList, TuiDropdown, TuiGroup } from '@taiga-ui/core';
 import { Params, RouterModule } from '@angular/router';
-import { AuthService } from '@core/auth';
 import { Observable, of } from 'rxjs';
 import { IsDisabledStatePipe } from '@ui/pipes/is-disabled-state.pipe';
-import { SelectFacade } from 'stores/facades/select.facade';
 
 interface NavItem {
   path: any[] | string | null | undefined;
@@ -40,9 +38,6 @@ type NavList = NavItem[];
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavComponent {
-  private readonly _authService: AuthService = inject(AuthService);
-  private readonly _select: SelectFacade = inject(SelectFacade);
-
   readonly size = 's';
   readonly links$: Observable<NavList> = of([
     { name: 'Терминал', path: '/lk/pro/main-v2', icon: '@tui.trello', disabled: false, params: null },
@@ -63,9 +58,5 @@ export class NavComponent {
     }
 
     this.isDropdownOpen = false;
-  }
-
-  logout() {
-    this._authService.logout();
   }
 }

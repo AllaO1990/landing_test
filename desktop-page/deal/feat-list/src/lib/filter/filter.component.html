@@ -84,5 +84,40 @@
         />
       </tui-textfield>
     </div>
+    <div class="form__label">
+      <span>{{ constants.currency }}</span>
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherCurrency()"
+        [stringify]="stringifyCurrency()"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="currency"
+          placeholder="Валюта"
+          autocomplete="off"
+          tuiSelect />
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="currency$ | async"
+        />
+      </tui-textfield>
+    </div>
+    <div class="form__label">
+      <span>{{ constants.range }}</span>
+      <lib-range-with-list
+        formControlName="range"
+        [items]="rangeList"
+        [itemContent]="itemRange"
+        [selectHandler]="selectRangeHandler"
+      ></lib-range-with-list>
+    </div>
+
   </tui-scrollbar>
 </form>
+
+<ng-template #itemRange let-item>
+  {{ item.text }}
+</ng-template>

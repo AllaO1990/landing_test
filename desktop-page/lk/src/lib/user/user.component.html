@@ -1,4 +1,27 @@
 <tui-avatar
   size="s"
   src="@tui.user"
+  [tuiAppearanceState]="open ? 'active' : null"
+  [tuiDropdown]="dropdown"
+  tuiDropdownDirection="bottom"
+  tuiDropdownAlign="right"
+  [(tuiDropdownOpen)]="open"
 />
+
+<ng-template #dropdown>
+  <tui-data-list size="s">
+    <tui-opt-group>
+      @for (item of items; track item) {
+        <button
+          new
+          tuiOption
+          [iconStart]="item.icon"
+          (click)="onClick($event, item.action)"
+          [disabled]="item.disabled"
+          type="button">
+          {{ item.name }}
+        </button>
+      }
+    </tui-opt-group>
+  </tui-data-list>
+</ng-template>

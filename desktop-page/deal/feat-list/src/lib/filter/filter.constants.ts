@@ -12,6 +12,7 @@ export const DELA_LIST_FILTER_CONSTANTS: { [key in DealListFilterEnums]: string 
   [DealListFilterEnums.BROKER]: 'Брокер',
   [DealListFilterEnums.PORTFOLIO]: 'Портфель',
   [DealListFilterEnums.DEAL]: 'Сделка',
+  [DealListFilterEnums.RANGE]: 'Период',
 };
 
 export const DEAL_TYPES: AccountDealTypes = [

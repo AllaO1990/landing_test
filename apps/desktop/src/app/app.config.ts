@@ -24,6 +24,7 @@ import { LocalStorage } from 'storage/local.storage';
 import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 import { TimerInterval } from 'utils/timer-interval';
 import { APP_CONFIG, AppConfig } from 'tokens/desktop/config';
+import { TODAY } from 'tokens/desktop/today';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -61,6 +62,10 @@ export const appConfig: ApplicationConfig = {
       provide: QUERY_PARAMS,
       useFactory: (router: Router, activatedRoute: ActivatedRoute) => new QueryParams(router, activatedRoute),
       deps: [Router, ActivatedRoute],
+    },
+    {
+      provide: TODAY,
+      useValue: new Date(new Date().setUTCHours(12, 0, 0, 0)),
     },
     {
       provide: TIMER_INTERVAL,

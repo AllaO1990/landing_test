@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, OnInit } from '@angular/core';
 import { Params, RouterOutlet } from '@angular/router';
-import { CONTEXT_ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
+import { ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
 import { debounceTime, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -32,6 +32,7 @@ import { DataAccessStructureStore } from '@data-access-structure/store';
 import { ApiStructureService } from '@data-access-structure/api.service';
 import { UserComponent } from '../user/user.component';
 import { ModeComponent } from '../mode/mode.component';
+import { ActionLogout } from '../common/plugins/action-logout';
 
 @Component({
   selector: 'lib-lk',
@@ -76,28 +77,33 @@ import { ModeComponent } from '../mode/mode.component';
       deps: [ApiDealService],
     },
     {
-      provide: CONTEXT_ACTION_EVENTS,
+      provide: ACTION_EVENTS,
       useClass: ActionDeletePosition,
       multi: true,
     },
     {
-      provide: CONTEXT_ACTION_EVENTS,
+      provide: ACTION_EVENTS,
       useClass: ActionNewPosition,
       multi: true,
     },
     {
-      provide: CONTEXT_ACTION_EVENTS,
+      provide: ACTION_EVENTS,
       useClass: ActionShowPosition,
       multi: true,
     },
     {
-      provide: CONTEXT_ACTION_EVENTS,
+      provide: ACTION_EVENTS,
       useClass: ActionShowIdea,
       multi: true,
     },
     {
-      provide: CONTEXT_ACTION_EVENTS,
+      provide: ACTION_EVENTS,
       useClass: ActionCopyIdea,
+      multi: true,
+    },
+    {
+      provide: ACTION_EVENTS,
+      useClass: ActionLogout,
       multi: true,
     },
     {

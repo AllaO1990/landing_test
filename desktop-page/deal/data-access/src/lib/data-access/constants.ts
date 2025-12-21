@@ -11,4 +11,5 @@ export const DEAL_CONSTANTS: { [key in DealEnums]: string } = {
   [DealEnums.BUTTON_ACTION]: 'Выйти',
   [DealEnums.DEAL]: 'Сделка',
   [DealEnums.BROKER]: 'Брокер',
+  [DealEnums.RANGE]: 'Период',
 };

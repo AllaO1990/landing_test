@@ -1,3 +1,12 @@
 :host {
   flex: 1;
 }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+
+  button {
+    margin-right: var(--padding-4);
+  }
+}

@@ -16,7 +16,7 @@ import {
 } from '@taiga-ui/core';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { CONTEXT_ACTION_EVENTS, QUERY_PARAMS } from 'tokens/desktop';
+import { ACTION_EVENTS, QUERY_PARAMS } from 'tokens/desktop';
 import { EventSelected } from 'types/events';
 import { StockId } from 'types/stock';
 import { getColor, getRGBA } from 'utils/get-color';
@@ -71,7 +71,7 @@ export class EntryTableComponent {
 
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   private readonly _store: SelectFacade = inject(SelectFacade);
-  readonly #contextActionPlugins: ContextActionPlugin[] = inject(CONTEXT_ACTION_EVENTS);
+  readonly #contextActionPlugins: ContextActionPlugin[] = inject(ACTION_EVENTS);
   readonly #mapPlugins: Map<string, ContextAction> = new Map();
 
   public readonly header: EntryHeaderItem[] = ENTRY_HEADER;
@@ -147,7 +147,7 @@ export class EntryTableComponent {
       const find = this.#contextActionPlugins.find((item) => item.condition(button.type));
 
       if (!find) {
-        console.warn('Plugin CONTEXT_ACTION_EVENTS not found');
+        console.warn('Plugin ACTION_EVENTS not found');
         return;
       }
 

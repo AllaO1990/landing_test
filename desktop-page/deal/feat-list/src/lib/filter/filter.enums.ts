@@ -9,4 +9,5 @@ export enum DealListFilterEnums {
   BROKER = 'broker',
   PORTFOLIO = 'portfolio',
   DEAL = 'deal',
+  RANGE = 'range',
 }

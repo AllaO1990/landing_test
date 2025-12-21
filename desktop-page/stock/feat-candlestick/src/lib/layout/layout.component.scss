@@ -1,0 +1,23 @@
+:host {
+  display: block;
+
+  height: 100%;
+  width: 100%;
+}
+
+.layout {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+
+  &__header {
+    flex: 0 0 auto;
+
+    height: 32px;
+  }
+
+  &__chart {
+    flex: 1;
+  }
+}

@@ -31,7 +31,14 @@ import {
 import { TuiBadgedContent, TuiBadgeNotification, TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
-import { AccountBroker, AccountDealType, AccountStrategy, AccountType } from 'types/account';
+import {
+  AccountBroker,
+  AccountCurrency,
+  AccountDealType,
+  AccountRange,
+  AccountStrategy,
+  AccountType,
+} from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ColorPriceDirective } from '@ui/components/price';
@@ -43,12 +50,17 @@ import { DataAccessDealService } from '@data-access-deal/data-access.service';
 import { Params } from '@angular/router';
 import { PortfolioPosition } from 'types/portfolio';
 import { LoaderComponent } from '@ui/components/loader';
+import { TuiDayRange } from '@taiga-ui/cdk';
+import { getListOfRange } from 'utils/get-list-of-range';
+import { TODAY } from 'tokens/desktop/today';
 
 interface FilterValue {
   type: AccountType;
   strategy: AccountStrategy;
   dealType: AccountDealType;
   broker: AccountBroker;
+  currency: AccountCurrency;
+  range: AccountRange;
 }
 
 @Component({
@@ -83,14 +95,18 @@ interface FilterValue {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {
+  readonly #today: Date = inject(TODAY);
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #dataAccess: DataAccessDealService = inject(DataAccessDealService);
+  readonly #rangeList: { text: string; range: TuiDayRange }[] = getListOfRange(this.#today);
   readonly #valueDefault = {
     dealType: FilterDealListComponent.valueDefaultDealType,
     type: FilterDealListComponent.valueDefaultType,
     strategy: FilterDealListComponent.valueDefaultStrategy,
     broker: FilterDealListComponent.valueDefaultBroker,
+    currency: FilterDealListComponent.valueDefaultCurrency,
+    range: this.#rangeList[5].range,
   };
 
   protected readonly size = 's';
@@ -111,7 +127,9 @@ export class LayoutComponent implements AfterViewInit {
         value.dealType.id !== null ||
         value.strategy.id !== null ||
         value.type.id !== null ||
-        value.broker.brokerId !== null
+        value.broker.brokerId !== null ||
+        value.currency.currencyId !== null ||
+        value.range.to !== null
     ),
     distinctUntilChanged()
   );
@@ -183,7 +201,7 @@ export class LayoutComponent implements AfterViewInit {
 
     this.#queryParams.update({
       trade: 'visible',
-      type: 'transaction',
+      type: EventSelected.TRANSACTION,
       id: item.id || (item as any).ideaId,
     });
   }
@@ -194,20 +212,30 @@ export class LayoutComponent implements AfterViewInit {
     console.log(item);
 
     this.#queryParams.update({
-      type: EventSelected.IDEA,
+      type: EventSelected.TRANSACTION,
       id: item.id,
       dialog: 'visible',
     });
   }
 
   private _getParams(): Params {
-    const { dealType, type, strategy, broker } = this.filterControl.value;
+    const { dealType, type, strategy, broker, currency, range } = this.filterControl.value;
+    let rangeValue = null;
+
+    if (range) {
+      rangeValue = {
+        from: (range as TuiDayRange).from.toUtcNativeDate().toISOString(),
+        to: new Date((range as TuiDayRange).to.toUtcNativeDate().setUTCHours(23, 59, 59)).toISOString(),
+      };
+    }
 
     return {
       brokerId: broker.brokerId,
       dealType: dealType.id,
       instrumentType: type.id,
       strategyId: strategy.id,
+      currencyId: currency.currencyId,
+      ...rangeValue,
     };
   }
 }

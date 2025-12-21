@@ -18,15 +18,6 @@
       {{ item.name }}
     </a>
   </ng-container>
-  <button
-    *tuiItem
-    appearance="outline-grayscale"
-    [size]="size"
-    tuiIconButton
-    iconStart="@tui.log-out"
-    type="button"
-    (click)="logout()">
-  </button>
 
   <ng-template
     let-lastIndex
@@ -64,13 +55,6 @@
                 {{ item.name }}
               </a>
             </ng-container>
-            <button
-              tuiOption
-              class="link-option"
-              iconStart="@tui.log-out"
-              (click)="logout()">
-              Выход
-            </button>
           </tui-opt-group>
         </tui-data-list>
       </ng-template>
