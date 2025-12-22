@@ -25,6 +25,8 @@ import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 import { TimerInterval } from 'utils/timer-interval';
 import { APP_CONFIG, AppConfig } from 'tokens/desktop/config';
 import { TODAY } from 'tokens/desktop/today';
+import { TUI_LANGUAGE, TUI_RUSSIAN_LANGUAGE } from '@taiga-ui/i18n';
+import { of } from 'rxjs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -94,10 +96,10 @@ export const appConfig: ApplicationConfig = {
         desktopLargest: 1920,
       },
     },
-    // {
-    //   provide: TUI_LANGUAGE,
-    //   useValue: of(TUI_RUSSIAN_LANGUAGE),
-    // },
+    {
+      provide: TUI_LANGUAGE,
+      useValue: of(TUI_RUSSIAN_LANGUAGE),
+    },
     GlobalDateRangeService,
   ],
 };

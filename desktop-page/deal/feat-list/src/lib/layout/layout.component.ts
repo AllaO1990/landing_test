@@ -12,14 +12,12 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
-import { QueryParams } from 'utils/query-params';
-import { QUERY_PARAMS } from 'tokens/desktop';
+import { ACTION_EVENTS } from 'tokens/desktop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FilterDealListComponent } from '../filter/filter.component';
 import { debounceTime, distinctUntilChanged, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
-import { EventSelected } from 'types/events';
 import {
   TuiButton,
   TuiFormatNumberPipe,
@@ -42,7 +40,6 @@ import {
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ColorPriceDirective } from '@ui/components/price';
-import { Position, ResponsePosition } from 'types/position';
 import { DataAccessDealState } from '@data-access-deal/store';
 import { DEAL_CONSTANTS } from '@data-access-deal/constants';
 import { GetDatePassedPipe } from '@ui/pipes/get-date-passed.pipe';
@@ -53,6 +50,10 @@ import { LoaderComponent } from '@ui/components/loader';
 import { TuiDayRange } from '@taiga-ui/cdk';
 import { getListOfRange } from 'utils/get-list-of-range';
 import { TODAY } from 'tokens/desktop/today';
+import { ContextActionPlugin } from 'types/context-action-plugin';
+import { ContextAction } from 'types/context-action';
+import { getContextAction } from 'utils/get-context-action';
+import { SelectItemPipe } from './layout.directive';
 
 interface FilterValue {
   type: AccountType;
@@ -88,6 +89,7 @@ interface FilterValue {
     TuiBadgeNotification,
     TuiBadgedContent,
     LoaderComponent,
+    SelectItemPipe,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -96,9 +98,10 @@ interface FilterValue {
 })
 export class LayoutComponent implements AfterViewInit {
   readonly #today: Date = inject(TODAY);
-  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
+  readonly #actions: ContextActionPlugin[] = inject(ACTION_EVENTS);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #dataAccess: DataAccessDealService = inject(DataAccessDealService);
+  readonly #map: Map<string, ContextAction> = new Map();
   readonly #rangeList: { text: string; range: TuiDayRange }[] = getListOfRange(this.#today);
   readonly #valueDefault = {
     dealType: FilterDealListComponent.valueDefaultDealType,
@@ -173,11 +176,11 @@ export class LayoutComponent implements AfterViewInit {
 
   onOpenDialog(event: StockInstrument | null): void {
     if (event) {
-      this.#queryParams.update({
-        type: EventSelected.STOCK_LIST,
-        id: event.id,
-        dialog: 'visible',
-      });
+      const context = this._getAction('newPosition');
+
+      if (context) {
+        context.action(event.id);
+      }
     }
   }
 
@@ -196,26 +199,34 @@ export class LayoutComponent implements AfterViewInit {
     this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this._getParams() }));
   }
 
-  onTrade(event: Event, item: ResponsePosition): void {
+  onTrade(event: Event, item: PortfolioPosition): void {
     event.preventDefault();
 
-    this.#queryParams.update({
-      trade: 'visible',
-      type: EventSelected.TRANSACTION,
-      id: item.id || (item as any).ideaId,
-    });
+    const context = this._getAction('showTrade');
+
+    if (context) {
+      context.action(item.ideaId);
+    }
   }
 
-  public onDblclick(event: Event, item: Position): void {
+  onClick(event: Event, item: PortfolioPosition): void {
     event.preventDefault();
 
-    console.log(item);
+    const context = this._getAction('selectTransaction');
 
-    this.#queryParams.update({
-      type: EventSelected.TRANSACTION,
-      id: item.id,
-      dialog: 'visible',
-    });
+    if (context) {
+      context.action(item.ideaId);
+    }
+  }
+
+  onDblclick(event: Event, item: PortfolioPosition): void {
+    event.preventDefault();
+
+    const context = this._getAction('showPosition');
+
+    if (context) {
+      context.action(item.ideaId);
+    }
   }
 
   private _getParams(): Params {
@@ -237,5 +248,9 @@ export class LayoutComponent implements AfterViewInit {
       currencyId: currency.currencyId,
       ...rangeValue,
     };
+  }
+
+  private _getAction(type: string): ContextAction | null {
+    return getContextAction(this.#actions, this.#map, type);
   }
 }

@@ -4,6 +4,7 @@ import { TuiDataList, TuiDropdown } from '@taiga-ui/core';
 import { ACTION_EVENTS } from 'tokens/desktop';
 import { ContextActionPlugin } from 'types/context-action-plugin';
 import { ContextAction } from 'types/context-action';
+import { getContextAction } from 'utils/get-context-action';
 
 @Component({
   selector: 'lk-user',
@@ -46,23 +47,6 @@ export class UserComponent {
   }
 
   _getAction(type: string): ContextAction | null {
-    let contextAction = this.mapAction.get(type);
-
-    if (!contextAction) {
-      const find = this.#actions.find((item) => item.condition(type)) || null;
-
-      try {
-        if (!find) {
-          throw new Error('Plugin ACTION_EVENTS');
-        }
-
-        this.mapAction.set(type, find.getAction());
-        contextAction = find.getAction();
-      } catch (e) {
-        console.warn(`Action ${type} not found: ${e}`);
-      }
-    }
-
-    return contextAction || null;
+    return getContextAction(this.#actions, this.mapAction, type);
   }
 }

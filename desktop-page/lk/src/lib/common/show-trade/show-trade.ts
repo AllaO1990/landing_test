@@ -2,7 +2,7 @@ import { QueryParams } from 'utils/query-params';
 import { ContextAction } from 'types/context-action';
 import { EventSelected } from 'types/events';
 
-export class ShowPosition extends ContextAction {
+export class ShowTrade extends ContextAction {
   constructor(private readonly _queryParams: QueryParams) {
     super();
   }
@@ -11,7 +11,7 @@ export class ShowPosition extends ContextAction {
     return this._queryParams.update({
       id,
       type: EventSelected.TRANSACTION,
-      dialog: 'visible',
+      trade: 'visible',
     });
   }
 }

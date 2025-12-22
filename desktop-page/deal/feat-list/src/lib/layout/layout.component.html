@@ -126,7 +126,12 @@
         [itemSize]="28"
         [list]="list()"
         [header]="header">
-        <div class="item" *uiLibListItem="let item" (dblclick)="onDblclick($event, item)">
+        <div
+          class="item"
+          [class.item--active]="item | dealSelectItem | async"
+          *uiLibListItem="let item"
+          (click)="onClick($event, item)"
+          (dblclick)="onDblclick($event, item)">
           <div class="item__cell item__date">
             @if (item.entry && item.entry.date; as date) {
               {{ date | date: 'dd.MM.yy' }}

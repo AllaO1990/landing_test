@@ -33,6 +33,9 @@ import { ApiStructureService } from '@data-access-structure/api.service';
 import { UserComponent } from '../user/user.component';
 import { ModeComponent } from '../mode/mode.component';
 import { ActionLogout } from '../common/plugins/action-logout';
+import { ActionShowTrade } from '../common/plugins/action-show-trade';
+import { ActionSelectIdea } from '../common/plugins/action-select-idea';
+import { ActionSelectTransaction } from '../common/plugins/action-select-transaction';
 
 @Component({
   selector: 'lib-lk',
@@ -89,6 +92,21 @@ import { ActionLogout } from '../common/plugins/action-logout';
     {
       provide: ACTION_EVENTS,
       useClass: ActionShowPosition,
+      multi: true,
+    },
+    {
+      provide: ACTION_EVENTS,
+      useClass: ActionSelectIdea,
+      multi: true,
+    },
+    {
+      provide: ACTION_EVENTS,
+      useClass: ActionSelectTransaction,
+      multi: true,
+    },
+    {
+      provide: ACTION_EVENTS,
+      useClass: ActionShowTrade,
       multi: true,
     },
     {

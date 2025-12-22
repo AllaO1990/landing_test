@@ -133,6 +133,10 @@
     padding: var(--padding-1) var(--padding-2);
   }
 
+  &--active {
+    background: var(--tui-service-selection-background);
+  }
+
   &__skeleton {
     flex: 1;
 
