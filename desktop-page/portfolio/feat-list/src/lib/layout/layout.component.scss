@@ -3,12 +3,11 @@
   display: flex;
   flex-flow: column nowrap;
 
+  height: 100%;
+
   &__item {
     padding: 0 var(--padding-2);
-
-    &:not(:last-child) {
-      margin-bottom: var(--padding-2);
-    }
+    margin-bottom: var(--padding-2);
   }
 
   &__header {
@@ -27,8 +26,13 @@
     font-weight: 500;
   }
 
+  &__container {
+    flex: 1;
+  }
+
   &__loader {
     position: absolute;
+    z-index: 10;
     top: 0;
     left: 0;
 
@@ -36,7 +40,7 @@
     height: 100%;
   }
 
-  &__loader ~ &__item {
+  &__loader ~ &__item, &__loader ~ &__container {
     filter: blur(2px);
   }
 }
@@ -80,7 +84,14 @@
 
   &__select {
     margin-left: var(--padding-4);
-    min-width: 120px;
+
+    &--currency {
+      min-width: 80px;
+    }
+
+    &--calendar {
+      min-width: 120px;
+    }
   }
 
   &__content {
@@ -107,4 +118,7 @@
     font-weight: 500;
     line-height: 24px;
   }
+}
+
+@media (max-height: 780px) {
 }

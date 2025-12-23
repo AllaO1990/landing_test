@@ -2,7 +2,7 @@ import { QueryParams } from 'utils/query-params';
 import { ContextAction } from 'types/context-action';
 import { EventSelected } from 'types/events';
 
-export class SelectIdea extends ContextAction {
+export class SelectStock extends ContextAction {
   constructor(private readonly _queryParams: QueryParams) {
     super();
   }
@@ -10,7 +10,7 @@ export class SelectIdea extends ContextAction {
   action(id: string | number) {
     return this._queryParams.update({
       id,
-      type: EventSelected.IDEA,
+      type: EventSelected.STOCK_LIST,
     });
   }
 }

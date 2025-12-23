@@ -58,5 +58,7 @@
 }
 
 .widget {
+  overflow: hidden;
+  
   background-color: var(--tui-background-base);
 }

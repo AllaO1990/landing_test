@@ -14,10 +14,20 @@
   &__header {
     flex: 0 0 auto;
 
+    display: flex;
+    align-items: center;
+
     height: 32px;
+    padding: var(--padding-2);
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 500;
   }
 
   &__chart {
     flex: 1;
+    overflow: hidden;
   }
 }

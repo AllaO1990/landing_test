@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { PORTFOLIO_CONSTANTS } from '@data-access-portfolio/constants';
 import { AccountCurrency, AccountPortfolio } from 'types/account';
-import { filter, Observable, shareReplay, startWith } from 'rxjs';
+import { filter, Observable, shareReplay, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { TuiButton, TuiTextfield } from '@taiga-ui/core';
@@ -11,6 +11,8 @@ import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 import { Params } from '@angular/router';
+import { LocalStorage } from 'storage/local.storage';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 
 interface FilterValue {
   portfolio: AccountPortfolio;
@@ -29,12 +31,17 @@ export class FilterPortfolioListComponent implements AfterViewInit {
   static valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
   static valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
 
+  readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
   readonly #dataAccess: DataAccessPortfolioService = inject(DataAccessPortfolioService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #accountFacade: AccountFacade = inject(AccountFacade);
 
   protected readonly size = 's';
   protected readonly constants = PORTFOLIO_CONSTANTS;
+  protected readonly valueDefault = {
+    portfolio: FilterPortfolioListComponent.valueDefaultPortfolio,
+    currency: { currency: 'rub', currencyId: 1, currencySymbol: '₽' },
+  };
 
   stringifyCurrency = signal((x: AccountCurrency) => x.currencySymbol || '');
   identityMatcherCurrency = signal((a: AccountCurrency, b: AccountCurrency) => a.currencyId === b.currencyId);
@@ -54,15 +61,17 @@ export class FilterPortfolioListComponent implements AfterViewInit {
   );
 
   readonly formGroup: FormGroup = new FormGroup({
-    portfolio: new FormControl(FilterPortfolioListComponent.valueDefaultPortfolio),
-    currency: new FormControl({ currency: 'rub', currencyId: 1, currencySymbol: '₽' }),
+    portfolio: new FormControl(this.valueDefault.portfolio),
+    currency: new FormControl(this.valueDefault.currency),
   });
 
   ngAfterViewInit(): void {
+    this._initFormGroupValue();
+
     this.formGroup.valueChanges
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
-        startWith(this.formGroup.value),
+        tap((value: FilterValue) => this.#localStorage.setItem('lightPortfolioFilter', value)),
         map((value: FilterValue) => ({
           portfolioId: value.portfolio.portfolioId,
           currencyId: value.currency.currencyId,
@@ -71,5 +80,11 @@ export class FilterPortfolioListComponent implements AfterViewInit {
       .subscribe((params: Params) => {
         this.#dataAccess.params.update((value) => ({ ...value, ...params }));
       });
+  }
+
+  private _initFormGroupValue(): void {
+    const value = this.#localStorage.getItem('lightPortfolioFilter') || this.valueDefault;
+
+    this.formGroup.patchValue(value);
   }
 }

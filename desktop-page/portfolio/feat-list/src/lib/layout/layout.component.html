@@ -1,4 +1,4 @@
-<div class="portfolio">
+<div class="portfolio" [formGroup]="formGroup">
   @if (isLoading()) {
     <div class="portfolio__loader">
       <ui-loader></ui-loader>
@@ -10,90 +10,110 @@
   <div class="portfolio__item portfolio__filter">
     <portfolio-filter [tuiSkeleton]="isLoaded()"></portfolio-filter>
   </div>
-  <div class="portfolio__item portfolio__value">
-    <div class="card card--primary" [tuiSkeleton]="isLoaded()">
-      <div class="card__header">
-        <div class="card__title">{{ constants.value }}</div>
-        <div class="space"></div>
-        <div class="card__actions">
-          <button
-            tuiIconButton
-            appearance="icon"
-            size="xs"
-            iconStart="@tui.pencil"
-            type="button">
-          </button>
+  <tui-scrollbar class="portfolio__container">
+    <div class="portfolio__item portfolio__value">
+      <div class="card card--primary" [tuiSkeleton]="isLoaded()">
+        <div class="card__header">
+          <div class="card__title">{{ constants.value }} в:</div>
+          <tui-textfield
+            class="card__select card__select--currency"
+            tuiChevron
+            [identityMatcher]="identityMatcherCurrency()"
+            [stringify]="stringifyCurrency()"
+            [tuiTextfieldSize]="size"
+            [tuiTextfieldCleaner]="false">
+            <input
+              formControlName="leadToCurrency"
+              [placeholder]="constants.currency"
+              autocomplete="off"
+              tuiSelect/>
+            <tui-data-list-wrapper
+              *tuiTextfieldDropdown
+              new
+              [items]="currency$ | async"
+            />
+          </tui-textfield>
+          <div class="space"></div>
+          <div class="card__actions">
+            <button
+              tuiIconButton
+              appearance="icon"
+              size="xs"
+              iconStart="@tui.pencil"
+              type="button">
+            </button>
+          </div>
+        </div>
+        <div class="card__content">
+          @if (balance(); as balance) {
+            <div class="card__value">
+              {{ balance.deposit | tuiFormatNumber | async }}
+              <span>{{ balance.currencySymbol }}</span>
+            </div>
+          }
         </div>
       </div>
-      <div class="card__content">
-        @if (balance(); as balance) {
-          <div class="card__value">
-            {{ balance.deposit | tuiFormatNumber | async }}
-            <span>{{ balance.currencySymbol }}</span>
-          </div>
-        }
-      </div>
     </div>
-  </div>
-  <div class="portfolio__item portfolio__profit">
-    <div class="card card--default" [tuiSkeleton]="isLoaded()">
-      <div class="card__header">
-        <div class="card__title">{{ constants.profit }}</div>
-        <tui-textfield
-          class="card__select"
-          tuiChevron
-          [identityMatcher]="identityMatcherCalendar()"
-          [stringify]="stringifyCalendar()"
-          tuiTextfieldSize="s"
-          [tuiTextfieldCleaner]="false">
-          <input
-            [formControl]="controlCalendar"
-            [placeholder]="constants.portfolio"
-            autocomplete="off"
-            tuiSelect />
-          <tui-data-list-wrapper
-            *tuiTextfieldDropdown
-            new
-            [items]="calendar$ | async"
-          />
-        </tui-textfield>
-        <div class="space"></div>
-        <button
-          [size]="size"
-          portfolioChartButton
-          tuiButton
-          appearance="flat"
-          type="button">
-          {{ constants.chart }}
-        </button>
+    <div class="portfolio__item portfolio__profit">
+      <div class="card card--default" [tuiSkeleton]="isLoaded()">
+        <div class="card__header">
+          <div class="card__title">{{ constants.profit }}</div>
+          <tui-textfield
+            class="card__select card__select--calendar"
+            tuiChevron
+            [identityMatcher]="identityMatcherCalendar()"
+            [stringify]="stringifyCalendar()"
+            tuiTextfieldSize="s"
+            [tuiTextfieldCleaner]="false">
+            <input
+              formControlName="calendar"
+              [placeholder]="constants.portfolio"
+              autocomplete="off"
+              tuiSelect/>
+            <tui-data-list-wrapper
+              *tuiTextfieldDropdown
+              new
+              [items]="calendar$ | async"
+            />
+          </tui-textfield>
+          <div class="space"></div>
+          <button
+            [size]="size"
+            portfolioChartButton
+            tuiButton
+            appearance="flat"
+            type="button">
+            {{ constants.chart }}
+          </button>
 
-      </div>
-      <div class="card__content">
-        @if (balance(); as balance) {
-          <div class="card__value">
-            {{ balance.profit | tuiFormatNumber | async }}
-            <span>{{ balance.currencySymbol }}</span>
-          </div>
-          <div class="card__percent" [class.long]="balance.profitPct > 0" [class.short]="balance.profitPct < 0">
-            {{ balance.profitPct | tuiFormatNumber | async }}%
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-  <div class="portfolio__item portfolio__spare">
-    <div class="card card--default" [tuiSkeleton]="isLoaded()">
-      <div class="card__header">
-        <div class="card__title">{{ constants.spare }}</div>
-      </div>
-      <div class="card__content">
-        @if (balance(); as balance) {
-          <div class="card__value">
-            {{ balance.spare | tuiFormatNumber | async }}
-            <span>{{ balance.currencySymbol }}</span>
-          </div>
-        }
+        </div>
+        <div class="card__content">
+          @if (balance(); as balance) {
+            <div class="card__value">
+              {{ balance.profit | tuiFormatNumber | async }}
+              <span>{{ balance.currencySymbol }}</span>
+            </div>
+            <div class="card__percent" [class.long]="balance.profitPct > 0" [class.short]="balance.profitPct < 0">
+              {{ balance.profitPct | tuiFormatNumber | async }}%
+            </div>
+          }
+        </div>
       </div>
     </div>
-  </div>
+    <div class="portfolio__item portfolio__spare">
+      <div class="card card--default" [tuiSkeleton]="isLoaded()">
+        <div class="card__header">
+          <div class="card__title">{{ constants.spare }}</div>
+        </div>
+        <div class="card__content">
+          @if (balance(); as balance) {
+            <div class="card__value">
+              {{ balance.spare | tuiFormatNumber | async }}
+              <span>{{ balance.currencySymbol }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </tui-scrollbar>
 </div>

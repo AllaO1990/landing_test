@@ -20,6 +20,7 @@ export class ApiStructureService {
       brokerId: params['brokerId'] || null,
       currencyId: params['currencyId'] || null,
       portfolioId: params['portfolioId'] || null,
+      leadToCurrency: params['leadToCurrency'] || null,
       strategyId: params['strategyId'] || null,
       date: params['date'] || null,
       groupBy: params['groupBy'] || null,

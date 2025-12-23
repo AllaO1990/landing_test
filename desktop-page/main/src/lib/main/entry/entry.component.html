@@ -38,8 +38,8 @@
         appearance="secondary"
         class="entry__add-idea"
         iconStart="@tui.plus"
-        searchDialog
-        #dialog=SearchDialog
+        uiSearchDialog
+        #dialog=uiSearchDialog
         (click)="dialog.onSearch($event)"
         (selected)="onOpenDialog($event)">
         {{ constants.add_idea }}

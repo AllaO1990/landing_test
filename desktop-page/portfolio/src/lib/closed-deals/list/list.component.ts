@@ -4,7 +4,6 @@ import { DatePipe, NgIf } from '@angular/common';
 import { GetPositionTypePipe } from '@ui/pipes/get-posiotion-type.pipe';
 import { GetStrategyNamePipe } from '@ui/pipes/get-strategy-name.pipe';
 import { HeaderComponent, UiListItem } from '@ui/components/list';
-import { INPUT_DATA } from '../constants';
 
 @Component({
   selector: 'lib-wrapper-list',
@@ -15,5 +14,5 @@ import { INPUT_DATA } from '../constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WrapperListComponent {
-  @Input() list: any[] = INPUT_DATA;
+  @Input() list: any[] = [];
 }

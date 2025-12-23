@@ -5,15 +5,15 @@ import { Observable } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { EventSelected } from 'types/events';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { LoaderComponent } from '@ui/components/loader';
-import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { IdeaFacade } from 'stores/facades/idea.facade';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 
 @Component({
   selector: 'lib-toolbar-search',
   standalone: true,
-  imports: [NgIf, AsyncPipe, TuiIcon, LoaderComponent, SearchDialogDirective],
+  imports: [AsyncPipe, TuiIcon, LoaderComponent, SearchDialogDirective],
   templateUrl: './toolbar-search.component.html',
   styleUrls: ['./toolbar-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

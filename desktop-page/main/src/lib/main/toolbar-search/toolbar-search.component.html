@@ -1,20 +1,21 @@
 <div class="toolbar">
-  <div class="toolbar__ticker" *ngIf="(selected$ | async) as selected; else load">
-    <div
-      class="ticker"
-      searchDialog
-      #dialog=SearchDialog
-      (click)="dialog.onSearch($event)"
-      (selected)="onSelect($event)">
-      <tui-icon icon="@tui.search"></tui-icon>
-      <div class="ticker__name">
-        {{ selected.ticker }}
+  @if (selected$ | async; as selected) {
+    <div class="toolbar__ticker">
+      <div
+        class="ticker"
+        uiSearchDialog
+        #dialog=uiSearchDialog
+        (click)="dialog.onSearch($event)"
+        (selected)="onSelect($event)">
+        <tui-icon icon="@tui.search"></tui-icon>
+        <div class="ticker__name">
+          {{ selected.ticker }}
+        </div>
       </div>
     </div>
-  </div>
+  } @else {
+    <ui-loader></ui-loader>
+  }
+
   <div class="toolbar__space"></div>
 </div>
-
-<ng-template #load>
-  <ui-loader></ui-loader>
-</ng-template>

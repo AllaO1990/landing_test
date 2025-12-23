@@ -3,7 +3,6 @@ import { WrapperTableComponent } from './table/table.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { TuiButton, TuiTextfield } from '@taiga-ui/core';
-import { OUT_CONSTANTS } from '../../../../main/src/lib/main/out/out.constants';
 import { StockInstrument } from 'types/stock';
 import { EventSelected } from 'types/events';
 import { QueryParams } from 'utils/query-params';
@@ -13,6 +12,7 @@ import { TuiDataListWrapperComponent } from '@taiga-ui/kit';
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { filter, Observable, of, shareReplay, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CLOSED_DEALS_CONSTANTS } from './constants';
 
 type ListItem = { value: string; id: string | null };
 
@@ -38,7 +38,7 @@ type ListItem = { value: string; id: string | null };
 export class ClosedDealsComponent {
   readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
 
-  protected readonly constants = OUT_CONSTANTS;
+  protected readonly constants = CLOSED_DEALS_CONSTANTS;
   readonly size = 's';
   readonly formControl: FormControl = new FormControl(null);
   readonly controlSearch: FormControl = new FormControl(null);

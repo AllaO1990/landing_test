@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.layout {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+}
+.layout__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: var(--padding-2);
+}
+.layout__title {
+  font-size: 13px;
+  font-weight: 500;
+}
+.layout__chart {
+  flex: 1;
+  overflow: hidden;
+}
+
+/*# sourceMappingURL=layout.component.css.map */

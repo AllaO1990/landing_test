@@ -6,8 +6,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 
 @Directive({
-  selector: '[searchDialog]',
-  exportAs: 'SearchDialog',
+  selector: '[uiSearchDialog]',
+  exportAs: 'uiSearchDialog',
   standalone: true,
   providers: [],
 })

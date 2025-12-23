@@ -2,7 +2,7 @@
   "name": "ui-common",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ui-common/src",
-  "prefix": "lib",
+  "prefix": "ui",
   "projectType": "library",
   "tags": ["common"],
   "targets": {

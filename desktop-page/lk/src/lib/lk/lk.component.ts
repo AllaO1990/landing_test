@@ -36,6 +36,7 @@ import { ActionLogout } from '../common/plugins/action-logout';
 import { ActionShowTrade } from '../common/plugins/action-show-trade';
 import { ActionSelectIdea } from '../common/plugins/action-select-idea';
 import { ActionSelectTransaction } from '../common/plugins/action-select-transaction';
+import { ActionSelectStock } from '../common/plugins/action-select-stock';
 
 @Component({
   selector: 'lib-lk',
@@ -102,6 +103,11 @@ import { ActionSelectTransaction } from '../common/plugins/action-select-transac
     {
       provide: ACTION_EVENTS,
       useClass: ActionSelectTransaction,
+      multi: true,
+    },
+    {
+      provide: ACTION_EVENTS,
+      useClass: ActionSelectStock,
       multi: true,
     },
     {

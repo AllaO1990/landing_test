@@ -1,8 +1,30 @@
 <div class="layout">
   <div class="layout__header">
-    <div class="layout__title">
-
-    </div>
+    <button
+      appearance="icon"
+      iconStart="@tui.search"
+      tuiIconButton
+      size="xs"
+      type="button"
+      uiSearchDialog
+      #dialog=uiSearchDialog
+      (click)="dialog.onSearch($event)"
+      (selected)="onSelect($event)"
+    ></button>
+    @if (instrument$ | async; as instrument) {
+      <div class="layout__title">
+        {{ instrument.ticker }} ({{ instrument.name }})
+      </div>
+    }
+    <div class="space"></div>
+    <button
+      appearance="icon"
+      iconStart="@tui.x"
+      tuiIconButton
+      size="xs"
+      type="button"
+      (click)="onClose($event)"
+    ></button>
   </div>
   <div class="layout__chart">
     <lib-chart></lib-chart>

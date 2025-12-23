@@ -8,7 +8,7 @@ import {
   inject,
   Signal,
 } from '@angular/core';
-import { Observable, startWith } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, startWith } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { IdeaListWrapper } from '@feat-idea-list';
@@ -28,6 +28,7 @@ import { AsyncPipe } from '@angular/common';
 import { TuiFormatNumberPipe } from '@taiga-ui/core';
 import { StockWrapperComponent } from 'feat-candlestick';
 import { PortfolioChartWrapper } from '@feat-portfolio-chart';
+import { DataAccessDealStore } from '@data-access-deal/store';
 
 @Component({
   selector: 'light-layout',
@@ -59,12 +60,15 @@ export class LightLayoutComponent implements AfterViewInit {
   readonly #storePortfolio: DataAccessPortfolioStore = inject(DataAccessPortfolioStore);
   readonly #dataAccessStructure: DataAccessStructureService = inject(DataAccessStructureService);
   readonly #storeStructure: DataAccessStructureStore = inject(DataAccessStructureStore);
+  readonly #dataAccessDeal: DataAccessDealService = inject(DataAccessDealService);
+  readonly #dataAccessDealStore: DataAccessDealStore = inject(DataAccessDealStore);
 
   readonly paramsPortfolio: Signal<Params | null> = computed(() => this.#dataAccessPortfolio.params());
   readonly paramsStructure: Signal<Params | null> = computed(() =>
     this._getParamsStructure(this.#dataAccessStructure.params(), this.#dataAccessPortfolio.params())
   );
   readonly paramsPortfolio$ = toObservable(this.#dataAccessPortfolio.params).pipe(filter((params) => !!params));
+  readonly paramsDeal$ = toObservable(this.#dataAccessDeal.params).pipe(filter((params) => !!params));
   readonly isChart$: Observable<boolean> = this.#queryParams.pipe(
     takeUntilDestroyed(this.#destroyRef),
     startWith(this.#queryParams.value()),
@@ -88,6 +92,16 @@ export class LightLayoutComponent implements AfterViewInit {
     switchMap(() => this.paramsPortfolio$),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+  readonly commonParamsDeal$: Observable<Params> = combineLatest([
+    this.paramsPortfolio$.pipe(
+      map((value: Params) => value['portfolioId']),
+      distinctUntilChanged()
+    ),
+    this.paramsDeal$,
+  ]).pipe(
+    takeUntilDestroyed(this.#destroyRef),
+    map(([portfolioId, params]: [string, Params]) => ({ ...params, portfolioId }))
+  );
 
   constructor() {
     effect(() => {
@@ -106,6 +120,7 @@ export class LightLayoutComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.chartPortfolio$.subscribe((params: Params) => this.#storePortfolio.loadHistory(params));
+    this.commonParamsDeal$.subscribe((params: Params) => this.#dataAccessDealStore.load(params));
   }
 
   private _getParamsStructure(paramsStructure: Params | null, paramsPortfolio: Params | null): Params | null {

@@ -43,8 +43,8 @@
         [size]="size"
         appearance="secondary"
         class="out__add-idea"
-        searchDialog
-        #dialog=SearchDialog
+        uiSearchDialog
+        #dialog=uiSearchDialog
         (click)="dialog.onSearch($event)"
         (selected)="onOpenDialog($event)">
         {{ constants.add_idea }}

@@ -11,13 +11,13 @@ import {
   signal,
 } from '@angular/core';
 import { PORTFOLIO_CONSTANTS } from '@data-access-portfolio/constants';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FilterPortfolioListComponent } from '../filter/filter.component';
 import { AsyncPipe } from '@angular/common';
-import { TuiButton, TuiFormatNumberPipe, tuiNumberFormatProvider, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, tuiNumberFormatProvider, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapperComponent, TuiSelect, TuiSkeleton } from '@taiga-ui/kit';
 import { getListOfRange } from 'utils/get-list-of-range';
-import { Observable, of, startWith } from 'rxjs';
+import { filter, Observable, of, shareReplay, startWith } from 'rxjs';
 import { TuiDayRange } from '@taiga-ui/cdk';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -25,13 +25,19 @@ import { getParamsFromRange } from 'utils/get-params-from-range';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { LoaderComponent } from '@ui/components/loader';
-import { AccountBalance } from 'types/account';
+import { AccountBalance, AccountCurrency } from 'types/account';
 import { ChartPortfolioButtonDirective } from './layout.directive';
 import { PortfolioData } from '@data-access-portfolio/types';
+import { AccountFacade } from 'stores/facades/account.facade';
 
 interface CalendarRangeItem {
   text: string;
   range: TuiDayRange;
+}
+
+interface FormGroupValue {
+  calendar: CalendarRangeItem;
+  leadToCurrency: AccountCurrency;
 }
 
 @Component({
@@ -50,6 +56,7 @@ interface CalendarRangeItem {
     TuiSkeleton,
     LoaderComponent,
     ChartPortfolioButtonDirective,
+    TuiScrollbar,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
@@ -58,12 +65,24 @@ interface CalendarRangeItem {
 })
 export class LayoutComponent implements AfterViewInit {
   readonly #dataAccess: DataAccessPortfolioService = inject(DataAccessPortfolioService);
+  readonly #accountFacade: AccountFacade = inject(AccountFacade);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #rangeList: CalendarRangeItem[] = getListOfRange(new Date());
 
   protected readonly size = 's';
   protected readonly constants = PORTFOLIO_CONSTANTS;
-  protected readonly controlCalendar: FormControl = new FormControl(this.#rangeList[0]);
+  protected readonly valueDefault = {
+    calendar: this.#rangeList[0],
+    leadToCurrency: {
+      currency: 'rub',
+      currencyId: 1,
+      currencySymbol: '₽',
+    },
+  };
+  protected readonly formGroup: FormGroup = new FormGroup({
+    calendar: new FormControl(this.valueDefault.calendar),
+    leadToCurrency: new FormControl(this.valueDefault.leadToCurrency),
+  });
   protected readonly calendar$: Observable<CalendarRangeItem[]> = of(this.#rangeList);
 
   data: InputSignal<PortfolioData<AccountBalance>> = input.required();
@@ -73,15 +92,27 @@ export class LayoutComponent implements AfterViewInit {
 
   stringifyCalendar = signal((x: CalendarRangeItem) => x.text);
   identityMatcherCalendar = signal((a: CalendarRangeItem, b: CalendarRangeItem) => a.range === b.range);
+  stringifyCurrency = signal((x: AccountCurrency) => x.currencySymbol || '');
+  identityMatcherCurrency = signal((a: AccountCurrency, b: AccountCurrency) => a.currencyId === b.currencyId);
+
+  readonly currency$: Observable<AccountCurrency[] | null> = this.#accountFacade.currencies$.pipe(
+    filter((list: AccountCurrency[] | null): list is AccountCurrency[] => list !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   ngAfterViewInit(): void {
-    this.controlCalendar.valueChanges
+    this.formGroup.valueChanges
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
-        startWith(this.controlCalendar.value),
-        map((value: CalendarRangeItem) => getParamsFromRange(value.range))
+        startWith(this.formGroup.value),
+        map((value: FormGroupValue) => {
+          return {
+            leadToCurrency: value.leadToCurrency.currency,
+            ...getParamsFromRange(value.calendar.range),
+          };
+        })
       )
-      .subscribe((value: { from: string | null; to: string | null }) =>
+      .subscribe((value: { from: string | null; to: string | null; leadToCurrency: string | null }) =>
         this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value }))
       );
   }
