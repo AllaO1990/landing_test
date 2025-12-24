@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { Observable } from 'rxjs';
+import { distinctUntilChanged, map, Observable, shareReplay, tap } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { AsyncPipe } from '@angular/common';
 import { TuiButton } from '@taiga-ui/core';
@@ -11,10 +11,11 @@ import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { ContextAction } from 'types/context-action';
 import { getContextAction } from 'utils/get-context-action';
 import { ContextActionPlugin } from 'types/context-action-plugin';
+import { TuiSkeleton } from '@taiga-ui/kit';
 
 @Component({
   selector: 'stock-layout',
-  imports: [ChartCandlestickComponent, AsyncPipe, TuiButton, SearchDialogDirective],
+  imports: [ChartCandlestickComponent, AsyncPipe, TuiButton, SearchDialogDirective, TuiSkeleton],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +27,12 @@ export class StockLayoutComponent {
   readonly #store: IdeaFacade = inject(IdeaFacade);
 
   readonly instrument$: Observable<StockInstrument | null> = this.#store.instrument$;
+  readonly isSkeleton$: Observable<boolean> = this.instrument$.pipe(
+    tap((data) => console.log(data)),
+    map((instrument: StockInstrument | null) => !instrument),
+    distinctUntilChanged(),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
 
   onClose(event: Event): void {
     event.preventDefault();

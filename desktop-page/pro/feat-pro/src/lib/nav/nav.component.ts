@@ -40,7 +40,7 @@ type NavList = NavItem[];
 export class NavComponent {
   readonly size = 's';
   readonly links$: Observable<NavList> = of([
-    { name: 'Терминал', path: '/lk/pro/main-v2', icon: '@tui.trello', disabled: false, params: null },
+    { name: 'Терминал', path: '/lk/pro/main', icon: '@tui.trello', disabled: false, params: null },
     { name: 'Портфель', path: '/lk/pro/portfolio', icon: '@tui.briefcase-business', disabled: false, params: null },
   ]);
 

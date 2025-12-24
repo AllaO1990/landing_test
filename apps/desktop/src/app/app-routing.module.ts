@@ -1,6 +1,9 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { inject, Injector, NgModule } from '@angular/core';
+import { RedirectFunction, RouterModule, Routes } from '@angular/router';
 import { AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard } from './core/routing/guards';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
+
+const redirectFn: RedirectFunction = (redirectData) => inject(Injector).get(LOCAL_STORAGE).getItem('mode') || 'light';
 
 export const routes: Routes = [
   {
@@ -20,7 +23,17 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'light',
+        redirectTo: redirectFn,
+        pathMatch: 'full',
+      },
+      {
+        path: 'main-v2',
+        redirectTo: redirectFn,
+        pathMatch: 'full',
+      },
+      {
+        path: 'short-link',
+        redirectTo: redirectFn,
         pathMatch: 'full',
       },
       {
@@ -51,11 +64,11 @@ export const routes: Routes = [
           },
           {
             path: '',
-            redirectTo: 'main-v2',
+            redirectTo: 'main',
             pathMatch: 'full',
           },
           {
-            path: 'main-v2',
+            path: 'main',
             canActivate: [PermissionGuard],
             children: [
               {

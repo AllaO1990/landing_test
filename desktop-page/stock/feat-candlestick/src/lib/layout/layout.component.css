@@ -19,10 +19,14 @@
 .layout__title {
   font-size: 13px;
   font-weight: 500;
+  min-width: 120px;
+  height: 13px;
+  margin-left: var(--padding-2);
 }
 .layout__chart {
   flex: 1;
   overflow: hidden;
+  padding: 0 var(--padding-2) var(--padding-2);
 }
 
 /*# sourceMappingURL=layout.component.css.map */

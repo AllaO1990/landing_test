@@ -1,6 +1,7 @@
 <div class="layout">
   <div class="layout__header">
     <button
+      [tuiSkeleton]="isSkeleton$ | async"
       appearance="icon"
       iconStart="@tui.search"
       tuiIconButton
@@ -11,13 +12,14 @@
       (click)="dialog.onSearch($event)"
       (selected)="onSelect($event)"
     ></button>
-    @if (instrument$ | async; as instrument) {
-      <div class="layout__title">
+    <div class="layout__title" [tuiSkeleton]="isSkeleton$ | async">
+      @if (instrument$ | async; as instrument) {
         {{ instrument.ticker }} ({{ instrument.name }})
-      </div>
-    }
+      }
+    </div>
     <div class="space"></div>
     <button
+      [tuiSkeleton]="isSkeleton$ | async"
       appearance="icon"
       iconStart="@tui.x"
       tuiIconButton
@@ -27,6 +29,6 @@
     ></button>
   </div>
   <div class="layout__chart">
-    <lib-chart></lib-chart>
+    <lib-chart [tuiSkeleton]="isSkeleton$ | async"></lib-chart>
   </div>
 </div>

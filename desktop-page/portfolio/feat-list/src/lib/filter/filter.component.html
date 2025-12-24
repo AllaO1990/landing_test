@@ -12,7 +12,7 @@
         formControlName="portfolio"
         [placeholder]="constants.portfolio"
         autocomplete="off"
-        tuiSelect />
+        tuiSelect/>
       <tui-data-list-wrapper
         *tuiTextfieldDropdown
         new
@@ -25,6 +25,7 @@
       tuiButton
       appearance="secondary"
       [size]="size"
+      [disabled]="true"
       iconStart="@tui.plus"
       type="button">
       {{ constants.portfolio }}
@@ -43,7 +44,7 @@
         formControlName="currency"
         [placeholder]="constants.currency"
         autocomplete="off"
-        tuiSelect />
+        tuiSelect/>
       <tui-data-list-wrapper
         *tuiTextfieldDropdown
         new

@@ -1,10 +1,14 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { LayoutComponent } from '../layout/layout.component';
-import { DataAccessIdeaStore } from '@data-access-idea/store';
+import { DataAccessIdeaState, DataAccessIdeaStore } from '@data-access-idea/store';
 import { AsyncPipe } from '@angular/common';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
 import { DataAccessIdeaService } from '@data-access-idea/data-access.service';
 import { Params } from '@angular/router';
+import { filter, take } from 'rxjs';
+import { QUERY_PARAMS } from 'tokens/desktop';
+import { QueryParams } from 'utils/query-params';
+import { EventSelected } from 'types/events';
 
 interface ValueSubmit {
   search: string;
@@ -23,7 +27,8 @@ interface ValueSubmit {
   styleUrl: './wrapper.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IdeaListWrapper {
+export class IdeaListWrapper implements AfterViewInit {
+  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
   readonly #dataAccessIdea: DataAccessIdeaService = inject(DataAccessIdeaService);
   readonly #dataAccessIdeaStore: DataAccessIdeaStore = inject(DataAccessIdeaStore);
 
@@ -37,6 +42,25 @@ export class IdeaListWrapper {
         this.#dataAccessIdeaStore.loadIdeas(params);
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.response$
+      .pipe(
+        filter((response: DataAccessIdeaState) => response.data !== null),
+        take(1)
+      )
+      .subscribe((response: DataAccessIdeaState) => {
+        const data = response.data && response.data.items;
+        const id = this.#queryParams.value()['id'];
+
+        if (data !== null && data.length && !id) {
+          this.#queryParams.update({
+            id: data[0].id,
+            type: EventSelected.IDEA,
+          });
+        }
+      });
   }
 
   onSubmit(value: ValueSubmit): void {

@@ -35,6 +35,8 @@ import { ContextAction } from 'types/context-action';
 import { getContextAction } from 'utils/get-context-action';
 import { ContextActionPlugin } from 'types/context-action-plugin';
 import { SelectItemIdeaPipe } from './layout.directive';
+import { LocalStorage } from 'storage/local.storage';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 
 interface FilterValue {
   type: AccountType;
@@ -73,8 +75,9 @@ interface FilterValue {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {
-  readonly #dataAccess: DataAccessIdeaService = inject(DataAccessIdeaService);
+  readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
   readonly #actions: ContextActionPlugin[] = inject(ACTION_EVENTS);
+  readonly #dataAccess: DataAccessIdeaService = inject(DataAccessIdeaService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #map: Map<string, ContextAction> = new Map();
   readonly #valueDefault = {
@@ -116,11 +119,34 @@ export class LayoutComponent implements AfterViewInit {
   });
 
   ngAfterViewInit(): void {
+    this._initFormGroup();
+
     this.paginationControl.valueChanges
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(({ limit, page }: Params) =>
-        this.#dataAccess.params.update((params: Params | null) => ({ ...params, limit, page: page + 1 }))
-      );
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        map(({ limit, page }: Params, index: number) => {
+          let filter = {};
+
+          if (index === 0) {
+            const { type, strategy, currency } = this.filterControl.value;
+
+            filter = {
+              currencyId: currency.currencyId,
+              instrumentType: type.id,
+              strategyId: strategy.id,
+            };
+          }
+
+          return {
+            limit,
+            page: page + 1,
+            ...filter,
+          };
+        })
+      )
+      .subscribe((value: Params) => {
+        this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value }));
+      });
 
     this.searchControl.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(250))
@@ -201,6 +227,12 @@ export class LayoutComponent implements AfterViewInit {
     if (context) {
       context.action(item.id);
     }
+  }
+
+  private _initFormGroup(): void {
+    const value = this.#localStorage.getItem('filterIdea') || {};
+
+    this.filterControl.setValue(value);
   }
 
   private _getAction(type: string): ContextAction | null {

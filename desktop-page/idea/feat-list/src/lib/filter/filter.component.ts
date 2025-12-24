@@ -5,7 +5,7 @@ import {
   DestroyRef,
   forwardRef,
   inject,
-  signal,
+  signal
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -13,17 +13,19 @@ import {
   FormGroup,
   FormsModule,
   NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
 import { TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapperComponent, TuiSelect } from '@taiga-ui/kit';
 import { debounceTime, filter, Observable, shareReplay } from 'rxjs';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { AsyncPipe } from '@angular/common';
 import { IDEA_LIST_FILTER_CONSTANTS } from './filter.constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LocalStorage } from 'storage/local.storage';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 
 @Component({
   selector: 'idea-filter',
@@ -54,6 +56,7 @@ export class FilterIdeaListComponent implements ControlValueAccessor, AfterViewI
   static valueDefaultStrategy = { name: 'Все', key: 'all', id: null };
   static valueDefaultType = { name: 'Все', key: 'all', id: null };
 
+  readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #accountFacade: AccountFacade = inject(AccountFacade);
 
@@ -91,13 +94,19 @@ export class FilterIdeaListComponent implements ControlValueAccessor, AfterViewI
   readonly types$: Observable<AccountType[]> = this.#accountFacade.types$.pipe(
     filter((list: AccountType[] | null): list is AccountType[] => list !== null),
     map((list: AccountType[]) => [FilterIdeaListComponent.valueDefaultType, ...list]),
+    tap((data) => console.log(data)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   ngAfterViewInit(): void {
+    this._initFormGroup();
+
     this.formGroup.valueChanges
       .pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(150))
-      .subscribe((value: unknown) => this.onChange(value));
+      .subscribe((value: any) => {
+        this.#localStorage.setItem('filterIdea', value);
+        this.onChange(value);
+      });
   }
 
   writeValue(obj: any): void {
@@ -114,5 +123,11 @@ export class FilterIdeaListComponent implements ControlValueAccessor, AfterViewI
 
   setDisabledState(isDisabled: boolean): void {
     this.formGroup[isDisabled ? 'disable' : 'enable']();
+  }
+
+  private _initFormGroup(): void {
+    const value = this.#localStorage.getItem('filterIdea') || {};
+
+    this.formGroup.patchValue(value);
   }
 }
