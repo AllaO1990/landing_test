@@ -5,7 +5,7 @@ import {
   DestroyRef,
   forwardRef,
   inject,
-  signal
+  signal,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -13,13 +13,13 @@ import {
   FormGroup,
   FormsModule,
   NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapperComponent, TuiSelect } from '@taiga-ui/kit';
 import { debounceTime, filter, Observable, shareReplay } from 'rxjs';
 import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { AsyncPipe } from '@angular/common';
 import { IDEA_LIST_FILTER_CONSTANTS } from './filter.constants';
@@ -94,7 +94,6 @@ export class FilterIdeaListComponent implements ControlValueAccessor, AfterViewI
   readonly types$: Observable<AccountType[]> = this.#accountFacade.types$.pipe(
     filter((list: AccountType[] | null): list is AccountType[] => list !== null),
     map((list: AccountType[]) => [FilterIdeaListComponent.valueDefaultType, ...list]),
-    tap((data) => console.log(data)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 

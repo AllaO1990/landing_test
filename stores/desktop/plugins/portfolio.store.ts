@@ -15,7 +15,7 @@ import {
   AccountRange,
   AccountStrategy,
   AccountStructure,
-  AccountType,
+  AccountType
 } from 'types/account';
 import { map } from 'rxjs/operators';
 import { eachDayOfInterval } from 'date-fns/eachDayOfInterval';
@@ -183,7 +183,7 @@ export class PortfolioStore extends WithQueue<PortfolioState> {
 
             return {
               total: result.data.total,
-              items: result.data.items.map((item) => ({ ...item, ideaId: item.ideaId })),
+              items: result.data.items.map((item: PortfolioPosition) => ({ ...item, ideaId: item.ideaId })),
             };
           }),
           tap((result: DataList<PortfolioPosition> | null) => {

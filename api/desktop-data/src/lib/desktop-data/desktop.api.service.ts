@@ -4,7 +4,6 @@ import { catchError, map, Observable, of, retry, timer } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ActiveZone, FigureIdea } from 'types/chart';
 import { ResponsePositions, StockPosition } from 'types/position';
-import { DataList, Response, ResponseMessage } from 'types/response';
 import {
   Stock,
   StockId,
@@ -35,6 +34,7 @@ import {
 import { PortfolioPosition } from 'types/portfolio';
 import { Commission } from 'types/commission';
 import { APP_CONFIG } from 'tokens/desktop/config';
+import { DataList, Response, ResponseMessage } from 'types/response';
 
 @Injectable()
 export class DesktopApiService extends DesktopService {

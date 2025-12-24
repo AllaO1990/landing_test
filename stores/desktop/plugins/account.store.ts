@@ -177,7 +177,9 @@ export class AccountStore extends ComponentStore<AccountState> {
       switchMap(() =>
         this._api.getAccountStrategies().pipe(
           tap((response: Response<DataList<AccountStrategy>>) => {
-            this.updateStrategies(response.data.items.sort((a, b) => sortText(a.name, b.name)));
+            this.updateStrategies(
+              response.data.items.sort((a: AccountStrategy, b: AccountStrategy) => sortText(a.name, b.name))
+            );
             this.updateStrategiesMap(response.data.items);
           })
         )
@@ -189,7 +191,7 @@ export class AccountStore extends ComponentStore<AccountState> {
       switchMap(() =>
         this._api.getAccountTypes().pipe(
           tap((response: Response<DataList<AccountType>>) => {
-            this.updateTypes(response.data.items.sort((a, b) => sortText(a.name, b.name)));
+            this.updateTypes(response.data.items.sort((a: AccountType, b: AccountType) => sortText(a.name, b.name)));
           })
         )
       )

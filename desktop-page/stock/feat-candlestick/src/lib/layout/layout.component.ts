@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { distinctUntilChanged, map, Observable, shareReplay, tap } from 'rxjs';
+import { distinctUntilChanged, map, Observable, shareReplay } from 'rxjs';
 import { StockInstrument } from 'types/stock';
 import { AsyncPipe } from '@angular/common';
 import { TuiButton } from '@taiga-ui/core';
@@ -28,7 +28,6 @@ export class StockLayoutComponent {
 
   readonly instrument$: Observable<StockInstrument | null> = this.#store.instrument$;
   readonly isSkeleton$: Observable<boolean> = this.instrument$.pipe(
-    tap((data) => console.log(data)),
     map((instrument: StockInstrument | null) => !instrument),
     distinctUntilChanged(),
     shareReplay({ refCount: true, bufferSize: 1 })

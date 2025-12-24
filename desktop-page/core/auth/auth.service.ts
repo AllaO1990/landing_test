@@ -3,9 +3,9 @@ import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, EMPTY, Observable, of, tap } from 'rxjs';
 import { VtLocalStorageService } from '../storage';
-import { Response } from '../../../types/response';
 import { DOCUMENT } from '@angular/common';
 import { APP_CONFIG } from '../../../tokens/desktop/config';
+import { Response } from '../../../types/response';
 
 interface UserData {
   data: { access_token: string; token_type: string };

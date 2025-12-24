@@ -1,18 +1,14 @@
 {
   "name": "data-access-structure",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "desktop-page/structure/data-access/src",
-  "prefix": "lib",
+  "sourceRoot": "desktop-page/structure/data-access/src/lib/data-access",
+  "prefix": "structure",
   "projectType": "library",
-  "tags": [
-    "structure"
-  ],
+  "tags": ["structure"],
   "targets": {
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": [
-        "{workspaceRoot}/dist/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
         "project": "desktop-page/structure/data-access/ng-package.json"
       },
@@ -28,9 +24,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "desktop-page/structure/data-access/jest.config.ts"
       }
