@@ -34,7 +34,7 @@ export class IdeaListWrapper {
       const params: Params | null = this.#dataAccessIdea.params();
 
       if (params !== null) {
-        this.#dataAccessIdeaStore.loadIdaes(params);
+        this.#dataAccessIdeaStore.loadIdeas(params);
       }
     });
   }
@@ -42,7 +42,7 @@ export class IdeaListWrapper {
   onSubmit(value: ValueSubmit): void {
     const { currency, type, strategy, limit, page } = value;
 
-    this.#dataAccessIdeaStore.loadIdaes({
+    this.#dataAccessIdeaStore.loadIdeas({
       currencyId: currency.currencyId,
       instrumentType: type.id,
       limit,

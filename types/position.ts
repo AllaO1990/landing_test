@@ -1,6 +1,7 @@
 import { StockId, StockInstrument, StockPositionDirection } from './stock';
 import { getPriceIncrement } from '../utils/get-price-increment';
 import { AccountBroker } from './account';
+import { getNumberPrecision } from '../utils/get-number-precision';
 
 export interface ResponsePositions {
   items: ResponsePosition[] | null;
@@ -198,6 +199,7 @@ export class Position implements ResponsePosition {
   inPositionPrice: number;
   inPositionProfitPercent: number;
   inPositionResult: number;
+  profit: { value: number; percentage: number };
   result: { profitPercent: number; profitPrice: number };
 
   entryAveragePrice: number;
@@ -238,6 +240,7 @@ export class Position implements ResponsePosition {
     this.dividends = data.dividends || [];
 
     this.priceToTarget = this._getPriceToTarget(data.lastPrice, data.entries);
+    this.profit = this._getProfitIdea(data.entries, data.targets);
 
     // this.fullPositionQuantityValue = this._getFulPositionQuantity(data.targets);
     // this.fullPositionPrice = this._getFullPositionPrice(data.entries);
@@ -245,6 +248,19 @@ export class Position implements ResponsePosition {
 
     this.priceIncrement = getPriceIncrement(data.minPriceIncrement);
     this.currentTarget = this._getCurrentTarget(data.targets);
+  }
+
+  private _getProfitIdea(
+    entries: StockPositionIdeaEntry[],
+    targets: StockPositionTarget[]
+  ): { value: number; percentage: number } {
+    const totalEntries = entries.reduce((acc, item) => (acc += item.totalPrice), 0);
+    const totalProfitTargets = targets.reduce((acc, item) => (acc += item.profit || 0), 0);
+
+    return {
+      value: getNumberPrecision(totalProfitTargets, 2),
+      percentage: getNumberPrecision((totalProfitTargets / totalEntries) * 100, 2),
+    };
   }
 
   private _getAveragePrice(data: StockPositionIdeaEntry[]): number {

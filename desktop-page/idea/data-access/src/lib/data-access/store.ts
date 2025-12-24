@@ -52,7 +52,7 @@ export class DataAccessIdeaStore extends ComponentStore<DataAccessIdeaState> {
     }
   );
 
-  readonly loadIdaes = this.effect((stream$: Observable<Params>) =>
+  readonly loadIdeas = this.effect((stream$: Observable<Params>) =>
     stream$.pipe(
       tap(() => this.updateUploaded(false)),
       switchMap((params: Params) =>
