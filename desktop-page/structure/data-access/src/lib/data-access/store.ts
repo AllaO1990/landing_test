@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { AccountStructure } from 'types/account';
 import { ComponentStore } from '@ngrx/component-store';
 import { forkJoin, map, Observable, switchMap, tap, timer } from 'rxjs';
@@ -12,7 +11,6 @@ export interface DataAccessStructureState {
   data: AccountStructure | null;
 }
 
-@Injectable()
 export class DataAccessStructureStore extends ComponentStore<DataAccessStructureState> {
   static defaultState: DataAccessStructureState = {
     isLoaded: false,
@@ -22,8 +20,6 @@ export class DataAccessStructureStore extends ComponentStore<DataAccessStructure
 
   constructor(private api: ApiStructureService) {
     super(DataAccessStructureStore.defaultState);
-
-    console.log('DataAccessStructureStore constructor called');
   }
 
   readonly updateUploaded = this.updater(

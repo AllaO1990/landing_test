@@ -127,7 +127,9 @@ export class WithPaginationComponent implements ControlValueAccessor, AfterViewI
     this.length$
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
-        switchMap((length: number | null) => this.index$.pipe(filter((index: number) => (length || 0) < index)))
+        switchMap((length: number | null) =>
+          this.index$.pipe(filter((index: number) => (length || 0) <= index && index !== 0))
+        )
       )
       .subscribe((_) => {
         this.#index$.next(0);
