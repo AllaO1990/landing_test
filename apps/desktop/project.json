@@ -1,135 +1,129 @@
 {
-  "name": "desktop",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "application",
-  "generators": {
-    "@schematics/angular:component": {
-      "style": "scss",
-      "changeDetection": "OnPush"
-    },
-    "@schematics/angular:application": {
-      "strict": true
-    }
-  },
-  "sourceRoot": "apps/desktop/src",
-  "prefix": "vt",
-  "targets": {
-    "build": {
-      "executor": "@angular-devkit/build-angular:browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
-      "options": {
-        "sourceMap": {
-          "scripts": false,
-          "styles": false,
-          "hidden": false,
-          "vendor": false
-        },
-        "outputPath": "dist/apps/desktop",
-        "index": "apps/desktop/src/index.html",
-        "main": "apps/desktop/src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
-        "tsConfig": "apps/desktop/tsconfig.app.json",
-        "inlineStyleLanguage": "scss",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "node_modules/@taiga-ui/icons/src",
-            "output": "assets/taiga-ui/icons"
-          },
-          {
-            "glob": "**/test.html",
-            "input": "apps/desktop/src/",
-            "output": "./"
-          },
-          "apps/desktop/src/favicon.ico",
-          "apps/desktop/src/assets"
-        ],
-        "styles": [
-          "node_modules/highcharts/css/stocktools/gui.css",
-          "node_modules/highcharts/css/annotations/popup.css",
-          "./node_modules/@taiga-ui/core/styles/taiga-ui-theme.less",
-          "./node_modules/@taiga-ui/core/styles/taiga-ui-fonts.less",
-          "./node_modules/@taiga-ui/styles/taiga-ui-global.less",
-          "apps/desktop/src/styles.scss"
-        ],
-        "scripts": [],
-        "allowedCommonJsDependencies": [
-          "text-mask-core",
-          "highcharts/highstock",
-          "highcharts/indicators/indicators-all",
-          "highcharts/modules/annotations-advanced",
-          "highcharts/modules/drag-panes",
-          "highcharts/modules/exporting",
-          "highcharts/modules/full-screen",
-          "highcharts/modules/price-indicator",
-          "highcharts/modules/stock-tools",
-          "highcharts/modules/draggable-points"
-        ]
-      },
-      "configurations": {
-        "production": {
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "3mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
-              "maximumError": "8kb"
-            }
-          ],
-          "fileReplacements": [
-            {
-              "replace": "apps/desktop/src/environments/environment.ts",
-              "with": "apps/desktop/src/environments/environment.prod.ts"
-            }
-          ],
-          "outputHashing": "all"
-        },
-        "development": {
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true
-        }
-      },
-      "defaultConfiguration": "production"
-    },
-    "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
-      "configurations": {
-        "production": {
-          "buildTarget": "desktop:build:production"
-        },
-        "development": {
-          "buildTarget": "desktop:build:development"
-        }
-      },
-      "defaultConfiguration": "development"
-    },
-    "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
-      "options": {
-        "buildTarget": "desktop:build"
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
-      "options": {
-        "jestConfig": "apps/desktop/jest.config.ts"
-      }
-    }
-  }
+	"name": "desktop",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"generators": {
+		"@schematics/angular:component": {
+			"style": "scss",
+			"changeDetection": "OnPush"
+		},
+		"@schematics/angular:application": {
+			"strict": true
+		}
+	},
+	"sourceRoot": "apps/desktop/src",
+	"prefix": "vt",
+	"targets": {
+		"build": {
+			"executor": "@angular-devkit/build-angular:browser",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"sourceMap": {
+					"scripts": false,
+					"styles": false,
+					"hidden": false,
+					"vendor": false
+				},
+				"outputPath": "dist/apps/desktop",
+				"index": "apps/desktop/src/index.html",
+				"main": "apps/desktop/src/main.ts",
+				"polyfills": ["zone.js"],
+				"tsConfig": "apps/desktop/tsconfig.app.json",
+				"inlineStyleLanguage": "scss",
+				"assets": [
+					{
+						"glob": "**/*",
+						"input": "node_modules/@taiga-ui/icons/src",
+						"output": "assets/taiga-ui/icons"
+					},
+					{
+						"glob": "**/test.html",
+						"input": "apps/desktop/src/",
+						"output": "./"
+					},
+					"apps/desktop/src/favicon.ico",
+					"apps/desktop/src/assets"
+				],
+				"styles": [
+					"node_modules/highcharts/css/stocktools/gui.css",
+					"node_modules/highcharts/css/annotations/popup.css",
+					"./node_modules/@taiga-ui/core/styles/taiga-ui-theme.less",
+					"./node_modules/@taiga-ui/core/styles/taiga-ui-fonts.less",
+					"./node_modules/@taiga-ui/styles/taiga-ui-global.less",
+					"apps/desktop/src/styles.scss"
+				],
+				"scripts": [],
+				"allowedCommonJsDependencies": [
+					"text-mask-core",
+					"highcharts/highstock",
+					"highcharts/indicators/indicators-all",
+					"highcharts/modules/annotations-advanced",
+					"highcharts/modules/drag-panes",
+					"highcharts/modules/exporting",
+					"highcharts/modules/full-screen",
+					"highcharts/modules/price-indicator",
+					"highcharts/modules/stock-tools",
+					"highcharts/modules/draggable-points"
+				]
+			},
+			"configurations": {
+				"production": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "500kb",
+							"maximumError": "3mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumWarning": "4kb",
+							"maximumError": "8kb"
+						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/desktop/src/environments/environment.ts",
+							"with": "apps/desktop/src/environments/environment.prod.ts"
+						}
+					],
+					"outputHashing": "all"
+				},
+				"development": {
+					"optimization": false,
+					"extractLicenses": false,
+					"sourceMap": true,
+					"namedChunks": true
+				}
+			},
+			"defaultConfiguration": "production"
+		},
+		"serve": {
+			"executor": "@angular-devkit/build-angular:dev-server",
+			"configurations": {
+				"production": {
+					"buildTarget": "desktop:build:production"
+				},
+				"development": {
+					"buildTarget": "desktop:build:development"
+				}
+			},
+			"defaultConfiguration": "development"
+		},
+		"extract-i18n": {
+			"executor": "@angular-devkit/build-angular:extract-i18n",
+			"options": {
+				"buildTarget": "desktop:build"
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		},
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "apps/desktop/jest.config.ts"
+			}
+		}
+	}
 }

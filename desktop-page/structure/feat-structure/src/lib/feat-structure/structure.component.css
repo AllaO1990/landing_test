@@ -1,0 +1,155 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+  background-color: var(--block-bg-color);
+}
+:host [data-size=xs] {
+  --t-size: 3rem;
+}
+:host [data-size=s] {
+  --t-size: 4rem;
+}
+:host [data-size=m] {
+  --t-size: 9rem;
+}
+:host [data-size=l] {
+  --t-size: 11rem;
+}
+:host [data-size=xl] {
+  --t-size: 16rem;
+}
+
+.structure {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.structure__header {
+  flex: 0 0 auto;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  height: 32px;
+  margin: var(--padding-2) var(--padding-4) 0;
+}
+.structure__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.structure__switcher {
+  flex: 0;
+  width: 100%;
+}
+.structure__controls {
+  margin: var(--padding-4);
+}
+.structure__controls label {
+  font-size: var(--font-size-small);
+}
+.structure label {
+  justify-content: center;
+}
+.structure__list {
+  order: 1;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+}
+.structure__chart {
+  order: 0;
+  margin: var(--padding-4) auto;
+}
+.structure__loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.structure__loader ~ .structure__chart, .structure__loader ~ .structure__list {
+  filter: blur(2px);
+}
+
+.list {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  overflow: auto;
+}
+.list__item {
+  height: 32px;
+  flex: 0 0 auto;
+}
+.list__item:not(:last-child) {
+  border-bottom: 1px solid var(--main-bg-color);
+}
+
+.item {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.25s ease-in-out;
+}
+.item__active, .item:hover {
+  background-color: rgba(0, 102, 255, 0.1);
+  transition: none;
+}
+.item__cell {
+  margin: 0 var(--padding-4);
+}
+.item__name {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  flex: 1 1 auto;
+  width: 60%;
+}
+.item__name span {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item__name tui-pin {
+  transform: none;
+  margin-right: var(--padding-1);
+}
+.item__percentage {
+  flex: 1 1 auto;
+  width: 40%;
+  text-align: right;
+}
+
+.chart__text {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+ui-loader {
+  width: 100%;
+  height: 100%;
+}
+
+.skeleton__chart {
+  inline-size: var(--t-size);
+  block-size: var(--t-size);
+}
+.skeleton__item {
+  display: flex;
+  padding: var(--padding-1) var(--padding-4);
+}
+.skeleton__item div {
+  width: 100%;
+  height: 100%;
+}
+
+/*# sourceMappingURL=structure.component.css.map */

@@ -95,18 +95,6 @@
           />
         </tui-textfield>
       </div>
-
-      <div class="idea__action">
-        <button
-          [disabled]="true"
-          iconStart="@tui.ellipsis-vertical"
-          tuiIconButton
-          type="button"
-          appearance="outline-grayscale"
-          [size]="size"
-          class=" idea__action-more">
-        </button>
-      </div>
     </div>
   </div>
   <div class="idea__list list">
@@ -124,9 +112,11 @@
     } @else {
       <ui-lib-list
         [header]="header"
-        [itemSize]="28"
+        [itemSize]="32"
         [list]="list()">
         <div
+          tuiDropdownContext
+          [tuiDropdown]="contextMenu"
           class="item"
           *uiLibListItem="let item"
           [class.item--active]="item | ideaSelectItem | async"
@@ -134,6 +124,24 @@
           (click)="onClick($event, item)"
           (dblclick)="onDblclick($event, item)"
         >
+          <ng-template #contextMenu let-close>
+            <tui-data-list
+              [size]="size"
+              role="menu"
+              class="context-menu">
+              @for (button of listOfButtonConstants; track button.type) {
+                <button
+                  tuiOption
+                  new
+                  type="button"
+                  [disabled]="button.disabled"
+                  (click)="onContextClick($event, item, button); close()">
+                  <tui-icon [icon]="button.icon"></tui-icon>
+                  {{ button.text }}
+                </button>
+              }
+            </tui-data-list>
+          </ng-template>
           <div class="item__cell item__date">
             <div class="item__row">
               <ng-container *ngTemplateOutlet="avatar; context: { $implicit: item.author }"></ng-container>

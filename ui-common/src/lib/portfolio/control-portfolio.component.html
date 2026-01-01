@@ -1,41 +1,52 @@
-<div class="portfolio" [formGroup]="form" *ngIf="(list$ | async) as list; else load">
-  <div class="portfolio__container" *ngIf="!isAdd; else add">
-    <tui-select
-      class="portfolio__control"
-      [stringify]="stringify"
-      [tuiTextfieldSize]="size"
-      formControlName="portfolio"
-      [tuiTextfieldLabelOutside]="true">
-      <ng-content></ng-content>
-      <tui-data-list-wrapper
-        *tuiDataList
+@if (list$ | async; as list) {
+  <div class="portfolio" [formGroup]="form">
+    @if (!isAdd) {
+      <div class="portfolio__container">
+        <tui-textfield
+          class="portfolio__control"
+          tuiChevron
+          [identityMatcher]="identityMatcherPortfolio()"
+          [stringify]="stringifyPortfolio()"
+          [tuiTextfieldSize]="size"
+          tuiDropdownLimitWidth="auto"
+          [tuiTextfieldCleaner]="false">
+          <input
+            formControlName="portfolio"
+            [placeholder]="'Портфель'"
+            autocomplete="off"
+            tuiSelect/>
+          <tui-data-list-wrapper
+            *tuiTextfieldDropdown
+            new
+            [items]="list"
+            [itemContent]="content"
+          />
+        </tui-textfield>
+        <button
+          class="portfolio__action"
+          [size]="size"
+          [disabled]="isDisabled"
+          iconStart="@tui.plus"
+          tuiIconButton
+          appearance="secondary"
+          type="button"
+          (click)="onAdd($event)">
+        </button>
+      </div>
+    } @else {
+      <lib-input-with-actions
+        class="portfolio__control"
         [size]="size"
-        [items]="list"
-        [itemContent]="content">
-      </tui-data-list-wrapper>
-    </tui-select>
-    <button
-      class="portfolio__action"
-      [size]="size"
-      [disabled]="isDisabled"
-      iconStart="@tui.plus"
-      tuiIconButton
-      appearance="secondary"
-      type="button"
-      (click)="onAdd($event)">
-    </button>
+        [placeholder]="'Название портфеля'"
+        [stringify]="stringify"
+        [value]="controlAdd.value"
+        (formEvent)="onFormEvent($event)">
+      </lib-input-with-actions>
+    }
   </div>
-</div>
-
-<ng-template #add>
-  <lib-input-with-actions
-    [size]="size"
-    [stringify]="stringify"
-    [value]="controlAdd.value"
-    (formEvent)="onFormEvent($event)">
-    Название портфеля
-  </lib-input-with-actions>
-</ng-template>
+} @else {
+  <ui-loader></ui-loader>
+}
 
 <ng-template #content let-item>
   <div class="item">
@@ -64,10 +75,6 @@
       </button>
     </div>
   </div>
-</ng-template>
-
-<ng-template #load>
-  <ui-loader></ui-loader>
 </ng-template>
 
 <ng-template #templateDelete let-data>

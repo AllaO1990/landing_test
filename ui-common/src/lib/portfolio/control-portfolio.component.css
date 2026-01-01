@@ -1,0 +1,60 @@
+:host {
+  display: flex;
+}
+
+.portfolio {
+  display: flex;
+  width: 100%;
+}
+.portfolio__container {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  width: 100%;
+}
+.portfolio__control {
+  flex: 1;
+}
+.portfolio__action {
+  margin-left: var(--padding-2);
+}
+
+.item {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  width: 100%;
+}
+.item__text {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-width: 5rem;
+}
+.item__space {
+  flex: 1;
+}
+.item__actions {
+  --tui-height-s: 24px;
+  --t-size: 20px;
+}
+.item__actions [tuiIcons]:before, .item__actions [tuiIcons]:after {
+  font-size: 12px;
+}
+.item__edit {
+  margin-right: var(--padding-2);
+}
+
+.dialog__title {
+  margin: 0 var(--padding-2);
+}
+.dialog__content {
+  padding: var(--padding-2);
+  border-bottom: 1px solid var(--main-bg-color);
+}
+
+::ng-deep tui-data-list[data-size=s] .t-checkmark, ::ng-deep tui-data-list[data-size=s] .t-checkmark {
+  margin-inline-start: 0.375rem;
+}
+
+/*# sourceMappingURL=control-portfolio.component.css.map */

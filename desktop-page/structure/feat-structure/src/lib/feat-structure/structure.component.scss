@@ -35,10 +35,20 @@
   height: 100%;
   overflow: hidden;
 
-  &__title {
-    flex: 0;
+  &__header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
 
-    padding: 0 var(--padding-2);
+    height: 32px;
+
+    margin: var(--padding-2) var(--padding-4) 0;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 600;
   }
 
   &__switcher {
@@ -48,7 +58,7 @@
   }
 
   &__controls {
-    margin: var(--padding-2);
+    margin: var(--padding-4);
 
     label {
       font-size: var(--font-size-small);

@@ -17,10 +17,10 @@
   padding: var(--padding-2);
 }
 .layout__title {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   min-width: 120px;
-  height: 13px;
+  height: 15px;
   margin-left: var(--padding-2);
 }
 .layout__chart {

@@ -18,7 +18,7 @@
     flex-flow: row nowrap;
     align-items: center;
 
-    padding: var(--padding-2);
+    padding: var(--padding-2) var(--padding-4);
   }
 
   &__title {
@@ -35,7 +35,7 @@
   &__pagination {
     flex: 0 0 32px;
 
-    margin: var(--padding-2);
+    margin: var(--padding-2) var(--padding-4);
   }
 
   &__title {
@@ -117,19 +117,21 @@
 
 .item {
   cursor: pointer;
-  
+
   display: flex;
   align-items: center;
 
-  height: 28px;
+  height: 32px;
   overflow: hidden;
 
-  font-size: 9px;
-  line-height: 12px;
+  font-size: 11px;
+  line-height: 13px;
   font-weight: 400;
 
   box-sizing: border-box;
   box-shadow: inset 0 -1px 0 0 var(--tui-border-normal);
+
+  margin: 0 var(--padding-4);
 
   &--skeleton {
     padding: var(--padding-1) var(--padding-2);
@@ -161,7 +163,6 @@
     height: 100%;
 
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
 
     padding: 0 var(--padding-2);
@@ -184,11 +185,14 @@
   }
 
   &__direction {
-    width: 50px;
+    width: 40px;
   }
 
   &__ticker {
-    width: 90px;
+    flex: 1;
+
+    max-width: 100px;
+    min-width: 80px;
   }
 
   &__entry {
@@ -204,21 +208,21 @@
   }
 
   &__luck {
+    flex: 1;
+
     width: 60px;
   }
 
   &__action {
-    flex: 1;
-
-    min-width: 60px;
+    width: 60px;
   }
 }
 
 .header {
   position: relative;
   z-index: 10;
-  font-size: 7px;
-  line-height: 9px;
+  font-size: 9px;
+  line-height: 11px;
 
   color: var(--tui-text-secondary);
   background-color: var(--tui-background-base-alt);
@@ -226,8 +230,8 @@
 }
 
 .substring {
-  font-size: 7px;
-  line-height: 9px;
+  font-size: 9px;
+  line-height: 11px;
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -249,4 +253,10 @@
 
 tui-badge-notification[appearance="primary"] {
   background: var(--tui-background-accent-1);
+}
+
+.context-menu {
+  tui-icon {
+    font-size: 15px;
+  }
 }

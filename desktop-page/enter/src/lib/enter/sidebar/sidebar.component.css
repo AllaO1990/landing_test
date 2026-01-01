@@ -1,0 +1,159 @@
+:host {
+  --tui-height-m: 24px;
+  --tui-font-text-s: normal 11px/24px var(--tui-font-text);
+}
+
+.widget {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+.widget__space {
+  flex: 1 1;
+}
+.widget__empty {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.widget__toolbar {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 48px;
+  border-bottom: 1px solid var(--main-bg-color);
+}
+.widget__valid-date {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  height: 78px;
+  border-bottom: 1px solid var(--main-bg-color);
+}
+.widget__portfolio, .widget__broker, .widget__implementation, .widget__strategy, .widget__timing, .widget__description {
+  padding: var(--padding-4) 0;
+  border-bottom: 1px solid var(--main-bg-color);
+}
+.widget__portfolio {
+  display: flex;
+  flex-flow: column wrap;
+}
+.widget__comment {
+  padding: var(--padding-4) 0;
+}
+.widget__action {
+  display: flex;
+  flex-flow: column;
+  padding: var(--padding-4) 0;
+}
+.widget__action button {
+  flex: 1;
+}
+.widget__action button:not(:last-child) {
+  margin-bottom: var(--padding-2);
+}
+.widget__padding {
+  padding-left: var(--padding-4);
+  padding-right: var(--padding-4);
+}
+
+.control__label {
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 13px;
+  color: var(--tui-text-secondary);
+}
+
+.item {
+  margin: 0 var(--padding-1) var(--padding-1) 0;
+}
+
+.action {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 32px;
+}
+
+.actions {
+  width: 100%;
+  margin-top: var(--padding-2);
+}
+.actions .button:not(:last-child) {
+  margin-right: var(--padding-2);
+}
+.actions .button--in {
+  width: calc(50% - var(--padding-1));
+  margin-right: var(--padding-2);
+}
+.actions .button--out {
+  width: calc(50% - var(--padding-1));
+}
+
+.trash {
+  color: var(--tui-text-secondary);
+}
+.trash tui-svg {
+  margin-right: var(--padding-2);
+}
+
+.comment__label {
+  margin-bottom: var(--padding-2);
+}
+
+.description {
+  display: flex;
+  flex-flow: column;
+}
+.description__row {
+  display: flex;
+  align-items: center;
+}
+.description__row:not(:last-child) {
+  margin-bottom: var(--padding-2);
+}
+.description__label:not(:last-child) {
+  margin-right: var(--padding-2);
+}
+.description__text {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 15px;
+}
+
+.portfolio__label {
+  margin-bottom: var(--padding-2);
+}
+.portfolio__actions {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+.portfolio__select {
+  flex: 1;
+}
+.portfolio__currency {
+  width: 80px;
+  margin-left: var(--padding-4);
+}
+
+.deposit {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
+  animation: 225ms ease-in-out init;
+}
+
+@keyframes init {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*# sourceMappingURL=sidebar.component.css.map */

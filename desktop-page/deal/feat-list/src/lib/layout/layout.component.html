@@ -95,18 +95,6 @@
           />
         </tui-textfield>
       </div>
-
-      <div class="deal__action">
-        <button
-          [disabled]="true"
-          iconStart="@tui.ellipsis-vertical"
-          tuiIconButton
-          type="button"
-          appearance="outline-grayscale"
-          [size]="size"
-          class=" deal__action-more">
-        </button>
-      </div>
     </div>
   </div>
   <div class="deal__list list">
@@ -123,15 +111,36 @@
       }
     } @else {
       <ui-lib-list
-        [itemSize]="28"
+        [itemSize]="32"
         [list]="list()"
         [header]="header">
         <div
+          tuiDropdownContext
+          [tuiDropdown]="contextMenu"
           class="item"
           [class.item--active]="item | dealSelectItem | async"
           *uiLibListItem="let item"
           (click)="onClick($event, item)"
           (dblclick)="onDblclick($event, item)">
+          <ng-template #contextMenu let-close>
+            <tui-data-list
+              [size]="size"
+              role="menu"
+              class="context-menu">
+              @for (button of listOfButtonConstants; track button.type) {
+                <button
+                  tuiOption
+                  new
+                  type="button"
+                  [disabled]="button.disabled"
+                  (click)="onContextClick($event, item, button); close()">
+                  <tui-icon [icon]="button.icon"></tui-icon>
+                  {{ button.text }}
+                </button>
+              }
+            </tui-data-list>
+          </ng-template>
+
           <div class="item__cell item__date">
             @if (item.entry && item.entry.date; as date) {
               {{ date | date: 'dd.MM.yy' }}
@@ -152,9 +161,9 @@
             {{ item.instrument.ticker }}
             <span class="substring">{{ item.instrument.name }}</span>
           </div>
-          <div class="item__cell item__cell--center item__quantity">
+          <div class="item__cell item__cell--number item__quantity">
             @if (item.inPosition.amount; as amount) {
-              {{ amount }}
+              {{ amount | tuiFormatNumber | async }}
             } @else {
               &mdash;
             }
@@ -185,8 +194,6 @@
             </button>
           </div>
         </div>
-
-
       </ui-lib-list>
     }
   </div>
@@ -223,7 +230,7 @@
       Тикер
     </div>
     <div class="item__cell item__quantity">
-      Кол-во в<br>
+      Кол-во в
       сделке
     </div>
     <div class="item__cell item__total">

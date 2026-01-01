@@ -1,35 +1,11 @@
 <div class="filter" [formGroup]="formGroup">
   <div class="filter__item filter__select">
     <span>{{ constants.title }}</span>
-    <tui-textfield
-      class="form__control"
-      tuiChevron
-      [identityMatcher]="identityMatcherPortfolio()"
-      [stringify]="stringifyPortfolio()"
-      [tuiTextfieldSize]="size"
-      [tuiTextfieldCleaner]="false">
-      <input
-        formControlName="portfolio"
-        [placeholder]="constants.portfolio"
-        autocomplete="off"
-        tuiSelect/>
-      <tui-data-list-wrapper
-        *tuiTextfieldDropdown
-        new
-        [items]="portfolios$ | async"
-      />
-    </tui-textfield>
-  </div>
-  <div class="filter__item">
-    <button
-      tuiButton
-      appearance="secondary"
-      [size]="size"
-      [disabled]="true"
-      iconStart="@tui.plus"
-      type="button">
-      {{ constants.portfolio }}
-    </button>
+    <lib-control-portfolio
+      class="portfolio__select"
+      [items]="portfolios$ | async"
+      formControlName="portfolio">
+    </lib-control-portfolio>
   </div>
   <div class="filter__item filter__select">
     <span>{{ constants.currency }}</span>

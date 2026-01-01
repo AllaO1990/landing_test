@@ -1,36 +1,14 @@
 {
-  "name": "data-access-structure",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "desktop-page/structure/data-access/src/lib/data-access",
-  "prefix": "structure",
-  "projectType": "library",
-  "tags": ["structure"],
-  "targets": {
-    "build": {
-      "executor": "@nx/angular:ng-packagr-lite",
-      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
-      "options": {
-        "project": "desktop-page/structure/data-access/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "desktop-page/structure/data-access/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "desktop-page/structure/data-access/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production"
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "desktop-page/structure/data-access/jest.config.ts"
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    }
-  }
+	"name": "data-access-structure",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "desktop-page/structure/data-access/src",
+	"prefix": "structure",
+	"projectType": "library",
+	"tags": ["structure"],
+	"targets": {
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		}
+	},
+	"implicitDependencies": []
 }

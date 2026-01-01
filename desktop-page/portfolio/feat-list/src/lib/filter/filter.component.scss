@@ -16,5 +16,9 @@
 
   &__select {
     flex: 1 1;
+
+    &:last-child {
+      max-width: 120px;
+    }
   }
 }

@@ -1,23 +1,37 @@
-<div class="layout" [class.layout--with-chart]="isChart$ | async">
-  <div class="layout__portfolio widget">
-    <portfolio-list-wrapper></portfolio-list-wrapper>
-  </div>
-  <div class="layout__structure widget">
-    <structure-wrapper></structure-wrapper>
-  </div>
-  <div class="layout__chart widget">
-    @if (isShowPortfolioChart$ | async) {
-      <portfolio-chart-wrapper></portfolio-chart-wrapper>
-    }
+<div
+  class="layout"
+  [class.layout--mobile]="isMobile$ | async"
+  [class.layout--with-chart]="isChart$ | async">
+  <div
+    class="layout__container"
+    [style.margin-left.%]="activeItemIndex * -100">
+    <div class="layout__portfolio widget">
+      <portfolio-list-wrapper></portfolio-list-wrapper>
+    </div>
+    <div class="layout__structure widget">
+      <structure-wrapper></structure-wrapper>
+    </div>
+    <div class="layout__out widget">
+      <deal-list-wrapper></deal-list-wrapper>
+    </div>
+    <div class="layout__idea widget">
+      <idea-list-wrapper></idea-list-wrapper>
+    </div>
+    <div class="layout__chart widget">
+      @if (isShowPortfolioChart$ | async) {
+        <portfolio-chart-wrapper></portfolio-chart-wrapper>
+      }
 
-    @if (isShowCandlestickChart$ | async) {
-      <stock-candlestick-wrapper></stock-candlestick-wrapper>
-    }
+      @if (isShowCandlestickChart$ | async) {
+        <stock-candlestick-wrapper></stock-candlestick-wrapper>
+      }
+    </div>
   </div>
-  <div class="layout__out widget">
-    <deal-list-wrapper></deal-list-wrapper>
-  </div>
-  <div class="layout__idea widget">
-    <idea-list-wrapper></idea-list-wrapper>
-  </div>
+  @if (tabs$ | async; as tabs) {
+    <lib-tabs
+      class="layout__tabs"
+      [tabs]="tabs"
+      [(activeItemIndex)]="activeItemIndex">
+    </lib-tabs>
+  }
 </div>

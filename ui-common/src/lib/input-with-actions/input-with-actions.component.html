@@ -1,13 +1,16 @@
 <form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
-  <tui-input
+  <tui-textfield
     class="form__input"
     tuiAutoFocus
-    formControlName="name"
     [tuiTextfieldSize]="size"
     [tuiTextfieldCleaner]="true">
-    <ng-content></ng-content>
-    <input tuiTextfieldLegacy />
-  </tui-input>
+    <input
+      [placeholder]="placeholder"
+      tuiTextfield
+      formControlName="name"
+      autocomplete="off"
+    />
+  </tui-textfield>
   <button
     class="form__action form__submit"
     [size]="size"

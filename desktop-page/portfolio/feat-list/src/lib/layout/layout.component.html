@@ -14,35 +14,29 @@
     <div class="portfolio__item portfolio__value">
       <div class="card card--primary" [tuiSkeleton]="isLoaded()">
         <div class="card__header">
-          <div class="card__title">{{ constants.value }} в:</div>
-          <tui-textfield
-            class="card__select card__select--currency"
-            tuiChevron
-            [identityMatcher]="identityMatcherCurrency()"
-            [stringify]="stringifyCurrency()"
-            [tuiTextfieldSize]="size"
-            [tuiTextfieldCleaner]="false">
-            <input
-              formControlName="leadToCurrency"
-              [placeholder]="constants.currency"
-              autocomplete="off"
-              tuiSelect/>
-            <tui-data-list-wrapper
-              *tuiTextfieldDropdown
-              new
-              [items]="currency$ | async"
-            />
-          </tui-textfield>
+          <div class="card__title">{{ constants.value }}</div>
           <div class="space"></div>
           <div class="card__actions">
-            <button
-              tuiIconButton
-              [disabled]="true"
-              appearance="icon"
-              size="xs"
-              iconStart="@tui.pencil"
-              type="button">
-            </button>
+            <span>в:</span>
+            <tui-textfield
+              class="card__select card__select--currency"
+              tuiChevron
+              [identityMatcher]="identityMatcherCurrency()"
+              [stringify]="stringifyCurrency()"
+              [tuiTextfieldSize]="size"
+              [tuiTextfieldCleaner]="false">
+              <input
+                formControlName="leadToCurrency"
+                [placeholder]="constants.currency"
+                autocomplete="off"
+                tuiSelect/>
+              <tui-data-list-wrapper
+                [size]="size"
+                *tuiTextfieldDropdown
+                new
+                [items]="currency$ | async"
+              />
+            </tui-textfield>
           </div>
         </div>
         <div class="card__content">
@@ -52,6 +46,17 @@
               <span>{{ balance.currencySymbol }}</span>
             </div>
           }
+          <div class="space"></div>
+          <div class="card__actions">
+            <button
+              tuiIconButton
+              (click)="openDialogBalance($event)"
+              appearance="primary"
+              [size]="size"
+              iconStart="@tui.pencil"
+              type="button">
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -59,34 +64,29 @@
       <div class="card card--default" [tuiSkeleton]="isLoaded()">
         <div class="card__header">
           <div class="card__title">{{ constants.profit }}</div>
-          <tui-textfield
-            class="card__select card__select--calendar"
-            tuiChevron
-            [identityMatcher]="identityMatcherCalendar()"
-            [stringify]="stringifyCalendar()"
-            tuiTextfieldSize="s"
-            [tuiTextfieldCleaner]="false">
-            <input
-              formControlName="calendar"
-              [placeholder]="constants.portfolio"
-              autocomplete="off"
-              tuiSelect/>
-            <tui-data-list-wrapper
-              *tuiTextfieldDropdown
-              new
-              [items]="calendar$ | async"
-            />
-          </tui-textfield>
           <div class="space"></div>
-          <button
-            [size]="size"
-            portfolioChartButton
-            tuiButton
-            appearance="flat"
-            type="button">
-            {{ constants.chart }}
-          </button>
-
+          <div class="card__actions">
+            <span>за:</span>
+            <tui-textfield
+              class="card__select card__select--calendar"
+              tuiChevron
+              [identityMatcher]="identityMatcherCalendar()"
+              [stringify]="stringifyCalendar()"
+              [tuiTextfieldSize]="size"
+              [tuiTextfieldCleaner]="false">
+              <input
+                formControlName="calendar"
+                [placeholder]="constants.portfolio"
+                autocomplete="off"
+                tuiSelect/>
+              <tui-data-list-wrapper
+                *tuiTextfieldDropdown
+                new
+                [size]="size"
+                [items]="calendar$ | async"
+              />
+            </tui-textfield>
+          </div>
         </div>
         <div class="card__content">
           @if (balance(); as balance) {
@@ -98,6 +98,17 @@
               {{ balance.profitPct | tuiFormatNumber | async }}%
             </div>
           }
+          <div class="space"></div>
+          <div class="card__actions">
+            <button
+              [size]="size"
+              portfolioChartButton
+              tuiButton
+              appearance="flat"
+              type="button">
+              {{ constants.chart }}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,20 @@
+:host {
+  display: block;
+}
+
+.filter {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-end;
+}
+.filter__item:not(:last-child) {
+  margin-right: var(--padding-2);
+}
+.filter__select {
+  flex: 1 1;
+}
+.filter__select:last-child {
+  max-width: 120px;
+}
+
+/*# sourceMappingURL=filter.component.css.map */
