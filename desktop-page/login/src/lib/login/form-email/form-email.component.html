@@ -1,0 +1,24 @@
+<form class="form" [formGroup]="formGroup" (ngSubmit)="onSubmit($event)">
+  <div class="form__container">
+    <label class="form__control control">
+      <span class="control__text">Введите email</span>
+      <tui-textfield
+        [tuiTextfieldSize]="size"
+        iconStart="@tui.mail">
+        <input
+          placeholder="my@my.com"
+          tuiTextfield
+          formControlName="email"
+        />
+      </tui-textfield>
+    </label>
+    <button
+      class="form__action"
+      [size]="size"
+      [disabled]="controlEmail.invalid || !controlAgree.value"
+      tuiButton
+      type="submit">
+      Получить код
+    </button>
+  </div>
+</form>

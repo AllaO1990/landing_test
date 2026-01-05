@@ -1,33 +1,22 @@
-<form class="form" [formGroup]="formGroup" (ngSubmit)="onSubmit($event)">
-  <div class="form__title">Зарегистрироваться</div>
-  <div class="form__container" [formGroup]="formGroup">
-    @if (isLoad()) {
-      <ui-loader size="l" class="loader"></ui-loader>
-    }
-    <label class="form__control control">
-      <span class="control__text">Введите email</span>
-      <tui-textfield
-        @opacityAnimations
-        [tuiTextfieldSize]="size"
-        iconStart="@tui.mail">
-        <input
-          placeholder="my@my.com"
-          tuiTextfield
-          formControlName="email"
-        />
-      </tui-textfield>
-    </label>
-    <button
-      class="form__action"
-      [size]="size"
-      [disabled]="controlEmail.invalid"
-      tuiButton
-      type="submit">
-      Получить код
-    </button>
+<div class="form">
+  <div class="form__title">
+    Зарегистрироваться
   </div>
-</form>
+  @if (isLoad()) {
+    <ui-loader size="l" class="loader"></ui-loader>
+  }
+  @if (email() === null) {
+    <login-form-email
+      [agree]="true"
+      (changed)="onChangeEmail($event)"></login-form-email>
+  } @else {
+    <login-form-tg-code
+      [email]="email()"
+      (changed)="onChangeCode($event)"
+    ></login-form-tg-code>
+  }
+</div>
 
 <p class="form__information">Есть учетная запись?
-  <a tuiLink iconEnd="@tui.arrow-right" [routerLink]="['../sign-in']">Войти</a>
+  <a tuiLink iconEnd="@tui.arrow-right" [routerLink]="['../sign-in']" [queryParams]="params$ | async">Войти</a>
 </p>

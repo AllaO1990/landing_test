@@ -1,0 +1,62 @@
+.form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.form__title {
+  color: var(--tui-text-primary-on-accent-1);
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: Inter, sans-serif;
+  line-height: 1.2em;
+  letter-spacing: -1px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.form__container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.form__control:not(:last-child) {
+  margin-bottom: 2rem;
+}
+.form__information {
+  padding: 0;
+  margin-top: 2rem;
+  box-shadow: none;
+  font: normal 18px/18px var(--tui-font-text);
+  color: #979797;
+}
+
+.control {
+  height: 68px;
+}
+.control__text {
+  display: inline-block;
+  margin-bottom: var(--padding-2);
+  color: #979797;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.25px;
+}
+
+.loader {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.loader ~ login-form-email, .loader ~ login-form-tg-code {
+  filter: blur(2px);
+}
+
+[tuiButton][data-size=m] {
+  font: var(--tui-font-text-l);
+}
+
+/*# sourceMappingURL=form.css.map */

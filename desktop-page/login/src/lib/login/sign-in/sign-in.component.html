@@ -1,71 +1,23 @@
-<form class="form" [formGroup]="formGroup" (ngSubmit)="onSubmit($event)">
+<form class="form">
   <div class="form__title">Войти по email</div>
-  <ng-container [ngTemplateOutlet]="formType() === 'email' ? email : code"></ng-container>
+  @if (isLoad()) {
+    <ui-loader size="l" class="loader"></ui-loader>
+  }
+  @if (email() === null) {
+    <login-form-email
+      [agree]="controlAgree.value"
+      (changed)="onChangeEmail($event)"></login-form-email>
+  } @else {
+    <login-form-tg-code
+      [email]="email()"
+      (changed)="onChangeCode($event)"
+    ></login-form-tg-code>
+  }
 </form>
-
-<ng-template #email>
-  <div class="form__container" [formGroup]="formGroup">
-    @if (isLoad()) {
-      <ui-loader size="l" class="loader"></ui-loader>
-    }
-    <label class="form__control control">
-      <span class="control__text">Введите email</span>
-      <tui-textfield
-        @opacityAnimations
-        [tuiTextfieldSize]="size"
-        iconStart="@tui.mail">
-        <input
-          placeholder="my@my.com"
-          tuiTextfield
-          formControlName="email"
-        />
-      </tui-textfield>
-    </label>
-    <button
-      class="form__action"
-      [size]="size"
-      [disabled]="controlEmail.invalid || !controlAgree.value"
-      tuiButton
-      type="submit">
-      Войти
-    </button>
-  </div>
-</ng-template>
-
-<ng-template #code>
-  <div class="form__container" [formGroup]="formGroup">
-    @if (isLoad()) {
-      <ui-loader size="l" class="loader"></ui-loader>
-    }
-    <label class="form__control control">
-      <span class="control__text">Введите пароль/код из Telegram</span>
-      <tui-textfield
-        @opacityAnimations
-        [tuiTextfieldSize]="size"
-        iconStart="@tui.key-round">
-        <input
-          inputmode="numeric"
-          pattern="[0-9]*"
-          placeholder="Telegram code"
-          tuiTextfield
-          formControlName="code"
-        />
-      </tui-textfield>
-    </label>
-    <button
-      class="form__action"
-      [size]="size"
-      [disabled]="controlCode.invalid || !controlAgree.value"
-      tuiButton
-      type="submit">
-      Войти
-    </button>
-  </div>
-</ng-template>
 
 <p class="form__information">Нет учетной записи?
   <a tuiLink iconEnd="@tui.arrow-right"
-     [routerLink]="['../sign-up']" [queryParams]="{ email: controlEmail.value }">Зарегистрироваться</a>
+     [routerLink]="['../sign-up']" [queryParams]="params$ | async">Зарегистрироваться</a>
 </p>
 
 <label tuiBlock [formGroup]="formGroup" class="form__information">

@@ -1,17 +1,21 @@
-/* Error: Can't find stylesheet to import.
- *   ,
- * 1 | @import "ui-common/src/lib/dialog/dialog";
- *   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- *   '
- *   balance.component.scss 1:9  root stylesheet */
-
-body::before {
-  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
-      "Droid Sans Mono", monospace, monospace;
-  white-space: pre;
-  display: block;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-bottom: 2px solid black;
-  content: "Error: Can't find stylesheet to import.\a   \2577 \a 1 \2502  @import \"ui-common/src/lib/dialog/dialog\";\a   \2502          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\a   \2575 \a   balance.component.scss 1:9  root stylesheet";
+.form {
+  max-width: 750px;
+  width: 60vw;
 }
+.form__list {
+  min-height: 300px;
+  width: 100%;
+  margin: var(--padding-4) 0;
+}
+.form__pagination {
+  display: inline-block;
+  width: 100%;
+  border-bottom: 1px solid var(--main-bg-color);
+  padding-bottom: var(--padding-4);
+}
+
+.header {
+  background: var(--block-bg-color);
+}
+
+/*# sourceMappingURL=balance.component.css.map */

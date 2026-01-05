@@ -1,88 +1,106 @@
-import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LoaderComponent } from '@ui/components/loader';
-import {
-  TuiAlertService,
-  TuiButton,
-  TuiLink,
-  TuiTextfield,
-  TuiTextfieldComponent,
-  TuiTextfieldDirective,
-} from '@taiga-ui/core';
-import { Router, RouterLink } from '@angular/router';
-import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TuiAlertService, TuiLink } from '@taiga-ui/core';
+import { Params, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth';
-import { forkJoin, map, timer } from 'rxjs';
+import { FormEmailComponent } from '../form-email/form-email.component';
+import { forkJoin, map, Observable, timer } from 'rxjs';
 import { Response } from 'types/response';
-import { QueryParams } from 'utils/query-params';
+import { LoaderComponent } from '@ui/components/loader';
+import { FormTelegramCodeComponent } from '../form-tg-code/form-tg-code.component';
+import { AsyncPipe } from '@angular/common';
 import { QUERY_PARAMS } from 'tokens/desktop';
+import { QueryParams } from 'utils/query-params';
+
+interface FormValue {
+	email: string | null;
+	code: string | null;
+	agree: boolean;
+}
 
 @Component({
-  selector: 'login-sign-up',
-  standalone: true,
-  imports: [
-    FormsModule,
-    LoaderComponent,
-    ReactiveFormsModule,
-    TuiButton,
-    TuiTextfieldComponent,
-    TuiTextfieldDirective,
-    TuiTextfield,
-    RouterLink,
-    TuiLink,
-  ],
-  templateUrl: './sign-up.component.html',
-  styleUrls: ['../form.scss', './sign-up.component.scss'],
-  animations: [triggerOpacityAnimations('1s cubic-bezier(0.4,0.0,0.2,1)')],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'login-sign-up',
+	standalone: true,
+	imports: [
+		FormsModule,
+		ReactiveFormsModule,
+		RouterLink,
+		TuiLink,
+		FormEmailComponent,
+		LoaderComponent,
+		FormTelegramCodeComponent,
+		AsyncPipe,
+	],
+	templateUrl: './sign-up.component.html',
+	styleUrls: ['../form.scss', './sign-up.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignUpComponent {
-  readonly #auth: AuthService = inject(AuthService);
-  readonly #router: Router = inject(Router);
-  readonly #alerts: TuiAlertService = inject(TuiAlertService);
-  readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
+	readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
+	readonly #auth: AuthService = inject(AuthService);
+	readonly #router: Router = inject(Router);
+	readonly #alerts: TuiAlertService = inject(TuiAlertService);
 
-  get email(): string {
-    const value = this.#queryParams.value();
+	readonly size = 'm';
+	readonly params$: Observable<Params> = this.#queryParams;
+	readonly data: WritableSignal<FormValue> = signal({ email: null, agree: true, code: null });
+	readonly email: Signal<string | null> = computed(() => this.data().email);
+	readonly isLoad: WritableSignal<boolean> = signal(false);
 
-    return value['email'] ? value['email'] : '';
-  }
+	onChangeEmail(event: { agree: boolean; email: string }): void {
+		this.data.update((value: FormValue) => ({ ...value, ...event }));
+		this.isLoad.set(true);
 
-  readonly size = 'm';
+		const email = this.email();
 
-  readonly formGroup: FormGroup = new FormGroup({
-    email: new FormControl(this.email, [Validators.required, Validators.email]),
-  });
+		if (email !== null) {
+			forkJoin([this.#auth.onSignUp(email), timer(500)])
+				.pipe(map((response: [Response<string>, number]) => response[0]))
+				.subscribe((result: Response<string>) => {
+					this.isLoad.set(false);
 
-  get controlEmail(): FormControl {
-    return this.formGroup.get('email') as FormControl;
-  }
+					if (!result.success) {
+						this.data.update((value: FormValue) => ({ ...value, email: null }));
 
-  readonly isLoad: WritableSignal<boolean> = signal(false);
+						this.#alerts
+							.open('Такой Email уже существует, проверьте корректность', {
+								label: 'Неверный Email',
+								appearance: 'negative',
+							})
+							.subscribe();
+					}
+				});
+		}
+	}
 
-  onSubmit(event: Event): void {
-    event.preventDefault();
+	onChangeCode(event: { code: string; email: string }): void {
+		this.data.update((value: FormValue) => ({ ...value, ...event }));
 
-    this.isLoad.set(true);
+		this.isLoad.set(true);
+		forkJoin([this.#auth.onLogin(event.email, event.code), timer(500)])
+			.pipe(map((response: [Response<any>, number]) => response[0]))
+			.subscribe((result) => {
+				this.isLoad.set(false);
 
-    forkJoin([this.#auth.onSignUp(this.controlEmail.value), timer(500)])
-      .pipe(map((response: [Response<string>, number]) => response[0]))
-      .subscribe((result: Response<string>) => {
-        this.isLoad.set(false);
+				if (result.success) {
+					if (this.#auth.getUrl()) {
+						this.#router.navigateByUrl(this.#auth.getUrl());
+						this.#auth.resetUrl();
+					} else {
+						this.#router.navigate(['lk']);
+					}
+				}
 
-        if (result.success) {
-          this.#router.navigate(['..'], { queryParams: { email: this.controlEmail.value } });
-          return;
-        }
+				if (!result.success) {
+					this.data.update((value: FormValue) => ({ ...value, code: null }));
 
-        if (!result.success) {
-          this.#alerts
-            .open('Такой Email уже существует, проверьте корректность', {
-              label: 'Неверный Email',
-              appearance: 'negative',
-            })
-            .subscribe();
-        }
-      });
-  }
+					this.#alerts
+						.open('Проверка кода из Telegram', {
+							label: 'Неверный код',
+							appearance: 'negative',
+						})
+						.subscribe();
+				}
+			});
+	}
 }

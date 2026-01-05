@@ -6,6 +6,11 @@
 	"projectType": "library",
 	"tags": ["portfolio-balance"],
 	"targets": {
+		"serve": {
+			"options": {
+				"styles": ["ui-common/src/lib/dialog/dialog.scss"]
+			}
+		},
 		"test": {
 			"executor": "@nx/jest:jest",
 			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

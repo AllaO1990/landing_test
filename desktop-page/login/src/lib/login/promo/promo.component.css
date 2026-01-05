@@ -1,0 +1,43 @@
+.promo {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.promo__title {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  margin: 5rem 1rem;
+  color: var(--tui-text-primary-on-accent-1);
+}
+.promo__title h1 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: Inter, sans-serif;
+  line-height: 1em;
+  letter-spacing: -1.5px;
+  text-shadow: 1px 1px 2px var(--tui-text-secondary);
+}
+.promo__title span {
+  color: #D6F252;
+}
+.promo__image {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  width: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.promo__image img {
+  object-fit: contain;
+  width: 100%;
+}
+
+/*# sourceMappingURL=promo.component.css.map */

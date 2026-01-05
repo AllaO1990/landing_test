@@ -1,4 +1,5 @@
 .form {
+  position: relative;
   display: flex;
   flex-direction: column;
 
@@ -65,7 +66,10 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+}
+
+.loader ~ login-form-email, .loader ~ login-form-tg-code {
+  filter: blur(2px);
 }
 
 [tuiButton][data-size=m] {

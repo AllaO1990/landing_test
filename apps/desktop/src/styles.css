@@ -13,6 +13,8 @@
   --padding-4: 16px;
   --padding-5: 20px;
   --padding-6: 24px;
+  --padding-7: 28px;
+  --padding-8: 32px;
   --color-g-12: #12151e;
   --color-g-11: #1c1f2b;
   --color-g-10: #272a38;
@@ -28,11 +30,7 @@
   --color-r: #ff103b;
   --color-g: #039322;
   --color-b: #0066ff;
-  --tui-height-xs: 1.5rem;
-  --tui-height-s: 16px;
-  --tui-height-m: 2.75rem;
-  --tui-height-l: 3.5rem;
-  --tui-radius: 2px;
+  --tui-radius: 3px;
   --tui-radius-xs: var(--tui-radius);
   --tui-radius-s: var(--tui-radius);
   --tui-radius-m: var(--tui-radius);
@@ -43,7 +41,7 @@
   --tui-font-text-xl: normal 1.1875rem/1.75rem var(--tui-font-text);
   --tui-font-text-l: normal 1.0625rem/1.5rem var(--tui-font-text);
   --tui-font-text-ui-l: normal 1.0625rem/1.25rem var(--tui-font-text);
-  --tui-font-text-m: normal 1rem/1.5rem var(--tui-font-text);
+  --tui-font-text-m: normal 11px/16px var(--tui-font-text);
   --tui-font-text-ui-m: normal 1rem/1.25rem var(--tui-font-text);
   --tui-font-text-s: normal 11px/16px var(--tui-font-text);
   --tui-font-text-ui-s: normal 0.8125rem/1rem var(--tui-font-text);
@@ -57,17 +55,6 @@
 html,
 body {
   height: 100%;
-}
-
-body {
-  margin: 0;
-  font-family: var(--tui-text-font);
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  line-height: 15px;
-  box-sizing: border-box;
-  background-color: var(--main-bg-color);
 }
 
 *::-webkit-scrollbar {
@@ -85,7 +72,7 @@ body {
 
 .develop {
   opacity: 1;
-  background-image: url('/assets/images/logo.svg');
+  background-image: url("/assets/images/logo.svg");
   background-repeat: no-repeat;
   background-size: 200px;
   background-position: center;
@@ -95,9 +82,94 @@ tui-root {
   height: 100%;
 }
 
+tui-data-list[role=menu] [tuiOption]:not([new]) {
+  justify-content: flex-start;
+}
+tui-data-list[role=menu] [tuiOption]:not([new]) tui-icon {
+  font: var(--tui-font-text-ui-l);
+  margin-right: var(--padding-2);
+}
+
+.bold {
+  font-weight: 500;
+}
+
+.space {
+  flex: 1 1;
+}
+
+.long {
+  color: var(--color-g);
+}
+
+.short {
+  color: var(--color-r);
+}
+
 @keyframes rotate {
   100% {
     transform: rotateY(360deg);
+  }
+}
+lib-dialog[appearance=dialog-block] {
+  margin: auto;
+  border: none;
+  border-radius: 0;
+}
+
+lib-dialog[appearance=medium-block] {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  min-height: 100%;
+  height: 100vh;
+}
+
+lib-dialog[appearance=medium-block-flex] {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+lib-dialog[appearance=small-block] {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+lib-dialog[appearance=dialog-confirm] {
+  background-color: var(--block-bg-color);
+  padding: var(--padding-4);
+}
+
+tui-dialog[data-appearance=dialog-confirm] {
+  border-radius: 0;
+}
+
+@media screen and (min-width: 768px) {
+  lib-dialog[appearance=small-block] {
+    display: block;
+    width: 30vw;
+    height: auto;
+  }
+  lib-dialog[appearance=medium-block] {
+    display: block;
+    max-width: 750px;
+    width: 60vw;
+    min-height: 500px;
+    height: 60vh;
+  }
+  lib-dialog[appearance=medium-block-flex] {
+    max-width: 750px;
+    width: 60vw;
+    height: auto;
+  }
+  lib-dialog[appearance=big-block] {
+    display: block;
+    max-width: 750px;
+    width: 65vw;
+    min-height: 700px;
+    height: 80vh;
   }
 }
 
