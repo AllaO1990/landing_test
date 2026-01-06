@@ -1,24 +1,24 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  Injector,
-  Input,
-  OnDestroy,
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	forwardRef,
+	inject,
+	Injector,
+	Input,
+	OnDestroy,
 } from '@angular/core';
 import {
-  AbstractControl,
-  ControlValueAccessor,
-  FormControl,
-  FormGroup,
-  NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
+	AbstractControl,
+	ControlValueAccessor,
+	FormControl,
+	FormGroup,
+	NG_VALIDATORS,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule,
+	ValidationErrors,
+	Validators,
 } from '@angular/forms';
 import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
 import { SIDEBAR_CONSTANTS } from './sidebar.constants';
@@ -26,16 +26,16 @@ import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
 import { StockPosition } from 'types/position';
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  Observable,
-  ReplaySubject,
-  shareReplay,
-  startWith,
-  Subject,
+	BehaviorSubject,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	Observable,
+	ReplaySubject,
+	shareReplay,
+	startWith,
+	Subject,
 } from 'rxjs';
 import { AccountBalance, AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -58,406 +58,404 @@ import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 type Item = { id: string; name: string };
 
 interface FormValue {
-  positionType: null | string;
-  expirationDate: null | string;
-  strategyId: null | number;
-  portfolioId: null | number;
-  comment: string;
-  instrumentId: null | number;
-  parentId: null | number;
+	positionType: null | string;
+	expirationDate: null | string;
+	strategyId: null | number;
+	portfolioId: null | number;
+	comment: string;
+	instrumentId: null | number;
+	parentId: null | number;
 }
 
 @Component({
-  selector: 'lib-enter-sidebar',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    TuiTextarea,
-    AsyncPipe,
-    NgIf,
-    TuiDataListWrapper,
-    TuiSelect,
-    TuiChevron,
-    ValidDateComponent,
-    ControlPortfolioComponent,
-    TuiScrollbar,
-    TuiTextfield,
-    TuiFormatNumberPipe,
-    TuiButton,
-    TuiAutoFocus,
-  ],
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => EnterSidebarComponent),
-      multi: true,
-    },
-    {
-      provide: NG_VALIDATORS,
-      useExisting: forwardRef(() => EnterSidebarComponent),
-      multi: true,
-    },
-    {
-      provide: BalanceDepositService,
-      useFactory: (dialog: DialogService) => new BalanceDepositService(dialog),
-      deps: [DIALOG],
-    },
-    {
-      provide: BalanceWithdrawalService,
-      useFactory: (dialog: DialogService) => new BalanceWithdrawalService(dialog),
-      deps: [DIALOG],
-    },
-    tuiAutoFocusOptionsProvider({
-      delay: 1000,
-      preventScroll: true,
-    }),
-  ],
-  animations: [triggerOpacityAnimations()],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'lib-enter-sidebar',
+	standalone: true,
+	imports: [
+		ReactiveFormsModule,
+		TuiTextarea,
+		AsyncPipe,
+		NgIf,
+		TuiDataListWrapper,
+		TuiSelect,
+		TuiChevron,
+		ValidDateComponent,
+		ControlPortfolioComponent,
+		TuiScrollbar,
+		TuiTextfield,
+		TuiFormatNumberPipe,
+		TuiButton,
+		TuiAutoFocus,
+	],
+	templateUrl: './sidebar.component.html',
+	styleUrl: './sidebar.component.scss',
+	providers: [
+		{
+			provide: NG_VALUE_ACCESSOR,
+			useExisting: forwardRef(() => EnterSidebarComponent),
+			multi: true,
+		},
+		{
+			provide: NG_VALIDATORS,
+			useExisting: forwardRef(() => EnterSidebarComponent),
+			multi: true,
+		},
+		{
+			provide: BalanceDepositService,
+			useFactory: (dialog: DialogService) => new BalanceDepositService(dialog),
+			deps: [DIALOG],
+		},
+		{
+			provide: BalanceWithdrawalService,
+			useFactory: (dialog: DialogService) => new BalanceWithdrawalService(dialog),
+			deps: [DIALOG],
+		},
+		tuiAutoFocusOptionsProvider({
+			delay: 1000,
+			preventScroll: true,
+		}),
+	],
+	animations: [triggerOpacityAnimations()],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnterSidebarComponent implements ControlValueAccessor, Validators, AfterViewInit, OnDestroy {
-  readonly #injector: Injector = inject(Injector);
-  readonly #balanceDepositService: BalanceDepositService = inject(BalanceDepositService);
-  readonly #balanceWithdrawalService: BalanceWithdrawalService = inject(BalanceWithdrawalService);
-  readonly #servicePortfolioFacade: PortfolioFacade = inject(PortfolioFacade);
-  readonly #loadBalance$: Subject<void> = new BehaviorSubject<void>(void 0);
-  private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly _idea: IdeaFacade = inject(IdeaFacade);
-  private readonly _accountStore: AccountFacade = inject(AccountFacade);
+	readonly #injector: Injector = inject(Injector);
+	readonly #balanceDepositService: BalanceDepositService = inject(BalanceDepositService);
+	readonly #balanceWithdrawalService: BalanceWithdrawalService = inject(BalanceWithdrawalService);
+	readonly #servicePortfolioFacade: PortfolioFacade = inject(PortfolioFacade);
+	readonly #loadBalance$: Subject<void> = new BehaviorSubject<void>(void 0);
+	private readonly _destroyRef: DestroyRef = inject(DestroyRef);
+	private readonly _idea: IdeaFacade = inject(IdeaFacade);
+	private readonly _accountStore: AccountFacade = inject(AccountFacade);
 
-  readonly strategy: AccountStrategy[] = STOCK_STRATEGY_LIST;
-  readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
-  readonly constants = SIDEBAR_CONSTANTS;
+	readonly strategy: AccountStrategy[] = STOCK_STRATEGY_LIST;
+	readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
+	readonly constants = SIDEBAR_CONSTANTS;
 
-  private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
+	private readonly _controlValue$: Subject<any | null> = new ReplaySubject(1);
 
-  readonly strategies$: Observable<AccountStrategy[]> = this._accountStore.strategies$.pipe(
-    filter((value: AccountStrategy[] | null): value is AccountStrategy[] => value !== null),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  );
-  readonly currencies$: Observable<AccountCurrency[]> = this._accountStore.currencies$.pipe(
-    filter((currencies: AccountCurrency[] | null): currencies is AccountCurrency[] => currencies !== null),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  );
-  readonly portfolio$: Observable<AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
-    filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null),
-    filter((portfolio: AccountPortfolio[]) => !!portfolio.length),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  );
-  readonly idea$: Observable<StockPosition> = this._idea.idea$.pipe(
-    filter((position: StockPosition | null): position is StockPosition => position !== null),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  );
-  readonly balance$: Observable<null | AccountBalance> = this.#servicePortfolioFacade.balance$.pipe(
-    shareReplay({ refCount: true, bufferSize: 1 })
-  );
+	readonly strategies$: Observable<AccountStrategy[]> = this._accountStore.strategies$.pipe(
+		filter((value: AccountStrategy[] | null): value is AccountStrategy[] => value !== null),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
+	readonly currencies$: Observable<AccountCurrency[]> = this._accountStore.currencies$.pipe(
+		filter((currencies: AccountCurrency[] | null): currencies is AccountCurrency[] => currencies !== null),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
+	readonly portfolio$: Observable<AccountPortfolio[]> = this._accountStore.portfolios$.pipe(
+		filter((portfolio: AccountPortfolio[] | null): portfolio is AccountPortfolio[] => portfolio !== null),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
+	readonly idea$: Observable<StockPosition> = this._idea.idea$.pipe(
+		filter((position: StockPosition | null): position is StockPosition => position !== null),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
+	readonly balance$: Observable<null | AccountBalance> = this.#servicePortfolioFacade.balance$.pipe(
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
 
-  isDisabled = false;
-  value: any = null;
+	isDisabled = false;
+	value: any = null;
 
-  onChange = (_: any) => {};
-  onTouched = () => {};
+	onChange = (_: any) => {};
+	onTouched = () => {};
 
-  form: FormGroup = new FormGroup({
-    author: new FormControl(null),
-    positionType: new FormControl<null | string>(null, Validators.required),
-    expirationDate: new FormControl<null | string>(null),
-    strategyId: new FormControl<null | number>(null, Validators.required),
-    portfolioId: new FormControl<null | number>(null, Validators.required),
-    comment: new FormControl<string>(''),
-    instrumentId: new FormControl<null | number>(null),
-    parentId: new FormControl<null | number>(null),
-  });
+	form: FormGroup = new FormGroup({
+		author: new FormControl(null),
+		positionType: new FormControl<null | string>(null, Validators.required),
+		expirationDate: new FormControl<null | string>(null),
+		strategyId: new FormControl<null | number>(null, Validators.required),
+		portfolioId: new FormControl<null | number>(null, Validators.required),
+		comment: new FormControl<string>(''),
+		instrumentId: new FormControl<null | number>(null),
+		parentId: new FormControl<null | number>(null),
+	});
 
-  readonly size = 's';
+	readonly size = 's';
 
-  get controlPortfolio(): FormControl {
-    return this.form.get('portfolioId') as FormControl;
-  }
+	get controlPortfolio(): FormControl {
+		return this.form.get('portfolioId') as FormControl;
+	}
 
-  get controlStrategy(): FormControl {
-    return this.form.get('strategyId') as FormControl;
-  }
+	get controlStrategy(): FormControl {
+		return this.form.get('strategyId') as FormControl;
+	}
 
-  get controlPositionType(): FormControl {
-    return this.form.get('positionType') as FormControl;
-  }
+	get controlPositionType(): FormControl {
+		return this.form.get('positionType') as FormControl;
+	}
 
-  get controlComment(): FormControl {
-    return this.form.get('comment') as FormControl;
-  }
+	get controlComment(): FormControl {
+		return this.form.get('comment') as FormControl;
+	}
 
-  readonly formControlPortfolio: FormControl<AccountPortfolio | null> = new FormControl<AccountPortfolio | null>(
-    null,
-    Validators.required
-  );
-  readonly formControlCurrency: FormControl<AccountCurrency | null> = new FormControl<AccountCurrency | null>(
-    { value: null, disabled: true },
-    Validators.required
-  );
-  readonly formControlStrategy: FormControl<null | AccountStrategy> = new FormControl<null | AccountStrategy>(
-    null,
-    Validators.required
-  );
-  readonly formControlPositionType: FormControl<null | Item> = new FormControl<null | Item>(null, Validators.required);
+	readonly formControlPortfolio: FormControl<AccountPortfolio | null> = new FormControl<AccountPortfolio | null>(
+		null,
+		Validators.required
+	);
+	readonly formControlCurrency: FormControl<AccountCurrency | null> = new FormControl<AccountCurrency | null>(
+		{ value: null, disabled: true },
+		Validators.required
+	);
+	readonly formControlStrategy: FormControl<null | AccountStrategy> = new FormControl<null | AccountStrategy>(
+		null,
+		Validators.required
+	);
+	readonly formControlPositionType: FormControl<null | Item> = new FormControl<null | Item>(null, Validators.required);
 
-  @Input({ required: true }) formGroup!: FormGroup;
+	@Input({ required: true }) formGroup!: FormGroup;
 
-  ngAfterViewInit(): void {
-    this._init();
+	ngAfterViewInit(): void {
+		this._init();
 
-    combineLatest([
-      this.formControlPortfolio.valueChanges.pipe(
-        startWith(this.formControlPortfolio.value),
-        filter((value: null | AccountPortfolio): value is AccountPortfolio => value !== null),
-        distinctUntilChanged()
-      ),
-      this.#loadBalance$.asObservable(),
-    ])
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        map(([value]: [AccountPortfolio, void]) => {
-          const date = new Date();
-          return {
-            brokerId: null,
-            currencyId: 1,
-            from: new Date(new Date(date.getFullYear(), date.getMonth(), 1, 23).setUTCHours(0, 0, 0, 0)).toISOString(),
-            instrumentType: 0,
-            leadToCurrency: 'rub',
-            portfolioId: value.portfolioId,
-            strategyId: null,
-            to: new Date(endOfMonth(new Date()).setUTCHours(23, 59, 59, 0)).toISOString(),
-          };
-        })
-      )
-      .subscribe((params: Params) => {
-        this.#servicePortfolioFacade.loadBalance(params);
-      });
-  }
+		combineLatest([
+			this.formControlPortfolio.valueChanges.pipe(
+				startWith(this.formControlPortfolio.value),
+				filter((value: null | AccountPortfolio): value is AccountPortfolio => value !== null),
+				distinctUntilChanged()
+			),
+			this.#loadBalance$.asObservable(),
+		])
+			.pipe(
+				takeUntilDestroyed(this._destroyRef),
+				filter(([value]: [AccountPortfolio, void]) => !!value),
+				map(([value]: [AccountPortfolio, void]) => {
+					const date = new Date();
+					return {
+						brokerId: null,
+						currencyId: 1,
+						from: new Date(new Date(date.getFullYear(), date.getMonth(), 1, 23).setUTCHours(0, 0, 0, 0)).toISOString(),
+						instrumentType: 0,
+						leadToCurrency: 'rub',
+						portfolioId: value.portfolioId,
+						strategyId: null,
+						to: new Date(endOfMonth(new Date()).setUTCHours(23, 59, 59, 0)).toISOString(),
+					};
+				})
+			)
+			.subscribe((params: Params) => {
+				this.#servicePortfolioFacade.loadBalance(params);
+			});
+	}
 
-  ngOnDestroy(): void {
-    this.#loadBalance$.complete();
-  }
+	ngOnDestroy(): void {
+		this.#loadBalance$.complete();
+	}
 
-  writeValue(obj: any): void {
-    this._controlValue$.next(obj);
-  }
+	writeValue(obj: any): void {
+		this._controlValue$.next(obj);
+	}
 
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
+	registerOnChange(fn: any): void {
+		this.onChange = fn;
+	}
 
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
+	registerOnTouched(fn: any): void {
+		this.onTouched = fn;
+	}
 
-  setDisabledState(isDisabled: boolean): void {
-    this.isDisabled = isDisabled;
+	setDisabledState(isDisabled: boolean): void {
+		this.isDisabled = isDisabled;
 
-    const action = isDisabled ? 'disable' : 'enable';
+		const action = isDisabled ? 'disable' : 'enable';
 
-    this.form[action]();
-    // this.formControlPortfolio[action]();
-    this.formControlStrategy[action]();
-    this.formControlPositionType[action]();
-    this.controlComment.enable();
-  }
+		this.form[action]();
+		// this.formControlPortfolio[action]();
+		this.formControlStrategy[action]();
+		this.formControlPositionType[action]();
+		this.controlComment.enable();
+	}
 
-  validate(control: AbstractControl): ValidationErrors | null {
-    if (this.form.invalid) {
-      return { sidebar: 'invalid' };
-    }
+	validate(control: AbstractControl): ValidationErrors | null {
+		if (this.form.invalid) {
+			return { sidebar: 'invalid' };
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  readonly stringifyCurrency = (item: AccountCurrency) => item.currencySymbol;
-  readonly stringifyStrategy = (item: AccountStrategy) => item.name;
-  readonly stringifyPositionType = (item: Item) => item.name;
+	readonly stringifyCurrency = (item: AccountCurrency) => item.currencySymbol;
+	readonly stringifyStrategy = (item: AccountStrategy) => item.name;
+	readonly stringifyPositionType = (item: Item) => item.name;
 
-  private _init(): void {
-    this._controlValue$
-      .asObservable()
-      .pipe(debounceTime(100), takeUntilDestroyed(this._destroyRef))
-      .subscribe((result) => {
-        if (result === null) {
-          this.form.reset({
-            author: null,
-            positionType: null,
-            strategyId: 4,
-            instrumentId: null,
-            portfolioId: null,
-            parentId: null,
-            expirationDate: null,
-            comment: '',
-          });
-        } else {
-          const params: { [key: string]: any } = {};
+	private _init(): void {
+		this._controlValue$
+			.asObservable()
+			.pipe(debounceTime(100), takeUntilDestroyed(this._destroyRef))
+			.subscribe((result) => {
+				if (result === null) {
+					this.form.reset({
+						author: null,
+						positionType: null,
+						strategyId: 4,
+						instrumentId: null,
+						portfolioId: null,
+						parentId: null,
+						expirationDate: null,
+						comment: '',
+					});
+				} else {
+					const params: { [key: string]: any } = {};
 
-          // if (result.portfolioId !== null) {
-          //   this.controlPortfolio.patchValue(result.portfolioId, { onlySelf: true });
-          // } else {
-          params['portfolioId'] = this.controlPortfolio.value;
-          // }
-          //
-          // if (result.strategyId !== null) {
-          //   this.controlStrategy.patchValue(result.strategyId, { onlySelf: true });
-          // } else {
-          params['strategyId'] = this.controlStrategy.value;
-          // }
+					// if (result.portfolioId !== null) {
+					//   this.controlPortfolio.patchValue(result.portfolioId, { onlySelf: true });
+					// } else {
+					params['portfolioId'] = this.controlPortfolio.value;
+					// }
+					//
+					// if (result.strategyId !== null) {
+					//   this.controlStrategy.patchValue(result.strategyId, { onlySelf: true });
+					// } else {
+					params['strategyId'] = this.controlStrategy.value;
+					// }
 
-          this.form.patchValue({ ...result, ...params });
-        }
+					this.form.patchValue({ ...result, ...params });
+				}
 
-        setTimeout(() => {
-          this.formGroup.markAsPristine();
-        }, 100);
-      });
+				setTimeout(() => {
+					this.formGroup.markAsPristine();
+				}, 100);
+			});
 
-    combineLatest([this.currencies$, this.strategies$, this.portfolio$, this.idea$])
-      .pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
-      .subscribe(
-        ([currencies, strategies, portfolios, position]: [
-          AccountCurrency[],
-          AccountStrategy[],
-          AccountPortfolio[],
-          StockPosition
-        ]) => {
-          const portfolio =
-            portfolios.find((item: AccountPortfolio) => item.portfolioId === position.idea.portfolioId) ||
-            portfolios[0];
+		combineLatest([this.currencies$, this.strategies$, this.portfolio$, this.idea$])
+			.pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
+			.subscribe(
+				([currencies, strategies, portfolios, position]: [
+					AccountCurrency[],
+					AccountStrategy[],
+					AccountPortfolio[],
+					StockPosition
+				]) => {
+					const portfolio =
+						portfolios.find((item: AccountPortfolio) => item.portfolioId === position.idea.portfolioId) || portfolios[0];
 
-          const currency =
-            currencies.find((item: AccountCurrency) => item.currency === position.idea.instrument.currency) ||
-            currencies[0];
+					const currency =
+						currencies.find((item: AccountCurrency) => item.currency === position.idea.instrument.currency) || currencies[0];
 
-          const positionType = this.positionType.find((item: Item) => item.id === position.idea.positionType) || null;
+					const positionType = this.positionType.find((item: Item) => item.id === position.idea.positionType) || null;
 
-          let value = this._getControlStrategyUser();
-          const strategy = this._getIdeaStrategy(strategies, position);
-          const strategyDefault = this._getControlStrategy(strategy);
+					let value = this._getControlStrategyUser();
+					const strategy = this._getIdeaStrategy(strategies, position);
+					const strategyDefault = this._getControlStrategy(strategy);
 
-          if (strategy) {
-            value = strategy;
-          } else if (strategyDefault) {
-            value = strategyDefault;
-          }
+					if (strategy) {
+						value = strategy;
+					} else if (strategyDefault) {
+						value = strategyDefault;
+					}
 
-          if (this.controlStrategy.value === null) {
-            this.controlStrategy.patchValue(value.id);
-          }
+					if (this.controlStrategy.value === null) {
+						this.controlStrategy.patchValue(value.id);
+					}
 
-          this.controlPositionType.patchValue(position.idea.positionType);
+					this.controlPositionType.patchValue(position.idea.positionType);
 
-          if (this.controlPortfolio.value === null) {
-            this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
-          }
+					if (this.controlPortfolio.value === null && portfolio) {
+						this.controlPortfolio.patchValue(portfolio.portfolioId, { onlySelf: false });
+					}
 
-          if (this.controlPositionType.value === null) {
-            this.controlPositionType.patchValue(positionType);
-          }
+					if (this.controlPositionType.value === null) {
+						this.controlPositionType.patchValue(positionType);
+					}
 
-          this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
-          this.formControlPortfolio.patchValue(portfolio, { emitEvent: true });
-          this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
-          this.formControlPositionType.patchValue(positionType);
+					this.formControlStrategy.patchValue(strategyDefault || value, { emitEvent: false, onlySelf: true });
+					this.formControlPortfolio.patchValue(portfolio, { emitEvent: true });
+					this.formControlCurrency.patchValue(currency, { emitEvent: false, onlySelf: true });
+					this.formControlPositionType.patchValue(positionType);
 
-          this.form.patchValue({});
-        }
-      );
+					this.form.patchValue({});
+				}
+			);
 
-    this.form.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((_: FormValue) => this.onChange(this.form.getRawValue()));
+		this.form.valueChanges
+			.pipe(takeUntilDestroyed(this._destroyRef))
+			.subscribe((_: FormValue) => this.onChange(this.form.getRawValue()));
 
-    this.formControlPortfolio.valueChanges
-      .pipe(
-        takeUntilDestroyed(this._destroyRef),
-        startWith(this.formControlPortfolio.value),
-        filter((value: AccountPortfolio | null): value is AccountPortfolio => value !== null),
-        distinctUntilChanged((a, b) => a.portfolioId === b.portfolioId)
-      )
-      .subscribe((result: AccountPortfolio) => {
-        this.controlPortfolio.patchValue(result ? result.portfolioId : null, { emitEvent: false });
-      });
+		this.formControlPortfolio.valueChanges
+			.pipe(
+				takeUntilDestroyed(this._destroyRef),
+				startWith(this.formControlPortfolio.value),
+				filter((value: AccountPortfolio | null): value is AccountPortfolio => !!value),
+				distinctUntilChanged((a, b) => a.portfolioId === b.portfolioId)
+			)
+			.subscribe((result: AccountPortfolio) => {
+				this.controlPortfolio.patchValue(result ? result.portfolioId : null, { emitEvent: false });
+			});
 
-    this.formControlStrategy.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((result: AccountStrategy | null) => {
-        this.controlStrategy.patchValue(result ? result.id : null);
-      });
+		this.formControlStrategy.valueChanges
+			.pipe(takeUntilDestroyed(this._destroyRef))
+			.subscribe((result: AccountStrategy | null) => {
+				this.controlStrategy.patchValue(result ? result.id : null);
+			});
 
-    this.formControlPositionType.valueChanges
-      .pipe(takeUntilDestroyed(this._destroyRef), startWith(this.formControlPositionType.value))
-      .subscribe((result: Item | null) => {
-        this.controlPositionType.patchValue(result ? result.id : null);
-      });
-  }
+		this.formControlPositionType.valueChanges
+			.pipe(takeUntilDestroyed(this._destroyRef), startWith(this.formControlPositionType.value))
+			.subscribe((result: Item | null) => {
+				this.controlPositionType.patchValue(result ? result.id : null);
+			});
+	}
 
-  private _getControlStrategyUser(): AccountStrategy {
-    return this.strategy.find((item: AccountStrategy) => item.key === 'user') || this.strategy[0];
-  }
+	private _getControlStrategyUser(): AccountStrategy {
+		return this.strategy.find((item: AccountStrategy) => item.key === 'user') || this.strategy[0];
+	}
 
-  private _getControlStrategy(strategy: AccountStrategy | null): AccountStrategy | null {
-    if (strategy === null) {
-      return null;
-    }
+	private _getControlStrategy(strategy: AccountStrategy | null): AccountStrategy | null {
+		if (strategy === null) {
+			return null;
+		}
 
-    return this.strategy.find((item: AccountStrategy) => strategy.key.indexOf(item.key) !== -1) || null;
-  }
+		return this.strategy.find((item: AccountStrategy) => strategy.key.indexOf(item.key) !== -1) || null;
+	}
 
-  private _getIdeaStrategy(list: AccountStrategy[], position: StockPosition): AccountStrategy | null {
-    const strategy = position.idea.strategy;
+	private _getIdeaStrategy(list: AccountStrategy[], position: StockPosition): AccountStrategy | null {
+		const strategy = position.idea.strategy;
 
-    if (strategy === null) {
-      return null;
-    }
+		if (strategy === null) {
+			return null;
+		}
 
-    return list.find((item: AccountStrategy) => item.key === strategy.type) || null;
-  }
+		return list.find((item: AccountStrategy) => item.key === strategy.type) || null;
+	}
 
-  openDialogDeposit(event: Event): void {
-    event.preventDefault();
+	openDialogDeposit(event: Event): void {
+		event.preventDefault();
 
-    this.#balanceDepositService
-      .openDialog(this.#injector, {
-        data: {
-          type: 'deposit',
-          portfolio: this.formControlPortfolio.value,
-          currency: this.formControlCurrency.value,
-        },
-        max: null,
-        label: 'Внести средства',
-        action: 'Пополнить',
-      })
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((value) => {
-        if (value) {
-          this.#loadBalance$.next();
-        }
-      });
-  }
+		this.#balanceDepositService
+			.openDialog(this.#injector, {
+				data: {
+					type: 'deposit',
+					portfolio: this.formControlPortfolio.value,
+					currency: this.formControlCurrency.value,
+				},
+				max: null,
+				label: 'Внести средства',
+				action: 'Пополнить',
+			})
+			.pipe(takeUntilDestroyed(this._destroyRef))
+			.subscribe((value) => {
+				if (value) {
+					this.#loadBalance$.next();
+				}
+			});
+	}
 
-  openDialogExpense(event: Event): void {
-    event.preventDefault();
+	openDialogExpense(event: Event): void {
+		event.preventDefault();
 
-    this.#balanceWithdrawalService
-      .openDialog(this.#injector, {
-        max: true,
-        label: 'Вывести средства',
-        data: {
-          type: 'deposit',
-          portfolio: this.formControlPortfolio.value,
-          currency: this.formControlCurrency.value,
-        },
-      })
-      .pipe(takeUntilDestroyed(this._destroyRef))
-      .subscribe((value) => {
-        if (value) {
-          this.#loadBalance$.next();
-        }
-      });
-  }
+		this.#balanceWithdrawalService
+			.openDialog(this.#injector, {
+				max: true,
+				label: 'Вывести средства',
+				data: {
+					type: 'deposit',
+					portfolio: this.formControlPortfolio.value,
+					currency: this.formControlCurrency.value,
+				},
+			})
+			.pipe(takeUntilDestroyed(this._destroyRef))
+			.subscribe((value) => {
+				if (value) {
+					this.#loadBalance$.next();
+				}
+			});
+	}
 }

@@ -9,7 +9,7 @@ import {
 	InputSignal,
 	Signal,
 	signal,
-	WritableSignal,
+	WritableSignal
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ACTION_EVENTS } from 'tokens/desktop';
@@ -25,9 +25,9 @@ import {
 	TuiFormatNumberPipe,
 	TuiHint,
 	TuiIcon,
-	tuiNumberFormatProvider,
+	TuiNumberFormatSettings,
 	TuiPopup,
-	TuiTextfield,
+	TuiTextfield
 } from '@taiga-ui/core';
 import { TuiBadgedContent, TuiBadgeNotification, TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
@@ -38,7 +38,7 @@ import {
 	AccountDealType,
 	AccountRange,
 	AccountStrategy,
-	AccountType,
+	AccountType
 } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -107,7 +107,7 @@ type ActionButton = {
 	],
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss',
-	providers: [tuiNumberFormatProvider({ precision: 2, decimalMode: 'always' })],
+	providers: [],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {
@@ -126,6 +126,7 @@ export class LayoutComponent implements AfterViewInit {
 		range: this.#rangeList[5].range,
 	};
 
+	protected readonly formatNumberSettings: Partial<TuiNumberFormatSettings> = { precision: 2, decimalMode: 'always' };
 	protected readonly size = 's';
 	protected readonly listPagination = [10, 50, 100];
 	protected readonly listOfButtonConstants = DEAL_CONSTANTS_LIST_OF_BUTTON;

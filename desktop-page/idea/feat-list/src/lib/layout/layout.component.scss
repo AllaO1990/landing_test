@@ -191,7 +191,7 @@
   &__ticker {
     flex: 1;
 
-    max-width: 100px;
+    max-width: 120px;
     min-width: 80px;
   }
 
@@ -205,12 +205,6 @@
     flex: 1;
 
     min-width: 60px;
-  }
-
-  &__luck {
-    flex: 1;
-
-    width: 60px;
   }
 
   &__action {

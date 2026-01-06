@@ -159,7 +159,6 @@
             {{ item.entries[0].price | tuiFormatNumber | async }}
           </div>
           <div class="item__cell item__cell--number item__result">{{ item.profit.percentage }}%</div>
-          <div class="item__cell item__cell--number item__luck">&mdash;</div>
           <div class="item__cell item__action">
             <button
               [disabled]="item.instrument.source !== 'tinkoff'"
@@ -200,7 +199,6 @@
     <div class="item__cell item__ticker">Тикер</div>
     <div class="item__cell item__entry">Цена входа</div>
     <div class="item__cell item__result">Прибыль %</div>
-    <div class="item__cell item__luck">Успех %</div>
     <div class="item__cell item__action">Действия</div>
   </div>
 </ng-template>

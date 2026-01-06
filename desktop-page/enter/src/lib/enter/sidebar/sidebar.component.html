@@ -12,28 +12,26 @@
             [formControl]="formControlPortfolio">
           </lib-control-portfolio>
 
-          <tui-textfield
-            class="portfolio__currency"
-            tuiChevron
-            *ngIf="currencies$ | async as list"
-            [stringify]="stringifyCurrency"
-            [tuiTextfieldSize]="size"
-            [tuiTextfieldCleaner]="false"
-          >
-            <input
-              [formControl]="formControlCurrency"
-              placeholder="Валюта"
-              tuiSelect
-            />
+          @if (currencies$ | async; as list) {
+            <tui-textfield
+              class="portfolio__currency"
+              tuiChevron
+              [stringify]="stringifyCurrency"
+              [tuiTextfieldSize]="size"
+              [tuiTextfieldCleaner]="false">
+              <input
+                [formControl]="formControlCurrency"
+                placeholder="Валюта"
+                tuiSelect/>
 
-            <tui-data-list-wrapper
-              *tuiTextfieldDropdown
-              new
-              [items]="list"
-              [itemContent]="contentCurrency"
-            />
+              <tui-data-list-wrapper
+                *tuiTextfieldDropdown
+                new
+                [items]="list"
+                [itemContent]="contentCurrency"/>
 
-          </tui-textfield>
+            </tui-textfield>
+          }
         </div>
       </div>
 

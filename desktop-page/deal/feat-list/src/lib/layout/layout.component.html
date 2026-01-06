@@ -169,16 +169,16 @@
             }
           </div>
           <div class="item__cell item__cell--number item__total">
-            @if (item.inPositionResult) {
-              {{ item.inPositionResult | tuiFormatNumber | async }}
+            @if (item.inPosition.totalPrice) {
+              {{ item.inPosition.totalPrice | tuiFormatNumber: formatNumberSettings | async }}
             } @else {
               &mdash;
             }
           </div>
           <div class="item__cell item__cell--number item__result" [uiPriceColor]="item.resultPct">
-            {{ item.result | tuiFormatNumber | async }}
+            {{ item.result | tuiFormatNumber: formatNumberSettings | async }}
             <div class="substring">
-              {{ item.resultPct | tuiFormatNumber | async }}%
+              {{ item.resultPct | tuiFormatNumber: formatNumberSettings | async }}%
             </div>
           </div>
           <div class="item__cell item__action">

@@ -24,7 +24,6 @@ import { TuiButton, TuiDropdown, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
 import { TuiStringHandler } from '@taiga-ui/cdk';
 import { AccountPortfolio } from 'types/account';
-import { InputWithActionsComponent } from '../input-with-actions/input-with-actions.component';
 import { LoaderComponent } from '@ui/components/loader';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { BehaviorSubject, filter, Observable, startWith, Subject, take } from 'rxjs';
@@ -33,7 +32,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { DialogApproveComponent } from '../dialog-approve';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { FormInputEvent } from '../input-with-actions';
+import { FormInputEvent, InputWithActionsComponent } from '../input-with-actions';
 
 type FormEvent = 'create' | 'rename' | null;
 

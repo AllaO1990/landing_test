@@ -142,7 +142,7 @@
 }
 .item__ticker {
   flex: 1;
-  max-width: 100px;
+  max-width: 120px;
   min-width: 80px;
 }
 .item__entry {
@@ -152,10 +152,6 @@
 .item__result {
   flex: 1;
   min-width: 60px;
-}
-.item__luck {
-  flex: 1;
-  width: 60px;
 }
 .item__action {
   width: 60px;

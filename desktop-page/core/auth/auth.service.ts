@@ -11,7 +11,7 @@ import {
 	shareReplay,
 	Subject,
 	switchMap,
-	tap
+	tap,
 } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { APP_CONFIG } from '../../../tokens/desktop/config';
