@@ -15,7 +15,7 @@ import { ACTION_EVENTS } from 'tokens/desktop';
 import { IDEA_CONSTANTS } from '@data-access-idea/constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FilterIdeaListComponent } from '../filter/filter.component';
-import { debounceTime, Observable, startWith, tap } from 'rxjs';
+import { debounceTime, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import {
@@ -124,7 +124,6 @@ export class LayoutComponent implements AfterViewInit {
 
 	readonly isActiveFilter$: Observable<boolean> = this.filterControl.valueChanges.pipe(
 		startWith(this.filterControl.value),
-		tap((data) => console.log('isActiveFilter$', data)),
 		map(
 			(value: FilterValue) =>
 				(value.currency && value.currency.currencyId !== null) ||
@@ -155,8 +154,6 @@ export class LayoutComponent implements AfterViewInit {
 				takeUntilDestroyed(this.#destroyRef),
 				map(({ limit, page }: Params, index: number) => {
 					let filter = {};
-
-					console.log('this.paginationControl.valueChanges', this.filterControl.value);
 
 					if (index === 0) {
 						const { type, strategy, currency } = this.filterControl.value;

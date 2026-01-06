@@ -1,3 +1,26 @@
 <div class="payment">
-  <h1 class="tui-text_h1">Необходимо оплатить <a tuiLink [href]="link" target="_blank">подписку</a></h1>
+  <div tuiCardLarge tuiAppearance="floating">
+    <header tuiHeader>
+      <h1 tuiTitle>
+        Необходимо оплатить подписку</h1>
+    </header>
+    <footer class="payment__footer">
+      <a appearance="outline"
+         tuiAppearanceMode="checked"
+         tuiButton
+         [size]="size"
+         [href]="link"
+         target="_blank">
+        Проверить подписку
+      </a>
+      <button
+        appearance="primary"
+        [size]="size"
+        (click)="onAlreadySubscription($event)"
+        [disabled]="alreadySubscription()"
+        tuiButton>
+        Уже есть подписка
+      </button>
+    </footer>
+  </div>
 </div>

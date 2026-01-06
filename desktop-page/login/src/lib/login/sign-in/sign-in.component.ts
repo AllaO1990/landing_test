@@ -95,7 +95,7 @@ export class SignInComponent {
 
 				if (result.success) {
 					if (this.#auth.getUrl()) {
-						this.#router.navigateByUrl(this.#auth.getUrl());
+						this.#router.navigateByUrl(this.#router.parseUrl(this.#auth.getUrl()));
 						this.#auth.resetUrl();
 					} else {
 						this.#router.navigate(['lk']);

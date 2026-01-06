@@ -1,25 +1,21 @@
 import { inject, Injector, NgModule } from '@angular/core';
 import { RedirectFunction, RouterModule, Routes } from '@angular/router';
-import { AuthGuard, ForbiddenGuard, LkGuard, PermissionGuard } from './core/routing/guards';
+import { AuthGuard, ForbiddenGuard, lkGuardCanActivate, PermissionGuard } from './core/routing/guards';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
+import { paymentGuardCanActivate } from './core/routing/guards/payment.guard';
 
 const redirectFn: RedirectFunction = (redirectData) => inject(Injector).get(LOCAL_STORAGE).getItem('mode') || 'light';
 
 export const routes: Routes = [
 	{
 		path: 'login',
-		// loadComponent: () => import('login').then((m) => m.LoginComponent),
 		loadChildren: () => import('login').then((m) => m.ROUTES),
-		// loadChildren: () => import('login').then((m) => m.LoginComponent),
 		canMatch: [AuthGuard],
-		// canActivate: [AuthGuard],
-		// outlet: 'login',
 	},
 	{
 		path: 'lk',
 		loadComponent: () => import('lk').then((m) => m.LkComponent),
-		canActivate: [LkGuard],
-		canActivateChild: [LkGuard],
+		canActivate: [lkGuardCanActivate],
 		children: [
 			{
 				path: '',
@@ -35,20 +31,6 @@ export const routes: Routes = [
 				path: 'short-link',
 				redirectTo: redirectFn,
 				pathMatch: 'full',
-			},
-			{
-				path: 'payment',
-				children: [
-					{
-						path: '',
-						outlet: 'toolbar-right',
-						loadComponent: () => import('payment').then((m) => m.PaymentToolbarComponent),
-					},
-					{
-						path: '',
-						loadComponent: () => import('payment').then((m) => m.PaymentComponent),
-					},
-				],
 			},
 			{
 				path: 'light',
@@ -127,6 +109,21 @@ export const routes: Routes = [
 			{
 				path: '**',
 				loadChildren: () => import('page-404').then((m) => m.Page404Module),
+			},
+		],
+	},
+	{
+		path: 'payment',
+		canActivate: [paymentGuardCanActivate],
+		children: [
+			{
+				path: '',
+				outlet: 'toolbar-right',
+				loadComponent: () => import('payment').then((m) => m.PaymentToolbarComponent),
+			},
+			{
+				path: '',
+				loadComponent: () => import('payment').then((m) => m.PaymentComponent),
 			},
 		],
 	},
