@@ -144,7 +144,7 @@ export class LayoutComponent implements AfterViewInit {
 			.openDialog(this.#injector, {
 				data,
 			})
-			.subscribe((res) => {
+			.subscribe(() => {
 				this.#dataAccess.params.update((params) => ({ ...params, ...params }));
 			});
 	}

@@ -9,6 +9,7 @@ import { addMinutes } from 'date-fns/addMinutes';
 import { isSameDay } from 'date-fns/isSameDay';
 import { eachMonthOfInterval } from 'date-fns/eachMonthOfInterval';
 import { isSameMonth } from 'date-fns/isSameMonth';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 interface PortfolioApi {
 	getAccountBalance(params: Params): Observable<Response<AccountBalance>>;
@@ -18,11 +19,15 @@ interface PortfolioApi {
 export interface DataAccessPortfolioState {
 	balance: PortfolioData<AccountBalance>;
 	history: PortfolioData<AccountBalanceHistory>;
+	balanceHistory: PortfolioData<AccountBalanceHistory>;
 }
 
 export class DataAccessPortfolioStore extends ComponentStore<DataAccessPortfolioState> {
 	readonly balance$: Observable<PortfolioData<AccountBalance>> = this.select((state) => state.balance);
 	readonly history$: Observable<PortfolioData<AccountBalanceHistory>> = this.select((state) => state.history);
+	readonly balanceHistory$: Observable<PortfolioData<AccountBalanceHistory>> = this.select(
+		(state) => state.balanceHistory
+	);
 
 	static defaultState: DataAccessPortfolioState = {
 		balance: {
@@ -31,6 +36,11 @@ export class DataAccessPortfolioStore extends ComponentStore<DataAccessPortfolio
 			data: null,
 		},
 		history: {
+			isLoaded: false,
+			isLoading: false,
+			data: null,
+		},
+		balanceHistory: {
 			isLoaded: false,
 			isLoading: false,
 			data: null,
@@ -83,6 +93,38 @@ export class DataAccessPortfolioStore extends ComponentStore<DataAccessPortfolio
 		})
 	);
 
+	readonly updateBalanceHistoryData = () =>
+		this.patchState((state: DataAccessPortfolioState): DataAccessPortfolioState => {
+			if (state.history.data !== null && state.balance.data !== null) {
+				const items = state.history.data.items.slice();
+				items[items.length - 1] = {
+					date: items[items.length - 1].date,
+					balance: getNumberPrecision(items[items.length - 1].balance + state.balance.data.inPositionProfit, 2),
+				};
+
+				return {
+					...state,
+					balanceHistory: {
+						isLoaded: true,
+						isLoading: true,
+						data: {
+							currencySymbol: state.history.data.currencySymbol,
+							items,
+						},
+					},
+				};
+			}
+
+			return {
+				...state,
+				balanceHistory: {
+					isLoaded: false,
+					isLoading: false,
+					data: null,
+				},
+			};
+		});
+
 	readonly loadBalance = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
 			tap(() => this.updateBalanceLoading(false)),
@@ -90,7 +132,8 @@ export class DataAccessPortfolioStore extends ComponentStore<DataAccessPortfolio
 				forkJoin([this.api.getAccountBalance(params), timer(1000)]).pipe(
 					map(([response]: [Response<AccountBalance>, number]) => response && this.updateBalanceData(response.data))
 				)
-			)
+			),
+			tap(() => this.updateBalanceHistoryData())
 		)
 	);
 
@@ -107,7 +150,8 @@ export class DataAccessPortfolioStore extends ComponentStore<DataAccessPortfolio
 						this.updateHistoryData(data);
 					})
 				)
-			)
+			),
+			tap(() => this.updateBalanceHistoryData())
 		)
 	);
 

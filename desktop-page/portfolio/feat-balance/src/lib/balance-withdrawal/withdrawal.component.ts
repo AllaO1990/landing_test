@@ -17,7 +17,7 @@ import {
 	Subject,
 	switchMap,
 	tap,
-	timer
+	timer,
 } from 'rxjs';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -27,7 +27,7 @@ import {
 	TuiInputDateTimeModule,
 	TuiSelectModule,
 	TuiTextareaModule,
-	TuiTextfieldControllerModule
+	TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiInputNumberDirective } from '@taiga-ui/kit';
