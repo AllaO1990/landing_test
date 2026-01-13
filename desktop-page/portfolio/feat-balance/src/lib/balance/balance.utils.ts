@@ -9,20 +9,20 @@ export const getParamsFromFilter = (value: any): Params => {
 	let brokerId: number | null = null;
 	let currencyId: number | null = null;
 
-	if (range !== null) {
+	if (range !== null && range !== undefined) {
 		from = new Date((range.from as TuiDay).toUtcNativeDate().setUTCHours(0, 0, 0)).toISOString();
 		to = new Date((range.to as TuiDay).toUtcNativeDate().setUTCHours(23, 59, 59)).toISOString();
 	}
 
-	if (portfolio !== null && portfolio.portfolioId !== null) {
+	if (portfolio !== undefined && portfolio !== null && portfolio.portfolioId !== null) {
 		portfolioId = portfolio.portfolioId;
 	}
 
-	if (broker !== null && broker.brokerId !== null) {
+	if (broker !== undefined && broker !== null && broker.brokerId !== null) {
 		brokerId = broker.brokerId;
 	}
 
-	if (currency !== null && currency.currencyId !== null) {
+	if (currency !== undefined && currency !== null && currency.currencyId !== null) {
 		currencyId = currency.currencyId;
 	}
 

@@ -14,8 +14,6 @@ export const authGuardCanActivate: CanActivateFn = (
 	route: ActivatedRouteSnapshot,
 	state: RouterStateSnapshot
 ): MaybeAsync<GuardResult> => {
-	console.log('authGuardCanActivate', route, state);
-
 	const _authService: AuthService = inject(AuthService);
 	const _router: Router = inject(Router);
 
@@ -25,5 +23,9 @@ export const authGuardCanActivate: CanActivateFn = (
 
 	const urlTree: UrlTree = _router.parseUrl(state.url);
 
-	return _router.createUrlTree(['lk'], { fragment: urlTree.fragment || `path="${state.url}"` });
+	if (urlTree.fragment || Object.keys(urlTree.queryParams).length) {
+		return _router.createUrlTree(['lk'], { fragment: urlTree.fragment || `path="${state.url}"` });
+	}
+
+	return _router.createUrlTree(['lk']);
 };

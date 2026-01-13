@@ -113,6 +113,10 @@ export class PortfolioBalanceComponent extends DialogCoreComponent implements Af
 	);
 
 	ngAfterViewInit(): void {
+		if (this.context.data) {
+			this.controlFilter.patchValue(this.context.data);
+		}
+
 		this.formGroup.valueChanges
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
@@ -139,15 +143,17 @@ export class PortfolioBalanceComponent extends DialogCoreComponent implements Af
 
 		const { broker, portfolio, currency } = this.controlFilter.value;
 
+		console.log(this.controlFilter.value);
+
 		this.#balanceDepositService
 			.openDialog(this.#injector, {
 				max: null,
 				label: 'Внести средства',
 				action: 'Пополнить',
 				data: {
-					broker: broker.brokerId !== null ? broker : null,
-					portfolio: portfolio.portfolioId !== null ? portfolio : null,
-					currency: currency.currencyId !== null ? currency : null,
+					broker: broker && broker.brokerId !== null ? broker : null,
+					portfolio: portfolio && portfolio.portfolioId !== null ? portfolio : null,
+					currency: currency && currency.currencyId !== null ? currency : null,
 					type: 'deposit',
 				},
 			})
@@ -157,10 +163,17 @@ export class PortfolioBalanceComponent extends DialogCoreComponent implements Af
 	async openDialogExpense(event: Event): Promise<void> {
 		event.preventDefault();
 
+		const { broker, portfolio, currency } = this.controlFilter.value;
+
 		this.#balanceWithdrawalService
 			.openDialog(this.#injector, {
 				max: true,
 				label: 'Вывести средства',
+				data: {
+					broker: broker && broker.brokerId !== null ? broker : null,
+					portfolio: portfolio && portfolio.portfolioId !== null ? portfolio : null,
+					currency: currency && currency.currencyId !== null ? currency : null,
+				},
 			})
 			.subscribe(() => this._updateList());
 	}

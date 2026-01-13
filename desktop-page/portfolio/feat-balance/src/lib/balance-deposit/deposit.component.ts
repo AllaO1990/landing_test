@@ -1,14 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
-import { TuiButton, TuiDataListComponent, TuiFormatNumberPipe, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TuiAutoFocus, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
 import {
-	TuiInputDateTimeModule,
-	TuiSelectModule,
-	TuiTextareaModule,
-	TuiTextfieldControllerModule,
-} from '@taiga-ui/legacy';
+	TuiButton,
+	TuiDataList,
+	TuiDropdown,
+	TuiFormatNumberPipe,
+	TuiNumberFormat,
+	TuiTextfield,
+} from '@taiga-ui/core';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { AccountFacade } from 'stores/facades/account.facade';
 import {
@@ -30,7 +31,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { Response } from 'types/response';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TuiInputNumberDirective } from '@taiga-ui/kit';
+import { TuiChevron, TuiInputDateTime, TuiInputNumber, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
 import { StockId } from 'types/stock';
 import { getTuiDayTime } from 'utils/get-tui-day-time';
 import { DialogCoreComponent } from '../dialog/dialog';
@@ -40,25 +41,22 @@ import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
 	selector: 'portfolio-deposit',
 	standalone: true,
 	imports: [
-		AsyncPipe,
-		FormsModule,
-		NgForOf,
-		NgIf,
 		ReactiveFormsModule,
-		TuiAutoFocus,
-		TuiButton,
-		TuiDataListComponent,
-		TuiTextfieldControllerModule,
-		TuiNumberFormat,
-		TuiSelectModule,
 		ControlPortfolioComponent,
-		TuiFormatNumberPipe,
-		LoaderComponent,
-		TuiTextareaModule,
-		TuiInputNumberDirective,
+		AsyncPipe,
 		TuiTextfield,
-		TuiInputDateTimeModule,
-		ControlPortfolioComponent,
+		TuiChevron,
+		TuiDropdown,
+		TuiSelect,
+		LoaderComponent,
+		TuiFormatNumberPipe,
+		TuiInputNumber,
+		TuiNumberFormat,
+		TuiAutoFocus,
+		TuiInputDateTime,
+		TuiTextarea,
+		TuiButton,
+		TuiDataList,
 	],
 	templateUrl: './deposit.component.html',
 	styleUrls: ['../dialog/dialog.scss', './deposit.component.scss'],
@@ -146,7 +144,7 @@ export class DepositComponent extends DialogCoreComponent implements AfterViewIn
 
 		this.form.patchValue({
 			date: getTuiDayTime(date || new Date().toISOString()),
-			amount,
+			amount: amount || null,
 			currencyId: currency ? currency.currencyId : null,
 			brokerId: broker ? broker.brokerId : null,
 			portfolio,
@@ -183,17 +181,18 @@ export class DepositComponent extends DialogCoreComponent implements AfterViewIn
 		// this.form.patchValue({ amount: null });
 	}
 
-	@tuiPure
-	protected stringifyBroker(items: readonly AccountBroker[]): TuiStringHandler<TuiContext<number>> {
-		const map = new Map(items.map(({ broker, brokerId }) => [brokerId, broker] as [number, string]));
+	stringifyBro =
+		(items: AccountBroker[]): TuiStringHandler<number> =>
+		(id: number | null) => {
+			return items.find((item: AccountBroker) => item.brokerId === id)?.broker ?? '';
+		};
+	stringifyBroker = signal((x: AccountBroker) => x.broker);
+	identityMatcherBroker = signal((a: AccountBroker, b: AccountBroker) => a.brokerId === b.brokerId);
 
-		return ({ $implicit }: TuiContext<number>) => map.get($implicit) || '';
-	}
-
-	@tuiPure
-	protected stringifyCurrency(items: readonly AccountCurrency[]): TuiStringHandler<TuiContext<number>> {
-		const map = new Map(items.map(({ currencySymbol, currencyId }) => [currencyId, currencySymbol] as [number, string]));
-
-		return ({ $implicit }: TuiContext<number>) => map.get($implicit) || '';
-	}
+	stringifyCurrency =
+		(items: AccountCurrency[]): TuiStringHandler<number> =>
+		(id: number | null) => {
+			return items.find((item: AccountCurrency) => item.currencyId === id)?.currencySymbol ?? '';
+		};
+	identityMatcherCurrency = signal((a: AccountCurrency, b: AccountCurrency) => a.currencyId === b.currencyId);
 }

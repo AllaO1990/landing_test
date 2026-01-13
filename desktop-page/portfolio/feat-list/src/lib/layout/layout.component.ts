@@ -130,9 +130,22 @@ export class LayoutComponent implements AfterViewInit {
 
 	openDialogBalance(event: Event): void {
 		event.preventDefault();
+		let data = {};
+		const params = this.#dataAccess.params();
 
 		console.log(this.#dataAccess.params());
 
-		this.#balanceService.openDialog(this.#injector).subscribe((res) => console.log(res));
+		if (params) {
+			const { currency, portfolio } = params;
+			data = { currency, portfolio };
+		}
+
+		this.#balanceService
+			.openDialog(this.#injector, {
+				data,
+			})
+			.subscribe((res) => {
+				this.#dataAccess.params.update((params) => ({ ...params, ...params }));
+			});
 	}
 }
