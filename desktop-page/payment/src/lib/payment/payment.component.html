@@ -11,15 +11,16 @@
          [size]="size"
          [href]="link"
          target="_blank">
-        Проверить подписку
+        Оплатить
       </a>
       <button
         appearance="primary"
         [size]="size"
+        [loading]="isLoading$ | async"
         (click)="onAlreadySubscription($event)"
-        [disabled]="alreadySubscription()"
+        [disabled]="isLoading$ | async"
         tuiButton>
-        Уже есть подписка
+        Проверить
       </button>
     </footer>
   </div>

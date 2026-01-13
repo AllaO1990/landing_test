@@ -6,7 +6,7 @@ import {
 	DestroyRef,
 	effect,
 	inject,
-	Signal
+	Signal,
 } from '@angular/core';
 import { combineLatest, distinctUntilChanged, Observable, startWith } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
@@ -30,6 +30,7 @@ import { StockWrapperComponent } from 'feat-candlestick';
 import { PortfolioChartWrapper } from '@feat-portfolio-chart';
 import { DataAccessDealStore } from '@data-access-deal/store';
 import { TabsComponent } from 'ui-common/lib/tabs';
+import { PortfolioParams } from '@data-access-portfolio/types';
 
 @Component({
 	selector: 'light-layout',
@@ -67,11 +68,27 @@ export class LightLayoutComponent implements AfterViewInit {
 	readonly #dataAccessDealStore: DataAccessDealStore = inject(DataAccessDealStore);
 
 	activeItemIndex = 0;
-	readonly paramsPortfolio: Signal<Params | null> = computed(() => this.#dataAccessPortfolio.params());
+	readonly paramsPortfolio: Signal<PortfolioParams | null> = computed(() => {
+		const params = this.#dataAccessPortfolio.params();
+
+		if (params === null) {
+			return null;
+		}
+
+		const { currency, portfolio, ...other } = params;
+
+		return {
+			currencyId: currency ? currency.currencyId : null,
+			portfolioId: portfolio ? portfolio.portfolioId : null,
+			...other,
+		};
+	});
 	readonly paramsStructure: Signal<Params | null> = computed(() =>
 		this._getParamsStructure(this.#dataAccessStructure.params(), this.#dataAccessPortfolio.params())
 	);
-	readonly paramsPortfolio$ = toObservable(this.#dataAccessPortfolio.params).pipe(filter((params) => !!params));
+	readonly paramsPortfolio$: Observable<PortfolioParams> = toObservable(this.#dataAccessPortfolio.params).pipe(
+		filter((params) => !!params)
+	);
 	readonly paramsDeal$ = toObservable(this.#dataAccessDeal.params).pipe(filter((params) => !!params));
 	readonly isChart$: Observable<boolean> = this.#queryParams.pipe(
 		takeUntilDestroyed(this.#destroyRef),
@@ -96,15 +113,18 @@ export class LightLayoutComponent implements AfterViewInit {
 		switchMap(() => this.paramsPortfolio$),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
-	readonly commonParamsDeal$: Observable<Params> = combineLatest([
+	readonly portfolioParamsDeal$: Observable<Params> = combineLatest([
 		this.paramsPortfolio$.pipe(
-			map((value: Params) => value['portfolioId']),
+			map((value: PortfolioParams) => ({
+				portfolioId: value.portfolio ? value.portfolio['portfolioId'] : null,
+				currencyId: value.currency ? value.currency['currencyId'] : null,
+			})),
 			distinctUntilChanged()
 		),
 		this.paramsDeal$,
 	]).pipe(
 		takeUntilDestroyed(this.#destroyRef),
-		map(([portfolioId, params]: [string, Params]) => ({ ...params, portfolioId }))
+		map(([portfolioParams, params]: [Params, Params]) => ({ ...params, ...portfolioParams }))
 	);
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
@@ -155,10 +175,10 @@ export class LightLayoutComponent implements AfterViewInit {
 
 	ngAfterViewInit(): void {
 		this.chartPortfolio$.subscribe((params: Params) => this.#storePortfolio.loadHistory(params));
-		this.commonParamsDeal$.subscribe((params: Params) => this.#dataAccessDealStore.load(params));
+		this.portfolioParamsDeal$.subscribe((params: Params) => this.#dataAccessDealStore.load(params));
 	}
 
-	private _getParamsStructure(paramsStructure: Params | null, paramsPortfolio: Params | null): Params | null {
+	private _getParamsStructure(paramsStructure: Params | null, paramsPortfolio: PortfolioParams | null): Params | null {
 		if (paramsPortfolio === null && paramsStructure === null) {
 			return null;
 		}
@@ -169,6 +189,8 @@ export class LightLayoutComponent implements AfterViewInit {
 			params = {
 				...params,
 				...paramsPortfolio,
+				currencyId: paramsPortfolio['currency'] ? paramsPortfolio['currency']['currencyId'] : null,
+				portfolioId: paramsPortfolio['portfolio'] ? paramsPortfolio['portfolio']['portfolioId'] : null,
 				date: paramsPortfolio['to'],
 			};
 		}

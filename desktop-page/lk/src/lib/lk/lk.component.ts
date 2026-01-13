@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, OnIni
 import { Params, RouterOutlet } from '@angular/router';
 import { ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
-import { debounceTime, Observable, shareReplay, startWith, switchMap } from 'rxjs';
+import { debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LogoComponent } from '@ui/components/logo';
 import { DesktopService } from '@desktop-data/desktop-data';
@@ -38,11 +38,14 @@ import { ActionSelectIdea } from '../common/plugins/action-select-idea';
 import { ActionSelectTransaction } from '../common/plugins/action-select-transaction';
 import { ActionSelectStock } from '../common/plugins/action-select-stock';
 import { ActionShowTransaction } from '../common/plugins/action-show-transaction';
+import { Permissions } from 'utils/permissions';
+import { PERMISSIONS } from 'tokens/desktop/permission';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
 	selector: 'lib-lk',
 	standalone: true,
-	imports: [RouterOutlet, LogoComponent, UserComponent, ModeComponent],
+	imports: [RouterOutlet, LogoComponent, UserComponent, ModeComponent, AsyncPipe],
 	templateUrl: './lk.component.html',
 	styleUrl: './lk.component.scss',
 	providers: [
@@ -155,6 +158,7 @@ export class LkComponent implements OnInit {
 	readonly #dialogTrade: TradeDialogService = inject(TradeDialogService);
 	readonly #dialogEnter: EnterDialogService = inject(EnterDialogService);
 	private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
+	readonly #permissions: Permissions = inject(PERMISSIONS);
 	private readonly _select: SelectFacade = inject(SelectFacade);
 	private readonly _globalDateRangeService: GlobalDateRangeService = inject(GlobalDateRangeService);
 	private readonly _queryEnter$: Observable<Params> = this._queryParams.pipe(
@@ -173,8 +177,11 @@ export class LkComponent implements OnInit {
 		debounceTime(100),
 		shareReplay({ refCount: false, bufferSize: 1 })
 	);
+	readonly isAccess$: Observable<boolean | null> = this.#permissions.isAccessed$;
 
 	ngOnInit(): void {
+		this._queryParams.pipe(tap((data) => console.log(data))).subscribe();
+		//TODO - очищает PARAMS =( разобраться
 		this._queryParams
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),

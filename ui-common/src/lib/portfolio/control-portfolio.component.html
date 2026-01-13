@@ -62,6 +62,7 @@
         tuiIconButton
         appearance="icon"
         type="button"
+        [disabled]="!item.edit"
         (click)="onEdit($event, item)">
       </button>
       <button
@@ -71,6 +72,7 @@
         tuiIconButton
         appearance="icon"
         type="button"
+        [disabled]="!item.remove"
         (click)="onRemove($event, item)">
       </button>
     </div>

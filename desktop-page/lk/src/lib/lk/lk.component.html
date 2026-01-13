@@ -3,9 +3,11 @@
     <ui-logo class="toolbar__logo"></ui-logo>
     <router-outlet name="toolbar-left"></router-outlet>
     <router-outlet name="toolbar-right"></router-outlet>
-    <div class="toolbar__mode">
-      <lk-mode></lk-mode>
-    </div>
+    @if (isAccess$ | async) {
+      <div class="toolbar__mode">
+        <lk-mode></lk-mode>
+      </div>
+    }
     <div class="toolbar__user">
       <lk-user></lk-user>
     </div>

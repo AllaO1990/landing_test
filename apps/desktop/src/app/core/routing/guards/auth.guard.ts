@@ -1,18 +1,29 @@
-import { inject, Injectable } from '@angular/core';
-import { CanMatch, GuardResult, MaybeAsync, Route, Router, UrlSegment } from '@angular/router';
+import { inject } from '@angular/core';
+import {
+	ActivatedRouteSnapshot,
+	CanActivateFn,
+	GuardResult,
+	MaybeAsync,
+	Router,
+	RouterStateSnapshot,
+	UrlTree,
+} from '@angular/router';
 import { AuthService } from '@core/auth';
 
-@Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanMatch {
-	readonly #authService: AuthService = inject(AuthService);
-	readonly #router: Router = inject(Router);
+export const authGuardCanActivate: CanActivateFn = (
+	route: ActivatedRouteSnapshot,
+	state: RouterStateSnapshot
+): MaybeAsync<GuardResult> => {
+	console.log('authGuardCanActivate', route, state);
 
-	canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult> {
-		if (!this.#authService.isLoggedIn) {
-			return true;
-		}
+	const _authService: AuthService = inject(AuthService);
+	const _router: Router = inject(Router);
 
-		this.#router.navigate(['lk']);
-		return false;
+	if (!_authService.isLoggedIn) {
+		return true;
 	}
-}
+
+	const urlTree: UrlTree = _router.parseUrl(state.url);
+
+	return _router.createUrlTree(['lk'], { fragment: urlTree.fragment || `path="${state.url}"` });
+};

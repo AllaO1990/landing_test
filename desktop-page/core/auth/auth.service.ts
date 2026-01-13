@@ -123,25 +123,6 @@ export class AuthService {
 		// });
 	}
 
-	getKey(email: string) {
-		this.#http
-			.post<UserSignUpData>(`${this.host}/v1/auth/sign-up`, { email })
-			.pipe(
-				catchError((error, abc) => {
-					this.#router.navigate(['login']);
-					return this.#http.post<UserData>(`${this.host}/v1/auth/sign-in`, { email });
-				})
-			)
-			.subscribe((data) => {
-				// this.saveToken(data.token);
-				if (typeof data.data === 'string') {
-					window.open(data.data, '_blank');
-				}
-
-				this.#router.navigate(['login/tg-key'], { queryParams: { email } });
-			});
-	}
-
 	login(email: string, password: string): Observable<UserData> {
 		return this.#http.post<UserData>(`${this.host}/v1/auth/token`, { username: email, password: +password }).pipe(
 			tap((data: UserData) => this._saveToken(data['data']['access_token'])),

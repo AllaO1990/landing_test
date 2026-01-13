@@ -23,12 +23,11 @@ import { TuiDayRange } from '@taiga-ui/cdk';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { getParamsFromRange } from 'utils/get-params-from-range';
-import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { LoaderComponent } from '@ui/components/loader';
 import { AccountBalance, AccountCurrency } from 'types/account';
 import { ChartPortfolioButtonDirective } from './layout.directive';
-import { PortfolioData } from '@data-access-portfolio/types';
+import { PortfolioData, PortfolioParams } from '@data-access-portfolio/types';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { PortfolioBalanceService } from '@feat-portfolio-balance';
 import { DIALOG, DialogService } from '@ui/components/dialog';
@@ -125,12 +124,14 @@ export class LayoutComponent implements AfterViewInit {
 				})
 			)
 			.subscribe((value: { from: string | null; to: string | null; leadToCurrency: string | null }) =>
-				this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value }))
+				this.#dataAccess.params.update((params: PortfolioParams | null) => ({ ...params, ...value }))
 			);
 	}
 
 	openDialogBalance(event: Event): void {
 		event.preventDefault();
+
+		console.log(this.#dataAccess.params());
 
 		this.#balanceService.openDialog(this.#injector).subscribe((res) => console.log(res));
 	}

@@ -9,7 +9,7 @@ import {
 	InputSignal,
 	Signal,
 	signal,
-	WritableSignal
+	WritableSignal,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ACTION_EVENTS } from 'tokens/desktop';
@@ -27,7 +27,7 @@ import {
 	TuiIcon,
 	TuiNumberFormatSettings,
 	TuiPopup,
-	TuiTextfield
+	TuiTextfield,
 } from '@taiga-ui/core';
 import { TuiBadgedContent, TuiBadgeNotification, TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
@@ -38,7 +38,7 @@ import {
 	AccountDealType,
 	AccountRange,
 	AccountStrategy,
-	AccountType
+	AccountType,
 } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

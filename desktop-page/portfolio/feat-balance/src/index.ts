@@ -1,2 +1,1 @@
-export * from './lib/balance/balance.service';
-export * from './lib/balance/balance.component';
+export * from './lib/balance';

@@ -6,8 +6,8 @@ import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core
 import { TUI_CONFIRM, TuiButtonLoading } from '@taiga-ui/kit';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { BalanceDepositService } from 'ui-common/lib/dialog/balance-deposit';
-import { BalanceWithdrawalService } from 'ui-common/lib/dialog/balance-withdrawal';
+import { BalanceDepositService } from '../balance-deposit';
+import { BalanceWithdrawalService } from '../balance-withdrawal';
 import { debounceTime, filter, Observable, startWith } from 'rxjs';
 import { AccountTransaction, AccountTransactions } from 'types/account';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -18,7 +18,15 @@ import { BalanceStore } from './balance.store';
 import { ApiPortfolioService } from '@data-access-portfolio/api.service';
 import { getParamsFromFilter } from './balance.utils';
 import { DialogFilterComponent } from '@ui-portfolio-common/dialog-filter';
-import { DialogCore } from 'ui-common/lib/dialog/dialog.core';
+import { DialogCoreComponent } from '../dialog/dialog';
+
+interface FormValue {
+	filter: any | null;
+	pagination: {
+		limit: number;
+		page: number;
+	};
+}
 
 @Component({
 	selector: 'portfolio-balance',
@@ -38,7 +46,7 @@ import { DialogCore } from 'ui-common/lib/dialog/dialog.core';
 	],
 	standalone: true,
 	templateUrl: './balance.component.html',
-	styleUrls: ['./balance.component.scss'],
+	styleUrls: ['../dialog/dialog.scss', './balance.component.scss'],
 	providers: [
 		{
 			provide: BalanceDepositService,
@@ -58,7 +66,7 @@ import { DialogCore } from 'ui-common/lib/dialog/dialog.core';
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PortfolioBalanceComponent extends DialogCore implements AfterViewInit {
+export class PortfolioBalanceComponent extends DialogCoreComponent implements AfterViewInit {
 	readonly #injector: Injector = inject(Injector);
 	readonly #dialogService: DialogService = inject(DIALOG);
 	readonly #balanceDepositService: BalanceDepositService = inject(BalanceDepositService);
@@ -106,8 +114,13 @@ export class PortfolioBalanceComponent extends DialogCore implements AfterViewIn
 
 	ngAfterViewInit(): void {
 		this.formGroup.valueChanges
-			.pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value), debounceTime(0))
-			.subscribe((value) => {
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				startWith(this.formGroup.value),
+				filter((data) => !!data),
+				debounceTime(0)
+			)
+			.subscribe((value: FormValue) => {
 				const {
 					filter,
 					pagination: { page, limit },

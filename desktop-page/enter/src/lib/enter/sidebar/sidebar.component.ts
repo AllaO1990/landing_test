@@ -50,9 +50,9 @@ import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { endOfMonth } from 'date-fns/endOfMonth';
-import { BalanceDepositService } from 'ui-common/lib/dialog/balance-deposit';
+import { BalanceDepositService } from '../../../../../portfolio/feat-balance/src/lib/balance-deposit';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { BalanceWithdrawalService } from 'ui-common/lib/dialog/balance-withdrawal';
+import { BalanceWithdrawalService } from '../../../../../portfolio/feat-balance/src/lib/balance-withdrawal';
 import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 
 type Item = { id: string; name: string };

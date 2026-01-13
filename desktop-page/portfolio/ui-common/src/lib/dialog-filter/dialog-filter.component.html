@@ -2,71 +2,69 @@
   <div class="filter__row">
     <div class="filter__control filter__control--portfolio">
       <label for="portfolio">Портфель:</label>
-      <tui-select
-        *ngIf="(portfolios$ | async) as items"
-        [valueContent]="portfolioContent"
+      <tui-textfield
+        tuiChevron
+        [identityMatcher]="identityMatcherPortfolio()"
+        [stringify]="stringifyPortfolio()"
         [tuiTextfieldSize]="size"
-        formControlName="portfolio">
-        Портфель
-        <input autocomplete="off" tuiTextfieldLegacy id="portfolio" />
-        <ng-template tuiDataList>
-          <tui-data-list>
-            <button
-              *ngFor="let item of items"
-              tuiOption
-              type="button"
-              [value]="item">
-              {{ item.portfolio }}
-            </button>
-          </tui-data-list>
-        </ng-template>
-      </tui-select>
+        tuiDropdownLimitWidth="auto"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="portfolio"
+          [placeholder]="'Портфель'"
+          autocomplete="off"
+          tuiSelect/>
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="portfolios$ | async"
+          [itemContent]="portfolioContent"
+        />
+      </tui-textfield>
     </div>
     <div class="filter__control filter__control--broker">
       <label for="broker">Брокер:</label>
-      <tui-select
-        *ngIf="(brokers$ | async) as items"
-        class="filter__control"
-        [valueContent]="brokerContent"
+      <tui-textfield
+        tuiChevron
+        [identityMatcher]="identityMatcherBroker()"
+        [stringify]="stringifyBroker()"
         [tuiTextfieldSize]="size"
-        formControlName="broker">
-        Брокер
-        <input autocomplete="off" tuiTextfieldLegacy id="broker" />
-        <ng-template tuiDataList>
-          <tui-data-list>
-            <button
-              *ngFor="let item of items"
-              tuiOption
-              type="button"
-              [value]="item">
-              {{ item.broker }}
-            </button>
-          </tui-data-list>
-        </ng-template>
-      </tui-select>
+        tuiDropdownLimitWidth="auto"
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="broker"
+          [placeholder]="'Брокер'"
+          autocomplete="off"
+          tuiSelect/>
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="brokers$ | async"
+          [itemContent]="brokerContent"
+        />
+      </tui-textfield>
     </div>
     <div class="filter__control filter__control--currency">
       <label for="currency">Валюта:</label>
-      <tui-select
-        *ngIf="(currencies$ | async) as items"
-        class="filter__control"
-        [valueContent]="currencyContent"
+      <tui-textfield
+        class="form__control"
+        tuiChevron
+        [identityMatcher]="identityMatcherCurrency()"
+        [stringify]="stringifyCurrency()"
         [tuiTextfieldSize]="size"
-        formControlName="currency">
-        Валюта
-        <input autocomplete="off" tuiTextfieldLegacy id="currency" />
-        <ng-template tuiDataList>
-          <tui-data-list>
-            <button
-              *ngFor="let item of items"
-              tuiOption
-              type="button"
-              [value]="item">
-              {{ item.currencySymbol }}
-            </button>
-          </tui-data-list>
-        </ng-template>
-      </tui-select>
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="currency"
+          [placeholder]="'Валюта'"
+          autocomplete="off"
+          tuiSelect/>
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="currencies$ | async"
+          [itemContent]="currencyContent"
+        />
+      </tui-textfield>
     </div>
   </div>
   <div class="filter__row">

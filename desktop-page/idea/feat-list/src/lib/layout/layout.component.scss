@@ -22,8 +22,10 @@
   }
 
   &__title {
-    font-size: 13px;
-    font-weight: 500;
+    flex: 1;
+
+    font-size: 15px;
+    font-weight: 600;
 
     margin-right: var(--padding-2);
   }
@@ -36,13 +38,6 @@
     flex: 0 0 32px;
 
     margin: var(--padding-2) var(--padding-4);
-  }
-
-  &__title {
-    flex: 1;
-
-    font-size: 13px;
-    font-weight: 500;
   }
 
   &__actions {

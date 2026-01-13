@@ -10,7 +10,6 @@ import { TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
-import { Params } from '@angular/router';
 import { LocalStorage } from 'storage/local.storage';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
@@ -38,7 +37,7 @@ interface FilterValue {
 })
 export class FilterPortfolioListComponent implements AfterViewInit {
 	static valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
-	static valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null };
+	static valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null, edit: false, remove: false };
 
 	readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
 	readonly #dataAccess: DataAccessPortfolioService = inject(DataAccessPortfolioService);
@@ -73,27 +72,25 @@ export class FilterPortfolioListComponent implements AfterViewInit {
 	});
 
 	ngAfterViewInit(): void {
-		this._initFormGroupValue();
-
-		this.formGroup.valueChanges.subscribe((res) => console.log(res));
-
 		this.formGroup.valueChanges
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
-				tap((value: FilterValue) => this.#localStorage.setItem('lightPortfolioFilter', value)),
-				map((value: FilterValue) => ({
-					portfolioId: value.portfolio.portfolioId,
-					currencyId: value.currency.currencyId,
-				}))
+				tap((value: FilterValue) => this.#localStorage.setItem('lightPortfolioFilter', value))
+				// map((value: FilterValue) => ({
+				// 	portfolioId: value.portfolio.portfolioId,
+				// 	currencyId: value.currency.currencyId,
+				// }))
 			)
-			.subscribe((params: Params) => {
+			.subscribe((params: FilterValue) => {
 				this.#dataAccess.params.update((value) => ({ ...value, ...params }));
 			});
+
+		this._initFormGroupValue();
 	}
 
 	private _initFormGroupValue(): void {
 		const value = this.#localStorage.getItem('lightPortfolioFilter') || this.valueDefault;
 
-		this.formGroup.patchValue(value);
+		this.formGroup.setValue(value);
 	}
 }

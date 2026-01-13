@@ -108,7 +108,7 @@
   flex-flow: row nowrap;
   align-items: center;
   flex: 1 1 auto;
-  width: 60%;
+  width: 50%;
 }
 .item__name span {
   width: 100%;
@@ -122,7 +122,7 @@
 }
 .item__percentage {
   flex: 1 1 auto;
-  width: 40%;
+  width: 50%;
   text-align: right;
 }
 

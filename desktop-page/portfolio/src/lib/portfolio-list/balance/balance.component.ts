@@ -18,8 +18,8 @@ import { TUI_CONFIRM, TuiButtonLoading } from '@taiga-ui/kit';
 import { AccountTransaction, AccountTransactions } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { BalanceDepositService } from 'ui-common/lib/dialog/balance-deposit';
-import { BalanceWithdrawalService } from 'ui-common/lib/dialog/balance-withdrawal';
+import { BalanceDepositService } from '../../../../feat-balance/src/lib/balance-deposit';
+import { BalanceWithdrawalService } from '../../../../feat-balance/src/lib/balance-withdrawal';
 
 @Component({
 	selector: 'lib-portfolio-list-balance',

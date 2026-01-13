@@ -1,7 +1,7 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { Params } from '@angular/router';
+import { PortfolioParams } from './types';
 
 @Injectable()
 export class DataAccessPortfolioService {
-  readonly params: WritableSignal<Params | null> = signal(null);
+	readonly params: WritableSignal<PortfolioParams | null> = signal(null);
 }

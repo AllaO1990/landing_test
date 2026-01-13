@@ -1,11 +1,11 @@
 import { PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { Injector } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DialogServiceCore } from 'ui-common/lib/dialog/dialog.core';
+import { DialogCoreService } from '../dialog/dialog';
 import { DialogService } from '@ui/components/dialog';
 import { PortfolioBalanceComponent } from './balance.component';
 
-export class PortfolioBalanceService extends DialogServiceCore {
+export class PortfolioBalanceService extends DialogCoreService {
 	componentDeposit: PolymorpheusContent<PortfolioBalanceComponent> | null = null;
 
 	constructor(dialog: DialogService) {

@@ -4,6 +4,9 @@
   flex-flow: column nowrap;
   height: 100%;
 }
+.portfolio__filter {
+  margin-right: var(--padding-2);
+}
 .portfolio__item {
   padding: 0 var(--padding-4);
   margin-bottom: var(--padding-2);

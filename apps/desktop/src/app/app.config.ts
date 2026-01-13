@@ -1,11 +1,11 @@
 import { provideEventPlugins } from '@taiga-ui/event-plugins';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
 	ApplicationConfig,
 	importProvidersFrom,
 	inject,
 	provideAppInitializer,
-	provideZoneChangeDetection
+	provideZoneChangeDetection,
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
@@ -27,6 +27,8 @@ import { APP_CONFIG, AppConfig } from 'tokens/desktop/config';
 import { TODAY } from 'tokens/desktop/today';
 import { TUI_LANGUAGE, TUI_RUSSIAN_LANGUAGE } from '@taiga-ui/i18n';
 import { of } from 'rxjs';
+import { PERMISSIONS } from 'tokens/desktop/permission';
+import { Permissions } from 'utils/permissions';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -64,6 +66,15 @@ export const appConfig: ApplicationConfig = {
 			provide: QUERY_PARAMS,
 			useFactory: (router: Router, activatedRoute: ActivatedRoute) => new QueryParams(router, activatedRoute),
 			deps: [Router, ActivatedRoute],
+		},
+		{
+			provide: PERMISSIONS,
+			useFactory: (http: HttpClient, config: AppConfig) => {
+				const permissions = new Permissions(http, config);
+				permissions.load();
+				return permissions;
+			},
+			deps: [HttpClient, APP_CONFIG],
 		},
 		{
 			provide: TODAY,

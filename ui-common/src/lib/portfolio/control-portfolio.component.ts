@@ -9,7 +9,7 @@ import {
 	Input,
 	signal,
 	TemplateRef,
-	ViewChild
+	ViewChild,
 } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import {
@@ -18,7 +18,7 @@ import {
 	FormGroup,
 	FormsModule,
 	NG_VALUE_ACCESSOR,
-	ReactiveFormsModule
+	ReactiveFormsModule,
 } from '@angular/forms';
 import { TuiButton, TuiDropdown, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
@@ -35,6 +35,8 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { FormInputEvent, InputWithActionsComponent } from '../input-with-actions';
 
 type FormEvent = 'create' | 'rename' | null;
+
+type Portfolio = AccountPortfolio & { edit: boolean; remove: boolean };
 
 @Component({
 	selector: 'lib-control-portfolio',
@@ -68,7 +70,7 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
 	private readonly _destroyed: DestroyRef = inject(DestroyRef);
 	private readonly _accountStore: AccountFacade = inject(AccountFacade);
 	private readonly _dialog: DialogService = inject(DIALOG);
-	readonly #list$: Subject<AccountPortfolio[] | null> = new BehaviorSubject<AccountPortfolio[] | null>(null);
+	readonly #list$: Subject<Portfolio[] | null> = new BehaviorSubject<Portfolio[] | null>(null);
 
 	#dialogApproveComponent: PolymorpheusComponent<DialogApproveComponent> | null = null;
 
@@ -79,8 +81,8 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
 	@Input() autoSelected = false;
 
 	@Input()
-	set items(value: AccountPortfolio[] | null) {
-		this.#list$.next(value);
+	set items(value: (AccountPortfolio | Portfolio)[] | null) {
+		this.#list$.next(this._createPortfolios(value));
 	}
 
 	isDisabled = false;
@@ -129,7 +131,7 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
 	ngAfterViewInit(): void {
 		this.form.valueChanges
 			.pipe(takeUntilDestroyed(this._destroyed), startWith(this.form.value))
-			.subscribe((result: { portfolio: AccountPortfolio }) => {
+			.subscribe((result: { portfolio: Portfolio }) => {
 				this.onChange(result.portfolio);
 			});
 	}
@@ -212,6 +214,14 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
 				filter((value: AccountPortfolio | null): value is AccountPortfolio => value !== null),
 				take(1)
 			)
-			.subscribe((value: AccountPortfolio) => this.controlPortfolio.patchValue(value, { emitEvent: false }));
+			.subscribe((value: AccountPortfolio) => this.controlPortfolio.patchValue(value, { emitEvent: true }));
+	}
+
+	private _createPortfolios(list: AccountPortfolio[] | null): null | Portfolio[] {
+		if (list === null) {
+			return list;
+		}
+
+		return list.map((item: AccountPortfolio) => ({ edit: true, remove: true, ...item }));
 	}
 }
