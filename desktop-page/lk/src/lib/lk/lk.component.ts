@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, OnIni
 import { Params, RouterOutlet } from '@angular/router';
 import { ACTION_EVENTS, DESKTOP_API, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
-import { debounceTime, Observable, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { debounceTime, Observable, shareReplay, startWith, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LogoComponent } from '@ui/components/logo';
 import { DesktopService } from '@desktop-data/desktop-data';
@@ -43,7 +43,7 @@ import { PERMISSIONS } from 'tokens/desktop/permission';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-	selector: 'lib-lk',
+	selector: 'lk-layout',
 	standalone: true,
 	imports: [RouterOutlet, LogoComponent, UserComponent, ModeComponent, AsyncPipe],
 	templateUrl: './lk.component.html',
@@ -180,7 +180,7 @@ export class LkComponent implements OnInit {
 	readonly isAccess$: Observable<boolean | null> = this.#permissions.isAccessed$;
 
 	ngOnInit(): void {
-		this._queryParams.pipe(tap((data) => console.log(data))).subscribe();
+		// this._queryParams.pipe(tap((data) => console.log(data))).subscribe();
 		//TODO - очищает PARAMS =( разобраться
 		this._queryParams
 			.pipe(
