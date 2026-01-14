@@ -7,10 +7,10 @@ export class NewPosition extends ContextAction {
 		super();
 	}
 
-	action(position: { instrument: { id: string | number } }) {
+	action(data: { id: string | number }) {
 		return this._queryParams.update({
 			type: EventSelected.STOCK_LIST,
-			id: position.instrument.id,
+			id: data.id,
 			dialog: 'visible',
 		});
 	}

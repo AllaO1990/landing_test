@@ -257,10 +257,6 @@ export class Position implements ResponsePosition {
 		const totalEntries = entries.reduce((acc, item) => (acc += item.totalPrice), 0);
 		const totalProfitTargets = targets.reduce((acc, item) => (acc += item.profit || 0), 0);
 
-		console.log('totalEntries', totalEntries, entries);
-		console.log('totalProfitTargets', totalProfitTargets, targets);
-		console.log(' ');
-
 		return {
 			value: getNumberPrecision(totalProfitTargets, 2),
 			percentage: getNumberPrecision((totalProfitTargets / totalEntries) * 100, 2),

@@ -195,7 +195,7 @@ export class LayoutComponent implements AfterViewInit {
 			const context = this._getAction('newPosition');
 
 			if (context) {
-				context.action(event.id);
+				context.action(event);
 			}
 		}
 	}
