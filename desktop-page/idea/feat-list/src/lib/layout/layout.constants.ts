@@ -2,7 +2,7 @@ export const IDEA_CONSTANTS_LIST_OF_BUTTON = [
 	{
 		text: 'Открыть идею',
 		icon: '@tui.external-link',
-		type: 'showPosition',
+		type: 'showIdea',
 		disabled: false,
 	},
 	{

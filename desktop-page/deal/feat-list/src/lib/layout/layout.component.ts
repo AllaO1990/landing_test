@@ -59,6 +59,11 @@ import { getContextAction } from 'utils/get-context-action';
 import { SelectItemPipe } from './layout.directive';
 import { DEAL_CONSTANTS_LIST_OF_BUTTON } from './layout.constants';
 import { ActionDealDeletePosition } from '@data-access-deal/plugins/action-delete-portfolio';
+import { ActionShowTrade } from '../../../../../lk/src/lib/common/plugins/action-show-trade';
+import { ActionNewIdea } from '../../../../../lk/src/lib/common/plugins/action-new-idea';
+import { ActionSelectTransaction } from '../../../../../lk/src/lib/common/plugins/action-select-transaction';
+import { ActionShowTransaction } from '../../../../../lk/src/lib/common/plugins/action-show-transaction';
+import { ActionNewPosition } from '../../../../../lk/src/lib/common/plugins/action-new-position';
 
 interface FilterValue {
 	type: AccountType;
@@ -112,6 +117,31 @@ type ActionButton = {
 		{
 			provide: ACTION_EVENTS,
 			useClass: ActionDealDeletePosition,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionShowTrade,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionNewIdea,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionSelectTransaction,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionShowTransaction,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionNewPosition,
 			multi: true,
 		},
 	],
@@ -199,7 +229,7 @@ export class LayoutComponent implements AfterViewInit {
 
 	onOpenDialog(event: StockInstrument | null): void {
 		if (event) {
-			const context = this._getAction('newPosition');
+			const context = this._getAction('newIdea');
 
 			if (context) {
 				context.action(event);

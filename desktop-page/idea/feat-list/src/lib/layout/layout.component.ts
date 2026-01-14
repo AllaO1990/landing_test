@@ -8,7 +8,7 @@ import {
 	input,
 	InputSignal,
 	signal,
-	WritableSignal,
+	WritableSignal
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ACTION_EVENTS } from 'tokens/desktop';
@@ -28,7 +28,7 @@ import {
 	TuiHint,
 	TuiIcon,
 	TuiPopup,
-	TuiTextfield,
+	TuiTextfield
 } from '@taiga-ui/core';
 import { TuiBadgedContent, TuiBadgeNotification, TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
@@ -49,7 +49,13 @@ import { SelectItemIdeaPipe } from './layout.directive';
 import { LocalStorage } from 'storage/local.storage';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { IDEA_CONSTANTS_LIST_OF_BUTTON } from './layout.constants';
+import { ActionNewPosition } from '../../../../../lk/src/lib/common/plugins/action-new-position';
+import { ActionCopyIdea } from '../../../../../lk/src/lib/common/plugins/action-copy-idea';
+import { ActionSelectIdea } from '../../../../../lk/src/lib/common/plugins/action-select-idea';
 import { ActionIdeaDeletePosition } from '@data-access-idea/plugins/action-delete-portfolio';
+import { ActionShowTrade } from '../../../../../lk/src/lib/common/plugins/action-show-trade';
+import { ActionNewIdea } from '../../../../../lk/src/lib/common/plugins/action-new-idea';
+import { ActionShowIdea } from '../../../../../lk/src/lib/common/plugins/action-show-idea';
 
 interface FilterValue {
 	type: AccountType;
@@ -101,6 +107,36 @@ type ActionButton = {
 		{
 			provide: ACTION_EVENTS,
 			useClass: ActionIdeaDeletePosition,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionShowIdea,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionNewPosition,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionCopyIdea,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionSelectIdea,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionShowTrade,
+			multi: true,
+		},
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionNewIdea,
 			multi: true,
 		},
 	],
@@ -199,7 +235,7 @@ export class LayoutComponent implements AfterViewInit {
 
 	onOpenDialog(event: StockInstrument | null): void {
 		if (event) {
-			const context = this._getAction('newPosition');
+			const context = this._getAction('newIdea');
 
 			if (context) {
 				context.action(event);
@@ -258,7 +294,7 @@ export class LayoutComponent implements AfterViewInit {
 	onDblclick(event: Event, item: Position): void {
 		event.preventDefault();
 
-		const context = this._getAction('showPosition');
+		const context = this._getAction('showIdea');
 
 		if (context) {
 			context.action(item);

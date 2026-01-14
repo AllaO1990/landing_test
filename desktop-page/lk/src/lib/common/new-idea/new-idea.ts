@@ -1,17 +1,16 @@
 import { QueryParams } from 'utils/query-params';
 import { EventSelected } from 'types/events';
 import { ContextAction } from 'types/context-action';
-import { Position } from 'types/position';
 
-export class NewPosition extends ContextAction {
+export class NewIdea extends ContextAction {
 	constructor(private readonly _queryParams: QueryParams) {
 		super();
 	}
 
-	action(data: Position) {
+	action(data: { id: string | number }) {
 		return this._queryParams.update({
 			type: EventSelected.STOCK_LIST,
-			id: data.instrument.id,
+			id: data.id,
 			dialog: 'visible',
 		});
 	}
