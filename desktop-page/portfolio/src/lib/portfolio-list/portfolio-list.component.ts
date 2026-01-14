@@ -17,7 +17,7 @@ import {
 	Subject,
 	switchMap,
 	tap,
-	timer
+	timer,
 } from 'rxjs';
 import {
 	AccountBalance,
@@ -27,7 +27,7 @@ import {
 	AccountPortfolio,
 	AccountRange,
 	AccountStrategy,
-	AccountType
+	AccountType,
 } from 'types/account';
 import { map } from 'rxjs/operators';
 import { Params } from '@angular/router';
