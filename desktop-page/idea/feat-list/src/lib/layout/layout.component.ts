@@ -49,6 +49,7 @@ import { SelectItemIdeaPipe } from './layout.directive';
 import { LocalStorage } from 'storage/local.storage';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { IDEA_CONSTANTS_LIST_OF_BUTTON } from './layout.constants';
+import { ActionIdeaDeletePosition } from '@data-access-idea/plugins/action-delete-portfolio';
 
 interface FilterValue {
 	type: AccountType;
@@ -96,6 +97,13 @@ type ActionButton = {
 	],
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss',
+	providers: [
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionIdeaDeletePosition,
+			multi: true,
+		},
+	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {

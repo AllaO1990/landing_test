@@ -58,6 +58,7 @@ import { ContextAction } from 'types/context-action';
 import { getContextAction } from 'utils/get-context-action';
 import { SelectItemPipe } from './layout.directive';
 import { DEAL_CONSTANTS_LIST_OF_BUTTON } from './layout.constants';
+import { ActionDealDeletePosition } from '@data-access-deal/plugins/action-delete-portfolio';
 
 interface FilterValue {
 	type: AccountType;
@@ -107,7 +108,13 @@ type ActionButton = {
 	],
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss',
-	providers: [],
+	providers: [
+		{
+			provide: ACTION_EVENTS,
+			useClass: ActionDealDeletePosition,
+			multi: true,
+		},
+	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {

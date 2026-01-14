@@ -6,14 +6,14 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TuiDialogService } from '@taiga-ui/core';
 
 export class ActionDeletePosition extends ContextActionPlugin {
-  readonly #facade: IdeaFacade = inject(IdeaFacade);
-  readonly #dialog: TuiDialogService = inject(TuiDialogService);
+	readonly #facade: IdeaFacade = inject(IdeaFacade);
+	readonly #dialog: TuiDialogService = inject(TuiDialogService);
 
-  condition(type: string): boolean {
-    return type === 'deletePosition';
-  }
+	condition(type: string): boolean {
+		return type === 'deletePosition';
+	}
 
-  getAction(): ContextAction {
-    return new DeletePosition(this.#facade, this.#dialog);
-  }
+	getAction(): ContextAction {
+		return new DeletePosition(this.#facade, this.#dialog);
+	}
 }

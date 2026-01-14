@@ -1,9 +1,10 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { ApiDealService } from './api.service';
-import { forkJoin, map, Observable, switchMap, tap, timer } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 import { Params } from '@angular/router';
 import { DataList, Response } from 'types/response';
 import { PortfolioPosition } from 'types/portfolio';
+import { forkJoinTimer } from 'utils/forkjoin-timer';
 
 export interface DataAccessDealState {
 	isLoaded: boolean;
@@ -42,8 +43,8 @@ export class DataAccessDealStore extends ComponentStore<DataAccessDealState> {
 		stream$.pipe(
 			tap(() => this.updateUploaded(false)),
 			switchMap((params: Params) =>
-				forkJoin([this.api.getPortfolio(params), timer(1000)]).pipe(
-					map(([response]: [Response<DataList<PortfolioPosition>>, number]) => response && this.updateData(response.data))
+				forkJoinTimer(this.api.getPortfolio(params)).pipe(
+					tap((response: Response<DataList<PortfolioPosition>>) => response && this.updateData(response.data))
 				)
 			)
 		)

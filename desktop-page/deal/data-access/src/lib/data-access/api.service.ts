@@ -9,40 +9,44 @@ import { PortfolioPosition } from 'types/portfolio';
 
 @Injectable()
 export class ApiDealService {
-  #http: HttpClient = inject(HttpClient);
-  readonly #config = inject(APP_CONFIG);
+	#http: HttpClient = inject(HttpClient);
+	readonly #config = inject(APP_CONFIG);
 
-  get host() {
-    return this.#config.host;
-  }
+	get host() {
+		return this.#config.host;
+	}
 
-  getPortfolio(params: Params): Observable<Response<DataList<PortfolioPosition>>> {
-    return this.#http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/v1/ideas/portfolio`, {
-      author: params['author'] || null,
-      brokerId: params['brokerId'] || null,
-      currencyId: params['currencyId'] || null,
-      dealType: params['dealType'] || null,
-      instrumentType: params['instrumentType'] || null,
-      limit: params['limit'] || null,
-      page: params['page'] || null,
-      query: params['query'] || null,
-      strategyId: params['strategyId'] || null,
-      portfolioId: params['portfolioId'] || null,
-      from: params['from'] || null,
-      to: params['to'] || null,
-    });
-  }
+	getPortfolio(params: Params): Observable<Response<DataList<PortfolioPosition>>> {
+		return this.#http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/v1/ideas/portfolio`, {
+			author: params['author'] || null,
+			brokerId: params['brokerId'] || null,
+			currencyId: params['currencyId'] || null,
+			dealType: params['dealType'] || null,
+			instrumentType: params['instrumentType'] || null,
+			limit: params['limit'] || null,
+			page: params['page'] || null,
+			query: params['query'] || null,
+			strategyId: params['strategyId'] || null,
+			portfolioId: params['portfolioId'] || null,
+			from: params['from'] || null,
+			to: params['to'] || null,
+		});
+	}
 
-  getPositionList(params: Params): Observable<Response<ResponsePositions>> {
-    return this.#http.post<Response<ResponsePositions>>(`${this.host}/v1/ideas/positions`, {
-      brokerId: params['brokerId'] || null,
-      currencyId: params['currencyId'] || null,
-      instrumentType: params['instrumentType'] || null,
-      limit: params['limit'] || null,
-      page: params['page'] || null,
-      query: params['query'] || null,
-      strategyId: params['strategyId'] || null,
-      portfolioId: params['portfolioId'] || null,
-    });
-  }
+	deletePortfolio(id: string | number): Observable<Response<number>> {
+		return this.#http.delete<Response<number>>(`${this.host}/v1/ideas/${id}`);
+	}
+
+	getPositionList(params: Params): Observable<Response<ResponsePositions>> {
+		return this.#http.post<Response<ResponsePositions>>(`${this.host}/v1/ideas/positions`, {
+			brokerId: params['brokerId'] || null,
+			currencyId: params['currencyId'] || null,
+			instrumentType: params['instrumentType'] || null,
+			limit: params['limit'] || null,
+			page: params['page'] || null,
+			query: params['query'] || null,
+			strategyId: params['strategyId'] || null,
+			portfolioId: params['portfolioId'] || null,
+		});
+	}
 }

@@ -6,60 +6,60 @@ import { Response } from 'types/response';
 import { Position, Positions, ResponsePositions } from 'types/position';
 
 export interface DataAccessIdeaState {
-  isLoaded: boolean;
-  isLoading: boolean;
-  data: Positions | null;
+	isLoaded: boolean;
+	isLoading: boolean;
+	data: Positions | null;
 }
 
 export class DataAccessIdeaStore extends ComponentStore<DataAccessIdeaState> {
-  static defaultState: DataAccessIdeaState = {
-    isLoaded: false,
-    isLoading: false,
-    data: null,
-  };
+	static defaultState: DataAccessIdeaState = {
+		isLoaded: false,
+		isLoading: false,
+		data: null,
+	};
 
-  constructor(private api: ApiIdeaService) {
-    super(DataAccessIdeaStore.defaultState);
-  }
+	constructor(private api: ApiIdeaService) {
+		super(DataAccessIdeaStore.defaultState);
+	}
 
-  readonly updateUploaded = this.updater(
-    (state: DataAccessIdeaState, isUnloaded: boolean): DataAccessIdeaState => ({
-      ...state,
-      isLoading: isUnloaded,
-    })
-  );
+	readonly updateUploaded = this.updater(
+		(state: DataAccessIdeaState, isUnloaded: boolean): DataAccessIdeaState => ({
+			...state,
+			isLoading: isUnloaded,
+		})
+	);
 
-  readonly updateData = this.updater(
-    (state: DataAccessIdeaState, data: null | ResponsePositions): DataAccessIdeaState => {
-      if (data) {
-        return {
-          ...state,
-          data: {
-            total: data.total,
-            items: (data.items || []).map((item) => new Position(item)),
-          },
-          isLoaded: true,
-          isLoading: true,
-        };
-      }
+	readonly updateData = this.updater(
+		(state: DataAccessIdeaState, data: null | ResponsePositions): DataAccessIdeaState => {
+			if (data) {
+				return {
+					...state,
+					data: {
+						total: data.total,
+						items: (data.items || []).map((item) => new Position(item)),
+					},
+					isLoaded: true,
+					isLoading: true,
+				};
+			}
 
-      return {
-        ...state,
-        data: null,
-        isLoaded: true,
-        isLoading: true,
-      };
-    }
-  );
+			return {
+				...state,
+				data: null,
+				isLoaded: true,
+				isLoading: true,
+			};
+		}
+	);
 
-  readonly loadIdeas = this.effect((stream$: Observable<Params>) =>
-    stream$.pipe(
-      tap(() => this.updateUploaded(false)),
-      switchMap((params: Params) =>
-        forkJoin([this.api.getIdeaList(params), timer(1000)]).pipe(
-          map(([response]: [Response<ResponsePositions>, number]) => response && this.updateData(response.data))
-        )
-      )
-    )
-  );
+	readonly load = this.effect((stream$: Observable<Params>) =>
+		stream$.pipe(
+			tap(() => this.updateUploaded(false)),
+			switchMap((params: Params) =>
+				forkJoin([this.api.getIdeaList(params), timer(1000)]).pipe(
+					map(([response]: [Response<ResponsePositions>, number]) => response && this.updateData(response.data))
+				)
+			)
+		)
+	);
 }
