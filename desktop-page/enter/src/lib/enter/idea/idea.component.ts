@@ -56,7 +56,7 @@ import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
 import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
 
 @Component({
-	selector: 'lib-enter-idea',
+	selector: 'lib-enter-ideas',
 	standalone: true,
 	imports: [
 		AsyncPipe,

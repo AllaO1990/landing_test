@@ -20,18 +20,18 @@ import { DataAccessPortfolioStore } from '@data-access-portfolio/store';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 import { DataAccessStructureStore } from '@data-access-structure/store';
 import { DataAccessStructureService } from '@data-access-structure/data-access.service';
-import { DataAccessIdeaService } from '@data-access-idea/data-access.service';
-import { DataAccessDealService } from '@data-access-deal/data-access.service';
+import { DataAccessIdeaService } from '@data-access-idea/ideas/data-access.service';
+import { DataAccessDealService } from '@data-access-idea/deals/data-access.service';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
 import { AsyncPipe } from '@angular/common';
 import { TuiBreakpointMediaKey, TuiBreakpointService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import { StockWrapperComponent } from 'feat-candlestick';
 import { PortfolioChartWrapper } from '@feat-portfolio-chart';
-import { DataAccessDealStore } from '@data-access-deal/store';
 import { TabsComponent } from 'ui-common/lib/tabs';
 import { PortfolioParams } from '@data-access-portfolio/types';
 import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
+import { DataAccessIdeasStore } from '@data-access-idea/store';
 
 @Component({
 	selector: 'light-layout',
@@ -66,7 +66,7 @@ export class LightLayoutComponent implements AfterViewInit {
 	readonly #dataAccessStructure: DataAccessStructureService = inject(DataAccessStructureService);
 	readonly #storeStructure: DataAccessStructureStore = inject(DataAccessStructureStore);
 	readonly #dataAccessDeal: DataAccessDealService = inject(DataAccessDealService);
-	readonly #dataAccessDealStore: DataAccessDealStore = inject(DataAccessDealStore);
+	readonly #dataAccessDealStore: DataAccessIdeasStore = inject(DataAccessIdeasStore);
 	readonly #timerInterval: number = inject(TIMER_INTERVAL);
 
 	activeItemIndex = 0;
@@ -186,7 +186,7 @@ export class LightLayoutComponent implements AfterViewInit {
 					)
 				)
 			)
-			.subscribe((params: Params) => this.#dataAccessDealStore.load(params));
+			.subscribe((params: Params) => this.#dataAccessDealStore.loadDeals(params));
 	}
 
 	private _getParamsStructure(paramsStructure: Params | null, paramsPortfolio: PortfolioParams | null): Params | null {

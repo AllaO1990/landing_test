@@ -2,7 +2,7 @@ export default {
 	displayName: 'feat-ideas',
 	preset: '../../../jest.preset.js',
 	setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-	coverageDirectory: '../../../coverage/desktop-page/portfolio/feat-ideas',
+	coverageDirectory: '../../../coverage/desktop-page/ideas/feat-ideas',
 	transform: {
 		'^.+\\.(ts|mjs|js|html)$': [
 			'jest-preset-angular',

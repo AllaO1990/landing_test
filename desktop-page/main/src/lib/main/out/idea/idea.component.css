@@ -16,18 +16,21 @@
   height: 100%;
   border-top: 1px solid var(--border-color);
 }
+
 .idea__col {
   display: flex;
   align-items: center;
   flex: 1 1;
   padding-left: 8px;
 }
+
 .idea__col:not(:last-child) {
   border-right: 1px solid var(--border-color);
 }
+
 .idea__col--center {
   justify-content: center;
   padding-right: 8px;
 }
 
-/*# sourceMappingURL=idea.component.css.map */
+/*# sourceMappingURL=ideas.component.css.map */

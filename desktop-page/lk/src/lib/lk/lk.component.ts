@@ -22,10 +22,8 @@ import { ActionShowIdea } from 'ui-common/lib/plugins/plugins/action-show-idea';
 import { ActionCopyIdea } from 'ui-common/lib/plugins/plugins/action-copy-idea';
 import { TradeDialogService } from 'desktop-page/trade';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { DataAccessIdeaStore } from '@data-access-idea/store';
-import { ApiIdeaService } from '@data-access-idea/api.service';
-import { DataAccessDealStore } from '@data-access-deal/store';
-import { ApiDealService } from '@data-access-deal/api.service';
+import { DataAccessIdeasStore } from '@data-access-idea/store';
+import { ApiIdeasService } from '@data-access-idea/api.service';
 import { DataAccessPortfolioStore } from '@data-access-portfolio/store';
 import { ApiPortfolioService } from '@data-access-portfolio/api.service';
 import { DataAccessStructureStore } from '@data-access-structure/store';
@@ -72,17 +70,11 @@ import { AsyncPipe } from '@angular/common';
 			useFactory: (api: ApiStructureService) => new DataAccessStructureStore(api),
 			deps: [ApiStructureService],
 		},
-		ApiIdeaService,
+		ApiIdeasService,
 		{
-			provide: DataAccessIdeaStore,
-			useFactory: (api: ApiIdeaService) => new DataAccessIdeaStore(api),
-			deps: [ApiIdeaService],
-		},
-		ApiDealService,
-		{
-			provide: DataAccessDealStore,
-			useFactory: (api: ApiDealService) => new DataAccessDealStore(api),
-			deps: [ApiDealService],
+			provide: DataAccessIdeasStore,
+			useFactory: (api: ApiIdeasService) => new DataAccessIdeasStore(api),
+			deps: [ApiIdeasService],
 		},
 		{
 			provide: ACTION_EVENTS,
