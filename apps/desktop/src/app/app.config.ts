@@ -22,7 +22,6 @@ import { DOCUMENT } from '@angular/common';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { LocalStorage } from 'storage/local.storage';
 import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
-import { TimerInterval } from 'utils/timer-interval';
 import { APP_CONFIG, AppConfig } from 'tokens/desktop/config';
 import { TODAY } from 'tokens/desktop/today';
 import { TUI_LANGUAGE, TUI_RUSSIAN_LANGUAGE } from '@taiga-ui/i18n';
@@ -82,7 +81,7 @@ export const appConfig: ApplicationConfig = {
 		},
 		{
 			provide: TIMER_INTERVAL,
-			useClass: TimerInterval,
+			useValue: 60 * 1000,
 		},
 		{
 			provide: TUI_BUTTON_OPTIONS,

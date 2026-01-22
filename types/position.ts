@@ -115,6 +115,7 @@ export interface StockPositionIdeaEntry {
 	depositShare: number | null;
 	price: number;
 	quantity: number;
+	lots: number;
 	totalPrice: number;
 	broker: AccountBroker | null;
 }
@@ -131,7 +132,8 @@ export interface StockPositionActionEntry {
 export interface StockPositionTarget {
 	price: number;
 	amount: number;
-	profit: number | null;
+	lots: number;
+	profit: number;
 	profitPercent: null | number;
 	depositShare: null | number;
 	totalPrice: number;
@@ -220,7 +222,7 @@ export class Position implements ResponsePosition {
 		this.instrument = data.instrument;
 		this.minPriceIncrement = data.minPriceIncrement;
 		this.inPositionAccountingPrice = data.inPositionAccountingPrice;
-		this.entries = data.entries;
+		this.entries = data.entries.map((item) => ({ ...item, lots: item.quantity / data.instrument.lot }));
 		this.targets = data.targets.map((item) => ({ ...item, totalPrice: item.price * item.amount }));
 		this.fullPositionQuantity = this._getFulPositionQuantity(data.targets);
 		this.stop = data.stop && {

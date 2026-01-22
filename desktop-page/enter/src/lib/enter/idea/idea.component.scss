@@ -84,6 +84,11 @@ form {
     max-width: 150px;
 
     flex: 0 0 calc((100% - 40px - var(--padding-4)) / 6 - var(--padding-4));
+
+    span {
+      font-weight: 300;
+      color: var(--tui-text-secondary);
+    }
   }
 
   &__first {
@@ -120,13 +125,13 @@ form {
   }
 }
 
-.target {
-  .row {
-    &__fix {
-      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 6 - var(--padding-4)) * 2);
-    }
-  }
-}
+//.target {
+//  .row {
+//    &__fix {
+//      flex: 0 0 calc(((100% - 40px - var(--padding-4)) / 6 - var(--padding-4)) * 2);
+//    }
+//  }
+//}
 
 .stop {
   .row {

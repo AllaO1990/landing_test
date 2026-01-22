@@ -2,16 +2,19 @@
   class="container container--{{breakpoint$ | async}} container--{{orientation$ | async}}">
   <div class="container__toolbar">
     <div class="container__actions">
-      <ng-container *ngIf="(data$ | async) as result; else load">
+      @if (data$ | async; as result) {
         <lib-instrument
           [data]="result.idea.instrument">
         </lib-instrument>
-        <div class="date-start" *ngIf="result.idea.createdAt">
-          <div class="create">
-            <span>Идея от</span>
-            <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
+
+        @if (result.idea.createdAt) {
+          <div class="date-start">
+            <div class="create">
+              <span>Идея от</span>
+              <span>{{ result.idea.createdAt | date : 'dd.MM.yyyy' }}</span>
+            </div>
           </div>
-        </div>
+        }
 
         @if (result.idea.author === 'bot' || result.idea.parentId !== null) {
           <div class="date-start">
@@ -30,7 +33,9 @@
             </svg>
           </div>
         }
+
         <div class="space"></div>
+
         @if (isMobile$ | async) {
           <button
             class="action bell"
@@ -63,6 +68,7 @@
             {{ controlWatch.value ? 'Отслеживается' : 'Не отслеживается' }}
           </button>
         }
+
         <button
           class="action"
           tuiIconButton
@@ -73,6 +79,7 @@
           type="button"
           iconStart="@tui.trash"
         ></button>
+
         <button
           class="action save"
           tuiIconButton
@@ -84,21 +91,26 @@
           type="button"
           iconStart="@tui.save"
         ></button>
-        <button
-          *ngIf="isShowSearch$ | async"
-          class="search"
-          tuiIconButton
-          appearance="outline"
-          [size]="size"
-          [disabled]="false"
-          type="button"
-          uiSearchDialog
-          #dialog=uiSearchDialog
-          (click)="dialog.onSearch($event)"
-          (selected)="onSearch($event)"
-          iconStart="@tui.search"
-        ></button>
-      </ng-container>
+
+        @if (isShowSearch$ | async) {
+          <button
+            class="search"
+            tuiIconButton
+            appearance="outline"
+            [size]="size"
+            [disabled]="false"
+            type="button"
+            uiSearchDialog
+            #dialog=uiSearchDialog
+            (click)="dialog.onSearch($event)"
+            (selected)="onSearch($event)"
+            iconStart="@tui.search"
+          ></button>
+        }
+      } @else {
+        <ng-container [ngTemplateOutlet]="load"></ng-container>
+      }
+
       <button
         style="margin-left: var(--padding-4)"
         appearance="icon"

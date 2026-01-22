@@ -178,7 +178,7 @@
           <div class="item__cell item__cell--number item__result" [uiPriceColor]="item.resultPct">
             {{ item.result | tuiFormatNumber: formatNumberSettings | async }}
             <div class="substring">
-              {{ item.resultPct | tuiFormatNumber: formatNumberSettings | async }}%
+              {{ item.resultPct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
             </div>
           </div>
           <div class="item__cell item__action">

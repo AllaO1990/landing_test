@@ -1,359 +1,375 @@
 <form [formGroup]="controlFormArray">
-  <div class="entry table" formArrayName="entries" *ngIf="(entriesList$ | async) as list; else load">
-    <ui-lib-list
-      class="list"
-      [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
-      [list]="list"
-      [header]="entryHeader"
-      [footer]="entryFooter"
-      [itemSize]="itemHeight">
-      <lib-list-item
-        class="row"
-        *uiLibListItem="let item; let index = index">
-        <div class="item">
-          <div class="item__value row__item row__first">
-            <lib-check [value]="item.check"></lib-check>
+  @if (entriesList$ | async; as list) {
+    <div class="entry table" formArrayName="entries">
+      <ui-lib-list
+        class="list"
+        [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
+        [list]="list"
+        [header]="entryHeader"
+        [footer]="entryFooter"
+        [itemSize]="itemHeight">
+        <lib-list-item
+          class="row"
+          *uiLibListItem="let item; let index = index">
+          <div class="item">
+            <div class="item__value row__item row__first">
+              <lib-check [value]="item.check"></lib-check>
+            </div>
+            <!--          <div class="item__value row__item row__date">-->
+            <!--            {{ item.date | date: 'dd.MM.yy' }}-->
+            <!--          </div>-->
+            <div class="item__value row__item row__right row__price">
+              {{
+                item.price | tuiFormatNumber: {
+                  precision: priceIncrement,
+                  decimalMode: 'always'
+                } | getCryptoNumber | async
+              }}
+            </div>
+            <div class="item__value row__item row__right row__quantity">
+              <span>{{ item.quantity | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+            </div>
+            <div class="item__value row__item row__right row__total">
+              {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+            </div>
+            <!--          <div class="item__value row__item row__right row__deposit">-->
+            <!--            <ng-container *ngIf="item.depositShare !== null; else none">-->
+            <!--              {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
+            <!--            </ng-container>-->
+            <!--          </div>-->
+            <div class="row__space"></div>
+            @if (!isDisabled) {
+              <div class="item__value row__actions">
+                <button
+                  appearance="icon"
+                  iconStart="@tui.pencil"
+                  tuiIconButton
+                  size="xs"
+                  type="button"
+                  (click)="onEdit($event, index, 'entries')"
+                ></button>
+                <button
+                  appearance="icon"
+                  iconStart="@tui.x"
+                  tuiIconButton
+                  size="xs"
+                  type="button"
+                  (click)="onRemoveEntries($event, index)"
+                ></button>
+                <!--              [disabled]="formArrayTargets.value.length !== 0"-->
+              </div>
+            }
           </div>
-          <!--          <div class="item__value row__item row__date">-->
-          <!--            {{ item.date | date: 'dd.MM.yy' }}-->
-          <!--          </div>-->
-          <div class="item__value row__item row__right row__price">
-            {{
-              item.price | tuiFormatNumber: {
-                precision: priceIncrement,
-                decimalMode: 'always'
-              } | getCryptoNumber | async
-            }}
-          </div>
-          <div class="item__value row__item row__right row__quantity">
-            {{ item.quantity | tuiFormatNumber | async }}
-          </div>
-          <div class="item__value row__item row__right row__total">
-            {{ item.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-          </div>
-          <!--          <div class="item__value row__item row__right row__deposit">-->
-          <!--            <ng-container *ngIf="item.depositShare !== null; else none">-->
-          <!--              {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-          <!--            </ng-container>-->
-          <!--          </div>-->
-          <div class="row__space"></div>
-          <div class="item__value row__actions" *ngIf="!isDisabled">
-            <button
-              appearance="icon"
-              iconStart="@tui.pencil"
-              tuiIconButton
-              size="xs"
-              type="button"
-              (click)="onEdit($event, index, 'entries')"
-            ></button>
-            <button
-              appearance="icon"
-              iconStart="@tui.x"
-              tuiIconButton
-              size="xs"
-              type="button"
-              (click)="onRemoveEntries($event, index)"
-            ></button>
-            <!--              [disabled]="formArrayTargets.value.length !== 0"-->
-          </div>
-        </div>
-      </lib-list-item>
-    </ui-lib-list>
+        </lib-list-item>
+      </ui-lib-list>
 
-    <div class="action">
-      <button
-        *ngIf="formArrayEntries.value.length === 0 && !isDisabled"
-        class="button"
-        tuiButton
-        tuiHintAppearance="dark"
-        tuiHintDirection="bottom-right"
-        [tuiHint]="(isCanAddEntry$ | async) ? null : tooltip"
-        iconStart="@tui.plus"
-        [appearance]="(isCanAddEntry$ | async) ? 'primary' : 'outline'"
-        (click)="addEntry($event)"
-        type="button">
-        Добавить вход
-      </button>
+      <div class="action">
+        @if (formArrayEntries.value.length === 0 && !isDisabled) {
+          <button
+            class="button"
+            tuiButton
+            tuiHintAppearance="dark"
+            tuiHintDirection="bottom-right"
+            [tuiHint]="(isCanAddEntry$ | async) ? null : tooltip"
+            iconStart="@tui.plus"
+            [appearance]="(isCanAddEntry$ | async) ? 'primary' : 'outline'"
+            (click)="addEntry($event)"
+            type="button">
+            Добавить вход
+          </button>
+        }
+      </div>
     </div>
-  </div>
+  } @else {
+    <ng-container [ngTemplateOutlet]="load"></ng-container>
+  }
 
   <div class="space"></div>
 
-  <div class="target table" formArrayName="targets" *ngIf="(targetsList$ | async) as list; else load">
-    <ui-lib-list
-      class="list"
-      [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
-      [list]="list"
-      [header]="targetHeader"
-      [footer]="targetFooter"
-      [itemSize]="itemHeight">
-      <lib-list-item
-        class="row"
-        [style.background-color]="!!item.stopDate ? null : list | colorForPriceEntry: index :  'price' : (multiplier$ | async) : (lastPrice$ | async)"
-        *uiLibListItem="let item; let index = index">
-        <div class="item">
-          <div class="item__value row__item row__first">
-            <lib-check [value]="!!item.stopDate"></lib-check>
-          </div>
-          <!--          <div class="item__value row__item row__date">-->
-          <!--            {{ item.stopDate | date: 'dd.MM.yy' }}-->
-          <!--          </div>-->
-          <div class="item__value row__right row__item row__price">
-            {{
-              item.price | tuiFormatNumber: {
-                precision: priceIncrement,
-                decimalMode: 'always'
-              } | getCryptoNumber | async
-            }}
-          </div>
-          <div class="item__value row__right row__item row__profit">
-            <ng-container *ngIf="item.profitPercent !== null; else none">
-              {{ item.profitPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
-            </ng-container>
-          </div>
-          <div class="item__value row__right row__item row__profit">
-            <ng-container *ngIf="item.profit !== null; else none">
-              {{ item.profit | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-            </ng-container>
-          </div>
-          <!--          <div class="item__value row__right row__item row__deposit">-->
-          <!--            <ng-container *ngIf="item.depositShare !== null; else none">-->
-          <!--              {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-          <!--            </ng-container>-->
-          <!--          </div>-->
-          <div class="item__value row__right row__item row__fix-half">
-            {{ item.amount | tuiFormatNumber | async }}
-          </div>
-          <!--          <div class="item__value row__right row__item row__fix-half">-->
-          <!--            <ng-container *ngIf="inPositionQuantityValue !== 0; else none">-->
-          <!--              {{-->
-          <!--                item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: {-->
-          <!--                  precision: 1,-->
-          <!--                  decimalMode: 'always'-->
-          <!--                } | async-->
-          <!--              }}%-->
-          <!--            </ng-container>-->
-          <!--          </div>-->
-          <div class="row__space"></div>
-          <div class="item__value row__actions" *ngIf="!isDisabled">
-            <button
-              appearance="icon"
-              iconStart="@tui.pencil"
-              tuiIconButton
-              size="xs"
-              type="button"
-              (click)="onEdit($event, index, 'targets')"
-            ></button>
-            <button
-              appearance="icon"
-              iconStart="@tui.x"
-              tuiIconButton
-              size="xs"
-              type="button"
-              (click)="onRemove($event, index, 'targets')"
-            ></button>
-          </div>
-        </div>
-      </lib-list-item>
-    </ui-lib-list>
+  @if (targetsList$ | async; as list) {
+    <div class="target table" formArrayName="targets">
+      <ui-lib-list
+        class="list"
+        [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
+        [list]="list"
+        [header]="targetHeader"
+        [footer]="targetFooter"
+        [itemSize]="itemHeight">
+        <lib-list-item
+          class="row"
+          [style.background-color]="!!item.stopDate ? null : list | colorForPriceEntry: index :  'price' : (multiplier$ | async) : (lastPrice$ | async)"
+          *uiLibListItem="let item; let index = index">
+          <div class="item">
+            <div class="item__value row__item row__first">
+              <lib-check [value]="!!item.stopDate"></lib-check>
+            </div>
+            <!--          <div class="item__value row__item row__date">-->
+            <!--            {{ item.stopDate | date: 'dd.MM.yy' }}-->
+            <!--          </div>-->
+            <div class="item__value row__right row__item row__price">
+              {{
+                item.price | tuiFormatNumber: {
+                  precision: priceIncrement,
+                  decimalMode: 'always'
+                } | getCryptoNumber | async
+              }}
+            </div>
+            <div class="item__value row__right row__item row__fix-half">
+              <span>{{ item.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+            </div>
+            <div class="item__value row__right row__item row__profit">
+              @if (item.profit !== null) {
+                {{ item.profit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="item__value row__right row__item row__profit">
+              @if (item.profitPercent !== null) {
+                {{ item.profitPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="item__value row__right row__item row__profit">
+              @if (item.totalPrice !== null) {
+                {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
 
-    <div class="action">
-      <button
-        *ngIf="addTarget$ | async"
-        class="button"
-        [disabled]="formArrayEntries.value.length === 0 && !isDisabled"
-        tuiButton
-        iconStart="@tui.plus"
-        (click)="addTarget($event)"
-        type="button">
-        Добавить цель
-      </button>
+            <!--          <div class="item__value row__right row__item row__deposit">-->
+            <!--            <ng-container *ngIf="item.depositShare !== null; else none">-->
+            <!--              {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
+            <!--            </ng-container>-->
+            <!--          </div>-->
+
+            <!--          <div class="item__value row__right row__item row__fix-half">-->
+            <!--            <ng-container *ngIf="inPositionQuantityValue !== 0; else none">-->
+            <!--              {{-->
+            <!--                item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: {-->
+            <!--                  precision: 1,-->
+            <!--                  decimalMode: 'always'-->
+            <!--                } | async-->
+            <!--              }}%-->
+            <!--            </ng-container>-->
+            <!--          </div>-->
+            <div class="row__space"></div>
+            @if (!isDisabled) {
+              <div class="item__value row__actions">
+                <button
+                  appearance="icon"
+                  iconStart="@tui.pencil"
+                  tuiIconButton
+                  size="xs"
+                  type="button"
+                  (click)="onEdit($event, index, 'targets')"
+                ></button>
+                <button
+                  appearance="icon"
+                  iconStart="@tui.x"
+                  tuiIconButton
+                  size="xs"
+                  type="button"
+                  (click)="onRemove($event, index, 'targets')"
+                ></button>
+              </div>
+            }
+          </div>
+        </lib-list-item>
+      </ui-lib-list>
+
+      <div class="action">
+        @if (addTarget$ | async) {
+          <button
+            class="button"
+            [disabled]="formArrayEntries.value.length === 0 && !isDisabled"
+            tuiButton
+            iconStart="@tui.plus"
+            (click)="addTarget($event)"
+            type="button">
+            Добавить цель
+          </button>
+        }
+      </div>
     </div>
-  </div>
+  } @else {
+    <ng-container [ngTemplateOutlet]="load"></ng-container>
+  }
 
   <div class="space"></div>
 
-  <div class="stop table" formArrayName="stop" *ngIf="(stopList$ | async) as list; else load">
-    <ui-lib-list
-      class="list"
-      [style.height.px]="list.length > 2 ? 3 * itemHeight : list.length * itemHeight + 28"
-      [list]="list"
-      [header]="stopHeader"
-      [itemSize]="itemHeight">
-      <lib-list-item
-        class="row"
-        [style.background-color]="item.amount === null || item.amount === 0 ? null : item.price | colorForPriceStop: (lastPrice$ | async) : (multiplier$ | async)"
-        *uiLibListItem="let item">
-        <div class="item">
-          <div class="item__value row__item row__first">
-            <lib-check
-              [negative]="true"
-              [value]="!!item.stopCandleDate" />
+  @if (stopList$ | async; as list) {
+    <div class="stop table" formArrayName="stop">
+      <ui-lib-list
+        class="list"
+        [style.height.px]="list.length > 2 ? 3 * itemHeight : list.length * itemHeight + 28"
+        [list]="list"
+        [header]="stopHeader"
+        [itemSize]="itemHeight">
+        <lib-list-item
+          class="row"
+          [style.background-color]="item.amount === null || item.amount === 0 ? null : item.price | colorForPriceStop: (lastPrice$ | async) : (multiplier$ | async)"
+          *uiLibListItem="let item">
+          <div class="item">
+            <div class="item__value row__item row__first">
+              <lib-check
+                [negative]="true"
+                [value]="!!item.stopCandleDate"/>
+            </div>
+            <div class="item__value row__item row__right row__price">
+              {{
+                item.price | tuiFormatNumber: {
+                  precision: priceIncrement,
+                  decimalMode: 'always'
+                } | getCryptoNumber | async
+              }}
+            </div>
+            <div class="item__value row__item row__right row__fix-half">
+              @if (item.amount !== null) {
+                {{ item.amount | tuiFormatNumber | async }}
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="item__value row__item row__right row__profit">
+              @if (item.loss !== null) {
+                {{ item.loss | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="item__value row__item row__right row__profit">
+              @if (item.lossPercent !== null) {
+                {{ item.lossPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="row__space"></div>
+            @if (!isDisabled) {
+              <div class="item__value row__actions">
+                <button
+                  appearance="icon"
+                  iconStart="@tui.pencil"
+                  tuiIconButton
+                  size="xs"
+                  type="button"
+                  (click)="onEdit($event, 0, 'stop')"
+                ></button>
+                <button
+                  appearance="icon"
+                  iconStart="@tui.x"
+                  tuiIconButton
+                  size="xs"
+                  type="button"
+                  (click)="onRemove($event, 0, 'stop')"
+                ></button>
+              </div>
+            }
           </div>
-          <!--          <div class="item__value row__item row__date">-->
-          <!--            {{ item.stopCandleDate | date: 'dd.MM.yy' }}-->
-          <!--          </div>-->
-          <div class="item__value row__item row__right row__price">
-            {{
-              item.price | tuiFormatNumber: {
-                precision: priceIncrement,
-                decimalMode: 'always'
-              } | getCryptoNumber | async
-            }}
-          </div>
-          <div class="item__value row__item row__right row__profit">
-            <ng-container *ngIf="item.lossPercent !== null; else none">
-              {{ item.lossPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
-            </ng-container>
-          </div>
-          <div class="item__value row__item row__right row__profit">
-            <ng-container *ngIf="item.loss !== null; else none">
-              {{ item.loss | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-            </ng-container>
-          </div>
-          <!--          <div class="item__value row__item row__right row__deposit">-->
-          <!--            <ng-container *ngIf="item.depositShare !== null; else none">-->
-          <!--              {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-          <!--            </ng-container>-->
-          <!--          </div>-->
-          <div class="item__value row__item row__right row__fix-half">
-            <ng-container *ngIf="item.amount !== null; else none">
-              {{ item.amount | tuiFormatNumber | async }}
-            </ng-container>
-          </div>
-          <!--          <div class="item__value row__item row__right row__fix-half">-->
-          <!--            <ng-container *ngIf="item.amountPercent !== null; else none">-->
-          <!--              {{ item.amountPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-          <!--            </ng-container>-->
-          <!--          </div>-->
-          <div class="row__space"></div>
-          <div class="item__value row__actions" *ngIf="!isDisabled">
-            <button
-              appearance="icon"
-              iconStart="@tui.pencil"
-              tuiIconButton
-              size="xs"
-              type="button"
-              (click)="onEdit($event, 0, 'stop')"
-            ></button>
-            <button
-              appearance="icon"
-              iconStart="@tui.x"
-              tuiIconButton
-              size="xs"
-              type="button"
-              (click)="onRemove($event, 0, 'stop')"
-            ></button>
-          </div>
-        </div>
-      </lib-list-item>
-    </ui-lib-list>
+        </lib-list-item>
+      </ui-lib-list>
 
-    <div class="action" *ngIf="formArrayStop.value.length === 0 && !isDisabled">
-      <button
-        class="button"
-        tuiButton
-        [iconStart]="formArrayStop.value.length ? '@tui.edit' : '@tui.plus'"
-        [disabled]="formArrayEntries.value.length === 0"
-        (click)="addStop($event)"
-        type="button">
-        {{ formArrayStop.value.length ? 'Изменить стоп' : 'Добавить стоп' }}
-      </button>
+      @if (formArrayStop.value.length === 0 && !isDisabled) {
+        <div class="action">
+          <button
+            class="button"
+            tuiButton
+            [iconStart]="formArrayStop.value.length ? '@tui.edit' : '@tui.plus'"
+            [disabled]="formArrayEntries.value.length === 0"
+            (click)="addStop($event)"
+            type="button">
+            {{ formArrayStop.value.length ? 'Изменить стоп' : 'Добавить стоп' }}
+          </button>
+        </div>
+      }
     </div>
-  </div>
+  } @else {
+    <ng-container [ngTemplateOutlet]="load"></ng-container>
+  }
 </form>
 
 <ng-template #entryHeader>
   <lib-list-header class="header row">
     <div class="header__item row__item row__first">Вход</div>
-    <!--    <div class="header__item row__item row__date" title="Время достижения">Время достиж.</div>-->
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__quantity">Кол-во</div>
+    <div class="header__item row__item row__quantity">Кол-во/лоты</div>
     <div class="header__item row__item row__total">Стоимость</div>
-    <!--    <div class="header__item row__item row__deposit">% депо</div>-->
   </lib-list-header>
 </ng-template>
 
 <ng-template #entryFooter>
-  <lib-list-header class="total row" *ngIf="(totalEntry$ | async) as total">
-    <div class="total__item row__item row__first">Всего</div>
-    <!--    <div class="total__item row__item"></div>-->
-    <div class="total__item row__right row__item">
-      {{
-        total.price | tuiFormatNumber: {
-          precision: priceIncrement,
-          decimalMode: 'always'
-        } | getCryptoNumber | async
-      }}
-    </div>
-    <div class="total__item row__right row__item">
-      {{ total.quantity | tuiFormatNumber | async }}
-    </div>
-    <div class="total__item row__right row__item">
-      {{ total.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-    </div>
-    <!--    <div class="total__item row__right row__item">-->
-    <!--      <ng-container *ngIf="total.depositShare !== null; else none">-->
-    <!--        {{ total.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-    <!--      </ng-container>-->
-    <!--    </div>-->
-  </lib-list-header>
+  @if (totalEntry$ | async; as total) {
+    <lib-list-header class="total row">
+      <div class="total__item row__item row__first">Всего</div>
+      <div class="total__item row__right row__item">
+        {{
+          total.price | tuiFormatNumber: {precision: priceIncrement, decimalMode: 'always'} | getCryptoNumber | async
+        }}
+      </div>
+      <div class="total__item row__right row__item">
+        <span>{{ total.quantity | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ total.lots | tuiFormatNumber | async }}
+      </div>
+      <div class="total__item row__right row__item">
+        {{ total.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+      </div>
+    </lib-list-header>
+  }
 </ng-template>
 
 <ng-template #targetHeader>
   <lib-list-header class="header row">
     <div class="header__item row__item row__first">Цели</div>
-    <!--    <div class="header__item row__item row__date" title="Время достижения">Время достиж.</div>-->
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__profit">Прибыль %</div>
+    <div class="header__item row__item row__amount">Кол-во/лоты</div>
     <div class="header__item row__item row__profit">Прибыль</div>
-    <!--    <div class="header__item row__item row__deposit">% депо</div>-->
-    <div class="header__item row__item row__fix">Сколько фикс.</div>
+    <div class="header__item row__item row__profit">Прибыль %</div>
+    <div class="header__item row__item row__total">Стоимость</div>
   </lib-list-header>
 </ng-template>
 
 <ng-template #targetFooter>
-  <lib-list-header class="total row" *ngIf="(totalTarget$ | async) as total">
-    <div class="total__item row__item row__first">Всего</div>
-    <!--    <div class="total__item row__item"></div>-->
-    <div class="total__item row__right row__item">
-      {{
-        total.price | tuiFormatNumber: {
-          precision: priceIncrement,
-          decimalMode: 'always'
-        } | getCryptoNumber | async
-      }}
-    </div>
-    <div class="total__item row__right row__item">
-      <ng-container *ngIf="total.profitPercent !== null; else none">
-        {{ total.profitPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
-      </ng-container>
-    </div>
-    <div class="total__item row__right row__item">
-      <ng-container *ngIf="total.profit !== null; else none">
-        {{ total.profit | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
-      </ng-container>
-    </div>
-    <!--    <div class="total__item row__right row__item">-->
-    <!--      <ng-container *ngIf="total.depositShare !== null; else none">-->
-    <!--        {{ total.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-    <!--      </ng-container>-->
-    <!--    </div>-->
-    <div class="total__item row__right row__item">
-      {{ total.amount | tuiFormatNumber | async }}
-    </div>
-  </lib-list-header>
+  @if (totalTarget$ | async; as total) {
+    <lib-list-header class="total row">
+      <div class="total__item row__item row__first">Всего</div>
+      <div class="total__item row__right row__item">
+        {{
+          total.price | tuiFormatNumber: {
+            precision: priceIncrement,
+            decimalMode: 'always'
+          } | getCryptoNumber | async
+        }}
+      </div>
+      <div class="total__item row__right row__item">
+        <span>{{ total.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ total.lots | tuiFormatNumber | async }}
+      </div>
+      <div class="total__item row__right row__item">
+        @if (total.profit !== null) {
+          {{ total.profit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+        } @else {
+          <ng-container [ngTemplateOutlet]="none"></ng-container>
+        }
+      </div>
+      <div class="total__item row__right row__item">
+        @if (total.profitPercent !== null) {
+          {{ total.profitPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
+        } @else {
+          <ng-container [ngTemplateOutlet]="none"></ng-container>
+        }
+      </div>
+    </lib-list-header>
+  }
 </ng-template>
 
 <ng-template #stopHeader>
   <lib-list-header class="header row">
     <div class="header__item row__item row__first">Стоп</div>
-    <!--    <div class="header__item row__item row__date" title="Время достижения">Время достиж.</div>-->
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__profit">Прибыль %</div>
+    <div class="header__item row__item row__amount">Кол-во/лоты</div>
     <div class="header__item row__item row__profit">Прибыль</div>
-    <!--    <div class="header__item row__item row__deposit">% депо</div>-->
-    <div class="header__item row__item row__fix">Сколько фикс.</div>
+    <div class="header__item row__item row__profit">Прибыль %</div>
   </lib-list-header>
 </ng-template>
 
@@ -362,21 +378,21 @@
     <div class="total__item row__item row__first">Всего</div>
     <!--    <div class="total__item row__item"></div>-->
     <div class="total__item row__right row__item">
-      {{ total.price | tuiFormatNumber: { precision: priceIncrement, decimalMode: 'always' } | async }}
+      {{ total.price | tuiFormatNumber: {precision: priceIncrement, decimalMode: 'always'} | async }}
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.lossPercent !== null; else none">
-        {{ total.lossPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
+        {{ total.lossPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.loss !== null; else none">
-        {{ total.loss | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+        {{ total.loss | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.depositShare !== null; else none">
-        {{ total.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
+        {{ total.depositShare | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
       </ng-container>
     </div>
     <div class="total__item row__right row__item">
@@ -386,7 +402,7 @@
     </div>
     <div class="total__item row__right row__item">
       <ng-container *ngIf="total.amountPercent !== null; else none">
-        {{ total.amountPercent | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
+        {{ total.amountPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
       </ng-container>
     </div>
   </lib-list-header>

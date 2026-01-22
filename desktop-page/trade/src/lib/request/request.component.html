@@ -17,21 +17,21 @@
               formControlName="direction"
               placeholder="Действия"
               autocomplete="off"
-              tuiSelect />
+              tuiSelect/>
 
             <tui-data-list
               *tuiTextfieldDropdown
               tuiDataListDropdownManager>
-              <button
-                *ngFor="let item of items"
-                tuiOption
-                new
-                type="button"
-                [value]="item.id">
-                {{ item.name }}
-              </button>
+              @for (item of items; track item) {
+                <button
+                  tuiOption
+                  new
+                  type="button"
+                  [value]="item.id">
+                  {{ item.name }}
+                </button>
+              }
             </tui-data-list>
-
           </tui-textfield>
         }
       </div>
@@ -51,21 +51,22 @@
               formControlName="orderType"
               placeholder="Тип заявки"
               autocomplete="off"
-              tuiSelect />
+              tuiSelect/>
 
             <tui-data-list
               *tuiTextfieldDropdown
               tuiDataListDropdownManager>
-              <button
-                *ngFor="let item of items"
-                tuiOption
-                new
-                type="button"
-                [value]="item">
-                {{ item.name }}
-              </button>
-            </tui-data-list>
+              @for (item of items; track item) {
+                <button
+                  tuiOption
+                  new
+                  type="button"
+                  [value]="item">
+                  {{ item.name }}
+                </button>
+              }
 
+            </tui-data-list>
           </tui-textfield>
         }
       </div>
@@ -86,7 +87,7 @@
                 formControlName="expirationType"
                 placeholder="Тип заявки"
                 autocomplete="off"
-                tuiSelect />
+                tuiSelect/>
 
               <tui-data-list-wrapper
                 *tuiTextfieldDropdown
@@ -112,25 +113,26 @@
               />
 
               <datalist id="dates">
-                <option
-                  *ngFor="let item of dates"
-                  [value]="item.date">
-                  {{ item.name }}
-                </option>
+                @for (item of dates; track item) {
+                  <option
+                    [value]="item.date">
+                    {{ item.name }}
+                  </option>
+                }
               </datalist>
 
               <section class="calendar__container" *tuiTextfieldDropdown>
-                <tui-calendar />
+                <tui-calendar/>
 
                 <tui-data-list class="calendar__list">
-                  <button
-                    *ngFor="let item of dates"
-                    [value]="item.date"
-                    new
-                    tuiOption>
-                    {{ item.name }}
-                  </button>
-
+                  @for (item of dates; track item) {
+                    <button
+                      [value]="item.date"
+                      new
+                      tuiOption>
+                      {{ item.name }}
+                    </button>
+                  }
                 </tui-data-list>
               </section>
 

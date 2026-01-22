@@ -7,6 +7,15 @@
   padding: 0 var(--padding-2) var(--padding-2);
   background-color: var(--block-bg-color);
 
+  &__row {
+    display: flex;
+    flex-flow: row nowrap;
+
+    .form__control:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+  }
+
   &__control {
     &:not(:last-child) {
       margin-bottom: var(--padding-2);

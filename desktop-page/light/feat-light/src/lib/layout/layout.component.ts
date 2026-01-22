@@ -8,7 +8,7 @@ import {
 	inject,
 	Signal,
 } from '@angular/core';
-import { combineLatest, distinctUntilChanged, Observable, startWith } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, startWith, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { IdeaListWrapper } from '@feat-idea-list';
@@ -31,6 +31,7 @@ import { PortfolioChartWrapper } from '@feat-portfolio-chart';
 import { DataAccessDealStore } from '@data-access-deal/store';
 import { TabsComponent } from 'ui-common/lib/tabs';
 import { PortfolioParams } from '@data-access-portfolio/types';
+import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 
 @Component({
 	selector: 'light-layout',
@@ -66,6 +67,7 @@ export class LightLayoutComponent implements AfterViewInit {
 	readonly #storeStructure: DataAccessStructureStore = inject(DataAccessStructureStore);
 	readonly #dataAccessDeal: DataAccessDealService = inject(DataAccessDealService);
 	readonly #dataAccessDealStore: DataAccessDealStore = inject(DataAccessDealStore);
+	readonly #timerInterval: number = inject(TIMER_INTERVAL);
 
 	activeItemIndex = 0;
 	readonly paramsPortfolio: Signal<PortfolioParams | null> = computed(() => {
@@ -175,7 +177,16 @@ export class LightLayoutComponent implements AfterViewInit {
 
 	ngAfterViewInit(): void {
 		this.chartPortfolio$.subscribe((params: Params) => this.#storePortfolio.loadHistory(params));
-		this.portfolioParamsDeal$.subscribe((params: Params) => this.#dataAccessDealStore.load(params));
+		this.portfolioParamsDeal$
+			.pipe(
+				switchMap((params: Params) =>
+					timer(0, this.#timerInterval).pipe(
+						takeUntilDestroyed(this.#destroyRef),
+						map(() => params)
+					)
+				)
+			)
+			.subscribe((params: Params) => this.#dataAccessDealStore.load(params));
 	}
 
 	private _getParamsStructure(paramsStructure: Params | null, paramsPortfolio: PortfolioParams | null): Params | null {

@@ -158,7 +158,9 @@
           <div class="item__cell item__cell--number item__entry">
             {{ item.entries[0].price | tuiFormatNumber | async }}
           </div>
-          <div class="item__cell item__cell--number item__result">{{ item.profit.percentage }}%</div>
+          <div class="item__cell item__cell--number item__result">
+            {{ item.profit.percentage | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
+          </div>
           <div class="item__cell item__action">
             <button
               [disabled]="item.instrument.source !== 'tinkoff'"

@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, take, throwError } from 'rxjs';
 import { Permissions } from 'utils/permissions';
 import { PERMISSIONS } from 'tokens/desktop/permission';
 
@@ -16,20 +16,20 @@ export const paymentInterceptor: HttpInterceptorFn = (
 
 	return next(req).pipe(
 		catchError((error: HttpErrorResponse) => {
-			// if (error.status === 403) {
-			// 	if (!_router.url.includes(URL_PAYMENT)) {
-			// 		_permission.load();
-			// 		_permission.isAccessed$.pipe(take(1)).subscribe((isAccessed: boolean) => {
-			// 			if (!isAccessed) {
-			// 				console.log(_router.url);
-			//
-			// 				// _router.navigate([URL_PAYMENT], { fragment: `path="${_router.url}"` });
-			// 			}
-			// 		});
-			// 	}
-			// }
+			if (error.status === 403) {
+				if (!_router.url.includes(URL_PAYMENT)) {
+					_permission.load();
+					_permission.isAccessed$.pipe(take(1)).subscribe((isAccessed: boolean | null) => {
+						if (!isAccessed) {
+							console.log(_router.url);
 
-			return throwError(() => 'error');
+							_router.navigate([URL_PAYMENT], { fragment: `path="${_router.url}"` });
+						}
+					});
+				}
+			}
+
+			return throwError(() => error);
 		})
 	);
 };

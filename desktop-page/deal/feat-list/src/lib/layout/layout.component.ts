@@ -59,11 +59,11 @@ import { getContextAction } from 'utils/get-context-action';
 import { SelectItemPipe } from './layout.directive';
 import { DEAL_CONSTANTS_LIST_OF_BUTTON } from './layout.constants';
 import { ActionDealDeletePosition } from '@data-access-deal/plugins/action-delete-portfolio';
-import { ActionShowTrade } from '../../../../../lk/src/lib/common/plugins/action-show-trade';
-import { ActionNewIdea } from '../../../../../lk/src/lib/common/plugins/action-new-idea';
-import { ActionSelectTransaction } from '../../../../../lk/src/lib/common/plugins/action-select-transaction';
-import { ActionShowTransaction } from '../../../../../lk/src/lib/common/plugins/action-show-transaction';
-import { ActionNewPosition } from '../../../../../lk/src/lib/common/plugins/action-new-position';
+import { ActionShowTrade } from 'ui-common/lib/plugins/plugins/action-show-trade';
+import { ActionNewIdea } from 'ui-common/lib/plugins/plugins/action-new-idea';
+import { ActionSelectTransaction } from 'ui-common/lib/plugins/plugins/action-select-transaction';
+import { ActionShowTransaction } from 'ui-common/lib/plugins/plugins/action-show-transaction';
+import { ActionNewPosition } from 'ui-common/lib/plugins/plugins/action-new-position';
 
 interface FilterValue {
 	type: AccountType;
