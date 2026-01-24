@@ -1,70 +1,71 @@
-import {TUI_CONFIRM, TuiButtonLoading, TuiTabs} from '@taiga-ui/kit';
-import {AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
-import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector} from '@angular/core';
-import {TUI_WINDOW_SIZE, TuiPopover} from '@taiga-ui/cdk';
+import { TUI_CONFIRM, TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
+import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
+import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import {
-  TuiAlertService,
-  TuiBreakpointService,
-  TuiButton,
-  TuiDialogService,
-  TuiHintDirective,
-  TuiIcon,
-  TuiNotification,
-  TuiScrollbar,
+	TuiAlertService,
+	TuiBreakpointService,
+	TuiButton,
+	TuiDialogService,
+	TuiHintDirective,
+	TuiIcon,
+	TuiNotification,
+	TuiScrollbar,
 } from '@taiga-ui/core';
-import {POLYMORPHEUS_CONTEXT, PolymorpheusComponent, PolymorpheusContent} from '@taiga-ui/polymorpheus';
+import { POLYMORPHEUS_CONTEXT, PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  merge,
-  Observable,
-  of,
-  pairwise,
-  shareReplay,
-  startWith,
-  Subject,
-  switchMap,
-  timer,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	merge,
+	Observable,
+	of,
+	pairwise,
+	shareReplay,
+	startWith,
+	Subject,
+	switchMap,
+	timer,
 } from 'rxjs';
-import {EnterActionComponent} from './action/action.component';
-import {EnterSidebarComponent} from './sidebar/sidebar.component';
-import {map} from 'rxjs/operators';
-import {InstrumentComponent} from 'ui-common/lib/instrument/instrument.component';
-import {TuiBreakpointMediaKey} from '@taiga-ui/core/services/breakpoint.service';
-import {MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST} from './enter.constants';
-import {EventSelected} from 'types/events';
-import {LoaderComponent} from '@ui/components/loader';
-import {ChartCandlestickComponent} from 'ui-common/lib/chart';
-import {StockInstrument} from 'types/stock';
-import {QueryParams} from 'utils/query-params';
-import {DESKTOP_API, QUERY_PARAMS} from 'tokens/desktop';
-import {SearchDialogDirective} from 'ui-common/lib/dialog-search';
+import { EnterActionComponent } from './action/action.component';
+import { EnterSidebarComponent } from './sidebar/sidebar.component';
+import { map } from 'rxjs/operators';
+import { InstrumentComponent } from 'ui-common/lib/instrument/instrument.component';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
+import { EventSelected } from 'types/events';
+import { LoaderComponent } from '@ui/components/loader';
+import { ChartCandlestickComponent } from 'ui-common/lib/chart';
+import { StockInstrument } from 'types/stock';
+import { QueryParams } from 'utils/query-params';
+import { DESKTOP_API, QUERY_PARAMS } from 'tokens/desktop';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import {
-  StockPosition,
-  StockPositionActionEntry,
-  StockPositionIdeaEntry,
-  StockPositionStop,
-  StockPositionTarget,
+	StockPosition,
+	StockPositionActionEntry,
+	StockPositionIdeaEntry,
+	StockPositionStop,
+	StockPositionTarget,
 } from 'types/position';
-import {IdeaFacade} from 'stores/facades/idea.facade';
+import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
+	AbstractControl,
+	FormControl,
+	FormGroup,
+	ReactiveFormsModule,
+	ValidationErrors,
+	ValidatorFn,
 } from '@angular/forms';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {EnterIdeaSubscribeDirective} from './enter.directive';
-import {triggerHeightAnimations} from '@ui/animations/height.animations';
-import {EnterFinishComponent} from './finish/finish.component';
-import {DIALOG, DialogService} from '@ui/components/dialog';
-import {Params} from '@angular/router';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {getPriceIncrement} from 'utils/get-price-increment';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EnterIdeaSubscribeDirective } from './enter.directive';
+import { triggerHeightAnimations } from '@ui/animations/height.animations';
+import { EnterFinishComponent } from './finish/finish.component';
+import { DIALOG, DialogService } from '@ui/components/dialog';
+import { Params } from '@angular/router';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { getPriceIncrement } from 'utils/get-price-increment';
+import { EnterIdeaComponent } from './idea/idea.component';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -145,6 +146,7 @@ function maxAmount(): ValidatorFn {
 		TuiNotification,
 		TuiHintDirective,
 		NgTemplateOutlet,
+		EnterIdeaComponent,
 	],
 	templateUrl: './enter.component.html',
 	styleUrl: './enter.component.scss',

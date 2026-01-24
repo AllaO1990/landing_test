@@ -9,7 +9,7 @@ import { getPriceIncrement } from 'utils/get-price-increment';
 
 @Directive()
 export class AddForm implements AfterViewInit {
-	readonly #destroyRef: DestroyRef = inject(DestroyRef);
+	protected readonly destroyRef: DestroyRef = inject(DestroyRef);
 	readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, { optional: true });
 	readonly size = 's';
 	readonly today = new Date(new Date().setUTCHours(12, 0, 0, 0));
@@ -57,7 +57,7 @@ export class AddForm implements AfterViewInit {
 		control: FormControl
 	): UnaryFunction<Observable<[TuiDay | null, TuiTime | null]>, Observable<[TuiDay | null, TuiTime | null]>> {
 		return pipe(
-			takeUntilDestroyed(this.#destroyRef),
+			takeUntilDestroyed(this.destroyRef),
 			startWith(control.value),
 			pairwise(),
 			filter(

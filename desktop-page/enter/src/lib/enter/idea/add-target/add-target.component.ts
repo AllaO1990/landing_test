@@ -1,11 +1,21 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiButton, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
 import { AddForm } from '../add';
-import { TuiAutoFocus, TuiDay, tuiPure } from '@taiga-ui/cdk';
+import { TuiAutoFocus, tuiPure } from '@taiga-ui/cdk';
 import { getNumberFromE } from 'utils/get-number-from-e';
-import { TuiTime } from '@taiga-ui/cdk/date-time';
-import { TuiInputDateTime, TuiInputNumber } from '@taiga-ui/kit';
+import { TuiInputNumber, TuiTooltip } from '@taiga-ui/kit';
+import { AsyncPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest, filter, Observable, startWith } from 'rxjs';
+import { AddComponent } from '../add/add.component';
+
+export interface FormValue {
+	total: number | null;
+	price: number | null;
+	quantity: number | null;
+	lots: number | null;
+}
 
 @Component({
 	selector: 'lib-add-target-add',
@@ -13,11 +23,15 @@ import { TuiInputDateTime, TuiInputNumber } from '@taiga-ui/kit';
 	imports: [
 		ReactiveFormsModule,
 		TuiTextfield,
-		TuiInputDateTime,
 		TuiInputNumber,
 		TuiButton,
 		TuiAutoFocus,
 		TuiNumberFormat,
+		TuiIcon,
+		TuiTooltip,
+		AsyncPipe,
+		TuiFormatNumberPipe,
+		AddComponent,
 	],
 	templateUrl: './add-target.component.html',
 	styleUrls: ['../add.scss', './add-target.component.scss'],
@@ -25,17 +39,45 @@ import { TuiInputDateTime, TuiInputNumber } from '@taiga-ui/kit';
 })
 export class AddTargetComponent extends AddForm implements OnInit {
 	lot = null;
+	limit = null;
 	minPrice = 0;
 	maxPrice = null;
 	maxAmount = null;
-	minDay: [TuiDay | null, TuiTime | null] = [null, null];
 
-	override form = new FormGroup({
-		stopDate: new FormControl<[TuiDay, TuiTime] | [null, null]>({ value: [null, null], disabled: true }),
-		price: new FormControl({ value: null, disabled: true }, Validators.required),
-		amount: new FormControl({ value: null, disabled: true }, Validators.required),
+	override form: FormGroup = new FormGroup({
+		total: new FormControl<number | null>({ value: null, disabled: true }),
+		price: new FormControl<number | null>({ value: null, disabled: true }, Validators.required),
+		quantity: new FormControl<number | null>({ value: null, disabled: true }, Validators.required),
 		lots: new FormControl<number | null>({ value: null, disabled: true }, Validators.required),
 	});
+
+	control = new FormControl();
+
+	get controlPrice(): FormControl {
+		return this.form.get('price') as FormControl;
+	}
+
+	valuePrice$: Observable<number> = this.controlPrice.valueChanges.pipe(
+		startWith(this.controlPrice.value),
+		filter((value: null | number) => value !== null)
+	);
+
+	get controlLots(): FormControl {
+		return this.form.get('lots') as FormControl;
+	}
+
+	valueLots$: Observable<number> = this.controlLots.valueChanges.pipe(
+		startWith(this.controlLots.value),
+		filter((value: null | number) => value !== null)
+	);
+
+	get controlQuantity(): FormControl {
+		return this.form.get('quantity') as FormControl;
+	}
+
+	get controlTotal(): FormControl {
+		return this.form.get('total') as FormControl;
+	}
 
 	@tuiPure
 	get numberFromIncrement() {
@@ -43,50 +85,53 @@ export class AddTargetComponent extends AddForm implements OnInit {
 	}
 
 	ngOnInit(): void {
+		console.log(this.control);
+
+		this.control.valueChanges.pipe().subscribe((value) => {
+			console.log(value, this.control);
+		});
+
 		if (this.context.data) {
-			const { amount, price, lot, stopDate, minPriceIncrement, minPrice, maxPrice, maxAmount, minDay } = this.context.data;
+			const { quantity, price, lot, minPriceIncrement, minPrice, maxPrice, maxAmount, limit } = this.context.data;
 
 			this.form.patchValue({
-				amount,
+				quantity,
 				price,
-				lots: lot ? amount / lot : null,
-				stopDate: this.getTuiDates(stopDate || null),
+				lots: lot ? quantity / lot : null,
+				total: price && quantity ? price * quantity : null,
 			});
 
-			this.lot = lot;
-			this.minDay = this._getDateTime(minDay);
+			this.lot = lot || null;
+			this.limit = limit || null;
 			this.maxAmount = maxAmount || null;
-			this.minPrice = minPrice || 0;
+			this.minPrice = minPrice || null;
 			this.maxPrice = maxPrice || null;
 			this.minPriceIncrement = minPriceIncrement;
 			this.precision = this.getPrecision(minPriceIncrement);
 		}
+		this.controlPrice.enable({ emitEvent: false });
+		this.controlLots.enable({ emitEvent: false });
 
-		const controlDate = this.form.get('stopDate') as FormControl;
+		this.valueLots$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: number) => {
+			this.controlQuantity.setValue(value * (this.lot || 1), { emitEvent: false });
+		});
 
-		controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
+		combineLatest([this.valuePrice$, this.valueLots$])
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe(([price, lots]: [number, number]) => {
+				this.controlTotal.setValue(price * lots * (this.lot || 1), { emitEvent: false });
+			});
 	}
 
 	onSubmit(event: SubmitEvent): void {
 		event.preventDefault();
 
 		if (this.context) {
-			const { amount, price, stopDate } = this.form.value;
+			const { quantity, price } = this.form.getRawValue();
 			this.context.completeWith({
-				amount,
+				quantity,
 				price,
-				stopDate: stopDate ? this.getISOString(stopDate[0], stopDate[1]) : null,
 			});
 		}
-	}
-
-	private _getDateTime(value: string | null): [TuiDay | null, TuiTime | null] {
-		if (value === null) {
-			return [null, null];
-		}
-
-		const date = new Date(value);
-
-		return [TuiDay.fromLocalNativeDate(date), TuiTime.fromLocalNativeDate(date)];
 	}
 }

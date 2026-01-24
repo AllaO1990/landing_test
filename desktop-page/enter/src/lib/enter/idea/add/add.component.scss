@@ -1,11 +1,13 @@
-.form__controls {
+.form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--padding-4);
   margin: 0 var(--padding-2);
-}
-.form__control {
-  flex: 1;
+
+
+  &__control {
+    flex: 1;
+  }
 }
 
 tui-textfield span {
@@ -13,5 +15,3 @@ tui-textfield span {
   line-height: 32px;
   padding-right: var(--padding-2);
 }
-
-/*# sourceMappingURL=add-target.component.css.map */

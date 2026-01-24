@@ -56,7 +56,7 @@ import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
 import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
 
 @Component({
-	selector: 'lib-enter-ideas',
+	selector: 'lib-enter-idea',
 	standalone: true,
 	imports: [
 		AsyncPipe,
@@ -503,6 +503,8 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			maxPrice,
 			maxAmount,
 			minDay,
+			limit: null,
+			lot: 10,
 		}).subscribe((result: { amount: number; price: number; stopDate: string | null } | null) => {
 			if (result) {
 				const entries: StockPositionIdeaEntry | null = this.formArrayEntries.value[0];
@@ -600,7 +602,8 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	private _openDialog(c: PolymorpheusComponent<any>, data: any = null): Observable<any> {
 		return this._dialogService
 			.open(c, {
-				appearance: 'dialog-block',
+				// appearance: 'dialog-block',
+				appearance: 'medium-block-flex',
 				data,
 			})
 			.pipe(takeUntilDestroyed(this._destroyRef));

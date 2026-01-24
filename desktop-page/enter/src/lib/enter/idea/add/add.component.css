@@ -1,4 +1,4 @@
-.form__controls {
+.form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--padding-4);
@@ -14,4 +14,4 @@ tui-textfield span {
   padding-right: var(--padding-2);
 }
 
-/*# sourceMappingURL=add-target.component.css.map */
+/*# sourceMappingURL=add.component.css.map */

@@ -3,45 +3,55 @@
     <h3> Добавить цель</h3>
   </div>
   <div class="form__container">
-    <div class="form__control">
-      <span>Выбрать дату</span>
-      <tui-textfield
-        [tuiTextfieldSize]="size">
-        <input
-          [max]="maxDay"
-          [min]="minDay"
-          placeholder="Выбрать дату"
-          formControlName="stopDate"
-          tuiInputDateTime
-          autocomplete="off"
-        />
-        <tui-calendar *tuiTextfieldDropdown/>
-      </tui-textfield>
-    </div>
+    <lib-add [formControl]="control"></lib-add>
+    <div class="form__controls">
+      <div class="form__control">
+        <span>Цена</span>
+        <tui-textfield
+          [tuiTextfieldSize]="size">
+          <input
+            [quantum]="minPriceIncrement"
+            [tuiNumberFormat]="{precision: precision}"
+            formControlName="price"
+            placeholder="Цена"
+            tuiAutoFocus
+            tuiInputNumber
+            [min]="minPrice"
+            [max]="maxPrice"
+          />
+          @if (minPriceIncrement !== null) {
+            <span>
+            Шаг цены: {{ numberFromIncrement }}
+          </span>
+          }
+        </tui-textfield>
+      </div>
 
-    <div class="form__control">
-      <span>Цена</span>
-      <tui-textfield
-        [tuiTextfieldSize]="size">
-        <input
-          placeholder="Цена"
-          tuiAutoFocus
-          tuiInputNumber
-          [tuiNumberFormat]="{precision: precision}"
-          [min]="minPrice"
-          [max]="maxPrice"
-          [quantum]="numberFromIncrement"
-          formControlName="price"
-        />
-        @if (minPriceIncrement !== null) {
-          <span class="form__increment">
-    Шаг цены: {{ numberFromIncrement }}
-  </span>
-        }
-      </tui-textfield>
-    </div>
+      <div class="form__control">
+        <span>Стоимость</span>
+        <tui-textfield
+          [tuiTextfieldSize]="size">
+          <input
+            [tuiNumberFormat]="{precision: 2, decimalMode: 'always'}"
+            formControlName="total"
+            placeholder="Стоимость"
+            tuiInputNumber
+          />
+          @if (limit !== null) {
+            <span>
+             Лимит: {{ limit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+            </span>
+            <div>
+              <tui-icon
+                icon="@tui.circle-question-mark"
+                tuiHintAppearance="dark"
+                tuiTooltip="Рекомендуемый лимит на сделку"
+              ></tui-icon>
+            </div>
+          }
+        </tui-textfield>
+      </div>
 
-    <div class="form__row">
       <div class="form__control">
         <span>Лоты</span>
         <tui-textfield
@@ -72,7 +82,7 @@
             [min]="0"
             [max]="maxAmount"
             [quantum]="numberFromIncrement"
-            formControlName="amount"
+            formControlName="quantity"
           />
         </tui-textfield>
       </div>
