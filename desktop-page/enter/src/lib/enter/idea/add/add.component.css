@@ -2,7 +2,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--padding-4);
-  margin: 0 var(--padding-2);
 }
 .form__control {
   flex: 1;

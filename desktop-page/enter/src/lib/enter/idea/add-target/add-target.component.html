@@ -1,93 +1,93 @@
-<form class="form" [formGroup]="form" (ngSubmit)="onSubmit($event)">
+<form class="form" [formGroup]="control" (ngSubmit)="onSubmit($event)">
   <div class="form__header">
     <h3> Добавить цель</h3>
   </div>
-  <div class="form__container">
-    <lib-add [formControl]="control"></lib-add>
-    <div class="form__controls">
-      <div class="form__control">
-        <span>Цена</span>
-        <tui-textfield
-          [tuiTextfieldSize]="size">
-          <input
-            [quantum]="minPriceIncrement"
-            [tuiNumberFormat]="{precision: precision}"
-            formControlName="price"
-            placeholder="Цена"
-            tuiAutoFocus
-            tuiInputNumber
-            [min]="minPrice"
-            [max]="maxPrice"
-          />
-          @if (minPriceIncrement !== null) {
-            <span>
-            Шаг цены: {{ numberFromIncrement }}
-          </span>
-          }
-        </tui-textfield>
-      </div>
+  <lib-add [autoFocus]="true" [formControl]="control"></lib-add>
+  <!--  <div class="form__container">-->
+  <!--    <div class="form__controls">-->
+  <!--      <div class="form__control">-->
+  <!--        <span>Цена</span>-->
+  <!--        <tui-textfield-->
+  <!--          [tuiTextfieldSize]="size">-->
+  <!--          <input-->
+  <!--            [quantum]="minPriceIncrement"-->
+  <!--            [tuiNumberFormat]="{precision: precision}"-->
+  <!--            formControlName="price"-->
+  <!--            placeholder="Цена"-->
+  <!--            tuiAutoFocus-->
+  <!--            tuiInputNumber-->
+  <!--            [min]="minPrice"-->
+  <!--            [max]="maxPrice"-->
+  <!--          />-->
+  <!--          @if (minPriceIncrement !== null) {-->
+  <!--            <span>-->
+  <!--            Шаг цены: {{ numberFromIncrement }}-->
+  <!--          </span>-->
+  <!--          }-->
+  <!--        </tui-textfield>-->
+  <!--      </div>-->
 
-      <div class="form__control">
-        <span>Стоимость</span>
-        <tui-textfield
-          [tuiTextfieldSize]="size">
-          <input
-            [tuiNumberFormat]="{precision: 2, decimalMode: 'always'}"
-            formControlName="total"
-            placeholder="Стоимость"
-            tuiInputNumber
-          />
-          @if (limit !== null) {
-            <span>
-             Лимит: {{ limit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
-            </span>
-            <div>
-              <tui-icon
-                icon="@tui.circle-question-mark"
-                tuiHintAppearance="dark"
-                tuiTooltip="Рекомендуемый лимит на сделку"
-              ></tui-icon>
-            </div>
-          }
-        </tui-textfield>
-      </div>
+  <!--      <div class="form__control">-->
+  <!--        <span>Стоимость</span>-->
+  <!--        <tui-textfield-->
+  <!--          [tuiTextfieldSize]="size">-->
+  <!--          <input-->
+  <!--            [tuiNumberFormat]="{precision: 2, decimalMode: 'always'}"-->
+  <!--            formControlName="total"-->
+  <!--            placeholder="Стоимость"-->
+  <!--            tuiInputNumber-->
+  <!--          />-->
+  <!--          @if (limit !== null) {-->
+  <!--            <span>-->
+  <!--             Лимит: {{ limit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}-->
+  <!--            </span>-->
+  <!--            <div>-->
+  <!--              <tui-icon-->
+  <!--                icon="@tui.circle-question-mark"-->
+  <!--                tuiHintAppearance="dark"-->
+  <!--                tuiTooltip="Рекомендуемый лимит на сделку"-->
+  <!--              ></tui-icon>-->
+  <!--            </div>-->
+  <!--          }-->
+  <!--        </tui-textfield>-->
+  <!--      </div>-->
 
-      <div class="form__control">
-        <span>Лоты</span>
-        <tui-textfield
-          [tuiTextfieldSize]="size">
-          <input
-            placeholder="Лоты"
-            tuiInputNumber
-            [tuiNumberFormat]="{precision: precisionAmount}"
-            [min]="0"
-            [max]="maxAmount"
-            [quantum]="numberFromIncrement"
-            formControlName="lots"
-          />
-          @if (lot) {
-            <span>1 лот: {{ lot }} шт.</span>
-          }
-        </tui-textfield>
-      </div>
+  <!--      <div class="form__control">-->
+  <!--        <span>Лоты</span>-->
+  <!--        <tui-textfield-->
+  <!--          [tuiTextfieldSize]="size">-->
+  <!--          <input-->
+  <!--            placeholder="Лоты"-->
+  <!--            tuiInputNumber-->
+  <!--            [tuiNumberFormat]="{precision: precisionAmount}"-->
+  <!--            [min]="0"-->
+  <!--            [max]="maxAmount"-->
+  <!--            [quantum]="numberFromIncrement"-->
+  <!--            formControlName="lots"-->
+  <!--          />-->
+  <!--          @if (lot) {-->
+  <!--            <span>1 лот: {{ lot }} шт.</span>-->
+  <!--          }-->
+  <!--        </tui-textfield>-->
+  <!--      </div>-->
 
-      <div class="form__control">
-        <span>Количество</span>
-        <tui-textfield
-          [tuiTextfieldSize]="size">
-          <input
-            placeholder="Количество"
-            tuiInputNumber
-            [tuiNumberFormat]="{precision: precisionAmount}"
-            [min]="0"
-            [max]="maxAmount"
-            [quantum]="numberFromIncrement"
-            formControlName="quantity"
-          />
-        </tui-textfield>
-      </div>
-    </div>
-  </div>
+  <!--      <div class="form__control">-->
+  <!--        <span>Количество</span>-->
+  <!--        <tui-textfield-->
+  <!--          [tuiTextfieldSize]="size">-->
+  <!--          <input-->
+  <!--            placeholder="Количество"-->
+  <!--            tuiInputNumber-->
+  <!--            [tuiNumberFormat]="{precision: precisionAmount}"-->
+  <!--            [min]="0"-->
+  <!--            [max]="maxAmount"-->
+  <!--            [quantum]="numberFromIncrement"-->
+  <!--            formControlName="quantity"-->
+  <!--          />-->
+  <!--        </tui-textfield>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
   <div class="form__actions">
     <button
       class="form__action"
@@ -102,9 +102,13 @@
       class="form__action"
       [size]="size"
       tuiButton
-      [disabled]="form.invalid"
+      [disabled]="control.invalid"
       type="submit">
       Сохранить
     </button>
   </div>
 </form>
+
+<ng-template #contentPositionType let-item>
+  {{ item.name }}
+</ng-template>

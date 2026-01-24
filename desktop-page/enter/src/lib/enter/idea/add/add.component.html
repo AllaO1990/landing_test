@@ -8,7 +8,7 @@
         [tuiNumberFormat]="{precision: precision()}"
         formControlName="price"
         placeholder="Цена"
-        tuiAutoFocus
+        [tuiAutoFocus]="autoFocus()"
         (focusout)="onTouched()"
         tuiInputNumber
         [min]="minPrice()"

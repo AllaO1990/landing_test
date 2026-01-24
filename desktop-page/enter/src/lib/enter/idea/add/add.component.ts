@@ -1,31 +1,34 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	Component,
-	computed,
-	DestroyRef,
-	forwardRef,
-	inject,
-	input,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  forwardRef,
+  inject,
+  input,
+  InputSignal,
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {
-	ControlValueAccessor,
-	FormControl,
-	FormGroup,
-	NG_VALUE_ACCESSOR,
-	ReactiveFormsModule,
-	Validators,
+  ControlValueAccessor,
+  FormControl,
+  FormGroup,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
 } from '@angular/forms';
-import { TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
-import { TuiAutoFocus } from '@taiga-ui/cdk';
-import { TuiInputNumber, TuiTooltip } from '@taiga-ui/kit';
-import { combineLatest, startWith } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { map } from 'rxjs/operators';
-import { getNumberFromE } from 'utils/get-number-from-e';
-import { getPriceIncrement } from 'utils/get-price-increment';
+import {TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield} from '@taiga-ui/core';
+import {TuiAutoFocus} from '@taiga-ui/cdk';
+import {TuiInputNumber, TuiTooltip} from '@taiga-ui/kit';
+import {combineLatest, startWith} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {map} from 'rxjs/operators';
+import {getNumberFromE} from 'utils/get-number-from-e';
+import {getPriceIncrement} from 'utils/get-price-increment';
 
 export interface FormValue {
 	total: number | null;
@@ -76,6 +79,11 @@ const FORM_OPTIONS: FormOptions = {
 			useExisting: forwardRef(() => AddComponent),
 			multi: true,
 		},
+		{
+			provide: NG_VALIDATORS,
+			useExisting: forwardRef(() => AddComponent),
+			multi: true,
+		},
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -108,6 +116,8 @@ export class AddComponent implements ControlValueAccessor, AfterViewInit {
 	get controlTotal(): FormControl {
 		return this.form.get('total') as FormControl;
 	}
+
+	readonly autoFocus: InputSignal<boolean> = input(false);
 
 	readonly options = input(FORM_OPTIONS, {
 		transform: (value: Partial<FormOptions>) => Object.assign(FORM_OPTIONS, value),
@@ -164,6 +174,10 @@ export class AddComponent implements ControlValueAccessor, AfterViewInit {
 
 		this.controlPrice[action]();
 		this.controlLots[action]();
+	}
+
+	validate(): ValidationErrors | null {
+		return this.form.invalid ? { AddComponent: 'invalid' } : null;
 	}
 
 	ngAfterViewInit(): void {
