@@ -16,7 +16,9 @@
   margin-bottom: var(--padding-2);
 }
 .form__actions {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   margin-top: var(--padding-2);
 }
 .form__action:not(:last-child) {

@@ -2,64 +2,74 @@
   <div class="form__header">
     <h3>Добавить Вход</h3>
   </div>
-  <div class="form__form">
-    <!--    <tui-textfield-->
-    <!--      tuiChevron-->
-    <!--      [stringify]="stringifyPositionType"-->
+  <div class="form__container">
+
+    <div class="form__controls form__control">
+      <tui-textfield
+        tuiChevron
+        [stringify]="stringifyPositionType"
+        [tuiTextfieldSize]="size"
+        [tuiTextfieldCleaner]="false">
+
+        <input
+          tuiAutoFocus
+          formControlName="positionType"
+          placeholder="Выбрать направление"
+          tuiSelect/>
+
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="positionType"
+          [itemContent]="contentPositionType"
+        />
+      </tui-textfield>
+    </div>
+
+
+    <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
+      <lib-add
+        [autoFocus]="false"
+        [options]="options"
+        formControlName="add">
+      </lib-add>
+    </div>
+
+    <!--    <tui-input-date-time-->
+    <!--      [tuiTextfieldCleaner]="true"-->
+    <!--      [max]="maxDay"-->
+    <!--      class="form__control"-->
+    <!--      formControlName="date"-->
+    <!--      tuiTextfieldSize="s">-->
+    <!--      Выбрать дату-->
+    <!--    </tui-input-date-time>-->
+    <!--    <tui-input-number-->
+    <!--      tuiAutoFocus-->
+    <!--      class="form__control"-->
+    <!--      [tuiTextfieldCustomContent]="priceIncrement"-->
     <!--      [tuiTextfieldSize]="size"-->
-    <!--      [tuiTextfieldCleaner]="false"-->
-    <!--    >-->
+    <!--      [tuiNumberFormat]="{precision: precision}"-->
+    <!--      [min]="0"-->
+    <!--      formControlName="price">-->
+    <!--      Цена-->
     <!--      <input-->
-    <!--        tuiAutoFocus-->
-    <!--        [formControl]="formControlPositionType"-->
-    <!--        placeholder="Выбрать направление"-->
-    <!--        tuiSelect-->
+    <!--        autocomplete="off"-->
+    <!--        name="price"-->
+    <!--        tuiTextfieldLegacy-->
     <!--      />-->
-
-    <!--      <tui-data-list-wrapper-->
-    <!--        *tuiTextfieldDropdown-->
-    <!--        new-->
-    <!--        [items]="positionType"-->
-    <!--        [itemContent]="contentPositionType"-->
+    <!--    </tui-input-number>-->
+    <!--    <tui-input-number-->
+    <!--      class="form__control"-->
+    <!--      [tuiTextfieldSize]="size"-->
+    <!--      [tuiNumberFormat]="{precision: precisionAmount}"-->
+    <!--      formControlName="quantity">-->
+    <!--      Количество-->
+    <!--      <input-->
+    <!--        autocomplete="off"-->
+    <!--        name="amount"-->
+    <!--        tuiTextfieldLegacy-->
     <!--      />-->
-
-    <!--    </tui-textfield>-->
-
-    <tui-input-date-time
-      [tuiTextfieldCleaner]="true"
-      [max]="maxDay"
-      class="form__control"
-      formControlName="date"
-      tuiTextfieldSize="s">
-      Выбрать дату
-    </tui-input-date-time>
-    <tui-input-number
-      tuiAutoFocus
-      class="form__control"
-      [tuiTextfieldCustomContent]="priceIncrement"
-      [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: precision}"
-      [min]="0"
-      formControlName="price">
-      Цена
-      <input
-        autocomplete="off"
-        name="price"
-        tuiTextfieldLegacy
-      />
-    </tui-input-number>
-    <tui-input-number
-      class="form__control"
-      [tuiTextfieldSize]="size"
-      [tuiNumberFormat]="{precision: precisionAmount}"
-      formControlName="quantity">
-      Количество
-      <input
-        autocomplete="off"
-        name="amount"
-        tuiTextfieldLegacy
-      />
-    </tui-input-number>
+    <!--    </tui-input-number>-->
   </div>
   <div class="form__actions">
     <button
@@ -82,8 +92,6 @@
   </div>
 </form>
 
-<ng-template #priceIncrement>
-  <span class="form__increment" *ngIf="minPriceIncrement !== null">
-    Шаг цены: {{ getNumberFromE(minPriceIncrement) }}
-  </span>
+<ng-template #contentPositionType let-item>
+  {{ item.name }}
 </ng-template>

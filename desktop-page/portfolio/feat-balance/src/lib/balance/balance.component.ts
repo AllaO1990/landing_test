@@ -5,7 +5,7 @@ import { LoaderComponent } from '@ui/components/loader';
 import { TuiButton, TuiDialogService, TuiFormatNumberPipe } from '@taiga-ui/core';
 import { TUI_CONFIRM, TuiButtonLoading } from '@taiga-ui/kit';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
-import { DIALOG, DialogService } from '@ui/components/dialog';
+import { DIALOG, DialogCoreComponent, DialogService } from '@ui/components/dialog';
 import { BalanceDepositService } from '../balance-deposit';
 import { BalanceWithdrawalService } from '../balance-withdrawal';
 import { debounceTime, filter, Observable, startWith } from 'rxjs';
@@ -18,7 +18,6 @@ import { BalanceStore } from './balance.store';
 import { ApiPortfolioService } from '@data-access-portfolio/api.service';
 import { getParamsFromFilter } from './balance.utils';
 import { DialogFilterComponent } from '@ui-portfolio-common/dialog-filter';
-import { DialogCoreComponent } from '../dialog/dialog';
 
 interface FormValue {
 	filter: any | null;

@@ -99,6 +99,7 @@ type ActionButton = {
 		TuiDataListComponent,
 		TuiIcon,
 		TuiDataList,
+		FilterIdeaListComponent,
 	],
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss',

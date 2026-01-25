@@ -1,6 +1,5 @@
-import { DialogCoreService } from '../dialog/dialog';
 import { PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
-import { DialogService } from '@ui/components/dialog';
+import { DialogCoreService, DialogService } from '@ui/components/dialog';
 import { Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WithdrawalComponent } from './withdrawal.component';

@@ -1,34 +1,34 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  forwardRef,
-  inject,
-  input,
-  InputSignal,
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	computed,
+	DestroyRef,
+	forwardRef,
+	inject,
+	input,
+	InputSignal,
 } from '@angular/core';
-import {AsyncPipe} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
-  ControlValueAccessor,
-  FormControl,
-  FormGroup,
-  NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
+	ControlValueAccessor,
+	FormControl,
+	FormGroup,
+	NG_VALIDATORS,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule,
+	ValidationErrors,
+	Validators,
 } from '@angular/forms';
-import {TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield} from '@taiga-ui/core';
-import {TuiAutoFocus} from '@taiga-ui/cdk';
-import {TuiInputNumber, TuiTooltip} from '@taiga-ui/kit';
-import {combineLatest, startWith} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {map} from 'rxjs/operators';
-import {getNumberFromE} from 'utils/get-number-from-e';
-import {getPriceIncrement} from 'utils/get-price-increment';
+import { TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { TuiInputNumber, TuiTooltip } from '@taiga-ui/kit';
+import { combineLatest, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { map } from 'rxjs/operators';
+import { getNumberFromE } from 'utils/get-number-from-e';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 export interface FormValue {
 	total: number | null;
@@ -89,8 +89,6 @@ const FORM_OPTIONS: FormOptions = {
 })
 export class AddComponent implements ControlValueAccessor, AfterViewInit {
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
-
-	disabled = false;
 
 	readonly size = 's';
 
@@ -154,18 +152,18 @@ export class AddComponent implements ControlValueAccessor, AfterViewInit {
 
 	readonly maxPrice = computed(() => this.options().maxPrice);
 
-	onChange = (_: any) => {};
+	onChange = (_: unknown) => {};
 	onTouched = () => {};
 
 	writeValue(obj: FormValue): void {
 		this.form.patchValue(obj);
 	}
 
-	registerOnChange(fn: any): void {
+	registerOnChange(fn: (v: unknown) => unknown): void {
 		this.onChange = fn;
 	}
 
-	registerOnTouched(fn: any): void {
+	registerOnTouched(fn: () => unknown): void {
 		this.onTouched = fn;
 	}
 

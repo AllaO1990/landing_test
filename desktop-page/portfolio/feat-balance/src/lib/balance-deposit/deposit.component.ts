@@ -34,8 +34,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiChevron, TuiInputDateTime, TuiInputNumber, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
 import { StockId } from 'types/stock';
 import { getTuiDayTime } from 'utils/get-tui-day-time';
-import { DialogCoreComponent } from '../dialog/dialog';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
+import { DialogCoreComponent } from '@ui/components/dialog';
 
 @Component({
 	selector: 'portfolio-deposit',

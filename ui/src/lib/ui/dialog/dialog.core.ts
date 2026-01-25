@@ -1,8 +1,8 @@
 import { TuiPopover } from '@taiga-ui/cdk';
 import { inject } from '@angular/core';
 import { POLYMORPHEUS_CONTEXT, PolymorpheusContent } from '@taiga-ui/polymorpheus';
-import { DialogService } from '@ui/components/dialog';
 import { from, switchMap } from 'rxjs';
+import { DialogService } from './dialog.service';
 
 export class DialogCoreComponent {
 	readonly size = 's';

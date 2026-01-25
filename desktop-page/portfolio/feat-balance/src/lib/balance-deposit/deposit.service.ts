@@ -1,9 +1,8 @@
 import { Injector } from '@angular/core';
-import { DialogService } from '@ui/components/dialog';
+import { DialogCoreService, DialogService } from '@ui/components/dialog';
 import { PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
 import { Observable } from 'rxjs';
 import { DepositComponent } from './deposit.component';
-import { DialogCoreService } from '../dialog/dialog';
 
 export class BalanceDepositService extends DialogCoreService {
 	componentDeposit: PolymorpheusContent<DepositComponent> | null = null;

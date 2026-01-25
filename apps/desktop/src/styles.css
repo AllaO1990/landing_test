@@ -111,13 +111,13 @@ tui-data-list[role=menu] [tuiOption]:not([new]) tui-icon {
     transform: rotateY(360deg);
   }
 }
-lib-dialog[appearance=dialog-block] {
+.lib-dialog[appearance=dialog-block] {
   margin: auto;
   border: none;
   border-radius: 0;
 }
 
-lib-dialog[appearance=medium-block] {
+.lib-dialog[appearance=medium-block] {
   display: block;
   max-width: 100%;
   width: 100%;
@@ -125,46 +125,46 @@ lib-dialog[appearance=medium-block] {
   height: 100vh;
 }
 
-lib-dialog[appearance=medium-block-flex] {
+.lib-dialog[appearance=medium-block-flex] {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-lib-dialog[appearance=small-block] {
+.lib-dialog[appearance=small-block] {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-lib-dialog[appearance=dialog-confirm] {
+.lib-dialog[appearance=dialog-confirm] {
   background-color: var(--block-bg-color);
   padding: var(--padding-4);
 }
 
-tui-dialog[data-appearance=dialog-confirm] {
+.tui-dialog[data-appearance=dialog-confirm] {
   border-radius: 0;
 }
 
 @media screen and (min-width: 768px) {
-  lib-dialog[appearance=small-block] {
+  .lib-dialog[appearance=small-block] {
     display: block;
     width: 30vw;
     height: auto;
   }
-  lib-dialog[appearance=medium-block] {
+  .lib-dialog[appearance=medium-block] {
     display: block;
     max-width: 750px;
     width: 60vw;
     min-height: 500px;
     height: 60vh;
   }
-  lib-dialog[appearance=medium-block-flex] {
+  .lib-dialog[appearance=medium-block-flex] {
     max-width: 750px;
     width: 60vw;
     height: auto;
   }
-  lib-dialog[appearance=big-block] {
+  .lib-dialog[appearance=big-block] {
     display: block;
     max-width: 750px;
     width: 65vw;
