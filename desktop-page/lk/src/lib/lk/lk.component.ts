@@ -39,6 +39,7 @@ import { ActionShowTransaction } from 'ui-common/lib/plugins/plugins/action-show
 import { Permissions } from 'utils/permissions';
 import { PERMISSIONS } from 'tokens/desktop/permission';
 import { AsyncPipe } from '@angular/common';
+import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 
 @Component({
 	selector: 'lk-layout',
@@ -140,6 +141,11 @@ import { AsyncPipe } from '@angular/common';
 			provide: EnterDialogService,
 			useFactory: (dialog: EnterFullScreenDialogService) => new EnterDialogService(dialog),
 			deps: [EnterFullScreenDialogService],
+		},
+		{
+			provide: DialogApproveService,
+			useFactory: (dialog: DialogService) => new DialogApproveService(dialog),
+			deps: [DIALOG],
 		},
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,

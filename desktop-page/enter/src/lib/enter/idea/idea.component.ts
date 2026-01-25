@@ -25,10 +25,8 @@ import { IdeaService } from './idea.service';
 import { HeaderComponent, ItemComponent, UiList, UiListItem } from '@ui/components/list';
 import { CheckComponent } from '@ui/components/check';
 import { LoaderComponent } from '@ui/components/loader';
-import { AddTargetComponent } from './add-target/add-target.component';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { AddEntryComponent } from './add-entry/add-entry.component';
 import { AddStopComponent } from './add-stop/add-stop.component';
 import {
 	BehaviorSubject,
@@ -112,8 +110,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	#addEntryService: AddEntryService = inject(AddEntryService);
 	#addTargetService: AddTargetService = inject(AddTargetService);
 
-	private _dialogTargetComponent: PolymorpheusComponent<AddTargetComponent> | null = null;
-	private _dialogEntryComponent: PolymorpheusComponent<AddEntryComponent> | null = null;
 	private _dialogStopComponent: PolymorpheusComponent<AddStopComponent> | null = null;
 
 	readonly isEdit$: Subject<boolean> = new BehaviorSubject(false);
@@ -572,52 +568,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					this._updateDataFromDialog(this.formArrayTargets, value, control);
 				}
 			});
-
-		// this._dialogTargetComponent = await import('./add-target/add-target.component')
-		// 	.then((m) => m.AddTargetComponent)
-		// 	.then((c) => new PolymorpheusComponent(c, this._injector));
-		//
-		// this._openDialog(this._dialogTargetComponent as PolymorpheusComponent<AddTargetComponent>, {
-		// 	...data,
-		// 	minPriceIncrement: this.minPriceIncrement,
-		// 	minPrice,
-		// 	maxPrice,
-		// 	maxAmount,
-		// 	minDay,
-		// 	limit: null,
-		// 	lot: 10,
-		// 	targets: this.formArrayTargets.value,
-		// }).subscribe((result: { amount: number; price: number; stopDate: string | null } | null) => {
-		// 	this.isTargetOpen = false;
-		// 	if (result) {
-		// 		const entries: StockPositionIdeaEntry | null = this.formArrayEntries.value[0];
-		// 		let profit = null;
-		// 		let profitPercent = null;
-		//
-		// 		if (entries) {
-		// 			profit = getNumberPrecision(
-		// 				(result.price * result.amount - entries.price * result.amount) * this.multiplier,
-		// 				this.priceIncrement
-		// 			);
-		// 			profitPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
-		// 		}
-		//
-		// 		const value: StockPositionTarget = {
-		// 			price: result.price,
-		// 			amount: result.amount,
-		// 			lots: 0,
-		// 			profit: profit || 0,
-		// 			profitPercent: profitPercent,
-		// 			depositShare: null,
-		// 			totalPrice: result.price * result.amount,
-		// 			reached: false,
-		// 			stopDate: result.stopDate,
-		// 			broker: null,
-		// 		};
-		//
-		// 		this._updateDataFromDialog(this.formArrayTargets, value, control);
-		// 	}
-		// });
 	}
 
 	async addStop(event: Event, data: any = null, control: number | null = null): Promise<void> {

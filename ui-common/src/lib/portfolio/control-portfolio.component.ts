@@ -1,38 +1,37 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	Component,
-	DestroyRef,
-	forwardRef,
-	inject,
-	Injector,
-	Input,
-	signal,
-	TemplateRef,
-	ViewChild,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  forwardRef,
+  inject,
+  Injector,
+  Input,
+  signal,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {
-	ControlValueAccessor,
-	FormControl,
-	FormGroup,
-	FormsModule,
-	NG_VALUE_ACCESSOR,
-	ReactiveFormsModule,
+  ControlValueAccessor,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
-import { TuiButton, TuiDropdown, TuiTextfield } from '@taiga-ui/core';
-import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
-import { TuiStringHandler } from '@taiga-ui/cdk';
-import { AccountPortfolio } from 'types/account';
-import { LoaderComponent } from '@ui/components/loader';
-import { AccountFacade } from 'stores/facades/account.facade';
-import { BehaviorSubject, filter, Observable, startWith, Subject, take } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
-import { DialogApproveComponent } from '../dialog-approve';
-import { DIALOG, DialogService } from '@ui/components/dialog';
-import { FormInputEvent, InputWithActionsComponent } from '../input-with-actions';
+import {TuiButton, TuiDropdown, TuiTextfield} from '@taiga-ui/core';
+import {TuiChevron, TuiDataListWrapper, TuiSelect} from '@taiga-ui/kit';
+import {TuiStringHandler} from '@taiga-ui/cdk';
+import {AccountPortfolio} from 'types/account';
+import {LoaderComponent} from '@ui/components/loader';
+import {AccountFacade} from 'stores/facades/account.facade';
+import {BehaviorSubject, filter, Observable, startWith, Subject, take} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {DialogApproveService} from '../dialog-approve';
+import {DialogCoreComponent} from '@ui/components/dialog';
+import {FormInputEvent, InputWithActionsComponent} from '../input-with-actions';
 
 type FormEvent = 'create' | 'rename' | null;
 
@@ -65,16 +64,12 @@ type Portfolio = AccountPortfolio & { edit: boolean; remove: boolean };
 		},
 	],
 })
-export class ControlPortfolioComponent implements ControlValueAccessor, AfterViewInit {
+export class ControlPortfolioComponent extends DialogCoreComponent implements ControlValueAccessor, AfterViewInit {
 	private readonly _injector: Injector = inject(Injector);
 	private readonly _destroyed: DestroyRef = inject(DestroyRef);
 	private readonly _accountStore: AccountFacade = inject(AccountFacade);
-	private readonly _dialog: DialogService = inject(DIALOG);
 	readonly #list$: Subject<Portfolio[] | null> = new BehaviorSubject<Portfolio[] | null>(null);
-
-	#dialogApproveComponent: PolymorpheusComponent<DialogApproveComponent> | null = null;
-
-	readonly size = 's';
+	#dialogApproveService: DialogApproveService = inject(DialogApproveService);
 
 	@ViewChild('templateDelete', { static: true }) templateDelete!: TemplateRef<any>;
 
@@ -153,15 +148,8 @@ export class ControlPortfolioComponent implements ControlValueAccessor, AfterVie
 	async onRemove(event: Event, item: AccountPortfolio) {
 		event.stopPropagation();
 
-		if (this.#dialogApproveComponent === null) {
-			this.#dialogApproveComponent = await import('ui-common/lib/dialog-approve')
-				.then((m) => m.DialogApproveComponent)
-				.then((c) => new PolymorpheusComponent(c, this._injector));
-		}
-
-		this._dialog
-			.open(this.#dialogApproveComponent, {
-				appearance: 'dialog-remove',
+		this.#dialogApproveService
+			.openDialog(this._injector, {
 				data: {
 					template: this.templateDelete,
 					context: { name: item.portfolio },

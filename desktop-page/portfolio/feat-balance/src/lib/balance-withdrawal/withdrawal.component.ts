@@ -1,39 +1,39 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {LoaderComponent} from '@ui/components/loader';
-import {TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler} from '@taiga-ui/cdk';
-import {TuiButton, TuiFormatNumberPipe, TuiNumberFormat, TuiTextfield} from '@taiga-ui/core';
-import {DesktopService} from '@desktop-data/desktop-data';
-import {DESKTOP_API} from 'tokens/desktop';
-import {AccountFacade} from 'stores/facades/account.facade';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LoaderComponent } from '@ui/components/loader';
+import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
+import { TuiButton, TuiFormatNumberPipe, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
+import { DesktopService } from '@desktop-data/desktop-data';
+import { DESKTOP_API } from 'tokens/desktop';
+import { AccountFacade } from 'stores/facades/account.facade';
 import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  forkJoin,
-  Observable,
-  shareReplay,
-  Subject,
-  switchMap,
-  tap,
-  timer,
+	BehaviorSubject,
+	combineLatest,
+	filter,
+	forkJoin,
+	Observable,
+	shareReplay,
+	Subject,
+	switchMap,
+	tap,
+	timer,
 } from 'rxjs';
-import {AccountBroker, AccountCurrency, AccountPortfolio} from 'types/account';
-import {distinctUntilChanged, map} from 'rxjs/operators';
-import {Params} from '@angular/router';
-import {Response} from 'types/response';
+import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { Params } from '@angular/router';
+import { Response } from 'types/response';
 import {
-  TuiInputDateTimeModule,
-  TuiSelectModule,
-  TuiTextareaModule,
-  TuiTextfieldControllerModule,
+	TuiInputDateTimeModule,
+	TuiSelectModule,
+	TuiTextareaModule,
+	TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {TuiInputNumberDirective} from '@taiga-ui/kit';
-import {getTuiDayTime} from 'utils/get-tui-day-time';
-import {ControlPortfolioComponent} from 'ui-common/lib/portfolio';
-import {DialogCoreComponent} from '@ui/components/dialog';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TuiInputNumberDirective } from '@taiga-ui/kit';
+import { getTuiDayTime } from 'utils/get-tui-day-time';
+import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
+import { DialogCoreComponent } from '@ui/components/dialog';
 
 @Component({
 	selector: 'portfolio-withdrawal',
