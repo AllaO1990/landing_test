@@ -477,7 +477,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 				}
 			});
 
-		// this._dialogEntryComponent = await import('./add-entry/add-entry.component')
+		// this._dialogEntryComponent = await import('./form-price-lots-entry/form-price-lots-entry.component')
 		// 	.then((m) => m.AddEntryComponent)
 		// 	.then((c) => new PolymorpheusComponent(c, this._injector));
 		//

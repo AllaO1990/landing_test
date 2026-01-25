@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TuiButton } from '@taiga-ui/core';
-import { tuiPure } from '@taiga-ui/cdk';
-import { AddComponent } from '../add/add.component';
-import { DialogCoreComponent } from '@ui/components/dialog';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {TuiButton} from '@taiga-ui/core';
+import {tuiPure} from '@taiga-ui/cdk';
+import {DialogCoreComponent} from '@ui/components/dialog';
+import {FormPriceLotsComponent} from 'ui-common/lib/form-price-lots';
 
 interface ControlValue {
 	total: number | null;
@@ -33,9 +33,9 @@ const DEFAULT_OPTIONS: ControlOptions = {
 };
 
 @Component({
-	selector: 'lib-add-target',
+	selector: 'lib-form-price-lots-target',
 	standalone: true,
-	imports: [ReactiveFormsModule, TuiButton, AddComponent],
+	imports: [ReactiveFormsModule, TuiButton, FormPriceLotsComponent],
 	templateUrl: './add-target.component.html',
 	styleUrls: ['../add.scss', './add-target.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiAppearance, TuiButton, TuiTextfield } from '@taiga-ui/core';
-import { TuiAutoFocus, tuiPure } from '@taiga-ui/cdk';
-import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
-import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
-import { AddComponent } from '../add/add.component';
-import { TuiCardLarge } from '@taiga-ui/layout';
-import { DialogCoreComponent } from '@ui/components/dialog';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TuiAppearance, TuiButton, TuiTextfield} from '@taiga-ui/core';
+import {TuiAutoFocus, tuiPure} from '@taiga-ui/cdk';
+import {TuiChevron, TuiDataListWrapper, TuiSelect} from '@taiga-ui/kit';
+import {STOCK_POSITION_TYPE_LIST} from 'constants/stock-position-type';
+import {TuiCardLarge} from '@taiga-ui/layout';
+import {DialogCoreComponent} from '@ui/components/dialog';
+import {FormPriceLotsComponent} from 'ui-common/lib/form-price-lots';
 
 type Item = { id: string; name: string };
 
@@ -31,7 +31,7 @@ const DEFAULT_OPTIONS: ControlOptions = {
 };
 
 @Component({
-	selector: 'lib-add-entry',
+	selector: 'lib-form-price-lots-entry',
 	standalone: true,
 	imports: [
 		ReactiveFormsModule,
@@ -41,9 +41,9 @@ const DEFAULT_OPTIONS: ControlOptions = {
 		TuiAutoFocus,
 		TuiSelect,
 		TuiDataListWrapper,
-		AddComponent,
 		TuiAppearance,
 		TuiCardLarge,
+		FormPriceLotsComponent,
 	],
 	templateUrl: './add-entry.component.html',
 	styleUrls: ['../add.scss', './add-entry.component.scss'],

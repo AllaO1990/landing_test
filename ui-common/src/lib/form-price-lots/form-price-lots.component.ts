@@ -58,9 +58,9 @@ const FORM_OPTIONS: FormOptions = {
 };
 
 @Component({
-	selector: 'lib-add',
-	templateUrl: './add.component.html',
-	styleUrls: ['./add.component.scss'],
+	selector: 'ui-form-price-lots',
+	templateUrl: './form-price-lots.component.html',
+	styleUrls: ['./form-price-lots.component.scss'],
 	standalone: true,
 	imports: [
 		AsyncPipe,
@@ -76,18 +76,18 @@ const FORM_OPTIONS: FormOptions = {
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
-			useExisting: forwardRef(() => AddComponent),
+			useExisting: forwardRef(() => FormPriceLotsComponent),
 			multi: true,
 		},
 		{
 			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => AddComponent),
+			useExisting: forwardRef(() => FormPriceLotsComponent),
 			multi: true,
 		},
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddComponent implements ControlValueAccessor, AfterViewInit {
+export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewInit {
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
 	readonly size = 's';

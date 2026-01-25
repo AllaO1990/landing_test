@@ -2,11 +2,11 @@
   <div class="form__header">
     <h3> Добавить цель</h3>
   </div>
-  <lib-add
+  <ui-form-price-lots
     [autoFocus]="true"
     [options]="options"
-    [formControl]="control">
-  </lib-add>
+    [formControl]="control"
+  ></ui-form-price-lots>
   <div class="form__actions">
     <button
       class="form__action"
@@ -36,6 +36,3 @@
   </div>
 </form>
 
-<ng-template #contentPositionType let-item>
-  {{ item.name }}
-</ng-template>

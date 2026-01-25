@@ -1,6 +1,7 @@
 .form__controls {
   margin: 0 var(--padding-2);
 }
+
 .form__card[tuiCardLarge][data-space][data-space=compact] {
   --t-radius: 0;
   --t-padding: var(--padding-4);

@@ -5,25 +5,31 @@
   padding: 0 var(--padding-2) var(--padding-2);
   background-color: var(--block-bg-color);
 }
+
 .form__row {
   display: flex;
   flex-flow: row nowrap;
 }
+
 .form__row .form__control:not(:last-child) {
   margin-right: var(--padding-2);
 }
+
 .form__control:not(:last-child) {
   margin-bottom: var(--padding-2);
 }
+
 .form__actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   margin-top: var(--padding-2);
 }
+
 .form__action:not(:last-child) {
   margin-right: var(--padding-2);
 }
+
 .form__increment {
   color: var(--tui-text-secondary);
   margin-right: var(--padding-2);
