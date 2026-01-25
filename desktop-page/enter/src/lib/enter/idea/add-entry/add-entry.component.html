@@ -4,28 +4,41 @@
   </div>
   <div class="form__container">
 
-    <div class="form__controls form__control">
-      <tui-textfield
-        tuiChevron
-        [stringify]="stringifyPositionType"
-        [tuiTextfieldSize]="size"
-        [tuiTextfieldCleaner]="false">
+    <div class="form__controls">
+      <div class="form__control">
+        <tui-textfield
+          tuiChevron
+          [stringify]="stringifyPositionType(positionType)"
+          [tuiTextfieldSize]="size"
+          [tuiTextfieldCleaner]="false">
 
-        <input
-          tuiAutoFocus
-          formControlName="positionType"
-          placeholder="Выбрать направление"
-          tuiSelect/>
+          <input
+            tuiAutoFocus
+            formControlName="positionType"
+            placeholder="Выбрать направление"
+            tuiSelect/>
 
-        <tui-data-list-wrapper
-          *tuiTextfieldDropdown
-          new
-          [items]="positionType"
-          [itemContent]="contentPositionType"
-        />
-      </tui-textfield>
+          <tui-data-list *tuiTextfieldDropdown>
+            @for (item of positionType; track item.id) {
+              <button
+                new
+                tuiOption
+                type="button"
+                [value]="item.id">
+                {{ item.name }}
+              </button>
+            }
+          </tui-data-list>
+
+          <!--        <tui-data-list-wrapper-->
+          <!--          *tuiTextfieldDropdown-->
+          <!--          new-->
+          <!--          [items]="positionType"-->
+          <!--          [itemContent]="contentPositionType"-->
+          <!--        />-->
+        </tui-textfield>
+      </div>
     </div>
-
 
     <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
       <ui-form-price-lots

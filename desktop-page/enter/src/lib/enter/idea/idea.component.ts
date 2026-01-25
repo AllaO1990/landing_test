@@ -1,59 +1,59 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	Component,
-	DestroyRef,
-	forwardRef,
-	inject,
-	Injector,
-	Input,
-	NgZone,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  forwardRef,
+  inject,
+  Injector,
+  Input,
+  NgZone,
 } from '@angular/core';
-import { AsyncPipe, NgIf, NgTemplateOutlet } from '@angular/common';
-import { TuiButton, TuiDialogService, TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
+import {AsyncPipe, NgIf, NgTemplateOutlet} from '@angular/common';
+import {TuiButton, TuiFormatNumberPipe, TuiHint} from '@taiga-ui/core';
 import {
-	AbstractControl,
-	ControlValueAccessor,
-	FormArray,
-	FormControl,
-	FormGroup,
-	NG_VALUE_ACCESSOR,
-	ReactiveFormsModule,
+  AbstractControl,
+  ControlValueAccessor,
+  FormArray,
+  FormControl,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
-import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
-import { IdeaService } from './idea.service';
-import { HeaderComponent, ItemComponent, UiList, UiListItem } from '@ui/components/list';
-import { CheckComponent } from '@ui/components/check';
-import { LoaderComponent } from '@ui/components/loader';
-import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
-import { DIALOG, DialogService } from '@ui/components/dialog';
-import { AddStopComponent } from './add-stop/add-stop.component';
+import {StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from 'types/position';
+import {IdeaService} from './idea.service';
+import {HeaderComponent, ItemComponent, UiList, UiListItem} from '@ui/components/list';
+import {CheckComponent} from '@ui/components/check';
+import {LoaderComponent} from '@ui/components/loader';
+import {PolymorpheusComponent} from '@taiga-ui/polymorpheus';
+import {DIALOG, DialogService} from '@ui/components/dialog';
+import {AddStopComponent} from './add-stop/add-stop.component';
 import {
-	BehaviorSubject,
-	combineLatest,
-	debounceTime,
-	defer,
-	distinctUntilChanged,
-	filter,
-	Observable,
-	ReplaySubject,
-	shareReplay,
-	startWith,
-	Subject,
-	switchMap,
-	take,
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  defer,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  ReplaySubject,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+  take,
 } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { map, tap } from 'rxjs/operators';
-import { getPriceIncrement } from 'utils/get-price-increment';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { IdeaFacade } from 'stores/facades/idea.facade';
-import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
-import { TUI_CONFIRM } from '@taiga-ui/kit';
-import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
-import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
-import { AddEntryService } from './add-entry/add-entry.service';
-import { AddTargetService } from './add-target/add-target.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {map, tap} from 'rxjs/operators';
+import {getPriceIncrement} from 'utils/get-price-increment';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {IdeaFacade} from 'stores/facades/idea.facade';
+import {IndicatorAtr} from 'stores/plugins/indicator.atr.store';
+import {ColorForPriceEntryPipe, ColorForPriceStopPipe} from '../color.pipe';
+import {GetCryptoNumberPipe} from '@ui/pipes/get-crypto-number.pipe';
+import {AddEntryService} from './add-entry/add-entry.service';
+import {AddTargetService} from './add-target/add-target.service';
+import {DialogApproveService} from 'ui-common/lib/dialog-approve';
 
 @Component({
 	selector: 'lib-enter-idea',
@@ -101,12 +101,12 @@ import { AddTargetService } from './add-target/add-target.service';
 export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	private readonly _injector: Injector = inject(Injector);
 	private readonly _destroyRef: DestroyRef = inject(DestroyRef);
-	private readonly _dialogDefaultService: TuiDialogService = inject(TuiDialogService);
 	private readonly _dialogService: DialogService = inject(DIALOG);
 	private readonly _service: IdeaService = inject(IdeaService);
 	private readonly _ideaFacade: IdeaFacade = inject(IdeaFacade);
 	private readonly _ngZone: NgZone = inject(NgZone);
 
+	#dialogApproveService: DialogApproveService = inject(DialogApproveService);
 	#addEntryService: AddEntryService = inject(AddEntryService);
 	#addTargetService: AddTargetService = inject(AddTargetService);
 
@@ -124,7 +124,9 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	inPositionQuantityValue = 0;
 	isDisabled = false;
 	value: any = null;
+
 	isTargetOpen = false;
+	isEntryOpen = false;
 
 	get maxAmount() {
 		if (this.formArrayEntries && this.formArrayEntries.value.length > 0) {
@@ -419,14 +421,19 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		const list = this.formArrayTargets.value;
 
 		if (list && list.length > 0) {
-			this._onConfirmDialog(
-				`<p class="tui-text_h6">Удалить строку?</p><p class="tui-text_body-l">Все строки из таблицы Цели, будут удалены</p>`
-			).subscribe((result: boolean) => {
-				if (result) {
-					this.formArrayEntries.removeAt(index);
-					this.formArrayTargets.clear();
-				}
-			});
+			this.#dialogApproveService
+				.openDialog(this._injector, {
+					appearance: 'dialog-confirm',
+					data: {
+						context: `<p class="tui-text_body-l">Удалить строку?</p><p class="tui-text_body-m">Все строки из таблицы Цели, будут удалены</p>`,
+					},
+				})
+				.subscribe((result: boolean) => {
+					if (result) {
+						this.formArrayEntries.removeAt(index);
+						this.formArrayTargets.clear();
+					}
+				});
 		} else {
 			this.onRemove(event, index, 'entries');
 		}
@@ -438,11 +445,18 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		const formArray = this.controlFormArray.get(formName);
 
 		if (formArray !== null) {
-			this._onConfirmDialog('<p class="tui-text_h6">Удалить строку?</p>').subscribe((result: boolean) => {
-				if (result) {
-					(formArray as FormArray).removeAt(index);
-				}
-			});
+			this.#dialogApproveService
+				.openDialog(this._injector, {
+					appearance: 'dialog-confirm',
+					data: {
+						context: `<p class="tui-text_body-l">Удалить цель №${index + 1}?</p>`,
+					},
+				})
+				.subscribe((result: boolean) => {
+					if (result) {
+						(formArray as FormArray).removeAt(index);
+					}
+				});
 		}
 	}
 
@@ -452,46 +466,60 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		const formArray = this.controlFormArray.get(formName);
 
 		if (formArray !== null) {
-			this._mapForm[formName].bind(this)(event, (formArray as FormArray).at(index).value, index);
+			this._mapForm[formName].bind(this)(event, index, index);
 		}
 	}
 
-	async addEntry(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
+	addEntry(event: Event, index: number | null = null, control: number | null = null): void {
 		event.preventDefault();
 
-		console.log(data);
+		if (this.isEntryOpen) {
+			return;
+		}
 
-		if ((this.formGroup.value as any).sidebar.positionType === null) {
+		this.isEntryOpen = true;
+
+		const positionType = (this.formGroup.value as any).sidebar.positionType;
+
+		if (positionType === null) {
 			return;
 		}
 
 		this.#addEntryService
 			.openDialog(this._injector, {
-				...data,
-				minPriceIncrement: this.minPriceIncrement,
+				data: {
+					index,
+					entries: this.formArrayEntries.value,
+					positionType,
+					limit: this.formGroup.value.limit,
+					lot: this.formGroup.value.lot,
+					minPriceIncrement: this.minPriceIncrement,
+				},
 			})
 			.pipe()
-			.subscribe((res: object | null) => {
+			.subscribe((res: any | null) => {
+				this.isEntryOpen = false;
 				if (res) {
-					this._updateDataFromDialog(this.formArrayEntries, res, control);
+					this.formGroup.patchValue(
+						{ sidebar: { ...this.formGroup.value.sidebar, positionType: res.positionType } },
+						{ emitEvent: true, onlySelf: false }
+					);
+
+					this._updateDataFromDialog(
+						this.formArrayEntries,
+						{
+							...res,
+							totalPrice: res.total,
+						},
+						control
+					);
+
+					console.log(this.formGroup);
 				}
 			});
-
-		// this._dialogEntryComponent = await import('./form-price-lots-entry/form-price-lots-entry.component')
-		// 	.then((m) => m.AddEntryComponent)
-		// 	.then((c) => new PolymorpheusComponent(c, this._injector));
-		//
-		// this._openDialog(this._dialogEntryComponent as PolymorpheusComponent<AddEntryComponent>, {
-		// 	...data,
-		// 	minPriceIncrement: this.minPriceIncrement,
-		// }).subscribe((res: object | null) => {
-		// 	if (res) {
-		// 		this._updateDataFromDialog(this.formArrayEntries, res, control);
-		// 	}
-		// });
 	}
 
-	async addTarget(event: Event, data: object | null = null, control: number | null = null): Promise<void> {
+	addTarget(event: Event, index: number | null = null, control: number | null = null): void {
 		event.preventDefault();
 
 		if (this.isTargetOpen) {
@@ -526,15 +554,17 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
 		this.#addTargetService
 			.openDialog(this._injector, {
-				...data,
-				minPriceIncrement: this.minPriceIncrement,
-				minPrice,
-				maxPrice,
-				maxAmount,
-				minDay,
-				limit: null,
-				lot: 10,
-				targets: this.formArrayTargets.value,
+				data: {
+					index,
+					minPriceIncrement: this.minPriceIncrement,
+					minPrice,
+					maxPrice,
+					maxAmount,
+					minDay,
+					lot: this.formGroup.value.lot,
+					targets: this.formArrayTargets.value,
+					limit: null,
+				},
 			})
 			.pipe()
 			.subscribe((result: { amount: number; price: number; stopDate: string | null } | null) => {
@@ -570,7 +600,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			});
 	}
 
-	async addStop(event: Event, data: any = null, control: number | null = null): Promise<void> {
+	async addStop(event: Event, index: any = null, control: number | null = null): Promise<void> {
 		event.preventDefault();
 
 		const currentPrice = this.formArrayEntries.value[0].price;
@@ -598,7 +628,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			.then((c) => new PolymorpheusComponent(c, this._injector));
 
 		this._openDialog(this._dialogStopComponent as PolymorpheusComponent<AddStopComponent>, {
-			...data,
+			index,
 			minPriceIncrement: this.minPriceIncrement,
 			minPrice,
 			maxPrice,
@@ -707,18 +737,5 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			status: false,
 			list,
 		};
-	}
-
-	private _onConfirmDialog(content: string): Observable<boolean> {
-		return this._dialogDefaultService.open<boolean>(TUI_CONFIRM, {
-			appearance: 'dialog-confirm',
-			closeable: false,
-			size: 'auto',
-			data: {
-				content,
-				yes: 'Да',
-				no: 'Нет',
-			},
-		});
 	}
 }

@@ -1,12 +1,12 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {TuiAppearance, TuiButton, TuiTextfield} from '@taiga-ui/core';
-import {TuiAutoFocus, tuiPure} from '@taiga-ui/cdk';
-import {TuiChevron, TuiDataListWrapper, TuiSelect} from '@taiga-ui/kit';
-import {STOCK_POSITION_TYPE_LIST} from 'constants/stock-position-type';
-import {TuiCardLarge} from '@taiga-ui/layout';
-import {DialogCoreComponent} from '@ui/components/dialog';
-import {FormPriceLotsComponent} from 'ui-common/lib/form-price-lots';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TuiAppearance, TuiButton, TuiDataList, TuiTextfield } from '@taiga-ui/core';
+import { TuiAutoFocus, tuiPure } from '@taiga-ui/cdk';
+import { TuiChevron, TuiSelect } from '@taiga-ui/kit';
+import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
+import { TuiCardLarge } from '@taiga-ui/layout';
+import { DialogCoreComponent } from '@ui/components/dialog';
+import { FormPriceLotsComponent } from 'ui-common/lib/form-price-lots';
 
 type Item = { id: string; name: string };
 
@@ -40,10 +40,10 @@ const DEFAULT_OPTIONS: ControlOptions = {
 		TuiChevron,
 		TuiAutoFocus,
 		TuiSelect,
-		TuiDataListWrapper,
 		TuiAppearance,
 		TuiCardLarge,
 		FormPriceLotsComponent,
+		TuiDataList,
 	],
 	templateUrl: './add-entry.component.html',
 	styleUrls: ['../add.scss', './add-entry.component.scss'],
@@ -52,7 +52,8 @@ const DEFAULT_OPTIONS: ControlOptions = {
 export class AddEntryComponent extends DialogCoreComponent implements OnInit {
 	readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
 
-	readonly stringifyPositionType = (item: Item) => item.name;
+	readonly stringifyPositionType = (list: Item[]) => (id: string) =>
+		list.find((item: Item) => item.id === id)?.name ?? '';
 
 	readonly form: FormGroup = new FormGroup({
 		add: new FormControl(null, Validators.required),
@@ -70,7 +71,17 @@ export class AddEntryComponent extends DialogCoreComponent implements OnInit {
 
 	ngOnInit(): void {
 		if (this.context.data) {
-			const { date, price, quantity, minPriceIncrement } = this.context.data;
+			const { positionType, price, quantity, lots, totalPrice } = this.context.data;
+
+			this.form.patchValue({
+				positionType,
+				add: {
+					price,
+					quantity,
+					lots,
+					total: totalPrice,
+				},
+			});
 
 			// this.form.patchValue({
 			// 	price,

@@ -3,6 +3,10 @@
     margin: 0 var(--padding-2);
   }
 
+  &__controls &__control {
+    padding-bottom: var(--padding-2);
+  }
+
   &__card[tuiCardLarge][data-space][data-space=compact] {
     --t-radius: 0;
     --t-padding: var(--padding-4);

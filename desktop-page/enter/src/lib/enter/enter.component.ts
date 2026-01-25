@@ -215,6 +215,8 @@ export class VtEnterComponent implements AfterViewInit {
 			parentId: null,
 		}),
 		watch: new FormControl(true),
+		lot: new FormControl(null),
+		limit: new FormControl(null),
 		minPriceIncrement: new FormControl(null),
 		lastPrice: new FormControl(null),
 	});
@@ -327,8 +329,6 @@ export class VtEnterComponent implements AfterViewInit {
 					// console.log(last, result);
 					this.form.patchValue({});
 
-					console.log(last, result);
-
 					if (last !== null && result !== null) {
 						if (
 							result.idea.id !== null &&
@@ -410,6 +410,8 @@ export class VtEnterComponent implements AfterViewInit {
 								portfolioId: result.idea.portfolioId,
 								comment: '',
 							},
+							limit,
+							lot: result.idea.instrument.lot,
 							lastPrice: result.idea.lastPrice,
 							minPriceIncrement: result.idea.instrument.minPriceIncrement,
 						});
