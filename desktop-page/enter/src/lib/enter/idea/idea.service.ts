@@ -32,6 +32,8 @@ export class IdeaService {
 		depositShare: null,
 		lossPercent: 0,
 		loss: 0,
+		lots: 0,
+		totalPrice: 0,
 		price: 0,
 		stopCandleDate: null,
 		amount: 0,
@@ -84,6 +86,7 @@ export class IdeaService {
 				...acc,
 				price: acc.price + item.price * item.amount,
 				amount: getNumberPrecision(acc.amount + item.amount, priceIncrement),
+				totalPrice: acc.totalPrice + item.totalPrice,
 				profit: acc.profit + item.profit,
 				lots: acc.lots + item.lots,
 				depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
@@ -91,7 +94,7 @@ export class IdeaService {
 
 			if (list.length - 1 === index) {
 				value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
-				value.profitPercent = getNumberPrecision((value.profit / total.totalPrice) * 100 * multiplier, 2);
+				value.profitPercent = getNumberPrecision((value.profit / total.totalPrice) * 100, 2);
 			}
 
 			return value;

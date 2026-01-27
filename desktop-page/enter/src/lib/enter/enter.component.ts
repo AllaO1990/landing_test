@@ -66,6 +66,7 @@ import { Params } from '@angular/router';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { EnterIdeaComponent } from './idea/idea.component';
+import { calculateEntries, calculateStop, calculateTargets } from './idea-calculate';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -354,29 +355,56 @@ export class VtEnterComponent implements AfterViewInit {
 						const minPriceIncrement = getPriceIncrement(result.idea.instrument.minPriceIncrement);
 						const precision = minPriceIncrement === 8 ? 8 : 0;
 
-						const entries = this._getIdeaEntries(
+						// const entries = this._getIdeaEntries(
+						// 	result.idea.entries,
+						// 	result.actions.entries,
+						// 	precision,
+						// 	result.idea.instrument.lot,
+						// 	limit
+						// );
+
+						const entries = calculateEntries(
 							result.idea.entries,
-							result.actions.entries,
-							precision,
 							result.idea.instrument.lot,
+							result.idea.instrument.minPriceIncrement,
 							limit
 						);
+
 						const entriesQuantity = entries.reduce((acc, item) => (acc += item.quantity), 0);
 						const entriesPrice = entries.reduce((acc, item) => (acc += item.quantity * item.price), 0) / entriesQuantity;
 
-						const targets = this._getIdeaTargets(
+						// const targets = this._getIdeaTargets(
+						// 	result.idea.targets,
+						// 	result.actions.outs,
+						// 	result.idea.positionType === 'long' ? 1 : -1,
+						// 	result.idea.instrument.lot
+						// );
+
+						const targets = calculateTargets(
+							result.idea.positionType as 'long' | 'short',
 							result.idea.targets,
-							result.actions.outs,
-							result.idea.positionType === 'long' ? 1 : -1,
-							result.idea.instrument.lot
+							entries,
+							result.idea.instrument.lot,
+							result.idea.instrument.minPriceIncrement,
+							0
 						);
 
-						const stop = this._getIdeStop(
+						// const stop = this._getIdeStop(
+						// 	result.idea.stop ? [result.idea.stop] : [],
+						// 	result.actions.outs,
+						// 	result.idea.positionType === 'long' ? 1 : -1,
+						// 	entries,
+						// 	entriesPrice,
+						// 	result.idea.instrument.lot
+						// );
+
+						const stop = calculateStop(
+							result.idea.positionType as 'long' | 'short',
 							result.idea.stop ? [result.idea.stop] : [],
-							result.actions.outs,
-							result.idea.positionType === 'long' ? 1 : -1,
 							entries,
-							entriesPrice
+							result.idea.instrument.lot,
+							result.idea.instrument.minPriceIncrement,
+							0
 						);
 
 						const action: 'disable' | 'enable' =
@@ -716,7 +744,8 @@ export class VtEnterComponent implements AfterViewInit {
 		outs: any[] = [],
 		direction: 1 | -1 = 1,
 		entries: StockPositionIdeaEntry[],
-		price: number
+		price: number,
+		lot: number
 	): StockPositionStop[] {
 		const quantity = entries.reduce((acc: number, item) => (acc += item.quantity), 0);
 
@@ -741,6 +770,8 @@ export class VtEnterComponent implements AfterViewInit {
 				return {
 					depositShare: item.depositShare || null,
 					lossPercent: item.lossPercent || null,
+					totalPrice: getNumberPrecision(item.price * item.amount, 2),
+					lots: (item.amount || quantity) / lot,
 					loss: getNumberPrecision(-1 * quantity * Math.abs(item.price - price), 2) || null,
 					price: item.price || null,
 					stopCandleDate: item.stopCandleDate || stopDate,

@@ -1,14 +1,22 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiAppearance, TuiButton, TuiDataList, TuiTextfield } from '@taiga-ui/core';
-import { TuiAutoFocus, tuiPure } from '@taiga-ui/cdk';
-import { TuiChevron, TuiSelect } from '@taiga-ui/kit';
-import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
-import { TuiCardLarge } from '@taiga-ui/layout';
-import { DialogCoreComponent } from '@ui/components/dialog';
-import { FormPriceLotsComponent } from 'ui-common/lib/form-price-lots';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TuiAppearance, TuiButton, TuiDataList, TuiTextfield} from '@taiga-ui/core';
+import {TuiAutoFocus, tuiPure} from '@taiga-ui/cdk';
+import {TuiChevron, TuiSelect} from '@taiga-ui/kit';
+import {STOCK_POSITION_TYPE_LIST} from 'constants/stock-position-type';
+import {TuiCardLarge} from '@taiga-ui/layout';
+import {DialogCoreComponent} from '@ui/components/dialog';
+import {FormPriceLotsComponent} from 'ui-common/lib/form-price-lots';
+import {StockPositionDirection} from 'types/stock';
+import {StockPositionIdeaEntry} from 'types/position';
 
 type Item = { id: string; name: string };
+
+interface ContextData {
+	positionType?: StockPositionDirection | null;
+	index?: number | null;
+	entries?: StockPositionIdeaEntry[];
+}
 
 export interface ControlOptions {
 	lot: null | number;
@@ -49,7 +57,7 @@ const DEFAULT_OPTIONS: ControlOptions = {
 	styleUrls: ['../add.scss', './add-entry.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddEntryComponent extends DialogCoreComponent implements OnInit {
+export class AddEntryComponent extends DialogCoreComponent implements AfterViewInit {
 	readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
 
 	readonly stringifyPositionType = (list: Item[]) => (id: string) =>
@@ -69,33 +77,10 @@ export class AddEntryComponent extends DialogCoreComponent implements OnInit {
 		return Object.assign(DEFAULT_OPTIONS, this.context.data);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		if (this.context.data) {
-			const { positionType, price, quantity, lots, totalPrice } = this.context.data;
-
-			this.form.patchValue({
-				positionType,
-				add: {
-					price,
-					quantity,
-					lots,
-					total: totalPrice,
-				},
-			});
-
-			// this.form.patchValue({
-			// 	price,
-			// 	quantity,
-			// 	date: this.getTuiDates(date || null),
-			// });
-			//
-			// this.minPriceIncrement = minPriceIncrement;
-			// this.precision = this.getPrecision(minPriceIncrement);
+			this._initForm(this.context.data);
 		}
-
-		// const controlDate = this.form.get('date') as FormControl;
-		//
-		// controlDate.valueChanges.pipe(this.updateControlDate(controlDate)).subscribe();
 	}
 
 	onSubmit(event: SubmitEvent): void {
@@ -106,5 +91,23 @@ export class AddEntryComponent extends DialogCoreComponent implements OnInit {
 
 			this.context.completeWith({ positionType, ...add });
 		}
+	}
+
+	private _initForm(data: ContextData): void {
+		const { positionType, index, entries } = data;
+
+		let value = {};
+
+		if (index !== null && index !== undefined && entries) {
+			value = {
+				...entries[index],
+				total: entries[index].totalPrice,
+			};
+		}
+
+		this.form.patchValue({
+			positionType,
+			add: value,
+		});
 	}
 }

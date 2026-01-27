@@ -1,16 +1,17 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormArray, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {TuiAppearance, TuiButton, TuiFormatNumberPipe} from '@taiga-ui/core';
-import {tuiPure} from '@taiga-ui/cdk';
-import {DialogCoreComponent} from '@ui/components/dialog';
-import {FormPriceLotsComponent} from 'ui-common/lib/form-price-lots';
-import {StockPositionTarget} from 'types/position';
-import {Observable, startWith} from 'rxjs';
-import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
-import {GetCryptoNumberPipe} from '@ui/pipes/get-crypto-number.pipe';
-import {HeaderComponent, ItemComponent, UiList, UiListItem} from '@ui/components/list';
-import {tap} from 'rxjs/operators';
-import {TuiCardLarge} from '@taiga-ui/layout';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TuiAppearance, TuiButton, TuiFormatNumberPipe } from '@taiga-ui/core';
+import { tuiPure } from '@taiga-ui/cdk';
+import { DialogCoreComponent } from '@ui/components/dialog';
+import { FormPriceLotsComponent } from 'ui-common/lib/form-price-lots';
+import { StockPositionTarget } from 'types/position';
+import { distinctUntilChanged, Observable, startWith } from 'rxjs';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
+import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
+import { HeaderComponent, ItemComponent, UiList, UiListItem } from '@ui/components/list';
+import { tap } from 'rxjs/operators';
+import { TuiCardLarge } from '@taiga-ui/layout';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface ControlValue {
 	total: number | null;
@@ -62,6 +63,8 @@ const DEFAULT_OPTIONS: ControlOptions = {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTargetComponent extends DialogCoreComponent implements AfterViewInit {
+	readonly #destroyRef: DestroyRef = inject(DestroyRef);
+
 	readonly itemHeight = 28;
 	readonly form: FormGroup = new FormGroup({
 		targets: new FormArray([]),
@@ -87,18 +90,18 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 	);
 
 	ngAfterViewInit(): void {
-		console.log(this.context.data);
+		this.controlIndex.valueChanges
+			.pipe(takeUntilDestroyed(this.#destroyRef), distinctUntilChanged())
+			.subscribe((index: number | null) => {
+				let value = { price: null, lots: null, quantity: null, total: null };
 
-		this.controlIndex.valueChanges.pipe().subscribe((index: number | null) => {
-			let value = { price: null, lots: null, quantity: null, total: null };
+				if (index !== null) {
+					value = this.formArrayTarget.value[index];
+				}
 
-			if (index !== null) {
-				value = this.formArrayTarget.value[index];
-			}
-
-			this.controlAdd.reset(value);
-			this.controlAdd.markAsPristine();
-		});
+				this.controlAdd.reset(value);
+				this.controlAdd.markAsPristine();
+			});
 
 		if (this.context.data) {
 			this._initTargets(this.context.data.targets);
@@ -120,7 +123,7 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 		event.preventDefault();
 
 		if (this.context) {
-			// this.context.completeWith(this.control.value);
+			this.context.completeWith(this.formArrayTarget.value);
 		}
 	}
 

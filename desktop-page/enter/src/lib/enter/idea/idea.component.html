@@ -13,11 +13,11 @@
           *uiLibListItem="let item; let index = index">
           <div class="item">
             <div class="item__value row__item row__first">
-              <lib-check [value]="item.check"></lib-check>
+              @if (direction$ | async; as directionContext) {
+                <ng-container *ngTemplateOutlet="directionTemplate; context: { $implicit: directionContext }">
+                </ng-container>
+              }
             </div>
-            <!--          <div class="item__value row__item row__date">-->
-            <!--            {{ item.date | date: 'dd.MM.yy' }}-->
-            <!--          </div>-->
             <div class="item__value row__item row__right row__price">
               {{
                 item.price | tuiFormatNumber: {
@@ -32,11 +32,6 @@
             <div class="item__value row__item row__right row__total">
               {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
             </div>
-            <!--          <div class="item__value row__item row__right row__deposit">-->
-            <!--            <ng-container *ngIf="item.depositShare !== null; else none">-->
-            <!--              {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-            <!--            </ng-container>-->
-            <!--          </div>-->
             <div class="row__space"></div>
             @if (!isDisabled) {
               <div class="item__value row__actions">
@@ -101,11 +96,8 @@
           *uiLibListItem="let item; let index = index">
           <div class="item">
             <div class="item__value row__item row__first">
-              <lib-check [value]="!!item.stopDate"></lib-check>
+              {{ index + 1 }}
             </div>
-            <!--          <div class="item__value row__item row__date">-->
-            <!--            {{ item.stopDate | date: 'dd.MM.yy' }}-->
-            <!--          </div>-->
             <div class="item__value row__right row__item row__price">
               {{
                 item.price | tuiFormatNumber: {
@@ -214,9 +206,7 @@
           *uiLibListItem="let item">
           <div class="item">
             <div class="item__value row__item row__first">
-              <lib-check
-                [negative]="true"
-                [value]="!!item.stopCandleDate"/>
+              <div class="short">&mdash;</div>
             </div>
             <div class="item__value row__item row__right row__price">
               {{
@@ -228,7 +218,7 @@
             </div>
             <div class="item__value row__item row__right row__fix-half">
               @if (item.amount !== null) {
-                {{ item.amount | tuiFormatNumber | async }}
+                <span>{{ item.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
               } @else {
                 <ng-container [ngTemplateOutlet]="none"></ng-container>
               }
@@ -243,6 +233,13 @@
             <div class="item__value row__item row__right row__profit">
               @if (item.lossPercent !== null) {
                 {{ item.lossPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="item__value row__item row__right row__profit">
+              @if (item.totalPrice !== null) {
+                {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
               } @else {
                 <ng-container [ngTemplateOutlet]="none"></ng-container>
               }
@@ -359,6 +356,13 @@
           <ng-container [ngTemplateOutlet]="none"></ng-container>
         }
       </div>
+      <div class="total__item row__right row__item">
+        @if (total.totalPrice !== null) {
+          {{ total.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+        } @else {
+          <ng-container [ngTemplateOutlet]="none"></ng-container>
+        }
+      </div>
     </lib-list-header>
   }
 </ng-template>
@@ -370,41 +374,7 @@
     <div class="header__item row__item row__amount">Кол-во/лоты</div>
     <div class="header__item row__item row__profit">Прибыль</div>
     <div class="header__item row__item row__profit">Прибыль %</div>
-  </lib-list-header>
-</ng-template>
-
-<ng-template #stopFooter>
-  <lib-list-header class="total row" *ngIf="(totalStop$ | async) as total">
-    <div class="total__item row__item row__first">Всего</div>
-    <!--    <div class="total__item row__item"></div>-->
-    <div class="total__item row__right row__item">
-      {{ total.price | tuiFormatNumber: {precision: priceIncrement, decimalMode: 'always'} | async }}
-    </div>
-    <div class="total__item row__right row__item">
-      <ng-container *ngIf="total.lossPercent !== null; else none">
-        {{ total.lossPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-      </ng-container>
-    </div>
-    <div class="total__item row__right row__item">
-      <ng-container *ngIf="total.loss !== null; else none">
-        {{ total.loss | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
-      </ng-container>
-    </div>
-    <div class="total__item row__right row__item">
-      <ng-container *ngIf="total.depositShare !== null; else none">
-        {{ total.depositShare | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-      </ng-container>
-    </div>
-    <div class="total__item row__right row__item">
-      <ng-container *ngIf="total.amount !== null; else none">
-        {{ total.amount | tuiFormatNumber | async }}
-      </ng-container>
-    </div>
-    <div class="total__item row__right row__item">
-      <ng-container *ngIf="total.amountPercent !== null; else none">
-        {{ total.amountPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-      </ng-container>
-    </div>
+    <div class="header__item row__item row__profit">Стоимость</div>
   </lib-list-header>
 </ng-template>
 
@@ -418,4 +388,12 @@
 
 <ng-template #tooltip>
   Необходимо заполнить поле "Направление"
+</ng-template>
+
+<ng-template #directionTemplate let-type>
+  @if (type === 'long') {
+    <div class="long">▲</div>
+  } @else {
+    <div class="short">▼</div>
+  }
 </ng-template>

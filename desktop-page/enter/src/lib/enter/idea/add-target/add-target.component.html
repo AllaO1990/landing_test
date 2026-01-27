@@ -93,6 +93,7 @@
       [size]="size"
       tuiButton
       appearance="secondary"
+      [disabled]="controlIndex.value === null"
       (click)="newTarget($event)">
       Новая цель
     </button>

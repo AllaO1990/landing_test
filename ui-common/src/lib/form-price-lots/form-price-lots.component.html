@@ -54,6 +54,7 @@
       <input
         placeholder="Лоты"
         tuiInputNumber
+        [tuiNumberFormat]="{precision: precisionAmount()}"
         [min]="0"
         [max]="maxLots()"
         formControlName="lots"

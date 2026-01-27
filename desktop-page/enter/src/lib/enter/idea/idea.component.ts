@@ -1,59 +1,60 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  Injector,
-  Input,
-  NgZone,
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	forwardRef,
+	inject,
+	Injector,
+	Input,
+	NgZone,
 } from '@angular/core';
-import {AsyncPipe, NgIf, NgTemplateOutlet} from '@angular/common';
-import {TuiButton, TuiFormatNumberPipe, TuiHint} from '@taiga-ui/core';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
+import { TuiButton, TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
 import {
-  AbstractControl,
-  ControlValueAccessor,
-  FormArray,
-  FormControl,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
+	AbstractControl,
+	ControlValueAccessor,
+	FormArray,
+	FormControl,
+	FormGroup,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule,
 } from '@angular/forms';
-import {StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from 'types/position';
-import {IdeaService} from './idea.service';
-import {HeaderComponent, ItemComponent, UiList, UiListItem} from '@ui/components/list';
-import {CheckComponent} from '@ui/components/check';
-import {LoaderComponent} from '@ui/components/loader';
-import {PolymorpheusComponent} from '@taiga-ui/polymorpheus';
-import {DIALOG, DialogService} from '@ui/components/dialog';
-import {AddStopComponent} from './add-stop/add-stop.component';
+import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import { IdeaService } from './idea.service';
+import { HeaderComponent, ItemComponent, UiList, UiListItem } from '@ui/components/list';
+import { LoaderComponent } from '@ui/components/loader';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
+import { DIALOG, DialogService } from '@ui/components/dialog';
+import { AddStopComponent } from './add-stop/add-stop.component';
 import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  defer,
-  distinctUntilChanged,
-  filter,
-  Observable,
-  ReplaySubject,
-  shareReplay,
-  startWith,
-  Subject,
-  switchMap,
-  take,
+	BehaviorSubject,
+	combineLatest,
+	debounceTime,
+	defer,
+	distinctUntilChanged,
+	filter,
+	Observable,
+	ReplaySubject,
+	shareReplay,
+	startWith,
+	Subject,
+	switchMap,
+	take,
 } from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {map, tap} from 'rxjs/operators';
-import {getPriceIncrement} from 'utils/get-price-increment';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {IdeaFacade} from 'stores/facades/idea.facade';
-import {IndicatorAtr} from 'stores/plugins/indicator.atr.store';
-import {ColorForPriceEntryPipe, ColorForPriceStopPipe} from '../color.pipe';
-import {GetCryptoNumberPipe} from '@ui/pipes/get-crypto-number.pipe';
-import {AddEntryService} from './add-entry/add-entry.service';
-import {AddTargetService} from './add-target/add-target.service';
-import {DialogApproveService} from 'ui-common/lib/dialog-approve';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { map, tap } from 'rxjs/operators';
+import { getPriceIncrement } from 'utils/get-price-increment';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { IdeaFacade } from 'stores/facades/idea.facade';
+import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
+import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
+import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
+import { AddEntryService } from './add-entry/add-entry.service';
+import { AddTargetService } from './add-target/add-target.service';
+import { DialogApproveService } from 'ui-common/lib/dialog-approve';
+import { StockPositionDirection } from 'types/stock';
+import { AddStopService } from './add-stop/add-stop.service';
 
 @Component({
 	selector: 'lib-enter-idea',
@@ -65,10 +66,8 @@ import {DialogApproveService} from 'ui-common/lib/dialog-approve';
 		HeaderComponent,
 		TuiButton,
 		ReactiveFormsModule,
-		NgIf,
 		ColorForPriceEntryPipe,
 		ColorForPriceStopPipe,
-		CheckComponent,
 		TuiFormatNumberPipe,
 		UiList,
 		LoaderComponent,
@@ -95,6 +94,11 @@ import {DialogApproveService} from 'ui-common/lib/dialog-approve';
 			useFactory: (dialog: DialogService) => new AddTargetService(dialog),
 			deps: [DIALOG],
 		},
+		{
+			provide: AddStopService,
+			useFactory: (dialog: DialogService) => new AddStopService(dialog),
+			deps: [DIALOG],
+		},
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -109,6 +113,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	#dialogApproveService: DialogApproveService = inject(DialogApproveService);
 	#addEntryService: AddEntryService = inject(AddEntryService);
 	#addTargetService: AddTargetService = inject(AddTargetService);
+	#addStopService: AddStopService = inject(AddStopService);
 
 	private _dialogStopComponent: PolymorpheusComponent<AddStopComponent> | null = null;
 
@@ -172,6 +177,13 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
 	readonly isCanAddEntry$: Observable<boolean> = this.formGroupValueChanges$.pipe(
 		map((value: { sidebar: { positionType: string | null } }) => value.sidebar.positionType !== null),
+		distinctUntilChanged(),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
+
+	readonly direction$: Observable<StockPositionDirection> = this._formGroupValueChanges$.asObservable().pipe(
+		map((value: { sidebar: { positionType: StockPositionDirection | null } }) => value.sidebar.positionType),
+		filter((value: StockPositionDirection | null) => value !== null),
 		distinctUntilChanged(),
 		shareReplay({ refCount: true, bufferSize: 1 })
 	);
@@ -374,6 +386,8 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 							{
 								price: priceStop,
 								amount: quantityEntry,
+								totalPrice: priceStop * quantityEntry,
+								lots: 0,
 								loss: getNumberPrecision((priceStop - priceEntry) * quantityEntry * multiplier, priceIncrement),
 								lossPercent: getNumberPrecision(((priceStop - priceEntry) / priceEntry) * 100 * multiplier, priceIncrement),
 								depositShare: null,
@@ -600,8 +614,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			});
 	}
 
-	async addStop(event: Event, index: any = null, control: number | null = null): Promise<void> {
+	addStop(event: Event, index: any = null, control: number | null = null): void {
 		event.preventDefault();
+
+		console.log(this.formGroup.value);
 
 		const currentPrice = this.formArrayEntries.value[0].price;
 		let minPrice = null;
@@ -623,43 +639,86 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			}
 		}
 
-		this._dialogStopComponent = await import('./add-stop/add-stop.component')
-			.then((m) => m.AddStopComponent)
-			.then((c) => new PolymorpheusComponent(c, this._injector));
+		this.#addStopService
+			.openDialog(this._injector, {
+				data: {
+					index,
+					stop: this.formArrayStop.value,
+					minPrice,
+					maxPrice,
+					minDay,
+					lot: this.formGroup.value.lot,
+					minPriceIncrement: this.minPriceIncrement,
+				},
+			})
+			.pipe()
+			.subscribe((result: any | null) => {
+				if (result) {
+					const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
+					const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
+					let loss = null;
+					let lossPercent = null;
+					let amount = 0;
 
-		this._openDialog(this._dialogStopComponent as PolymorpheusComponent<AddStopComponent>, {
-			index,
-			minPriceIncrement: this.minPriceIncrement,
-			minPrice,
-			maxPrice,
-			minDay,
-		}).subscribe((result: { price: number; stopCandleDate: string | null } | null) => {
-			if (result) {
-				const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
-				const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
-				let loss = null;
-				let lossPercent = null;
-				let amount = 0;
+					if (entries) {
+						amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
 
-				if (entries) {
-					amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
+						lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
+						loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
+					}
 
-					lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
-					loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
+					const value: StockPositionStop = {
+						depositShare: null,
+						lossPercent: lossPercent,
+						totalPrice: result.price * amount,
+						loss: loss,
+						lots: result.lots,
+						price: result.price,
+						stopCandleDate: result.stopCandleDate,
+						amount: amount,
+						amountPercent: 100,
+					};
+					this._updateDataFromDialog(this.formArrayStop, value, control);
 				}
+			});
 
-				const value: StockPositionStop = {
-					depositShare: null,
-					lossPercent: lossPercent,
-					loss: loss,
-					price: result.price,
-					stopCandleDate: result.stopCandleDate,
-					amount: amount,
-					amountPercent: 100,
-				};
-				this._updateDataFromDialog(this.formArrayStop, value, control);
-			}
-		});
+		// this._dialogStopComponent = await import('./add-stop/add-stop.component')
+		// 	.then((m) => m.AddStopComponent)
+		// 	.then((c) => new PolymorpheusComponent(c, this._injector));
+
+		// this._openDialog(this._dialogStopComponent as PolymorpheusComponent<AddStopComponent>, {
+		// 	index,
+		// 	minPriceIncrement: this.minPriceIncrement,
+		// 	minPrice,
+		// 	maxPrice,
+		// 	minDay,
+		// }).subscribe((result: { price: number; stopCandleDate: string | null } | null) => {
+		// 	if (result) {
+		// 		const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
+		// 		const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
+		// 		let loss = null;
+		// 		let lossPercent = null;
+		// 		let amount = 0;
+		//
+		// 		if (entries) {
+		// 			amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
+		//
+		// 			lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
+		// 			loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
+		// 		}
+		//
+		// 		const value: StockPositionStop = {
+		// 			depositShare: null,
+		// 			lossPercent: lossPercent,
+		// 			loss: loss,
+		// 			price: result.price,
+		// 			stopCandleDate: result.stopCandleDate,
+		// 			amount: amount,
+		// 			amountPercent: 100,
+		// 		};
+		// 		this._updateDataFromDialog(this.formArrayStop, value, control);
+		// 	}
+		// });
 	}
 
 	private _openDialog(c: PolymorpheusComponent<any>, data: any = null): Observable<any> {

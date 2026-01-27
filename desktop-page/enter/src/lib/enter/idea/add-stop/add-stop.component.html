@@ -2,33 +2,14 @@
   <div class="form__header">
     <h3>Добавить Стоп</h3>
   </div>
-  <div class="form__form">
-    <tui-input-date-time
-      [min]="minDay"
-      [max]="maxDay"
-      [tuiTextfieldCleaner]="true"
-      class="form__control"
-      formControlName="stopCandleDate"
-      tuiTextfieldSize="s">
-      Выбрать дату
-    </tui-input-date-time>
-    <tui-input-number
-      class="form__control"
-      tuiAutoFocus
-      [min]="minPrice"
-      [max]="maxPrice"
-      [tuiTextfieldCustomContent]="priceIncrement"
-      [tuiNumberFormat]="{precision: precision}"
-      [tuiTextfieldSize]="size"
-      formControlName="price">
-      Стоп цена
-      <input
-        name="price"
-        autocomplete="off"
-        tuiTextfieldLegacy
-      />
-    </tui-input-number>
+  <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
+    <ui-form-price-lots
+      [autoFocus]="false"
+      [options]="options"
+      formControlName="add"
+    ></ui-form-price-lots>
   </div>
+
   <div class="form__actions">
     <button
       class="form__action"
@@ -39,6 +20,7 @@
       (click)="onCancel($event)">
       Отменить
     </button>
+
     <button
       class="form__action"
       [size]="size"
@@ -50,8 +32,3 @@
   </div>
 </form>
 
-<ng-template #priceIncrement>
-  <span class="form__increment" *ngIf="minPriceIncrement !== null">
-    Шаг цены: {{ getNumberFromE(minPriceIncrement) }}
-  </span>
-</ng-template>

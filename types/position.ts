@@ -104,8 +104,10 @@ export interface StockPositionStop {
 	lossPercent: number | null;
 	loss: number | null;
 	price: number;
+	totalPrice: number;
 	stopCandleDate: string | null;
 	amount: number | null;
+	lots: number | null;
 	amountPercent: number | null;
 }
 

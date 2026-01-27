@@ -29,13 +29,6 @@
               </button>
             }
           </tui-data-list>
-
-          <!--        <tui-data-list-wrapper-->
-          <!--          *tuiTextfieldDropdown-->
-          <!--          new-->
-          <!--          [items]="positionType"-->
-          <!--          [itemContent]="contentPositionType"-->
-          <!--        />-->
         </tui-textfield>
       </div>
     </div>
@@ -48,43 +41,9 @@
       ></ui-form-price-lots>
     </div>
 
-    <!--    <tui-input-date-time-->
-    <!--      [tuiTextfieldCleaner]="true"-->
-    <!--      [max]="maxDay"-->
-    <!--      class="form__control"-->
-    <!--      formControlName="date"-->
-    <!--      tuiTextfieldSize="s">-->
-    <!--      Выбрать дату-->
-    <!--    </tui-input-date-time>-->
-    <!--    <tui-input-number-->
-    <!--      tuiAutoFocus-->
-    <!--      class="form__control"-->
-    <!--      [tuiTextfieldCustomContent]="priceIncrement"-->
-    <!--      [tuiTextfieldSize]="size"-->
-    <!--      [tuiNumberFormat]="{precision: precision}"-->
-    <!--      [min]="0"-->
-    <!--      formControlName="price">-->
-    <!--      Цена-->
-    <!--      <input-->
-    <!--        autocomplete="off"-->
-    <!--        name="price"-->
-    <!--        tuiTextfieldLegacy-->
-    <!--      />-->
-    <!--    </tui-input-number>-->
-    <!--    <tui-input-number-->
-    <!--      class="form__control"-->
-    <!--      [tuiTextfieldSize]="size"-->
-    <!--      [tuiNumberFormat]="{precision: precisionAmount}"-->
-    <!--      formControlName="quantity">-->
-    <!--      Количество-->
-    <!--      <input-->
-    <!--        autocomplete="off"-->
-    <!--        name="amount"-->
-    <!--        tuiTextfieldLegacy-->
-    <!--      />-->
-    <!--    </tui-input-number>-->
   </div>
   <div class="form__actions">
+
     <button
       class="form__action"
       [size]="size"
@@ -94,6 +53,7 @@
       (click)="onCancel($event)">
       Отменить
     </button>
+
     <button
       class="form__action"
       [size]="size"
@@ -102,6 +62,7 @@
       type="submit">
       Сохранить
     </button>
+
   </div>
 </form>
 

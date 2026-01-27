@@ -139,6 +139,8 @@ export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewIn
 		return minPriceIncrement !== null ? getPriceIncrement(minPriceIncrement) : null;
 	});
 
+	readonly precisionAmount = computed(() => (this.precision() === 8 ? 8 : 0));
+
 	readonly maxQuantity = computed(() => this.options().maxQuantity);
 
 	readonly maxLots = computed(() => {
