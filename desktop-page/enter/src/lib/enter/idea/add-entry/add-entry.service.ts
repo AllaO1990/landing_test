@@ -11,7 +11,7 @@ export class AddEntryService extends DialogCoreService {
 		super(dialog);
 	}
 
-	openDialog(injector: Injector, data: object | null = {}): Observable<null | object> {
+	openDialog(injector: Injector, data: object | null = {}): Observable<null | any> {
 		return this.open(this.getComponentAddEntry(injector), {
 			closeable: false,
 			appearance: 'medium-block-flex',

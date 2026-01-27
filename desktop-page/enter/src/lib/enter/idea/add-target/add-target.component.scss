@@ -10,6 +10,10 @@
     flex: 1;
   }
 
+  &__add {
+    margin-bottom: var(--padding-4);
+  }
+
   &__targets[tuiCardLarge][data-space][data-space=compact] {
     --t-radius: 0;
     --t-padding: 0;
@@ -61,4 +65,8 @@ tui-textfield span {
   align-items: center;
 
   width: 100%;
+}
+
+.notification {
+  transition: height 0.225s ease-in-out;
 }

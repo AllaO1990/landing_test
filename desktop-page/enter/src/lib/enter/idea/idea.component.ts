@@ -10,7 +10,7 @@ import {
 	NgZone,
 } from '@angular/core';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
-import { TuiButton, TuiFormatNumberPipe, TuiHint } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon } from '@taiga-ui/core';
 import {
 	AbstractControl,
 	ControlValueAccessor,
@@ -74,6 +74,7 @@ import { AddStopService } from './add-stop/add-stop.service';
 		GetCryptoNumberPipe,
 		TuiHint,
 		NgTemplateOutlet,
+		TuiIcon,
 	],
 	templateUrl: './idea.component.html',
 	styleUrl: './idea.component.scss',
@@ -132,6 +133,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
 	isTargetOpen = false;
 	isEntryOpen = false;
+	isStopOpen = false;
 
 	get maxAmount() {
 		if (this.formArrayEntries && this.formArrayEntries.value.length > 0) {
@@ -511,26 +513,27 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 				},
 			})
 			.pipe()
-			.subscribe((res: any | null) => {
-				this.isEntryOpen = false;
-				if (res) {
-					this.formGroup.patchValue(
-						{ sidebar: { ...this.formGroup.value.sidebar, positionType: res.positionType } },
-						{ emitEvent: true, onlySelf: false }
-					);
+			.subscribe(
+				(result: { lots: number; positionType: string; price: number; quantity: number; total: number } | null) => {
+					this.isEntryOpen = false;
 
-					this._updateDataFromDialog(
-						this.formArrayEntries,
-						{
-							...res,
-							totalPrice: res.total,
-						},
-						control
-					);
+					if (result) {
+						this.formGroup.patchValue(
+							{ sidebar: { ...this.formGroup.value.sidebar, positionType: result.positionType } },
+							{ emitEvent: true, onlySelf: false }
+						);
 
-					console.log(this.formGroup);
+						this._updateDataFromDialog(
+							this.formArrayEntries,
+							{
+								...result,
+								totalPrice: result.total,
+							},
+							control
+						);
+					}
 				}
-			});
+			);
 	}
 
 	addTarget(event: Event, index: number | null = null, control: number | null = null): void {
@@ -560,10 +563,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			} else {
 				maxPrice = this.formArrayTargets.value[control - 1].price;
 			}
-			// maxAmount = this.formArrayTargets.value.reduce(
-			//   (acc: number, item: StockPositionTarget) => (acc = acc - item.amount),
-			//   maxAmount
-			// );
 		}
 
 		this.#addTargetService
@@ -576,40 +575,18 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					maxAmount,
 					minDay,
 					lot: this.formGroup.value.lot,
+					entries: this.formArrayEntries.value,
 					targets: this.formArrayTargets.value,
+					positionType: this.formGroup.value.sidebar.positionType,
 					limit: null,
 				},
 			})
 			.pipe()
-			.subscribe((result: { amount: number; price: number; stopDate: string | null } | null) => {
+			.subscribe((result: StockPositionTarget[] | null) => {
 				this.isTargetOpen = false;
+
 				if (result) {
-					const entries: StockPositionIdeaEntry | null = this.formArrayEntries.value[0];
-					let profit = null;
-					let profitPercent = null;
-
-					if (entries) {
-						profit = getNumberPrecision(
-							(result.price * result.amount - entries.price * result.amount) * this.multiplier,
-							this.priceIncrement
-						);
-						profitPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
-					}
-
-					const value: StockPositionTarget = {
-						price: result.price,
-						amount: result.amount,
-						lots: 0,
-						profit: profit || 0,
-						profitPercent: profitPercent,
-						depositShare: null,
-						totalPrice: result.price * result.amount,
-						reached: false,
-						stopDate: result.stopDate,
-						broker: null,
-					};
-
-					this._updateDataFromDialog(this.formArrayTargets, value, control);
+					this.formArrayTargets.patchValue(result);
 				}
 			});
 	}
@@ -617,7 +594,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	addStop(event: Event, index: any = null, control: number | null = null): void {
 		event.preventDefault();
 
-		console.log(this.formGroup.value);
+		if (this.isStopOpen) {
+			return;
+		}
+
+		this.isStopOpen = true;
 
 		const currentPrice = this.formArrayEntries.value[0].price;
 		let minPrice = null;
@@ -653,32 +634,35 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			})
 			.pipe()
 			.subscribe((result: any | null) => {
+				this.isStopOpen = false;
+
 				if (result) {
-					const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
-					const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
-					let loss = null;
-					let lossPercent = null;
-					let amount = 0;
-
-					if (entries) {
-						amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
-
-						lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
-						loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
-					}
-
-					const value: StockPositionStop = {
-						depositShare: null,
-						lossPercent: lossPercent,
-						totalPrice: result.price * amount,
-						loss: loss,
-						lots: result.lots,
-						price: result.price,
-						stopCandleDate: result.stopCandleDate,
-						amount: amount,
-						amountPercent: 100,
-					};
-					this._updateDataFromDialog(this.formArrayStop, value, control);
+					this.formArrayStop.patchValue(result);
+					// 	const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
+					// 	const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
+					// 	let loss = null;
+					// 	let lossPercent = null;
+					// 	let amount = 0;
+					//
+					// 	if (entries) {
+					// 		amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
+					//
+					// 		lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
+					// 		loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
+					// 	}
+					//
+					// 	const value: StockPositionStop = {
+					// 		depositShare: null,
+					// 		lossPercent: lossPercent,
+					// 		totalPrice: result.price * amount,
+					// 		loss: loss,
+					// 		lots: result.lots,
+					// 		price: result.price,
+					// 		stopCandleDate: result.stopCandleDate,
+					// 		amount: amount,
+					// 		amountPercent: 100,
+					// 	};
+					// 	this._updateDataFromDialog(this.formArrayStop, value, control);
 				}
 			});
 

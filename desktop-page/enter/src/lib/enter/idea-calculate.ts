@@ -1,6 +1,6 @@
-import {StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from 'types/position';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {getPriceIncrement} from 'utils/get-price-increment';
+import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 export const calculateEntries = (
 	list: StockPositionIdeaEntry[],
@@ -75,7 +75,7 @@ export const calculateTargets = (
 			amount: quantity,
 			lots: lots,
 			profit: getNumberPrecision((currentPrice - averagePrice) * quantity * multiplier, precision),
-			profitPercent: getNumberPrecision(100 * ((currentPrice - averagePrice) / currentPrice) * multiplier, 2),
+			profitPercent: getNumberPrecision(100 * ((currentPrice - averagePrice) / averagePrice) * multiplier, 2),
 			depositShare: null,
 			totalPrice: getNumberPrecision(currentPrice * quantity, precision),
 			reached: false,

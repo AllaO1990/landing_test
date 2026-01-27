@@ -7,6 +7,9 @@
 .form__control {
   flex: 1;
 }
+.form__add {
+  margin-bottom: var(--padding-4);
+}
 .form__targets[tuiCardLarge][data-space][data-space=compact] {
   --t-radius: 0;
   --t-padding: 0;
@@ -45,6 +48,10 @@ tui-textfield span {
   display: flex;
   align-items: center;
   width: 100%;
+}
+
+.notification {
+  transition: height 0.225s ease-in-out;
 }
 
 /*# sourceMappingURL=add-target.component.css.map */

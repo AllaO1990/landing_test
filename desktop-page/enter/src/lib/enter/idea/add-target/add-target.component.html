@@ -2,6 +2,11 @@
   <div class="form__header">
     <h3> Добавить цель</h3>
   </div>
+  @if (isDisabledSave$ | async) {
+    <tui-notification class="notification" appearance="negative">
+      Количество в целях не соответствует количество входа
+    </tui-notification>
+  }
   <div tuiAppearance="floating" tuiCardLarge="compact" class="form__targets">
     @if (targets$ | async; as list) {
       <ui-lib-list
@@ -21,7 +26,7 @@
             <div class="item__value row__right row__item row__price">
               {{
                 item.price | tuiFormatNumber: {
-                  precision: 2,
+                  precision: precision,
                   decimalMode: 'always'
                 } | getCryptoNumber | async
               }}
@@ -81,45 +86,50 @@
 
   <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
     <ui-form-price-lots
-      [autoFocus]="true"
+      class="form__add"
+      [autoFocus]="false"
       [options]="options"
       formControlName="add"
     ></ui-form-price-lots>
+    <div class="form__actions">
+      @if (controlIndex.value === null) {
+        <button
+          class="form__action"
+          [size]="size"
+          tuiButton
+          [disabled]="controlAdd.invalid"
+          (click)="addTarget($event)">
+          Подтвердить
+        </button>
+      }
+
+      @if (controlIndex.value !== null) {
+        <button
+          class="form__action"
+          [size]="size"
+          tuiButton
+          [disabled]="controlAdd.invalid || controlAdd.pristine"
+          (click)="changeTarget($event)">
+          Подтвердить
+        </button>
+      }
+
+      <button
+        iconStart="@tui.plus"
+        class="form__action"
+        [size]="size"
+        tuiButton
+        appearance="secondary"
+        [disabled]="controlIndex.value === null"
+        (click)="newTarget($event)">
+        Добавить цель
+      </button>
+      <div class="space"></div>
+    </div>
   </div>
 
   <div class="form__actions">
-    <button
-      class="form__action"
-      [size]="size"
-      tuiButton
-      appearance="secondary"
-      [disabled]="controlIndex.value === null"
-      (click)="newTarget($event)">
-      Новая цель
-    </button>
-    @if (controlIndex.value === null) {
-      <button
-        class="form__action"
-        [size]="size"
-        tuiButton
-        appearance="secondary"
-        [disabled]="controlAdd.invalid"
-        (click)="addTarget($event)">
-        Добавить цель
-      </button>
-    }
 
-    @if (controlIndex.value !== null) {
-      <button
-        class="form__action"
-        [size]="size"
-        tuiButton
-        appearance="secondary"
-        [disabled]="controlAdd.invalid || controlAdd.pristine"
-        (click)="changeTarget($event)">
-        Изменить цель
-      </button>
-    }
 
     <div class="space"></div>
 
@@ -137,7 +147,7 @@
       class="form__action"
       [size]="size"
       tuiButton
-      [disabled]="formArrayTarget.length === 0"
+      [disabled]="isDisabledSave$ | async"
       type="submit">
       Сохранить
     </button>
