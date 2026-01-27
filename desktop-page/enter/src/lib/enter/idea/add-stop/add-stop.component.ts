@@ -1,14 +1,14 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {TuiAppearance, TuiButton} from '@taiga-ui/core';
-import {FormPriceLotsComponent} from 'ui-common/lib/form-price-lots';
-import {TuiCard} from '@taiga-ui/layout';
-import {DialogCoreComponent} from '@ui/components/dialog';
-import {tuiPure} from '@taiga-ui/cdk';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {StockPositionStop} from 'types/position';
-import {debounceTime} from 'rxjs';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TuiAppearance, TuiButton } from '@taiga-ui/core';
+import { FormPriceLotsComponent } from 'ui-common/lib/form-price-lots';
+import { TuiCard } from '@taiga-ui/layout';
+import { DialogCoreComponent } from '@ui/components/dialog';
+import { tuiPure } from '@taiga-ui/cdk';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StockPositionStop } from 'types/position';
+import { debounceTime } from 'rxjs';
 
 interface ControlValue {
 	total: number | null;

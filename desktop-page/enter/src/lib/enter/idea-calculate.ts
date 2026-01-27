@@ -1,6 +1,6 @@
-import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { getPriceIncrement } from 'utils/get-price-increment';
+import {StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from 'types/position';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {getPriceIncrement} from 'utils/get-price-increment';
 
 export const calculateEntries = (
 	list: StockPositionIdeaEntry[],
@@ -38,7 +38,12 @@ export const calculateTargets = (
 	minPriceIncrement: number,
 	atr = 0
 ): StockPositionTarget[] => {
+	if (entries.length === 0) {
+		return [];
+	}
+
 	const atrList: number[] = [1, 2, 4];
+	const rate = [[0.4, 0.3, 0.3], [1], [0.5, 0.5]];
 	const multiplier = direction === 'long' ? 1 : -1;
 	const totalEntry = entries.reduce(
 		(acc: { total: number; quantity: number }, item: StockPositionIdeaEntry) => {
@@ -59,8 +64,17 @@ export const calculateTargets = (
 			: atrList.map((multiply: number): number => averagePrice + multiply * atr * multiplier);
 
 	let calcLots = 0;
+	let rateIndex = 0;
 
-	return [0.4, 0.3, 0.3].reduce((acc: StockPositionTarget[], part: number, index: number, array) => {
+	if (totalEntryLots === 2) {
+		rateIndex = 2;
+	}
+
+	if (totalEntryLots === 1) {
+		rateIndex = 1;
+	}
+
+	return rate[rateIndex].reduce((acc: StockPositionTarget[], part: number, index: number, array) => {
 		let lots = totalEntryLots - calcLots;
 
 		if (index !== array.length - 1) {
@@ -97,6 +111,10 @@ export const calculateStop = (
 	minPriceIncrement: number,
 	atr = 0
 ): StockPositionStop[] => {
+	if (entries.length === 0) {
+		return [];
+	}
+
 	const multiplier = direction === 'long' ? 1 : -1;
 	const precision = getPriceIncrement(minPriceIncrement);
 	const totalEntry = entries.reduce(
