@@ -45,7 +45,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs/operators';
 import { getPriceIncrement } from 'utils/get-price-increment';
-import { getNumberPrecision } from 'utils/get-number-precision';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { IndicatorAtr } from 'stores/plugins/indicator.atr.store';
 import { ColorForPriceEntryPipe, ColorForPriceStopPipe } from '../color.pipe';
@@ -55,6 +54,7 @@ import { AddTargetService } from './add-target/add-target.service';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { StockPositionDirection } from 'types/stock';
 import { AddStopService } from './add-stop/add-stop.service';
+import { calculateStop, calculateTargets } from '../idea-calculate';
 
 @Component({
 	selector: 'lib-enter-idea',
@@ -189,7 +189,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		distinctUntilChanged(),
 		shareReplay({ refCount: true, bufferSize: 1 })
 	);
-
+	readonly lot$: Observable<number> = this._formGroupValueChanges$.asObservable().pipe(
+		map((value: { lot: number }) => value.lot),
+		distinctUntilChanged(),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
 	multiplier$: Observable<number> = this.formGroupValueChanges$.pipe(
 		map((data: { sidebar: { positionType: string } }) => data.sidebar && data.sidebar.positionType),
 		distinctUntilChanged(),
@@ -312,100 +316,232 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					} => value !== null
 				)
 			),
-			this.multiplier$,
+			this.direction$,
+			this.lot$,
 			this.isEdit$.asObservable(),
 		])
 			.pipe(takeUntilDestroyed(this._destroyRef))
 			.subscribe((result) => {
-				if (result[4]) {
+				if (result[5]) {
 					const entries: StockPositionIdeaEntry[] = result[0];
 					const minPriceIncrement = result[1];
 					const priceIncrement = getPriceIncrement(minPriceIncrement);
 					const indicator: IndicatorAtr = result[2].data;
-					const multiplier = result[3];
+					const positionType = result[3];
+					const lot = result[4];
 
 					if (indicator === null) {
 						return;
 					}
 
+					const targets = calculateTargets(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
+
+					if (targets.length !== 0) {
+						this.formArrayTargets.clear();
+						targets.forEach((target, index) => {
+							this.formArrayTargets.setControl(index, new FormControl(target));
+						});
+					}
+
+					const stop = calculateStop(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
+
+					if (stop.length !== 0) {
+						this.formArrayStop.clear();
+						stop.forEach((stop, index) => {
+							this.formArrayStop.setControl(index, new FormControl(stop));
+						});
+					}
+
 					const priceEntry = entries[0].price;
 					const quantityEntry = entries[0].quantity;
 
-					if (this.formArrayTargets.value.length === 0 || this.formArrayTargets.pristine) {
-						const atrList: number[] = [1, 2, 4];
-						let quantity = 0;
+					// if (this.formArrayTargets.value.length === 0 || this.formArrayTargets.pristine) {
+					// 	const atrList: number[] = [1, 2, 4];
+					// 	let quantity = 0;
+					//
+					// 	const data: StockPositionTarget[] = [0.4, 0.3, 0.3].reduce(
+					// 		(acc: StockPositionTarget[], pct: number, index: number, array: number[]) => {
+					// 			const price = getNumberPrecision(priceEntry + -1 * atrList[index] * indicator.atr, priceIncrement);
+					// 			let amount = getNumberPrecision(quantityEntry * pct, priceIncrement === 8 ? priceIncrement : 0);
+					//
+					// 			if (quantityEntry === 1) {
+					// 				if (index === 1) {
+					// 					amount = 1;
+					// 				} else {
+					// 					return acc;
+					// 				}
+					// 			}
+					//
+					// 			if (index === array.length - 1) {
+					// 				amount = getNumberPrecision(quantityEntry - quantity, priceIncrement);
+					//
+					// 				if (amount === 0) {
+					// 					return acc;
+					// 				}
+					// 			}
+					//
+					// 			quantity += amount;
+					//
+					// 			acc.push({
+					// 				price: price,
+					// 				amount: amount,
+					// 				lots: 0,
+					// 				totalPrice: price * amount,
+					// 				profit: getNumberPrecision((price - priceEntry) * amount * -1, this.priceIncrement),
+					// 				profitPercent: getNumberPrecision(((price - priceEntry) / priceEntry) * 100 * -1, 2),
+					// 				depositShare: null,
+					// 				reached: false,
+					// 				stopDate: null,
+					// 				broker: null,
+					// 			});
+					//
+					// 			return acc;
+					// 		},
+					// 		[]
+					// 	);
+					//
+					// 	if (this.formArrayEntries.value.length) {
+					// 		this._updateFormArray('targets', data, true);
+					// 	}
+					// }
 
-						const data: StockPositionTarget[] = [0.4, 0.3, 0.3].reduce(
-							(acc: StockPositionTarget[], pct: number, index: number, array: number[]) => {
-								const price = getNumberPrecision(priceEntry + multiplier * atrList[index] * indicator.atr, priceIncrement);
-								let amount = getNumberPrecision(quantityEntry * pct, priceIncrement === 8 ? priceIncrement : 0);
-
-								if (quantityEntry === 1) {
-									if (index === 1) {
-										amount = 1;
-									} else {
-										return acc;
-									}
-								}
-
-								if (index === array.length - 1) {
-									amount = getNumberPrecision(quantityEntry - quantity, priceIncrement);
-
-									if (amount === 0) {
-										return acc;
-									}
-								}
-
-								quantity += amount;
-
-								acc.push({
-									price: price,
-									amount: amount,
-									lots: 0,
-									totalPrice: price * amount,
-									profit: getNumberPrecision((price - priceEntry) * amount * multiplier, this.priceIncrement),
-									profitPercent: getNumberPrecision(((price - priceEntry) / priceEntry) * 100 * multiplier, 2),
-									depositShare: null,
-									reached: false,
-									stopDate: null,
-									broker: null,
-								});
-
-								return acc;
-							},
-							[]
-						);
-
-						if (this.formArrayEntries.value.length) {
-							this._updateFormArray('targets', data, true);
-						}
-					}
-
-					if (this.formArrayStop.value.length === 0 || this.formArrayStop.pristine) {
-						const priceStop = getNumberPrecision(priceEntry - indicator.atr * multiplier, priceIncrement);
-
-						const data: StockPositionStop[] = [
-							{
-								price: priceStop,
-								amount: quantityEntry,
-								totalPrice: priceStop * quantityEntry,
-								lots: 0,
-								loss: getNumberPrecision((priceStop - priceEntry) * quantityEntry * multiplier, priceIncrement),
-								lossPercent: getNumberPrecision(((priceStop - priceEntry) / priceEntry) * 100 * multiplier, priceIncrement),
-								depositShare: null,
-								stopCandleDate: null,
-								amountPercent: 100,
-							},
-						];
-
-						this._updateFormArray('stop', data, true);
-					}
+					// if (this.formArrayStop.value.length === 0 || this.formArrayStop.pristine) {
+					// 	const priceStop = getNumberPrecision(priceEntry - indicator.atr * -1, priceIncrement);
+					//
+					// 	const data: StockPositionStop[] = [
+					// 		{
+					// 			price: priceStop,
+					// 			amount: quantityEntry,
+					// 			totalPrice: priceStop * quantityEntry,
+					// 			lots: 0,
+					// 			loss: getNumberPrecision((priceStop - priceEntry) * quantityEntry * -1, priceIncrement),
+					// 			lossPercent: getNumberPrecision(((priceStop - priceEntry) / priceEntry) * 100 * -1, priceIncrement),
+					// 			depositShare: null,
+					// 			stopCandleDate: null,
+					// 			amountPercent: 100,
+					// 		},
+					// 	];
+					//
+					// 	this._updateFormArray('stop', data, true);
+					// }
 
 					Promise.resolve().then(() => {
 						this.formGroup.markAsPristine();
 					});
 				}
 			});
+
+		// combineLatest([
+		// 	this.entriesList$.pipe(
+		// 		filter(
+		// 			(list: StockPositionIdeaEntry[] | null): list is StockPositionIdeaEntry[] => list !== null && list.length === 1
+		// 		)
+		// 	),
+		// 	this.minPriceIncrement$,
+		// 	this._ideaFacade.atr$.pipe(
+		// 		filter(
+		// 			(
+		// 				value: null | { data: IndicatorAtr; instrument: string }
+		// 			): value is {
+		// 				data: IndicatorAtr;
+		// 				instrument: string;
+		// 			} => value !== null
+		// 		)
+		// 	),
+		// 	this.multiplier$,
+		// 	this.isEdit$.asObservable(),
+		// ])
+		// 	.pipe(takeUntilDestroyed(this._destroyRef))
+		// 	.subscribe((result) => {
+		// 		if (result[4]) {
+		// 			const entries: StockPositionIdeaEntry[] = result[0];
+		// 			const minPriceIncrement = result[1];
+		// 			const priceIncrement = getPriceIncrement(minPriceIncrement);
+		// 			const indicator: IndicatorAtr = result[2].data;
+		// 			const multiplier = result[3];
+		//
+		// 			if (indicator === null) {
+		// 				return;
+		// 			}
+		//
+		// 			const priceEntry = entries[0].price;
+		// 			const quantityEntry = entries[0].quantity;
+		//
+		// 			if (this.formArrayTargets.value.length === 0 || this.formArrayTargets.pristine) {
+		// 				const atrList: number[] = [1, 2, 4];
+		// 				let quantity = 0;
+		//
+		// 				const data: StockPositionTarget[] = [0.4, 0.3, 0.3].reduce(
+		// 					(acc: StockPositionTarget[], pct: number, index: number, array: number[]) => {
+		// 						const price = getNumberPrecision(priceEntry + multiplier * atrList[index] * indicator.atr, priceIncrement);
+		// 						let amount = getNumberPrecision(quantityEntry * pct, priceIncrement === 8 ? priceIncrement : 0);
+		//
+		// 						if (quantityEntry === 1) {
+		// 							if (index === 1) {
+		// 								amount = 1;
+		// 							} else {
+		// 								return acc;
+		// 							}
+		// 						}
+		//
+		// 						if (index === array.length - 1) {
+		// 							amount = getNumberPrecision(quantityEntry - quantity, priceIncrement);
+		//
+		// 							if (amount === 0) {
+		// 								return acc;
+		// 							}
+		// 						}
+		//
+		// 						quantity += amount;
+		//
+		// 						acc.push({
+		// 							price: price,
+		// 							amount: amount,
+		// 							lots: 0,
+		// 							totalPrice: price * amount,
+		// 							profit: getNumberPrecision((price - priceEntry) * amount * multiplier, this.priceIncrement),
+		// 							profitPercent: getNumberPrecision(((price - priceEntry) / priceEntry) * 100 * multiplier, 2),
+		// 							depositShare: null,
+		// 							reached: false,
+		// 							stopDate: null,
+		// 							broker: null,
+		// 						});
+		//
+		// 						return acc;
+		// 					},
+		// 					[]
+		// 				);
+		//
+		// 				if (this.formArrayEntries.value.length) {
+		// 					this._updateFormArray('targets', data, true);
+		// 				}
+		// 			}
+		//
+		// 			if (this.formArrayStop.value.length === 0 || this.formArrayStop.pristine) {
+		// 				const priceStop = getNumberPrecision(priceEntry - indicator.atr * multiplier, priceIncrement);
+		//
+		// 				const data: StockPositionStop[] = [
+		// 					{
+		// 						price: priceStop,
+		// 						amount: quantityEntry,
+		// 						totalPrice: priceStop * quantityEntry,
+		// 						lots: 0,
+		// 						loss: getNumberPrecision((priceStop - priceEntry) * quantityEntry * multiplier, priceIncrement),
+		// 						lossPercent: getNumberPrecision(((priceStop - priceEntry) / priceEntry) * 100 * multiplier, priceIncrement),
+		// 						depositShare: null,
+		// 						stopCandleDate: null,
+		// 						amountPercent: 100,
+		// 					},
+		// 				];
+		//
+		// 				this._updateFormArray('stop', data, true);
+		// 			}
+		//
+		// 			Promise.resolve().then(() => {
+		// 				this.formGroup.markAsPristine();
+		// 			});
+		// 		}
+		// 	});
 
 		this.controlFormArray.valueChanges
 			.pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))

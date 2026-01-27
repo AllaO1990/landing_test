@@ -43,7 +43,7 @@ export const calculateTargets = (
 	}
 
 	const atrList: number[] = [1, 2, 4];
-	const rate = [[0.4, 0.3, 0.3], [1], [0.5, 0.5]];
+	const rate = [[0.4, 0.3, 0.3], [1], [0.5, 0.5], [0.33, 0.33, 0.33]];
 	const multiplier = direction === 'long' ? 1 : -1;
 	const totalEntry = entries.reduce(
 		(acc: { total: number; quantity: number }, item: StockPositionIdeaEntry) => {
@@ -66,12 +66,8 @@ export const calculateTargets = (
 	let calcLots = 0;
 	let rateIndex = 0;
 
-	if (totalEntryLots === 2) {
-		rateIndex = 2;
-	}
-
-	if (totalEntryLots === 1) {
-		rateIndex = 1;
+	if (totalEntryLots < 4) {
+		rateIndex = totalEntryLots;
 	}
 
 	return rate[rateIndex].reduce((acc: StockPositionTarget[], part: number, index: number, array) => {
@@ -115,7 +111,7 @@ export const calculateStop = (
 		return [];
 	}
 
-	const multiplier = direction === 'long' ? 1 : -1;
+	const multiplier = direction === 'long' ? -1 : 1;
 	const precision = getPriceIncrement(minPriceIncrement);
 	const totalEntry = entries.reduce(
 		(acc, item: StockPositionIdeaEntry) => {
@@ -127,7 +123,7 @@ export const calculateStop = (
 		{ total: 0, quantity: 0 }
 	);
 	const averagePrice = getNumberPrecision(totalEntry.total / totalEntry.quantity, precision);
-	const price = stop.length !== 0 ? stop[0].price : averagePrice + atr * 2 * multiplier;
+	const price = stop.length !== 0 ? stop[0].price : averagePrice + atr * multiplier;
 
 	return [
 		{
