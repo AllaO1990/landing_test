@@ -325,6 +325,13 @@
         <span>{{ total.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ total.lots | tuiFormatNumber | async }}
       </div>
       <div class="total__item row__right row__item">
+        @if (total.totalPrice !== null) {
+          {{ total.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+        } @else {
+          <ng-container [ngTemplateOutlet]="none"></ng-container>
+        }
+      </div>
+      <div class="total__item row__right row__item">
         @if (total.profit !== null) {
           {{ total.profit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
         } @else {
@@ -334,13 +341,6 @@
       <div class="total__item row__right row__item">
         @if (total.profitPercent !== null) {
           {{ total.profitPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-        } @else {
-          <ng-container [ngTemplateOutlet]="none"></ng-container>
-        }
-      </div>
-      <div class="total__item row__right row__item">
-        @if (total.totalPrice !== null) {
-          {{ total.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
         } @else {
           <ng-container [ngTemplateOutlet]="none"></ng-container>
         }

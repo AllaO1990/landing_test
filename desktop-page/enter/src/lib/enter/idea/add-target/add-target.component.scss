@@ -52,3 +52,12 @@ tui-textfield span {
 .notification {
   transition: height 0.225s ease-in-out;
 }
+
+@keyframes opacityControl {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

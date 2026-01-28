@@ -52,6 +52,8 @@ import { endOfMonth } from 'date-fns/endOfMonth';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 import { BalanceDepositService, BalanceWithdrawalService } from '@feat-portfolio-balance';
+import { LimitComponent } from '@feat-trade-limit';
+import { StockInstrument } from 'types/stock';
 
 type Item = { id: string; name: string };
 
@@ -80,6 +82,7 @@ interface FormValue {
 		TuiTextfield,
 		TuiFormatNumberPipe,
 		TuiButton,
+		LimitComponent,
 	],
 	templateUrl: './sidebar.component.html',
 	styleUrl: './sidebar.component.scss',
@@ -199,7 +202,13 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
 
 	@Input({ required: true }) formGroup!: FormGroup;
 
+	readonly currencyId$: Observable<number | null> = this._idea.instrument$.pipe(
+		map((value: StockInstrument | null) => (value ? value.currencyId : null))
+	);
+
 	ngAfterViewInit(): void {
+		console.log(this.formGroup);
+
 		this._init();
 
 		combineLatest([
