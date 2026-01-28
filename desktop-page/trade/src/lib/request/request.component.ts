@@ -1,41 +1,34 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { TuiDay, TuiPopover, tuiPure, TuiStringHandler, TuiTime } from '@taiga-ui/cdk';
-import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
+import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
+import {TuiDay, TuiPopover, tuiPure, TuiStringHandler, TuiTime} from '@taiga-ui/cdk';
+import {POLYMORPHEUS_CONTEXT} from '@taiga-ui/polymorpheus';
+import {TuiAppearance, TuiButton, TuiDataList, TuiDataListComponent, TuiScrollbar, TuiTextfield,} from '@taiga-ui/core';
+import {AsyncPipe} from '@angular/common';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TuiTextfieldControllerModule} from '@taiga-ui/legacy';
+import {combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith} from 'rxjs';
 import {
-	TuiAppearance,
-	TuiButton,
-	TuiDataList,
-	TuiDataListComponent,
-	TuiScrollbar,
-	TuiTextfield,
-} from '@taiga-ui/core';
-import { AsyncPipe } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith } from 'rxjs';
-import {
-	TuiChevron,
-	TuiDataListDropdownManager,
-	TuiDataListWrapper,
-	TuiInputDateTime,
-	TuiInputNumber,
-	TuiSelect,
+  TuiChevron,
+  TuiDataListDropdownManager,
+  TuiDataListWrapper,
+  TuiInputDateTime,
+  TuiInputNumber,
+  TuiSelect,
 } from '@taiga-ui/kit';
-import { TradeStore } from '../common/store';
+import {TradeStore} from '../common/store';
 import {
-	TradeOrderType,
-	TradeOrderTypeDescription,
-	TradeOrderTypesDescription,
-	TradeSource,
-	TradeSources,
-} from '../common/api.types';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { TRADE_EXPIRATION_TYPES } from './request.constants';
-import { TuiCard } from '@taiga-ui/layout';
-import { endOfWeek } from 'date-fns/endOfWeek';
-import { endOfMonth } from 'date-fns/endOfMonth';
-import { TradeOrderTypeText, TradeStopOrderTypeText } from '../common/order.types';
+  TradeOrderType,
+  TradeOrderTypeDescription,
+  TradeOrderTypesDescription,
+  TradeSource,
+  TradeSources,
+} from '@data-access-trade/types';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {TRADE_EXPIRATION_TYPES} from './request.constants';
+import {TuiCard} from '@taiga-ui/layout';
+import {endOfWeek} from 'date-fns/endOfWeek';
+import {endOfMonth} from 'date-fns/endOfMonth';
+import {TradeOrderTypeText, TradeStopOrderTypeText} from '../common/order.types';
 
 export interface RequestFormValue {
 	direction: boolean;

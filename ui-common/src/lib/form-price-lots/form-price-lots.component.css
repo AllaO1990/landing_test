@@ -1,10 +1,19 @@
 .form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: var(--padding-4);
+  grid-template-areas: "total" "price" "quantity" "lots";
 }
-.form__control {
-  flex: 1;
+.form__control--price {
+  grid-area: price;
+}
+.form__control--total {
+  grid-area: total;
+}
+.form__control--lots {
+  grid-area: lots;
+}
+.form__control--quantity {
+  grid-area: quantity;
 }
 
 tui-textfield span {

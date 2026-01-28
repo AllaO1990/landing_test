@@ -42,18 +42,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TuiButton, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { ValidDateComponent } from './valid-date/valid-date.component';
+import { AsyncPipe } from '@angular/common';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
-import { TuiAutoFocus, tuiAutoFocusOptionsProvider } from '@taiga-ui/cdk';
+import { tuiAutoFocusOptionsProvider } from '@taiga-ui/cdk';
 import { PortfolioFacade } from 'stores/facades/portfolio.facade';
 import { Params } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { endOfMonth } from 'date-fns/endOfMonth';
-import { BalanceDepositService } from '../../../../../portfolio/feat-balance/src/lib/balance-deposit';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { BalanceWithdrawalService } from '../../../../../portfolio/feat-balance/src/lib/balance-withdrawal';
 import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
+import { BalanceDepositService, BalanceWithdrawalService } from '@feat-portfolio-balance';
 
 type Item = { id: string; name: string };
 
@@ -74,17 +72,14 @@ interface FormValue {
 		ReactiveFormsModule,
 		TuiTextarea,
 		AsyncPipe,
-		NgIf,
 		TuiDataListWrapper,
 		TuiSelect,
 		TuiChevron,
-		ValidDateComponent,
 		ControlPortfolioComponent,
 		TuiScrollbar,
 		TuiTextfield,
 		TuiFormatNumberPipe,
 		TuiButton,
-		TuiAutoFocus,
 	],
 	templateUrl: './sidebar.component.html',
 	styleUrl: './sidebar.component.scss',
@@ -161,9 +156,9 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
 
 	form: FormGroup = new FormGroup({
 		author: new FormControl(null),
-		positionType: new FormControl<null | string>(null, Validators.required),
+		positionType: new FormControl<null | string>(null),
 		expirationDate: new FormControl<null | string>(null),
-		strategyId: new FormControl<null | number>(null, Validators.required),
+		strategyId: new FormControl<null | number>(null),
 		portfolioId: new FormControl<null | number>(null, Validators.required),
 		comment: new FormControl<string>(''),
 		instrumentId: new FormControl<null | number>(null),
@@ -311,9 +306,10 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
 					this.form.patchValue({ ...result, ...params });
 				}
 
-				setTimeout(() => {
-					this.formGroup.markAsPristine();
-				}, 100);
+				// setTimeout(() => {
+				// 	console.log('markAsPristine');
+				// 	this.formGroup.markAsPristine();
+				// }, 100);
 			});
 
 		combineLatest([this.currencies$, this.strategies$, this.portfolio$, this.idea$])

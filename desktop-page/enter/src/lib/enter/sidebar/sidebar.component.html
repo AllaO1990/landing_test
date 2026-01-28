@@ -59,7 +59,7 @@
               tuiButton
               iconStart="@tui.circle-arrow-down"
               [size]="size"
-              [disabled]="!(balance$ | async)"
+              [disabled]="(balance$ | async) === null "
               (click)="openDialogDeposit($event)"
               type="button">Внести
             </button>
@@ -68,102 +68,109 @@
               tuiButton
               iconStart="@tui.circle-arrow-up"
               [size]="size"
-              [disabled]="!(balance$ | async)"
+              [disabled]="(balance$ | async) === null"
               (click)="openDialogExpense($event)"
               type="button">Вывести
             </button>
           </div>
         </div>
       </div>
-      <div class="widget__valid-date widget__padding">
-        <lib-enter-sidebar-valid-date formControlName="expirationDate">
-        </lib-enter-sidebar-valid-date>
-      </div>
-      <div class="widget__implementation control widget__padding">
-        <div class="control__label comment__label">
-          Стратегия
-        </div>
-        <div class="comment__area">
-          <tui-textfield
-            class=""
-            tuiChevron
-            [stringify]="stringifyStrategy"
-            [tuiTextfieldSize]="size"
-            [tuiTextfieldCleaner]="false"
-          >
-            <input
-              [formControl]="formControlStrategy"
-              placeholder="Выбрать стратегию"
-              tuiSelect
-            />
 
-            <tui-data-list-wrapper
-              *tuiTextfieldDropdown
-              new
-              [items]="strategy"
-              [itemContent]="contentStrategy"
-            />
-          </tui-textfield>
-        </div>
-      </div>
-      <div class="widget__strategy control widget__padding">
-        <div class="control__label comment__label">
-          Направление
-        </div>
-        <div class="comment__area">
-          <tui-textfield
-            tuiChevron
-            [stringify]="stringifyPositionType"
-            [tuiTextfieldSize]="size"
-            [tuiTextfieldCleaner]="false"
-          >
-            <input
-              [tuiAutoFocus]="controlPositionType.value === null"
-              [formControl]="formControlPositionType"
-              placeholder="Выбрать направление"
-              tuiSelect
-            />
+      <!--      <div class="widget__valid-date widget__padding">-->
+      <!--        <lib-enter-sidebar-valid-date formControlName="expirationDate">-->
+      <!--        </lib-enter-sidebar-valid-date>-->
+      <!--      </div>-->
 
-            <tui-data-list-wrapper
-              *tuiTextfieldDropdown
-              new
-              [items]="positionType"
-              [itemContent]="contentPositionType"
-            />
+      <!--      <div class="widget__implementation control widget__padding">-->
+      <!--        <div class="control__label comment__label">-->
+      <!--          Стратегия-->
+      <!--        </div>-->
+      <!--        <div class="comment__area">-->
+      <!--          <tui-textfield-->
+      <!--            class=""-->
+      <!--            tuiChevron-->
+      <!--            [stringify]="stringifyStrategy"-->
+      <!--            [tuiTextfieldSize]="size"-->
+      <!--            [tuiTextfieldCleaner]="false"-->
+      <!--          >-->
+      <!--            <input-->
+      <!--              [formControl]="formControlStrategy"-->
+      <!--              placeholder="Выбрать стратегию"-->
+      <!--              tuiSelect-->
+      <!--            />-->
 
-          </tui-textfield>
-        </div>
-      </div>
-      <div class="widget__description description widget__padding">
-        <div class="description__row control">
-          <div class="description__label control__label">
-            Успешность
-          </div>
-          <div class="description__text">80%</div>
-        </div>
-      </div>
-      <div class="widget__description description widget__padding">
-        <!--        <div class="description__row">-->
-        <!--          <div class="description__label">Вероятность успеха</div>-->
-        <!--          <div class="description__text">-->
-        <!--            &lt;!&ndash;            {{ value.strategy.successProbability * 100 | tuiFormatNumber | async }}%&ndash;&gt;-->
-        <!--          </div>-->
-        <!--        </div>-->
-        <!--        <div class="description__row">-->
-        <!--          <div class="description__label">% вероятность успеха</div>-->
-        <!--          <div class="description__text">-->
-        <!--            &lt;!&ndash;            {{ value.inPositionDepositShare  | tuiFormatNumber | async }}%&ndash;&gt;-->
-        <!--          </div>-->
-        <!--        </div>-->
-        <div class="description__row control" *ngIf="(idea$ | async) as data">
-          <div class="description__label control__label">Отрасль</div>
-          <div class="description__text">{{ data.idea.instrument.sector }}</div>
-        </div>
-        <!--        <div class="description__row">-->
-        <!--          <div class="description__label">% сектора в вашем портфеле</div>-->
-        <!--          <div class="description__text">&mdash;</div>-->
-        <!--        </div>-->
-      </div>
+      <!--            <tui-data-list-wrapper-->
+      <!--              *tuiTextfieldDropdown-->
+      <!--              new-->
+      <!--              [items]="strategy"-->
+      <!--              [itemContent]="contentStrategy"-->
+      <!--            />-->
+      <!--          </tui-textfield>-->
+      <!--        </div>-->
+      <!--      </div>-->
+
+      <!--      <div class="widget__strategy control widget__padding">-->
+      <!--        <div class="control__label comment__label">-->
+      <!--          Направление-->
+      <!--        </div>-->
+      <!--        <div class="comment__area">-->
+      <!--          <tui-textfield-->
+      <!--            tuiChevron-->
+      <!--            [stringify]="stringifyPositionType"-->
+      <!--            [tuiTextfieldSize]="size"-->
+      <!--            [tuiTextfieldCleaner]="false"-->
+      <!--          >-->
+      <!--            <input-->
+      <!--              [tuiAutoFocus]="controlPositionType.value === null"-->
+      <!--              [formControl]="formControlPositionType"-->
+      <!--              placeholder="Выбрать направление"-->
+      <!--              tuiSelect-->
+      <!--            />-->
+
+      <!--            <tui-data-list-wrapper-->
+      <!--              *tuiTextfieldDropdown-->
+      <!--              new-->
+      <!--              [items]="positionType"-->
+      <!--              [itemContent]="contentPositionType"-->
+      <!--            />-->
+
+      <!--          </tui-textfield>-->
+      <!--        </div>-->
+      <!--      </div>-->
+
+      <!--      <div class="widget__description description widget__padding">-->
+      <!--        <div class="description__row control">-->
+      <!--          <div class="description__label control__label">-->
+      <!--            Успешность-->
+      <!--          </div>-->
+      <!--          <div class="description__text">80%</div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+
+      <!--      <div class="widget__description description widget__padding">-->
+      <!--        <div class="description__row">-->
+      <!--          <div class="description__label">Вероятность успеха</div>-->
+      <!--          <div class="description__text">-->
+      <!--            &lt;!&ndash;            {{ value.strategy.successProbability * 100 | tuiFormatNumber | async }}%&ndash;&gt;-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--        <div class="description__row">-->
+      <!--          <div class="description__label">% вероятность успеха</div>-->
+      <!--          <div class="description__text">-->
+      <!--            &lt;!&ndash;            {{ value.inPositionDepositShare  | tuiFormatNumber | async }}%&ndash;&gt;-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--        @if (idea$ | async; as data) {-->
+      <!--          <div class="description__row control">-->
+      <!--            <div class="description__label control__label">Отрасль</div>-->
+      <!--            <div class="description__text">{{ data.idea.instrument.sector }}</div>-->
+      <!--          </div>-->
+      <!--        }-->
+      <!--        <div class="description__row">-->
+      <!--          <div class="description__label">% сектора в вашем портфеле</div>-->
+      <!--          <div class="description__text">&mdash;</div>-->
+      <!--        </div>-->
+      <!--      </div>-->
       <div class="widget__comment comment control widget__padding">
         <div class="control__label comment__label">
           {{ constants.comment_label }}

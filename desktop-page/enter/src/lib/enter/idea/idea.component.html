@@ -63,11 +63,8 @@
           <button
             class="button"
             tuiButton
-            tuiHintAppearance="dark"
-            tuiHintDirection="bottom-right"
-            [tuiHint]="(isCanAddEntry$ | async) ? null : tooltip"
             iconStart="@tui.plus"
-            [appearance]="(isCanAddEntry$ | async) ? 'primary' : 'outline'"
+            appearance="primary"
             (click)="addEntry($event)"
             type="button">
             Добавить вход
@@ -110,6 +107,13 @@
               <span>{{ item.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
             </div>
             <div class="item__value row__right row__item row__profit">
+              @if (item.totalPrice !== null) {
+                {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="item__value row__right row__item row__profit">
               @if (item.profit !== null) {
                 {{ item.profit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
               } @else {
@@ -123,30 +127,6 @@
                 <ng-container [ngTemplateOutlet]="none"></ng-container>
               }
             </div>
-            <div class="item__value row__right row__item row__profit">
-              @if (item.totalPrice !== null) {
-                {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
-              } @else {
-                <ng-container [ngTemplateOutlet]="none"></ng-container>
-              }
-            </div>
-
-            <!--          <div class="item__value row__right row__item row__deposit">-->
-            <!--            <ng-container *ngIf="item.depositShare !== null; else none">-->
-            <!--              {{ item.depositShare | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%-->
-            <!--            </ng-container>-->
-            <!--          </div>-->
-
-            <!--          <div class="item__value row__right row__item row__fix-half">-->
-            <!--            <ng-container *ngIf="inPositionQuantityValue !== 0; else none">-->
-            <!--              {{-->
-            <!--                item.amount / inPositionQuantityValue * 100 | tuiFormatNumber: {-->
-            <!--                  precision: 1,-->
-            <!--                  decimalMode: 'always'-->
-            <!--                } | async-->
-            <!--              }}%-->
-            <!--            </ng-container>-->
-            <!--          </div>-->
             <div class="row__space"></div>
             @if (!isDisabled) {
               <div class="item__value row__actions">
@@ -226,6 +206,13 @@
               }
             </div>
             <div class="item__value row__item row__right row__profit">
+              @if (item.totalPrice !== null) {
+                {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+              } @else {
+                <ng-container [ngTemplateOutlet]="none"></ng-container>
+              }
+            </div>
+            <div class="item__value row__item row__right row__profit">
               @if (item.loss !== null) {
                 {{ item.loss | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
               } @else {
@@ -235,13 +222,6 @@
             <div class="item__value row__item row__right row__profit">
               @if (item.lossPercent !== null) {
                 {{ item.lossPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-              } @else {
-                <ng-container [ngTemplateOutlet]="none"></ng-container>
-              }
-            </div>
-            <div class="item__value row__item row__right row__profit">
-              @if (item.totalPrice !== null) {
-                {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
               } @else {
                 <ng-container [ngTemplateOutlet]="none"></ng-container>
               }
@@ -323,9 +303,9 @@
     <div class="header__item row__item row__first">Цели</div>
     <div class="header__item row__item row__price">Цена</div>
     <div class="header__item row__item row__amount">Кол-во/лоты</div>
+    <div class="header__item row__item row__total">Стоимость</div>
     <div class="header__item row__item row__profit">Прибыль</div>
     <div class="header__item row__item row__profit">Прибыль %</div>
-    <div class="header__item row__item row__total">Стоимость</div>
   </lib-list-header>
 </ng-template>
 
@@ -374,9 +354,9 @@
     <div class="header__item row__item row__first">Стоп</div>
     <div class="header__item row__item row__price">Цена</div>
     <div class="header__item row__item row__amount">Кол-во/лоты</div>
+    <div class="header__item row__item row__profit">Стоимость</div>
     <div class="header__item row__item row__profit">Прибыль</div>
     <div class="header__item row__item row__profit">Прибыль %</div>
-    <div class="header__item row__item row__profit">Стоимость</div>
   </lib-list-header>
 </ng-template>
 

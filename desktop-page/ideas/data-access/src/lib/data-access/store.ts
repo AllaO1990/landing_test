@@ -1,6 +1,6 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { ApiIdeasService } from './api.service';
-import { forkJoin, map, Observable, switchMap, tap, timer } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { Params } from '@angular/router';
 import { DataList, Response } from 'types/response';
 import { Position, Positions, ResponsePositions } from 'types/position';
@@ -95,9 +95,23 @@ export class DataAccessIdeasStore extends ComponentStore<DataAccessIdeasState> {
 		stream$.pipe(
 			tap(() => this.updateIdeasUploaded(false)),
 			switchMap((params: Params) =>
-				forkJoin([this.api.getIdeaList(params), timer(1000)]).pipe(
-					map(([response]: [Response<ResponsePositions>, number]) => response && this.updateIdeasData(response.data))
-				)
+				forkJoin([
+					this.api.getIdeaList(params).pipe(
+						catchError((err: Error) => {
+							console.error(err);
+
+							return of({
+								data: {
+									items: null,
+									total: 0,
+								},
+								message: `Error 'getIdeaList' ${err.message}`,
+								success: false,
+							});
+						})
+					),
+					timer(1000),
+				]).pipe(map(([response]: [Response<ResponsePositions>, number]) => response && this.updateIdeasData(response.data)))
 			)
 		)
 	);

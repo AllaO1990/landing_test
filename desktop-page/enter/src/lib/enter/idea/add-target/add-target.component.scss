@@ -1,4 +1,6 @@
 .form {
+  height: 100%;
+
   &__controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -14,10 +16,16 @@
     margin-bottom: var(--padding-4);
   }
 
+  &__container {
+    flex: 1;
+  }
+
   &__targets[tuiCardLarge][data-space][data-space=compact] {
     --t-radius: 0;
     --t-padding: 0;
     --t-space: 0;
+
+    overflow: hidden;
 
     margin: var(--padding-2);
     animation: opacityControl 725ms ease-in;
@@ -28,6 +36,8 @@
     --t-padding: var(--padding-4);
     --t-space: 0;
 
+    flex: 0 0 auto;
+
     margin: var(--padding-2);
     animation: opacityControl 725ms ease-in;
   }
@@ -37,34 +47,6 @@ tui-textfield span {
   font-size: smaller;
   line-height: 32px;
   padding-right: var(--padding-2);
-}
-
-.list {
-
-}
-
-.row {
-  &--active {
-    background: rgba(0, 102, 255, 0.1);
-  }
-
-  &__item {
-    flex: 0 0 auto;
-    width: calc(100% / 7);
-
-    padding: 0 var(--padding-2);
-  }
-}
-
-.header {
-  background-color: var(--tui-background-base);
-}
-
-.item {
-  display: flex;
-  align-items: center;
-
-  width: 100%;
 }
 
 .notification {

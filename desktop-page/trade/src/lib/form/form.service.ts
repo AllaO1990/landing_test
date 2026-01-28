@@ -15,7 +15,7 @@ import {
 	TradeSource,
 	TradeStopOrder,
 	TradeStopOrders,
-} from '../common/api.types';
+} from '@data-access-trade/types';
 import { sortNumber } from 'utils/sort-number';
 import {
 	ActualTradeOperation,

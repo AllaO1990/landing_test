@@ -10,7 +10,7 @@ import {
 	NgZone,
 } from '@angular/core';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
-import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon } from '@taiga-ui/core';
+import { TuiButton, TuiFormatNumberPipe, TuiIcon } from '@taiga-ui/core';
 import {
 	AbstractControl,
 	ControlValueAccessor,
@@ -72,7 +72,6 @@ import { calculateStop, calculateTargets } from '../idea-calculate';
 		UiList,
 		LoaderComponent,
 		GetCryptoNumberPipe,
-		TuiHint,
 		NgTemplateOutlet,
 		TuiIcon,
 	],
@@ -290,6 +289,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 				}
 
 				setTimeout(() => {
+					// console.log('markAsPristine');
 					this.formGroup.markAsPristine();
 				}, 100);
 			});
@@ -425,9 +425,10 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					// 	this._updateFormArray('stop', data, true);
 					// }
 
-					Promise.resolve().then(() => {
-						this.formGroup.markAsPristine();
-					});
+					// Promise.resolve().then(() => {
+					// 	console.log('markAsPristine');
+					// 	this.formGroup.markAsPristine();
+					// });
 				}
 			});
 
@@ -632,10 +633,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		this.isEntryOpen = true;
 
 		const positionType = (this.formGroup.value as any).sidebar.positionType;
-
-		if (positionType === null) {
-			return;
-		}
 
 		this.#addEntryService
 			.openDialog(this._injector, {

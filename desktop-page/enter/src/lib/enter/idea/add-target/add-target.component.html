@@ -7,81 +7,28 @@
       Количество в целях не соответствует количество входа
     </tui-notification>
   }
-  <div tuiAppearance="floating" tuiCardLarge="compact" class="form__targets">
-    @if (targets$ | async; as list) {
-      <ui-lib-list
-        class="list"
-        [style.height.px]="list.length > 5 ? 6 * itemHeight : list.length * itemHeight + 28"
-        [list]="list"
-        [header]="targetHeader"
-        [itemSize]="itemHeight">
-        <lib-list-item
-          class="row"
-          [class.row--active]="controlIndex.value === index"
-          *uiLibListItem="let item; let index = index">
-          <div class="item">
-            <div class="item__value row__item row__first">
-              {{ index + 1 }}
-            </div>
-            <div class="item__value row__right row__item row__price">
-              {{
-                item.price | tuiFormatNumber: {
-                  precision: precision,
-                  decimalMode: 'always'
-                } | getCryptoNumber | async
-              }}
-            </div>
-            <div class="item__value row__right row__item row__fix-half">
-              <span>{{ item.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
-            </div>
-            <div class="item__value row__right row__item row__profit">
-              @if (item.profit !== null) {
-                {{ item.profit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
-              } @else {
-                <ng-container [ngTemplateOutlet]="none"></ng-container>
-              }
-            </div>
-            <div class="item__value row__right row__item row__profit">
-              @if (item.profitPercent !== null) {
-                {{ item.profitPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-              } @else {
-                <ng-container [ngTemplateOutlet]="none"></ng-container>
-              }
-            </div>
-            <div class="item__value row__right row__item row__profit">
-              @if (item.totalPrice !== null) {
-                {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
-              } @else {
-                <ng-container [ngTemplateOutlet]="none"></ng-container>
-              }
-            </div>
-            <div class="row__space"></div>
-
-            <div class="item__value row__actions">
-              <button
-                (click)="onEdit($event, index)"
-                appearance="icon"
-                iconStart="@tui.pencil"
-                tuiIconButton
-                size="xs"
-                type="button"
-              ></button>
-              <button
-                (click)="onRemove($event, index)"
-                appearance="icon"
-                iconStart="@tui.x"
-                tuiIconButton
-                size="xs"
-                type="button"
-              ></button>
-            </div>
-          </div>
-        </lib-list-item>
-      </ui-lib-list>
-    } @else {
-      Цели не добавлены
-    }
-
+  <div class="form__container">
+    <div tuiAppearance="floating" tuiCardLarge="compact" class="form__targets">
+      @if (targets$ | async; as list) {
+        @if (isMobile$ | async) {
+          <lib-list-mobile
+            [list]="list"
+            [index]="controlIndex.value"
+            [option]="{ precision: precision }"
+            (action)="onAction($event)">
+          </lib-list-mobile>
+        } @else {
+          <lib-list-full
+            [list]="list"
+            [index]="controlIndex.value"
+            [option]="{ precision: precision }"
+            (action)="onAction($event)">
+          </lib-list-full>
+        }
+      } @else {
+        Цели не добавлены
+      }
+    </div>
   </div>
 
   <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
@@ -154,17 +101,3 @@
   </div>
 </form>
 
-<ng-template #targetHeader>
-  <lib-list-header class="header row">
-    <div class="header__item row__item row__first">Цели</div>
-    <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__amount">Кол-во/лоты</div>
-    <div class="header__item row__item row__profit">Прибыль</div>
-    <div class="header__item row__item row__profit">Прибыль %</div>
-    <div class="header__item row__item row__total">Стоимость</div>
-  </lib-list-header>
-</ng-template>
-
-<ng-template #none>
-  <div style="text-align: center; width: 100%">&mdash;</div>
-</ng-template>

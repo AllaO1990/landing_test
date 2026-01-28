@@ -5,6 +5,7 @@ import { Params } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Response } from 'types/response';
 import { AccountBalance, AccountBalanceHistory, AccountTransactions } from 'types/account';
+import { TradeLimit } from '@data-access-trade/types';
 
 @Injectable()
 export class ApiPortfolioService {
@@ -51,5 +52,9 @@ export class ApiPortfolioService {
 
 	deleteAccountTransactions(id: number | string): Observable<Response<number>> {
 		return this.#http.delete<Response<number>>(`${this.host}/v1/account/transactions/${id}`);
+	}
+
+	getLimitForCurrency(currencyId: number): Observable<Response<TradeLimit>> {
+		return this.#http.get<Response<TradeLimit>>(`${this.host}/v1/trades/limit`, { params: { currencyId } });
 	}
 }

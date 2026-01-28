@@ -1,19 +1,20 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TuiAppearance, TuiButton, TuiFormatNumberPipe, TuiNotification } from '@taiga-ui/core';
+import { TuiAppearance, TuiBreakpointService, TuiButton, TuiNotification } from '@taiga-ui/core';
 import { tuiPure } from '@taiga-ui/cdk';
 import { DialogCoreComponent } from '@ui/components/dialog';
 import { FormPriceLotsComponent } from 'ui-common/lib/form-price-lots';
 import { StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { distinctUntilChanged, Observable, shareReplay, startWith } from 'rxjs';
-import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
-import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
-import { HeaderComponent, ItemComponent, UiList, UiListItem } from '@ui/components/list';
+import { AsyncPipe } from '@angular/common';
 import { TuiCardLarge } from '@taiga-ui/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { map } from 'rxjs/operators';
+import { ListMobileComponent } from './list-mobile/list-mobile.component';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { ListFullComponent } from './list/list-full.component';
 
 interface ControlValue {
 	total: number | null;
@@ -57,25 +58,29 @@ const DEFAULT_OPTIONS: ControlOptions = {
 		TuiButton,
 		FormPriceLotsComponent,
 		AsyncPipe,
-		GetCryptoNumberPipe,
-		ItemComponent,
-		TuiFormatNumberPipe,
-		UiList,
-		UiListItem,
-		HeaderComponent,
-		NgTemplateOutlet,
 		TuiAppearance,
 		TuiCardLarge,
 		TuiNotification,
+		ListMobileComponent,
+		ListFullComponent,
 	],
 	templateUrl: './add-target.component.html',
 	styleUrls: ['../add.scss', './add-target.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTargetComponent extends DialogCoreComponent implements AfterViewInit {
+	readonly #breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
+	readonly #mapActions: Map<string, (e: Event, i: number) => void> = new Map([
+		['edit', this.onEdit],
+		['remove', this.onRemove],
+	]);
 
-	readonly itemHeight = 28;
+	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
+		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
+
 	readonly form: FormGroup = new FormGroup({
 		targets: new FormArray([]),
 		add: new FormControl<ControlValue | null>(null),
@@ -202,6 +207,14 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 		}
 
 		this.formArrayTarget.removeAt(index);
+	}
+
+	onAction(action: { event: Event; type: string; data: { index: number } }): void {
+		const fn = this.#mapActions.get(action.type);
+
+		if (fn) {
+			fn.bind(this)(action.event, action.data.index);
+		}
 	}
 
 	private _initTargets(list: StockPositionTarget[] | null): void {
