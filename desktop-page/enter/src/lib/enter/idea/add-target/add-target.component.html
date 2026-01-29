@@ -4,7 +4,11 @@
   </div>
   @if (isDisabledSave$ | async) {
     <tui-notification class="notification" appearance="negative">
-      Количество в целях не соответствует количество входа
+      <div tuiSubtitle>
+        Количество в целях не соответствует количеству входа<br>
+        Кол-во в целях: {{ totalTargetQuantity$ | async }}<br>
+        Кол-во входа: {{ totalEntryQuantity() }}
+      </div>
     </tui-notification>
   }
   <div class="form__container">
@@ -76,8 +80,6 @@
   </div>
 
   <div class="form__actions">
-
-
     <div class="space"></div>
 
     <button

@@ -103,11 +103,15 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 		startWith(this.formArrayTarget.value)
 	);
 
-	readonly isDisabledSave$: Observable<boolean> = this.targets$.pipe(
+	readonly totalTargetQuantity$: Observable<number> = this.targets$.pipe(
 		map((value: StockPositionTarget[]) =>
 			value.reduce((acc: number, item: StockPositionTarget) => (acc += item.amount), 0)
 		),
 		distinctUntilChanged(),
+		shareReplay({ bufferSize: 1, refCount: true })
+	);
+
+	readonly isDisabledSave$: Observable<boolean> = this.totalTargetQuantity$.pipe(
 		map((value: number) => value === 0 || value !== this.totalEntryQuantity()),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
