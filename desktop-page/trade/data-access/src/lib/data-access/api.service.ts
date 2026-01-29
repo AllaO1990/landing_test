@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { APP_CONFIG } from 'tokens/desktop/config';
 import { Observable } from 'rxjs';
 import { Response } from 'types/response';
-import { TradeLimit } from './types';
+import { TradeLimit, TradeOrders } from './types';
 import { Params } from '@angular/router';
 
 @Injectable()
@@ -28,5 +28,25 @@ export class ApiTradeService {
 
 	deleteLimitForCurrency(currencyId: number): Observable<Response<TradeLimit>> {
 		return this.#http.delete<Response<TradeLimit>>(`${this.host}/v1/trades/limit`, { body: { currencyId } });
+	}
+
+	getOrders(params: Params): Observable<Response<TradeOrders>> {
+		return this.#http.get<Response<TradeOrders>>(`${this.host}/v1/trades/orders`, {
+			params: {
+				accountId: params['accountId'],
+				instrumentId: params['instrumentId'],
+				sourceId: params['sourceId'],
+			},
+		});
+	}
+
+	getStopOrders(params: Params): Observable<Response<TradeOrders | null>> {
+		return this.#http.get<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
+			params: {
+				accountId: params['accountId'],
+				instrumentId: params['instrumentId'],
+				sourceId: params['sourceId'],
+			},
+		});
 	}
 }

@@ -2,8 +2,6 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, InputSignal 
 import { LimitStore } from './limit.store';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { filter, map, Observable, switchMap } from 'rxjs';
-import { TuiAppearance } from '@taiga-ui/core';
-import { TuiCardLarge } from '@taiga-ui/layout';
 import { TradeLimit } from '@data-access-trade/types';
 import { AsyncPipe } from '@angular/common';
 import { TuiSkeleton } from '@taiga-ui/kit';
@@ -11,7 +9,7 @@ import { LoaderComponent } from '@ui/components/loader';
 
 @Component({
 	selector: 'trade-limit',
-	imports: [TuiAppearance, TuiCardLarge, AsyncPipe, TuiSkeleton, LoaderComponent],
+	imports: [AsyncPipe, TuiSkeleton, LoaderComponent],
 	templateUrl: './limit.component.html',
 	styleUrl: './limit.component.scss',
 	providers: [

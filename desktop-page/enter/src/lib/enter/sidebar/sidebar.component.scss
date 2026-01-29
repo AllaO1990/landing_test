@@ -1,6 +1,15 @@
 :host {
   --tui-height-m: 24px;
   --tui-font-text-s: normal 11px/24px var(--tui-font-text);
+
+  [tuiCardLarge][data-space][data-space=compact] {
+    --t-radius: 0;
+    --t-padding: 0;
+    --t-space: 0;
+
+    margin: var(--padding-2);
+    animation: opacityControl 725ms ease-in;
+  }
 }
 
 .widget {
@@ -182,6 +191,10 @@
     width: 80px;
 
     margin-left: var(--padding-4);
+  }
+
+  &__limit, &__view {
+    padding: var(--padding-2);
   }
 }
 

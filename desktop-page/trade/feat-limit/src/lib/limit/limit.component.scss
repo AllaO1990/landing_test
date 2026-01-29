@@ -1,23 +1,8 @@
-:host {
-  [tuiCardLarge][data-space][data-space=compact] {
-    --t-radius: 0;
-    --t-padding: 0;
-    --t-space: 0;
-
-    margin: var(--padding-2);
-    animation: opacityControl 725ms ease-in;
-  }
-}
-
 .limit {
-  &__container {
-    position: relative;
+  position: relative;
 
-    display: flex;
-    flex-flow: column nowrap;
-
-    padding: var(--padding-2);
-  }
+  display: flex;
+  flex-flow: column nowrap;
 
   &__header {
     display: flex;

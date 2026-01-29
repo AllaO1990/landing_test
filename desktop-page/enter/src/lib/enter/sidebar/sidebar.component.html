@@ -76,7 +76,13 @@
         </div>
       </div>
 
-      <trade-limit [currency]="currencyId$ | async"></trade-limit>
+      <div tuiAppearance="floating" tuiCardLarge="compact">
+        <trade-limit class="portfolio__limit" [currency]="currencyId$ | async"></trade-limit>
+      </div>
+
+      <!--      <div tuiAppearance="floating" tuiCardLarge="compact">-->
+      <!--        <trade-view class="portfolio__view"></trade-view>-->
+      <!--      </div>-->
 
       <!--      <div class="widget__valid-date widget__padding">-->
       <!--        <lib-enter-sidebar-valid-date formControlName="expirationDate">-->

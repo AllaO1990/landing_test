@@ -198,3 +198,14 @@ tui-data-list[role="menu"] [tuiOption]:not([new]) {
     height: 80vh;
   }
 }
+
+.start-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  font: var(--tui-font-text-xl);
+}

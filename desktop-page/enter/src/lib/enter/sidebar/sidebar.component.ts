@@ -40,7 +40,7 @@ import {
 import { AccountBalance, AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { TuiButton, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
+import { TuiAppearance, TuiButton, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
 import { AsyncPipe } from '@angular/common';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
@@ -54,6 +54,7 @@ import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
 import { BalanceDepositService, BalanceWithdrawalService } from '@feat-portfolio-balance';
 import { LimitComponent } from '@feat-trade-limit';
 import { StockInstrument } from 'types/stock';
+import { TuiCardLarge } from '@taiga-ui/layout';
 
 type Item = { id: string; name: string };
 
@@ -83,6 +84,8 @@ interface FormValue {
 		TuiFormatNumberPipe,
 		TuiButton,
 		LimitComponent,
+		TuiAppearance,
+		TuiCardLarge,
 	],
 	templateUrl: './sidebar.component.html',
 	styleUrl: './sidebar.component.scss',
@@ -207,8 +210,6 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
 	);
 
 	ngAfterViewInit(): void {
-		console.log(this.formGroup);
-
 		this._init();
 
 		combineLatest([

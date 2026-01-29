@@ -1,16 +1,16 @@
 {
-	"name": "data-access-trade",
+	"name": "feat-view",
 	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
-	"sourceRoot": "desktop-page/trade/data-access/src",
-	"prefix": "trade",
+	"sourceRoot": "desktop-page/trade/feat-view/src",
+	"prefix": "lib",
 	"projectType": "library",
-	"tags": ["data-access"],
+	"tags": ["feat"],
 	"targets": {
 		"test": {
 			"executor": "@nx/jest:jest",
 			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
-				"jestConfig": "desktop-page/trade/data-access/jest.config.ts"
+				"jestConfig": "desktop-page/trade/feat-view/jest.config.ts"
 			}
 		},
 		"lint": {

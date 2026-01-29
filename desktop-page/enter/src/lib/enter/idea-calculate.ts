@@ -77,7 +77,7 @@ export const calculateTargets = (
 			lots = getNumberPrecision(totalEntryLots * part, precisionAmount, 'ceil');
 		}
 
-		if (totalEntryLots - calcLots - lots === 0) {
+		if (totalEntryLots - calcLots - lots === 0 && index !== array.length - 1) {
 			lots = 1;
 		}
 
@@ -115,7 +115,7 @@ export const calculateStop = (
 		return [];
 	}
 
-	const multiplier = direction === 'long' ? -1 : 1;
+	const multiplier = direction === 'long' ? 1 : -1;
 	const precision = getPriceIncrement(minPriceIncrement);
 	const totalEntry = entries.reduce(
 		(acc, item: StockPositionIdeaEntry) => {

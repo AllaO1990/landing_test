@@ -1,20 +1,19 @@
-<div class="limit" tuiAppearance="floating" tuiCardLarge="compact">
-  <div class="limit__container">
-    @if (isLoading$ | async) {
-      <div class="limit__loading">
-        <ui-loader></ui-loader>
-      </div>
-    }
-
-    <div class="limit__header">
-      <div class="limit__title" [tuiSkeleton]="isLoaded$ | async">
-        Лимит на сделку
-      </div>
+<div class="limit">
+  @if (isLoading$ | async) {
+    <div class="limit__loading">
+      <ui-loader></ui-loader>
     </div>
-    <div class="limit__value" [tuiSkeleton]="isLoaded$ | async">
-      @if (limit$ | async; as data) {
-        {{ data.limit }} {{ data.currencySymbol }}
-      }
+  }
+
+  <div class="limit__header">
+    <div class="limit__title" [tuiSkeleton]="isLoaded$ | async">
+      Лимит на сделку
     </div>
   </div>
+  <div class="limit__value" [tuiSkeleton]="isLoaded$ | async">
+    @if (limit$ | async; as data) {
+      {{ data.limit }} {{ data.currencySymbol }}
+    }
+  </div>
 </div>
+
