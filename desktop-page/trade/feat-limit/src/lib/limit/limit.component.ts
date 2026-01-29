@@ -11,7 +11,6 @@ import {
 	WritableSignal,
 } from '@angular/core';
 import { LimitStore } from './limit.store';
-import { ApiTradeService } from '@data-access-trade/api.service';
 import { distinctUntilChanged, filter, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { TradeLimit } from '@data-access-trade/types';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
@@ -39,14 +38,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 	],
 	templateUrl: './limit.component.html',
 	styleUrl: './limit.component.scss',
-	providers: [
-		ApiTradeService,
-		{
-			provide: LimitStore,
-			useFactory: (api: ApiTradeService) => new LimitStore(api),
-			deps: [ApiTradeService],
-		},
-	],
+	providers: [],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TareLimit implements AfterViewInit {

@@ -79,7 +79,7 @@
           type="button"
           iconStart="@tui.trash"
         ></button>
-        
+
         <button
           class="action save"
           tuiIconButton
@@ -182,13 +182,12 @@
           <button
             class="header__action header__action--right"
             tuiButton
-            appearance="secondary"
-            size="xs"
             type="button"
+            size="xs"
             [disabled]="isDisableTrade$ | async"
             (click)="onTrade($event)"
             iconStart="@tui.chart-candlestick">
-            Брокерские заявки
+            Выставить заявку
           </button>
         </div>
         <div class="widget__content">

@@ -40,6 +40,8 @@ import { Permissions } from 'utils/permissions';
 import { PERMISSIONS } from 'tokens/desktop/permission';
 import { AsyncPipe } from '@angular/common';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
+import { ApiTradeService } from '@data-access-trade/api.service';
+import { LimitStore } from '@feat-trade-limit';
 
 @Component({
 	selector: 'lk-layout',
@@ -76,6 +78,12 @@ import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 			provide: DataAccessIdeasStore,
 			useFactory: (api: ApiIdeasService) => new DataAccessIdeasStore(api),
 			deps: [ApiIdeasService],
+		},
+		ApiTradeService,
+		{
+			provide: LimitStore,
+			useFactory: (api: ApiTradeService) => new LimitStore(api),
+			deps: [ApiTradeService],
 		},
 		{
 			provide: ACTION_EVENTS,
