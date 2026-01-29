@@ -1,10 +1,13 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { forkJoin, map, Observable, switchMap, tap, timer } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { Response } from 'types/response';
 import { TradeLimit } from '@data-access-trade/types';
+import { Params } from '@angular/router';
 
 interface LimitApi {
 	getLimitForCurrency(params: number): Observable<Response<TradeLimit>>;
+	changeLimitForCurrency(params: Params): Observable<Response<TradeLimit>>;
+	deleteLimitForCurrency(currencyId: number): Observable<Response<TradeLimit>>;
 }
 
 export interface LimitState {
@@ -46,9 +49,62 @@ export class LimitStore extends ComponentStore<LimitState> {
 		stream$.pipe(
 			tap(() => this.updateLimitLoading(false)),
 			switchMap((params: number) =>
-				forkJoin([this.api.getLimitForCurrency(params), timer(1000)]).pipe(
-					map(([response]: [Response<TradeLimit>, number]) => response && this.updateLimitData(response.data))
-				)
+				forkJoin([
+					this.api.getLimitForCurrency(params).pipe(
+						catchError((err: Error) => {
+							return of({
+								data: null,
+								message: err.message,
+								success: true,
+							});
+						})
+					),
+					timer(1000),
+				]).pipe(map(([response]: [Response<TradeLimit | null>, number]) => response && this.updateLimitData(response.data)))
+			)
+		)
+	);
+
+	readonly changeLimit = this.effect((stream$: Observable<Params>) =>
+		stream$.pipe(
+			tap(() => this.updateLimitLoading(false)),
+			switchMap((params: Params) =>
+				forkJoin([
+					this.api.changeLimitForCurrency(params).pipe(
+						catchError((err: Error) => {
+							this.loadLimit(params['currencyId']);
+
+							return of({
+								data: null,
+								message: err.message,
+								success: true,
+							});
+						})
+					),
+					timer(1000),
+				]).pipe(map(([response]: [Response<TradeLimit | null>, number]) => response && this.updateLimitData(response.data)))
+			)
+		)
+	);
+
+	readonly deleteLimit = this.effect((stream$: Observable<number>) =>
+		stream$.pipe(
+			tap(() => this.updateLimitLoading(false)),
+			switchMap((params: number) =>
+				forkJoin([
+					this.api.deleteLimitForCurrency(params).pipe(
+						catchError((err: Error) => {
+							this.loadLimit(params);
+
+							return of({
+								data: null,
+								message: err.message,
+								success: true,
+							});
+						})
+					),
+					timer(1000),
+				]).pipe(tap(() => this.loadLimit(params)))
 			)
 		)
 	);

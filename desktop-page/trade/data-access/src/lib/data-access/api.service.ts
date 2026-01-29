@@ -27,7 +27,7 @@ export class ApiTradeService {
 	}
 
 	deleteLimitForCurrency(currencyId: number): Observable<Response<TradeLimit>> {
-		return this.#http.delete<Response<TradeLimit>>(`${this.host}/v1/trades/limit`, { body: { currencyId } });
+		return this.#http.delete<Response<TradeLimit>>(`${this.host}/v1/trades/limit`, { params: { currencyId } });
 	}
 
 	getOrders(params: Params): Observable<Response<TradeOrders>> {

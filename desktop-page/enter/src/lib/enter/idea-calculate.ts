@@ -115,7 +115,7 @@ export const calculateStop = (
 		return [];
 	}
 
-	const multiplier = direction === 'long' ? 1 : -1;
+	const multiplier = direction === 'long' ? -1 : 1;
 	const precision = getPriceIncrement(minPriceIncrement);
 	const totalEntry = entries.reduce(
 		(acc, item: StockPositionIdeaEntry) => {
@@ -135,8 +135,8 @@ export const calculateStop = (
 			lots: totalEntry.quantity / lot,
 			amount: totalEntry.quantity,
 			totalPrice: price * totalEntry.quantity,
-			loss: getNumberPrecision((price - averagePrice) * totalEntry.quantity * multiplier, precision),
-			lossPercent: getNumberPrecision(100 * ((price - averagePrice) / averagePrice) * multiplier, 2),
+			loss: getNumberPrecision((price - averagePrice) * totalEntry.quantity * multiplier * -1, precision),
+			lossPercent: getNumberPrecision(100 * ((price - averagePrice) / averagePrice) * multiplier * -1, 2),
 			depositShare: null,
 			stopCandleDate: null,
 			amountPercent: 100,

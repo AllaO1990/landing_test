@@ -1,4 +1,4 @@
-<div class="limit">
+<form class="limit" [formGroup]="form" (ngSubmit)="onSave($event)">
   @if (isLoading$ | async) {
     <div class="limit__loading">
       <ui-loader></ui-loader>
@@ -12,8 +12,72 @@
   </div>
   <div class="limit__value" [tuiSkeleton]="isLoaded$ | async">
     @if (limit$ | async; as data) {
-      {{ data.limit }} {{ data.currencySymbol }}
+      <ng-container
+        [ngTemplateOutlet]="isEdit() ? edit : view"
+        [ngTemplateOutletContext]="{ $implicit: data }">
+      </ng-container>
     }
   </div>
-</div>
+</form>
 
+<ng-template #view let-data>
+  @if (data.limit) {
+    {{ data.limit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }} {{ data.currencySymbol }}
+  } @else {
+    не определён
+  }
+  <div class="space"></div>
+  <button
+    appearance="secondary"
+    tuiIconButton
+    type="button"
+    iconStart="@tui.pencil"
+    [size]="size"
+    (click)="onEdit($event)">
+  </button>
+</ng-template>
+
+<ng-template #edit let-data>
+  <tui-textfield
+    class="limit__action limit__control"
+    [tuiTextfieldSize]="size"
+    [formGroup]="form">
+    <input
+      placeholder="Лимит"
+      tuiAutoFocus
+      tuiInputNumber
+      [postfix]="' ' + data.currencySymbol"
+      [tuiNumberFormat]="{precision: 2}"
+      autocomplete="off"
+      name="current"
+      formControlName="current"
+    />
+  </tui-textfield>
+  <button
+    class="limit__action"
+    tuiIconButton
+    type="button"
+    iconStart="@tui.check"
+    [disabled]="form.invalid || form.pristine"
+    [size]="size"
+    (click)="onSave($event)">
+  </button>
+  <button
+    class="limit__action"
+    tuiIconButton
+    type="button"
+    appearance="primary-destructive"
+    iconStart="@tui.trash"
+    [size]="size"
+    (click)="onDelete($event)">
+  </button>
+  <button
+    class="limit__action"
+    tuiIconButton
+    type="button"
+    appearance="secondary"
+    iconStart="@tui.x"
+    [size]="size"
+    (click)="onClose($event)">
+  </button>
+</ng-template>
