@@ -9,7 +9,7 @@ import {
 	Input,
 	NgZone,
 } from '@angular/core';
-import { AsyncPipe, DatePipe, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
 import {
 	StockPosition,
@@ -57,11 +57,12 @@ import { IdeaFacade } from 'stores/facades/idea.facade';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { AddDividendComponent } from './add-dividend/add-dividend.component';
 import { AddCommissionComponent } from './add-commission/add-commission.component';
-import { TuiTooltip } from '@taiga-ui/kit';
+import { TuiChevron, TuiTooltip } from '@taiga-ui/kit';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { Params } from '@angular/router';
 import { StockInstrument } from 'types/stock';
+import { TuiAccordion } from '@taiga-ui/experimental';
 
 type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 
@@ -84,6 +85,9 @@ type DialogType = 'entries' | 'outs' | 'dividends' | 'commissions';
 		TuiHint,
 		TuiIcon,
 		TuiTooltip,
+		NgTemplateOutlet,
+		TuiAccordion,
+		TuiChevron,
 	],
 	templateUrl: './action.component.html',
 	styleUrl: './action.component.scss',
@@ -131,11 +135,14 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
+	readonly size = 's';
 	readonly itemHeight = 28;
 	minPriceIncrement = 1e-8;
 	priceIncrement = 8;
 	value: any = null;
 	isDisabled = false;
+	dividendsExpanded = false;
+	commissionExpanded = false;
 
 	onChange = (_: any) => {};
 	onTouched = () => {};

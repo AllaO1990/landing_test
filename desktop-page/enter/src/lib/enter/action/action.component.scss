@@ -1,3 +1,15 @@
+:host {
+  tui-accordion {
+    [tuiButton], [tuiIconButton] {
+      --t-padding: var(--padding-2);
+    }
+
+    tui-expand {
+      padding: 0;
+    }
+  }
+}
+
 form {
   display: flex;
   flex-flow: column nowrap;
