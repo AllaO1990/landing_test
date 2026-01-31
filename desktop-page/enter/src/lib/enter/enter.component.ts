@@ -38,15 +38,9 @@ import { LoaderComponent } from '@ui/components/loader';
 import { ChartCandlestickComponent } from 'ui-common/lib/chart';
 import { StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
-import { DESKTOP_API, QUERY_PARAMS } from 'tokens/desktop';
+import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
-import {
-	StockPosition,
-	StockPositionActionEntry,
-	StockPositionIdeaEntry,
-	StockPositionStop,
-	StockPositionTarget,
-} from 'types/position';
+import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
 	AbstractControl,
@@ -63,7 +57,6 @@ import { EnterFinishComponent } from './finish/finish.component';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { Params } from '@angular/router';
 import { getNumberPrecision } from 'utils/get-number-precision';
-import { getPriceIncrement } from 'utils/get-price-increment';
 import { EnterIdeaComponent } from './idea/idea.component';
 import { calculateEntries, calculateStop, calculateTargets } from './idea-calculate';
 import { LimitStore } from '@feat-trade-limit';
@@ -164,7 +157,6 @@ export class VtEnterComponent implements AfterViewInit {
 	private readonly _isShowCopyNotify$: Subject<void> = new Subject<void>();
 	readonly #injector: Injector = inject(Injector);
 	readonly #dialog: DialogService = inject(DIALOG);
-	readonly #api = inject(DESKTOP_API);
 
 	#limitStore: LimitStore = inject(LimitStore);
 	#dialogFinish: PolymorpheusContent<EnterFinishComponent> | null = null;
@@ -354,33 +346,12 @@ export class VtEnterComponent implements AfterViewInit {
 					}
 
 					if (result) {
-						const minPriceIncrement = getPriceIncrement(result.idea.instrument.minPriceIncrement);
-						const precision = minPriceIncrement === 8 ? 8 : 0;
-
-						// const entries = this._getIdeaEntries(
-						// 	result.idea.entries,
-						// 	result.actions.entries,
-						// 	precision,
-						// 	result.idea.instrument.lot,
-						// 	limit
-						// );
-
 						const entries = calculateEntries(
 							result.idea.entries,
 							result.idea.instrument.lot,
 							result.idea.instrument.minPriceIncrement,
 							limit
 						);
-
-						const entriesQuantity = entries.reduce((acc, item) => (acc += item.quantity), 0);
-						const entriesPrice = entries.reduce((acc, item) => (acc += item.quantity * item.price), 0) / entriesQuantity;
-
-						// const targets = this._getIdeaTargets(
-						// 	result.idea.targets,
-						// 	result.actions.outs,
-						// 	result.idea.positionType === 'long' ? 1 : -1,
-						// 	result.idea.instrument.lot
-						// );
 
 						const targets = calculateTargets(
 							result.idea.positionType as 'long' | 'short',
@@ -390,15 +361,6 @@ export class VtEnterComponent implements AfterViewInit {
 							result.idea.instrument.minPriceIncrement,
 							0
 						);
-
-						// const stop = this._getIdeStop(
-						// 	result.idea.stop ? [result.idea.stop] : [],
-						// 	result.actions.outs,
-						// 	result.idea.positionType === 'long' ? 1 : -1,
-						// 	entries,
-						// 	entriesPrice,
-						// 	result.idea.instrument.lot
-						// );
 
 						const stop = calculateStop(
 							result.idea.positionType as 'long' | 'short',
@@ -609,45 +571,6 @@ export class VtEnterComponent implements AfterViewInit {
 		};
 	}
 
-	private _getIdeaEntries(
-		list: StockPositionIdeaEntry[],
-		actions: StockPositionActionEntry[],
-		precision: number,
-		lot: number,
-		limit: number | null = null
-	): StockPositionIdeaEntry[] {
-		const check = !!(actions[0] && actions[0].date);
-
-		const part = limit && limit / list.length;
-
-		return list
-			.filter((item) => item.price !== 0)
-			.map((item, index: number) => {
-				const quantity = item.price && part ? this._getLot(part / item.price, precision) : 0;
-				const total = item.price && quantity ? getNumberPrecision(item.price * quantity, 2) : null;
-				const lots = (quantity || item.quantity) / lot;
-
-				return {
-					check: index === 0 && check,
-					date: item.date || null,
-					depositShare: quantity ? null : item.depositShare || null,
-					broker: null,
-					lots,
-					price: item.price || 0,
-					quantity: quantity || item.quantity || 0,
-					totalPrice: total || item.totalPrice || 0,
-				};
-			});
-	}
-
-	private _getLot(lot: number, precision: number): number {
-		if (precision === 0) {
-			return Math.floor(lot);
-		}
-
-		return getNumberPrecision(lot, precision);
-	}
-
 	private _getDialogFinishType(value: StockPosition | null): 'profit' | 'loss' | null {
 		if (value === null) {
 			return null;
@@ -707,80 +630,6 @@ export class VtEnterComponent implements AfterViewInit {
 				data: { type },
 			})
 			.subscribe();
-	}
-
-	private _getIdeaTargets(list: any[], outs: any[] = [], direction: 1 | -1 = 1, lot: number): StockPositionTarget[] {
-		return list.map((item, index: number) => {
-			let stopDate = item.stopDate;
-
-			if (stopDate === null) {
-				const findIndex = outs.findIndex((out) => {
-					if (direction === 1) {
-						return out.price * 1.005 >= item.price;
-					}
-					return out.price * 0.995 <= item.price;
-				});
-
-				if (findIndex !== -1) {
-					stopDate = outs[findIndex].date;
-				}
-			}
-
-			return {
-				price: item.price || null,
-				amount: item.amount,
-				lots: item.amount / lot,
-				profit: item.profit,
-				profitPercent: item.profitPercent || null,
-				depositShare: item.depositShare || null,
-				totalPrice: getNumberPrecision(item.price * item.amount, 2),
-				reached: false,
-				stopDate: stopDate || null,
-				broker: null,
-			};
-		});
-	}
-
-	private _getIdeStop(
-		list: any[],
-		outs: any[] = [],
-		direction: 1 | -1 = 1,
-		entries: StockPositionIdeaEntry[],
-		price: number,
-		lot: number
-	): StockPositionStop[] {
-		const quantity = entries.reduce((acc: number, item) => (acc += item.quantity), 0);
-
-		return list
-			.filter((item) => item.price !== 0)
-			.map((item) => {
-				let stopDate = item.stopDate;
-
-				if (stopDate === null) {
-					const findIndex = outs.findIndex((out) => {
-						if (direction === 1) {
-							return out.price * 0.995 <= item.price;
-						}
-						return out.price * 1.005 >= item.price;
-					});
-
-					if (findIndex !== -1) {
-						stopDate = outs[findIndex].date;
-					}
-				}
-
-				return {
-					depositShare: item.depositShare || null,
-					lossPercent: item.lossPercent || null,
-					totalPrice: getNumberPrecision(item.price * item.amount, 2),
-					lots: (item.amount || quantity) / lot,
-					loss: getNumberPrecision(-1 * quantity * Math.abs(item.price - price), 2) || null,
-					price: item.price || null,
-					stopCandleDate: item.stopCandleDate || stopDate,
-					amount: item.amount || quantity,
-					amountPercent: item.amountPercent || 100,
-				};
-			});
 	}
 
 	onCopy(event: Event): void {
