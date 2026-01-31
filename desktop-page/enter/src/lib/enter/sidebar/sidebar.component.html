@@ -1,6 +1,11 @@
 <div class="widget" [formGroup]="form">
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
+      
+      <div tuiAppearance="floating" tuiCardLarge="compact">
+        <stock-card-instrument class="portfolio__limit" [instrument]="instrument$ | async"></stock-card-instrument>
+      </div>
+
       <div class="widget__portfolio control widget__padding portfolio">
         <div class="control__label portfolio__label">
           Портфель

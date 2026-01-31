@@ -3,9 +3,6 @@
   <div class="container__toolbar">
     <div class="container__actions">
       @if (data$ | async; as result) {
-        <lib-instrument
-          [data]="result.idea.instrument">
-        </lib-instrument>
 
         @if (result.idea.createdAt) {
           <div class="date-start">
@@ -17,7 +14,7 @@
         }
 
         @if (result.idea.author === 'bot' || result.idea.parentId !== null) {
-          <div class="date-start">
+          <div class="avatar">
             <img
               class="idea__icon"
               src="/assets/icons/vanya.svg"
@@ -25,7 +22,7 @@
             />
           </div>
         } @else {
-          <div class="date-start">
+          <div class="avatar">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>

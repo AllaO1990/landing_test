@@ -1,9 +1,11 @@
-<div class="icon-ticker" *ngIf="instrument">
-  <ng-container
-    [ngTemplateOutlet]="isError ? avatar : img"
-    [ngTemplateOutletContext]="{ $implicit: instrument }">
-  </ng-container>
-</div>
+@if (instrument) {
+  <div class="icon-ticker">
+    <ng-container
+      [ngTemplateOutlet]="isError ? avatar : img"
+      [ngTemplateOutletContext]="{ $implicit: instrument }">
+    </ng-container>
+  </div>
+}
 
 <ng-template #img let-instrument>
   <div class="icon-ticker__img">

@@ -31,7 +31,6 @@ import {
 import { EnterActionComponent } from './action/action.component';
 import { EnterSidebarComponent } from './sidebar/sidebar.component';
 import { map } from 'rxjs/operators';
-import { InstrumentComponent } from 'ui-common/lib/instrument/instrument.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
 import { EventSelected } from 'types/events';
@@ -139,7 +138,6 @@ function maxAmount(): ValidatorFn {
 		NgForOf,
 		TuiTabs,
 		TuiIcon,
-		InstrumentComponent,
 		LoaderComponent,
 		ChartCandlestickComponent,
 		SearchDialogDirective,

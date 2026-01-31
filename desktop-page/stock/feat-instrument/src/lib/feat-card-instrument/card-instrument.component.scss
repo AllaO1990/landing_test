@@ -1,0 +1,75 @@
+.card {
+  display: flex;
+  flex-flow: column nowrap;
+
+  &__row {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+
+  &__col {
+    flex: 1 1;
+
+    display: flex;
+    flex-flow: column nowrap;
+
+    overflow: hidden;
+
+    &--info {
+      margin-right: var(--padding-4);
+    }
+
+    &--with-price {
+      flex: 0 auto;
+    }
+  }
+
+  &__img {
+    width: 56px;
+
+    margin-right: var(--padding-2);
+  }
+
+  &__name {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__ticker {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+
+    color: var(--tui-text-secondary);
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+
+    white-space: nowrap;
+  }
+
+  &__price {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+
+    white-space: nowrap;
+  }
+
+  &__sector {
+    margin-top: var(--padding-2);
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}

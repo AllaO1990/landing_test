@@ -1,25 +1,25 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { StockInstrument } from 'types/stock';
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { TuiIconPipe } from '@taiga-ui/core';
 import { IconTickerSrcPipe } from './icon-ticker.pipe';
 
 @Component({
-  selector: 'ui-icon-ticker',
-  standalone: true,
-  imports: [NgIf, NgTemplateOutlet, TuiIconPipe, IconTickerSrcPipe],
-  templateUrl: './icon-ticker.component.html',
-  styleUrl: './icon-ticker.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'ui-icon-ticker',
+	standalone: true,
+	imports: [NgTemplateOutlet, TuiIconPipe, IconTickerSrcPipe],
+	templateUrl: './icon-ticker.component.html',
+	styleUrl: './icon-ticker.component.scss',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IconTickerComponent {
-  isError = false;
+	isError = false;
 
-  @Input() instrument: StockInstrument | null = null;
+	@Input() instrument: StockInstrument | null = null;
 
-  onErrorImg(event: Event): void {
-    event.preventDefault();
+	onErrorImg(event: Event): void {
+		event.preventDefault();
 
-    this.isError = true;
-  }
+		this.isError = true;
+	}
 }

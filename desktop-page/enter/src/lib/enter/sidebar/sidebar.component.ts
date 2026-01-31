@@ -55,6 +55,7 @@ import { BalanceDepositService, BalanceWithdrawalService } from '@feat-portfolio
 import { TareLimit } from '@feat-trade-limit';
 import { StockInstrument } from 'types/stock';
 import { TuiCardLarge } from '@taiga-ui/layout';
+import { StockCardInstrument } from 'feat-instrument';
 
 type Item = { id: string; name: string };
 
@@ -86,6 +87,7 @@ interface FormValue {
 		TuiAppearance,
 		TuiCardLarge,
 		TareLimit,
+		StockCardInstrument,
 	],
 	templateUrl: './sidebar.component.html',
 	styleUrl: './sidebar.component.scss',
@@ -205,9 +207,11 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
 
 	@Input({ required: true }) formGroup!: FormGroup;
 
-	readonly currencyId$: Observable<number | null> = this._idea.instrument$.pipe(
-		map((value: StockInstrument | null) => (value ? value.currencyId : null))
+	readonly instrument$: Observable<StockInstrument> = this._idea.instrument$.pipe(
+		filter((instrument: StockInstrument | null) => instrument !== null)
 	);
+
+	readonly currencyId$: Observable<number> = this.instrument$.pipe(map((value: StockInstrument) => value.currencyId));
 
 	ngAfterViewInit(): void {
 		this._init();

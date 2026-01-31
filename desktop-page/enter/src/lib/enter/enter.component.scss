@@ -6,14 +6,6 @@
   background-color: var(--block-bg-color);
 }
 
-lib-instrument {
-  margin-right: var(--padding-4);
-
-  width: 317px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
 .container {
   display: flex;
   flex-flow: column nowrap;
@@ -182,6 +174,16 @@ lib-instrument {
     margin-left: var(--padding-1);
   }
 
+  .create {
+    display: flex;
+    flex-flow: column nowrap;
+  }
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+
   &:before {
     content: '';
     display: block;
@@ -190,11 +192,6 @@ lib-instrument {
 
     background-color: var(--main-bg-color);
     margin-right: var(--padding-2);
-  }
-
-  .create {
-    display: flex;
-    flex-flow: column nowrap;
   }
 }
 

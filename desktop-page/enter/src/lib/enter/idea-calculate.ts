@@ -1,6 +1,6 @@
-import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { getPriceIncrement } from 'utils/get-price-increment';
+import {StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from 'types/position';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {getPriceIncrement} from 'utils/get-price-increment';
 
 export const calculateEntries = (
 	list: StockPositionIdeaEntry[],
@@ -10,7 +10,7 @@ export const calculateEntries = (
 ): StockPositionIdeaEntry[] => {
 	const total = list.reduce((acc: number, item: StockPositionIdeaEntry) => (acc += item.totalPrice), 0);
 
-	if (limit === null || total <= limit) {
+	if (limit === null || total <= limit || limit < list[0].price) {
 		return list.map((item: StockPositionIdeaEntry) => ({
 			...item,
 			lots: item.quantity / lot,

@@ -1,0 +1,62 @@
+<div class="card">
+  <div class="card__row">
+    <div class="card__img">
+      <ui-icon-ticker
+        [tuiSkeleton]="skeleton()"
+        [instrument]="instrument()">
+      </ui-icon-ticker>
+    </div>
+
+    <div class="card__col">
+      <div class="card__row">
+        <div class="card__col card__col--info">
+          <div
+            [tuiSkeleton]="skeleton()"
+            class="card__name"
+            [tuiHint]="name()"
+            tuiHintAppearance="dark">
+            {{ name() }}
+          </div>
+          <div
+            class="card__ticker"
+            [tuiSkeleton]="skeleton()">
+            {{ ticker() }}
+          </div>
+        </div>
+
+        <div class="card__col card__col--with-price">
+          <div
+            [tuiSkeleton]="skeleton()"
+            class="card__title">Цена акции
+          </div>
+          @if (price$ | async; as price) {
+            <div
+              [tuiSkeleton]="price.last === 0"
+              class="card__price">
+          <span
+            [class.long]="price.last > price.prev"
+            [class.short]="price.last < price.prev">
+            {{
+              price.last | tuiFormatNumber: {
+                precision: (price.minPriceIncrement | getPriceIncrement),
+                decimalMode: 'always'
+              } | async
+            }}
+          </span> {{ currency() }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="card__row">
+        <div
+          [tuiSkeleton]="skeleton()"
+          class="card__sector">
+          Отрасль: {{ sector() }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
