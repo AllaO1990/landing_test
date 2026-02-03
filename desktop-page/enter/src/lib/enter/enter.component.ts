@@ -189,7 +189,7 @@ export class VtEnterComponent implements AfterViewInit {
 
 			return this._queryParams.pipe(
 				startWith(this._queryParams.value()),
-				map((value: Params) => value['id'] && (value['type'] === 'position' || value['type'] === 'idea')),
+				map((value: Params) => value['id']),
 				map((value: boolean | null) => !value),
 				shareReplay({ bufferSize: 1, refCount: true })
 			);

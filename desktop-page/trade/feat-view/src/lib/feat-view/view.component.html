@@ -1,20 +1,61 @@
 <div class="view">
   <div class="view__header">
-    <div class="view__title">Вход</div>
+    <div class="view__title title">Заявки</div>
+    <div class="space"></div>
+    <button
+      tuiButton
+      type="button"
+      iconStart="@tui.chart-candlestick"
+      size="s"
+      (click)="onTrade($event)">
+      Подробнее
+    </button>
   </div>
   <div class="view__list">
-
+    <ng-template
+      [ngTemplateOutlet]="templateOrders"
+      [ngTemplateOutletContext]="{ $implicit: orders$ | async }">
+    </ng-template>
   </div>
+
   <div class="view__header">
-    <div class="view__title">Выход</div>
+    <div class="view__title title">Стоп заявка</div>
   </div>
   <div class="view__list">
-
-  </div>
-  <div class="view__header">
-    <div class="view__title">Стоп заявка</div>
-  </div>
-  <div class="view__list">
-
+    <ng-template
+      [ngTemplateOutlet]="templateOrders"
+      [ngTemplateOutletContext]="{ $implicit: stopOrders$ | async }">
+    </ng-template>
   </div>
 </div>
+
+<ng-template #templateOrders let-list>
+  @if (list) {
+    @if (list.length > 0) {
+      @for (item of list; track item.orderId) {
+        <div class="view__item item">
+          <div class="item__value">
+            {{ item.direction | tradeDirectionType | async }}
+          </div>
+          <div class="item__value">
+            {{ item.orderTypeText | tradeOrderType | async }}
+          </div>
+          <div class="item__value">
+            {{ (item.price.value || item.stopPrice.value) | tuiFormatNumber | async }}
+          </div>
+          <div class="item__value">
+            {{ (item.lotsRequested * (item.price.value || item.stopPrice.value)) | tuiFormatNumber | async }}
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="view__item">
+        Нет заявок
+      </div>
+    }
+  } @else {
+    <div class="view__item">
+      Нет данных
+    </div>
+  }
+</ng-template>

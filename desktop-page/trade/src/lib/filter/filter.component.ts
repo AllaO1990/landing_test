@@ -1,42 +1,43 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
-import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield } from '@taiga-ui/core';
-import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
-import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
+import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject} from '@angular/core';
+import {TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield} from '@taiga-ui/core';
+import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe} from '@angular/common';
+import {TuiSelectModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 import {
-	combineLatest,
-	distinctUntilChanged,
-	filter,
-	map,
-	Observable,
-	of,
-	pairwise,
-	startWith,
-	switchMap,
-	take,
-	tap,
-	timer,
+  combineLatest,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  of,
+  pairwise,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  timer,
 } from 'rxjs';
-import { TuiStringHandler } from '@taiga-ui/cdk';
-import { LoaderComponent } from '@ui/components/loader';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TradeStore } from '../common/store';
+import {TuiStringHandler} from '@taiga-ui/cdk';
+import {LoaderComponent} from '@ui/components/loader';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {TradeStore} from '../common/store';
 import {
-	TradeAccount,
-	TradeAccounts,
-	TradeOrders,
-	TradeSource,
-	TradeSources,
-	TradeToken,
+  TradeAccount,
+  TradeAccounts,
+  TradeOrders,
+  TradeSource,
+  TradeSources,
+  TradeToken,
 } from '@data-access-trade/types';
-import { TuiChip } from '@taiga-ui/kit';
-import { StockInstrument, WithLastPrice } from 'types/stock';
-import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
-import { Response } from 'types/response';
-import { Params } from '@angular/router';
-import { StockPosition } from 'types/position';
-import { IdeaFacade } from 'stores/facades/idea.facade';
-import { TokenButtonComponent } from '../token-button/token-button.component';
+import {TuiChip} from '@taiga-ui/kit';
+import {StockInstrument, WithLastPrice} from 'types/stock';
+import {TuiCurrencyPipe} from '@taiga-ui/addon-commerce';
+import {Response} from 'types/response';
+import {Params} from '@angular/router';
+import {StockPosition} from 'types/position';
+import {IdeaFacade} from 'stores/facades/idea.facade';
+import {TokenButtonComponent} from '../token-button/token-button.component';
+import {LOCAL_STORAGE} from 'tokens/desktop/local-storage';
 
 interface Position {
 	loading: boolean;
@@ -80,6 +81,7 @@ interface Position {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent implements ControlValueAccessor, AfterViewInit {
+	readonly #localStorage = inject(LOCAL_STORAGE);
 	readonly #store: TradeStore = inject(TradeStore);
 	readonly #idea: IdeaFacade = inject(IdeaFacade);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
@@ -154,6 +156,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 			.pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value))
 			.subscribe((value) => {
 				this.#onChange(value);
+				this.#localStorage.setItem('filterTrade', value);
 			});
 
 		this.#store.loadSources();

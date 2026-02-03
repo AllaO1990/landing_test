@@ -42,6 +42,8 @@ import { AsyncPipe } from '@angular/common';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { LimitStore } from '@feat-trade-limit';
+import { ApiService } from '../../../../trade/src/lib/common/api.service';
+import { TradeStore } from '../../../../trade/src/lib/common/store';
 
 @Component({
 	selector: 'lk-layout',
@@ -84,6 +86,12 @@ import { LimitStore } from '@feat-trade-limit';
 			provide: LimitStore,
 			useFactory: (api: ApiTradeService) => new LimitStore(api),
 			deps: [ApiTradeService],
+		},
+		ApiService,
+		{
+			provide: TradeStore,
+			useFactory: (api: ApiService) => new TradeStore(api),
+			deps: [ApiService],
 		},
 		{
 			provide: ACTION_EVENTS,
@@ -159,6 +167,7 @@ import { LimitStore } from '@feat-trade-limit';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LkComponent implements OnInit {
+	readonly #storeTrade: TradeStore = inject(TradeStore);
 	readonly #injector: Injector = inject(Injector);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 	readonly #dialogTrade: TradeDialogService = inject(TradeDialogService);
@@ -186,6 +195,7 @@ export class LkComponent implements OnInit {
 	readonly isAccess$: Observable<boolean | null> = this.#permissions.isAccessed$;
 
 	ngOnInit(): void {
+		this.#storeTrade.loadOrderTypes();
 		// this._queryParams.pipe(tap((data) => console.log(data))).subscribe();
 		//TODO - очищает PARAMS =( разобраться
 		this._queryParams

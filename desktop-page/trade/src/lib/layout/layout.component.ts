@@ -3,7 +3,6 @@ import { TuiBreakpointService, TuiButton } from '@taiga-ui/core';
 import { TuiPopover } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ApiService } from '../common/api.service';
 import { TradeStore } from '../common/store';
 import {
 	BehaviorSubject,
@@ -43,14 +42,7 @@ import { TradeDesktopFormComponent } from '../form/desktop/form.component';
 	],
 	templateUrl: './layout.component.html',
 	styleUrls: ['../common/dialog.scss', './layout.component.scss'],
-	providers: [
-		ApiService,
-		{
-			provide: TradeStore,
-			useFactory: (api: ApiService) => new TradeStore(api),
-			deps: [ApiService],
-		},
-	],
+	providers: [],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit, OnDestroy {
@@ -132,8 +124,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	);
 
 	ngAfterViewInit(): void {
-		this.#store.loadOrderTypes();
-
 		this.#isSubmitted$
 			.asObservable()
 			.pipe(

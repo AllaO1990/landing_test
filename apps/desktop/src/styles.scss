@@ -105,9 +105,8 @@ tui-data-list[role="menu"] [tuiOption]:not([new]) {
 }
 
 .title {
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 18px;
+  font: var(--tui-font-text-xl);
+  font-weight: 500;
 }
 
 .bold {
