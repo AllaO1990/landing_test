@@ -101,7 +101,7 @@
     <div class="out">
       <ui-lib-list
         class="list"
-        [style.height.px]="list.length > 3 ? 4 * itemHeight : list.length * itemHeight + 56"
+        [style.height.px]="list.length > 3 ? 5 * itemHeight : (list.length + 3) * itemHeight"
         [list]="list"
         [header]="outHeader"
         [footer]="outFooter"
@@ -205,10 +205,11 @@
 
   <div class="action">
     <button
+      class="button"
       tuiButton
       appearance="outline"
       (click)="dividendsExpanded = !dividendsExpanded"
-      [tuiChevron]="dividendsExpanded">Дивиденд
+      [tuiChevron]="dividendsExpanded">Дивиденды
     </button>
   </div>
   <tui-expand [expanded]="dividendsExpanded">
@@ -305,6 +306,7 @@
 
   <div class="action">
     <button
+      class="button"
       tuiButton
       appearance="outline"
       (click)="commissionExpanded = !commissionExpanded"

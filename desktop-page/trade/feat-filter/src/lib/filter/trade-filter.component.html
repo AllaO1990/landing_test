@@ -1,0 +1,108 @@
+<form class="form" [formGroup]="formGroup">
+  <div class="form__row">
+    <div class="form__control label">
+      <span class="label__text">
+        Источник
+      </span>
+
+      @if (sources$ | async; as list) {
+        <tui-textfield
+          class="label__action filter__source"
+          [stringify]="stringifySource"
+          [tuiTextfieldSize]="size"
+          [tuiTextfieldCleaner]="false"
+          tuiChevron>
+          <input
+            placeholder="Источник"
+            tuiSelect
+            formControlName="source"
+          />
+
+          <tui-data-list-wrapper
+            *tuiTextfieldDropdown
+            new
+            [items]="list"
+            [itemContent]="contentSource"
+          />
+        </tui-textfield>
+      } @else {
+        <ng-container [ngTemplateOutlet]="load"></ng-container>
+      }
+    </div>
+
+    <div class="form__control label">
+    <span class="label__text">
+      Брокерский счёт
+    </span>
+      @if (accounts$ | async; as list) {
+        @if (list.data) {
+          <tui-textfield
+            class="label__action filter__source"
+            [stringify]="stringifySource"
+            [tuiTextfieldSize]="size"
+            [tuiTextfieldCleaner]="false"
+            tuiChevron>
+            <input
+              placeholder="Брокерский счёт"
+              tuiSelect
+              formControlName="account"
+            />
+
+            <tui-data-list-wrapper
+              *tuiTextfieldDropdown
+              new
+              [items]="list.data"
+              [itemContent]="contentAccount"
+            />
+          </tui-textfield>
+        } @else {
+          <tui-chip
+            class="label__chip"
+            [tuiHint]="list.message"
+            tuiHintAppearance="dark"
+            appearance="negative">
+          <span>
+          {{ list.message }}
+          </span>
+          </tui-chip>
+        }
+      } @else {
+        <ui-loader></ui-loader>
+      }
+    </div>
+
+    <div class="form__control label">
+    <span class="label__text">
+      Токен
+    </span>
+      <trade-token-button [value]="formGroup.value"></trade-token-button>
+    </div>
+  </div>
+</form>
+
+<ng-template #contentSource let-item>
+  {{ item.name }}
+</ng-template>
+
+<ng-template #contentAccount let-account>
+  <div class="account">
+    <div class="account__name">
+      {{ account.name }}
+    </div>
+    @for (item of account.availableMoney; track item) {
+      <div class="account__money">
+        {{
+          item.value | tuiFormatNumber: {
+            precision: 2,
+            decimalMode: 'always'
+          } | async
+        }} {{ item.currency | uppercase | tuiCurrency }}
+      </div>
+    }
+  </div>
+
+</ng-template>
+
+<ng-template #load>
+  <ui-loader></ui-loader>
+</ng-template>

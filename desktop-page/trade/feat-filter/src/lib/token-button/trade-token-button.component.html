@@ -1,0 +1,36 @@
+<div tuiGroup class="filter">
+  @if (value.token === null) {
+    <button
+      [size]="size"
+      class="filter__token-action"
+      tuiButton
+      iconEnd="@tui.plus"
+      appearance="secondary"
+      (click)="addToken($event)"
+      type="button">
+      <span>Добавить токен</span>
+    </button>
+  } @else {
+    <button
+      [size]="size"
+      class="filter__token-action"
+      tuiButton
+      iconEnd="@tui.check"
+      appearance="positive"
+      (click)="addToken($event)"
+      type="button">
+      <span>{{ value.token.name }}</span>
+    </button>
+  }
+
+  <button
+    class="filter__token-remove"
+    [size]="size"
+    tuiIconButton
+    iconEnd="@tui.x"
+    appearance="secondary"
+    [disabled]="value.token === null"
+    (click)="removeToken($event)"
+    type="button">
+  </button>
+</div>
