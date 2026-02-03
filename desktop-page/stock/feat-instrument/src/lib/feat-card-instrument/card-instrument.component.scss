@@ -59,10 +59,13 @@
 
   &__price {
     font-size: 18px;
-    font-weight: 500;
     line-height: 24px;
 
     white-space: nowrap;
+
+    span {
+      font-weight: 500;
+    }
   }
 
   &__sector {

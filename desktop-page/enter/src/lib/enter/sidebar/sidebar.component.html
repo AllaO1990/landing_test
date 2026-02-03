@@ -1,13 +1,13 @@
 <div class="widget" [formGroup]="form">
   <tui-scrollbar>
     <div class="tui-zero-scrollbar">
-      
+
       <div tuiAppearance="floating" tuiCardLarge="compact">
         <stock-card-instrument class="portfolio__limit" [instrument]="instrument$ | async"></stock-card-instrument>
       </div>
 
       <div class="widget__portfolio control widget__padding portfolio">
-        <div class="control__label portfolio__label">
+        <div class="control__label portfolio__label title">
           Портфель
         </div>
         <div class="portfolio__actions">
@@ -42,7 +42,7 @@
 
       <div class="widget__implementation description widget__padding">
         <div class="control">
-          <div class="control__label portfolio__label">
+          <div class="control__label portfolio__label title">
             Баланс
           </div>
           @if (balance$ | async; as balance) {
@@ -184,7 +184,7 @@
       <!--        </div>-->
       <!--      </div>-->
       <div class="widget__comment comment control widget__padding">
-        <div class="control__label comment__label">
+        <div class="control__label comment__label title">
           {{ constants.comment_label }}
         </div>
         <div class="comment__area">
