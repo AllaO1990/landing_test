@@ -1,0 +1,13 @@
+@use 'ui/src/lib/ui/dialog/dialog.scss';
+
+.form {
+  &__control {
+    display: block;
+    margin-bottom: var(--padding-2);
+
+    span {
+      display: inline-block;
+      margin-bottom: var(--padding-1);
+    }
+  }
+}

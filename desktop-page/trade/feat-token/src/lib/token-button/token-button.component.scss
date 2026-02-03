@@ -1,0 +1,20 @@
+:host {
+  display: inline-block;
+
+  width: 100%;
+}
+
+.filter {
+  &__token-action {
+    flex: 1;
+
+    span {
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  &__token-remove {
+    flex: 0 0 auto;
+  }
+}

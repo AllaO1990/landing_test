@@ -22,6 +22,11 @@
             [tuiSkeleton]="skeleton()">
             {{ ticker() }}
           </div>
+          <div
+            [tuiSkeleton]="skeleton()"
+            class="card__sector">
+            {{ sector() }}
+          </div>
         </div>
 
         <div class="card__col card__col--with-price">
@@ -45,14 +50,6 @@
           </span> {{ currency() }}
             </div>
           }
-        </div>
-      </div>
-
-      <div class="card__row">
-        <div
-          [tuiSkeleton]="skeleton()"
-          class="card__sector">
-          Отрасль: {{ sector() }}
         </div>
       </div>
     </div>

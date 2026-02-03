@@ -56,6 +56,7 @@ import { TareLimit } from '@feat-trade-limit';
 import { StockInstrument } from 'types/stock';
 import { TuiCardLarge } from '@taiga-ui/layout';
 import { StockCardInstrument } from 'feat-instrument';
+import { ViewComponent } from 'feat-view';
 
 type Item = { id: string; name: string };
 
@@ -88,6 +89,7 @@ interface FormValue {
 		TuiCardLarge,
 		TareLimit,
 		StockCardInstrument,
+		ViewComponent,
 	],
 	templateUrl: './sidebar.component.html',
 	styleUrl: './sidebar.component.scss',
