@@ -43,7 +43,7 @@ import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { LimitStore } from '@feat-trade-limit';
 import { ApiService } from '../../../../trade/src/lib/common/api.service';
-import { TradeStore } from '../../../../trade/src/lib/common/store';
+import { TradeStore } from '@data-access-trade/store.trade';
 
 @Component({
 	selector: 'lk-layout',

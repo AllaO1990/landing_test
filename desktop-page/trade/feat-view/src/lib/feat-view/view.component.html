@@ -1,61 +1,75 @@
 <div class="view">
   <div class="view__header">
-    <div class="view__title title">Заявки</div>
+    <div class="view__title title">Брокерские заявки</div>
     <div class="space"></div>
     <button
-      tuiButton
-      type="button"
-      iconStart="@tui.chart-candlestick"
+      appearance="secondary"
+      iconStart="@tui.pencil"
+      tuiIconButton
       size="s"
-      (click)="onTrade($event)">
-      Подробнее
-    </button>
+      type="button"
+      (click)="onTrade($event)"
+    ></button>
   </div>
-  <div class="view__list">
+  <div class="view__container">
     <ng-template
       [ngTemplateOutlet]="templateOrders"
-      [ngTemplateOutletContext]="{ $implicit: orders$ | async }">
+      [ngTemplateOutletContext]="{ $implicit: entry$ | async, title: 'Вход' }">
     </ng-template>
-  </div>
-
-  <div class="view__header">
-    <div class="view__title title">Стоп заявка</div>
-  </div>
-  <div class="view__list">
     <ng-template
       [ngTemplateOutlet]="templateOrders"
-      [ngTemplateOutletContext]="{ $implicit: stopOrders$ | async }">
+      [ngTemplateOutletContext]="{ $implicit: out$ | async, title: 'Выход'}">
     </ng-template>
   </div>
 </div>
 
-<ng-template #templateOrders let-list>
-  @if (list) {
-    @if (list.length > 0) {
-      @for (item of list; track item.orderId) {
-        <div class="view__item item">
+<ng-template #templateOrders let-list let-title='title'>
+  @if (list && list.length > 0) {
+    <div class="view__subtitle">
+      {{ title }}
+    </div>
+    <div class="view__list">
+      @for (item of list; track item) {
+        <div class="view__item item order">
           <div class="item__value">
-            {{ item.direction | tradeDirectionType | async }}
-          </div>
-          <div class="item__value">
+            {{ item.direction | tradeDirectionType | async }}<br>
             {{ item.orderTypeText | tradeOrderType | async }}
           </div>
-          <div class="item__value">
-            {{ (item.price.value || item.stopPrice.value) | tuiFormatNumber | async }}
+          <div class="item__value item__value--number">
+            <strong>{{
+                (item.total) | tuiFormatNumber: {
+                  precision: 2,
+                  decimalMode: 'always'
+                } | async
+              }} {{ item.currencySymbol }}</strong>
+            <div>
+              <span>{{ item.quantity | tuiFormatNumber | async }} шт.
+                 по {{ item.priceOrder | tuiFormatNumber | async }}  {{ item.currencySymbol }}</span>
+            </div>
           </div>
-          <div class="item__value">
-            {{ (item.lotsRequested * (item.price.value || item.stopPrice.value)) | tuiFormatNumber | async }}
+          <div class="item__actions">
+            <button
+              appearance="icon"
+              iconStart="@tui.pencil"
+              tuiIconButton
+              size="xs"
+              type="button"
+              (click)="onTrade($event)"
+              [loading]="item.change"
+            ></button>
+            <button
+              (click)="onRemove($event, item)"
+              [loading]="item.removed"
+              [disabled]="item.removed"
+              appearance="icon"
+              iconStart="@tui.trash-2"
+              tuiIconButton
+              size="xs"
+              type="button"
+            ></button>
           </div>
         </div>
       }
-    } @else {
-      <div class="view__item">
-        Нет заявок
-      </div>
-    }
-  } @else {
-    <div class="view__item">
-      Нет данных
     </div>
   }
 </ng-template>

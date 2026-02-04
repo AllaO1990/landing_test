@@ -41,7 +41,7 @@ import {
 } from 'rxjs';
 import { StockPosition, StockPositionActionEntry, StockPositionActionTarget } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TradeStore } from '../common/store';
+import { TradeStore } from '@data-access-trade/store.trade';
 import { DirectionTypePipe } from '../common/direction-type.pipe';
 import { OrderTypePipe } from '../common/order-type.pipe';
 import {

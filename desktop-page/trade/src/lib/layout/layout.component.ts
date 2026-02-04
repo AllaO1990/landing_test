@@ -3,7 +3,7 @@ import { TuiBreakpointService, TuiButton } from '@taiga-ui/core';
 import { TuiPopover } from '@taiga-ui/cdk';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TradeStore } from '../common/store';
+import { TradeStore } from '@data-access-trade/store.trade';
 import {
 	BehaviorSubject,
 	combineLatest,

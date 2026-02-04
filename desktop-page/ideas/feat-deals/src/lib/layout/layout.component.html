@@ -13,6 +13,21 @@
               size="xs"
               tuiSlot="top"/>
           }
+          <!--          @if (isMobile$ | async) {-->
+          <!--            <button-->
+          <!--              tuiHintAppearance="dark"-->
+          <!--              tuiHintDirection="right"-->
+          <!--              [tuiHint]="tooltip"-->
+          <!--              tuiIconButton-->
+          <!--              appearance="secondary"-->
+          <!--              type="button"-->
+          <!--              [size]="size"-->
+          <!--              iconStart="@tui.filter"-->
+          <!--              class="deal__add-deal"-->
+          <!--              (click)="openFilter.set(true)">-->
+          <!--            </button>-->
+          <!--          } @else {-->
+          <!--          }-->
           <button
             tuiHintAppearance="dark"
             tuiHintDirection="right"
@@ -26,6 +41,7 @@
             (click)="openFilter.set(true)">
             {{ constants.filter }}
           </button>
+
         </tui-badged-content>
       </div>
 

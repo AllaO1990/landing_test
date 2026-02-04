@@ -176,7 +176,7 @@
   }
 
   &__date {
-    width: 80px;
+    width: 70px;
   }
 
   &__direction {
@@ -186,8 +186,7 @@
   &__ticker {
     flex: 1;
 
-    max-width: 120px;
-    min-width: 80px;
+    max-width: 90px;
   }
 
   &__entry {
@@ -251,5 +250,14 @@ tui-badge-notification[appearance="primary"] {
 .context-menu {
   tui-icon {
     font-size: 15px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .item {
+    &__ticker {
+      max-width: 120px;
+      min-width: 80px;
+    }
   }
 }

@@ -19,12 +19,21 @@ import { AsyncPipe } from '@angular/common';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { TuiSkeleton } from '@taiga-ui/kit';
 import { GetPriceIncrement } from './card-instrument.pipe';
+import { LastPriceDirective } from '@ui/components/price';
 
 const INTERVAL = 60 * 1000;
 
 @Component({
 	selector: 'stock-card-instrument',
-	imports: [IconTickerComponent, TuiHint, AsyncPipe, TuiFormatNumberPipe, TuiSkeleton, GetPriceIncrement],
+	imports: [
+		IconTickerComponent,
+		TuiHint,
+		AsyncPipe,
+		TuiFormatNumberPipe,
+		TuiSkeleton,
+		GetPriceIncrement,
+		LastPriceDirective,
+	],
 	templateUrl: './card-instrument.component.html',
 	styleUrl: './card-instrument.component.scss',
 	providers: [ApiStockService],

@@ -1,5 +1,5 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { ApiService } from './api.service';
+import { ApiService } from '../../../../src/lib/common/api.service';
 import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { Response } from 'types/response';
 import {
@@ -18,8 +18,8 @@ import {
 } from '@data-access-trade/types';
 import { Params } from '@angular/router';
 import { sortNumber } from 'utils/sort-number';
-import { TRADE_ORDERS } from './order.constants';
-import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
+import { TRADE_ORDERS } from '../../../../src/lib/common/order.constants';
+import { TradeOrderTypeText, TradeStopOrderTypeText } from '../../../../src/lib/common/order.types';
 
 export interface TradeState {
 	sources: TradeSources | null;

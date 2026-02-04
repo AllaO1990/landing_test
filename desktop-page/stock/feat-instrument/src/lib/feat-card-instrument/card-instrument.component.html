@@ -38,9 +38,7 @@
             <div
               [tuiSkeleton]="price.last === 0"
               class="card__price">
-          <span
-            [class.long]="price.last > price.prev"
-            [class.short]="price.last < price.prev">
+          <span [uiLastPrice]="price">
             {{
               price.last | tuiFormatNumber: {
                 precision: (price.minPriceIncrement | getPriceIncrement),

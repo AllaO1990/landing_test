@@ -7,7 +7,7 @@ import { AsyncPipe } from '@angular/common';
 import { TuiCell } from '@taiga-ui/layout';
 import { TuiFormatNumberPipe, TuiTitle } from '@taiga-ui/core';
 import { getNumberPrecision } from 'utils/get-number-precision';
-import { TradeStore } from '../common/store';
+import { TradeStore } from '@data-access-trade/store.trade';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { LoaderComponent } from '@ui/components/loader';
 import { Response } from 'types/response';

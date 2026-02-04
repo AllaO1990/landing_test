@@ -4,7 +4,7 @@ import { TuiButton, TuiDialogService, TuiGroup } from '@taiga-ui/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeTokenSource } from '@data-access-trade/types';
 import { TUI_CONFIRM } from '@taiga-ui/kit';
-import { TradeStore } from '../common/store';
+import { TradeStore } from '@data-access-trade/store.trade';
 import { TradeTokenButtonDialogService } from './token-button.dialog.service';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 

@@ -28,7 +28,7 @@ import {
 	TradeStopOrders,
 	TradeToken,
 } from '@data-access-trade/types';
-import { TradeStore } from '../common/store';
+import { TradeStore } from '@data-access-trade/store.trade';
 import { StockInstrument, WithLastPrice } from 'types/stock';
 import { Response } from 'types/response';
 
