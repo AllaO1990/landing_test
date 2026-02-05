@@ -1,4 +1,4 @@
-import { TradeOrderTypeDescription, TradeOrderTypesDescription } from '@data-access-trade/types';
+import { TradeOrderTypeDescription, TradeOrderTypesDescription } from './types';
 import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
 
 export const TRADE_ORDER_TYPE_LIMIT: TradeOrderTypeDescription = {

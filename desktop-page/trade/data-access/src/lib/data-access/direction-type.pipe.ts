@@ -1,8 +1,8 @@
 import { DestroyRef, inject, Pipe, PipeTransform } from '@angular/core';
-import { TradeStore } from '@data-access-trade/store.trade';
 import { map, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TradeDirection, TradeDirections } from '@data-access-trade/types';
+import { TradeStore } from './store.trade';
+import { TradeDirection, TradeDirections } from './types';
 
 @Pipe({
 	name: 'tradeDirectionType',

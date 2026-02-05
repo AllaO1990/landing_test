@@ -31,9 +31,9 @@ import {
 	TRADE_STOP_ORDER_TYPE_STOP_LIMIT,
 	TRADE_STOP_ORDER_TYPE_STOP_LOSS,
 	TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
-} from '../common/order.constants';
+} from '@data-access-trade/order.constants';
 import { TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL } from '../request/request.constants';
-import { TradeStopOrderTypeText } from '../common/order.types';
+import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
 import { WithLastPrice } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
 

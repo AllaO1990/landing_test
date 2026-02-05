@@ -22,12 +22,13 @@ import {
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue, ControlValueStatus } from '../form/form.types';
-import { TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
-import { TradeStopOrderTypeText } from '../common/order.types';
+import { TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
+import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { TradeMobileFormComponent } from '../form/mobile/form.component';
 import { TradeDesktopFormComponent } from '../form/desktop/form.component';
+import { Response } from 'types/response';
 
 @Component({
 	selector: 'trade-layout',
@@ -135,9 +136,6 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 						startWith(this.formGroup.value),
 						map((value: { trade: { entry: ControlValue[] } }): ControlValue[] => value.trade.entry),
 						pairwise(),
-						// tap(([first, second]: [ControlValue[], ControlValue[]]) =>
-						//   console.log(first, first[0] && first[0].status, second[0] && second[0].status)
-						// ),
 						filter(
 							([first, second]: [ControlValue[], ControlValue[]]) =>
 								(!first || !first[0] || (first[0] && first[0].status !== ControlValueStatus.EXECUTED)) &&
@@ -145,15 +143,13 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 								second[0] &&
 								second[0].status === ControlValueStatus.EXECUTED
 						),
-						// tap(([first, second]: [ControlValue[], ControlValue[]]) =>
-						//   console.log('after filter', first[0] && first[0].status, second, second[0] && second[0].status)
-						// ),
 						map((data: [ControlValue[], ControlValue[]]) => data[1])
 					)
 				)
-				// take(1)
 			)
 			.subscribe(() => {
+				console.log('submitted');
+
 				const {
 					filter: { account, instrument, source },
 					out,
@@ -181,6 +177,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 			.pipe(
 				switchMap((value: ControlValue) =>
 					this.#store.stopOrders$.pipe(
+						takeUntilDestroyed(this.#destroyRef),
 						filter((list: TradeStopOrders | null): list is TradeStopOrders => list !== null),
 						map((list: TradeStopOrders) =>
 							list.filter((item: TradeStopOrder) => item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS)
@@ -206,7 +203,18 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 			});
 
 		this.#isStop$
-			.pipe(filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING))
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING),
+				switchMap((value: ControlValue) =>
+					this.#store.portfolio$.pipe(
+						map((response: Response<TradePortfolio> | null) => response && response.data),
+						filter((portfolio: TradePortfolio | null) => portfolio !== null),
+						filter((portfolio: TradePortfolio) => portfolio.positions.length > 0 && portfolio.positions[0].quantity !== 0),
+						map(() => value)
+					)
+				)
+			)
 			.subscribe((controlValue: ControlValue) => {
 				const {
 					filter: { account, instrument, source },

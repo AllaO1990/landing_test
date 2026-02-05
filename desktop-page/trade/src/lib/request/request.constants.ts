@@ -1,5 +1,5 @@
 import { TradeSource, TradeSources } from '@data-access-trade/types';
-import { TradeStopOrderExpirationType } from '../common/order.types';
+import { TradeStopOrderExpirationType } from '@data-access-trade/order.types';
 
 export const TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL: TradeSource = {
 	id: 1,

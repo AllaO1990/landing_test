@@ -7,8 +7,6 @@
     align-items: center;
 
     height: 32px;
-
-    margin-bottom: var(--padding-2);
   }
 
   &__title {
@@ -17,6 +15,7 @@
   &__subtitle {
     font: var(--tui-font-text-ui-l);
 
+    margin-top: var(--padding-2);
     margin-bottom: var(--padding-1);
   }
 

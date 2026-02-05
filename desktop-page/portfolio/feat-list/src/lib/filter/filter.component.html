@@ -1,6 +1,5 @@
 <div class="filter" [formGroup]="formGroup">
   <div class="filter__item filter__select">
-    <span>{{ constants.title }}</span>
     <lib-control-portfolio
       class="portfolio__select"
       [items]="portfolios$ | async"
@@ -8,7 +7,6 @@
     </lib-control-portfolio>
   </div>
   <div class="filter__item filter__select">
-    <span>{{ constants.currency }}</span>
     <tui-textfield
       class="form__control"
       tuiChevron

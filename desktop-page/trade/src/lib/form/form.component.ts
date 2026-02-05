@@ -41,9 +41,10 @@ import {
 } from 'rxjs';
 import { StockPosition, StockPositionActionEntry, StockPositionActionTarget } from 'types/position';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ApiTradeService } from '@data-access-trade/api.service';
 import { TradeStore } from '@data-access-trade/store.trade';
-import { DirectionTypePipe } from '../common/direction-type.pipe';
-import { OrderTypePipe } from '../common/order-type.pipe';
+import { DirectionTypePipe } from '@data-access-trade/direction-type.pipe';
+import { OrderTypePipe } from '@data-access-trade/order-type.pipe';
 import {
 	TradeLimit,
 	TradeOperations,
@@ -63,7 +64,6 @@ import { ControlValue, ControlValueStatus } from './form.types';
 import { DetailsComponent } from '../details/details.component';
 import { Params } from '@angular/router';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
-import { ApiService } from '../common/api.service';
 import { Response } from 'types/response';
 import { TradeFormDialogService } from './form.dialog.service';
 import { DIALOG, DialogService } from '@ui/components/dialog';
@@ -120,7 +120,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 	readonly #idea: IdeaFacade = inject(IdeaFacade);
 	readonly #store: TradeStore = inject(TradeStore);
 	readonly #service: TradeFormService = inject(TradeFormService);
-	readonly #api: ApiService = inject(ApiService);
+	readonly #api: ApiTradeService = inject(ApiTradeService);
 
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
@@ -274,7 +274,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 					TradeStopOrders,
 					TradeOperations
 				]) => {
-					console.log('_initControls', position, orders, stopOrders, operations);
+					// console.log('_initControls', position, orders, stopOrders, operations);
 					this._initControls(position, orders, stopOrders, operations, limit.limit);
 				}
 			);
@@ -700,8 +700,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 				);
 			});
 
-		console.log(operationsOutPosition);
-
 		if (operationsEntryPosition.length > 0 || operationsOutPosition.length > 0 || commissions.length > 0) {
 			this._updateIdeaEntries(position, operationsEntryPosition, operationsOutPosition, commissions);
 
@@ -760,8 +758,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 			stopOrders,
 			outOperations
 		);
-
-		// console.log(stopLoss);
 
 		if (stopLoss) {
 			this.formArrayStop.setControl(0, new FormControl(stopLoss), { emitEvent: true });

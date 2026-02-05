@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnDestro
 import { AsyncPipe } from '@angular/common';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiButtonLoading, TuiSkeleton } from '@taiga-ui/kit';
-import { TRADE_ORDER_TYPE_MARKET } from '../common/order.constants';
+import { TRADE_ORDER_TYPE_MARKET } from '@data-access-trade/order.constants';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {

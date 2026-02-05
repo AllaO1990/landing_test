@@ -14,8 +14,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {IdeaFacade} from 'stores/facades/idea.facade';
 import {LOCAL_STORAGE} from 'tokens/desktop/local-storage';
 import {TuiButton, TuiFormatNumberPipe} from '@taiga-ui/core';
-import {DirectionTypePipe} from '../../../../src/lib/common/direction-type.pipe';
-import {OrderTypePipe} from '../../../../src/lib/common/order-type.pipe';
+import {DirectionTypePipe} from '@data-access-trade/direction-type.pipe';
+import {OrderTypePipe} from '@data-access-trade/order-type.pipe';
 import {StockPosition} from 'types/position';
 import {StockInstrument} from 'types/stock';
 import {QueryParams} from 'utils/query-params';
@@ -210,7 +210,9 @@ export class ViewComponent implements AfterViewInit {
 
 	private _updateOrders(
 		list: TradeOrders | null
-	): Array<TradeOrder & { removed: boolean; quantity: number; priceOrder: number; currencySymbol: string }> | null {
+	): Array<
+		TradeOrder & { removed: boolean; quantity: number; priceOrder: number; currencySymbol: string; uid: string }
+	> | null {
 		if (list === null) {
 			return null;
 		}
@@ -220,6 +222,7 @@ export class ViewComponent implements AfterViewInit {
 		return list.map((item) => {
 			return {
 				...item,
+				uid: item.orderId,
 				currencySymbol,
 				priceOrder: item.initialSecurityPrice.value,
 				total: getNumberPrecision(lot * item.lotsRequested * item.initialSecurityPrice.value, 2),
@@ -231,7 +234,9 @@ export class ViewComponent implements AfterViewInit {
 
 	private _updateStopOrders(
 		list: TradeStopOrders | null
-	): Array<TradeStopOrder & { removed: boolean; quantity: number; priceOrder: number; currencySymbol: string }> | null {
+	): Array<
+		TradeStopOrder & { removed: boolean; quantity: number; priceOrder: number; currencySymbol: string; uid: string }
+	> | null {
 		if (list === null) {
 			return null;
 		}
@@ -243,6 +248,7 @@ export class ViewComponent implements AfterViewInit {
 
 			return {
 				...item,
+				uid: item.stopOrderId,
 				currencySymbol,
 				priceOrder: price,
 				total: getNumberPrecision(lot * item.lotsRequested * price, 2),

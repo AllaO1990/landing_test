@@ -29,7 +29,7 @@
       {{ title }}
     </div>
     <div class="view__list">
-      @for (item of list; track item) {
+      @for (item of list; track item.uid) {
         <div class="view__item item order">
           <div class="item__value">
             {{ item.direction | tradeDirectionType | async }}<br>

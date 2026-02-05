@@ -1,5 +1,4 @@
 import { ComponentStore } from '@ngrx/component-store';
-import { ApiService } from '../../../../src/lib/common/api.service';
 import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { Response } from 'types/response';
 import {
@@ -15,11 +14,27 @@ import {
 	TradeStopOrders,
 	TradeToken,
 	TradeTokenSource,
-} from '@data-access-trade/types';
+} from './types';
 import { Params } from '@angular/router';
 import { sortNumber } from 'utils/sort-number';
-import { TRADE_ORDERS } from '../../../../src/lib/common/order.constants';
-import { TradeOrderTypeText, TradeStopOrderTypeText } from '../../../../src/lib/common/order.types';
+import { TRADE_ORDERS } from './order.constants';
+import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
+
+interface Api {
+	getSources(): Observable<Response<TradeSources>>;
+	getToken(sourceId: number): Observable<Response<TradeToken | null>>;
+	changeToken(data: TradeTokenSource): Observable<Response<TradeToken | null>>;
+	removeToken(data: TradeToken): Observable<Response<TradeToken | null>>;
+	getAccounts(sourceId: number): Observable<Response<TradeAccounts>>;
+	getOperations(params: Params): Observable<Response<TradeOperations>>;
+	getPortfolio(params: Params): Observable<Response<TradePortfolio>>;
+	getOrders(params: Params): Observable<Response<TradeOrders>>;
+	getStopOrders(params: Params): Observable<Response<TradeOrders | null>>;
+	addOrder(body: Params): Observable<Response<TradeOrders>>;
+	addStopOrder(body: Params): Observable<Response<any>>;
+	removeOrder(body: Params): Observable<Response<any>>;
+	removeStopOrder(body: Params): Observable<Response<any>>;
+}
 
 export interface TradeState {
 	sources: TradeSources | null;
@@ -62,7 +77,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	readonly portfolio$: Observable<Response<TradePortfolio> | null> = this.select((state: TradeState) => state.portfolio);
 	readonly operations$: Observable<TradeOperations | null> = this.select((state: TradeState) => state.operations);
 
-	constructor(private _api: ApiService) {
+	constructor(private _api: Api) {
 		super({
 			sources: null,
 			token: null,

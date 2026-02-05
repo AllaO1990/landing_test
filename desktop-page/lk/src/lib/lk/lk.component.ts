@@ -42,7 +42,6 @@ import { AsyncPipe } from '@angular/common';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { LimitStore } from '@feat-trade-limit';
-import { ApiService } from '../../../../trade/src/lib/common/api.service';
 import { TradeStore } from '@data-access-trade/store.trade';
 
 @Component({
@@ -87,11 +86,10 @@ import { TradeStore } from '@data-access-trade/store.trade';
 			useFactory: (api: ApiTradeService) => new LimitStore(api),
 			deps: [ApiTradeService],
 		},
-		ApiService,
 		{
 			provide: TradeStore,
-			useFactory: (api: ApiService) => new TradeStore(api),
-			deps: [ApiService],
+			useFactory: (api: ApiTradeService) => new TradeStore(api),
+			deps: [ApiTradeService],
 		},
 		{
 			provide: ACTION_EVENTS,
