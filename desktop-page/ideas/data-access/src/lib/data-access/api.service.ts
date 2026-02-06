@@ -3,9 +3,9 @@ import { Params } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ResponsePositions } from 'types/position';
-import { DataList, Response } from 'types/response';
+import { Response } from 'types/response';
 import { APP_CONFIG } from 'tokens/desktop/config';
-import { PortfolioPosition } from 'types/portfolio';
+import { ResponsePortfolioPosition } from 'types/portfolio';
 
 @Injectable()
 export class ApiIdeasService {
@@ -27,8 +27,8 @@ export class ApiIdeasService {
 		});
 	}
 
-	public getPortfolio(params: Params): Observable<Response<DataList<PortfolioPosition>>> {
-		return this.#http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/v1/ideas/portfolio`, {
+	public getPortfolio(params: Params): Observable<Response<ResponsePortfolioPosition>> {
+		return this.#http.post<Response<ResponsePortfolioPosition>>(`${this.host}/v1/ideas/portfolio`, {
 			author: params['author'] || null,
 			brokerId: params['brokerId'] || null,
 			currencyId: params['currencyId'] || null,

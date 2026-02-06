@@ -28,48 +28,62 @@
     <div class="view__subtitle">
       {{ title }}
     </div>
-    <div class="view__list">
-      @for (item of list; track item.uid) {
-        <div class="view__item item order">
-          <div class="item__value">
-            {{ item.direction | tradeDirectionType | async }}<br>
-            {{ item.orderTypeText | tradeOrderType | async }}
-          </div>
-          <div class="item__value item__value--number">
-            <strong>{{
-                (item.total) | tuiFormatNumber: {
-                  precision: 2,
-                  decimalMode: 'always'
-                } | async
-              }} {{ item.currencySymbol }}</strong>
-            <div>
+
+    <tui-scrollbar>
+      <cdk-virtual-scroll-viewport
+        class="view__list tui-zero-scrollbar"
+        appendOnly
+        [class.view__list--limit]="list.length > 4"
+        [style.height.px]="list.length > 4 ? 52 * 4 : list.length * 52"
+        itemSize="52"
+        tuiScrollable>
+        @for (item of list; track item.uid) {
+          <div
+            class="view__item item order"
+            [class.order--long]="item.direction"
+            [class.order--short]="!item.direction"
+          >
+            <div class="item__value">
+              {{ item.direction | tradeDirectionType | async }}<br>
+              {{ item.orderTypeText | tradeOrderType | async }}
+            </div>
+            <div class="item__value item__value--number">
+              <strong>{{
+                  (item.total) | tuiFormatNumber: {
+                    precision: 2,
+                    decimalMode: 'always'
+                  } | async
+                }} {{ item.currencySymbol }}</strong>
+              <div>
               <span>{{ item.quantity | tuiFormatNumber | async }} шт.
                  по {{ item.priceOrder | tuiFormatNumber | async }}  {{ item.currencySymbol }}</span>
+              </div>
+            </div>
+            <div class="item__actions">
+              <button
+                appearance="icon"
+                iconStart="@tui.pencil"
+                tuiIconButton
+                size="xs"
+                type="button"
+                (click)="onTrade($event)"
+                [loading]="item.change"
+              ></button>
+              <button
+                (click)="onRemove($event, item)"
+                [loading]="item.removed"
+                [disabled]="item.removed"
+                appearance="icon"
+                iconStart="@tui.trash-2"
+                tuiIconButton
+                size="xs"
+                type="button"
+              ></button>
             </div>
           </div>
-          <div class="item__actions">
-            <button
-              appearance="icon"
-              iconStart="@tui.pencil"
-              tuiIconButton
-              size="xs"
-              type="button"
-              (click)="onTrade($event)"
-              [loading]="item.change"
-            ></button>
-            <button
-              (click)="onRemove($event, item)"
-              [loading]="item.removed"
-              [disabled]="item.removed"
-              appearance="icon"
-              iconStart="@tui.trash-2"
-              tuiIconButton
-              size="xs"
-              type="button"
-            ></button>
-          </div>
-        </div>
-      }
-    </div>
+        }
+      </cdk-virtual-scroll-viewport>
+    </tui-scrollbar>
+
   }
 </ng-template>

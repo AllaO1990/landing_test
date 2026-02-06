@@ -209,7 +209,10 @@
       tuiButton
       appearance="outline"
       (click)="dividendsExpanded = !dividendsExpanded"
-      [tuiChevron]="dividendsExpanded">Дивиденды
+      [tuiChevron]="dividendsExpanded">
+      <span>
+        Дивиденды
+      </span>
     </button>
   </div>
   <tui-expand [expanded]="dividendsExpanded">
@@ -310,7 +313,8 @@
       tuiButton
       appearance="outline"
       (click)="commissionExpanded = !commissionExpanded"
-      [tuiChevron]="commissionExpanded">Комиссия
+      [tuiChevron]="commissionExpanded">
+      <span>Комиссия</span>
     </button>
   </div>
   <tui-expand [expanded]="commissionExpanded">

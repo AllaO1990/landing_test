@@ -2,9 +2,9 @@ import { ComponentStore } from '@ngrx/component-store';
 import { ApiIdeasService } from './api.service';
 import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { Params } from '@angular/router';
-import { DataList, Response } from 'types/response';
+import { Response } from 'types/response';
 import { Position, Positions, ResponsePositions } from 'types/position';
-import { PortfolioPosition } from 'types/portfolio';
+import { ResponsePortfolioPosition } from 'types/portfolio';
 import { forkJoinTimer } from 'utils/forkjoin-timer';
 
 export interface DataAccess<T> {
@@ -15,7 +15,7 @@ export interface DataAccess<T> {
 
 export interface DataAccessIdeasState {
 	ideas: DataAccess<Positions>;
-	deals: DataAccess<DataList<PortfolioPosition>>;
+	deals: DataAccess<ResponsePortfolioPosition>;
 }
 
 export class DataAccessIdeasStore extends ComponentStore<DataAccessIdeasState> {
@@ -25,7 +25,7 @@ export class DataAccessIdeasStore extends ComponentStore<DataAccessIdeasState> {
 	};
 
 	readonly ideas$: Observable<DataAccess<Positions>> = this.select((state: DataAccessIdeasState) => state.ideas);
-	readonly deals$: Observable<DataAccess<DataList<PortfolioPosition>>> = this.select(
+	readonly deals$: Observable<DataAccess<ResponsePortfolioPosition>> = this.select(
 		(state: DataAccessIdeasState) => state.deals
 	);
 
@@ -81,7 +81,7 @@ export class DataAccessIdeasStore extends ComponentStore<DataAccessIdeasState> {
 	);
 
 	readonly updateDealsData = this.updater(
-		(state: DataAccessIdeasState, data: null | DataList<PortfolioPosition>): DataAccessIdeasState => ({
+		(state: DataAccessIdeasState, data: null | ResponsePortfolioPosition): DataAccessIdeasState => ({
 			...state,
 			deals: {
 				data,
@@ -120,9 +120,22 @@ export class DataAccessIdeasStore extends ComponentStore<DataAccessIdeasState> {
 		stream$.pipe(
 			tap(() => this.updateDealsUploaded(false)),
 			switchMap((params: Params) =>
-				forkJoinTimer(this.api.getPortfolio(params)).pipe(
-					tap((response: Response<DataList<PortfolioPosition>>) => response && this.updateDealsData(response.data))
-				)
+				forkJoinTimer(
+					this.api.getPortfolio(params).pipe(
+						catchError((err: Error) => {
+							console.error(err);
+
+							return of({
+								data: {
+									items: null,
+									total: 0,
+								},
+								message: `Error 'getPortfolioList' ${err.message}`,
+								success: false,
+							});
+						})
+					)
+				).pipe(tap((response: Response<ResponsePortfolioPosition>) => response && this.updateDealsData(response.data)))
 			)
 		)
 	);

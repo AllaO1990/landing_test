@@ -5,6 +5,7 @@ import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/comm
 import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import {
 	combineLatest,
+	debounceTime,
 	distinctUntilChanged,
 	filter,
 	map,
@@ -206,6 +207,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 			this.#store.orders$.pipe(filter((orders: TradeOrders | null) => orders !== null)),
 		])
 			.pipe(
+				debounceTime(100),
 				takeUntilDestroyed(this.#destroyRef),
 				map(([value]) => value)
 			)

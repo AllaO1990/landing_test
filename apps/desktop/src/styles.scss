@@ -126,10 +126,43 @@ tui-data-list[role="menu"] [tuiOption]:not([new]) {
 }
 
 .order {
+  position: relative;
+
   background-color: var(--tui-background-base-alt, #F6F7FB);
   box-shadow: inset 0 0 0 1px var(--tui-border-normal);
 
+  overflow: hidden;
   border-radius: var(--tui-radius-s);
+
+  &--long {
+    &:before {
+      position: absolute;
+      content: '';
+
+      top: 0;
+      left: 0;
+
+      width: 4px;
+      height: 100%;
+
+      background: var(--color-g);
+    }
+  }
+
+  &--short {
+    &:before {
+      position: absolute;
+      content: '';
+
+      top: 0;
+      left: 0;
+
+      width: 4px;
+      height: 100%;
+
+      background: var(--color-r);
+    }
+  }
 }
 
 @keyframes rotate {

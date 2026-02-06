@@ -25,6 +25,12 @@
 
     white-space: nowrap;
   }
+
+  &__list--limit &__item {
+    margin-right: var(--padding-3);
+
+    animation: opacityControl 725ms ease-in;
+  }
 }
 
 .item {
@@ -52,5 +58,14 @@
     button:not(:last-child) {
       margin-right: var(--padding-2);
     }
+  }
+}
+
+@keyframes opacityControl {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
