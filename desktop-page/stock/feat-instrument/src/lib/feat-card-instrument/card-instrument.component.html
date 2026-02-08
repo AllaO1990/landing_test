@@ -30,22 +30,35 @@
         </div>
 
         <div class="card__col card__col--with-price">
-          <div
-            [tuiSkeleton]="skeleton()"
-            class="card__title">Цена
-          </div>
           @if (price$ | async; as price) {
+            <div
+              [tuiSkeleton]="skeleton()"
+              class="card__title">
+              Цена
+            </div>
             <div
               [tuiSkeleton]="price.last === 0"
               class="card__price">
-          <span [uiLastPrice]="price">
-            {{
-              price.last | tuiFormatNumber: {
-                precision: (price.minPriceIncrement | getPriceIncrement),
-                decimalMode: 'always'
-              } | async
-            }}
-          </span> {{ currency() }}
+              <strong [uiLastPrice]="price">
+                {{
+                  price.last | tuiFormatNumber: {
+                    precision: (price.minPriceIncrement | getPriceIncrement),
+                    decimalMode: 'always'
+                  } | async
+                }}
+              </strong> {{ currency() }}
+            </div>
+            <div>
+              @if (price && price.last) {
+                <span [uiLastPrice]="price">
+                  {{
+                    price | getPercentFromWithLastPrice | tuiFormatNumber: {
+                      precision: 2,
+                      decimalMode: 'always'
+                    } | async
+                  }}%
+                </span>
+              }
             </div>
           }
         </div>

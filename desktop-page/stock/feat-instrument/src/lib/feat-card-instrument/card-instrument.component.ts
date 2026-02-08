@@ -20,6 +20,7 @@ import { getPriceIncrement } from 'utils/get-price-increment';
 import { TuiSkeleton } from '@taiga-ui/kit';
 import { GetPriceIncrement } from './card-instrument.pipe';
 import { LastPriceDirective } from '@ui/components/price';
+import { GetPercent } from '@ui/components/price/get-percent.pipe';
 
 const INTERVAL = 60 * 1000;
 
@@ -33,6 +34,7 @@ const INTERVAL = 60 * 1000;
 		TuiSkeleton,
 		GetPriceIncrement,
 		LastPriceDirective,
+		GetPercent,
 	],
 	templateUrl: './card-instrument.component.html',
 	styleUrl: './card-instrument.component.scss',

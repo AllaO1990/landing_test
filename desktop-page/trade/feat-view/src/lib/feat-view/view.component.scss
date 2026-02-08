@@ -61,6 +61,12 @@
   }
 }
 
+.order {
+  &--colored.entry::before {
+    background-color: rgb(64, 224, 208);
+  }
+}
+
 @keyframes opacityControl {
   from {
     opacity: 0;

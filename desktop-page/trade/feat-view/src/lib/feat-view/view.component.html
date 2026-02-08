@@ -14,11 +14,11 @@
   <div class="view__container">
     <ng-template
       [ngTemplateOutlet]="templateOrders"
-      [ngTemplateOutletContext]="{ $implicit: entry$ | async, title: 'Вход' }">
+      [ngTemplateOutletContext]="{ $implicit: entry$ | async, title: 'entry' }">
     </ng-template>
     <ng-template
       [ngTemplateOutlet]="templateOrders"
-      [ngTemplateOutletContext]="{ $implicit: out$ | async, title: 'Выход'}">
+      [ngTemplateOutletContext]="{ $implicit: out$ | async, title: 'out'}">
     </ng-template>
   </div>
 </div>
@@ -26,7 +26,7 @@
 <ng-template #templateOrders let-list let-title='title'>
   @if (list && list.length > 0) {
     <div class="view__subtitle">
-      {{ title }}
+      {{ titleMap[title] }}
     </div>
 
     <tui-scrollbar>
@@ -39,9 +39,7 @@
         tuiScrollable>
         @for (item of list; track item.uid) {
           <div
-            class="view__item item order"
-            [class.order--long]="item.direction"
-            [class.order--short]="!item.direction"
+            class="view__item item order order--colored {{title}} {{ title === 'out' ? item.orderType === 2 ? 'order--short' : 'order--long' : '' }}"
           >
             <div class="item__value">
               {{ item.direction | tradeDirectionType | async }}<br>

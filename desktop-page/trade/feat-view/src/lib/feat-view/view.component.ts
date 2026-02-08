@@ -59,6 +59,11 @@ export class ViewComponent implements AfterViewInit {
 	readonly #localStorage = inject(LOCAL_STORAGE);
 	readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
 
+	readonly titleMap: { [key: string]: string } = {
+		entry: 'Вход',
+		out: 'Выход',
+	};
+
 	readonly formGroup: FormGroup = new FormGroup({
 		accountId: new FormControl<string | null>(null),
 		instrument: new FormControl<StockInstrument | null>(null),

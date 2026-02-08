@@ -1,5 +1,5 @@
-import {StockId, StockInstrument} from './stock';
-import {AccountBroker} from './account';
+import { StockId, StockInstrument } from './stock';
+import { AccountBroker } from './account';
 
 export interface ResponsePortfolioPosition {
 	items: PortfolioPosition[] | null;
