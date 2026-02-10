@@ -50,7 +50,6 @@ import { GetDatePassedPipe } from '@ui/pipes/get-date-passed.pipe';
 import { DataAccessDealService } from '@data-access-idea/deals/data-access.service';
 import { Params } from '@angular/router';
 import { PortfolioPosition } from 'types/portfolio';
-import { LoaderComponent } from '@ui/components/loader';
 import { TuiDayRange } from '@taiga-ui/cdk';
 import { getListOfRange } from 'utils/get-list-of-range';
 import { TODAY } from 'tokens/desktop/today';
@@ -108,7 +107,6 @@ type ActionButton = {
 		ColorPriceDirective,
 		TuiBadgeNotification,
 		TuiBadgedContent,
-		LoaderComponent,
 		SelectItemPipe,
 		TuiDropdown,
 		TuiDataList,

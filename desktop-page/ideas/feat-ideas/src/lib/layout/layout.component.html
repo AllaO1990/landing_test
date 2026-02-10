@@ -98,11 +98,11 @@
     </div>
   </div>
   <div class="idea__list list">
-    @if (isLoading()) {
-      <div class="list__loader">
-        <ui-loader></ui-loader>
-      </div>
-    }
+    <!--    @if (isLoading()) {-->
+    <!--      <div class="list__loader">-->
+    <!--        <ui-loader></ui-loader>-->
+    <!--      </div>-->
+    <!--    }-->
     @if (isLoaded()) {
       @for (item of [0, 1, 2, 3, 4]; track item) {
         <div class="item item--skeleton">

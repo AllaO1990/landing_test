@@ -1,11 +1,11 @@
-import { ComponentStore } from '@ngrx/component-store';
-import { ApiIdeasService } from './api.service';
-import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
-import { Params } from '@angular/router';
-import { Response } from 'types/response';
-import { Position, Positions, ResponsePositions } from 'types/position';
-import { ResponsePortfolioPosition } from 'types/portfolio';
-import { forkJoinTimer } from 'utils/forkjoin-timer';
+import {ComponentStore} from '@ngrx/component-store';
+import {ApiIdeasService} from './api.service';
+import {catchError, forkJoin, map, Observable, of, switchMap, tap, timer} from 'rxjs';
+import {Params} from '@angular/router';
+import {Response} from 'types/response';
+import {Position, Positions, ResponsePositions} from 'types/position';
+import {ResponsePortfolioPosition} from 'types/portfolio';
+import {forkJoinTimer} from 'utils/forkjoin-timer';
 
 export interface DataAccess<T> {
 	isLoaded: boolean;
@@ -51,7 +51,7 @@ export class DataAccessIdeasStore extends ComponentStore<DataAccessIdeasState> {
 					ideas: {
 						data: {
 							total: data.total,
-							items: (data.items || []).map((item) => new Position(item)),
+							items: data.items ? data.items.map((item) => new Position(item)) : null,
 						},
 						isLoaded: true,
 						isLoading: true,

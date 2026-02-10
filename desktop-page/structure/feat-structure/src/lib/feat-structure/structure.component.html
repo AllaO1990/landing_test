@@ -1,5 +1,5 @@
 <div class="structure">
-  @if (isLoaded() && !isLoading()) {
+  @if (isLoaded() && !isLoading() || !list()) {
     <div class="structure__loader">
       <ui-loader></ui-loader>
     </div>

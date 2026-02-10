@@ -12,23 +12,11 @@ import {
 } from '@taiga-ui/core';
 import { AccountBroker, AccountCurrency, AccountPortfolio } from 'types/account';
 import { AccountFacade } from 'stores/facades/account.facade';
-import {
-	BehaviorSubject,
-	combineLatest,
-	filter,
-	forkJoin,
-	Observable,
-	shareReplay,
-	Subject,
-	switchMap,
-	tap,
-	timer,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, Observable, shareReplay, Subject, switchMap, tap } from 'rxjs';
 import { DesktopService } from '@desktop-data/desktop-data';
 import { DESKTOP_API } from 'tokens/desktop';
 import { Params } from '@angular/router';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { Response } from 'types/response';
 import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TuiChevron, TuiInputDateTime, TuiInputNumber, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
@@ -36,6 +24,7 @@ import { StockId } from 'types/stock';
 import { getTuiDayTime } from 'utils/get-tui-day-time';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
 import { DialogCoreComponent } from '@ui/components/dialog';
+import { forkJoinTimer } from 'utils/forkjoin-timer';
 
 @Component({
 	selector: 'portfolio-deposit',
@@ -109,11 +98,6 @@ export class DepositComponent extends DialogCoreComponent implements AfterViewIn
 		return this.form.get('portfolio') as FormControl;
 	}
 
-	readonly getBalance = (params: Params) =>
-		forkJoin([this.#api.getBalancePortfolioBrokerCurrency(params), timer(1000)]).pipe(
-			map(([response, _]: [Response<any>, number]) => response.data)
-		);
-
 	readonly isLoadValue$: Subject<boolean> = new BehaviorSubject(false);
 	readonly value$: Observable<any> = combineLatest([
 		this.controlPortfolio.valueChanges.pipe(
@@ -133,7 +117,7 @@ export class DepositComponent extends DialogCoreComponent implements AfterViewIn
 		takeUntilDestroyed(this.#destroyRef),
 		tap(() => this.isLoadValue$.next(true)),
 		map(([portfolio, brokerId, currencyId]: any[]) => ({ brokerId, currencyId, portfolioId: portfolio.portfolioId })),
-		switchMap((params: Params) => this.getBalance(params)),
+		switchMap((params: Params) => forkJoinTimer(this.#api.getBalancePortfolioBrokerCurrency(params))),
 		tap(() => this.isLoadValue$.next(false)),
 		// tap(() => this.form.patchValue({ amount: null })),
 		shareReplay({ bufferSize: 1, refCount: true })

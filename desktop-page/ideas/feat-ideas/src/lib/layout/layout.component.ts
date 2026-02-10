@@ -37,7 +37,6 @@ import { AccountCurrency, AccountStrategy, AccountType } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataAccess } from '@data-access-idea/store';
-import { LoaderComponent } from '@ui/components/loader';
 import { Position, Positions } from 'types/position';
 import { GetColorToPositionPipe } from '@ui/pipes/get-color-to-position.pipe';
 import { Params } from '@angular/router';
@@ -86,7 +85,6 @@ type ActionButton = {
 		UiListItem,
 		WithPaginationComponent,
 		TuiSkeleton,
-		LoaderComponent,
 		DatePipe,
 		NgTemplateOutlet,
 		TuiFormatNumberPipe,

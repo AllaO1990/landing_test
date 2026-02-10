@@ -54,6 +54,10 @@ import { DataAccessIdeasStore } from '@data-access-idea/store';
 		DataAccessIdeaService,
 		DataAccessDealService,
 		TuiFormatNumberPipe,
+		{
+			provide: TIMER_INTERVAL,
+			useValue: 60 * 1000 * 15,
+		},
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
