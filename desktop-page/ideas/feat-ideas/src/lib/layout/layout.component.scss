@@ -46,10 +46,6 @@
   }
 
   &__action {
-    [tuibutton], tui-badged-content {
-      min-width: 120px;
-    }
-
     &:not(:last-child) {
       margin-right: var(--padding-2);
     }
@@ -116,11 +112,11 @@
   display: flex;
   align-items: center;
 
-  height: 32px;
+  height: 34px;
   overflow: hidden;
 
-  font-size: 11px;
-  line-height: 13px;
+  font-size: 13px;
+  line-height: 15px;
   font-weight: 400;
 
   box-sizing: border-box;
@@ -176,17 +172,17 @@
   }
 
   &__date {
-    width: 70px;
+    width: 64px;
   }
 
   &__direction {
-    width: 40px;
+    width: 30px;
   }
 
   &__ticker {
     flex: 1;
 
-    max-width: 90px;
+    max-width: 60px;
   }
 
   &__entry {
@@ -222,8 +218,8 @@
 }
 
 .substring {
-  font-size: 9px;
-  line-height: 11px;
+  font-size: 11px;
+  line-height: 13px;
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -258,6 +254,14 @@ tui-badge-notification[appearance="primary"] {
     &__ticker {
       max-width: 120px;
       min-width: 80px;
+    }
+  }
+
+  .idea {
+    &__action {
+      [tuibutton], tui-badged-content {
+        min-width: 120px;
+      }
     }
   }
 }

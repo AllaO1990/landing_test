@@ -13,19 +13,34 @@
               size="xs"
               tuiSlot="top"/>
           }
-          <button
-            tuiHintAppearance="dark"
-            tuiHintDirection="right"
-            [tuiHint]="tooltip"
-            tuiButton
-            appearance="secondary"
-            type="button"
-            [size]="size"
-            iconStart="@tui.filter"
-            class=" idea__add-idea"
-            (click)="openFilter.set(true)">
-            {{ constants.filter }}
-          </button>
+          @if (isMobile$ | async) {
+            <button
+              tuiHintAppearance="dark"
+              tuiHintDirection="right"
+              [tuiHint]="tooltip"
+              tuiIconButton
+              appearance="secondary"
+              type="button"
+              [size]="size"
+              iconStart="@tui.filter"
+              class="deal__add-deal"
+              (click)="openFilter.set(true)">
+            </button>
+          } @else {
+            <button
+              tuiHintAppearance="dark"
+              tuiHintDirection="right"
+              [tuiHint]="tooltip"
+              tuiButton
+              appearance="secondary"
+              type="button"
+              [size]="size"
+              iconStart="@tui.filter"
+              class=" idea__add-idea"
+              (click)="openFilter.set(true)">
+              {{ constants.filter }}
+            </button>
+          }
         </tui-badged-content>
       </div>
 
@@ -112,7 +127,7 @@
     } @else {
       <ui-lib-list
         [header]="header"
-        [itemSize]="32"
+        [itemSize]="34"
         [list]="list()">
         <div
           tuiDropdownContext

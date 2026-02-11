@@ -13,35 +13,34 @@
               size="xs"
               tuiSlot="top"/>
           }
-          <!--          @if (isMobile$ | async) {-->
-          <!--            <button-->
-          <!--              tuiHintAppearance="dark"-->
-          <!--              tuiHintDirection="right"-->
-          <!--              [tuiHint]="tooltip"-->
-          <!--              tuiIconButton-->
-          <!--              appearance="secondary"-->
-          <!--              type="button"-->
-          <!--              [size]="size"-->
-          <!--              iconStart="@tui.filter"-->
-          <!--              class="deal__add-deal"-->
-          <!--              (click)="openFilter.set(true)">-->
-          <!--            </button>-->
-          <!--          } @else {-->
-          <!--          }-->
-          <button
-            tuiHintAppearance="dark"
-            tuiHintDirection="right"
-            [tuiHint]="tooltip"
-            tuiButton
-            appearance="secondary"
-            type="button"
-            [size]="size"
-            iconStart="@tui.filter"
-            class="deal__add-deal"
-            (click)="openFilter.set(true)">
-            {{ constants.filter }}
-          </button>
-
+          @if (isMobile$ | async) {
+            <button
+              tuiHintAppearance="dark"
+              tuiHintDirection="right"
+              [tuiHint]="tooltip"
+              tuiIconButton
+              appearance="secondary"
+              type="button"
+              [size]="size"
+              iconStart="@tui.filter"
+              class="deal__add-deal"
+              (click)="openFilter.set(true)">
+            </button>
+          } @else {
+            <button
+              tuiHintAppearance="dark"
+              tuiHintDirection="right"
+              [tuiHint]="tooltip"
+              tuiButton
+              appearance="secondary"
+              type="button"
+              [size]="size"
+              iconStart="@tui.filter"
+              class="deal__add-deal"
+              (click)="openFilter.set(true)">
+              {{ constants.filter }}
+            </button>
+          }
         </tui-badged-content>
       </div>
 
@@ -127,7 +126,7 @@
       }
     } @else {
       <ui-lib-list
-        [itemSize]="32"
+        [itemSize]="34"
         [list]="list()"
         [header]="header">
         <div
@@ -177,19 +176,19 @@
             {{ item.instrument.ticker }}
             <span class="substring">{{ item.instrument.name }}</span>
           </div>
-          <div class="item__cell item__cell--number item__quantity">
-            @if (item.inPosition.amount; as amount) {
-              {{ amount | tuiFormatNumber | async }}
-            } @else {
-              &mdash;
-            }
-          </div>
           <div class="item__cell item__cell--number item__total">
             @if (item.inPosition.totalPrice) {
               {{ item.inPosition.totalPrice | tuiFormatNumber: formatNumberSettings | async }}
             } @else {
               &mdash;
             }
+            <div class="substring">
+              @if (item.inPosition.amount; as amount) {
+                {{ amount | tuiFormatNumber | async }}
+              } @else {
+                &mdash;
+              }
+            </div>
           </div>
           <div class="item__cell item__cell--number item__result" [uiPriceColor]="item.resultPct">
             {{ item.result | tuiFormatNumber: formatNumberSettings | async }}
@@ -236,8 +235,8 @@
 <ng-template #header>
   <div class="header item">
     <div class="item__cell item__date">
-      Дата входа <br>
-      Дата выхода
+      Дата вх <br>
+      Дата вых
     </div>
     <div class="item__cell item__direction">
       Напр
@@ -245,12 +244,10 @@
     <div class="item__cell item__ticker">
       Тикер
     </div>
-    <div class="item__cell item__quantity">
+    <div class="item__cell item__total">
+      Стоимость <br>
       Кол-во в
       сделке
-    </div>
-    <div class="item__cell item__total">
-      Стоимость
     </div>
     <div class="item__cell item__result">
       Результат

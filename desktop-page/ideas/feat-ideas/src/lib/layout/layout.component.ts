@@ -15,10 +15,12 @@ import { ACTION_EVENTS } from 'tokens/desktop';
 import { IDEA_CONSTANTS } from '@data-access-idea/ideas/constants';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FilterIdeaListComponent } from '../filter/filter.component';
-import { debounceTime, Observable, startWith } from 'rxjs';
+import { debounceTime, Observable, shareReplay, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import {
+	TuiBreakpointMediaKey,
+	TuiBreakpointService,
 	TuiButton,
 	TuiDataList,
 	TuiDataListComponent,
@@ -141,6 +143,7 @@ type ActionButton = {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit {
+	readonly #breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
 	readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
 	readonly #actions: ContextActionPlugin[] = inject(ACTION_EVENTS);
 	readonly #dataAccess: DataAccessIdeaService = inject(DataAccessIdeaService);
@@ -163,6 +166,11 @@ export class LayoutComponent implements AfterViewInit {
 		page: 0,
 	});
 	protected readonly openFilter: WritableSignal<boolean> = signal(false);
+
+	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
+		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
 
 	readonly isActiveFilter$: Observable<boolean> = this.filterControl.valueChanges.pipe(
 		startWith(this.filterControl.value),
