@@ -24,7 +24,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: npm install, build
         run: |
           npm install
@@ -55,7 +55,7 @@ jobs:
           target: /home/mantyz/projects/vanya-frontend-builds
       # Runs a single command using the runners shell
       - name: Run docker build
-        uses: appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
