@@ -43,6 +43,9 @@ import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { LimitStore } from '@feat-trade-limit';
 import { TradeStore } from '@data-access-trade/store.trade';
+import { DataAccessIdeaService } from '@data-access-idea/ideas/data-access.service';
+import { DataAccessDealService } from '@data-access-idea/deals/data-access.service';
+import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 
 @Component({
 	selector: 'lk-layout',
@@ -63,6 +66,9 @@ import { TradeStore } from '@data-access-trade/store.trade';
 		AccountFacade,
 		PortfolioFacade,
 		ApiPortfolioService,
+		DataAccessIdeaService,
+		DataAccessDealService,
+		DataAccessPortfolioService,
 		{
 			provide: DataAccessPortfolioStore,
 			useFactory: (api: ApiPortfolioService) => new DataAccessPortfolioStore(api),
@@ -165,6 +171,12 @@ import { TradeStore } from '@data-access-trade/store.trade';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LkComponent implements OnInit {
+	readonly #dataAccessIdea: DataAccessIdeaService = inject(DataAccessIdeaService);
+	readonly #dataAccessDeal: DataAccessDealService = inject(DataAccessDealService);
+	readonly #dataAccessIdeaStore: DataAccessIdeasStore = inject(DataAccessIdeasStore);
+	readonly #dataAccessPortfolio: DataAccessPortfolioService = inject(DataAccessPortfolioService);
+	readonly #dataAccessPortfolioStore: DataAccessPortfolioStore = inject(DataAccessPortfolioStore);
+
 	readonly #storeTrade: TradeStore = inject(TradeStore);
 	readonly #injector: Injector = inject(Injector);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
@@ -225,7 +237,24 @@ export class LkComponent implements OnInit {
 				takeUntilDestroyed(this.#destroyRef),
 				switchMap(() => this.#dialogEnter.openEnterDialog(this.#injector))
 			)
-			.subscribe();
+			.subscribe((result: null | string | void) => {
+				console.log(result);
+
+				if (result === 'isUpdate') {
+					const paramsIdea = this.#dataAccessIdea.params();
+					if (paramsIdea) {
+						this.#dataAccessIdeaStore.loadIdeas(paramsIdea);
+					}
+					const paramsDeal = this.#dataAccessDeal.params();
+					if (paramsDeal) {
+						this.#dataAccessIdeaStore.loadDeals(paramsDeal);
+					}
+					const paramsPortfolio = this.#dataAccessPortfolio.params();
+					if (paramsPortfolio) {
+						this.#dataAccessPortfolioStore.loadBalance(paramsPortfolio);
+					}
+				}
+			});
 
 		this._queryTrade$
 			.pipe(

@@ -20,7 +20,6 @@ import { DataAccessPortfolioStore } from '@data-access-portfolio/store';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
 import { DataAccessStructureStore } from '@data-access-structure/store';
 import { DataAccessStructureService } from '@data-access-structure/data-access.service';
-import { DataAccessIdeaService } from '@data-access-idea/ideas/data-access.service';
 import { DataAccessDealService } from '@data-access-idea/deals/data-access.service';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
@@ -49,10 +48,7 @@ import { DataAccessIdeasStore } from '@data-access-idea/store';
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss',
 	providers: [
-		DataAccessPortfolioService,
 		DataAccessStructureService,
-		DataAccessIdeaService,
-		DataAccessDealService,
 		TuiFormatNumberPipe,
 		{
 			provide: TIMER_INTERVAL,

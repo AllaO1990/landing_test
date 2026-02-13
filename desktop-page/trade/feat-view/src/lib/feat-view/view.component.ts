@@ -7,6 +7,7 @@ import {
 	TradeSources,
 	TradeStopOrder,
 	TradeStopOrders,
+	TradeToken,
 } from '@data-access-trade/types';
 import { Response } from 'types/response';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
@@ -50,6 +51,7 @@ interface FormValue {
 	],
 	templateUrl: './view.component.html',
 	styleUrl: './view.component.scss',
+	standalone: true,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ViewComponent implements AfterViewInit {
@@ -79,8 +81,11 @@ export class ViewComponent implements AfterViewInit {
 		return this.formGroup.get('positionType') as FormControl;
 	}
 
-	readonly idea$: Observable<StockPosition> = this.#idea.idea$.pipe(
-		distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
+	readonly idea$: Observable<StockPosition> = this.#tradeStore.token$.pipe(
+		filter((token: Response<TradeToken | null> | null) => token !== null && token.data !== null),
+		switchMap(() =>
+			this.#idea.idea$.pipe(distinctUntilChanged((a: StockPosition, b: StockPosition) => a.idea.id === b.idea.id))
+		)
 	);
 
 	readonly orders$ = this.#tradeStore.orders$.pipe(
@@ -158,10 +163,15 @@ export class ViewComponent implements AfterViewInit {
 			)
 			.subscribe((value: FormValue) => this._load(value));
 
-		this.#tradeStore.source$
+		this.#tradeStore.token$
 			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				filter((source: TradeSources | null): source is TradeSources => source !== null && source.length > 0)
+				filter((token: Response<TradeToken | null> | null) => token !== null && token.data !== null),
+				switchMap(() =>
+					this.#tradeStore.source$.pipe(
+						takeUntilDestroyed(this.#destroyRef),
+						filter((source: TradeSources | null): source is TradeSources => source !== null && source.length > 0)
+					)
+				)
 			)
 			.subscribe((sources: TradeSources) => {
 				this.#tradeStore.loadAccounts(sources[0].id);

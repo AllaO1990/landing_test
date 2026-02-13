@@ -112,7 +112,7 @@
   display: flex;
   align-items: center;
 
-  height: 34px;
+  height: 36px;
   overflow: hidden;
 
   font-size: 13px;
@@ -239,6 +239,10 @@ tui-badge-notification[appearance="primary"] {
     &__ticker {
       max-width: 120px;
       min-width: 80px;
+    }
+
+    &__direction {
+      width: 40px;
     }
   }
 

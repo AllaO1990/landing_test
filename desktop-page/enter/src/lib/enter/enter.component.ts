@@ -1,4 +1,4 @@
-import { TUI_CONFIRM, TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
+import { TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
 import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
 import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
@@ -6,13 +6,12 @@ import {
 	TuiAlertService,
 	TuiBreakpointService,
 	TuiButton,
-	TuiDialogService,
 	TuiHintDirective,
 	TuiIcon,
 	TuiNotification,
 	TuiScrollbar,
 } from '@taiga-ui/core';
-import { POLYMORPHEUS_CONTEXT, PolymorpheusComponent, PolymorpheusContent } from '@taiga-ui/polymorpheus';
+import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import {
 	combineLatest,
 	debounceTime,
@@ -53,7 +52,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EnterIdeaSubscribeDirective } from './enter.directive';
 import { triggerHeightAnimations } from '@ui/animations/height.animations';
-import { EnterFinishComponent } from './finish/finish.component';
 import { DIALOG, DialogService } from '@ui/components/dialog';
 import { Params } from '@angular/router';
 import { getNumberPrecision } from 'utils/get-number-precision';
@@ -61,6 +59,8 @@ import { EnterIdeaComponent } from './idea/idea.component';
 import { calculateEntries, calculateStop, calculateTargets } from './idea-calculate';
 import { LimitStore } from '@feat-trade-limit';
 import { TradeLimit } from '@data-access-trade/types';
+import { FinishService } from './finish/finish.service';
+import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -144,22 +144,27 @@ function maxAmount(): ValidatorFn {
 	],
 	templateUrl: './enter.component.html',
 	styleUrl: './enter.component.scss',
+	providers: [
+		{
+			provide: FinishService,
+			useFactory: (dialog: DialogService) => new FinishService(dialog),
+			deps: [DIALOG],
+		},
+	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	animations: [triggerHeightAnimations],
 })
 export class VtEnterComponent implements AfterViewInit {
 	readonly #breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
-	private readonly _dialogDefaultService: TuiDialogService = inject(TuiDialogService);
+	readonly #dialogFinishService: FinishService = inject(FinishService);
+	readonly #dialogApproveService: DialogApproveService = inject(DialogApproveService);
 	private readonly _destroyRef: DestroyRef = inject(DestroyRef);
 	private readonly _idea: IdeaFacade = inject(IdeaFacade);
 	private readonly _alerts = inject(TuiAlertService);
 	private readonly _queryParams: QueryParams = inject(QUERY_PARAMS);
 	private readonly _isShowCopyNotify$: Subject<void> = new Subject<void>();
 	readonly #injector: Injector = inject(Injector);
-	readonly #dialog: DialogService = inject(DIALOG);
-
-	#limitStore: LimitStore = inject(LimitStore);
-	#dialogFinish: PolymorpheusContent<EnterFinishComponent> | null = null;
+	readonly #limitStore: LimitStore = inject(LimitStore);
 
 	readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, {
 		optional: true,
@@ -289,6 +294,7 @@ export class VtEnterComponent implements AfterViewInit {
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 	activeItemIndex = 0;
+	isEdit = false;
 
 	ngAfterViewInit(): void {
 		this.data$
@@ -424,26 +430,22 @@ export class VtEnterComponent implements AfterViewInit {
 		event.preventDefault();
 
 		if (this.form.pristine) {
-			this.context.$implicit.complete();
+			this.context.completeWith(this.isEdit ? 'isUpdate' : null);
 
 			return;
 		}
 
-		this._dialogDefaultService
-			.open<boolean>(TUI_CONFIRM, {
+		this.#dialogApproveService
+			.openDialog(this.#injector, {
 				appearance: 'dialog-confirm',
-				size: 'auto',
-				closeable: false,
 				data: {
-					content: '<p class="tui-text_h6">Данные не сохранены.<br/> Хотите закрыть?</h2>',
-					yes: 'Да',
-					no: 'Нет',
+					context: '<p class="tui-text_h6">Данные не сохранены.<br/> Хотите закрыть?</h2>',
 				},
 			})
 			.subscribe((result: boolean) => {
 				if (result) {
 					this._idea.updateIdea(null);
-					this.context.$implicit.complete();
+					this.context.completeWith(this.isEdit ? 'isUpdate' : null);
 				}
 			});
 	}
@@ -469,21 +471,19 @@ export class VtEnterComponent implements AfterViewInit {
 		} else {
 			this._idea.editIdea({ id: ideaId, body: this._getValueToSubmit(this.form.getRawValue()) });
 		}
+
+		this.isEdit = true;
 	}
 
 	onDelete(event: Event, ideaId: number | null): void {
 		event.preventDefault();
 
 		if (ideaId !== null) {
-			this._dialogDefaultService
-				.open<boolean>(TUI_CONFIRM, {
+			this.#dialogApproveService
+				.openDialog(this.#injector, {
 					appearance: 'dialog-confirm',
-					size: 'auto',
-					closeable: false,
 					data: {
-						content: '<p class="tui-text_h6">Удалить идею безвозвратно?</h2>',
-						yes: 'Да',
-						no: 'Нет',
+						context: '<p class="tui-text_h6">Удалить идею безвозвратно?</h2>',
 					},
 				})
 				.subscribe((result: boolean) => {
@@ -617,16 +617,9 @@ export class VtEnterComponent implements AfterViewInit {
 		return out.total < entry.total ? 'profit' : 'loss';
 	}
 
-	private async _showDialogFinish(type: 'profit' | 'loss' | null = null): Promise<void> {
-		if (this.#dialogFinish === null) {
-			this.#dialogFinish = await import('./finish/finish.component')
-				.then((m) => m.EnterFinishComponent)
-				.then((c) => new PolymorpheusComponent(c, this.#injector));
-		}
-
-		this.#dialog
-			.open(this.#dialogFinish, {
-				appearance: 'dialog-block',
+	private _showDialogFinish(type: 'profit' | 'loss' | null = null): void {
+		this.#dialogFinishService
+			.openDialog(this.#injector, {
 				data: { type },
 			})
 			.subscribe();
