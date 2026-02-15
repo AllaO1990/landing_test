@@ -2,19 +2,26 @@
   class="container"
   [class.container--update]="isUpdate$ | async">
   <div class="column">
-    <div class="charts" *ngIf="(candles$ | async) as data; else loader">
-      <vt-chart
-        (event)="onEvent($event)"
-        [data]="data"
-        [indicators]="indicators$ | async"
-        [zones]="zone$ | async"
-        [figure]="figures$ | async"
-        [text]="text$ | async"
-      ></vt-chart>
-    </div>
-    <div class="legend" *ngIf="toggleLegend">
-      <lib-chart-legend class="chart-legend" [list]="(legend$ | async) || []"></lib-chart-legend>
-    </div>
+    @if (candles$ | async; as data) {
+      <div class="charts">
+        <vt-chart
+          (event)="onEvent($event)"
+          [data]="data"
+          [indicators]="indicators$ | async"
+          [zones]="zone$ | async"
+          [figure]="figures$ | async"
+          [text]="text$ | async"
+        ></vt-chart>
+      </div>
+    } @else {
+      <ui-loader class="loader"></ui-loader>
+    }
+
+    @if (toggleLegend) {
+      <div class="legend">
+        <lib-chart-legend class="chart-legend" [list]="(legend$ | async) || []"></lib-chart-legend>
+      </div>
+    }
   </div>
   <div
     class="actions"
@@ -94,13 +101,11 @@
   </div>
 </div>
 
-<div class="update" *ngIf="isUpdate$ | async">
-  <ui-loader class="loader"></ui-loader>
-</div>
-
-<ng-template #loader>
-  <ui-loader class="loader"></ui-loader>
-</ng-template>
+@if (isUpdate$ | async) {
+  <div class="update">
+    <ui-loader class="loader"></ui-loader>
+  </div>
+}
 
 <ng-template #empty>
   <div class="empty">Загрузка...</div>

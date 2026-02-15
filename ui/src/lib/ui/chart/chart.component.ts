@@ -1,17 +1,17 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	Component,
-	EventEmitter,
-	Input,
-	OnDestroy,
-	Output,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
 } from '@angular/core';
 
 import * as Highcharts from 'highcharts/highstock';
 import HC_exporting from 'highcharts/modules/exporting';
 
-import { HighchartsChartModule } from 'highcharts-angular';
+import {HighchartsChartModule} from 'highcharts-angular';
 import HIndicatorsAll from 'highcharts/indicators/indicators-all';
 import HAnnotationsAdvanced from 'highcharts/modules/annotations-advanced';
 import HDragPanes from 'highcharts/modules/drag-panes';
@@ -19,22 +19,22 @@ import HDraggablePoints from 'highcharts/modules/draggable-points';
 import HFullScreen from 'highcharts/modules/full-screen';
 import HPriceIndicator from 'highcharts/modules/price-indicator';
 import HStockTools from 'highcharts/modules/stock-tools';
-import { NgIf } from '@angular/common';
-import { HIGHCHARTS_LANG, HIGHCHARTS_OPTIONS } from './chart.options';
+import {NgIf} from '@angular/common';
+import {HIGHCHARTS_LANG, HIGHCHARTS_OPTIONS} from './chart.options';
 import {
-	BehaviorSubject,
-	distinctUntilChanged,
-	filter,
-	map,
-	ReplaySubject,
-	shareReplay,
-	Subject,
-	switchMap,
-	tap,
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  map,
+  ReplaySubject,
+  shareReplay,
+  Subject,
+  switchMap,
+  tap,
 } from 'rxjs';
-import { WheelSetExtremes } from './chart.utils';
-import { tuiFormatNumber } from '@taiga-ui/core';
-import { CHART_INDICATORS_NAME } from './chart.constants';
+import {WheelSetExtremes} from './chart.utils';
+import {tuiFormatNumber} from '@taiga-ui/core';
+import {CHART_INDICATORS_NAME} from './chart.constants';
 
 HC_exporting(Highcharts);
 
@@ -62,7 +62,7 @@ let CHART_INCREMENT = 2;
 export class ChartComponent implements AfterViewInit, OnDestroy {
 	private readonly _indicatorsName: string[] = CHART_INDICATORS_NAME;
 	private readonly _zonesName: string[] = ['zones-5', 'zones-12', 'zones-13', 'zones-ideas', 'zones-watch'];
-	private readonly _figuresName: string[] = ['lines-ideas', 'lines-user'];
+	private readonly _figuresName: string[] = ['lines-idea', 'lines-user'];
 	private readonly _instrument$: Subject<any> = new BehaviorSubject(null);
 	private readonly _indicators$: Subject<SeriesSpline[] | null> = new BehaviorSubject<SeriesSpline[] | null>(null);
 	private readonly _zone$: Subject<Zones | null> = new BehaviorSubject<Zones | null>(null);

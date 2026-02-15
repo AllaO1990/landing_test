@@ -238,8 +238,6 @@ export class LkComponent implements OnInit {
 				switchMap(() => this.#dialogEnter.openEnterDialog(this.#injector))
 			)
 			.subscribe((result: null | string | void) => {
-				console.log(result);
-
 				if (result === 'isUpdate') {
 					const paramsIdea = this.#dataAccessIdea.params();
 					if (paramsIdea) {
