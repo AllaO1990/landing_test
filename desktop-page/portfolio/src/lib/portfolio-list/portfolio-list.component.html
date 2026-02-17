@@ -1,6 +1,6 @@
 <div class="portfolio">
   <div class="portfolio__title">
-    <h3>Портфель</h3>
+    Портфель
   </div>
   <div class="portfolio__container" *ngIf="(data$ | async) as data; else load">
     <div class="portfolio__info">
@@ -63,7 +63,7 @@
           <span
             class="card__title-value-pct"
             [uiPriceColor]="data.profit">
-            ({{ data.profitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
+            ({{ data.profitPct | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}%)
           </span>
         </div>
         <div class="card__list">
@@ -74,7 +74,7 @@
             <dd class="card__cell card__description">
               {{ data.fixedProfit | tuiFormatNumber | async }}
               <span class="card__value-pct" [uiPriceColor]="data.fixedProfitPct">
-                ({{ data.fixedProfitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
+                ({{ data.fixedProfitPct | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}%)
               </span>
             </dd>
           </dl>
@@ -91,7 +91,7 @@
             </dd>
           </dl>
         </div>
-        <hr />
+        <hr/>
         <div class="card__list">
           <dl class="card__row">
             <dt class="card__cell card__name">
@@ -100,7 +100,7 @@
             <dd class="card__cell card__description">
               {{ data.inPositionProfit | tuiFormatNumber | async }}
               <span class="card__value-pct" [uiPriceColor]="data.inPositionProfitPct">
-                ({{ data.inPositionProfitPct | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}%)
+                ({{ data.inPositionProfitPct | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}%)
               </span>
             </dd>
           </dl>
@@ -126,7 +126,7 @@
           [valueContent]="valueTemplate"
           [tuiTextfieldSize]="size"
           [formControl]="controlType">
-          <input autocomplete="off" tuiTextfieldLegacy />
+          <input autocomplete="off" tuiTextfieldLegacy/>
           <ng-template tuiDataList>
             <tui-data-list>
               <button

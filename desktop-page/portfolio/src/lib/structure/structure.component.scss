@@ -16,9 +16,18 @@
   overflow: hidden;
 
   &__title {
-    flex: 0;
+    flex: 0 auto;
+
+    display: flex;
+    align-items: center;
+
+    height: 32px;
+
+    font-size: 15px;
+    font-weight: 600;
 
     padding: 0 var(--padding-2);
+    margin: var(--padding-2) 0;
   }
 
   &__switcher {

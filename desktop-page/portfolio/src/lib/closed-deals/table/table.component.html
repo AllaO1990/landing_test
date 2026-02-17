@@ -1,6 +1,8 @@
-<div class="empty" *ngIf="isData === false">
-  Нет данных
-</div>
+@if (isData === false) {
+  <div class="empty">
+    Нет данных
+  </div>
+}
 <div class="container">
   <cdk-virtual-scroll-viewport
     #viewport
@@ -45,15 +47,15 @@
               @if (item.entry && item.entry.date; as date) {
                 {{ date | date: 'dd.MM.yy' }}
               } @else {
-              &mdash;
-            }
+                &mdash;
+              }
             </div>
             <div class="date__close">
               @if (item.out && item.out.date; as date) {
                 {{ date | date: 'dd.MM.yy' }}
               } @else {
-              &mdash;
-            }
+                &mdash;
+              }
             </div>
           </div>
         </td>
@@ -102,11 +104,12 @@
               <div class="cost__quantity">
                 {{ amount | tuiFormatNumber | async }}
               </div>
-            } @if (item.entry && item.entry.totalPrice; as total) {
-            <div class="cost__price substring">
-              {{ total | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
-            </div>
-          }
+            }
+            @if (item.entry && item.entry.totalPrice; as total) {
+              <div class="cost__price substring">
+                {{ total | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
+              </div>
+            }
           </div>
         </td>
 
@@ -131,7 +134,7 @@
             </div>
             <div class="cost__price substring">
               <ng-container *ngIf="item.out && item.out.totalPrice; else none">
-                {{ item.out.totalPrice | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+                {{ item.out.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
               </ng-container>
             </div>
           </div>
@@ -149,7 +152,7 @@
             </div>
             <div class="dividend__price substring">
               <ng-container *ngIf="item.dividendPct; else none">
-                {{ item.dividendPct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
+                {{ item.dividendPct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
               </ng-container>
             </div>
           </div>
@@ -162,10 +165,10 @@
           <div class="profit-realized">
             <ng-container *ngIf="item.fixedResultPct; else none">
               <div class="profit-realized__percentage">
-                {{ item.fixedResultPct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
+                {{ item.fixedResultPct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
               </div>
               <div class="profit-realized__price substring">
-                {{ item.fixedResult | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
+                {{ item.fixedResult | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
               </div>
             </ng-container>
           </div>
@@ -180,7 +183,7 @@
               {{ item.inPosition.amount | tuiFormatNumber | async }}
             </div>
             <div class="remainder__price substring">
-              {{ item.inPosition.totalPrice | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
+              {{ item.inPosition.totalPrice | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
             </div>
           </div>
         </td>
@@ -191,10 +194,10 @@
           tuiTd>
           <div class="profit-not-realized" [uiPriceColor]="item.inPositionResultPct">
             <div class="profit-not-realized__percentage">
-              {{ item.inPositionResultPct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
+              {{ item.inPositionResultPct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
             </div>
             <div class="profit-not-realized__price substring">
-              {{ item.inPositionResult | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
+              {{ item.inPositionResult | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
             </div>
           </div>
         </td>
@@ -205,10 +208,10 @@
           tuiTd>
           <div class="result" [uiPriceColor]="item.resultPct">
             <div class="result__percentage">
-              {{ item.resultPct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
+              {{ item.resultPct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
             </div>
             <div class="result__price substring">
-              {{ item.result | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}
+              {{ item.result | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
             </div>
           </div>
         </td>
@@ -218,10 +221,10 @@
           *tuiCell="'deposit'"
           tuiTd>
           @if (item.depositSharePct) {
-            {{ item.depositSharePct | tuiFormatNumber: { precision: 1, decimalMode: 'always' } | async }}%
+            {{ item.depositSharePct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
           } @else {
-          &mdash;
-        }
+            &mdash;
+          }
         </td>
 
         <td

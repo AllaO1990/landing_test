@@ -316,7 +316,21 @@ export class DesktopApiService extends DesktopService {
 	}
 
 	getPortfolio(params: Params): Observable<Response<DataList<PortfolioPosition>>> {
-		return this._http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/v1/ideas/portfolio`, params);
+		return this._http.post<Response<DataList<PortfolioPosition>>>(`${this.host}/v1/ideas/portfolio`, {
+			author: params['author'],
+			brokerId: params['brokerId'],
+			currencyId: params['currencyId'],
+			dealType: params['dealType'],
+			from: params['from'],
+			instrumentType: params['instrumentType'],
+			leadToCurrency: params['leadToCurrency'],
+			limit: params['limit'],
+			page: params['page'],
+			portfolioId: params['portfolioId'],
+			query: params['query'],
+			strategyId: params['strategyId'],
+			to: params['to'],
+		});
 	}
 
 	getIdea(id: StockId): Observable<Response<StockPosition | null>> {
