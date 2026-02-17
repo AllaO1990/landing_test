@@ -47,6 +47,17 @@
           iconStart="@tui.plus">
           Добавить заявку
         </button>
+
+        <button
+          class="add-from-idea"
+          [disabled]="isDisabledButton$ | async"
+          (click)="addFromIdeaEntry($event)"
+          appearance="outline"
+          tuiAppearanceMode="checked"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить из идеи
+        </button>
       </div>
     </div>
 
@@ -78,7 +89,7 @@
         <button
           class="add-from-idea"
           [disabled]="isDisabledButton$ | async"
-          (click)="addFromIdea($event)"
+          (click)="addFromIdeaOut($event)"
           appearance="outline"
           tuiAppearanceMode="checked"
           tuiButton
@@ -202,7 +213,7 @@
     <div class="cell cell--number">
       <div class="cell--full">
         <strong>
-          {{ item.total | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}</strong>
+          {{ item.total | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}</strong>
       </div>
       <div class="cell--full">
       <span>{{ item.quantity | tuiFormatNumber | async }} шт.
@@ -303,7 +314,7 @@
     }}
   </div>
   <div class="item__value item__value--number row__item row__item--total">
-    {{ item.initialOrderPrice.value | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+    {{ item.initialOrderPrice.value | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
   </div>
   <div class="item__value row__item row__item--actions">
     <!--    <button-->
@@ -352,7 +363,7 @@
     }}
   </div>
   <div class="item__value item__value--number row__item row__item--total">
-    {{ (item.price.value * item.lotsRequested) | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+    {{ (item.price.value * item.lotsRequested) | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
   </div>
   <div class="item__value row__item row__item--actions">
     <!--    <button-->
@@ -402,7 +413,7 @@
     }}
   </div>
   <div class="item__value item__value--number row__item row__item--total">
-    {{ item.payment.value | tuiFormatNumber: { precision: 2, decimalMode: 'always' } | async }}
+    {{ item.payment.value | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
   </div>
   <!--  <div class="item__value row__item row__item&#45;&#45;center">-->
   <!--    <tui-icon-->

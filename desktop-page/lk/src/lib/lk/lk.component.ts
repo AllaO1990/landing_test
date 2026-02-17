@@ -46,6 +46,7 @@ import { TradeStore } from '@data-access-trade/store.trade';
 import { DataAccessIdeaService } from '@data-access-idea/ideas/data-access.service';
 import { DataAccessDealService } from '@data-access-idea/deals/data-access.service';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
+import { TradeBrokerStore } from '@data-access-trade/store.broker';
 
 @Component({
 	selector: 'lk-layout',
@@ -95,6 +96,11 @@ import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.s
 		{
 			provide: TradeStore,
 			useFactory: (api: ApiTradeService) => new TradeStore(api),
+			deps: [ApiTradeService],
+		},
+		{
+			provide: TradeBrokerStore,
+			useFactory: (api: ApiTradeService) => new TradeBrokerStore(api),
 			deps: [ApiTradeService],
 		},
 		{

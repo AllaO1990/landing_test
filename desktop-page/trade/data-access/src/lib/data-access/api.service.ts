@@ -69,16 +69,16 @@ export class ApiTradeService {
 		});
 	}
 
-	getToken(sourceId: number): Observable<Response<TradeToken | null>> {
-		return this.#http.get<Response<TradeToken | null>>(`${this.host}/v1/trades/token`, { params: { sourceId } });
+	getToken(sourceId: number): Observable<Response<TradeToken>> {
+		return this.#http.get<Response<TradeToken>>(`${this.host}/v1/trades/token`, { params: { sourceId } });
 	}
 
-	changeToken(data: TradeTokenSource): Observable<Response<TradeToken | null>> {
-		return this.#http.post<Response<TradeToken | null>>(`${this.host}/v1/trades/token`, data);
+	changeToken(data: TradeTokenSource): Observable<Response<TradeToken>> {
+		return this.#http.post<Response<TradeToken>>(`${this.host}/v1/trades/token`, data);
 	}
 
-	removeToken(data: TradeToken): Observable<Response<TradeToken | null>> {
-		return this.#http.delete<Response<TradeToken | null>>(`${this.host}/v1/trades/token`, {
+	removeToken(data: TradeToken): Observable<Response<TradeToken>> {
+		return this.#http.delete<Response<TradeToken>>(`${this.host}/v1/trades/token`, {
 			body: { sourceId: data.sourceId, tokenId: data.tokenId },
 		});
 	}

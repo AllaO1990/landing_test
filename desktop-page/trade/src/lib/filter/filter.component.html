@@ -5,20 +5,25 @@
         Источник
       </span>
 
-      <tui-select
-        *ngIf="sources$ | async as list; else load"
+      <tui-textfield
         class="label__action filter__source"
-        [stringify]="stringifySource"
+        tuiChevron
+        [identityMatcher]="identityMatcherSource()"
+        [stringify]="stringifySource()"
         [tuiTextfieldSize]="size"
-        formControlName="source"
-        [tuiTextfieldLabelOutside]="true">
+        [tuiTextfieldCleaner]="false">
+        <input
+          formControlName="source"
+          placeholder="Источник"
+          autocomplete="off"
+          tuiSelect/>
         <tui-data-list-wrapper
-          *tuiDataList
-          [size]="size"
-          [items]="list"
-          [itemContent]="contentSource">
-        </tui-data-list-wrapper>
-      </tui-select>
+          *tuiTextfieldDropdown
+          new
+          [itemContent]="contentSource"
+          [items]="sources$ | async"
+        />
+      </tui-textfield>
     </div>
 
     <div class="form__control label">
@@ -27,19 +32,25 @@
     </span>
       @if (accounts$ | async; as list) {
         @if (list.data) {
-          <tui-select
+          <tui-textfield
             class="label__action filter__source"
-            [stringify]="stringifySource"
+            tuiChevron
+            [identityMatcher]="identityMatcherAccount()"
+            [stringify]="stringifyAccount()"
             [tuiTextfieldSize]="size"
-            formControlName="account"
-            [tuiTextfieldLabelOutside]="true">
+            [tuiTextfieldCleaner]="false">
+            <input
+              formControlName="account"
+              placeholder="Брокерский счёт"
+              autocomplete="off"
+              tuiSelect/>
             <tui-data-list-wrapper
-              *tuiDataList
-              [size]="size"
+              *tuiTextfieldDropdown
+              new
               [items]="list.data"
-              [itemContent]="contentAccount">
-            </tui-data-list-wrapper>
-          </tui-select>
+              [itemContent]="contentAccount"
+            />
+          </tui-textfield>
         } @else {
           <tui-chip
             class="label__chip"
@@ -74,16 +85,17 @@
     <div class="account__name">
       {{ account.name }}
     </div>
-    <div
-      class="account__money"
-      *ngFor="let item of account.availableMoney; trackBy: trackByIndex">
-      {{
-        item.value | tuiFormatNumber: {
-          precision: 2,
-          decimalMode: 'always'
-        } | async
-      }} {{ item.currency | uppercase | tuiCurrency }}
-    </div>
+    @for (item of account.availableMoney; track item.accountId) {
+      <div
+        class="account__money">
+        {{
+          item.value | tuiFormatNumber: {
+            precision: 2,
+            decimalMode: 'always'
+          } | async
+        }} {{ item.currency | uppercase | tuiCurrency }}
+      </div>
+    }
   </div>
 
 </ng-template>
@@ -91,20 +103,3 @@
 <ng-template #load>
   <ui-loader></ui-loader>
 </ng-template>
-
-<ng-template #error let-error>
-  {{ error | json }}
-</ng-template>
-
-<!--<ng-template #buttonCheck>-->
-<!--  <button-->
-<!--    [size]="size"-->
-<!--    class="filter__token-action"-->
-<!--    tuiButton-->
-<!--    iconEnd="@tui.check"-->
-<!--    appearance="positive"-->
-<!--    (click)="addToken($event)"-->
-<!--    type="button">-->
-<!--    <span>{{ controlToken.value.name }}</span>-->
-<!--  </button>-->
-<!--</ng-template>-->

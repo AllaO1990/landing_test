@@ -67,6 +67,7 @@ import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.servic
 import { Response } from 'types/response';
 import { TradeFormDialogService } from './form.dialog.service';
 import { DIALOG, DialogService } from '@ui/components/dialog';
+import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 
 @Component({
 	selector: 'trade-form',
@@ -121,6 +122,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 	readonly #store: TradeStore = inject(TradeStore);
 	readonly #service: TradeFormService = inject(TradeFormService);
 	readonly #api: ApiTradeService = inject(ApiTradeService);
+	readonly #timerInterval: number = inject(TIMER_INTERVAL);
 
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
@@ -218,6 +220,18 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
+	readonly positionAndLimit$: Observable<{ position: StockPosition; limit: TradeLimit }> = this.idea$.pipe(
+		distinctUntilChanged((a, b) => a.idea.id === b.idea.id),
+		switchMap((position: StockPosition) =>
+			this.#api.getLimitForCurrency(position.idea.instrument.currencyId).pipe(
+				map((response: Response<TradeLimit>) => ({
+					limit: response.data,
+					position,
+				}))
+			)
+		)
+	);
+
 	heightStop$: Observable<number> = combineLatest([this.listStop$, this.isMobile$]).pipe(
 		map(([list, isMobile]: [ControlValue[], boolean]) => {
 			const length = ((list && list.length) || 0) + 1;
@@ -243,16 +257,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 
 	ngAfterViewInit(): void {
 		combineLatest([
-			this.idea$.pipe(
-				switchMap((position: StockPosition) =>
-					this.#api.getLimitForCurrency(position.idea.instrument.currencyId).pipe(
-						map((response: Response<TradeLimit>) => ({
-							limit: response.data,
-							position,
-						}))
-					)
-				)
-			),
+			this.positionAndLimit$,
 			this.orders$.pipe(
 				filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
 				distinctUntilChanged((a, b) => this._distinctOrders(a, b))
@@ -330,7 +335,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 				filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
 				distinctUntilChanged(this._distinct),
 				switchMap((value: Params) =>
-					timer(0, this.#store.TIMER).pipe(
+					timer(0, this.#timerInterval).pipe(
 						takeUntilDestroyed(this.#destroyRef),
 						map(() => value)
 					)
@@ -633,7 +638,21 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 		this.expandedFilter.update((status: boolean) => !status);
 	}
 
-	addFromIdea(event: Event): void {
+	addFromIdeaEntry(event: Event): void {
+		event.preventDefault();
+
+		this.positionAndLimit$
+			.pipe(takeUntilDestroyed(this.#destroyRef), take(1))
+			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
+				const entry = this.#service.getEntryControlValue(position, [], [], [], this.controlFilter.value, limit.limit);
+
+				entry.ideas.forEach((item, index: number) => {
+					this.formArrayEntry.setControl(index + length, new FormControl(item));
+				});
+			});
+	}
+
+	addFromIdeaOut(event: Event): void {
 		event.preventDefault();
 
 		this.idea$

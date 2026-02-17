@@ -16,7 +16,6 @@
     } @else {
       <ui-loader class="loader"></ui-loader>
     }
-
     @if (toggleLegend) {
       <div class="legend">
         <lib-chart-legend class="chart-legend" [list]="(legend$ | async) || []"></lib-chart-legend>

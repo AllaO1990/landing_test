@@ -1,8 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, forwardRef, inject } from '@angular/core';
-import { TuiDataList, TuiFormatNumberPipe, TuiHint, TuiTextfield } from '@taiga-ui/core';
+import {
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	forwardRef,
+	inject,
+	signal,
+} from '@angular/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { AsyncPipe, JsonPipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
-import { TuiSelectModule, TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import {
 	combineLatest,
 	debounceTime,
@@ -18,57 +23,41 @@ import {
 	tap,
 	timer,
 } from 'rxjs';
-import { TuiStringHandler } from '@taiga-ui/cdk';
-import { LoaderComponent } from '@ui/components/loader';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '@data-access-trade/store.trade';
-import {
-	TradeAccount,
-	TradeAccounts,
-	TradeOrders,
-	TradeSource,
-	TradeSources,
-	TradeToken,
-} from '@data-access-trade/types';
-import { TuiChip } from '@taiga-ui/kit';
+import { TradeAccount, TradeOrders, TradeSource, TradeSources, TradeToken } from '@data-access-trade/types';
 import { StockInstrument, WithLastPrice } from 'types/stock';
-import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
-import { Response } from 'types/response';
+import { Charge } from 'types/response';
 import { Params } from '@angular/router';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { TokenButtonComponent } from '../token-button/token-button.component';
 import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
-
-interface Position {
-	loading: boolean;
-	quantity: number;
-	currency: string;
-	price: number;
-	total: number;
-}
+import { TuiFormatNumberPipe, TuiHint, TuiTextfield } from '@taiga-ui/core';
+import { TuiChevron, TuiChip, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
+import { AsyncPipe, UpperCasePipe } from '@angular/common';
+import { LoaderComponent } from '@ui/components/loader';
+import { TokenButtonComponent } from '@feat-trade-token';
+import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
+import { TradeBrokerAccounts, TradeBrokerStore, TradeBrokerToken } from '@data-access-trade/store.broker';
+import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 
 @Component({
 	selector: 'trade-filter',
 	standalone: true,
 	imports: [
-		TuiTextfield,
 		ReactiveFormsModule,
-		TuiDataList,
-		TuiSelectModule,
-		TuiTextfieldControllerModule,
-		NgIf,
+		TuiTextfield,
+		TuiChevron,
+		TuiSelect,
+		TuiDataListWrapper,
 		AsyncPipe,
-		LoaderComponent,
-		NgForOf,
-		TuiFormatNumberPipe,
-		TuiCurrencyPipe,
-		UpperCasePipe,
-		JsonPipe,
 		TuiChip,
 		TuiHint,
+		LoaderComponent,
 		TokenButtonComponent,
-		TuiTextfield,
+		TuiFormatNumberPipe,
+		UpperCasePipe,
+		TuiCurrencyPipe,
 	],
 	templateUrl: './filter.component.html',
 	styleUrl: './filter.component.scss',
@@ -83,7 +72,9 @@ interface Position {
 })
 export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 	readonly #localStorage = inject(LOCAL_STORAGE);
+	readonly #timerInterval: number = inject(TIMER_INTERVAL);
 	readonly #store: TradeStore = inject(TradeStore);
+	readonly #storeBroker: TradeBrokerStore = inject(TradeBrokerStore);
 	readonly #idea: IdeaFacade = inject(IdeaFacade);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
@@ -92,12 +83,12 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 
 	readonly size = 's';
 	readonly idea$: Observable<StockPosition> = this.#idea.idea$;
-	readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.#store.accounts$.pipe(
-		filter((data: Response<TradeAccounts | null> | null): data is Response<TradeAccounts | null> => data !== null),
-		tap((response: Response<TradeAccounts | null>) => this.controlAccount.setValue(response.data && response.data[0]))
+	readonly accounts$: Observable<TradeBrokerAccounts> = this.#storeBroker.accounts$.pipe(
+		tap((data: TradeBrokerAccounts) => data.data && this.controlAccount.setValue(data.data[0]))
 	);
-	readonly token$: Observable<Response<TradeToken | null> | null> = this.#store.token$;
-	readonly sources$: Observable<TradeSources> = this.#store.source$.pipe(
+	readonly token$: Observable<TradeBrokerToken> = this.#storeBroker.token$;
+	readonly sources$: Observable<TradeSources> = this.#storeBroker.source$.pipe(
+		map((data: Charge<TradeSources>) => data.data),
 		filter((data: TradeSources | null): data is TradeSources => data !== null)
 	);
 	readonly formGroup: FormGroup = new FormGroup({
@@ -128,7 +119,10 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 		return this.formGroup.get('lastPrice') as FormControl;
 	}
 
-	readonly stringifySource: TuiStringHandler<TradeSource> = (item: TradeSource) => item.name;
+	readonly stringifySource = signal((x: TradeSource) => x.name || '');
+	readonly identityMatcherSource = signal((a: TradeSource, b: TradeSource) => a.id === b.id);
+	readonly stringifyAccount = signal((x: TradeAccount) => x.name || '');
+	readonly identityMatcherAccount = signal((a: TradeAccount, b: TradeAccount) => a.accountId === b.accountId);
 
 	isDisabled = false;
 
@@ -160,7 +154,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 				this.#localStorage.setItem('filterTrade', value);
 			});
 
-		this.#store.loadSources();
+		this.#storeBroker.loadSources();
 
 		this.idea$
 			.pipe(
@@ -184,7 +178,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 						return of(null);
 					}
 
-					return timer(0, this.#store.TIMER).pipe(
+					return timer(0, this.#timerInterval).pipe(
 						takeUntilDestroyed(this.#destroyRef),
 						map(() => instrument.id)
 					);
@@ -224,7 +218,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 				distinctUntilChanged()
 			)
 			.subscribe((id: number) => {
-				this.#store.loadToken(id);
+				this.#storeBroker.loadToken(id);
 			});
 
 		this.sources$
@@ -239,26 +233,21 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
 				pairwise(),
-				map(([first, second]: [Response<TradeToken | null> | null, Response<TradeToken | null> | null]) => {
+				map(([first, second]: [TradeBrokerToken, TradeBrokerToken]) => {
 					if ((first !== null && second === null) || (second && second.data === null)) {
-						this.#store.updateAccounts({
+						this.#storeBroker.updateAccounts({
 							data: null,
 							message: 'Не добавлен токен источника tinkoff',
-							success: true,
 						});
 					}
 
 					if ((first === null || first.data === null) && second !== null && second.data !== null) {
-						this.#store.loadAccounts(second.data.sourceId);
+						this.#storeBroker.loadAccounts(second.data.sourceId);
 					}
 					return second;
 				})
 			)
-			.subscribe((value: Response<TradeToken | null> | null) => this.controlToken.setValue(value && value.data));
-	}
-
-	trackByIndex(index: number): number {
-		return index;
+			.subscribe((value: TradeBrokerToken) => this.controlToken.setValue(value && value.data));
 	}
 
 	private _distinct(

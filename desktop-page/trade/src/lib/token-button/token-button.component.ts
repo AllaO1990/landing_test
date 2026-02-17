@@ -4,9 +4,9 @@ import { TuiButton, TuiDialogService, TuiGroup } from '@taiga-ui/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeTokenSource } from '@data-access-trade/types';
 import { TUI_CONFIRM } from '@taiga-ui/kit';
-import { TradeStore } from '@data-access-trade/store.trade';
 import { TradeTokenButtonDialogService } from './token-button.dialog.service';
 import { DIALOG, DialogService } from '@ui/components/dialog';
+import { TradeBrokerStore } from '@data-access-trade/store.broker';
 
 @Component({
 	selector: 'trade-token-button',
@@ -27,7 +27,7 @@ export class TokenButtonComponent {
 	readonly #dialogDefaultService: TuiDialogService = inject(TuiDialogService);
 	readonly #injector: Injector = inject(Injector);
 	readonly #dialog: TradeTokenButtonDialogService = inject(TradeTokenButtonDialogService);
-	readonly #store: TradeStore = inject(TradeStore);
+	readonly #storeBroker: TradeBrokerStore = inject(TradeBrokerStore);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
 	readonly size = 's';
@@ -42,7 +42,7 @@ export class TokenButtonComponent {
 			.pipe(takeUntilDestroyed(this.#destroyRef))
 			.subscribe((value: null | TradeTokenSource) => {
 				if (value !== null) {
-					this.#store.changeToken(value);
+					this.#storeBroker.changeToken(value);
 				}
 			});
 	}
@@ -67,7 +67,7 @@ export class TokenButtonComponent {
 				.pipe(takeUntilDestroyed(this.#destroyRef))
 				.subscribe((result: boolean) => {
 					if (result) {
-						this.#store.removeToken(token);
+						this.#storeBroker.removeToken(token);
 					}
 				});
 		}

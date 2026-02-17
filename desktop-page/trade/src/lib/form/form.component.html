@@ -58,6 +58,17 @@
           iconStart="@tui.plus">
           Добавить заявку
         </button>
+
+        <button
+          class="add-from-idea"
+          [disabled]="isDisabledButton$ | async"
+          (click)="addFromIdeaEntry($event)"
+          appearance="outline"
+          tuiAppearanceMode="checked"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить из идеи
+        </button>
       </div>
     </div>
 
@@ -103,7 +114,7 @@
         <button
           class="add-from-idea"
           [disabled]="isDisabledButton$ | async"
-          (click)="addFromIdea($event)"
+          (click)="addFromIdeaOut($event)"
           appearance="outline"
           tuiAppearanceMode="checked"
           tuiButton

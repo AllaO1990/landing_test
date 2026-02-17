@@ -2,7 +2,6 @@ import { ComponentStore } from '@ngrx/component-store';
 import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { Response } from 'types/response';
 import {
-	TradeAccounts,
 	TradeDirections,
 	TradeOperation,
 	TradeOperations,
@@ -10,10 +9,7 @@ import {
 	TradeOrders,
 	TradeOrderTypesDescription,
 	TradePortfolio,
-	TradeSources,
 	TradeStopOrders,
-	TradeToken,
-	TradeTokenSource,
 } from './types';
 import { Params } from '@angular/router';
 import { sortNumber } from 'utils/sort-number';
@@ -21,11 +17,6 @@ import { TRADE_ORDERS } from './order.constants';
 import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
 
 interface Api {
-	getSources(): Observable<Response<TradeSources>>;
-	getToken(sourceId: number): Observable<Response<TradeToken | null>>;
-	changeToken(data: TradeTokenSource): Observable<Response<TradeToken | null>>;
-	removeToken(data: TradeToken): Observable<Response<TradeToken | null>>;
-	getAccounts(sourceId: number): Observable<Response<TradeAccounts>>;
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
 	getPortfolio(params: Params): Observable<Response<TradePortfolio>>;
 	getOrders(params: Params): Observable<Response<TradeOrders>>;
@@ -37,9 +28,6 @@ interface Api {
 }
 
 export interface TradeState {
-	sources: TradeSources | null;
-	token: Response<TradeToken | null> | null;
-	accounts: Response<TradeAccounts | null> | null;
 	orderType: TradeOrderTypesDescription | null;
 	orders: TradeOrders | null;
 	stopOrders: TradeStopOrders | null;
@@ -59,13 +47,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 		TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS,
 		TradeStopOrderTypeText.STOP_ORDER_TYPE_TAKE_PROFIT,
 	];
-	readonly TIMER = 1000 * 30 * 2;
 
-	readonly source$: Observable<TradeSources | null> = this.select((state: TradeState) => state.sources);
-	readonly token$: Observable<Response<TradeToken | null> | null> = this.select((state: TradeState) => state.token);
-	readonly accounts$: Observable<Response<TradeAccounts | null> | null> = this.select(
-		(state: TradeState) => state.accounts
-	);
 	readonly directionTypes$: Observable<TradeDirections | null> = this.select(
 		(state: TradeState) => state.directionTypes
 	);
@@ -79,9 +61,6 @@ export class TradeStore extends ComponentStore<TradeState> {
 
 	constructor(private _api: Api) {
 		super({
-			sources: null,
-			token: null,
-			accounts: null,
 			orderType: null,
 			orders: null,
 			stopOrders: null,
@@ -93,27 +72,6 @@ export class TradeStore extends ComponentStore<TradeState> {
 			],
 		});
 	}
-
-	readonly updateSources = this.updater(
-		(state: TradeState, sources: null | TradeSources): TradeState => ({
-			...state,
-			sources,
-		})
-	);
-
-	readonly updateToken = this.updater(
-		(state: TradeState, token: Response<TradeToken | null> | null): TradeState => ({
-			...state,
-			token,
-		})
-	);
-
-	readonly updateAccounts = this.updater(
-		(state: TradeState, accounts: Response<TradeAccounts | null> | null): TradeState => ({
-			...state,
-			accounts,
-		})
-	);
 
 	readonly updateOrderTypes = this.updater(
 		(state: TradeState, orderType: null | TradeOrderTypesDescription): TradeState => ({
@@ -148,62 +106,6 @@ export class TradeStore extends ComponentStore<TradeState> {
 			...state,
 			portfolio,
 		})
-	);
-
-	loadSources = this.effect((stream$: Observable<void>) =>
-		stream$.pipe(
-			switchMap(() => this._api.getSources()),
-			tap((response: Response<TradeSources>) => this.updateSources(response.data))
-		)
-	);
-
-	loadToken = this.effect((stream$: Observable<number>) =>
-		stream$.pipe(
-			switchMap((sourceId: number) => this._api.getToken(sourceId)),
-			tap((response: Response<TradeToken | null>) => this.updateToken(response))
-		)
-	);
-
-	changeToken = this.effect((stream$: Observable<TradeTokenSource>) =>
-		stream$.pipe(
-			switchMap((token: TradeTokenSource) =>
-				this._api.changeToken(token).pipe(
-					catchError((error: Error | null) => {
-						console.error(error);
-
-						return of({
-							data: null,
-							message: `Error changeToken`,
-							success: false,
-						});
-					})
-				)
-			),
-			tap((response: Response<TradeToken | null>) => this.updateToken(response))
-		)
-	);
-
-	removeToken = this.effect((stream$: Observable<TradeToken>) =>
-		stream$.pipe(
-			switchMap((token: TradeToken) => this._api.removeToken(token)),
-			tap((response: Response<TradeToken | null>) => response.success && this.updateToken(null))
-		)
-	);
-
-	loadAccounts = this.effect((stream$: Observable<number>) =>
-		stream$.pipe(
-			switchMap((sourceId: number) =>
-				this._api.getAccounts(sourceId).pipe(
-					catchError((error) =>
-						of({
-							data: null,
-							...error.error,
-						})
-					)
-				)
-			),
-			tap((response: Response<TradeAccounts | null>) => this.updateAccounts(response))
-		)
 	);
 
 	loadOrderTypes = this.effect((stream$: Observable<void>) =>

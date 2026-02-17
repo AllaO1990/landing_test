@@ -1,31 +1,31 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { combineLatest, distinctUntilChanged, filter, map, Observable, shareReplay, switchMap } from 'rxjs';
+import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
+import {combineLatest, distinctUntilChanged, filter, map, Observable, shareReplay, switchMap} from 'rxjs';
 import {
-	TradeAccounts,
-	TradeOrder,
-	TradeOrders,
-	TradeSources,
-	TradeStopOrder,
-	TradeStopOrders,
-	TradeToken,
+  TradeAccounts,
+  TradeOrder,
+  TradeOrders,
+  TradeSources,
+  TradeStopOrder,
+  TradeStopOrders,
 } from '@data-access-trade/types';
-import { Response } from 'types/response';
-import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { IdeaFacade } from 'stores/facades/idea.facade';
-import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
-import { TuiButton, TuiFormatNumberPipe, TuiScrollable, TuiScrollbar } from '@taiga-ui/core';
-import { DirectionTypePipe } from '@data-access-trade/direction-type.pipe';
-import { OrderTypePipe } from '@data-access-trade/order-type.pipe';
-import { StockPosition } from 'types/position';
-import { StockInstrument } from 'types/stock';
-import { QueryParams } from 'utils/query-params';
-import { QUERY_PARAMS } from 'tokens/desktop';
-import { TuiButtonLoading } from '@taiga-ui/kit';
-import { TradeStore } from '@data-access-trade/store.trade';
-import { FormControl, FormGroup } from '@angular/forms';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { CdkFixedSizeVirtualScroll, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {Charge} from 'types/response';
+import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {IdeaFacade} from 'stores/facades/idea.facade';
+import {LOCAL_STORAGE} from 'tokens/desktop/local-storage';
+import {TuiButton, TuiFormatNumberPipe, TuiScrollable, TuiScrollbar} from '@taiga-ui/core';
+import {DirectionTypePipe} from '@data-access-trade/direction-type.pipe';
+import {OrderTypePipe} from '@data-access-trade/order-type.pipe';
+import {StockPosition} from 'types/position';
+import {StockInstrument} from 'types/stock';
+import {QueryParams} from 'utils/query-params';
+import {QUERY_PARAMS} from 'tokens/desktop';
+import {TuiButtonLoading} from '@taiga-ui/kit';
+import {TradeStore} from '@data-access-trade/store.trade';
+import {FormControl, FormGroup} from '@angular/forms';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {CdkFixedSizeVirtualScroll, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {TradeBrokerAccounts, TradeBrokerStore, TradeBrokerToken} from '@data-access-trade/store.broker';
 
 interface FormValue {
 	accountId: string;
@@ -57,6 +57,7 @@ interface FormValue {
 export class ViewComponent implements AfterViewInit {
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 	readonly #tradeStore: TradeStore = inject(TradeStore);
+	readonly #storeBroker: TradeBrokerStore = inject(TradeBrokerStore);
 	readonly #idea: IdeaFacade = inject(IdeaFacade);
 	readonly #localStorage = inject(LOCAL_STORAGE);
 	readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
@@ -81,8 +82,8 @@ export class ViewComponent implements AfterViewInit {
 		return this.formGroup.get('positionType') as FormControl;
 	}
 
-	readonly idea$: Observable<StockPosition> = this.#tradeStore.token$.pipe(
-		filter((token: Response<TradeToken | null> | null) => token !== null && token.data !== null),
+	readonly idea$: Observable<StockPosition> = this.#storeBroker.token$.pipe(
+		filter((token: TradeBrokerToken) => token !== null && token.data !== null),
 		switchMap(() =>
 			this.#idea.idea$.pipe(distinctUntilChanged((a: StockPosition, b: StockPosition) => a.idea.id === b.idea.id))
 		)
@@ -139,16 +140,14 @@ export class ViewComponent implements AfterViewInit {
 		}
 
 		combineLatest([
-			this.#tradeStore.source$.pipe(
+			this.#storeBroker.source$.pipe(
 				takeUntilDestroyed(this.#destroyRef),
+				map((source: Charge<TradeSources>) => source.data),
 				filter((source: TradeSources | null): source is TradeSources => source !== null && source.length > 0)
 			),
-			this.#tradeStore.accounts$.pipe(
+			this.#storeBroker.accounts$.pipe(
 				takeUntilDestroyed(this.#destroyRef),
-				filter(
-					(accounts: Response<TradeAccounts | null> | null): accounts is Response<TradeAccounts | null> => accounts !== null
-				),
-				map((accounts: Response<TradeAccounts | null>) => accounts.data),
+				map((accounts: TradeBrokerAccounts) => accounts.data),
 				filter((accounts: TradeAccounts | null): accounts is TradeAccounts => accounts !== null && accounts.length > 0)
 			),
 			this.idea$.pipe(takeUntilDestroyed(this.#destroyRef)),
@@ -163,21 +162,22 @@ export class ViewComponent implements AfterViewInit {
 			)
 			.subscribe((value: FormValue) => this._load(value));
 
-		this.#tradeStore.token$
+		this.#storeBroker.token$
 			.pipe(
-				filter((token: Response<TradeToken | null> | null) => token !== null && token.data !== null),
+				filter((token: TradeBrokerToken) => token !== null && token.data !== null),
 				switchMap(() =>
-					this.#tradeStore.source$.pipe(
+					this.#storeBroker.source$.pipe(
 						takeUntilDestroyed(this.#destroyRef),
+						map((sources: Charge<TradeSources>) => sources.data),
 						filter((source: TradeSources | null): source is TradeSources => source !== null && source.length > 0)
 					)
 				)
 			)
 			.subscribe((sources: TradeSources) => {
-				this.#tradeStore.loadAccounts(sources[0].id);
+				this.#storeBroker.loadAccounts(sources[0].id);
 			});
 
-		this.#tradeStore.loadSources();
+		this.#storeBroker.loadSources();
 	}
 
 	onTrade(event: Event) {
