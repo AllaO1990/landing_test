@@ -1,1 +1,1 @@
-export * from './lib/token-button/token-button.component';
+export * from './lib/token-button';

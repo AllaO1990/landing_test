@@ -114,6 +114,36 @@ export class TradeFormService {
 			});
 	}
 
+	getIdeaControlValue(
+		position: StockPosition,
+		filter: { lastPrice: WithLastPrice; source: TradeSource },
+		limit: number | null = null
+	): ControlValue[] {
+		const { lastPrice } = filter;
+		const defaultItem = this.getDefaultControlValue(position);
+		const precision = getPriceIncrement(position.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
+		const limitItem = limit && position.idea.entries.length ? limit / position.idea.entries.length : limit;
+
+		return position.idea.entries.reduce((acc: ControlValue[], item) => {
+			const lots = this._getEntryLot(item, defaultItem.lot, precision, limitItem);
+
+			const percent = this._getPriceToTarget(lastPrice.last, item.price);
+
+			acc.push({
+				...defaultItem,
+				price: item.price,
+				commission: 0,
+				quantity: lots * defaultItem.lot,
+				lots,
+				total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
+				orderType: this._getOrderType(percent === null ? 1 : percent),
+				status: ControlValueStatus.UNLOADING,
+			});
+
+			return acc;
+		}, []);
+	}
+
 	getEntryControlValue(
 		position: StockPosition,
 		orders: TradeOrders,
@@ -126,12 +156,11 @@ export class TradeFormService {
 		actions: ControlValue[];
 		ideas: ControlValue[];
 	} {
-		const { lastPrice, source } = filter;
+		const { source } = filter;
 		const defaultItem = this.getDefaultControlValue(position);
 		const entries = position.actions.entries.filter((item: StockPositionActionEntry) => item.brokerId === source.id);
 		const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
 		const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
-		const limitItem = limit && position.idea.entries.length ? limit / position.idea.entries.length : limit;
 		const precision = getPriceIncrement(position.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
 
 		/**
@@ -168,35 +197,7 @@ export class TradeFormService {
 		let unloadingControlValues: ControlValue[] = [];
 
 		if (ordersDirection.length === 0 && stopOrdersDirection.length === 0 && executedControlValues.length === 0) {
-			unloadingControlValues = position.idea.entries.reduce((acc: ControlValue[], item) => {
-				const lots = this._getEntryLot(item, defaultItem.lot, precision, limitItem);
-
-				/**
-         * Расскомментировать если в идее больше одного входа и часть входов находится с заявках
-         if (this._findOrders(unloadingStopOrdersDirection, lots)) {
-         return acc;
-         }
-
-         if (this._findOrders(unloadingOrdersDirection, lots)) {
-         return acc;
-         }
-         */
-
-				const percent = this._getPriceToTarget(lastPrice.last, item.price);
-
-				acc.push({
-					...defaultItem,
-					price: item.price,
-					commission: 0,
-					quantity: lots * defaultItem.lot,
-					lots,
-					total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-					orderType: this._getOrderType(percent === null ? 1 : percent),
-					status: ControlValueStatus.UNLOADING,
-				});
-
-				return acc;
-			}, []);
+			unloadingControlValues = this.getIdeaControlValue(position, filter, limit);
 		}
 
 		/**
@@ -301,28 +302,6 @@ export class TradeFormService {
 				if (this._findOrders(unloadingStopOrdersDirection, lots)) {
 					return acc;
 				}
-
-				// if (unloadingOrdersDirection.length > 0) {
-				//   const findIndexOrder = unloadingOrdersDirection.findIndex((orderItem: TradeOrder) => {
-				//     return orderItem.lotsRequested === lots;
-				//   });
-				//
-				//   if (findIndexOrder !== -1) {
-				//     unloadingOrdersDirection[findIndexOrder].lotsRequested = -1;
-				//     return acc;
-				//   }
-				// }
-
-				// if (unloadingStopOrdersDirection.length > 0) {
-				//   const findIndexOrder = unloadingStopOrdersDirection.findIndex((orderItem: TradeStopOrder) => {
-				//     return orderItem.lotsRequested === lots;
-				//   });
-				//
-				//   if (findIndexOrder !== -1) {
-				//     unloadingStopOrdersDirection[findIndexOrder].lotsRequested = -1;
-				//     return acc;
-				//   }
-				// }
 
 				acc.push({
 					...defaultItem,

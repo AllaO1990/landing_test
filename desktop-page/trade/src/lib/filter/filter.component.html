@@ -71,7 +71,10 @@
     <span class="label__text">
       Токен
     </span>
-      <trade-token-button [value]="formGroup.value"></trade-token-button>
+      <trade-token-button
+        (completed)="onComplete($event)"
+        [value]="formGroup.valueChanges | async">
+      </trade-token-button>
     </div>
   </div>
 </form>

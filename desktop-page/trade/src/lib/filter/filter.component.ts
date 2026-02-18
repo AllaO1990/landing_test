@@ -16,7 +16,7 @@ import {
 	map,
 	Observable,
 	of,
-	pairwise,
+	shareReplay,
 	startWith,
 	switchMap,
 	take,
@@ -36,7 +36,7 @@ import { TuiFormatNumberPipe, TuiHint, TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiChip, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
 import { AsyncPipe, UpperCasePipe } from '@angular/common';
 import { LoaderComponent } from '@ui/components/loader';
-import { TokenButtonComponent } from '@feat-trade-token';
+import { TokenButtonComponent, TradeTokenCompleted, TradeTokenCompleteType } from '@feat-trade-token';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { TradeBrokerAccounts, TradeBrokerStore, TradeBrokerToken } from '@data-access-trade/store.broker';
 import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
@@ -86,7 +86,11 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 	readonly accounts$: Observable<TradeBrokerAccounts> = this.#storeBroker.accounts$.pipe(
 		tap((data: TradeBrokerAccounts) => data.data && this.controlAccount.setValue(data.data[0]))
 	);
-	readonly token$: Observable<TradeBrokerToken> = this.#storeBroker.token$;
+	readonly token$: Observable<TradeToken | null> = this.#storeBroker.token$.pipe(
+		map((token: TradeBrokerToken) => token.data),
+		distinctUntilChanged(),
+		shareReplay({ bufferSize: 1, refCount: true })
+	);
 	readonly sources$: Observable<TradeSources> = this.#storeBroker.source$.pipe(
 		map((data: Charge<TradeSources>) => data.data),
 		filter((data: TradeSources | null): data is TradeSources => data !== null)
@@ -229,25 +233,22 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 			)
 			.subscribe((list: TradeSources) => this.controlSource.setValue(list[0]));
 
-		this.token$
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				pairwise(),
-				map(([first, second]: [TradeBrokerToken, TradeBrokerToken]) => {
-					if ((first !== null && second === null) || (second && second.data === null)) {
-						this.#storeBroker.updateAccounts({
-							data: null,
-							message: 'Не добавлен токен источника tinkoff',
-						});
-					}
+		this.token$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((value: TradeToken | null) => {
+			if (value) {
+				this.#storeBroker.loadAccounts(value.sourceId);
+			}
 
-					if ((first === null || first.data === null) && second !== null && second.data !== null) {
-						this.#storeBroker.loadAccounts(second.data.sourceId);
-					}
-					return second;
-				})
-			)
-			.subscribe((value: TradeBrokerToken) => this.controlToken.setValue(value && value.data));
+			this.controlToken.setValue(value);
+		});
+	}
+
+	onComplete(event: TradeTokenCompleted): void {
+		if (event.type === TradeTokenCompleteType.CHANGE) {
+			this.#storeBroker.changeToken(event.data);
+		}
+		if (event.type === TradeTokenCompleteType.REMOVE) {
+			this.#storeBroker.removeToken(event.data);
+		}
 	}
 
 	private _distinct(

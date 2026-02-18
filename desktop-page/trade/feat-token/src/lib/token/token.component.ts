@@ -5,6 +5,8 @@ import { TuiButton, TuiTextfield } from '@taiga-ui/core';
 import { TuiTextfieldControllerModule } from '@taiga-ui/legacy';
 import { TradeSource, TradeSources } from '@data-access-trade/types';
 import { DialogCoreComponent } from '@ui/components/dialog';
+import { TokenTitleTypes } from './token.types';
+import { TOKEN_CONSTANT_TITLE } from './token.constants';
 
 @Component({
 	selector: 'trade-token',
@@ -22,7 +24,8 @@ export class TradeTokenComponent extends DialogCoreComponent implements AfterVie
 		token: new FormControl<string | null>(null, Validators.required),
 	});
 
-	typeTitle: 'add' | 'change' = 'add';
+	readonly title = TOKEN_CONSTANT_TITLE;
+	titleType: TokenTitleTypes = TokenTitleTypes.ADD;
 
 	ngAfterViewInit(): void {
 		if (this.context) {
@@ -37,7 +40,7 @@ export class TradeTokenComponent extends DialogCoreComponent implements AfterVie
 			}
 
 			if (token) {
-				this.typeTitle = 'change';
+				this.titleType = TokenTitleTypes.CHANGE;
 				this.formGroup.patchValue({ name: token.name });
 			}
 		}

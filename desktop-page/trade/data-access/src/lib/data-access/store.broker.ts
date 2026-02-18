@@ -25,7 +25,7 @@ export class TradeBrokerStore extends ComponentStore<TradeStoreBrokerState> {
 	static defaultState: TradeStoreBrokerState = {
 		accounts: {
 			data: null,
-			message: null,
+			message: 'Не добавлен токен источника',
 			isLoaded: false,
 			isLoading: false,
 		},
@@ -142,12 +142,15 @@ export class TradeBrokerStore extends ComponentStore<TradeStoreBrokerState> {
 			tap(() => this.updateAccountsLoading(true)),
 			switchMap((sourceId: number) =>
 				this._api.getAccounts(sourceId).pipe(
-					catchError((error) =>
-						of({
+					catchError((error) => {
+						console.error(error);
+
+						return of({
 							data: null,
-							...error.error,
-						})
-					)
+							message: 'Не валидный токен источника',
+							success: true,
+						});
+					})
 				)
 			),
 			tap((response: Response<TradeAccounts | null>) => this.updateAccounts(response))
@@ -164,13 +167,14 @@ export class TradeBrokerStore extends ComponentStore<TradeStoreBrokerState> {
 
 						return of({
 							data: null,
-							message: `Error changeToken`,
+							message: `Ошибка изменения токена`,
 							success: false,
 						});
 					})
 				)
 			),
-			tap((response: Response<TradeToken | null>) => this.updateToken(response))
+			tap((response: Response<TradeToken | null>) => this.updateToken(response)),
+			tap((response: Response<TradeToken | null>) => response.data && this.loadAccounts(response.data.sourceId))
 		)
 	);
 
@@ -178,7 +182,8 @@ export class TradeBrokerStore extends ComponentStore<TradeStoreBrokerState> {
 		stream$.pipe(
 			tap(() => this.updateTokenLoading(true)),
 			switchMap((token: TradeToken) => this._api.removeToken(token)),
-			tap((response: Response<TradeToken | null>) => this.updateToken(response))
+			tap((response: Response<TradeToken | null>) => this.updateToken({ data: null, message: response.message })),
+			tap(() => this.updateAccounts(TradeBrokerStore.defaultState.accounts))
 		)
 	);
 }

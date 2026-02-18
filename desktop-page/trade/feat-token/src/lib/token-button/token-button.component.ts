@@ -1,10 +1,20 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, Injector, Input} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  Injector,
+  Input,
+  Output,
+} from '@angular/core';
 import {TuiButton, TuiGroup} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TradeTokenSource} from '@data-access-trade/types';
 import {TradeTokenDialogService} from '../token/token.dialog.service';
 import {DIALOG, DialogService} from '@ui/components/dialog';
 import {DialogApproveService} from 'ui-common/lib/dialog-approve';
+import {TradeTokenCompleted, TradeTokenCompleteType} from './token-button.types';
 
 @Component({
 	selector: 'trade-token-button',
@@ -25,7 +35,6 @@ export class TokenButtonComponent {
 	readonly #dialogApproveService: DialogApproveService = inject(DialogApproveService);
 	readonly #injector: Injector = inject(Injector);
 	readonly #dialog: TradeTokenDialogService = inject(TradeTokenDialogService);
-	// readonly #store: TradeStore = inject(TradeStore);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
 	#isOpened = false;
@@ -33,6 +42,8 @@ export class TokenButtonComponent {
 	readonly size = 's';
 
 	@Input() value: any = null;
+
+	@Output() completed: EventEmitter<TradeTokenCompleted> = new EventEmitter();
 
 	addToken(event: Event): void {
 		event.preventDefault();
@@ -50,7 +61,7 @@ export class TokenButtonComponent {
 				this.#isOpened = false;
 
 				if (value !== null) {
-					// this.#store.changeToken(value);
+					this.completed.emit({ type: TradeTokenCompleteType.CHANGE, data: value });
 				}
 			});
 	}
@@ -67,20 +78,10 @@ export class TokenButtonComponent {
 						context: '<div class="tui-text_h6">Удалить токен?</div>',
 					},
 				})
-				// .open<boolean>(TUI_CONFIRM, {
-				// 	appearance: 'dialog-confirm',
-				// 	closeable: false,
-				// 	size: 'auto',
-				// 	data: {
-				// 		content: '<p class="tui-text_h6">Удалить токен?</p>',
-				// 		yes: 'Да',
-				// 		no: 'Нет',
-				// 	},
-				// })
 				.pipe(takeUntilDestroyed(this.#destroyRef))
 				.subscribe((result: boolean) => {
 					if (result) {
-						// this.#store.removeToken(token);
+						this.completed.emit({ type: TradeTokenCompleteType.REMOVE, data: token });
 					}
 				});
 		}

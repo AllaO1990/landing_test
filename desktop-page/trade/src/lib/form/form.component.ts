@@ -229,7 +229,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 					position,
 				}))
 			)
-		)
+		),
+		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
 	heightStop$: Observable<number> = combineLatest([this.listStop$, this.isMobile$]).pipe(
@@ -644,11 +645,28 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 		this.positionAndLimit$
 			.pipe(takeUntilDestroyed(this.#destroyRef), take(1))
 			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
-				const entry = this.#service.getEntryControlValue(position, [], [], [], this.controlFilter.value, limit.limit);
+				const entry = this.#service.getIdeaControlValue(position, this.controlFilter.value, limit.limit);
+				const startIndex = this.formArrayEntry.value.length;
 
-				entry.ideas.forEach((item, index: number) => {
-					this.formArrayEntry.setControl(index + length, new FormControl(item));
+				entry.forEach((item, index: number) => {
+					this.formArrayEntry.setControl(startIndex + index + length, new FormControl(item));
 				});
+
+				const maxLots: number = this.formArrayEntry.value.reduce(
+					(acc: number, item: ControlValue) => (acc += item.lots),
+					0
+				);
+
+				const indexStopControlValue = this.formArrayStop.value.findIndex(
+					(item: ControlValue) => item.status === ControlValueStatus.UNLOADING
+				);
+
+				const stop = this.#service.getStopLossControlValue(position, maxLots, [], [], [], []);
+
+				if (stop) {
+					this.formArrayStop.clear({ emitEvent: false });
+					this.formArrayStop.setControl(indexStopControlValue === -1 ? 0 : indexStopControlValue, new FormControl(stop));
+				}
 			});
 	}
 
@@ -669,6 +687,19 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 				outs.ideas.forEach((item, index: number) => {
 					this.formArrayOut.setControl(index + length, new FormControl(item));
 				});
+
+				const indexStopControlValue = this.formArrayStop.value.findIndex(
+					(item: ControlValue) => item.status === ControlValueStatus.UNLOADING
+				);
+
+				const stop = this.#service.getStopLossControlValue(position, maxLots, [], [], [], []);
+
+				console.log(stop);
+
+				if (stop) {
+					this.formArrayStop.clear({ emitEvent: false });
+					this.formArrayStop.setControl(indexStopControlValue === -1 ? 0 : indexStopControlValue, new FormControl(stop));
+				}
 			});
 	}
 
