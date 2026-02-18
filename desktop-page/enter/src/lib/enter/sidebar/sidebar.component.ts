@@ -1,62 +1,62 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	Component,
-	DestroyRef,
-	forwardRef,
-	inject,
-	Injector,
-	Input,
-	OnDestroy,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  forwardRef,
+  inject,
+  Injector,
+  Input,
+  OnDestroy,
 } from '@angular/core';
 import {
-	AbstractControl,
-	ControlValueAccessor,
-	FormControl,
-	FormGroup,
-	NG_VALIDATORS,
-	NG_VALUE_ACCESSOR,
-	ReactiveFormsModule,
-	ValidationErrors,
-	Validators,
+  AbstractControl,
+  ControlValueAccessor,
+  FormControl,
+  FormGroup,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
 } from '@angular/forms';
-import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
-import { SIDEBAR_CONSTANTS } from './sidebar.constants';
-import { STOCK_STRATEGY_LIST } from 'constants/stock-strategy';
-import { StockPosition } from 'types/position';
-import { AccountFacade } from 'stores/facades/account.facade';
+import {STOCK_POSITION_TYPE_LIST} from 'constants/stock-position-type';
+import {SIDEBAR_CONSTANTS} from './sidebar.constants';
+import {STOCK_STRATEGY_LIST} from 'constants/stock-strategy';
+import {StockPosition} from 'types/position';
+import {AccountFacade} from 'stores/facades/account.facade';
 import {
-	BehaviorSubject,
-	combineLatest,
-	debounceTime,
-	distinctUntilChanged,
-	filter,
-	Observable,
-	ReplaySubject,
-	shareReplay,
-	startWith,
-	Subject,
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  ReplaySubject,
+  shareReplay,
+  startWith,
+  Subject,
 } from 'rxjs';
-import { AccountBalance, AccountCurrency, AccountPortfolio, AccountStrategy } from 'types/account';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { IdeaFacade } from 'stores/facades/idea.facade';
-import { TuiAppearance, TuiButton, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield } from '@taiga-ui/core';
-import { TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea } from '@taiga-ui/kit';
-import { AsyncPipe } from '@angular/common';
-import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
-import { tuiAutoFocusOptionsProvider } from '@taiga-ui/cdk';
-import { PortfolioFacade } from 'stores/facades/portfolio.facade';
-import { Params } from '@angular/router';
-import { map } from 'rxjs/operators';
-import { endOfMonth } from 'date-fns/endOfMonth';
-import { DIALOG, DialogService } from '@ui/components/dialog';
-import { triggerOpacityAnimations } from '@ui/animations/opacity.animations';
-import { BalanceDepositService, BalanceWithdrawalService } from '@feat-portfolio-balance';
-import { TareLimit } from '@feat-trade-limit';
-import { StockInstrument } from 'types/stock';
-import { TuiCardLarge } from '@taiga-ui/layout';
-import { StockCardInstrument } from 'feat-instrument';
-import { ViewComponent } from 'feat-view';
+import {AccountBalance, AccountCurrency, AccountPortfolio, AccountStrategy} from 'types/account';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {IdeaFacade} from 'stores/facades/idea.facade';
+import {TuiAppearance, TuiButton, TuiFormatNumberPipe, TuiScrollbar, TuiTextfield} from '@taiga-ui/core';
+import {TuiChevron, TuiDataListWrapper, TuiSelect, TuiTextarea} from '@taiga-ui/kit';
+import {AsyncPipe} from '@angular/common';
+import {ControlPortfolioComponent} from 'ui-common/lib/portfolio';
+import {tuiAutoFocusOptionsProvider} from '@taiga-ui/cdk';
+import {PortfolioFacade} from 'stores/facades/portfolio.facade';
+import {Params} from '@angular/router';
+import {map} from 'rxjs/operators';
+import {endOfMonth} from 'date-fns/endOfMonth';
+import {DIALOG, DialogService} from '@ui/components/dialog';
+import {triggerOpacityAnimations} from '@ui/animations/opacity.animations';
+import {BalanceDepositService, BalanceWithdrawalService} from '@feat-portfolio-balance';
+import {TareLimit} from '@feat-trade-limit';
+import {StockInstrument} from 'types/stock';
+import {TuiCardLarge} from '@taiga-ui/layout';
+import {StockCardInstrument} from 'feat-instrument';
+import {ViewComponent} from 'feat-view';
 
 type Item = { id: string; name: string };
 
@@ -90,6 +90,7 @@ interface FormValue {
 		TareLimit,
 		StockCardInstrument,
 		ViewComponent,
+
 	],
 	templateUrl: './sidebar.component.html',
 	styleUrl: './sidebar.component.scss',
@@ -390,7 +391,7 @@ export class EnterSidebarComponent implements ControlValueAccessor, Validators, 
 				distinctUntilChanged((a, b) => a.portfolioId === b.portfolioId)
 			)
 			.subscribe((result: AccountPortfolio) => {
-				this.controlPortfolio.patchValue(result ? result.portfolioId : null, { emitEvent: false });
+				this.controlPortfolio.patchValue(result ? result.portfolioId : null);
 			});
 
 		this.formControlStrategy.valueChanges
