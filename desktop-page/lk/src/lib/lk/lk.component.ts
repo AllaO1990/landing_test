@@ -247,30 +247,15 @@ export class LkComponent implements OnInit {
 				if (result === 'isUpdate') {
 					const paramsIdea = this.#dataAccessIdea.params();
 					const paramsDeal = this.#dataAccessDeal.params();
-					const paramsPortfolio = this.#dataAccessPortfolio.params();
+					const paramsPortfolio = this.#dataAccessPortfolio.paramsUrl();
 					if (paramsIdea) {
 						this.#dataAccessIdeaStore.loadIdeas(paramsIdea);
 					}
 					if (paramsDeal) {
-						let params = paramsDeal;
-						if (paramsPortfolio) {
-							const { currency, portfolio, ...other } = paramsPortfolio;
-							params = {
-								...params,
-								currencyId: currency ? currency.currencyId : null,
-								portfolioId: portfolio ? portfolio.portfolioId : null,
-								...other,
-							};
-						}
-						this.#dataAccessIdeaStore.loadDeals(params);
+						this.#dataAccessIdeaStore.loadDeals(paramsPortfolio ? { ...paramsDeal, ...paramsPortfolio } : paramsDeal);
 					}
 					if (paramsPortfolio) {
-						const { currency, portfolio, ...other } = paramsPortfolio;
-						this.#dataAccessPortfolioStore.loadBalance({
-							currencyId: currency ? currency.currencyId : null,
-							portfolioId: portfolio ? portfolio.portfolioId : null,
-							...other,
-						});
+						this.#dataAccessPortfolioStore.loadBalance(paramsPortfolio);
 					}
 				}
 			});
