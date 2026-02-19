@@ -1,73 +1,73 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	Component,
-	DestroyRef,
-	forwardRef,
-	inject,
-	Injector,
-	signal,
-	WritableSignal,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  forwardRef,
+  inject,
+  Injector,
+  signal,
+  WritableSignal,
 } from '@angular/core';
-import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
-import { TuiButtonLoading, TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
+import {HeaderComponent, UiList, UiListItem} from '@ui/components/list';
+import {TuiButtonLoading, TuiCheckbox, TuiChevron} from '@taiga-ui/kit';
 import {
-	ControlValueAccessor,
-	FormArray,
-	FormControl,
-	FormGroup,
-	NG_VALUE_ACCESSOR,
-	ReactiveFormsModule,
+  ControlValueAccessor,
+  FormArray,
+  FormControl,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
-import { TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
-import { TuiExpand } from '@taiga-ui/experimental';
-import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
-import { FilterComponent } from '../filter/filter.component';
-import { IdeaFacade } from 'stores/facades/idea.facade';
+import {TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar} from '@taiga-ui/core';
+import {TuiExpand} from '@taiga-ui/experimental';
+import {AsyncPipe, DatePipe, NgTemplateOutlet} from '@angular/common';
+import {FilterComponent} from '../filter/filter.component';
+import {IdeaFacade} from 'stores/facades/idea.facade';
 import {
-	combineLatest,
-	debounceTime,
-	distinctUntilChanged,
-	filter,
-	map,
-	Observable,
-	pairwise,
-	shareReplay,
-	skip,
-	startWith,
-	switchMap,
-	take,
-	timer,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  pairwise,
+  shareReplay,
+  skip,
+  startWith,
+  switchMap,
+  take,
+  timer,
 } from 'rxjs';
-import { StockPosition, StockPositionActionEntry, StockPositionActionTarget } from 'types/position';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ApiTradeService } from '@data-access-trade/api.service';
-import { TradeStore } from '@data-access-trade/store.trade';
-import { DirectionTypePipe } from '@data-access-trade/direction-type.pipe';
-import { OrderTypePipe } from '@data-access-trade/order-type.pipe';
+import {StockPosition, StockPositionActionEntry, StockPositionActionTarget} from 'types/position';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {ApiTradeService} from '@data-access-trade/api.service';
+import {TradeStore} from '@data-access-trade/store.trade';
+import {DirectionTypePipe} from '@data-access-trade/direction-type.pipe';
+import {OrderTypePipe} from '@data-access-trade/order-type.pipe';
 import {
-	TradeLimit,
-	TradeOperations,
-	TradeOrder,
-	TradeOrders,
-	TradeOrderType,
-	TradeStopOrder,
-	TradeStopOrders,
-	TradeToken,
+  TradeLimit,
+  TradeOperations,
+  TradeOrder,
+  TradeOrders,
+  TradeOrderType,
+  TradeStopOrder,
+  TradeStopOrders,
+  TradeToken,
 } from '@data-access-trade/types';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { RequestFormValue } from '../request/request.component';
-import { TradeFormService } from './form.service';
-import { TuiItem } from '@taiga-ui/cdk';
-import { triggerHeightAnimations } from '@ui/animations/height.animations';
-import { ControlValue, ControlValueStatus } from './form.types';
-import { DetailsComponent } from '../details/details.component';
-import { Params } from '@angular/router';
-import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
-import { Response } from 'types/response';
-import { TradeFormDialogService } from './form.dialog.service';
-import { DIALOG, DialogService } from '@ui/components/dialog';
-import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {RequestFormValue} from '../request/request.component';
+import {TradeFormService} from './form.service';
+import {TuiItem} from '@taiga-ui/cdk';
+import {triggerHeightAnimations} from '@ui/animations/height.animations';
+import {ControlValue, ControlValueStatus} from './form.types';
+import {DetailsComponent} from '../details/details.component';
+import {Params} from '@angular/router';
+import {TuiBreakpointMediaKey} from '@taiga-ui/core/services/breakpoint.service';
+import {Response} from 'types/response';
+import {TradeFormDialogService} from './form.dialog.service';
+import {DIALOG, DialogService} from '@ui/components/dialog';
+import {TIMER_INTERVAL} from 'tokens/desktop/timer-interval';
 
 @Component({
 	selector: 'trade-form',
@@ -173,6 +173,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 	isDisabledButton$: Observable<boolean> = this.controlFilter.valueChanges.pipe(
 		map((value: null | { token: null | string }): boolean => !(value && value.token)),
 		shareReplay({ bufferSize: 1, refCount: true })
+	);
+
+	isDisabledButtonStop$: Observable<boolean> = this.isDisabledButton$.pipe(
+		filter((isDisabled: boolean) => isDisabled),
+		switchMap(() =>
+			this.formArrayEntry.valueChanges.pipe(
+				startWith(this.formArrayEntry.value),
+				map((entry: ControlValue[]) => !entry.length),
+				distinctUntilChanged()
+			)
+		)
 	);
 
 	readonly itemHeight = 28;
@@ -382,25 +393,26 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 			}
 		});
 
-		this.#idea.idea$
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				switchMap((position: StockPosition) =>
-					this.formArrayStop.valueChanges.pipe(
-						takeUntilDestroyed(this.#destroyRef),
-						startWith(this.formArrayStop.value),
-						pairwise(),
-						filter(([prev, curr]: [ControlValue[], ControlValue[]]) => prev.length > 0 && curr.length === 0),
-						map(() => position)
-					)
-				)
-			)
-			.subscribe((position: StockPosition) => {
-				this.#idea.editIdea({
-					id: position.idea.id!,
-					body: this.#service.updateIdea(this.#service.getIdeaStopLossToStop(position), [], [], []),
-				});
-			});
+		// this.#idea.idea$
+		// 	.pipe(
+		// 		takeUntilDestroyed(this.#destroyRef),
+		// 		switchMap((position: StockPosition) =>
+		// 			this.formArrayStop.valueChanges.pipe(
+		// 				takeUntilDestroyed(this.#destroyRef),
+		// 				startWith(this.formArrayStop.value),
+		// 				pairwise(),
+		// 				filter(([prev, curr]: [ControlValue[], ControlValue[]]) => prev.length > 0 && curr.length === 0),
+		// 				map(() => position)
+		// 			)
+		// 		)
+		// 	)
+		// 	.subscribe((position: StockPosition) => {
+		// 		console.log(position);
+		// 		// this.#idea.editIdea({
+		// 		// 	id: position.idea.id!,
+		// 		// 	body: this.#service.updateIdea(this.#service.getIdeaStopLossToStop(position), [], [], []),
+		// 		// });
+		// 	});
 
 		this.#idea.idea$
 			.pipe(
@@ -639,6 +651,34 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 		this.expandedFilter.update((status: boolean) => !status);
 	}
 
+	addFromIdea(event: Event): void {
+		event.preventDefault();
+
+		this.positionAndLimit$
+			.pipe(takeUntilDestroyed(this.#destroyRef), take(1))
+			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
+				const entry = this.#service.getIdeaControlValue(position, this.controlFilter.value, limit.limit);
+				const maxLots = entry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
+				const startIndexEntry = this.formArrayEntry.value.length;
+				const startIndexOut = this.formArrayOut.value.length;
+				const startIndexStop = this.formArrayStop.value.length;
+				const outs = this.#service.getOutControlValue(position, [], [], [], this.controlFilter.value, maxLots);
+				const stop = this.#service.getStopLossControlValue(position, maxLots, [], [], [], []);
+
+				entry.forEach((item, index: number) => {
+					this.formArrayEntry.setControl(startIndexEntry + index + length, new FormControl(item));
+				});
+
+				outs.ideas.forEach((item, index: number) => {
+					this.formArrayOut.setControl(startIndexOut + index, new FormControl(item));
+				});
+
+				stop.forEach((item, index: number) => {
+					this.formArrayStop.setControl(startIndexStop + index, new FormControl(item));
+				});
+			});
+	}
+
 	addFromIdeaEntry(event: Event): void {
 		event.preventDefault();
 
@@ -651,55 +691,40 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 				entry.forEach((item, index: number) => {
 					this.formArrayEntry.setControl(startIndex + index + length, new FormControl(item));
 				});
-
-				const maxLots: number = this.formArrayEntry.value.reduce(
-					(acc: number, item: ControlValue) => (acc += item.lots),
-					0
-				);
-
-				const indexStopControlValue = this.formArrayStop.value.findIndex(
-					(item: ControlValue) => item.status === ControlValueStatus.UNLOADING
-				);
-
-				const stop = this.#service.getStopLossControlValue(position, maxLots, [], [], [], []);
-
-				if (stop) {
-					this.formArrayStop.clear({ emitEvent: false });
-					this.formArrayStop.setControl(indexStopControlValue === -1 ? 0 : indexStopControlValue, new FormControl(stop));
-				}
 			});
 	}
 
 	addFromIdeaOut(event: Event): void {
 		event.preventDefault();
 
-		this.idea$
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				take(1),
-				distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
-			)
-			.subscribe((position: StockPosition) => {
-				const length = this.formArrayOut.value ? this.formArrayOut.value.length : 0;
-				const maxLots = this.formArrayEntry.value.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
+		this.positionAndLimit$
+			.pipe(takeUntilDestroyed(this.#destroyRef), take(1))
+			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
+				const entry = this.#service.getIdeaControlValue(position, this.controlFilter.value, limit.limit);
+				const maxLots = entry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
 				const outs = this.#service.getOutControlValue(position, [], [], [], this.controlFilter.value, maxLots);
+				const startIndex = this.formArrayOut.value.length;
 
 				outs.ideas.forEach((item, index: number) => {
-					this.formArrayOut.setControl(index + length, new FormControl(item));
+					this.formArrayOut.setControl(startIndex + index + length, new FormControl(item));
 				});
+			});
+	}
 
-				const indexStopControlValue = this.formArrayStop.value.findIndex(
-					(item: ControlValue) => item.status === ControlValueStatus.UNLOADING
-				);
+	addFromIdeaStop(event: Event): void {
+		event.preventDefault();
 
+		this.positionAndLimit$
+			.pipe(takeUntilDestroyed(this.#destroyRef), take(1))
+			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
+				const entry = this.#service.getIdeaControlValue(position, this.controlFilter.value, limit.limit);
+				const maxLots = entry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
 				const stop = this.#service.getStopLossControlValue(position, maxLots, [], [], [], []);
+				const startIndexStop = this.formArrayStop.value.length;
 
-				console.log(stop);
-
-				if (stop) {
-					this.formArrayStop.clear({ emitEvent: false });
-					this.formArrayStop.setControl(indexStopControlValue === -1 ? 0 : indexStopControlValue, new FormControl(stop));
-				}
+				stop.forEach((item, index: number) => {
+					this.formArrayStop.setControl(startIndexStop + index, new FormControl(item));
+				});
 			});
 	}
 
@@ -809,9 +834,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 			outOperations
 		);
 
-		if (stopLoss) {
-			this.formArrayStop.setControl(0, new FormControl(stopLoss), { emitEvent: true });
-		}
+		stopLoss.forEach((item: ControlValue, index: number) => {
+			this.formArrayStop.setControl(index, new FormControl(item), { emitEvent: true });
+		});
 
 		this.formArrayEntry.patchValue([]);
 		this.formArrayOut.patchValue([]);

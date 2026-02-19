@@ -376,7 +376,7 @@ export class TradeFormService {
 		orders: TradeOrders,
 		stopOrders: TradeStopOrders,
 		operations: ActualTradeOperations
-	): (ControlValue & { disabled: boolean }) | null {
+	): (ControlValue & { disabled: boolean })[] {
 		let stopPrice = 0;
 
 		if (position.idea.stop) {
@@ -388,7 +388,7 @@ export class TradeFormService {
 		}
 
 		if (stopPrice === 0) {
-			return null;
+			return [];
 		}
 
 		const entryLots = position.actions.entries.reduce(
@@ -401,11 +401,11 @@ export class TradeFormService {
 		);
 
 		if (entryLots === outLots && entryLots !== 0) {
-			return null;
+			return [];
 		}
 
 		if (maxLots === outLots && maxLots !== 0) {
-			return null;
+			return [];
 		}
 
 		const defaultItem = this.getDefaultControlValue(position, 'reverse');
@@ -448,14 +448,16 @@ export class TradeFormService {
 			) || null;
 
 		if (filterStopOrder !== null) {
-			return {
-				...control,
-				id: filterStopOrder.stopOrderId,
-				price: filterStopOrder.price.value,
-				stopPrice: filterStopOrder.stopPrice.value,
-				orderType: this._getStopOrderByName(filterStopOrder.orderTypeText),
-				status: ControlValueStatus.AWAITS,
-			};
+			return [
+				{
+					...control,
+					id: filterStopOrder.stopOrderId,
+					price: filterStopOrder.price.value,
+					stopPrice: filterStopOrder.stopPrice.value,
+					orderType: this._getStopOrderByName(filterStopOrder.orderTypeText),
+					status: ControlValueStatus.AWAITS,
+				},
+			];
 		}
 
 		const filterOrder =
@@ -464,14 +466,16 @@ export class TradeFormService {
 			) || null;
 
 		if (filterOrder !== null) {
-			return {
-				...control,
-				id: filterOrder.orderId,
-				price: filterOrder.initialSecurityPrice.value,
-				stopPrice: filterOrder.initialSecurityPrice.value,
-				orderType: { type: filterOrder.orderTypeText, id: filterOrder.orderType },
-				status: ControlValueStatus.AWAITS,
-			};
+			return [
+				{
+					...control,
+					id: filterOrder.orderId,
+					price: filterOrder.initialSecurityPrice.value,
+					stopPrice: filterOrder.initialSecurityPrice.value,
+					orderType: { type: filterOrder.orderTypeText, id: filterOrder.orderType },
+					status: ControlValueStatus.AWAITS,
+				},
+			];
 		}
 
 		// if (operations.length > 0 && entryLots === outLots) {
@@ -500,7 +504,7 @@ export class TradeFormService {
 		//   return null;
 		// }
 
-		return control;
+		return [control];
 	}
 
 	updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {

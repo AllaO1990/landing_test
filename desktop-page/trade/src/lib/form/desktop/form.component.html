@@ -9,6 +9,15 @@
     <trade-details [data]="controlFilter.value"></trade-details>
     <div class="space"></div>
     <trade-close-position [data]="controlFilter.value"></trade-close-position>
+    <button
+      class="add-from-idea"
+      [disabled]="isDisabledButton$ | async"
+      (click)="addFromIdea($event)"
+      appearance="outline"
+      tuiAppearanceMode="checked"
+      tuiButton>
+      Заполнить из идеи
+    </button>
   </div>
   <tui-scrollbar class="trade__container">
     <div class="entry">
@@ -73,7 +82,7 @@
 
         <button
           class="add-from-idea"
-          [disabled]="isDisabledButton$ | async"
+          [disabled]="isDisabledButtonStop$ | async"
           (click)="addFromIdeaOut($event)"
           appearance="outline"
           tuiAppearanceMode="checked"
@@ -107,6 +116,17 @@
           tuiButton
           iconStart="@tui.plus">
           Добавить заявку
+        </button>
+
+        <button
+          class="add-from-idea"
+          [disabled]="isDisabledButtonStop$ | async"
+          (click)="addFromIdeaStop($event)"
+          appearance="outline"
+          tuiAppearanceMode="checked"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить из идеи
         </button>
       </div>
     </div>

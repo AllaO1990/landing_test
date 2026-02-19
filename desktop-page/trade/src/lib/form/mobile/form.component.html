@@ -14,13 +14,23 @@
       Информация о брокере
     </button>
 
-    <div class="space"></div>
-
-    <trade-close-position [data]="controlFilter.value"></trade-close-position>
-
     <tui-expand [expanded]="expandedFilter()">
       <trade-filter formControlName="filter"></trade-filter>
     </tui-expand>
+  </div>
+  <div class="trade__filter">
+    <!--    <div class="space"></div>-->
+
+    <trade-close-position [data]="controlFilter.value"></trade-close-position>
+
+    <button
+      class="add-from-idea"
+      (click)="addFromIdea($event)"
+      appearance="outline"
+      tuiAppearanceMode="checked"
+      tuiButton>
+      Заполнить из идеи
+    </button>
   </div>
   <div class="trade__details">
     <trade-details [data]="controlFilter.value"></trade-details>
@@ -88,7 +98,7 @@
 
         <button
           class="add-from-idea"
-          [disabled]="isDisabledButton$ | async"
+          [disabled]="isDisabledButtonStop$ | async"
           (click)="addFromIdeaOut($event)"
           appearance="outline"
           tuiAppearanceMode="checked"
@@ -122,6 +132,17 @@
           tuiButton
           iconStart="@tui.plus">
           Добавить заявку
+        </button>
+
+        <button
+          class="add-from-idea"
+          [disabled]="isDisabledButtonStop$ | async"
+          (click)="addFromIdeaStop($event)"
+          appearance="outline"
+          tuiAppearanceMode="checked"
+          tuiButton
+          iconStart="@tui.plus">
+          Добавить из идеи
         </button>
       </div>
     </div>

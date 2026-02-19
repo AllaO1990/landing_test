@@ -16,7 +16,7 @@
   }
 
   &__details {
-    margin: var(--padding-4) 0;
+    margin: var(--padding-2) 0 var(--padding-4);
   }
 
   &__filter {
@@ -27,6 +27,8 @@
     tui-expand {
       width: 100%;
     }
+
+    margin-bottom: var(--padding-2);
   }
 
   &__actions {
