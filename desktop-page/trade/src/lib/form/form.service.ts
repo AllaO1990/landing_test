@@ -376,6 +376,73 @@ export class TradeFormService {
 		orders: TradeOrders,
 		stopOrders: TradeStopOrders,
 		operations: ActualTradeOperations
+	): {
+		orders: ControlValue[];
+		actions: ControlValue[];
+		ideas: ControlValue[];
+	} {
+		const ideas = this.getIdeaStopLossControlValue(position, maxLots, temp);
+
+		const outLots = position.actions.outs.reduce(
+			(acc: number, item: StockPositionActionTarget) => (acc += item.amount),
+			0
+		);
+
+		const defaultItem = this.getDefaultControlValue(position, 'reverse');
+		const precision = position.idea.instrument.source === 'tinkoff' ? 0 : 8;
+		const lots = getNumberPrecision(
+			outLots === 0 ? maxLots : position.idea.inPositionQuantity / defaultItem.lot,
+			precision
+		);
+
+		const brokerStopOrder = stopOrders
+			.filter(
+				(item: TradeStopOrder) =>
+					item.direction === defaultItem.direction &&
+					(item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS ||
+						item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LIMIT)
+			)
+			.map((item: TradeStopOrder): ControlValue & { disabled: boolean } => ({
+				...defaultItem,
+				disabled: false,
+				price: item.price.value,
+				lots: item.lotsRequested,
+				quantity: getNumberPrecision(item.lotsRequested * defaultItem.lot, precision),
+				total: getNumberPrecision(item.stopPrice.value * item.lotsRequested * defaultItem.lot, 2),
+				commission: 0,
+				stopPrice: item.stopPrice.value,
+				id: item.stopOrderId,
+				orderType: this._getStopOrderByName(item.orderTypeText),
+				status: ControlValueStatus.AWAITS,
+			}));
+
+		const brokerOrder = orders
+			.filter((item: TradeOrder) => !!item.direction === defaultItem.direction && item.lotsRequested === lots)
+			.map((item: TradeOrder): ControlValue & { disabled: boolean } => ({
+				...defaultItem,
+				disabled: false,
+				price: item.initialSecurityPrice.value,
+				lots: item.lotsRequested,
+				quantity: getNumberPrecision(item.lotsRequested * defaultItem.lot, precision),
+				total: getNumberPrecision(item.initialSecurityPrice.value * item.lotsRequested * defaultItem.lot, 2),
+				commission: 0,
+				stopPrice: item.initialSecurityPrice.value,
+				id: item.orderId,
+				orderType: { type: item.orderTypeText, id: item.orderType },
+				status: ControlValueStatus.AWAITS,
+			}));
+
+		return {
+			ideas,
+			orders: [...brokerStopOrder, ...brokerOrder],
+			actions: [],
+		};
+	}
+
+	getIdeaStopLossControlValue(
+		position: StockPosition,
+		maxLots: number,
+		temp: ControlValue[]
 	): (ControlValue & { disabled: boolean })[] {
 		let stopPrice = 0;
 
@@ -411,100 +478,24 @@ export class TradeFormService {
 		const defaultItem = this.getDefaultControlValue(position, 'reverse');
 		const precision = position.idea.instrument.source === 'tinkoff' ? 0 : 8;
 		const lots = getNumberPrecision(
-			outLots === 0 ? maxLots : position.idea.inPositionQuantity / defaultItem.lot,
+			outLots === 0 || position.idea.inPositionQuantity < 0 ? maxLots : position.idea.inPositionQuantity / defaultItem.lot,
 			precision
 		);
 
-		// if (position.ideas.targets.length) {
-		//   if (position.ideas.targets.length === 1) {
-		//     stopPrice = position.ideas.targets[0].price;
-		//   }
-		//   if (position.ideas.targets.length > 1) {
-		//     stopPrice = position.ideas.targets[position.ideas.targets.length - 2].price;
-		//     console.log(position, position.ideas.targets[position.ideas.targets.length - 2].price);
-		//   }
-		// }
-
-		const control = {
-			...defaultItem,
-			disabled: false,
-			price: stopPrice,
-			lots: lots,
-			quantity: getNumberPrecision(lots * defaultItem.lot, precision),
-			total: getNumberPrecision(stopPrice * lots * defaultItem.lot, 2),
-			commission: 0,
-			stopPrice: stopPrice,
-			orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS,
-			status: ControlValueStatus.UNLOADING,
-		};
-
-		const filterStopOrder =
-			stopOrders.find(
-				(item: TradeStopOrder) =>
-					item.direction === defaultItem.direction &&
-					(item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS ||
-						item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LIMIT) &&
-					item.lotsRequested === control.lots
-			) || null;
-
-		if (filterStopOrder !== null) {
-			return [
-				{
-					...control,
-					id: filterStopOrder.stopOrderId,
-					price: filterStopOrder.price.value,
-					stopPrice: filterStopOrder.stopPrice.value,
-					orderType: this._getStopOrderByName(filterStopOrder.orderTypeText),
-					status: ControlValueStatus.AWAITS,
-				},
-			];
-		}
-
-		const filterOrder =
-			orders.find(
-				(item: TradeOrder) => !!item.direction === defaultItem.direction && item.lotsRequested === control.lots
-			) || null;
-
-		if (filterOrder !== null) {
-			return [
-				{
-					...control,
-					id: filterOrder.orderId,
-					price: filterOrder.initialSecurityPrice.value,
-					stopPrice: filterOrder.initialSecurityPrice.value,
-					orderType: { type: filterOrder.orderTypeText, id: filterOrder.orderType },
-					status: ControlValueStatus.AWAITS,
-				},
-			];
-		}
-
-		// if (operations.length > 0 && entryLots === outLots) {
-		//   if (temp.length === 1) {
-		//     const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === temp[0].lots);
-		//
-		//     if (findIndex !== -1) {
-		//       return {
-		//         ...temp[0],
-		//         disabled: true,
-		//         status: ControlValueStatus.EXECUTED,
-		//       };
-		//     }
-		//   }
-		//
-		//   const findIndex = operations.findIndex((item: ActualTradeOperation) => item.lots === lots);
-		//
-		//   if (findIndex !== -1) {
-		//     return {
-		//       ...control,
-		//       disabled: true,
-		//       status: ControlValueStatus.EXECUTED,
-		//     };
-		//   }
-		//
-		//   return null;
-		// }
-
-		return [control];
+		return [
+			{
+				...defaultItem,
+				disabled: false,
+				price: stopPrice,
+				lots: lots,
+				quantity: getNumberPrecision(lots * defaultItem.lot, precision),
+				total: getNumberPrecision(stopPrice * lots * defaultItem.lot, 2),
+				commission: 0,
+				stopPrice: stopPrice,
+				orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+				status: ControlValueStatus.UNLOADING,
+			},
+		];
 	}
 
 	updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {

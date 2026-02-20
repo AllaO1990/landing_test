@@ -42,7 +42,6 @@ import { AsyncPipe } from '@angular/common';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { LimitStore } from '@feat-trade-limit';
-import { TradeStore } from '@data-access-trade/store.trade';
 import { DataAccessIdeaService } from '@data-access-idea/ideas/data-access.service';
 import { DataAccessDealService } from '@data-access-idea/deals/data-access.service';
 import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
@@ -91,11 +90,6 @@ import { TradeBrokerStore } from '@data-access-trade/store.broker';
 		{
 			provide: LimitStore,
 			useFactory: (api: ApiTradeService) => new LimitStore(api),
-			deps: [ApiTradeService],
-		},
-		{
-			provide: TradeStore,
-			useFactory: (api: ApiTradeService) => new TradeStore(api),
 			deps: [ApiTradeService],
 		},
 		{
@@ -183,7 +177,6 @@ export class LkComponent implements OnInit {
 	readonly #dataAccessPortfolio: DataAccessPortfolioService = inject(DataAccessPortfolioService);
 	readonly #dataAccessPortfolioStore: DataAccessPortfolioStore = inject(DataAccessPortfolioStore);
 
-	readonly #storeTrade: TradeStore = inject(TradeStore);
 	readonly #injector: Injector = inject(Injector);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 	readonly #dialogTrade: TradeDialogService = inject(TradeDialogService);
@@ -203,15 +196,16 @@ export class LkComponent implements OnInit {
 	private readonly _queryTrade$: Observable<Params> = this._queryParams.pipe(
 		takeUntilDestroyed(this.#destroyRef),
 		startWith(this._queryParams.value()),
+		filter((params: Params) => params['id']),
 		distinctUntilChanged((a: Params, b: Params) => a['trade'] === b['trade']),
-		filter((params: Params) => params['trade'] === 'visible'),
+		filter((params: Params) => params['trade'] === 'visible' && params['id']),
 		debounceTime(100),
 		shareReplay({ refCount: false, bufferSize: 1 })
 	);
 	readonly isAccess$: Observable<boolean | null> = this.#permissions.isAccessed$;
 
 	ngOnInit(): void {
-		this.#storeTrade.loadOrderTypes();
+		// this.#storeTrade.loadOrderTypes();
 		// this._queryParams.pipe(tap((data) => console.log(data))).subscribe();
 		//TODO - очищает PARAMS =( разобраться
 		this._queryParams
@@ -263,7 +257,7 @@ export class LkComponent implements OnInit {
 		this._queryTrade$
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
-				switchMap(() => this.#dialogTrade.openTradeDialog(this.#injector))
+				switchMap((params: Params) => this.#dialogTrade.openTradeDialog(this.#injector, params))
 			)
 			.subscribe(() => console.log('dialog service'));
 	}

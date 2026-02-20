@@ -19,7 +19,7 @@ import {
 	tap,
 	timer,
 } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue, ControlValueStatus } from '../form/form.types';
 import { TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
@@ -29,6 +29,13 @@ import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.servic
 import { TradeMobileFormComponent } from '../form/mobile/form.component';
 import { TradeDesktopFormComponent } from '../form/desktop/form.component';
 import { Response } from 'types/response';
+import { ApiTradeService } from '@data-access-trade/api.service';
+
+interface SourceValue {
+	entry: ControlValue[];
+	out: ControlValue[];
+	stop: ControlValue[];
+}
 
 @Component({
 	selector: 'trade-layout',
@@ -40,10 +47,18 @@ import { Response } from 'types/response';
 		TuiButtonLoading,
 		TradeMobileFormComponent,
 		TradeDesktopFormComponent,
+		JsonPipe,
 	],
 	templateUrl: './layout.component.html',
 	styleUrls: ['../common/dialog.scss', './layout.component.scss'],
-	providers: [],
+	providers: [
+		ApiTradeService,
+		{
+			provide: TradeStore,
+			useFactory: (api: ApiTradeService) => new TradeStore(api),
+			deps: [ApiTradeService],
+		},
+	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements AfterViewInit, OnDestroy {
@@ -64,6 +79,39 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 		trade: new FormControl(null),
 	});
 
+	readonly sourceValueChanges$: Observable<SourceValue> = this.formGroup.valueChanges.pipe(
+		startWith(this.formGroup.value),
+		map((value) => value.trade),
+		filter((value: SourceValue | null): value is SourceValue => value !== null)
+	);
+
+	/**
+	 * Необходимо снимать STOP_ORDER_TYPE_STOP_LOSS (Stop-loss) заявку если она есть в брокере
+	 * Условие:
+	 * 1 - Заявки входа - испольнены, заявки выхода - исполнены
+	 * 2 - количество лотов входа = количеству лотов
+	 * */
+	readonly isCloseStopLoss$: Observable<boolean> = this.sourceValueChanges$.pipe(
+		filter((value: SourceValue) => {
+			const entryIndex = value.entry.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+			const outIndex = value.out.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+
+			return entryIndex === -1 && outIndex === -1;
+		}),
+		map((value: SourceValue) => {
+			const entryLots = value.entry.reduce((acc, item) => (acc += item.lots), 0);
+			const outLots = value.out.reduce((acc, item) => (acc += item.lots), 0);
+
+			return entryLots === outLots;
+		}),
+		distinctUntilChanged()
+	);
+
+	/**
+	 * return boolean;
+	 * Проверяем в entry, out, stop хотя бы одна заявка со статусом "не отправлена брокеру" (UNLOADING)
+	 * Если где-то есть UNLOADING => false, нет => true
+	 * */
 	readonly isUnloading$: Observable<boolean> = this.formGroup.valueChanges.pipe(
 		startWith(this.formGroup.value),
 		map((value) => value.trade),
@@ -125,6 +173,32 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	);
 
 	ngAfterViewInit(): void {
+		this.#store.stopOrders$
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				filter(
+					(stopOrders: TradeStopOrders | null): stopOrders is TradeStopOrders => stopOrders !== null && stopOrders.length > 0
+				),
+				switchMap((stopOrders: TradeStopOrders) =>
+					this.isCloseStopLoss$.pipe(
+						filter((status: boolean) => status),
+						map(() => stopOrders)
+					)
+				)
+			)
+			.subscribe((stopOrders: TradeStopOrders) => {
+				const {
+					filter: { account, instrument, source },
+				} = this.formGroup.value.trade;
+
+				this.#store.removeStopOrder({
+					accountId: account.accountId,
+					id: stopOrders[0].stopOrderId,
+					sourceId: source.id,
+					instrumentId: instrument.id,
+				});
+			});
+
 		this.#isSubmitted$
 			.asObservable()
 			.pipe(
@@ -158,10 +232,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
 				if (account && instrument && source) {
 					const outOrders = this._getOrders(
-						[
-							...out,
-							//, ...stop
-						].filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+						[...out, ...stop].filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
 						account.accountId,
 						instrument.id,
 						source.id
@@ -182,6 +253,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 						map((list: TradeStopOrders) =>
 							list.filter((item: TradeStopOrder) => item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS)
 						),
+						tap(() => console.log('stop stop stop stop stop stop stop stop')),
 						filter(
 							(list: TradeStopOrders) =>
 								list.length > 0 && list.findIndex((item: TradeStopOrder) => item.lotsRequested !== value.lots) !== -1
@@ -194,12 +266,14 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 					filter: { account, instrument, source },
 				} = this.formGroup.value.trade;
 
-				this.#store.removeStopOrder({
-					accountId: account.accountId,
-					id: orders[0].stopOrderId,
-					sourceId: source.id,
-					instrumentId: instrument.id,
-				});
+				console.log('removeStopOrder');
+
+				// this.#store.removeStopOrder({
+				// 	accountId: account.accountId,
+				// 	id: orders[0].stopOrderId,
+				// 	sourceId: source.id,
+				// 	instrumentId: instrument.id,
+				// });
 			});
 
 		this.#isStop$
@@ -211,6 +285,12 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 						map((response: Response<TradePortfolio> | null) => response && response.data),
 						filter((portfolio: TradePortfolio | null) => portfolio !== null),
 						filter((portfolio: TradePortfolio) => portfolio.positions.length > 0 && portfolio.positions[0].quantity !== 0),
+						map((portfolio: TradePortfolio) => {
+							const position = portfolio.positions[0];
+
+							return position.averagePositionPrice.value * position.quantity;
+						}),
+						distinctUntilChanged(),
 						map(() => value)
 					)
 				)
@@ -220,7 +300,9 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 					filter: { account, instrument, source },
 				} = this.formGroup.value.trade;
 
-				this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
+				console.log('addStopOrder', account, instrument, source);
+
+				// this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
 			});
 	}
 

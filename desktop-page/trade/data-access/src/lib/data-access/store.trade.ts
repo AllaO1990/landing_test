@@ -71,6 +71,8 @@ export class TradeStore extends ComponentStore<TradeState> {
 				{ id: false, name: 'Продать' },
 			],
 		});
+
+		this.loadOrderTypes();
 	}
 
 	readonly updateOrderTypes = this.updater(

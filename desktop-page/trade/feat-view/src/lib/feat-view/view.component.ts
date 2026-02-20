@@ -26,6 +26,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { CdkFixedSizeVirtualScroll, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { TradeBrokerAccounts, TradeBrokerStore, TradeBrokerToken } from '@data-access-trade/store.broker';
+import { ApiTradeService } from '@data-access-trade/api.service';
 
 interface FormValue {
 	accountId: string;
@@ -52,6 +53,14 @@ interface FormValue {
 	templateUrl: './view.component.html',
 	styleUrl: './view.component.scss',
 	standalone: true,
+	providers: [
+		ApiTradeService,
+		{
+			provide: TradeStore,
+			useFactory: (api: ApiTradeService) => new TradeStore(api),
+			deps: [ApiTradeService],
+		},
+	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ViewComponent implements AfterViewInit {

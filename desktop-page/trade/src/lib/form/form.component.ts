@@ -1,73 +1,76 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  Injector,
-  signal,
-  WritableSignal,
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	forwardRef,
+	inject,
+	Injector,
+	OnDestroy,
+	signal,
+	WritableSignal,
 } from '@angular/core';
-import {HeaderComponent, UiList, UiListItem} from '@ui/components/list';
-import {TuiButtonLoading, TuiCheckbox, TuiChevron} from '@taiga-ui/kit';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
+import { TuiButtonLoading, TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
 import {
-  ControlValueAccessor,
-  FormArray,
-  FormControl,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
+	ControlValueAccessor,
+	FormArray,
+	FormControl,
+	FormGroup,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule,
 } from '@angular/forms';
-import {TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar} from '@taiga-ui/core';
-import {TuiExpand} from '@taiga-ui/experimental';
-import {AsyncPipe, DatePipe, NgTemplateOutlet} from '@angular/common';
-import {FilterComponent} from '../filter/filter.component';
-import {IdeaFacade} from 'stores/facades/idea.facade';
+import { TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiExpand } from '@taiga-ui/experimental';
+import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
+import { FilterComponent } from '../filter/filter.component';
+import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  Observable,
-  pairwise,
-  shareReplay,
-  skip,
-  startWith,
-  switchMap,
-  take,
-  timer,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	map,
+	Observable,
+	pairwise,
+	shareReplay,
+	skip,
+	startWith,
+	switchMap,
+	take,
+	tap,
+	timer,
 } from 'rxjs';
-import {StockPosition, StockPositionActionEntry, StockPositionActionTarget} from 'types/position';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {ApiTradeService} from '@data-access-trade/api.service';
-import {TradeStore} from '@data-access-trade/store.trade';
-import {DirectionTypePipe} from '@data-access-trade/direction-type.pipe';
-import {OrderTypePipe} from '@data-access-trade/order-type.pipe';
+import { StockPosition, StockPositionActionEntry, StockPositionActionTarget } from 'types/position';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ApiTradeService } from '@data-access-trade/api.service';
+import { TradeStore } from '@data-access-trade/store.trade';
+import { DirectionTypePipe } from '@data-access-trade/direction-type.pipe';
+import { OrderTypePipe } from '@data-access-trade/order-type.pipe';
 import {
-  TradeLimit,
-  TradeOperations,
-  TradeOrder,
-  TradeOrders,
-  TradeOrderType,
-  TradeStopOrder,
-  TradeStopOrders,
-  TradeToken,
+	TradeLimit,
+	TradeOperations,
+	TradeOrder,
+	TradeOrders,
+	TradeOrderType,
+	TradeStopOrder,
+	TradeStopOrders,
+	TradeToken,
 } from '@data-access-trade/types';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {RequestFormValue} from '../request/request.component';
-import {TradeFormService} from './form.service';
-import {TuiItem} from '@taiga-ui/cdk';
-import {triggerHeightAnimations} from '@ui/animations/height.animations';
-import {ControlValue, ControlValueStatus} from './form.types';
-import {DetailsComponent} from '../details/details.component';
-import {Params} from '@angular/router';
-import {TuiBreakpointMediaKey} from '@taiga-ui/core/services/breakpoint.service';
-import {Response} from 'types/response';
-import {TradeFormDialogService} from './form.dialog.service';
-import {DIALOG, DialogService} from '@ui/components/dialog';
-import {TIMER_INTERVAL} from 'tokens/desktop/timer-interval';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { RequestFormValue } from '../request/request.component';
+import { TradeFormService } from './form.service';
+import { TuiItem, TuiPopover } from '@taiga-ui/cdk';
+import { triggerHeightAnimations } from '@ui/animations/height.animations';
+import { ControlValue, ControlValueStatus } from './form.types';
+import { DetailsComponent } from '../details/details.component';
+import { Params } from '@angular/router';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { Response } from 'types/response';
+import { TradeFormDialogService } from './form.dialog.service';
+import { DIALOG, DialogService } from '@ui/components/dialog';
+import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
+import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 
 @Component({
 	selector: 'trade-form',
@@ -113,7 +116,7 @@ import {TIMER_INTERVAL} from 'tokens/desktop/timer-interval';
 	animations: [triggerHeightAnimations],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
+export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
 	readonly #breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
 	readonly #injector: Injector = inject(Injector);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
@@ -123,6 +126,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 	readonly #service: TradeFormService = inject(TradeFormService);
 	readonly #api: ApiTradeService = inject(ApiTradeService);
 	readonly #timerInterval: number = inject(TIMER_INTERVAL);
+	readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
@@ -268,22 +272,39 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 	};
 
 	ngAfterViewInit(): void {
-		combineLatest([
-			this.positionAndLimit$,
-			this.orders$.pipe(
-				filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
-				distinctUntilChanged((a, b) => this._distinctOrders(a, b))
-			),
-			this.stopOrders$.pipe(
-				filter((orders: TradeStopOrders | null): orders is TradeStopOrders => orders !== null),
-				distinctUntilChanged((a, b) => this._distinctStopOrders(a, b))
-			),
-			this.operations$.pipe(
-				filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null),
-				distinctUntilChanged((a, b) => a.length === b.length)
-			),
-		])
-			.pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(100))
+		this.idea$
+			.pipe(
+				distinctUntilChanged((a, b) => a.idea.id === b.idea.id),
+				tap((position: StockPosition) => {
+					this.formArrayEntry.clear();
+					this.formArrayOut.clear();
+					this.formArrayStop.clear();
+				}),
+				filter((position: StockPosition) => position.idea.id !== null && +position.idea.id === +this.#context.data.id),
+				switchMap((position: StockPosition) =>
+					combineLatest([
+						this.#api.getLimitForCurrency(position.idea.instrument.currencyId).pipe(
+							map((response: Response<TradeLimit>) => ({
+								limit: response.data,
+								position,
+							}))
+						),
+						this.orders$.pipe(
+							filter((orders: TradeOrders | null): orders is TradeOrders => orders !== null),
+							distinctUntilChanged((a, b) => this._distinctOrders(a, b))
+						),
+						this.stopOrders$.pipe(
+							filter((orders: TradeStopOrders | null): orders is TradeStopOrders => orders !== null),
+							distinctUntilChanged((a, b) => this._distinctStopOrders(a, b))
+						),
+						this.operations$.pipe(
+							filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null),
+							distinctUntilChanged((a, b) => a.length === b.length)
+						),
+					])
+				)
+			)
+			.pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(300))
 			.subscribe(
 				([{ position, limit }, orders, stopOrders, operations]: [
 					{ position: StockPosition; limit: TradeLimit },
@@ -442,6 +463,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 		this.formGroup.valueChanges
 			.pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.formGroup.value))
 			.subscribe((value) => this.#onChange(value));
+	}
+
+	ngOnDestroy(): void {
+		console.log('ngOnDestroy');
 	}
 
 	private _distinct(
@@ -663,7 +688,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 				const startIndexOut = this.formArrayOut.value.length;
 				const startIndexStop = this.formArrayStop.value.length;
 				const outs = this.#service.getOutControlValue(position, [], [], [], this.controlFilter.value, maxLots);
-				const stop = this.#service.getStopLossControlValue(position, maxLots, [], [], [], []);
+				const stop = this.#service.getIdeaStopLossControlValue(position, maxLots, []);
 
 				entry.forEach((item, index: number) => {
 					this.formArrayEntry.setControl(startIndexEntry + index + length, new FormControl(item));
@@ -719,7 +744,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
 				const entry = this.#service.getIdeaControlValue(position, this.controlFilter.value, limit.limit);
 				const maxLots = entry.reduce((acc: number, item: ControlValue) => (acc += item.lots), 0);
-				const stop = this.#service.getStopLossControlValue(position, maxLots, [], [], [], []);
+				const stop = this.#service.getIdeaStopLossControlValue(position, maxLots, []);
 				const startIndexStop = this.formArrayStop.value.length;
 
 				stop.forEach((item, index: number) => {
@@ -834,12 +859,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit {
 			outOperations
 		);
 
-		stopLoss.forEach((item: ControlValue, index: number) => {
-			this.formArrayStop.setControl(index, new FormControl(item), { emitEvent: true });
-		});
+		this._setControl(this.formArrayStop, tempStop, stopLoss, !this.direction, compose.length === 0);
 
 		this.formArrayEntry.patchValue([]);
 		this.formArrayOut.patchValue([]);
+		this.formArrayStop.patchValue([]);
 	}
 
 	private _getDataForRequestForm(item: ControlValue) {

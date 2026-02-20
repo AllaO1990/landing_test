@@ -84,6 +84,13 @@ export class AuthService {
 		this.#updatePermission$.next();
 	}
 
+	async sha256(message: string) {
+		const msgBuffer = new TextEncoder().encode(message); // кодируем строку в Uint8Array
+		const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer); // хешируем
+		const hashArray = Array.from(new Uint8Array(hashBuffer)); // конвертируем ArrayBuffer в байты
+		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join(''); // конвертируем байты в hex строку
+	}
+
 	onSignIn(email: string): Observable<Response<any>> {
 		return this.#http.post<Response<any>>(`${this.host}/v1/auth/sign-in`, { email }).pipe(
 			catchError((errorResponse: HttpErrorResponse, abc) => {
@@ -114,7 +121,11 @@ export class AuthService {
 				catchError((errorResponse: HttpErrorResponse, abc) => {
 					return of(errorResponse.error);
 				}),
-				tap((response: Response<UserLogin>) => response.success && this._saveToken(response['data']['access_token']))
+				tap((response: Response<UserLogin>) => {
+					if (response.success) {
+						this._saveToken({ token: response['data']['access_token'] });
+					}
+				})
 			);
 		// .subscribe((data) => {
 		//   this._saveToken(data['data']['access_token']);
@@ -125,7 +136,7 @@ export class AuthService {
 
 	login(email: string, password: string): Observable<UserData> {
 		return this.#http.post<UserData>(`${this.host}/v1/auth/token`, { username: email, password: +password }).pipe(
-			tap((data: UserData) => this._saveToken(data['data']['access_token'])),
+			tap((data: UserData) => this._saveToken({ token: data['data']['access_token'] })),
 			catchError((error, abc) => {
 				this.#router.navigate(['login']);
 				return EMPTY;
@@ -151,8 +162,8 @@ export class AuthService {
 		return user ? user['token'] : null;
 	}
 
-	private _saveToken(token: string) {
-		this.#storage.setItem('user', { token });
+	private _saveToken(token: object) {
+		this.#storage.setItem('user', token);
 	}
 
 	private _getFromFragment(): string | null {
