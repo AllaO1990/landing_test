@@ -1,0 +1,16 @@
+<div class="header">
+  3 простых шага, чтобы начать<br> зарабатывать
+</div>
+@for (item of data; track item.title; let index = $index) {
+  <div class="step">
+    <div class="step__index">
+      <tui-badge appearance="primary">
+        {{ index + 1 }}
+      </tui-badge>
+    </div>
+    <div class="step__title">
+      {{ item.title }}
+    </div>
+    <div class="step__text" [innerHTML]="item.text | safeHtml"></div>
+  </div>
+}

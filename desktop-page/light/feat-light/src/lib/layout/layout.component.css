@@ -6,6 +6,7 @@
   width: 100%;
   overflow: hidden;
 }
+
 .layout__container {
   display: grid;
   height: 100%;
@@ -14,42 +15,52 @@
   grid-template-rows: 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
+
 .layout__tabs {
   flex: 0 0 60px;
   position: relative;
   box-shadow: var(--tui-shadow-medium);
 }
+
 .layout__portfolio {
   grid-row: 1;
   grid-column: 1/3;
 }
+
 .layout__structure {
   grid-row: 2;
   grid-column: 1/3;
 }
+
 .layout__chart {
   height: 0;
   grid-row: 1;
   grid-column: 3/9;
   overflow: hidden;
 }
+
 .layout__idea {
   grid-row: 1/3;
   grid-column: 6/9;
 }
+
 .layout__out {
   grid-row: 1/3;
   grid-column: 3/6;
 }
+
 .layout--with-chart .layout__chart {
   height: 100%;
 }
+
 .layout--with-chart .layout__idea {
   grid-row: 2/3;
 }
+
 .layout--with-chart .layout__out {
   grid-row: 2/3;
 }
+
 .layout--mobile .layout__container {
   display: flex;
   flex-flow: row nowrap;
@@ -57,10 +68,12 @@
   height: 100%;
   width: 100%;
 }
+
 .layout--mobile .layout__chart {
   width: 0;
   height: 0;
 }
+
 .layout--mobile.layout--with-chart .layout__chart {
   position: absolute;
   z-index: 1;
@@ -68,6 +81,7 @@
   left: 0;
   height: 100%;
 }
+
 .layout--mobile .widget {
   flex: 0 0 auto;
   width: 100%;
@@ -78,4 +92,4 @@
   background-color: var(--tui-background-base);
 }
 
-/*# sourceMappingURL=layout.component.css.map */
+/*# sourceMappingURL=layout.component.scss.map */

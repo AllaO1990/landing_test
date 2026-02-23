@@ -1,0 +1,14 @@
+@for (item of data; track item.title) {
+  <div class="description">
+    <div class="description__icon">
+      <tui-icon
+        [icon]="item.icon"
+        [background]="item.iconBackground">
+      </tui-icon>
+    </div>
+    <div class="description__title">
+      {{ item.title }}
+    </div>
+    <div class="description__text" [innerHTML]="item.text | safeHtml"></div>
+  </div>
+}

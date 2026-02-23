@@ -15,7 +15,7 @@ import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { DESKTOP_API, DESKTOP_ENVIRONMENT, GlobalDateRangeService, QUERY_PARAMS } from 'tokens/desktop';
 import { QueryParams } from 'utils/query-params';
 import { environment } from '../environments/environment';
-import { routes } from './app-routing.module';
+import { routes } from './app.routes';
 import { httpInterceptors } from './core/interceptors';
 import { WINDOW } from 'tokens/desktop/window';
 import { DOCUMENT } from '@angular/common';

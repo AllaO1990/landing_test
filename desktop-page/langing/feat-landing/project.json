@@ -1,0 +1,20 @@
+{
+	"name": "feat-landing",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "desktop-page/langing/feat-landing/src",
+	"prefix": "lib",
+	"projectType": "library",
+	"tags": ["landing"],
+	"targets": {
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "desktop-page/langing/feat-landing/jest.config.ts"
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		}
+	}
+}

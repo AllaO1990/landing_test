@@ -1,0 +1,67 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.description {
+  display: flex;
+  flex-flow: column nowrap;
+
+  padding: var(--padding-vertical) var(--padding-horizontal);
+
+  & > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 3rem;
+    height: 3rem;
+
+    border-radius: 0.25rem;
+    background-color: var(--tui-background-neutral-2);
+
+    tui-icon {
+      color: var(--tui-text-action);
+      background-color: var(--tui-text-action-hover);
+
+
+      font-size: 1.5rem;
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+
+    color: var(--tui-text-primary);
+  }
+
+  &__text {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.2;
+
+    color: var(--tui-text-secondary);
+  }
+
+  ::ng-deep {
+    p {
+      margin-top: 0;
+      margin-block-start: 0;
+    }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  :host {
+    flex-direction: row;
+  }
+
+  .description {
+    flex: 1;
+  }
+}

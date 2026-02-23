@@ -1,0 +1,81 @@
+:host {
+  display: flex;
+  flex-flow: column nowrap;
+
+  font-family: Inter, sans-serif;
+
+  ::ng-deep {
+    p {
+      margin-top: 0;
+      margin-block-start: 0;
+    }
+  }
+}
+
+.header {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+
+  text-align: center;
+
+  padding: var(--padding-vertical) var(--padding-horizontal);
+}
+
+.step {
+  display: flex;
+  flex-flow: column nowrap;
+
+  border-radius: 0.25rem;
+  border: 1px solid var(--tui-border-normal);
+
+  padding: 1.25rem;
+  margin: 1.25rem;
+
+  tui-badge, [tuiBadge] {
+    font-size: 1.25rem;
+    font-weight: 600;
+    --t-size: 3rem;
+  }
+
+  & > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  &__text {
+    font-size: 1.125rem;
+    line-height: 1.4;
+
+    color: var(--tui-text-secondary);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  :host {
+    flex-flow: row wrap;
+    justify-content: center;
+  }
+
+  .header {
+    flex: 1 1 100%;
+
+    font-size: 3rem;
+    line-height: 4rem;
+  }
+
+  .step {
+    flex: 1 1 calc(100% / 3 - var(--padding-horizontal));
+    max-width: 25rem;
+    margin: 0;
+
+    &:not(:last-child) {
+      margin-right: var(--padding-horizontal);
+    }
+  }
+}

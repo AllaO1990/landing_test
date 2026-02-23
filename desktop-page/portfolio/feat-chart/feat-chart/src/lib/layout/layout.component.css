@@ -3,6 +3,7 @@
   flex-flow: column nowrap;
   height: 100%;
 }
+
 .layout__header {
   flex: 0 0;
   display: flex;
@@ -10,16 +11,19 @@
   height: 32px;
   padding: var(--padding-2);
 }
+
 .layout__title {
   font-size: 15px;
   font-weight: 600;
 }
+
 .layout__chart {
   position: relative;
   flex: 1;
   overflow: hidden;
   padding: 0 var(--padding-2) var(--padding-2);
 }
+
 .layout__loader {
   position: absolute;
   top: 0;
@@ -28,8 +32,9 @@
   height: 100%;
   z-index: 10;
 }
+
 .layout__loader ~ portfolio-chart {
   filter: blur(2px);
 }
 
-/*# sourceMappingURL=layout.component.css.map */
+/*# sourceMappingURL=layout.component.scss.map */

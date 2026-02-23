@@ -10,6 +10,7 @@
   height: 100%;
   width: 100%;
 }
+
 .deal__header {
   flex: 0 0;
   display: flex;
@@ -17,29 +18,36 @@
   align-items: center;
   padding: var(--padding-2) var(--padding-4);
 }
+
 .deal__title {
   flex: 1;
   font-size: 15px;
   font-weight: 600;
   margin-right: var(--padding-2);
 }
+
 .deal__list {
   flex: 1;
 }
+
 .deal__pagination {
   flex: 0 0 32px;
   margin: var(--padding-2) var(--padding-4);
 }
+
 .deal__actions {
   display: flex;
   align-items: center;
 }
+
 .deal__action [tuibutton], .deal__action tui-badged-content {
   min-width: 120px;
 }
+
 .deal__action:not(:last-child) {
   margin-right: var(--padding-2);
 }
+
 .deal__search {
   min-width: 100px;
   flex: 1;
@@ -50,6 +58,7 @@
   border-radius: 0;
   inline-size: 20rem;
 }
+
 .filter__actions {
   position: absolute;
   bottom: 0;
@@ -60,9 +69,11 @@
   width: 100%;
   padding: var(--padding-2);
 }
+
 .filter__actions button:not(:last-child) {
   margin-right: var(--padding-2);
 }
+
 .filter ::ng-deep .t-content > .t-content {
   padding: var(--padding-8) var(--padding-2) var(--padding-2);
 }
@@ -72,6 +83,7 @@
   display: flex;
   flex-flow: column nowrap;
 }
+
 .list__loader {
   position: absolute;
   top: 0;
@@ -79,6 +91,7 @@
   width: 100%;
   height: 100%;
 }
+
 .list__loader ~ ui-lib-list {
   filter: blur(2px);
 }
@@ -96,16 +109,20 @@
   box-shadow: inset 0 -1px 0 0 var(--tui-border-normal);
   margin: 0 var(--padding-4);
 }
+
 .item--skeleton {
   padding: var(--padding-1) var(--padding-2);
 }
+
 .item--active {
   background: var(--tui-service-selection-background);
 }
+
 .item__skeleton {
   flex: 1;
   height: 100%;
 }
+
 .item__cell {
   flex: 0 0 auto;
   display: flex;
@@ -117,38 +134,48 @@
   white-space: nowrap;
   padding: 0 var(--padding-2);
 }
+
 .item__cell--center {
   align-items: center;
 }
+
 .item__cell--number {
   align-items: flex-end;
 }
+
 .item__cell:not(:last-child) {
   box-shadow: inset -1px 0 0 0 var(--tui-border-normal);
 }
+
 .item__date {
   width: 80px;
 }
+
 .item__direction {
   width: 40px;
 }
+
 .item__ticker {
   flex: 1;
   max-width: 120px;
   min-width: 80px;
 }
+
 .item__quantity {
   flex: 1;
   min-width: 60px;
 }
+
 .item__total {
   flex: 1;
   min-width: 60px;
 }
+
 .item__result {
   flex: 1;
   min-width: 60px;
 }
+
 .item__action {
   width: 64px;
 }
@@ -180,4 +207,4 @@ tui-badge-notification[appearance=primary] {
   font-size: 15px;
 }
 
-/*# sourceMappingURL=layout.component.css.map */
+/*# sourceMappingURL=layout.component.scss.map */

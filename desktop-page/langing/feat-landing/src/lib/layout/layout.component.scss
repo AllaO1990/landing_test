@@ -1,0 +1,14 @@
+.layout {
+  display: flex;
+  flex-flow: column nowrap;
+
+  --padding-vertical: 2rem;
+  --padding-horizontal: 2rem;
+}
+
+@media screen and (min-width: 768px) {
+  .layout {
+    --padding-vertical: 4rem;
+    --padding-horizontal: 3.5rem;
+  }
+}

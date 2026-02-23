@@ -1,0 +1,23 @@
+<div class="header">
+  Эффективность, подтвержденная цифрами
+</div>
+@for (item of data; track item.title) {
+  <div class="efficiency">
+    <div class="efficiency__title">
+      {{ item.title }}
+    </div>
+    <div class="efficiency__text" [innerHTML]="item.text | safeHtml"></div>
+  </div>
+}
+<div class="action">
+  <button
+    class=""
+    size="m"
+    tuiButton
+    [disabled]="true">
+    <tui-icon
+      icon="@tui.square-arrow-up-right"
+    />
+    Попробовать бесплатно
+  </button>
+</div>

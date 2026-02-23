@@ -9,6 +9,7 @@
   flex-flow: column nowrap;
   height: 100%;
 }
+
 .layout__header {
   flex: 0 0 auto;
   display: flex;
@@ -16,6 +17,7 @@
   height: 32px;
   padding: var(--padding-2);
 }
+
 .layout__title {
   font-size: 15px;
   font-weight: 600;
@@ -23,10 +25,11 @@
   height: 15px;
   margin-left: var(--padding-2);
 }
+
 .layout__chart {
   flex: 1;
   overflow: hidden;
   padding: 0 var(--padding-2) var(--padding-2);
 }
 
-/*# sourceMappingURL=layout.component.css.map */
+/*# sourceMappingURL=layout.component.scss.map */
