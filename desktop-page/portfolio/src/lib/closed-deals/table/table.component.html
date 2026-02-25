@@ -146,14 +146,18 @@
           tuiTd>
           <div class="dividend">
             <div class="dividend__quantity">
-              <ng-container *ngIf="item.dividend; else none">
+              @if (item.dividend) {
                 {{ item.dividend | tuiFormatNumber | async }}
-              </ng-container>
+              } @else {
+                <ng-template [ngTemplateOutlet]="none"></ng-template>
+              }
             </div>
             <div class="dividend__price substring">
-              <ng-container *ngIf="item.dividendPct; else none">
+              @if (item.dividendPct) {
                 {{ item.dividendPct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
-              </ng-container>
+              } @else {
+                <ng-template [ngTemplateOutlet]="none"></ng-template>
+              }
             </div>
           </div>
         </td>
@@ -163,14 +167,16 @@
           *tuiCell="'profitRealized'"
           tuiTd>
           <div class="profit-realized">
-            <ng-container *ngIf="item.fixedResultPct; else none">
+            @if (item.fixedResultPct) {
               <div class="profit-realized__percentage">
                 {{ item.fixedResultPct | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
               </div>
               <div class="profit-realized__price substring">
                 {{ item.fixedResult | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}
               </div>
-            </ng-container>
+            } @else {
+              <ng-template [ngTemplateOutlet]="none"></ng-template>
+            }
           </div>
         </td>
 

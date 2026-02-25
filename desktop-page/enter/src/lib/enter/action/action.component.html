@@ -400,44 +400,54 @@
   <div class="space"></div>
 
   <div class="result">
-    <tui-scrollbar *ngIf="(totalResult$ | async) as result; else load" [hidden]="true">
-      <lib-list-header class="header">
-        <div class="header__item row__item">Результат</div>
-        <div class="header__item row__item">Цена</div>
-        <div class="header__item row__item">Кол-во</div>
-        <div class="header__item row__item">Стоимость</div>
-        <div class="header__item row__item">Прибыль</div>
-        <div class="header__item row__item">Приб. %</div>
-        <div class="header__item row__item">% депо</div>
-      </lib-list-header>
-      <lib-list-header class="total">
-        <div class="total__item row__item">Всего</div>
-        <div class="total__item row__right row__item">
-          {{ result.price | tuiFormatNumber: {precision: priceIncrement, decimalMode: 'always'} | async }}
-        </div>
-        <div class="total__item row__right row__item">
-          {{ result.amount | tuiFormatNumber | async }}
-        </div>
-        <div class="total__item row__right row__item">
-          {{ result.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
-        </div>
-        <div class="total__item row__right row__item">
-          <ng-container *ngIf="result.profit !== null; else none">
-            {{ result.profit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
-          </ng-container>
-        </div>
-        <div class="total__item row__right row__item">
-          <ng-container *ngIf="result.profitPercent !== null; else none">
-            {{ result.profitPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-          </ng-container>
-        </div>
-        <div class="total__item row__right row__item">
-          <ng-container *ngIf="result.depositShare !== null; else none">
-            {{ result.depositShare | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
-          </ng-container>
-        </div>
-      </lib-list-header>
-    </tui-scrollbar>
+    @if (totalResult$ | async; as result) {
+      <tui-scrollbar [hidden]="true">
+        <lib-list-header class="header">
+          <div class="header__item row__item">Результат</div>
+          <div class="header__item row__item">Цена</div>
+          <div class="header__item row__item">Кол-во</div>
+          <div class="header__item row__item">Стоимость</div>
+          <div class="header__item row__item">Прибыль</div>
+          <div class="header__item row__item">Приб. %</div>
+          <div class="header__item row__item">% депо</div>
+        </lib-list-header>
+        <lib-list-header class="total">
+          <div class="total__item row__item">Всего</div>
+          <div class="total__item row__right row__item">
+            {{ result.price | tuiFormatNumber: {precision: priceIncrement, decimalMode: 'always'} | async }}
+          </div>
+          <div class="total__item row__right row__item">
+            {{ result.amount | tuiFormatNumber | async }}
+          </div>
+          <div class="total__item row__right row__item">
+            {{ result.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+          </div>
+          <div class="total__item row__right row__item">
+            @if (result.profit !== null) {
+              {{ result.profit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+            } @else {
+              <ng-template [ngTemplateOutlet]="none"></ng-template>
+            }
+          </div>
+          <div class="total__item row__right row__item">
+            @if (result.profitPercent !== null) {
+              {{ result.profitPercent | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
+            } @else {
+              <ng-template [ngTemplateOutlet]="none"></ng-template>
+            }
+          </div>
+          <div class="total__item row__right row__item">
+            @if (result.depositShare !== null) {
+              {{ result.depositShare | tuiFormatNumber: {precision: 1, decimalMode: 'always'} | async }}%
+            } @else {
+              <ng-template [ngTemplateOutlet]="none"></ng-template>
+            }
+          </div>
+        </lib-list-header>
+      </tui-scrollbar>
+    } @else {
+      <ng-template [ngTemplateOutlet]="load"></ng-template>
+    }
   </div>
 </form>
 

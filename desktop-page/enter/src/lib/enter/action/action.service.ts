@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
-	StockPositionActionEntry,
-	StockPositionActionTarget,
-	StockPositionCommission,
-	StockPositionDividend,
-	StockPositionTarget,
+  StockPositionActionEntry,
+  StockPositionActionTarget,
+  StockPositionCommission,
+  StockPositionDividend,
+  StockPositionTarget,
 } from 'types/position';
-import { getNumberPrecision } from 'utils/get-number-precision';
+import {getNumberPrecision} from 'utils/get-number-precision';
 
 @Injectable()
 export class ActionService {
@@ -212,10 +212,7 @@ export class ActionService {
 			return this._defaultTotalOut;
 		}
 
-		const totalPrice = getNumberPrecision(
-			target.totalPrice + remainder.totalPrice - commission.size * multiplier,
-			priceIncrement
-		);
+		const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice, priceIncrement);
 		const profit = getNumberPrecision(
 			(totalPrice - entry.totalPrice) * multiplier + (dividend.profit || 0),
 			priceIncrement
