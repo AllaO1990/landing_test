@@ -1,0 +1,36 @@
+<tui-drawer
+  *tuiPopup="openFilter()"
+  direction="left"
+  class="filter"
+  [overlay]="true"
+  (click.self)="onClose($event)">
+  <deal-filter [formControl]="control"></deal-filter>
+  <div class="filter__actions">
+    <button
+      [size]="size"
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="onReset($event)">
+      Сбросить
+    </button>
+    <div class="space"></div>
+    <button
+      [size]="size"
+      tuiButton
+      appearance="secondary"
+      type="button"
+      (click)="onClose($event)">
+      Отменить
+    </button>
+    <button
+      [size]="size"
+      [disabled]="control.pristine"
+      (click)="onSubmit($event)"
+      tuiButton
+      appearance="primary"
+      type="submit">
+      Применить
+    </button>
+  </div>
+</tui-drawer>

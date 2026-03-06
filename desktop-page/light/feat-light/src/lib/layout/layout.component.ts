@@ -8,7 +8,7 @@ import {
 	inject,
 	Signal,
 } from '@angular/core';
-import { combineLatest, distinctUntilChanged, Observable, startWith, timer } from 'rxjs';
+import { Observable, startWith, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { IdeaListWrapper } from '@feat-idea-list';
@@ -31,6 +31,7 @@ import { TabsComponent } from 'ui-common/lib/tabs';
 import { PortfolioParams } from '@data-access-portfolio/types';
 import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 import { DataAccessIdeasStore } from '@data-access-idea/store';
+import { DealFilterDialogService, DialogComponent } from '@feat-deals-filter';
 
 @Component({
 	selector: 'light-layout',
@@ -44,6 +45,7 @@ import { DataAccessIdeasStore } from '@data-access-idea/store';
 		StockWrapperComponent,
 		PortfolioChartWrapper,
 		TabsComponent,
+		DialogComponent,
 	],
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss',
@@ -54,6 +56,7 @@ import { DataAccessIdeasStore } from '@data-access-idea/store';
 			provide: TIMER_INTERVAL,
 			useValue: 60 * 1000 * 15,
 		},
+		DealFilterDialogService,
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -115,19 +118,6 @@ export class LightLayoutComponent implements AfterViewInit {
 		switchMap(() => this.paramsPortfolio$),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
-	readonly portfolioParamsDeal$: Observable<Params> = combineLatest([
-		this.paramsPortfolio$.pipe(
-			map((value: PortfolioParams) => ({
-				portfolioId: value.portfolio ? value.portfolio['portfolioId'] : null,
-				currencyId: value.currency ? value.currency['currencyId'] : null,
-			})),
-			distinctUntilChanged()
-		),
-		this.paramsDeal$,
-	]).pipe(
-		takeUntilDestroyed(this.#destroyRef),
-		map(([portfolioParams, params]: [Params, Params]) => ({ ...params, ...portfolioParams }))
-	);
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
 		shareReplay({ refCount: true, bufferSize: 1 })
@@ -177,7 +167,7 @@ export class LightLayoutComponent implements AfterViewInit {
 
 	ngAfterViewInit(): void {
 		this.chartPortfolio$.subscribe((params: Params) => this.#storePortfolio.loadHistory(params));
-		this.portfolioParamsDeal$
+		this.paramsDeal$
 			.pipe(
 				switchMap((params: Params) =>
 					timer(0, this.#timerInterval).pipe(

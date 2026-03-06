@@ -6,9 +6,52 @@
   }
   <div class="portfolio__header">
     <div class="portfolio__title" [tuiSkeleton]="isLoaded()"> {{ constants.title }}</div>
+
+    <div class="space"></div>
+
+    <div class="portfolio__actions" [tuiSkeleton]="isLoaded()">
+      <div class="portfolio__action">
+        <tui-badged-content>
+          @if (isActiveFilter()) {
+            <tui-badge-notification
+              appearance="primary"
+              size="xs"
+              tuiSlot="top"/>
+          }
+          @if (isMobile$ | async) {
+            <button
+              tuiHintAppearance="dark"
+              tuiHintDirection="right"
+              [tuiHint]="tooltip"
+              tuiIconButton
+              appearance="secondary"
+              type="button"
+              [size]="size"
+              iconStart="@tui.filter"
+              class="portfolio__add-deal"
+              (click)="onOpenFilter($event)">
+            </button>
+          } @else {
+            <button
+              tuiHintAppearance="dark"
+              tuiHintDirection="right"
+              [tuiHint]="tooltip"
+              tuiButton
+              appearance="secondary"
+              type="button"
+              [size]="size"
+              iconStart="@tui.filter"
+              class="portfolio__add-deal"
+              (click)="onOpenFilter($event)">
+              {{ constants.filter }}
+            </button>
+          }
+        </tui-badged-content>
+      </div>
+    </div>
   </div>
   <div class="portfolio__item portfolio__filter">
-    <portfolio-filter [tuiSkeleton]="isLoaded()"></portfolio-filter>
+    <portfolio-filter formControlName="filter" [tuiSkeleton]="isLoaded()"></portfolio-filter>
   </div>
   <tui-scrollbar class="portfolio__container">
     <div class="portfolio__item portfolio__value">
@@ -127,3 +170,15 @@
     </div>
   </tui-scrollbar>
 </div>
+
+<ng-template #tooltip>
+  <ul>
+    <li>{{ constants.portfolio }}: {{ value().portfolio.portfolio }}</li>
+    <li>{{ constants.deal }}: {{ value().dealType.name }}</li>
+    <li>{{ constants.type }}: {{ value().type.name }}</li>
+    <li>{{ constants.strategy }}: {{ value().strategy.name }}</li>
+    <li>{{ constants.broker }}: {{ value().broker.broker }}</li>
+    <li>{{ constants.currency }}: {{ value().currency.currencySymbol }}</li>
+    <li>{{ constants.range }}: {{ value().range.from }}&mdash;{{ value().range.to }}</li>
+  </ul>
+</ng-template>

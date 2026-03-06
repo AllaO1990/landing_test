@@ -1,6 +1,6 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
-import { Response } from 'types/response';
+import { DataAccess, Response } from 'types/response';
 import {
 	TradeDirections,
 	TradeOperation,
@@ -31,7 +31,7 @@ export interface TradeState {
 	orderType: TradeOrderTypesDescription | null;
 	orders: TradeOrders | null;
 	stopOrders: TradeStopOrders | null;
-	portfolio: Response<TradePortfolio> | null;
+	portfolio: DataAccess<TradePortfolio>;
 	operations: TradeOperations | null;
 	directionTypes: TradeDirections | null;
 }
@@ -56,7 +56,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	);
 	readonly orders$: Observable<TradeOrders | null> = this.select((state: TradeState) => state.orders);
 	readonly stopOrders$: Observable<TradeStopOrders | null> = this.select((state: TradeState) => state.stopOrders);
-	readonly portfolio$: Observable<Response<TradePortfolio> | null> = this.select((state: TradeState) => state.portfolio);
+	readonly portfolio$: Observable<DataAccess<TradePortfolio>> = this.select((state: TradeState) => state.portfolio);
 	readonly operations$: Observable<TradeOperations | null> = this.select((state: TradeState) => state.operations);
 
 	constructor(private _api: Api) {
@@ -64,7 +64,11 @@ export class TradeStore extends ComponentStore<TradeState> {
 			orderType: null,
 			orders: null,
 			stopOrders: null,
-			portfolio: null,
+			portfolio: {
+				data: null,
+				isLoading: false,
+				isLoaded: false,
+			},
 			operations: null,
 			directionTypes: [
 				{ id: true, name: 'Купить' },
@@ -104,9 +108,23 @@ export class TradeStore extends ComponentStore<TradeState> {
 	);
 
 	readonly updatePortfolio = this.updater(
-		(state: TradeState, portfolio: null | Response<TradePortfolio>): TradeState => ({
+		(state: TradeState, portfolio: null | TradePortfolio): TradeState => ({
 			...state,
-			portfolio,
+			portfolio: {
+				data: portfolio,
+				isLoaded: true,
+				isLoading: false,
+			},
+		})
+	);
+
+	readonly updatePortfolioLoading = this.updater(
+		(state: TradeState, isLoading: boolean): TradeState => ({
+			...state,
+			portfolio: {
+				...state.portfolio,
+				isLoading,
+			},
 		})
 	);
 
@@ -151,8 +169,9 @@ export class TradeStore extends ComponentStore<TradeState> {
 
 	loadPortfolio = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
+			tap(() => this.updatePortfolioLoading(true)),
 			switchMap((params: Params) => this._api.getPortfolio(params)),
-			tap((response: Response<TradePortfolio> | null) => response && this.updatePortfolio(response))
+			tap((response: Response<TradePortfolio> | null) => response && this.updatePortfolio(response.data))
 		)
 	);
 

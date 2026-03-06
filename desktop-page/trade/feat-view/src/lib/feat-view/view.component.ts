@@ -8,7 +8,7 @@ import {
 	TradeStopOrder,
 	TradeStopOrders,
 } from '@data-access-trade/types';
-import { Charge } from 'types/response';
+import { DataAccess } from 'types/response';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IdeaFacade } from 'stores/facades/idea.facade';
@@ -151,7 +151,7 @@ export class ViewComponent implements AfterViewInit {
 		combineLatest([
 			this.#storeBroker.source$.pipe(
 				takeUntilDestroyed(this.#destroyRef),
-				map((source: Charge<TradeSources>) => source.data),
+				map((source: DataAccess<TradeSources>) => source.data),
 				filter((source: TradeSources | null): source is TradeSources => source !== null && source.length > 0)
 			),
 			this.#storeBroker.accounts$.pipe(
@@ -177,7 +177,7 @@ export class ViewComponent implements AfterViewInit {
 				switchMap(() =>
 					this.#storeBroker.source$.pipe(
 						takeUntilDestroyed(this.#destroyRef),
-						map((sources: Charge<TradeSources>) => sources.data),
+						map((sources: DataAccess<TradeSources>) => sources.data),
 						filter((source: TradeSources | null): source is TradeSources => source !== null && source.length > 0)
 					)
 				)

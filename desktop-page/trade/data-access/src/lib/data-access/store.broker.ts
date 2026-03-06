@@ -1,7 +1,7 @@
 import { ComponentStore } from '@ngrx/component-store';
 import { TradeAccounts, TradeSources, TradeToken, TradeTokenSource } from './types';
 import { catchError, Observable, of, switchMap, tap } from 'rxjs';
-import { Charge, Response } from 'types/response';
+import { DataAccess, Response } from 'types/response';
 
 interface Api {
 	getSources(): Observable<Response<TradeSources>>;
@@ -13,13 +13,13 @@ interface Api {
 
 interface TradeStoreBrokerState {
 	accounts: TradeBrokerAccounts;
-	sources: Charge<TradeSources>;
+	sources: DataAccess<TradeSources>;
 	token: TradeBrokerToken;
 }
 
-export type TradeBrokerAccounts = Charge<TradeAccounts> & { message: string | null };
+export type TradeBrokerAccounts = DataAccess<TradeAccounts> & { message: string | null };
 
-export type TradeBrokerToken = Charge<TradeToken> & { message: string | null };
+export type TradeBrokerToken = DataAccess<TradeToken> & { message: string | null };
 
 export class TradeBrokerStore extends ComponentStore<TradeStoreBrokerState> {
 	static defaultState: TradeStoreBrokerState = {
@@ -42,7 +42,7 @@ export class TradeBrokerStore extends ComponentStore<TradeStoreBrokerState> {
 		},
 	};
 
-	readonly source$: Observable<Charge<TradeSources>> = this.select((state: TradeStoreBrokerState) => state.sources);
+	readonly source$: Observable<DataAccess<TradeSources>> = this.select((state: TradeStoreBrokerState) => state.sources);
 	readonly token$: Observable<TradeBrokerToken> = this.select((state: TradeStoreBrokerState) => state.token);
 	readonly accounts$: Observable<TradeBrokerAccounts> = this.select((state: TradeStoreBrokerState) => state.accounts);
 

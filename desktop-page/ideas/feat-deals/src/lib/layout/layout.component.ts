@@ -8,14 +8,11 @@ import {
 	input,
 	InputSignal,
 	Signal,
-	signal,
-	WritableSignal,
 } from '@angular/core';
 import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ACTION_EVENTS } from 'tokens/desktop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { FilterDealListComponent } from '../filter/filter.component';
-import { debounceTime, distinctUntilChanged, Observable, shareReplay, startWith } from 'rxjs';
+import { debounceTime, Observable, shareReplay } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StockInstrument } from 'types/stock';
 import {
@@ -28,20 +25,12 @@ import {
 	TuiHint,
 	TuiIcon,
 	TuiNumberFormatSettings,
-	TuiPopup,
 	TuiTextfield,
 } from '@taiga-ui/core';
-import { TuiBadgedContent, TuiBadgeNotification, TuiDrawer, TuiSkeleton } from '@taiga-ui/kit';
+import { TuiBadgedContent, TuiBadgeNotification, TuiSkeleton } from '@taiga-ui/kit';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
 import { UiList, UiListItem } from '@ui/components/list';
-import {
-	AccountBroker,
-	AccountCurrency,
-	AccountDealType,
-	AccountRange,
-	AccountStrategy,
-	AccountType,
-} from 'types/account';
+import { AccountBroker, AccountCurrency, AccountDealType, AccountStrategy, AccountType } from 'types/account';
 import { WithPaginationComponent } from 'ui-common/lib/with-pagination';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ColorPriceDirective } from '@ui/components/price';
@@ -50,9 +39,6 @@ import { GetDatePassedPipe } from '@ui/pipes/get-date-passed.pipe';
 import { DataAccessDealService } from '@data-access-idea/deals/data-access.service';
 import { Params } from '@angular/router';
 import { PortfolioPosition } from 'types/portfolio';
-import { TuiDayRange } from '@taiga-ui/cdk';
-import { getListOfRange } from 'utils/get-list-of-range';
-import { TODAY } from 'tokens/desktop/today';
 import { ContextActionPlugin } from 'types/context-action-plugin';
 import { ContextAction } from 'types/context-action';
 import { getContextAction } from 'utils/get-context-action';
@@ -66,6 +52,8 @@ import { ActionShowTransaction } from 'ui-common/lib/plugins/plugins/action-show
 import { ActionNewPosition } from 'ui-common/lib/plugins/plugins/action-new-position';
 import { DataAccess } from '@data-access-idea/store';
 import { DataList } from 'types/response';
+import { DealFilterDialogService, FilterDealValue } from '@feat-deals-filter';
+import { TuiDayRange } from '@taiga-ui/cdk';
 
 interface FilterValue {
 	type: AccountType;
@@ -73,7 +61,7 @@ interface FilterValue {
 	dealType: AccountDealType;
 	broker: AccountBroker;
 	currency: AccountCurrency;
-	range: AccountRange;
+	range: TuiDayRange;
 }
 
 type ActionButton = {
@@ -90,10 +78,7 @@ type ActionButton = {
 		ReactiveFormsModule,
 		TuiButton,
 		TuiHint,
-		TuiDrawer,
-		TuiPopup,
 		SearchDialogDirective,
-		FilterDealListComponent,
 		TuiTextfield,
 		AsyncPipe,
 		UiList,
@@ -150,52 +135,41 @@ type ActionButton = {
 })
 export class LayoutComponent implements AfterViewInit {
 	readonly #breakpoint$: TuiBreakpointService = inject(TuiBreakpointService);
-	readonly #today: Date = inject(TODAY);
 	readonly #actions: ContextActionPlugin[] = inject(ACTION_EVENTS);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 	readonly #dataAccess: DataAccessDealService = inject(DataAccessDealService);
+	readonly #dealFilterDialogService: DealFilterDialogService = inject(DealFilterDialogService);
 	readonly #map: Map<string, ContextAction> = new Map();
-	readonly #rangeList: { text: string; range: TuiDayRange }[] = getListOfRange(this.#today);
-	readonly #valueDefault = {
-		dealType: FilterDealListComponent.valueDefaultDealType,
-		type: FilterDealListComponent.valueDefaultType,
-		strategy: FilterDealListComponent.valueDefaultStrategy,
-		broker: FilterDealListComponent.valueDefaultBroker,
-		currency: FilterDealListComponent.valueDefaultCurrency,
-		range: this.#rangeList[5].range,
-	};
 
 	protected readonly formatNumberSettings: Partial<TuiNumberFormatSettings> = { precision: 2, decimalMode: 'always' };
 	protected readonly size = 's';
 	protected readonly listPagination = [10, 50, 100];
 	protected readonly listOfButtonConstants = DEAL_CONSTANTS_LIST_OF_BUTTON;
 	protected readonly constants = DEAL_CONSTANTS;
-	protected readonly filterControl: FormControl = new FormControl(this.#valueDefault);
 	protected readonly searchControl: FormControl<string | null> = new FormControl('', { nonNullable: true });
 	protected readonly paginationControl: FormControl = new FormControl({
 		limit: this.listPagination[1],
 		page: 0,
 	});
-	protected readonly openFilter: WritableSignal<boolean> = signal(false);
 
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
 		shareReplay({ refCount: true, bufferSize: 1 })
 	);
 
-	readonly isActiveFilter$: Observable<boolean> = this.filterControl.valueChanges.pipe(
-		startWith(this.filterControl.value),
-		map(
-			(value: FilterValue) =>
-				value.dealType.id !== null ||
-				value.strategy.id !== null ||
-				value.type.id !== null ||
-				value.broker.brokerId !== null ||
-				value.currency.currencyId !== null ||
-				value.range.to !== null
-		),
-		distinctUntilChanged()
-	);
+	readonly value: Signal<FilterDealValue> = this.#dealFilterDialogService.value;
+	readonly isActiveFilter: Signal<boolean> = computed(() => {
+		const value = this.#dealFilterDialogService.value();
+
+		return (
+			value.portfolio.portfolioId !== null ||
+			value.dealType.id !== null ||
+			value.strategy.id !== null ||
+			value.type.id !== null ||
+			value.broker.brokerId !== null ||
+			value.currency.currencyId !== null
+		);
+	});
 
 	readonly data: InputSignal<DataAccess<DataList<PortfolioPosition>>> = input.required();
 	readonly isLoaded = computed(() => !this.data().isLoaded);
@@ -212,11 +186,13 @@ export class LayoutComponent implements AfterViewInit {
 	});
 
 	ngAfterViewInit(): void {
-		this.paginationControl.valueChanges
-			.pipe(takeUntilDestroyed(this.#destroyRef))
-			.subscribe((value: Params) =>
-				this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...value, ...this._getParams() }))
-			);
+		this.paginationControl.valueChanges.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((value: Params) =>
+			this.#dataAccess.params.update((params: Params | null) => ({
+				...params,
+				...value,
+				...this.#dealFilterDialogService.getParams(this.#dealFilterDialogService.value()),
+			}))
+		);
 
 		this.searchControl.valueChanges
 			.pipe(takeUntilDestroyed(this.#destroyRef), debounceTime(250))
@@ -228,10 +204,10 @@ export class LayoutComponent implements AfterViewInit {
 			);
 	}
 
-	onClose(event: Event): void {
+	onOpenFilter(event: Event): void {
 		event.preventDefault();
 
-		this.openFilter.set(false);
+		this.#dealFilterDialogService.open();
 	}
 
 	onOpenDialog(event: StockInstrument | null): void {
@@ -242,21 +218,6 @@ export class LayoutComponent implements AfterViewInit {
 				context.action(event);
 			}
 		}
-	}
-
-	onReset(event: Event): void {
-		event.preventDefault();
-
-		this.openFilter.set(false);
-		this.filterControl.reset(this.#valueDefault);
-		this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this._getParams() }));
-	}
-
-	onSubmit(event: Event): void {
-		event.preventDefault();
-
-		this.openFilter.set(false);
-		this.#dataAccess.params.update((params: Params | null) => ({ ...params, ...this._getParams() }));
 	}
 
 	onTrade(event: Event, item: PortfolioPosition): void {
@@ -297,27 +258,6 @@ export class LayoutComponent implements AfterViewInit {
 		if (context) {
 			context.action(item);
 		}
-	}
-
-	private _getParams(): Params {
-		const { dealType, type, strategy, broker, currency, range } = this.filterControl.value;
-		let rangeValue = null;
-
-		if (range) {
-			rangeValue = {
-				from: (range as TuiDayRange).from.toUtcNativeDate().toISOString(),
-				to: new Date((range as TuiDayRange).to.toUtcNativeDate().setUTCHours(23, 59, 59)).toISOString(),
-			};
-		}
-
-		return {
-			brokerId: broker.brokerId,
-			dealType: dealType.id,
-			instrumentType: type.id,
-			strategyId: strategy.id,
-			currencyId: currency.currencyId,
-			...rangeValue,
-		};
 	}
 
 	private _getAction(type: string): ContextAction | null {

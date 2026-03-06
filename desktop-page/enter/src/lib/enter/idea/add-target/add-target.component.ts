@@ -269,7 +269,7 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 			depositShare: null,
 			reached: false,
 			stopDate: null,
-			broker: null,
+			brokerId: null,
 		};
 	}
 }

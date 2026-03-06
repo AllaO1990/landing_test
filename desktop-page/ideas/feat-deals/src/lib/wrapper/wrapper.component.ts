@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { LayoutComponent } from '../layout/layout.component';
 import { DataAccessIdeasStore } from '@data-access-idea/store';
+import { LayoutComponent } from '../layout/layout.component';
 
 @Component({
 	selector: 'deal-list-wrapper',

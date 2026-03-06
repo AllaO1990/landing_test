@@ -30,7 +30,7 @@ import {
 } from '@data-access-trade/types';
 import { TradeStore } from '@data-access-trade/store.trade';
 import { StockInstrument, WithLastPrice } from 'types/stock';
-import { Response } from 'types/response';
+import { DataAccess } from 'types/response';
 
 interface DetailsData {
 	instrument: StockInstrument | null;
@@ -74,7 +74,7 @@ export class ClosePositionComponent implements OnDestroy {
 						data !== null && data.source !== null && data.instrument !== null && data.account !== null
 				)
 			),
-		this.#store.portfolio$.pipe(map((portfolio: Response<TradePortfolio> | null) => this._calcTradePortfolio(portfolio))),
+		this.#store.portfolio$.pipe(map((portfolio: DataAccess<TradePortfolio>) => this._calcTradePortfolio(portfolio))),
 	]).pipe(
 		map(([details, portfolio]: [DetailsData | null, TradePortfolioData | null]) => {
 			if (details === null) {
@@ -158,8 +158,8 @@ export class ClosePositionComponent implements OnDestroy {
 		}
 	}
 
-	private _calcTradePortfolio(portfolio: Response<TradePortfolio> | null): TradePortfolioData | null {
-		if (portfolio === null) {
+	private _calcTradePortfolio(portfolio: DataAccess<TradePortfolio>): TradePortfolioData | null {
+		if (!portfolio.isLoaded) {
 			return null;
 		}
 

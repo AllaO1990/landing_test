@@ -5,14 +5,13 @@ import { getNumberPrecision } from 'utils/get-number-precision';
 @Injectable()
 export class IdeaService {
 	private readonly _totalDefaultEntry: StockPositionIdeaEntry = {
-		check: false,
 		date: null,
 		depositShare: null,
 		price: 0,
 		lots: 0,
 		quantity: 0,
 		totalPrice: 0,
-		broker: null,
+		brokerId: null,
 	};
 
 	private readonly _totalDefaultTarget: StockPositionTarget = {
@@ -25,7 +24,7 @@ export class IdeaService {
 		totalPrice: 0,
 		reached: false,
 		stopDate: null,
-		broker: null,
+		brokerId: null,
 	};
 
 	private readonly _totalDefaultStop: StockPositionStop = {

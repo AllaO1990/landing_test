@@ -1,18 +1,23 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	forwardRef,
+	inject,
+	signal,
+} from '@angular/core';
+import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { PORTFOLIO_CONSTANTS } from '@data-access-portfolio/constants';
 import { AccountCurrency, AccountPortfolio } from 'types/account';
-import { filter, Observable, shareReplay, tap } from 'rxjs';
+import { filter, Observable, shareReplay } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AccountFacade } from 'stores/facades/account.facade';
 import { TuiTextfield } from '@taiga-ui/core';
 import { TuiChevron, TuiDataListWrapper, TuiSelect } from '@taiga-ui/kit';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DataAccessPortfolioService } from '@data-access-portfolio/data-access.service';
-import { LocalStorage } from 'storage/local.storage';
-import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
 import { ControlPortfolioComponent } from 'ui-common/lib/portfolio';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface FilterValue {
 	portfolio: AccountPortfolio;
@@ -33,14 +38,19 @@ interface FilterValue {
 	],
 	templateUrl: './filter.component.html',
 	styleUrl: './filter.component.scss',
+	providers: [
+		{
+			provide: NG_VALUE_ACCESSOR,
+			useExisting: forwardRef(() => FilterPortfolioListComponent),
+			multi: true,
+		},
+	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FilterPortfolioListComponent implements AfterViewInit {
+export class FilterPortfolioListComponent implements AfterViewInit, ControlValueAccessor {
 	static valueDefaultCurrency = { currency: 'Все', currencySymbol: 'Все', currencyId: null };
 	static valueDefaultPortfolio = { portfolio: 'Все', portfolioId: null, edit: false, remove: false };
 
-	readonly #localStorage: LocalStorage = inject(LOCAL_STORAGE);
-	readonly #dataAccess: DataAccessPortfolioService = inject(DataAccessPortfolioService);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 	readonly #accountFacade: AccountFacade = inject(AccountFacade);
 
@@ -53,6 +63,9 @@ export class FilterPortfolioListComponent implements AfterViewInit {
 
 	stringifyCurrency = signal((x: AccountCurrency) => x.currencySymbol || '');
 	identityMatcherCurrency = signal((a: AccountCurrency, b: AccountCurrency) => a.currencyId === b.currencyId);
+
+	onChange = (v: any) => {};
+	onTouched = () => {};
 
 	readonly currency$: Observable<AccountCurrency[] | null> = this.#accountFacade.currencies$.pipe(
 		filter((list: AccountCurrency[] | null): list is AccountCurrency[] => list !== null),
@@ -71,26 +84,25 @@ export class FilterPortfolioListComponent implements AfterViewInit {
 		currency: new FormControl(this.valueDefault.currency),
 	});
 
-	ngAfterViewInit(): void {
-		this.formGroup.valueChanges
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				tap((value: FilterValue) => this.#localStorage.setItem('lightPortfolioFilter', value))
-				// map((value: FilterValue) => ({
-				// 	portfolioId: value.portfolio.portfolioId,
-				// 	currencyId: value.currency.currencyId,
-				// }))
-			)
-			.subscribe((params: FilterValue) => {
-				this.#dataAccess.params.update((value) => ({ ...value, ...params }));
-			});
-
-		this._initFormGroupValue();
+	writeValue(obj: any): void {
+		this.formGroup.patchValue(obj);
 	}
 
-	private _initFormGroupValue(): void {
-		const value = this.#localStorage.getItem('lightPortfolioFilter') || this.valueDefault;
+	registerOnChange(fn: any): void {
+		this.onChange = fn;
+	}
 
-		this.formGroup.setValue(value);
+	registerOnTouched(fn: any): void {
+		this.onTouched = fn;
+	}
+
+	setDisabledState(isDisabled: boolean): void {
+		this.formGroup[isDisabled ? 'disable' : 'enable']();
+	}
+
+	ngAfterViewInit(): void {
+		this.formGroup.valueChanges
+			.pipe(takeUntilDestroyed(this.#destroyRef))
+			.subscribe((value: FilterValue) => this.onChange(value));
 	}
 }

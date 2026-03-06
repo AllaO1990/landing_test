@@ -1,4 +1,4 @@
-export interface Charge<T> {
+export interface DataAccess<T> {
 	data: T | null;
 	isLoaded: boolean;
 	isLoading: boolean;

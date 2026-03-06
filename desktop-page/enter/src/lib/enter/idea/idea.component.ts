@@ -26,7 +26,6 @@ import { HeaderComponent, ItemComponent, UiList, UiListItem } from '@ui/componen
 import { LoaderComponent } from '@ui/components/loader';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { DIALOG, DialogService } from '@ui/components/dialog';
-import { AddStopComponent } from './add-stop/add-stop.component';
 import {
 	BehaviorSubject,
 	combineLatest,
@@ -54,7 +53,7 @@ import { AddTargetService } from './add-target/add-target.service';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { StockPositionDirection } from 'types/stock';
 import { AddStopService } from './add-stop/add-stop.service';
-import { calculateStop, calculateTargets } from '../idea-calculate';
+import { calculateStop, calculateTargets } from 'utils/idea-calculate';
 
 @Component({
 	selector: 'lib-enter-idea',
@@ -114,8 +113,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	#addEntryService: AddEntryService = inject(AddEntryService);
 	#addTargetService: AddTargetService = inject(AddTargetService);
 	#addStopService: AddStopService = inject(AddStopService);
-
-	private _dialogStopComponent: PolymorpheusComponent<AddStopComponent> | null = null;
 
 	readonly isEdit$: Subject<boolean> = new BehaviorSubject(false);
 	readonly _controlValue: Subject<any | null> = new ReplaySubject(1);
@@ -320,7 +317,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			this.lot$,
 			this.isEdit$.asObservable(),
 		])
-			.pipe(takeUntilDestroyed(this._destroyRef))
+			.pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
 			.subscribe((result) => {
 				if (result[5]) {
 					const entries: StockPositionIdeaEntry[] = result[0];
@@ -903,7 +900,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 				list: [
 					{
 						...this._service.getTotalEntry(entries),
-						check: true,
 					},
 				],
 			};

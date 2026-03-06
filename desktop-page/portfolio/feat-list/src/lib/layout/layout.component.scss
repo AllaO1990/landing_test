@@ -25,6 +25,21 @@
     margin: var(--padding-2) var(--padding-4);
   }
 
+  &__actions {
+    display: flex;
+    align-items: center;
+  }
+
+  &__action {
+    [tuibutton], tui-badged-content {
+      min-width: 120px;
+    }
+
+    &:not(:last-child) {
+      margin-right: var(--padding-2);
+    }
+  }
+
   &__title {
     font-size: 15px;
     font-weight: 600;
@@ -129,6 +144,10 @@
     font-weight: 500;
     line-height: 24px;
   }
+}
+
+tui-badge-notification[appearance="primary"] {
+  background: var(--tui-background-accent-1);
 }
 
 @media (max-height: 780px) {

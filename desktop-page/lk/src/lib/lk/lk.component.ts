@@ -237,28 +237,30 @@ export class LkComponent implements OnInit {
 				takeUntilDestroyed(this.#destroyRef),
 				switchMap(() => this.#dialogEnter.openEnterDialog(this.#injector))
 			)
-			.subscribe((result: null | string | void) => {
-				if (result === 'isUpdate') {
-					const paramsIdea = this.#dataAccessIdea.params();
-					const paramsDeal = this.#dataAccessDeal.params();
-					const paramsPortfolio = this.#dataAccessPortfolio.paramsUrl();
-					if (paramsIdea) {
-						this.#dataAccessIdeaStore.loadIdeas(paramsIdea);
-					}
-					if (paramsDeal) {
-						this.#dataAccessIdeaStore.loadDeals(paramsPortfolio ? { ...paramsDeal, ...paramsPortfolio } : paramsDeal);
-					}
-					if (paramsPortfolio) {
-						this.#dataAccessPortfolioStore.loadBalance(paramsPortfolio);
-					}
-				}
-			});
+			.subscribe((result: null | string | void) => this._update(result));
 
 		this._queryTrade$
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
 				switchMap((params: Params) => this.#dialogTrade.openTradeDialog(this.#injector, params))
 			)
-			.subscribe(() => console.log('dialog service'));
+			.subscribe((result: null | string | void) => this._update(result));
+	}
+
+	private _update(result: null | string | void): void {
+		if (result === 'isUpdate') {
+			const paramsIdea = this.#dataAccessIdea.params();
+			const paramsDeal = this.#dataAccessDeal.params();
+			const paramsPortfolio = this.#dataAccessPortfolio.paramsUrl();
+			if (paramsIdea) {
+				this.#dataAccessIdeaStore.loadIdeas(paramsIdea);
+			}
+			if (paramsDeal) {
+				this.#dataAccessIdeaStore.loadDeals(paramsPortfolio ? { ...paramsDeal, ...paramsPortfolio } : paramsDeal);
+			}
+			if (paramsPortfolio) {
+				this.#dataAccessPortfolioStore.loadBalance(paramsPortfolio);
+			}
+		}
 	}
 }

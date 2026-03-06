@@ -1,6 +1,5 @@
 import { StockId, StockInstrument, StockPositionDirection } from './stock';
 import { getPriceIncrement } from '../utils/get-price-increment';
-import { AccountBroker } from './account';
 import { getNumberPrecision } from '../utils/get-number-precision';
 
 export interface ResponsePositions {
@@ -111,46 +110,46 @@ export interface StockPositionStop {
 	amountPercent: number | null;
 }
 
+export interface StockPositionIdea {}
+
 export interface StockPositionIdeaEntry {
-	check: boolean;
 	date: string | null;
 	depositShare: number | null;
 	price: number;
 	quantity: number;
 	lots: number;
 	totalPrice: number;
-	broker: AccountBroker | null;
-}
-
-export interface StockPositionActionEntry {
-	date: string | null;
-	price: number;
-	amount: number;
 	brokerId: number | null;
-	depositShare: number | null;
-	totalPrice: number;
 }
 
 export interface StockPositionTarget {
-	price: number;
-	amount: number;
 	lots: number;
 	profit: number;
 	profitPercent: null | number;
 	depositShare: null | number;
-	totalPrice: number;
 	reached: boolean;
 	stopDate: null | string;
-	broker: number | null;
+	brokerId: number | null;
+	amount: number;
+	price: number;
+	totalPrice: number;
 }
 
-export interface StockPositionActionTarget {
-	price: number;
+export interface StockPositionAction {
+	brokerId: number | null;
 	amount: number;
+	price: number;
+	totalPrice: number;
+}
+
+export interface StockPositionActionEntry extends StockPositionAction {
+	date: string | null;
+	depositShare: number | null;
+}
+
+export interface StockPositionActionTarget extends StockPositionAction {
 	profit: number | null;
 	profitPercent: null | number;
-	totalPrice: number;
-	brokerId: number | null;
 	depositShare: null | number;
 	date: string | null;
 }

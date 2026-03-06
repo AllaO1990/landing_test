@@ -9,6 +9,7 @@ import {
 	combineLatest,
 	distinctUntilChanged,
 	filter,
+	finalize,
 	map,
 	Observable,
 	pairwise,
@@ -16,20 +17,24 @@ import {
 	startWith,
 	Subject,
 	switchMap,
+	take,
 	tap,
 	timer,
 } from 'rxjs';
-import { AsyncPipe, JsonPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue, ControlValueStatus } from '../form/form.types';
-import { TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
+import { TradeLimit, TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
 import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { TradeMobileFormComponent } from '../form/mobile/form.component';
 import { TradeDesktopFormComponent } from '../form/desktop/form.component';
-import { Response } from 'types/response';
+import { DataAccess, Response } from 'types/response';
 import { ApiTradeService } from '@data-access-trade/api.service';
+import { StockPosition } from 'types/position';
+import { IdeaFacade } from 'stores/facades/idea.facade';
+import { calculateEntries, calculateStop, calculateTargets } from 'utils/idea-calculate';
 
 interface SourceValue {
 	entry: ControlValue[];
@@ -47,7 +52,6 @@ interface SourceValue {
 		TuiButtonLoading,
 		TradeMobileFormComponent,
 		TradeDesktopFormComponent,
-		JsonPipe,
 	],
 	templateUrl: './layout.component.html',
 	styleUrls: ['../common/dialog.scss', './layout.component.scss'],
@@ -65,10 +69,14 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	readonly #breakpoint$: Observable<TuiBreakpointMediaKey | null> = inject(TuiBreakpointService);
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 	readonly #store: TradeStore = inject(TradeStore);
+	readonly #idea: IdeaFacade = inject(IdeaFacade);
+	readonly #api: ApiTradeService = inject(ApiTradeService);
 	readonly #isSubmitted$: Subject<boolean> = new BehaviorSubject<boolean>(false);
-	readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
+	readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
 
 	loading = false;
+
+	readonly #idea$: Observable<StockPosition> = this.#idea.idea$;
 
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
@@ -191,12 +199,14 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 					filter: { account, instrument, source },
 				} = this.formGroup.value.trade;
 
-				this.#store.removeStopOrder({
-					accountId: account.accountId,
-					id: stopOrders[0].stopOrderId,
-					sourceId: source.id,
-					instrumentId: instrument.id,
-				});
+				console.log('removeStopOrder', stopOrders);
+
+				// this.#store.removeStopOrder({
+				// 	accountId: account.accountId,
+				// 	id: stopOrders[0].stopOrderId,
+				// 	sourceId: source.id,
+				// 	instrumentId: instrument.id,
+				// });
 			});
 
 		this.#isSubmitted$
@@ -224,24 +234,24 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 			.subscribe(() => {
 				console.log('submitted');
 
-				const {
-					filter: { account, instrument, source },
-					out,
-					stop,
-				} = this.formGroup.value.trade;
-
-				if (account && instrument && source) {
-					const outOrders = this._getOrders(
-						[...out, ...stop].filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
-						account.accountId,
-						instrument.id,
-						source.id
-					);
-
-					if (outOrders.length > 0) {
-						this.#store.addOrders(outOrders);
-					}
-				}
+				// const {
+				// 	filter: { account, instrument, source },
+				// 	out,
+				// 	stop,
+				// } = this.formGroup.value.trade;
+				//
+				// if (account && instrument && source) {
+				// 	const outOrders = this._getOrders(
+				// 		[...out, ...stop].filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+				// 		account.accountId,
+				// 		instrument.id,
+				// 		source.id
+				// 	);
+				//
+				// 	if (outOrders.length > 0) {
+				// 		this.#store.addOrders(outOrders);
+				// 	}
+				// }
 			});
 
 		this.#isStop$
@@ -282,7 +292,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 				filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING),
 				switchMap((value: ControlValue) =>
 					this.#store.portfolio$.pipe(
-						map((response: Response<TradePortfolio> | null) => response && response.data),
+						map((response: DataAccess<TradePortfolio> | null) => response && response.data),
 						filter((portfolio: TradePortfolio | null) => portfolio !== null),
 						filter((portfolio: TradePortfolio) => portfolio.positions.length > 0 && portfolio.positions[0].quantity !== 0),
 						map((portfolio: TradePortfolio) => {
@@ -313,7 +323,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	onClose(event: Event): void {
 		event.preventDefault();
 
-		this.context.$implicit.complete();
+		this.#context.completeWith('isUpdate');
 	}
 
 	onSubmit(event: Event): void {
@@ -325,44 +335,138 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
 		this.loading = true;
 
+		this.#idea$
+			.pipe(
+				filter((position: StockPosition) => position.idea.id !== null && +position.idea.id === +this.#context.data.id),
+				take(1),
+				takeUntilDestroyed(this.#destroyRef),
+				switchMap((position: StockPosition) =>
+					this.#api.getLimitForCurrency(position.idea.instrument.currencyId).pipe(
+						map((response: Response<TradeLimit>) => ({
+							limit: response.data,
+							position,
+						}))
+					)
+				),
+				finalize(() => console.log('finalize submitted'))
+			)
+			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
+				const entries = calculateEntries(
+					position.idea.entries,
+					position.idea.instrument.lot,
+					position.idea.minPriceIncrement,
+					limit.limit
+				);
+
+				const targets = calculateTargets(
+					position.idea.positionType as 'long' | 'short',
+					position.idea.targets,
+					entries,
+					position.idea.instrument.lot,
+					position.idea.minPriceIncrement
+				);
+
+				const stops = calculateStop(
+					position.idea.positionType as 'long' | 'short',
+					position.idea.stop ? [position.idea.stop] : [],
+					entries,
+					position.idea.instrument.lot,
+					position.idea.instrument.minPriceIncrement
+				);
+
+				const positionUpdate = {
+					actions: {
+						entries: position.actions.entries.map((item) => ({
+							amount: item.amount,
+							brokerId: item.brokerId,
+							date: item.date,
+							price: item.price,
+						})),
+						outs: position.actions.outs.map((item) => ({
+							amount: item.amount,
+							brokerId: item.brokerId,
+							date: item.date,
+							price: item.price,
+						})),
+					},
+					comissions: position.comissions.map((item) => ({
+						brokerId: item.brokerId,
+						comment: item.comment,
+						date: item.date,
+						size: item.size,
+						id: item.id,
+					})),
+					dividends: position.dividends.map((item) => ({
+						amount: item.amount,
+						brokerId: item.brokerId,
+						date: item.date,
+						size: item.size,
+					})),
+					idea: {
+						amount: entries[0].quantity,
+						entry: entries[0].price,
+						goals: targets.map((item) => ({
+							amount: item.amount,
+							goal: item.price,
+						})),
+						instrumentId: position.idea.instrument.id,
+						parentId: position.idea.parentId,
+						portfolioId: position.idea.portfolioId,
+						positionType: position.idea.positionType,
+						strategyId: position.idea.strategy!.id,
+						stop: stops[0].price,
+						watch: true,
+					},
+				};
+
+				this.#idea.editIdea({
+					id: position.idea.id!,
+					body: positionUpdate,
+				});
+			});
+
 		console.log('onSubmit loading', this.loading);
 
-		this.#isSubmitted$.next(true);
-		const { filter, entry, out, stop } = this.formGroup.getRawValue().trade;
-		const { account, instrument, source } = filter;
+		// this.#isSubmitted$.next(true);
+		// const {
+		// 	filter: { account, instrument, source },
+		// 	entry,
+		// 	out,
+		// 	stop,
+		// } = this.formGroup.getRawValue().trade;
 
-		const entryOrders = this._getOrders(
-			entry.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
-			account.accountId,
-			instrument.id,
-			source.id
-		);
-
-		if (entryOrders.length > 0) {
-			this.#store.addOrders(entryOrders);
-
-			return;
-		}
-
-		const outOrders = this._getOrders(
-			out.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
-			account.accountId,
-			instrument.id,
-			source.id
-		);
-
-		const stopOrders = this._getOrders(
-			stop.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
-			account.accountId,
-			instrument.id,
-			source.id
-		);
-
-		const common = [...outOrders, ...stopOrders];
-
-		if (common.length > 0) {
-			this.#store.addOrders(common);
-		}
+		// const entryOrders = this._getOrders(
+		// 	entry.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+		// 	account.accountId,
+		// 	instrument.id,
+		// 	source.id
+		// );
+		//
+		// if (entryOrders.length > 0) {
+		// 	this.#store.addOrders(entryOrders);
+		//
+		// 	return;
+		// }
+		//
+		// const outOrders = this._getOrders(
+		// 	out.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+		// 	account.accountId,
+		// 	instrument.id,
+		// 	source.id
+		// );
+		//
+		// const stopOrders = this._getOrders(
+		// 	stop.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+		// 	account.accountId,
+		// 	instrument.id,
+		// 	source.id
+		// );
+		//
+		// const common = [...outOrders, ...stopOrders];
+		//
+		// if (common.length > 0) {
+		// 	this.#store.addOrders(common);
+		// }
 	}
 
 	private _getOrder(controlValue: ControlValue, accountId: string, instrumentId: string, sourceId: number): any {

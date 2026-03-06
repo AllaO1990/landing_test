@@ -1,6 +1,6 @@
-import {StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from 'types/position';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {getPriceIncrement} from 'utils/get-price-increment';
+import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from '../types/position';
+import { getNumberPrecision } from './get-number-precision';
+import { getPriceIncrement } from './get-price-increment';
 
 export const calculateEntries = (
 	list: StockPositionIdeaEntry[],
@@ -94,7 +94,7 @@ export const calculateTargets = (
 			totalPrice: getNumberPrecision(currentPrice * quantity, precision),
 			reached: false,
 			stopDate: null,
-			broker: null,
+			brokerId: null,
 		});
 
 		calcLots += lots;

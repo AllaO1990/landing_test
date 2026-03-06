@@ -10,7 +10,7 @@ import { getNumberPrecision } from 'utils/get-number-precision';
 import { TradeStore } from '@data-access-trade/store.trade';
 import { TuiCurrencyPipe } from '@taiga-ui/addon-commerce';
 import { LoaderComponent } from '@ui/components/loader';
-import { Response } from 'types/response';
+import { DataAccess } from 'types/response';
 
 interface DetailsData {
 	instrument: StockInstrument | null;
@@ -60,8 +60,8 @@ export class DetailsComponent implements OnDestroy {
 		distinctUntilChanged()
 	);
 	readonly portfolio$: Observable<{ data: DetailsPosition | null } | null> = this.#store.portfolio$.pipe(
-		map((portfolio: Response<TradePortfolio> | null) => {
-			if (portfolio === null) {
+		map((portfolio: DataAccess<TradePortfolio>) => {
+			if (!portfolio.isLoaded) {
 				return null;
 			}
 

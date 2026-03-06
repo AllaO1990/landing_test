@@ -56,7 +56,7 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { Params } from '@angular/router';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { EnterIdeaComponent } from './idea/idea.component';
-import { calculateEntries, calculateStop, calculateTargets } from './idea-calculate';
+import { calculateEntries, calculateStop, calculateTargets } from 'utils/idea-calculate';
 import { LimitStore } from '@feat-trade-limit';
 import { TradeLimit } from '@data-access-trade/types';
 import { FinishService } from './finish/finish.service';
@@ -317,7 +317,8 @@ export class VtEnterComponent implements AfterViewInit {
 							limit,
 						}))
 					);
-				})
+				}),
+				debounceTime(0)
 			)
 			.subscribe(
 				({
@@ -444,6 +445,7 @@ export class VtEnterComponent implements AfterViewInit {
 			})
 			.subscribe((result: boolean) => {
 				if (result) {
+					console.log('this.#dialogApproveService this._idea.updateIdea');
 					this._idea.updateIdea(null);
 					this.context.completeWith(this.isEdit ? 'isUpdate' : null);
 				}

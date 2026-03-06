@@ -27,7 +27,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TradeStore } from '@data-access-trade/store.trade';
 import { TradeAccount, TradeOrders, TradeSource, TradeSources, TradeToken } from '@data-access-trade/types';
 import { StockInstrument, WithLastPrice } from 'types/stock';
-import { Charge } from 'types/response';
+import { DataAccess } from 'types/response';
 import { Params } from '@angular/router';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
@@ -92,7 +92,7 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 	readonly sources$: Observable<TradeSources> = this.#storeBroker.source$.pipe(
-		map((data: Charge<TradeSources>) => data.data),
+		map((data: DataAccess<TradeSources>) => data.data),
 		filter((data: TradeSources | null): data is TradeSources => data !== null)
 	);
 	readonly formGroup: FormGroup = new FormGroup({

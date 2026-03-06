@@ -1,0 +1,20 @@
+{
+	"name": "feat-deals-filter",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "desktop-page/ideas/feat-deals-filter/src",
+	"prefix": "deal-filter",
+	"projectType": "library",
+	"tags": ["deal-filter"],
+	"targets": {
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "desktop-page/ideas/feat-deals-filter/jest.config.ts"
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		}
+	}
+}

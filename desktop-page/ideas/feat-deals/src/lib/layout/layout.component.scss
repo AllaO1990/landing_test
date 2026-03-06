@@ -58,35 +58,6 @@
   }
 }
 
-.filter {
-  top: 0;
-  border-radius: 0;
-  inline-size: 20rem;
-
-  &__actions {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-
-    display: flex;
-    align-items: center;
-
-    border-top: 1px solid var(--tui-border-normal);
-    width: 100%;
-    padding: var(--padding-2);
-
-    button:not(:last-child) {
-      margin-right: var(--padding-2);
-    }
-  }
-
-  ::ng-deep {
-    .t-content > .t-content {
-      padding: var(--padding-8) var(--padding-2) var(--padding-2);
-    }
-  }
-}
-
 .list {
   position: relative;
   display: flex;
@@ -167,7 +138,7 @@
   }
 
   &__date {
-    width: 64px;
+    width: 75px;
   }
 
   &__direction {

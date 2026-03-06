@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
-  StockPositionActionEntry,
-  StockPositionActionTarget,
-  StockPositionCommission,
-  StockPositionDividend,
-  StockPositionTarget,
+	StockPositionActionEntry,
+	StockPositionActionTarget,
+	StockPositionCommission,
+	StockPositionDividend,
+	StockPositionTarget,
 } from 'types/position';
-import {getNumberPrecision} from 'utils/get-number-precision';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 @Injectable()
 export class ActionService {
@@ -40,7 +40,7 @@ export class ActionService {
 		depositShare: null,
 		reached: false,
 		stopDate: null,
-		broker: null,
+		brokerId: null,
 	};
 
 	private readonly _defaultTotalDividend: StockPositionDividend = {
@@ -147,7 +147,7 @@ export class ActionService {
 			depositShare: null,
 			reached: false,
 			stopDate: null,
-			broker: null,
+			brokerId: null,
 		};
 	}
 

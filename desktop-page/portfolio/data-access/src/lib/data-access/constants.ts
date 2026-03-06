@@ -8,4 +8,10 @@ export const PORTFOLIO_CONSTANTS: { [key in PortfolioEnums]: string } = {
 	[PortfolioEnums.PROFIT]: 'Прибыль',
 	[PortfolioEnums.SPARE]: 'Свободные средства',
 	[PortfolioEnums.CHART]: 'График',
+	[PortfolioEnums.DEAL]: 'Тип сделки',
+	[PortfolioEnums.TYPE]: 'Актив',
+	[PortfolioEnums.STRATEGY]: 'Стратегия',
+	[PortfolioEnums.BROKER]: 'Брокер',
+	[PortfolioEnums.RANGE]: 'Период',
+	[PortfolioEnums.FILTER]: 'Фильтр',
 };
