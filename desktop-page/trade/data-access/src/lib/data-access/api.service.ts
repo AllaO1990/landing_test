@@ -191,4 +191,28 @@ export class ApiTradeService {
 				})
 			);
 	}
+
+	getJournal(params: Params): Observable<Response<any>> {
+		return this.#http.get<Response<any>>(`${this.host}/v1/trades/journal`, {
+			params: getCleanParams(params, ['accountId', 'instrumentId', 'ideaId']),
+		});
+	}
+
+	setJournalItem(item: any): Observable<Response<any>> {
+		return this.#http.post<Response<any>>(`${this.host}/v1/trades/journal`, item);
+	}
+
+	setJournalItems(items: any[]): Observable<Response<any>> {
+		return this.#http.post<Response<any>>(`${this.host}/v1/trades/journal-items`, items);
+	}
 }
+
+const getCleanParams = (params: Params, list: string[] = []): Params => {
+	return list.reduce((acc: Params, item: string) => {
+		if (params[item]) {
+			acc[item] = params[item];
+		}
+
+		return acc;
+	}, {});
+};

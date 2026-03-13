@@ -1,20 +1,21 @@
-import { ComponentStore } from '@ngrx/component-store';
-import { catchError, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
-import { DataAccess, Response } from 'types/response';
+import {ComponentStore} from '@ngrx/component-store';
+import {catchError, forkJoin, map, Observable, of, switchMap, tap, timer} from 'rxjs';
+import {DataAccess, Response} from 'types/response';
 import {
-	TradeDirections,
-	TradeOperation,
-	TradeOperations,
-	TradeOrder,
-	TradeOrders,
-	TradeOrderTypesDescription,
-	TradePortfolio,
-	TradeStopOrders,
+  TradeDirections,
+  TradeOperation,
+  TradeOperations,
+  TradeOrder,
+  TradeOrders,
+  TradeOrderTypesDescription,
+  TradePortfolio,
+  TradeStopOrders,
 } from './types';
-import { Params } from '@angular/router';
-import { sortNumber } from 'utils/sort-number';
-import { TRADE_ORDERS } from './order.constants';
-import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
+import {Params} from '@angular/router';
+import {sortNumber} from 'utils/sort-number';
+import {TRADE_ORDERS} from './order.constants';
+import {TradeOrderTypeText, TradeStopOrderTypeText} from './order.types';
+import {TradeJournal} from 'types/trade';
 
 interface Api {
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
@@ -25,6 +26,9 @@ interface Api {
 	addStopOrder(body: Params): Observable<Response<any>>;
 	removeOrder(body: Params): Observable<Response<any>>;
 	removeStopOrder(body: Params): Observable<Response<any>>;
+	getJournal(params: Params): Observable<Response<TradeJournal[]>>;
+	setJournalItems(items: TradeJournal[]): Observable<Response<any>>;
+	setJournalItem(item: TradeJournal): Observable<Response<any>>;
 }
 
 export interface TradeState {
@@ -34,6 +38,7 @@ export interface TradeState {
 	portfolio: DataAccess<TradePortfolio>;
 	operations: TradeOperations | null;
 	directionTypes: TradeDirections | null;
+	journal: TradeJournal[] | null;
 }
 
 export class TradeStore extends ComponentStore<TradeState> {
@@ -58,12 +63,14 @@ export class TradeStore extends ComponentStore<TradeState> {
 	readonly stopOrders$: Observable<TradeStopOrders | null> = this.select((state: TradeState) => state.stopOrders);
 	readonly portfolio$: Observable<DataAccess<TradePortfolio>> = this.select((state: TradeState) => state.portfolio);
 	readonly operations$: Observable<TradeOperations | null> = this.select((state: TradeState) => state.operations);
+	readonly journal$: Observable<TradeJournal[] | null> = this.select((state: TradeState) => state.journal);
 
 	constructor(private _api: Api) {
 		super({
 			orderType: null,
 			orders: null,
 			stopOrders: null,
+			journal: null,
 			portfolio: {
 				data: null,
 				isLoading: false,
@@ -104,6 +111,13 @@ export class TradeStore extends ComponentStore<TradeState> {
 		(state: TradeState, operations: null | TradeOperations): TradeState => ({
 			...state,
 			operations: this._sortOperations(operations),
+		})
+	);
+
+	readonly updateJournal = this.updater(
+		(state: TradeState, journal: null | TradeJournal[]): TradeState => ({
+			...state,
+			journal,
 		})
 	);
 
@@ -172,6 +186,14 @@ export class TradeStore extends ComponentStore<TradeState> {
 			tap(() => this.updatePortfolioLoading(true)),
 			switchMap((params: Params) => this._api.getPortfolio(params)),
 			tap((response: Response<TradePortfolio> | null) => response && this.updatePortfolio(response.data))
+		)
+	);
+
+	loadJournal = this.effect((stream$: Observable<Params>) =>
+		stream$.pipe(
+			switchMap((params: Params) => this._api.getJournal(params)),
+			tap((response) => this.updateJournal(response.data)),
+			tap((data) => console.log(data))
 		)
 	);
 
@@ -282,25 +304,6 @@ export class TradeStore extends ComponentStore<TradeState> {
 		return this._api.addStopOrder(params);
 	}
 
-	// changeOrder = this.effect((stream$: Observable<Params>) =>
-	//   stream$.pipe(
-	//     switchMap((params: Params) =>
-	//       this._api.removeOrder(params).pipe(
-	//         switchMap((removed: Response<any>) =>
-	//           this._api.addOrder(params).pipe(
-	//             tap((response: Response<any>) => {
-	//               if (response.success) {
-	//                 this.loadOperations(params);
-	//                 this.loadOrders(params);
-	//               }
-	//             })
-	//           )
-	//         )
-	//       )
-	//     )
-	//   )
-	// );
-
 	addStopOrder = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
 			switchMap((params: Params) =>
@@ -342,6 +345,28 @@ export class TradeStore extends ComponentStore<TradeState> {
 							})
 						);
 					})
+				);
+			})
+		)
+	);
+
+	setJournalItems = this.effect((stream$: Observable<{ items: TradeJournal[]; params: Params }>) =>
+		stream$.pipe(
+			switchMap((body: { items: TradeJournal[]; params: Params }) => {
+				return this._api.setJournalItems(body.items).pipe(
+					tap((response: Response<TradeJournal>) => console.log(response)),
+					tap(() => this.loadJournal(body.params))
+				);
+			})
+		)
+	);
+
+	setJournalItem = this.effect((stream$: Observable<{ item: TradeJournal; params: Params }>) =>
+		stream$.pipe(
+			switchMap((body: { item: TradeJournal; params: Params }) => {
+				return this._api.setJournalItem(body.item).pipe(
+					tap((response: Response<TradeJournal>) => console.log(response)),
+					tap(() => this.loadJournal(body.params))
 				);
 			})
 		)

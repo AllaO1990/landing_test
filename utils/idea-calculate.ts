@@ -134,7 +134,7 @@ export const calculateStop = (
 			price,
 			lots: totalEntry.quantity / lot,
 			amount: totalEntry.quantity,
-			totalPrice: price * totalEntry.quantity,
+			totalPrice: getNumberPrecision(price * totalEntry.quantity, 2),
 			loss: getNumberPrecision((price - averagePrice) * totalEntry.quantity * multiplier * -1, precision),
 			lossPercent: getNumberPrecision(100 * ((price - averagePrice) / averagePrice) * multiplier * -1, 2),
 			depositShare: null,

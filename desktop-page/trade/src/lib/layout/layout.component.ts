@@ -9,7 +9,6 @@ import {
 	combineLatest,
 	distinctUntilChanged,
 	filter,
-	finalize,
 	map,
 	Observable,
 	pairwise,
@@ -17,24 +16,38 @@ import {
 	startWith,
 	Subject,
 	switchMap,
-	take,
 	tap,
 	timer,
 } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue, ControlValueStatus } from '../form/form.types';
-import { TradeLimit, TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
+import { TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
 import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { TradeMobileFormComponent } from '../form/mobile/form.component';
 import { TradeDesktopFormComponent } from '../form/desktop/form.component';
-import { DataAccess, Response } from 'types/response';
+import { DataAccess } from 'types/response';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { calculateEntries, calculateStop, calculateTargets } from 'utils/idea-calculate';
+
+const filtered = (list: { status: string }[]) =>
+	list.reduce(
+		(acc: { executed: { status: string }[]; other: { status: string }[] }, item: { status: string }) => {
+			if (item.status === ControlValueStatus.EXECUTED) {
+				acc.executed.push(item);
+
+				return acc;
+			}
+
+			acc.other.push(item);
+
+			return acc;
+		},
+		{ executed: [], other: [] }
+	);
 
 interface SourceValue {
 	entry: ControlValue[];
@@ -335,97 +348,71 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
 		this.loading = true;
 
-		this.#idea$
-			.pipe(
-				filter((position: StockPosition) => position.idea.id !== null && +position.idea.id === +this.#context.data.id),
-				take(1),
-				takeUntilDestroyed(this.#destroyRef),
-				switchMap((position: StockPosition) =>
-					this.#api.getLimitForCurrency(position.idea.instrument.currencyId).pipe(
-						map((response: Response<TradeLimit>) => ({
-							limit: response.data,
-							position,
-						}))
-					)
-				),
-				finalize(() => console.log('finalize submitted'))
-			)
-			.subscribe(({ position, limit }: { position: StockPosition; limit: TradeLimit }) => {
-				const entries = calculateEntries(
-					position.idea.entries,
-					position.idea.instrument.lot,
-					position.idea.minPriceIncrement,
-					limit.limit
-				);
+		const { idea, position, entry, out, stop, filter } = this.formGroup.value.trade;
 
-				const targets = calculateTargets(
-					position.idea.positionType as 'long' | 'short',
-					position.idea.targets,
-					entries,
-					position.idea.instrument.lot,
-					position.idea.minPriceIncrement
-				);
+		const entries = entry.filter((item: { status: string }) => item.status === ControlValueStatus.EXECUTED);
+		const outs = out.filter((item: { status: string }) => item.status === ControlValueStatus.EXECUTED);
 
-				const stops = calculateStop(
-					position.idea.positionType as 'long' | 'short',
-					position.idea.stop ? [position.idea.stop] : [],
-					entries,
-					position.idea.instrument.lot,
-					position.idea.instrument.minPriceIncrement
-				);
+		const positionUpdate = {
+			actions: {
+				entries: entries.map((item: any) => ({
+					amount: item.quantity,
+					brokerId: item.brokerId,
+					date: item.expireDate,
+					price: item.price,
+				})),
+				outs: outs.map((item: any) => ({
+					amount: item.quantity,
+					brokerId: item.brokerId,
+					date: item.expireDate,
+					price: item.price,
+				})),
+			},
+			comissions: position.comissions.map((item: any) => ({
+				brokerId: item.brokerId,
+				comment: item.comment,
+				date: item.date,
+				size: item.size,
+				id: item.id,
+			})),
+			dividends: position.dividends.map((item: any) => ({
+				amount: item.amount,
+				brokerId: item.brokerId,
+				date: item.date,
+				size: item.size,
+			})),
+			idea: {
+				amount: idea.entry[0].quantity,
+				entry: idea.entry[0].price,
+				goals: idea.out.map((item: any) => ({
+					amount: item.amount,
+					goal: item.price,
+				})),
+				instrumentId: position.idea.instrument.id,
+				parentId: position.idea.parentId,
+				portfolioId: position.idea.portfolioId,
+				positionType: position.idea.positionType,
+				strategyId: position.idea.strategy!.id,
+				stop: idea.stop[0].price,
+				watch: true,
+			},
+		};
 
-				const positionUpdate = {
-					actions: {
-						entries: position.actions.entries.map((item) => ({
-							amount: item.amount,
-							brokerId: item.brokerId,
-							date: item.date,
-							price: item.price,
-						})),
-						outs: position.actions.outs.map((item) => ({
-							amount: item.amount,
-							brokerId: item.brokerId,
-							date: item.date,
-							price: item.price,
-						})),
-					},
-					comissions: position.comissions.map((item) => ({
-						brokerId: item.brokerId,
-						comment: item.comment,
-						date: item.date,
-						size: item.size,
-						id: item.id,
-					})),
-					dividends: position.dividends.map((item) => ({
-						amount: item.amount,
-						brokerId: item.brokerId,
-						date: item.date,
-						size: item.size,
-					})),
-					idea: {
-						amount: entries[0].quantity,
-						entry: entries[0].price,
-						goals: targets.map((item) => ({
-							amount: item.amount,
-							goal: item.price,
-						})),
-						instrumentId: position.idea.instrument.id,
-						parentId: position.idea.parentId,
-						portfolioId: position.idea.portfolioId,
-						positionType: position.idea.positionType,
-						strategyId: position.idea.strategy!.id,
-						stop: stops[0].price,
-						watch: true,
-					},
-				};
+		// this.#idea.editIdea({
+		// 	id: position.idea.id!,
+		// 	body: positionUpdate,
+		// });
 
-				this.#idea.editIdea({
-					id: position.idea.id!,
-					body: positionUpdate,
-				});
-			});
+		console.log([...entry, ...out, ...stop]);
 
-		console.log('onSubmit loading', this.loading);
+		this.#store.setJournalItems({
+			params: {
+				sourceId: filter.source && filter.source.id,
+				accountId: filter.account && filter.account.accountId,
+				instrumentId: filter.instrument && filter.instrument.id,
+			},
+			items: [...entry, ...out, ...stop].map((item: any, index: number) => ({ ...item, id: index })),
+		});
 
 		// this.#isSubmitted$.next(true);
 		// const {

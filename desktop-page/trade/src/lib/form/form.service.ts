@@ -14,6 +14,7 @@ import {
 	TradeOrders,
 	TradeOrderType,
 	TradeOrderTypeDescription,
+	TradePosition,
 	TradeSource,
 	TradeStopOrder,
 	TradeStopOrders,
@@ -22,6 +23,7 @@ import { sortNumber } from 'utils/sort-number';
 import { ActualTradeOperation, ActualTradeOperations, ControlValue, ControlValueStatus } from './form.types';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import {
+	TRADE_ORDER_TYPE_BESTPRICE,
 	TRADE_ORDER_TYPE_LIMIT,
 	TRADE_ORDER_TYPE_MARKET,
 	TRADE_STOP_ORDER_TYPE_STOP_LIMIT,
@@ -32,6 +34,7 @@ import { TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL } from '../request/re
 import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
 import { WithLastPrice } from 'types/stock';
 import { getPriceIncrement } from 'utils/get-price-increment';
+import { TradeCoreJournal, TradeJournal } from 'types/trade';
 
 @Injectable()
 export class TradeFormService {
@@ -39,34 +42,30 @@ export class TradeFormService {
 		return direction ? 15 : 22;
 	}
 
-	getDefaultControlValue(position: StockPosition, positionType: 'direct' | 'reverse' = 'direct'): ControlValue {
+	getDefaultControlValue(position: StockPosition, positionType: 'direct' | 'reverse' = 'direct'): TradeCoreJournal {
 		const direction = position.idea.positionType === 'long';
 		const minPriceIncrement = position.idea.instrument.minPriceIncrement;
 
 		return {
+			ideaId: position.idea.id || 0,
+			ideaDate: null,
 			lots: 0,
 			price: 0,
 			quantity: 0,
 			total: 0,
 			status: ControlValueStatus.UNLOADING,
-			removed: false,
-			change: false,
 			expireDate: null,
-			expirationType: TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL,
-			orderType: TRADE_ORDER_TYPE_LIMIT,
+			expirationType: TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL.id,
+			orderType: TRADE_ORDER_TYPE_LIMIT.id,
 			instrumentId: position.idea.instrument.id,
 			commission: 0,
 			direction: positionType === 'direct' ? direction : !direction,
-			id: null,
-			date: null,
 			lot: position.idea.instrument.lot,
 			stopPrice: null,
-			trailingData: {
-				indent: 1,
-				indentType: 1,
-				spread: getNumberPrecision(minPriceIncrement * 3, getPriceIncrement(minPriceIncrement)),
-				spreadType: 1,
-			},
+			trailingIndent: 1,
+			trailingIndentType: 1,
+			trailingSpread: getNumberPrecision(minPriceIncrement * 3, getPriceIncrement(minPriceIncrement)),
+			trailingSpreadType: 1,
 		};
 	}
 
@@ -119,25 +118,29 @@ export class TradeFormService {
 		position: StockPosition,
 		filter: { lastPrice: WithLastPrice; source: TradeSource },
 		limit: number | null = null
-	): ControlValue[] {
+	): TradeJournal[] {
 		const { lastPrice } = filter;
 		const defaultItem = this.getDefaultControlValue(position);
 		const precision = getPriceIncrement(position.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
 		const limitItem = limit && position.idea.entries.length ? limit / position.idea.entries.length : limit;
 
-		return position.idea.entries.reduce((acc: ControlValue[], item) => {
+		return position.idea.entries.reduce((acc: TradeJournal[], item) => {
 			const lots = this._getEntryLot(item, defaultItem.lot, precision, limitItem);
 
 			const percent = this._getPriceToTarget(lastPrice.last, item.price);
 
 			acc.push({
+				sourceId: 0,
+				accountId: '',
+				externalId: null,
+				id: 0,
 				...defaultItem,
 				price: item.price,
 				commission: 0,
 				quantity: lots * defaultItem.lot,
 				lots,
 				total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-				orderType: this._getOrderType(percent === null ? 1 : percent),
+				orderType: this._getOrderType(percent === null ? 1 : percent).id,
 				status: ControlValueStatus.UNLOADING,
 			});
 
@@ -145,19 +148,57 @@ export class TradeFormService {
 		}, []);
 	}
 
-	getExecutedControlValue(
-		position: StockPosition,
-		list: StockPositionAction[],
+	getPositionControlValue(
+		accountId: string,
 		source: TradeSource,
+		position: StockPosition,
+		portfolio: TradePosition | null,
 		operationsDirection: ActualTradeOperations,
 		positionType: 'direct' | 'reverse' = 'direct'
-	): ControlValue[] {
+	): TradeJournal[] {
+		if (portfolio) {
+			const defaultItem = this.getDefaultControlValue(position, positionType);
+			const precision = getPriceIncrement(position.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
+			const lots = this._getLot(portfolio.quantity / defaultItem.lot, precision);
+			const findOperation =
+				operationsDirection.find((operation: ActualTradeOperation) => {
+					return operation.lots === lots;
+				}) || null;
+
+			return [
+				{
+					...defaultItem,
+					accountId,
+					sourceId: source.id,
+					externalId: '0',
+					id: 0,
+					price: portfolio.averagePositionPrice.value,
+					quantity: portfolio.quantity,
+					commission: findOperation && findOperation.comission ? Math.abs(findOperation.comission.value) : 0,
+					lots,
+					total: getNumberPrecision(portfolio.averagePositionPrice.value * portfolio.quantity, 2),
+					status: ControlValueStatus.EXECUTED,
+				},
+			];
+		}
+
+		return [];
+	}
+
+	getExecutedControlValue(
+		accountId: string,
+		source: TradeSource,
+		position: StockPosition,
+		list: StockPositionAction[],
+		operationsDirection: ActualTradeOperations,
+		positionType: 'direct' | 'reverse' = 'direct'
+	): TradeJournal[] {
 		const defaultItem = this.getDefaultControlValue(position, positionType);
 		const precision = getPriceIncrement(position.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
 
 		return list
 			.filter((item: StockPositionAction) => item.brokerId === source.id)
-			.map((item: StockPositionAction): ControlValue => {
+			.map((item: StockPositionAction): TradeJournal => {
 				const lots = this._getLot(item.amount / defaultItem.lot, precision);
 
 				const findOperation =
@@ -166,6 +207,10 @@ export class TradeFormService {
 					}) || null;
 
 				return {
+					accountId,
+					sourceId: source.id,
+					externalId: '0',
+					id: 0,
 					...defaultItem,
 					price: item.price,
 					quantity: item.amount,
@@ -178,28 +223,30 @@ export class TradeFormService {
 	}
 
 	getAwaitsControlValue(
+		accountId: string,
+		source: TradeSource,
 		position: StockPosition,
 		orders: TradeOrders,
 		stopOrders: TradeStopOrders,
 		positionType: 'direct' | 'reverse' = 'direct'
-	): ControlValue[] {
+	): TradeJournal[] {
 		const defaultItem = this.getDefaultControlValue(position, positionType);
 
 		/**
 		 * Все отфильтрованные по направлению лимитные заявки
 		 * */
-		const orderControlValues: ControlValue[] = orders
+		const orderControlValues: TradeJournal[] = orders
 			.filter((item: TradeOrder) => +item.direction === +defaultItem.direction)
 			.map((item: TradeOrder) => ({
 				...defaultItem,
-				id: item.orderId,
+				accountId,
+				sourceId: source.id,
+				externalId: item.orderId,
+				id: 0,
 				price: item.initialSecurityPrice.value,
 				quantity: item.lotsRequested * defaultItem.lot,
 				lots: item.lotsRequested,
-				orderType: {
-					id: item.orderType,
-					type: item.orderTypeText,
-				},
+				orderType: item.orderType,
 				commission: item.initialCommission ? item.initialCommission.value : 0,
 				total: getNumberPrecision(item.initialSecurityPrice.value * item.lotsRequested * defaultItem.lot, 2),
 				status: ControlValueStatus.AWAITS,
@@ -208,7 +255,7 @@ export class TradeFormService {
 		/**
 		 * Все отфильтрованные по направлению стоп заявки
 		 * */
-		const stopOrderControlValues: ControlValue[] = stopOrders
+		const stopOrderControlValues: TradeJournal[] = stopOrders
 			.filter(
 				(item: TradeStopOrder) =>
 					+item.direction === +defaultItem.direction &&
@@ -216,14 +263,14 @@ export class TradeFormService {
 			)
 			.map((item: TradeStopOrder) => ({
 				...defaultItem,
-				id: item.stopOrderId,
+				accountId,
+				externalId: item.stopOrderId,
+				sourceId: source.id,
+				id: 0,
 				price: item.price.value,
 				quantity: item.lotsRequested * defaultItem.lot,
 				lots: item.lotsRequested,
-				orderType: {
-					id: item.orderType,
-					type: item.orderTypeText,
-				},
+				orderType: item.orderType,
 				stopPrice: item.stopPrice.value,
 				trailingData: item.trailingData,
 				total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
@@ -234,22 +281,33 @@ export class TradeFormService {
 	}
 
 	getUnloadingControlValue(
+		accountId: string,
+		source: TradeSource,
 		position: StockPosition,
 		list: { price: number; lots: number }[],
 		orderType: TradeOrderTypeDescription,
 		positionType: 'direct' | 'reverse' = 'direct'
-	): ControlValue[] {
+	): TradeJournal[] {
 		const defaultItem = this.getDefaultControlValue(position, positionType);
 
-		return list.reduce((acc: ControlValue[], item: { price: number; lots: number }) => {
+		return list.reduce((acc: TradeJournal[], item: { price: number; lots: number }) => {
 			acc.push({
 				...defaultItem,
+				accountId,
+				sourceId: source.id,
+				externalId: '0',
+				id: 0,
+				trailingIndent: 0,
+				trailingIndentType: 0,
+				trailingSpread: 0,
+				trailingSpreadType: 0,
 				price: item.price,
+				stopPrice: this.isOrderFamily(orderType) ? null : item.price,
 				commission: 0,
 				quantity: item.lots * defaultItem.lot,
 				lots: item.lots,
 				total: getNumberPrecision(item.price * item.lots * defaultItem.lot, 2),
-				orderType,
+				orderType: orderType.id,
 				status: ControlValueStatus.UNLOADING,
 			});
 
@@ -257,56 +315,56 @@ export class TradeFormService {
 		}, []);
 	}
 
-	getEntryControlValue(
-		position: StockPosition,
-		orders: TradeOrders,
-		stopOrders: TradeStopOrders,
-		operationsDirection: ActualTradeOperations,
-		filter: { lastPrice: WithLastPrice; source: TradeSource },
-		limit: number | null = null
-	): {
-		orders: ControlValue[];
-		actions: ControlValue[];
-		ideas: ControlValue[];
-	} {
-		const { source } = filter;
-		const defaultItem = this.getDefaultControlValue(position);
-		const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
-		const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
-
-		/**
-		 * Записаные в сделке входы
-		 * */
-		const executedControlValues: ControlValue[] = this.getExecutedControlValue(
-			position,
-			position.actions.entries,
-			source,
-			operationsDirection
-		);
-
-		/**
-     * Расскомментировать если в идее больше одного входа и часть входов находится с заявках
-     const unloadingOrdersDirection = ordersDirection.map((item) => ({ ...item }));
-     const unloadingStopOrdersDirection = stopOrdersDirection.map((item) => ({ ...item }));
-     */
-
-		/**
-		 * Входы из идеи
-		 */
-		let unloadingControlValues: ControlValue[] = [];
-
-		if (ordersDirection.length === 0 && stopOrdersDirection.length === 0 && executedControlValues.length === 0) {
-			unloadingControlValues = this.getIdeaControlValue(position, filter, limit);
-		}
-
-		const awaitsControlValues = this.getAwaitsControlValue(position, orders, stopOrders);
-
-		return {
-			actions: executedControlValues,
-			ideas: unloadingControlValues,
-			orders: awaitsControlValues,
-		};
-	}
+	// getEntryControlValue(
+	// 	position: StockPosition,
+	// 	orders: TradeOrders,
+	// 	stopOrders: TradeStopOrders,
+	// 	operationsDirection: ActualTradeOperations,
+	// 	filter: { lastPrice: WithLastPrice; source: TradeSource },
+	// 	limit: number | null = null
+	// ): {
+	// 	orders: TradeControlValue[];
+	// 	actions: TradeControlValue[];
+	// 	ideas: TradeControlValue[];
+	// } {
+	// 	const { source } = filter;
+	// 	const defaultItem = this.getDefaultControlValue(position);
+	// 	const ordersDirection = orders.filter((item: TradeOrder) => +item.direction === +defaultItem.direction);
+	// 	const stopOrdersDirection = stopOrders.filter((item: TradeStopOrder) => +item.direction === +defaultItem.direction);
+	//
+	// 	/**
+	// 	 * Записаные в сделке входы
+	// 	 * */
+	// 	const executedControlValues: TradeControlValue[] = this.getExecutedControlValue(
+	// 		position,
+	// 		position.actions.entries,
+	// 		source,
+	// 		operationsDirection
+	// 	);
+	//
+	// 	/**
+	//    * Расскомментировать если в идее больше одного входа и часть входов находится с заявках
+	//    const unloadingOrdersDirection = ordersDirection.map((item) => ({ ...item }));
+	//    const unloadingStopOrdersDirection = stopOrdersDirection.map((item) => ({ ...item }));
+	//    */
+	//
+	// 	/**
+	// 	 * Входы из идеи
+	// 	 */
+	// 	let unloadingControlValues: TradeControlValue[] = [];
+	//
+	// 	if (ordersDirection.length === 0 && stopOrdersDirection.length === 0 && executedControlValues.length === 0) {
+	// 		unloadingControlValues = this.getIdeaControlValue(position, filter, limit);
+	// 	}
+	//
+	// 	const awaitsControlValues = this.getAwaitsControlValue(position, orders, stopOrders);
+	//
+	// 	return {
+	// 		actions: executedControlValues,
+	// 		ideas: unloadingControlValues,
+	// 		orders: awaitsControlValues,
+	// 	};
+	// }
 
 	getOutControlValue(
 		position: StockPosition,
@@ -316,9 +374,9 @@ export class TradeFormService {
 		filter: { source: TradeSource },
 		maxLots: number | null = null
 	): {
-		orders: ControlValue[];
-		actions: ControlValue[];
-		ideas: ControlValue[];
+		orders: TradeJournal[];
+		actions: TradeJournal[];
+		ideas: TradeJournal[];
 	} {
 		const { source } = filter;
 		const defaultItem = this.getDefaultControlValue(position, 'reverse');
@@ -330,13 +388,17 @@ export class TradeFormService {
 		/**
 		 * Записаные в сделке выходы
 		 * */
-		const executedControlValues: ControlValue[] = outs.map((item): ControlValue => {
+		const executedControlValues: TradeJournal[] = outs.map((item): TradeJournal => {
 			const lots = this._getLot(item.amount / defaultItem.lot, precision);
 
 			const findOperation = operationsDirection.find((operation: ActualTradeOperation) => operation.lots === lots) || null;
 
 			return {
 				...defaultItem,
+				accountId: '',
+				sourceId: 0,
+				externalId: '',
+				id: 0,
 				price: item.price,
 				stopPrice: item.price,
 				lots,
@@ -351,8 +413,8 @@ export class TradeFormService {
 		const unloadingStopOrdersDirection = stopOrdersDirection.map((item: TradeStopOrder) => ({ ...item }));
 		const getLotItem = this._getOutLot(position.idea.targets.length, defaultItem.lot, precision, maxLots);
 
-		const unloadingControlValues: ControlValue[] = position.idea.targets.reduce(
-			(acc: ControlValue[], item, index: number) => {
+		const unloadingControlValues: TradeJournal[] = position.idea.targets.reduce(
+			(acc: TradeJournal[], item, index: number) => {
 				const lots = getLotItem(item, index);
 
 				if (lots === null) {
@@ -369,13 +431,17 @@ export class TradeFormService {
 
 				acc.push({
 					...defaultItem,
+					sourceId: 0,
+					accountId: '',
+					externalId: '',
+					id: 0,
 					price: item.price,
 					stopPrice: item.price,
 					commission: 0,
 					lots,
 					quantity: lots * defaultItem.lot,
 					total: getNumberPrecision(item.price * lots * defaultItem.lot, 2),
-					orderType: TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
+					orderType: TRADE_STOP_ORDER_TYPE_TAKE_PROFIT.id,
 					status: ControlValueStatus.UNLOADING,
 				});
 
@@ -384,7 +450,7 @@ export class TradeFormService {
 			[]
 		);
 
-		const awaitsControlValues = this.getAwaitsControlValue(position, orders, stopOrders, 'reverse');
+		const awaitsControlValues = this.getAwaitsControlValue('', source, position, orders, stopOrders, 'reverse');
 
 		return {
 			actions: executedControlValues,
@@ -396,14 +462,14 @@ export class TradeFormService {
 	getStopLossControlValue(
 		position: StockPosition,
 		maxLots: number,
-		temp: ControlValue[],
+		temp: TradeJournal[],
 		orders: TradeOrders,
 		stopOrders: TradeStopOrders,
 		operations: ActualTradeOperations
 	): {
-		orders: ControlValue[];
-		actions: ControlValue[];
-		ideas: ControlValue[];
+		orders: TradeJournal[];
+		actions: TradeJournal[];
+		ideas: TradeJournal[];
 	} {
 		const ideas = this.getIdeaStopLossControlValue(position, maxLots, temp);
 
@@ -426,24 +492,35 @@ export class TradeFormService {
 					(item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS ||
 						item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LIMIT)
 			)
-			.map((item: TradeStopOrder): ControlValue & { disabled: boolean } => ({
-				...defaultItem,
-				disabled: false,
-				price: item.price.value,
-				lots: item.lotsRequested,
-				quantity: getNumberPrecision(item.lotsRequested * defaultItem.lot, precision),
-				total: getNumberPrecision(item.stopPrice.value * item.lotsRequested * defaultItem.lot, 2),
-				commission: 0,
-				stopPrice: item.stopPrice.value,
-				id: item.stopOrderId,
-				orderType: this._getStopOrderByName(item.orderTypeText),
-				status: ControlValueStatus.AWAITS,
-			}));
+			.map((item: TradeStopOrder): TradeJournal & { disabled: boolean } => {
+				const orderType = this._getStopOrderByName(item.orderTypeText);
+
+				return {
+					...defaultItem,
+					accountId: '',
+					sourceId: 0,
+					externalId: '',
+					id: +item.stopOrderId,
+					disabled: false,
+					price: item.price.value,
+					lots: item.lotsRequested,
+					quantity: getNumberPrecision(item.lotsRequested * defaultItem.lot, precision),
+					total: getNumberPrecision(item.stopPrice.value * item.lotsRequested * defaultItem.lot, 2),
+					commission: 0,
+					stopPrice: item.stopPrice.value,
+					orderType: orderType ? orderType.id : 0,
+					status: ControlValueStatus.AWAITS,
+				};
+			});
 
 		const brokerOrder = orders
 			.filter((item: TradeOrder) => !!item.direction === defaultItem.direction && item.lotsRequested === lots)
-			.map((item: TradeOrder): ControlValue & { disabled: boolean } => ({
+			.map((item: TradeOrder): TradeJournal & { disabled: boolean } => ({
 				...defaultItem,
+				sourceId: 0,
+				accountId: '',
+				externalId: '',
+				id: +item.orderId,
 				disabled: false,
 				price: item.initialSecurityPrice.value,
 				lots: item.lotsRequested,
@@ -451,8 +528,7 @@ export class TradeFormService {
 				total: getNumberPrecision(item.initialSecurityPrice.value * item.lotsRequested * defaultItem.lot, 2),
 				commission: 0,
 				stopPrice: item.initialSecurityPrice.value,
-				id: item.orderId,
-				orderType: { type: item.orderTypeText, id: item.orderType },
+				orderType: item.orderType,
 				status: ControlValueStatus.AWAITS,
 			}));
 
@@ -466,8 +542,8 @@ export class TradeFormService {
 	getIdeaStopLossControlValue(
 		position: StockPosition,
 		maxLots: number,
-		temp: ControlValue[]
-	): (ControlValue & { disabled: boolean })[] {
+		temp: TradeJournal[]
+	): (TradeJournal & { disabled: boolean })[] {
 		let stopPrice = 0;
 
 		if (position.idea.stop) {
@@ -509,6 +585,10 @@ export class TradeFormService {
 		return [
 			{
 				...defaultItem,
+				accountId: '',
+				sourceId: 0,
+				externalId: '',
+				id: 0,
 				disabled: false,
 				price: stopPrice,
 				lots: lots,
@@ -516,7 +596,7 @@ export class TradeFormService {
 				total: getNumberPrecision(stopPrice * lots * defaultItem.lot, 2),
 				commission: 0,
 				stopPrice: stopPrice,
-				orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+				orderType: TRADE_STOP_ORDER_TYPE_STOP_LOSS.id,
 				status: ControlValueStatus.UNLOADING,
 			},
 		];
@@ -835,9 +915,42 @@ export class TradeFormService {
 		return false;
 	}
 
+	isOrderFamily(order: TradeOrderType): boolean {
+		return (
+			[TRADE_ORDER_TYPE_LIMIT, TRADE_ORDER_TYPE_MARKET, TRADE_ORDER_TYPE_BESTPRICE].findIndex(
+				(item) => item.type === order.type
+			) !== -1
+		);
+	}
+
+	isMayBeOrderStop(id: number): boolean {
+		return [TRADE_STOP_ORDER_TYPE_STOP_LOSS, TRADE_STOP_ORDER_TYPE_STOP_LIMIT].findIndex((item) => item.id === id) !== -1;
+	}
+
 	private _getStopOrderByName(name: string): TradeOrderType | null {
 		const list = [TRADE_STOP_ORDER_TYPE_STOP_LOSS, TRADE_STOP_ORDER_TYPE_STOP_LIMIT];
 
 		return list.find((item: TradeOrderType) => item.type === name) || null;
+	}
+
+	getEntryFromJournal(position: StockPosition, journal: TradeJournal[]): TradeJournal[] {
+		const direction = position.idea.positionType === 'long';
+		return journal.filter((item: TradeJournal) => item.direction === direction);
+	}
+
+	getOutFromJournal(position: StockPosition, journal: TradeJournal[]): TradeJournal[] {
+		const direction = position.idea.positionType === 'long';
+		return journal.filter(
+			(item: TradeJournal) =>
+				item.direction !== direction && item.stopPrice !== null && !this.isMayBeOrderStop(item.orderType)
+		);
+	}
+
+	getStopFromJournal(position: StockPosition, journal: TradeJournal[]): TradeJournal[] {
+		const direction = position.idea.positionType === 'long';
+		return journal.filter(
+			(item: TradeJournal) =>
+				item.direction !== direction && item.stopPrice !== null && this.isMayBeOrderStop(item.orderType)
+		);
 	}
 }

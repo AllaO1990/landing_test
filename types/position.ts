@@ -106,7 +106,7 @@ export interface StockPositionStop {
 	totalPrice: number;
 	stopCandleDate: string | null;
 	amount: number | null;
-	lots: number | null;
+	lots: number;
 	amountPercent: number | null;
 }
 

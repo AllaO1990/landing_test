@@ -18,8 +18,8 @@
     <button
       type="submit"
       [loading]="loading"
-      [disabled]="loading || (isDisabled$ | async)"
       (click)="onSubmit($event)"
+      [disabled]="loading || (isDisabled$ | async)"
       appearance="primary"
       tuiButton>
       Подтвердить
