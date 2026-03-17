@@ -1,33 +1,36 @@
-import {ComponentStore} from '@ngrx/component-store';
-import {catchError, forkJoin, map, Observable, of, switchMap, tap, timer} from 'rxjs';
-import {DataAccess, Response} from 'types/response';
+import { ComponentStore } from '@ngrx/component-store';
+import { catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
+import { DataAccess, Response } from 'types/response';
 import {
-  TradeDirections,
-  TradeOperation,
-  TradeOperations,
-  TradeOrder,
-  TradeOrders,
-  TradeOrderTypesDescription,
-  TradePortfolio,
-  TradeStopOrders,
+	TradeDirections,
+	TradeOperation,
+	TradeOperations,
+	TradeOrder,
+	TradeOrderParams,
+	TradeOrders,
+	TradeOrderType,
+	TradeOrderTypesDescription,
+	TradePortfolio,
+	TradeStopOrders,
 } from './types';
-import {Params} from '@angular/router';
-import {sortNumber} from 'utils/sort-number';
-import {TRADE_ORDERS} from './order.constants';
-import {TradeOrderTypeText, TradeStopOrderTypeText} from './order.types';
-import {TradeJournal} from 'types/trade';
+import { Params } from '@angular/router';
+import { sortNumber } from 'utils/sort-number';
+import { TRADE_ORDERS } from './order.constants';
+import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
+import { TradeJournal, TradeJournalStatus } from 'types/trade';
 
 interface Api {
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
 	getPortfolio(params: Params): Observable<Response<TradePortfolio>>;
 	getOrders(params: Params): Observable<Response<TradeOrders>>;
 	getStopOrders(params: Params): Observable<Response<TradeOrders | null>>;
-	addOrder(body: Params): Observable<Response<TradeOrders>>;
-	addStopOrder(body: Params): Observable<Response<any>>;
+	addOrder(body: TradeOrderParams): Observable<Response<TradeOrder>>;
+	addStopOrder(body: TradeJournal): Observable<Response<any>>;
 	removeOrder(body: Params): Observable<Response<any>>;
 	removeStopOrder(body: Params): Observable<Response<any>>;
-	getJournal(params: Params): Observable<Response<TradeJournal[]>>;
+	getJournal(params: Params): Observable<Response<TradeJournal[] | null>>;
 	setJournalItems(items: TradeJournal[]): Observable<Response<any>>;
+	removeJournalItem(id: number): Observable<Response<any>>;
 	setJournalItem(item: TradeJournal): Observable<Response<any>>;
 }
 
@@ -192,7 +195,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 	loadJournal = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
 			switchMap((params: Params) => this._api.getJournal(params)),
-			tap((response) => this.updateJournal(response.data)),
+			tap((response) => {
+				const journal = response.data !== null ? response.data.sort((a, b) => a.price - b.price) : null;
+				this.updateJournal(journal);
+			}),
 			tap((data) => console.log(data))
 		)
 	);
@@ -222,14 +228,16 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
-	addOrder = this.effect((stream$: Observable<Params>) =>
+	addOrder = this.effect((stream$: Observable<TradeOrderParams>) =>
 		stream$.pipe(
-			switchMap((params: Params) =>
-				this._api.addOrder(params).pipe(
-					tap((response: Response<any>) => {
+			switchMap((journal: TradeOrderParams) =>
+				this._api.addOrder(journal).pipe(
+					tap((response: Response<TradeOrder>) => {
 						if (response.success) {
-							this.loadOrders(params);
-							this.loadOperations(params);
+							this.setJournalItem({ ...journal, externalId: response.data.orderId as string } as TradeJournal);
+
+							this.loadOrders(journal);
+							this.loadOperations(journal);
 						}
 					})
 				)
@@ -237,24 +245,38 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
-	addOrders = this.effect((stream$: Observable<Params[]>) =>
+	addOrders = this.effect((stream$: Observable<TradeJournal[]>) =>
 		stream$.pipe(
-			switchMap((params: Params[]) => {
-				const order = params.filter((item: Params) => this.isOrder(item['orderType']['type']));
-				const orderStop = params.filter((item: Params) => this.isStopOrder(item['orderType']['type']));
+			switchMap((journal: TradeJournal[]) => {
+				const order = journal.filter((item: TradeJournal) => this.isOrder(item.orderTypeText));
+				const orderStop = journal.filter((item: TradeJournal) => this.isStopOrder(item.orderTypeText));
 
 				return forkJoin([
-					...order.map((item: Params) => this._api.addOrder(item)),
-					...orderStop.map((item: Params) => this._api.addStopOrder(item)),
+					...order.map((item: TradeJournal) => this._api.addOrder(item)),
+					...orderStop.map((item: TradeJournal) => this._api.addStopOrder(item)),
 				]).pipe(
-					switchMap(() =>
-						timer(3000).pipe(
-							tap(() => {
-								this.loadOrders(params[0]);
-								this.loadOperations(params[0]);
-							})
-						)
-					)
+					switchMap((responses: Response<any>[]) => {
+						if (responses.every((item) => item.success)) {
+							return this._api
+								.setJournalItems(
+									journal.map((item) => ({
+										...item,
+										status: TradeJournalStatus.AWAITS,
+									}))
+								)
+								.pipe(
+									tap((response: Response<TradeOrder>) => {
+										if (response.success) {
+											this.loadOrders(journal[0]);
+											this.loadOperations(journal[0]);
+											this.loadJournal(journal[0]);
+										}
+									})
+								);
+						}
+
+						return of(responses);
+					})
 				);
 			})
 		)
@@ -262,15 +284,31 @@ export class TradeStore extends ComponentStore<TradeState> {
 
 	removeOrder = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
-			switchMap((params: Params) =>
-				this._api.removeOrder(params).pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
-			)
+			switchMap((params: Params) => {
+				return this._api.removeOrder(params).pipe(
+					switchMap((response: Response<any>) => {
+						if (response.success || response.message.indexOf('30027')) {
+							return this._api.removeJournalItem(params['id']).pipe(
+								tap((response: Response<any>) => {
+									if (response.success) {
+										this.loadOrders(params);
+										this.loadOperations(params);
+										this.loadJournal(params);
+									}
+								})
+							);
+						}
+
+						return of(response);
+					})
+				);
+			})
 		)
 	);
 
-	changeOrder = this.effect((stream$: Observable<Params>) =>
+	changeOrder = this.effect((stream$: Observable<TradeJournal & { orderTypePrev: TradeOrderType | null }>) =>
 		stream$.pipe(
-			switchMap((params: Params) =>
+			switchMap((params: TradeJournal & { orderTypePrev: TradeOrderType | null }) =>
 				this._getRemoveOrder(params).pipe(
 					switchMap(() =>
 						this._getAddOrder(params).pipe(
@@ -288,25 +326,28 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
-	private _getRemoveOrder(params: Params): Observable<Response<any>> {
-		if (this.isOrder(params['orderTypePrev'].type)) {
-			return this._api.removeOrder({ ...params, orderType: params['orderTypePrev'] });
+	private _getRemoveOrder(journal: TradeJournal & { orderTypePrev: TradeOrderType | null }): Observable<Response<any>> {
+		const { orderTypePrev, ...other } = journal;
+		const typePrev: TradeOrderType = orderTypePrev ? orderTypePrev : { id: other.orderType, type: other.orderTypeText };
+
+		if (this.isOrder(typePrev.type)) {
+			return this._api.removeOrder({ ...other, orderType: typePrev.id, orderTypeText: typePrev.type });
 		}
 
-		return this._api.removeStopOrder({ ...params, orderType: params['orderTypePrev'] });
+		return this._api.removeStopOrder({ ...other, orderType: typePrev.type, orderTypeText: typePrev.id });
 	}
 
-	private _getAddOrder(params: Params): Observable<Response<any>> {
-		if (this.isOrder(params['orderType'].type)) {
+	private _getAddOrder(params: TradeJournal): Observable<Response<any>> {
+		if (this.isOrder(params['orderTypeText'])) {
 			return this._api.addOrder(params);
 		}
 
 		return this._api.addStopOrder(params);
 	}
 
-	addStopOrder = this.effect((stream$: Observable<Params>) =>
+	addStopOrder = this.effect((stream$: Observable<TradeJournal>) =>
 		stream$.pipe(
-			switchMap((params: Params) =>
+			switchMap((params: TradeJournal) =>
 				this._api.addStopOrder(params).pipe(
 					tap((response: Response<any>) => {
 						if (response.success) {
@@ -321,17 +362,31 @@ export class TradeStore extends ComponentStore<TradeState> {
 
 	removeStopOrder = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
-			switchMap((params: Params) =>
-				this._api
-					.removeStopOrder(params)
-					.pipe(tap((response: Response<any>) => response.success && this.loadOrders(params)))
-			)
+			switchMap((params: Params) => {
+				return this._api.removeStopOrder(params).pipe(
+					switchMap((response: Response<any>) => {
+						if (response.success || response.message.indexOf('30027')) {
+							return this._api.removeJournalItem(params['id']).pipe(
+								tap((response: Response<any>) => {
+									if (response.success) {
+										this.loadOrders(params);
+										this.loadOperations(params);
+										this.loadJournal(params);
+									}
+								})
+							);
+						}
+
+						return of(response);
+					})
+				);
+			})
 		)
 	);
 
-	changeStopOrder = this.effect((stream$: Observable<Params>) =>
+	changeStopOrder = this.effect((stream$: Observable<TradeJournal>) =>
 		stream$.pipe(
-			switchMap((params: Params) => {
+			switchMap((params: TradeJournal) => {
 				console.log(params);
 
 				return this._api.removeStopOrder(params).pipe(
@@ -350,23 +405,53 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
-	setJournalItems = this.effect((stream$: Observable<{ items: TradeJournal[]; params: Params }>) =>
+	setJournalItems = this.effect((stream$: Observable<TradeJournal[]>) =>
 		stream$.pipe(
-			switchMap((body: { items: TradeJournal[]; params: Params }) => {
-				return this._api.setJournalItems(body.items).pipe(
+			switchMap((journal: TradeJournal[]) => {
+				return this._api.setJournalItems(journal).pipe(
 					tap((response: Response<TradeJournal>) => console.log(response)),
-					tap(() => this.loadJournal(body.params))
+					tap(() => this.loadJournal(journal[0]))
 				);
 			})
 		)
 	);
 
-	setJournalItem = this.effect((stream$: Observable<{ item: TradeJournal; params: Params }>) =>
+	setJournalList = this.effect((stream$: Observable<TradeJournal[]>) =>
 		stream$.pipe(
-			switchMap((body: { item: TradeJournal; params: Params }) => {
-				return this._api.setJournalItem(body.item).pipe(
+			switchMap((journal: TradeJournal[]) => {
+				return forkJoin(journal.map((item: TradeJournal) => this._api.setJournalItem(item))).pipe(
+					tap((response: Response<any>[]) => {
+						if (response.every((item) => item.success)) {
+							this.loadJournal(journal[0]);
+						}
+					})
+				);
+			})
+		)
+	);
+
+	setJournalItem = this.effect((stream$: Observable<TradeJournal>) =>
+		stream$.pipe(
+			switchMap((journal: TradeJournal) => {
+				return this._api.setJournalItem(journal).pipe(
 					tap((response: Response<TradeJournal>) => console.log(response)),
-					tap(() => this.loadJournal(body.params))
+					tap(() => this.loadJournal(journal))
+				);
+			})
+		)
+	);
+
+	removeJournalItem = this.effect((stream$: Observable<TradeJournal>) =>
+		stream$.pipe(
+			filter((item: TradeJournal) => item.id !== null),
+			switchMap((item: TradeJournal) => {
+				return this._api.removeJournalItem(item.id as number).pipe(
+					tap((response: Response<any>) => {
+						if (response.success) {
+							this.loadJournal(item);
+							this.loadOrders(item);
+						}
+					})
 				);
 			})
 		)

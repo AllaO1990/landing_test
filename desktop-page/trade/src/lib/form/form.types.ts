@@ -1,10 +1,5 @@
 import { TradeOperation, TradeOrderType, TradeSource } from '@data-access-trade/types';
-
-export enum ControlValueStatus {
-	UNLOADING = 'UNLOADING', // не отправлена брокеру
-	AWAITS = 'AWAITS', // ожидает исполнения на брокере
-	EXECUTED = 'EXECUTED', // исполнена брокером \ пользователем
-}
+import { TradeJournalStatus } from 'types/trade';
 
 export interface ControlValue {
 	change: boolean; // служебная для кнопки spinner
@@ -16,7 +11,7 @@ export interface ControlValue {
 	stopPrice: number | null;
 	total: number;
 	commission: number;
-	status: ControlValueStatus;
+	status: TradeJournalStatus;
 	id: string | null;
 	lot: number;
 	lots: number;

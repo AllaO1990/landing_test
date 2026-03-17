@@ -21,7 +21,7 @@ import {
 } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ControlValue, ControlValueStatus } from '../form/form.types';
+import { ControlValue } from '../form/form.types';
 import { TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
 import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
 import { TuiButtonLoading } from '@taiga-ui/kit';
@@ -32,11 +32,12 @@ import { DataAccess } from 'types/response';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
+import { TradeJournalStatus } from 'types/trade';
 
 const filtered = (list: { status: string }[]) =>
 	list.reduce(
 		(acc: { executed: { status: string }[]; other: { status: string }[] }, item: { status: string }) => {
-			if (item.status === ControlValueStatus.EXECUTED) {
+			if (item.status === TradeJournalStatus.EXECUTED) {
 				acc.executed.push(item);
 
 				return acc;
@@ -114,8 +115,8 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	 * */
 	readonly isCloseStopLoss$: Observable<boolean> = this.sourceValueChanges$.pipe(
 		filter((value: SourceValue) => {
-			const entryIndex = value.entry.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
-			const outIndex = value.out.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+			const entryIndex = value.entry.findIndex((item) => item.status === TradeJournalStatus.UNLOADING);
+			const outIndex = value.out.findIndex((item) => item.status === TradeJournalStatus.UNLOADING);
 
 			return entryIndex === -1 && outIndex === -1;
 		}),
@@ -144,9 +145,9 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 				out,
 				stop,
 			}: {
-				entry: { status: ControlValueStatus }[];
-				out: { status: ControlValueStatus }[];
-				stop: { status: ControlValueStatus }[];
+				entry: { status: TradeJournalStatus }[];
+				out: { status: TradeJournalStatus }[];
+				stop: { status: TradeJournalStatus }[];
 			}) => {
 				if (!entry || !out || !stop) {
 					return true;
@@ -155,9 +156,9 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 					return true;
 				}
 
-				const entryIndex = entry.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
-				const outIndex = out.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
-				const stopIndex = stop.findIndex((item) => item.status === ControlValueStatus.UNLOADING);
+				const entryIndex = entry.findIndex((item) => item.status === TradeJournalStatus.UNLOADING);
+				const outIndex = out.findIndex((item) => item.status === TradeJournalStatus.UNLOADING);
+				const stopIndex = stop.findIndex((item) => item.status === TradeJournalStatus.UNLOADING);
 
 				return entryIndex === -1 && outIndex === -1 && stopIndex === -1;
 			}
@@ -186,7 +187,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 				entry && entry.length > 0 && stop && stop.length > 0
 		),
 		filter(
-			({ entry }: { entry: ControlValue[]; stop: ControlValue[] }) => entry[0].status === ControlValueStatus.EXECUTED
+			({ entry }: { entry: ControlValue[]; stop: ControlValue[] }) => entry[0].status === TradeJournalStatus.EXECUTED
 		),
 		map(({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) => ({ entry: entry[0], stop: stop[0] })),
 		distinctUntilChanged((a, b) => this._distinct(a, b)),
@@ -194,33 +195,33 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	);
 
 	ngAfterViewInit(): void {
-		this.#store.stopOrders$
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				filter(
-					(stopOrders: TradeStopOrders | null): stopOrders is TradeStopOrders => stopOrders !== null && stopOrders.length > 0
-				),
-				switchMap((stopOrders: TradeStopOrders) =>
-					this.isCloseStopLoss$.pipe(
-						filter((status: boolean) => status),
-						map(() => stopOrders)
-					)
-				)
-			)
-			.subscribe((stopOrders: TradeStopOrders) => {
-				const {
-					filter: { account, instrument, source },
-				} = this.formGroup.value.trade;
-
-				console.log('removeStopOrder', stopOrders);
-
-				// this.#store.removeStopOrder({
-				// 	accountId: account.accountId,
-				// 	id: stopOrders[0].stopOrderId,
-				// 	sourceId: source.id,
-				// 	instrumentId: instrument.id,
-				// });
-			});
+		// this.#store.stopOrders$
+		// 	.pipe(
+		// 		takeUntilDestroyed(this.#destroyRef),
+		// 		filter(
+		// 			(stopOrders: TradeStopOrders | null): stopOrders is TradeStopOrders => stopOrders !== null && stopOrders.length > 0
+		// 		),
+		// 		switchMap((stopOrders: TradeStopOrders) =>
+		// 			this.isCloseStopLoss$.pipe(
+		// 				filter((status: boolean) => status),
+		// 				map(() => stopOrders)
+		// 			)
+		// 		)
+		// 	)
+		// 	.subscribe((stopOrders: TradeStopOrders) => {
+		// 		const {
+		// 			filter: { account, instrument, source },
+		// 		} = this.formGroup.value.trade;
+		//
+		// 		console.log('removeStopOrder', stopOrders);
+		//
+		// 		// this.#store.removeStopOrder({
+		// 		// 	accountId: account.accountId,
+		// 		// 	id: stopOrders[0].stopOrderId,
+		// 		// 	sourceId: source.id,
+		// 		// 	instrumentId: instrument.id,
+		// 		// });
+		// 	});
 
 		this.#isSubmitted$
 			.asObservable()
@@ -235,10 +236,10 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 						pairwise(),
 						filter(
 							([first, second]: [ControlValue[], ControlValue[]]) =>
-								(!first || !first[0] || (first[0] && first[0].status !== ControlValueStatus.EXECUTED)) &&
+								(!first || !first[0] || (first[0] && first[0].status !== TradeJournalStatus.EXECUTED)) &&
 								second &&
 								second[0] &&
-								second[0].status === ControlValueStatus.EXECUTED
+								second[0].status === TradeJournalStatus.EXECUTED
 						),
 						map((data: [ControlValue[], ControlValue[]]) => data[1])
 					)
@@ -302,7 +303,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 		this.#isStop$
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
-				filter((value: ControlValue) => value.status === ControlValueStatus.UNLOADING),
+				filter((value: ControlValue) => value.status === TradeJournalStatus.UNLOADING),
 				switchMap((value: ControlValue) =>
 					this.#store.portfolio$.pipe(
 						map((response: DataAccess<TradePortfolio> | null) => response && response.data),
@@ -348,10 +349,10 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
 		this.loading = true;
 
-		const { idea, position, entry, out, stop, filter } = this.formGroup.value.trade;
+		const { idea, position, entry, out, stop, filter } = this.formGroup.getRawValue().trade;
 
-		const entries = entry.filter((item: { status: string }) => item.status === ControlValueStatus.EXECUTED);
-		const outs = out.filter((item: { status: string }) => item.status === ControlValueStatus.EXECUTED);
+		const entries = entry.filter((item: { status: string }) => item.status === TradeJournalStatus.EXECUTED);
+		const outs = out.filter((item: { status: string }) => item.status === TradeJournalStatus.EXECUTED);
 
 		const positionUpdate = {
 			actions: {
@@ -398,42 +399,23 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 			},
 		};
 
-		// this.#idea.editIdea({
-		// 	id: position.idea.id!,
-		// 	body: positionUpdate,
-		// });
-
-		console.log([...entry, ...out, ...stop]);
-
-		this.#store.setJournalItems({
-			params: {
-				sourceId: filter.source && filter.source.id,
-				accountId: filter.account && filter.account.accountId,
-				instrumentId: filter.instrument && filter.instrument.id,
-			},
-			items: [...entry, ...out, ...stop].map((item: any, index: number) => ({ ...item, id: index })),
+		this.#idea.editIdea({
+			id: position.idea.id!,
+			body: positionUpdate,
 		});
 
-		// this.#isSubmitted$.next(true);
-		// const {
-		// 	filter: { account, instrument, source },
-		// 	entry,
-		// 	out,
-		// 	stop,
-		// } = this.formGroup.getRawValue().trade;
+		this.#store.setJournalItems([...entry, ...out, ...stop]);
 
-		// const entryOrders = this._getOrders(
-		// 	entry.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
-		// 	account.accountId,
-		// 	instrument.id,
-		// 	source.id
+		// const entryUnloadingOrders: TradeJournal[] = entry.filter(
+		// 	(item: TradeJournal) => item.status === ControlValueStatus.UNLOADING
 		// );
 		//
-		// if (entryOrders.length > 0) {
-		// 	this.#store.addOrders(entryOrders);
+		// if (entryUnloadingOrders.length > 0) {
+		// 	this.#store.addOrders(entryUnloadingOrders);
 		//
 		// 	return;
 		// }
+
 		//
 		// const outOrders = this._getOrders(
 		// 	out.filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),

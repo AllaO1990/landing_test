@@ -1,6 +1,7 @@
 import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from '../types/position';
 import { getNumberPrecision } from './get-number-precision';
 import { getPriceIncrement } from './get-price-increment';
+import { StockPositionDirection } from '../types/stock';
 
 export const calculateEntries = (
 	list: StockPositionIdeaEntry[],
@@ -44,7 +45,7 @@ export const calculateTargets = (
 
 	const atrList: number[] = [1, 2, 4];
 	const rate = [[0.4, 0.3, 0.3], [1], [0.5, 0.5], [0.33, 0.33, 0.33]];
-	const multiplier = direction === 'long' ? 1 : -1;
+	const multiplier = direction === StockPositionDirection.LONG ? 1 : -1;
 	const totalEntry = entries.reduce(
 		(acc: { total: number; quantity: number }, item: StockPositionIdeaEntry) => {
 			acc.total += item.totalPrice;
@@ -115,7 +116,7 @@ export const calculateStop = (
 		return [];
 	}
 
-	const multiplier = direction === 'long' ? -1 : 1;
+	const multiplier = direction === StockPositionDirection.LONG ? -1 : 1;
 	const precision = getPriceIncrement(minPriceIncrement);
 	const totalEntry = entries.reduce(
 		(acc, item: StockPositionIdeaEntry) => {

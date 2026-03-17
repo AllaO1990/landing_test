@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { APP_CONFIG } from 'tokens/desktop/config';
 import { catchError, Observable, of } from 'rxjs';
@@ -8,6 +8,8 @@ import {
 	TradeLimit,
 	TradeLimitList,
 	TradeOperations,
+	TradeOrder,
+	TradeOrderParams,
 	TradeOrders,
 	TradeOrderTypes,
 	TradePortfolio,
@@ -16,6 +18,7 @@ import {
 	TradeTokenSource,
 } from './types';
 import { Params } from '@angular/router';
+import { TradeJournal } from 'types/trade';
 
 @Injectable()
 export class ApiTradeService {
@@ -105,35 +108,41 @@ export class ApiTradeService {
 		});
 	}
 
-	addOrder(body: Params): Observable<Response<TradeOrders>> {
-		return this.#http.post<Response<TradeOrders>>(`${this.host}/v1/trades/orders`, {
+	addOrder(body: TradeOrderParams): Observable<Response<TradeOrder>> {
+		return this.#http.post<Response<TradeOrder>>(`${this.host}/v1/trades/orders`, {
+			orderId: body['externalId'],
 			accountId: body['accountId'],
 			direction: body['direction'],
 			instrumentId: body['instrumentId'],
-			orderType: body['orderType']['id'],
+			orderType: body['orderType'],
 			price: body['price'],
-			quantity: body['quantity'],
+			quantity: body['lots'],
 			sourceId: body['sourceId'],
 		});
 	}
 
-	addStopOrder(body: Params): Observable<Response<any>> {
+	addStopOrder(body: TradeJournal): Observable<Response<any>> {
 		return this.#http
 			.post<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
 				accountId: body['accountId'],
 				direction: body['direction'],
 				exchangeOrderType: 0,
-				expirationType: body['expirationType']['id'],
+				expirationType: body['expirationType'],
 				expireDate: body['expireDate'],
 				instrumentId: body['instrumentId'],
 				price: body['price'],
 				quantity: body['quantity'],
 				sourceId: body['sourceId'],
 				priceType: 0,
-				stopOrderType: body['orderType']['id'],
+				stopOrderType: body['orderType'],
 				stopPrice: body['stopPrice'],
 				takeProfitType: 0,
-				trailingData: body['trailingData'],
+				trailingData: {
+					indent: body['trailingIndent'],
+					indentType: body['trailingIndentType'],
+					spread: body['trailingSpread'],
+					spreadType: body['trailingSpreadType'],
+				},
 			})
 			.pipe(
 				catchError((error: Error) => {
@@ -153,7 +162,7 @@ export class ApiTradeService {
 			.delete<Response<any>>(`${this.host}/v1/trades/orders`, {
 				body: {
 					accountId: body['accountId'],
-					orderId: body['id'],
+					orderId: body['orderId'],
 					sourceId: body['sourceId'],
 				},
 			})
@@ -175,17 +184,15 @@ export class ApiTradeService {
 			.delete<Response<any>>(`${this.host}/v1/trades/stop-orders`, {
 				body: {
 					accountId: body['accountId'],
-					orderId: body['id'],
+					orderId: body['orderId'],
 					sourceId: body['sourceId'],
 				},
 			})
 			.pipe(
-				catchError((error: Error) => {
-					console.warn(error);
-
+				catchError((error: HttpErrorResponse) => {
 					return of({
 						data: body,
-						message: error.message,
+						message: error.error.message,
 						success: false,
 					});
 				})
@@ -202,8 +209,19 @@ export class ApiTradeService {
 		return this.#http.post<Response<any>>(`${this.host}/v1/trades/journal`, item);
 	}
 
-	setJournalItems(items: any[]): Observable<Response<any>> {
-		return this.#http.post<Response<any>>(`${this.host}/v1/trades/journal-items`, items);
+	removeJournalItem(id: number): Observable<Response<any>> {
+		return this.#http.delete<Response<any>>(`${this.host}/v1/trades/journal`, { body: { id } });
+	}
+
+	setJournalItems(items: TradeJournal[]): Observable<Response<any>> {
+		return this.#http.post<Response<any>>(
+			`${this.host}/v1/trades/journal-items`,
+			items.map((item: TradeJournal) => {
+				const { orderId, ...other } = item;
+
+				return other;
+			})
+		);
 	}
 }
 

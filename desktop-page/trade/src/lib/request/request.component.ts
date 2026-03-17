@@ -214,6 +214,7 @@ export class RequestTradeComponent implements AfterViewInit {
 			const {
 				data: {
 					orderType,
+					orderTypeText,
 					direction,
 					quantity,
 					lot,
@@ -233,7 +234,7 @@ export class RequestTradeComponent implements AfterViewInit {
 			this._updateControl(this.controlLots, { value: lots, disabled: quantity.disabled });
 			this._updateControl(this.controlStopPrice, stopPriceCalc.value ? stopPriceCalc : lastPrice);
 			this._updateControl(this.controlPrice, price);
-			this._updateControl(this.controlOrderType, orderType);
+			this._updateControl(this.controlOrderType, { value: { id: orderType, type: orderTypeText }, disabled: false });
 			this._updateControl(this.controlLot, lot, { onlySelf: false });
 			this._updateControl(this.controlSpread, minPriceIncrement);
 

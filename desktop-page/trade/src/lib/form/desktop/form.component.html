@@ -18,18 +18,10 @@
       tuiButton>
       Заполнить из идеи
     </button>
-    <button
-      class="add-from-idea"
-      (click)="onSwitch($event)"
-      appearance="outline"
-      tuiAppearanceMode="checked"
-      type="button"
-      tuiButton>
-      onSwitch
-    </button>
   </div>
   <tui-scrollbar class="trade__container">
     <div class="entry">
+      <p>IsNew {{ controlIsNew.value }}</p>
       <div class="tui-text_h6">Вход</div>
       <ui-lib-list
         [header]="header"
@@ -45,7 +37,7 @@
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
-          (click)="onOpen($event, formArrayEntry, direction, 'entry')"
+          (click)="onOpen($event, formArrayEntry, true, 'entry')"
           appearance="primary"
           tuiButton
           iconStart="@tui.plus">
@@ -82,7 +74,7 @@
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
-          (click)="onOpen($event, formArrayOut, !direction, 'out')"
+          (click)="onOpen($event, formArrayOut, false, 'out')"
           appearance="primary"
           tuiButton
           iconStart="@tui.plus">
@@ -120,7 +112,7 @@
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
-          (click)="onOpen($event, formArrayStop, !direction, 'stop')"
+          (click)="onOpen($event, formArrayStop, false, 'stop')"
           appearance="primary"
           tuiButton
           iconStart="@tui.plus">
@@ -234,7 +226,7 @@
     {{ item.direction | tradeDirectionType | async }}
   </div>
   <div class="item__value row__item row__item--types">
-    {{ item.orderType | tradeOrderType | async }}
+    {{ item.orderTypeText | tradeOrderType | async }}
   </div>
   <div class="item__value item__value--number row__item">
     {{ (item.price || item.stopPrice) | tuiFormatNumber | async }}
@@ -266,12 +258,14 @@
         tuiHintAppearance="dark"
         style="color: var(--tui-text-positive)"
         icon="@tui.circle-check"></tui-icon>
-    } @else {
+    } @else if (item.status === 'UNLOADING') {
       <tui-icon
-        tuiHint="Заявка не выставлена"
+        tuiHint="Заявка ожидает выставления"
         tuiHintAppearance="dark"
         style="color: var(--tui-text-secondary)"
         icon="@tui.timer"></tui-icon>
+    } @else {
+      &mdash;
     }
   </div>
   <div class="item__value row__item row__item--actions">

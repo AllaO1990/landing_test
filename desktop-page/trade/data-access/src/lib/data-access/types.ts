@@ -169,3 +169,15 @@ export interface TradeLimit {
 }
 
 export type TradeLimitList = TradeLimit[];
+
+export interface TradeOrderParams {
+	externalId: string | null;
+	accountId: string;
+	direction: boolean;
+	instrumentId: string;
+	orderType: number;
+	lots: number;
+	price: number;
+	quantity: number;
+	sourceId: number;
+}

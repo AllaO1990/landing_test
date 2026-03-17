@@ -61,6 +61,7 @@ import { LimitStore } from '@feat-trade-limit';
 import { TradeLimit } from '@data-access-trade/types';
 import { FinishService } from './finish/finish.service';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
+import { StockPositionType } from 'types/stock-position-type';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -612,7 +613,7 @@ export class VtEnterComponent implements AfterViewInit {
 			return null;
 		}
 
-		if (positionType === 'long') {
+		if (positionType === StockPositionType.LONG) {
 			return out.total > entry.total ? 'profit' : 'loss';
 		}
 

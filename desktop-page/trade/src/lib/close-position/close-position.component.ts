@@ -102,9 +102,11 @@ export class ClosePositionComponent implements OnDestroy {
 		if (source && instrument && account) {
 			this.#store.addOrder({
 				direction: !(close.quantity > 0),
-				orderType: TRADE_ORDER_TYPE_MARKET,
+				orderType: TRADE_ORDER_TYPE_MARKET.id,
+				externalId: null,
 				price: close.price,
-				quantity: getNumberPrecision(Math.abs(close.quantity) / instrument.lot, 0),
+				lots: getNumberPrecision(Math.abs(close.quantity) / instrument.lot, 0),
+				quantity: close.quantity,
 				accountId: account.accountId,
 				instrumentId: instrument.id,
 				sourceId: source.id,

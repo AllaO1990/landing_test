@@ -51,7 +51,7 @@
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
-          (click)="onOpen($event, formArrayEntry, direction, 'entry')"
+          (click)="onOpen($event, formArrayEntry, true, 'entry')"
           appearance="primary"
           tuiButton
           iconStart="@tui.plus">
@@ -89,7 +89,7 @@
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
-          (click)="onOpen($event, formArrayOut, !direction, 'out')"
+          (click)="onOpen($event, formArrayOut, false, 'out')"
           appearance="primary"
           tuiButton
           iconStart="@tui.plus">
@@ -127,7 +127,7 @@
       <div class="trade__actions">
         <button
           [disabled]="isDisabledButton$ | async"
-          (click)="onOpen($event, formArrayStop, !direction, 'stop')"
+          (click)="onOpen($event, formArrayStop, false, 'stop')"
           appearance="primary"
           tuiButton
           iconStart="@tui.plus">
