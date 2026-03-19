@@ -42,6 +42,7 @@ export interface TradeState {
 	operations: TradeOperations | null;
 	directionTypes: TradeDirections | null;
 	journal: TradeJournal[] | null;
+	isLoading: boolean;
 }
 
 export class TradeStore extends ComponentStore<TradeState> {
@@ -67,6 +68,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	readonly portfolio$: Observable<DataAccess<TradePortfolio>> = this.select((state: TradeState) => state.portfolio);
 	readonly operations$: Observable<TradeOperations | null> = this.select((state: TradeState) => state.operations);
 	readonly journal$: Observable<TradeJournal[] | null> = this.select((state: TradeState) => state.journal);
+	readonly isLoading$: Observable<boolean> = this.select((state: TradeState) => state.isLoading);
 
 	constructor(private _api: Api) {
 		super({
@@ -84,6 +86,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 				{ id: true, name: 'Купить' },
 				{ id: false, name: 'Продать' },
 			],
+			isLoading: false,
 		});
 
 		this.loadOrderTypes();
@@ -93,6 +96,13 @@ export class TradeStore extends ComponentStore<TradeState> {
 		(state: TradeState, orderType: null | TradeOrderTypesDescription): TradeState => ({
 			...state,
 			orderType,
+		})
+	);
+
+	readonly updateIsLoading = this.updater(
+		(state: TradeState, isLoading: boolean): TradeState => ({
+			...state,
+			isLoading,
 		})
 	);
 
@@ -196,7 +206,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 		stream$.pipe(
 			switchMap((params: Params) => this._api.getJournal(params)),
 			tap((response) => {
-				this.updateJournal(this._sortJournal(response.data));
+				this.updateJournal(response.data);
 			})
 		)
 	);
@@ -460,16 +470,6 @@ export class TradeStore extends ComponentStore<TradeState> {
 			})
 		)
 	);
-
-	private _sortJournal(journal: TradeJournal[] | null): TradeJournal[] | null {
-		if (journal === null) {
-			return null;
-		}
-
-		const direction = journal[0].direction;
-
-		return journal.sort((a, b) => (a.price - b.price) * -1 * +direction);
-	}
 
 	private _sortOrders(orders: null | TradeOrders): null | TradeOrders {
 		if (orders === null) {

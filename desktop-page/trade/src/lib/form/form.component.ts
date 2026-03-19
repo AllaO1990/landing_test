@@ -402,9 +402,20 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				finalize(() => console.log('finalize subscribe'))
 			)
 			.subscribe((res: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] }) => {
-				this._updateFormArray(this.formArrayEntry, res.entry);
-				this._updateFormArray(this.formArrayOut, res.out);
-				this._updateFormArray(this.formArrayStop, res.stop);
+				this._updateFormArray(
+					this.formArrayEntry,
+					res.entry.sort((a, b) => a.price - b.price)
+				);
+				this._updateFormArray(
+					this.formArrayOut,
+					res.out.sort((a, b) => a.price - b.price)
+				);
+				this._updateFormArray(
+					this.formArrayStop,
+					res.stop.sort((a, b) => a.price - b.price)
+				);
+
+				this.#store.updateIsLoading(false);
 			});
 
 		this.controlIsNew.valueChanges
@@ -428,7 +439,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				)
 			)
 			.subscribe((list: TradeJournal[]) => {
-				console.log('addOrders', list);
+				console.log('formArrayEntry', list);
 
 				this.#store.addOrders(list);
 			});
@@ -466,7 +477,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				)
 			)
 			.subscribe((list: TradeJournal[]) => {
-				console.log('addStopOrders', list);
+				console.log('formArrayOut', list);
 
 				this.#store.addOrders(list);
 			});
@@ -694,15 +705,18 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						lots: value.lots,
 						orderType: value.orderType.id,
 						orderTypeText: value.orderType.type,
+						stopPrice: value.stopPrice,
 						status: null,
 						change: false,
-						total: getNumberPrecision(value.price * value.lots * item.lot, 2),
+						total: value.total,
 					};
 
 					if (item.status === TradeJournalStatus.AWAITS && calcValue.orderType) {
 						this.formArrayRemove.push(new FormControl(item));
 					}
 					control.setControl(index, new FormControl(calcValue));
+				} else {
+					item['change'] = false;
 				}
 			});
 	}
@@ -1043,7 +1057,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		operations: TradeOperations,
 		portfolio: TradePortfolio
 	) {
-		const direction = position.idea.positionType === 'long';
 		const journalUpdate = this._updateTradeJournalOrder(journal, orders, stopOrders, operations);
 
 		const entry = this.#service.getEntryFromJournal(position, journalUpdate);
@@ -1064,6 +1077,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		operations: TradeOperations
 	): TradeJournal[] {
 		const listForUpdate: TradeJournal[] = [];
+		const operationList = operations.filter((item: TradeOperation) => item.state === 1);
 
 		const list = journal.map((item: TradeJournal) => {
 			const findOrder: TradeOrder | null =
@@ -1106,21 +1120,37 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				return item;
 			}
 
-			if (item.status !== TradeJournalStatus.EXECUTED) {
-				const operationType = this.#service.getOperationType(item.direction);
-				const findOperation: TradeOperation | null =
-					operations.find(
-						(operation: TradeOperation) =>
-							operation.quantity === item.quantity && operation.type === operationType && operation.state === 1
-					) || null;
+			if (operationList.length === 0) {
+				return item;
+			}
 
-				if (findOperation) {
-					listForUpdate.push({
-						...item,
-						price: findOperation.price.value,
-						status: TradeJournalStatus.EXECUTED,
-					});
+			const operationType = this.#service.getOperationType(item.direction);
+
+			if (item.status === TradeJournalStatus.EXECUTED) {
+				const findIndex: number = operationList.findIndex(
+					(operation: TradeOperation) =>
+						operation.quantity === item.quantity && operation.type === operationType && operation.state === 1
+				);
+
+				if (findIndex !== -1) {
+					operationList.splice(findIndex, 1);
 				}
+
+				return item;
+			}
+
+			const findOperation: TradeOperation | null =
+				operationList.find(
+					(operation: TradeOperation) =>
+						operation.quantity === item.quantity && operation.type === operationType && operation.state === 1
+				) || null;
+
+			if (findOperation) {
+				listForUpdate.push({
+					...item,
+					price: findOperation.price.value,
+					status: TradeJournalStatus.EXECUTED,
+				});
 			}
 
 			return item;

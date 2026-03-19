@@ -6,33 +6,25 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TradeStore } from '@data-access-trade/store.trade';
 import {
 	BehaviorSubject,
-	combineLatest,
 	distinctUntilChanged,
 	filter,
 	map,
 	Observable,
-	pairwise,
 	shareReplay,
 	startWith,
 	Subject,
-	switchMap,
 	tap,
-	timer,
 } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValue } from '../form/form.types';
-import { TradePortfolio, TradeStopOrder, TradeStopOrders } from '@data-access-trade/types';
-import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
-import { TuiButtonLoading } from '@taiga-ui/kit';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { TradeMobileFormComponent } from '../form/mobile/form.component';
 import { TradeDesktopFormComponent } from '../form/desktop/form.component';
-import { DataAccess } from 'types/response';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TradeJournal, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
+import { TuiButtonLoading } from '@taiga-ui/kit';
 
 const filtered = (list: { status: string }[]) =>
 	list.reduce(
@@ -63,9 +55,9 @@ interface SourceValue {
 		TuiButton,
 		ReactiveFormsModule,
 		AsyncPipe,
-		TuiButtonLoading,
 		TradeMobileFormComponent,
 		TradeDesktopFormComponent,
+		TuiButtonLoading,
 	],
 	templateUrl: './layout.component.html',
 	styleUrls: ['../common/dialog.scss', './layout.component.scss'],
@@ -92,6 +84,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
 	readonly #idea$: Observable<StockPosition> = this.#idea.idea$;
 
+	readonly isLoading$: Observable<boolean> = this.#store.isLoading$;
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
 		shareReplay({ refCount: true, bufferSize: 1 })
@@ -175,28 +168,28 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 		})
 	);
 
-	readonly isDisabled$: Observable<boolean> = combineLatest([this.isUnloading$]).pipe(
-		map(([isUnloading]: [boolean]) => isUnloading),
-		distinctUntilChanged()
-	);
+	// readonly isDisabled$: Observable<boolean> = combineLatest([this.isUnloading$]).pipe(
+	// 	map(([isUnloading]: [boolean]) => isUnloading),
+	// 	distinctUntilChanged()
+	// );
 
-	#isStop$: Observable<ControlValue> = this.formGroup.valueChanges.pipe(
-		takeUntilDestroyed(this.#destroyRef),
-		map((value: { trade: { entry: ControlValue[]; stop: ControlValue[] } }) => ({
-			entry: value.trade.entry,
-			stop: value.trade.stop,
-		})),
-		filter(
-			({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) =>
-				entry && entry.length > 0 && stop && stop.length > 0
-		),
-		filter(
-			({ entry }: { entry: ControlValue[]; stop: ControlValue[] }) => entry[0].status === TradeJournalStatus.EXECUTED
-		),
-		map(({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) => ({ entry: entry[0], stop: stop[0] })),
-		distinctUntilChanged((a, b) => this._distinct(a, b)),
-		map(({ stop }: { stop: ControlValue }) => stop)
-	);
+	// #isStop$: Observable<ControlValue> = this.formGroup.valueChanges.pipe(
+	// 	takeUntilDestroyed(this.#destroyRef),
+	// 	map((value: { trade: { entry: ControlValue[]; stop: ControlValue[] } }) => ({
+	// 		entry: value.trade.entry,
+	// 		stop: value.trade.stop,
+	// 	})),
+	// 	filter(
+	// 		({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) =>
+	// 			entry && entry.length > 0 && stop && stop.length > 0
+	// 	),
+	// 	filter(
+	// 		({ entry }: { entry: ControlValue[]; stop: ControlValue[] }) => entry[0].status === TradeJournalStatus.EXECUTED
+	// 	),
+	// 	map(({ entry, stop }: { entry: ControlValue[]; stop: ControlValue[] }) => ({ entry: entry[0], stop: stop[0] })),
+	// 	distinctUntilChanged((a, b) => this._distinct(a, b)),
+	// 	map(({ stop }: { stop: ControlValue }) => stop)
+	// );
 
 	ngAfterViewInit(): void {
 		// this.#store.stopOrders$
@@ -226,112 +219,109 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 		// 		// 	instrumentId: instrument.id,
 		// 		// });
 		// 	});
-
-		this.#isSubmitted$
-			.asObservable()
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				filter((isSubmitted: boolean) => isSubmitted),
-				switchMap(() =>
-					this.formGroup.valueChanges.pipe(
-						switchMap((value) => timer(100).pipe(map(() => value))),
-						startWith(this.formGroup.value),
-						map((value: { trade: { entry: ControlValue[] } }): ControlValue[] => value.trade.entry),
-						pairwise(),
-						filter(
-							([first, second]: [ControlValue[], ControlValue[]]) =>
-								(!first || !first[0] || (first[0] && first[0].status !== TradeJournalStatus.EXECUTED)) &&
-								second &&
-								second[0] &&
-								second[0].status === TradeJournalStatus.EXECUTED
-						),
-						map((data: [ControlValue[], ControlValue[]]) => data[1])
-					)
-				)
-			)
-			.subscribe(() => {
-				console.log('submitted');
-
-				// const {
-				// 	filter: { account, instrument, source },
-				// 	out,
-				// 	stop,
-				// } = this.formGroup.value.trade;
-				//
-				// if (account && instrument && source) {
-				// 	const outOrders = this._getOrders(
-				// 		[...out, ...stop].filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
-				// 		account.accountId,
-				// 		instrument.id,
-				// 		source.id
-				// 	);
-				//
-				// 	if (outOrders.length > 0) {
-				// 		this.#store.addOrders(outOrders);
-				// 	}
-				// }
-			});
-
-		this.#isStop$
-			.pipe(
-				switchMap((value: ControlValue) =>
-					this.#store.stopOrders$.pipe(
-						takeUntilDestroyed(this.#destroyRef),
-						filter((list: TradeStopOrders | null): list is TradeStopOrders => list !== null),
-						map((list: TradeStopOrders) =>
-							list.filter((item: TradeStopOrder) => item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS)
-						),
-						tap(() => console.log('stop stop stop stop stop stop stop stop')),
-						filter(
-							(list: TradeStopOrders) =>
-								list.length > 0 && list.findIndex((item: TradeStopOrder) => item.lotsRequested !== value.lots) !== -1
-						)
-					)
-				)
-			)
-			.subscribe((orders: TradeStopOrders) => {
-				const {
-					filter: { account, instrument, source },
-				} = this.formGroup.value.trade;
-
-				console.log('removeStopOrder');
-
-				// this.#store.removeStopOrder({
-				// 	accountId: account.accountId,
-				// 	id: orders[0].stopOrderId,
-				// 	sourceId: source.id,
-				// 	instrumentId: instrument.id,
-				// });
-			});
-
-		this.#isStop$
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				filter((value: ControlValue) => value.status === TradeJournalStatus.UNLOADING),
-				switchMap((value: ControlValue) =>
-					this.#store.portfolio$.pipe(
-						map((response: DataAccess<TradePortfolio> | null) => response && response.data),
-						filter((portfolio: TradePortfolio | null) => portfolio !== null),
-						filter((portfolio: TradePortfolio) => portfolio.positions.length > 0 && portfolio.positions[0].quantity !== 0),
-						map((portfolio: TradePortfolio) => {
-							const position = portfolio.positions[0];
-
-							return position.averagePositionPrice.value * position.quantity;
-						}),
-						distinctUntilChanged(),
-						map(() => value)
-					)
-				)
-			)
-			.subscribe((controlValue: ControlValue) => {
-				const {
-					filter: { account, instrument, source },
-				} = this.formGroup.value.trade;
-
-				console.log('addStopOrder', account, instrument, source);
-
-				// this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
-			});
+		// this.#isSubmitted$
+		// 	.asObservable()
+		// 	.pipe(
+		// 		takeUntilDestroyed(this.#destroyRef),
+		// 		filter((isSubmitted: boolean) => isSubmitted),
+		// 		switchMap(() =>
+		// 			this.formGroup.valueChanges.pipe(
+		// 				switchMap((value) => timer(100).pipe(map(() => value))),
+		// 				startWith(this.formGroup.value),
+		// 				map((value: { trade: { entry: ControlValue[] } }): ControlValue[] => value.trade.entry),
+		// 				pairwise(),
+		// 				filter(
+		// 					([first, second]: [ControlValue[], ControlValue[]]) =>
+		// 						(!first || !first[0] || (first[0] && first[0].status !== TradeJournalStatus.EXECUTED)) &&
+		// 						second &&
+		// 						second[0] &&
+		// 						second[0].status === TradeJournalStatus.EXECUTED
+		// 				),
+		// 				map((data: [ControlValue[], ControlValue[]]) => data[1])
+		// 			)
+		// 		)
+		// 	)
+		// 	.subscribe(() => {
+		// 		console.log('submitted');
+		//
+		// 		// const {
+		// 		// 	filter: { account, instrument, source },
+		// 		// 	out,
+		// 		// 	stop,
+		// 		// } = this.formGroup.value.trade;
+		// 		//
+		// 		// if (account && instrument && source) {
+		// 		// 	const outOrders = this._getOrders(
+		// 		// 		[...out, ...stop].filter((item: { status: ControlValueStatus }) => item.status === ControlValueStatus.UNLOADING),
+		// 		// 		account.accountId,
+		// 		// 		instrument.id,
+		// 		// 		source.id
+		// 		// 	);
+		// 		//
+		// 		// 	if (outOrders.length > 0) {
+		// 		// 		this.#store.addOrders(outOrders);
+		// 		// 	}
+		// 		// }
+		// 	});
+		// this.#isStop$
+		// 	.pipe(
+		// 		switchMap((value: ControlValue) =>
+		// 			this.#store.stopOrders$.pipe(
+		// 				takeUntilDestroyed(this.#destroyRef),
+		// 				filter((list: TradeStopOrders | null): list is TradeStopOrders => list !== null),
+		// 				map((list: TradeStopOrders) =>
+		// 					list.filter((item: TradeStopOrder) => item.orderTypeText === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS)
+		// 				),
+		// 				tap(() => console.log('stop stop stop stop stop stop stop stop')),
+		// 				filter(
+		// 					(list: TradeStopOrders) =>
+		// 						list.length > 0 && list.findIndex((item: TradeStopOrder) => item.lotsRequested !== value.lots) !== -1
+		// 				)
+		// 			)
+		// 		)
+		// 	)
+		// 	.subscribe((orders: TradeStopOrders) => {
+		// 		const {
+		// 			filter: { account, instrument, source },
+		// 		} = this.formGroup.value.trade;
+		//
+		// 		console.log('removeStopOrder');
+		//
+		// 		// this.#store.removeStopOrder({
+		// 		// 	accountId: account.accountId,
+		// 		// 	id: orders[0].stopOrderId,
+		// 		// 	sourceId: source.id,
+		// 		// 	instrumentId: instrument.id,
+		// 		// });
+		// 	});
+		// this.#isStop$
+		// 	.pipe(
+		// 		takeUntilDestroyed(this.#destroyRef),
+		// 		filter((value: ControlValue) => value.status === TradeJournalStatus.UNLOADING),
+		// 		switchMap((value: ControlValue) =>
+		// 			this.#store.portfolio$.pipe(
+		// 				map((response: DataAccess<TradePortfolio> | null) => response && response.data),
+		// 				filter((portfolio: TradePortfolio | null) => portfolio !== null),
+		// 				filter((portfolio: TradePortfolio) => portfolio.positions.length > 0 && portfolio.positions[0].quantity !== 0),
+		// 				map((portfolio: TradePortfolio) => {
+		// 					const position = portfolio.positions[0];
+		//
+		// 					return position.averagePositionPrice.value * position.quantity;
+		// 				}),
+		// 				distinctUntilChanged(),
+		// 				map(() => value)
+		// 			)
+		// 		)
+		// 	)
+		// 	.subscribe((controlValue: ControlValue) => {
+		// 		const {
+		// 			filter: { account, instrument, source },
+		// 		} = this.formGroup.value.trade;
+		//
+		// 		console.log('addStopOrder', account, instrument, source);
+		//
+		// 		// this.#store.addStopOrder(this._getOrder(controlValue, account.accountId, instrument.id, source.id));
+		// 	});
 	}
 
 	ngOnDestroy(): void {
@@ -347,11 +337,13 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	onSubmit(event: Event): void {
 		event.preventDefault();
 
-		if (this.loading) {
-			return;
-		}
+		this.#store.updateIsLoading(true);
 
-		this.loading = true;
+		// if (this.loading) {
+		// 	return;
+		// }
+		//
+		// this.loading = true;
 
 		const { idea, position, entry, out, stop, remove, filter } = this.formGroup.getRawValue().trade;
 
@@ -429,6 +421,8 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
 			return journal;
 		});
+
+		console.log(removed, update);
 
 		this.#store.onSubmitJournal({ removed, update });
 

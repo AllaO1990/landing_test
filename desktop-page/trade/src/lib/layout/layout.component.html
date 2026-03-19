@@ -15,11 +15,12 @@
       tuiButton>
       Закрыть
     </button>
+    <!--      [disabled]="loading || (isDisabled$ | async)"-->
+    <!--      [loading]="loading"-->
     <button
+      [loading]="isLoading$ | async"
       type="submit"
-      [loading]="loading"
       (click)="onSubmit($event)"
-      [disabled]="loading || (isDisabled$ | async)"
       appearance="primary"
       tuiButton>
       Подтвердить

@@ -44,6 +44,8 @@ export interface RequestFormValue {
 	quantity: number;
 	lot: number;
 	lots: number;
+	stopPrice: number;
+	total: number;
 }
 
 @Component({
@@ -278,10 +280,12 @@ export class RequestTradeComponent implements AfterViewInit {
 				}
 
 				if (value && this.#store.isStopOrder(value.type)) {
+					this.controlStopPrice.patchValue(this.price || this.lastPrice);
 					this.controlExpirationType.enable();
 					this.controlStopPrice.enable();
 					this.controlSpread.enable();
 				} else {
+					this.controlStopPrice.patchValue(null);
 					this.controlExpirationType.disable();
 					this.controlStopPrice.disable();
 					this.controlSpread.disable();
