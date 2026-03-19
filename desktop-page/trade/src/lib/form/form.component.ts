@@ -13,6 +13,7 @@ import {
 import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
 import { TuiButtonLoading, TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
 import {
+	AbstractControl,
 	ControlValueAccessor,
 	FormArray,
 	FormControl,
@@ -60,7 +61,6 @@ import {
 	TradeOperations,
 	TradeOrder,
 	TradeOrders,
-	TradeOrderType,
 	TradePortfolio,
 	TradeSource,
 	TradeStopOrder,
@@ -87,7 +87,7 @@ import {
 	TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
 } from '@data-access-trade/order.constants';
 import { StockInstrument } from 'types/stock';
-import { TradeJournal, TradeJournalStatus } from 'types/trade';
+import { TradeJournal, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
 import { StockPositionType } from 'types/stock-position-type';
 
 interface DefaultIdea {
@@ -188,6 +188,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		entry: new FormArray([]),
 		out: new FormArray([]),
 		stop: new FormArray([]),
+		remove: new FormArray([]),
 		auto: new FormControl(true, { nonNullable: true }),
 		isNew: new FormControl(true),
 	});
@@ -202,6 +203,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 	get controlIdea(): FormControl {
 		return this.formGroup.get('idea') as FormControl;
+	}
+
+	get formArrayRemove(): FormArray {
+		return this.formGroup.get('remove') as FormArray;
 	}
 
 	get formArrayEntry(): FormArray {
@@ -313,6 +318,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			...this._getStartIdeaWithLimit(position, limit.limit),
 			position,
 		})),
+		takeUntilDestroyed(this.#destroyRef),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
@@ -377,6 +383,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 							filter((portfolio: TradePortfolio | null): portfolio is TradePortfolio => portfolio !== null)
 						),
 					]).pipe(
+						debounceTime(1000),
 						switchMap(
 							([orders, stopOrders, operations, portfolio]: [TradeOrders, TradeStopOrders, TradeOperations, TradePortfolio]) =>
 								this.journal$.pipe(
@@ -391,30 +398,18 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 								)
 						)
 					)
-				)
+				),
+				finalize(() => console.log('finalize subscribe'))
 			)
 			.subscribe((res: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] }) => {
-				this.formArrayEntry.clear();
-
-				res.entry.forEach((item: TradeJournal, index: number) => {
-					this.formArrayEntry.setControl(index, new FormControl(item));
-				});
-
-				this.formArrayOut.clear();
-
-				res.out.forEach((item: TradeJournal, index: number) => {
-					this.formArrayOut.setControl(index, new FormControl(item));
-				});
-
-				this.formArrayStop.clear();
-
-				res.stop.forEach((item: TradeJournal, index: number) => {
-					this.formArrayStop.setControl(index, new FormControl(item));
-				});
+				this._updateFormArray(this.formArrayEntry, res.entry);
+				this._updateFormArray(this.formArrayOut, res.out);
+				this._updateFormArray(this.formArrayStop, res.stop);
 			});
 
 		this.controlIsNew.valueChanges
 			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
 				startWith(this.controlIsNew.value),
 				filter((status: boolean) => !status),
 				switchMap(() =>
@@ -426,10 +421,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 									item.status === TradeJournalStatus.UNLOADING && item.externalId !== null && item.trailingIndentType !== 0
 							)
 						),
-						filter((list: TradeJournal[]) => list.length > 0)
+						filter((list: TradeJournal[]) => list.length > 0),
+						distinctUntilChanged((a, b) => this._distinctJournal(a, b)),
+						debounceTime(1000)
 					)
-				),
-				finalize(() => console.log('finalize this.controlIsNew.valueChanges'))
+				)
 			)
 			.subscribe((list: TradeJournal[]) => {
 				console.log('addOrders', list);
@@ -439,22 +435,35 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 		this.controlIsNew.valueChanges
 			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
 				startWith(this.controlIsNew.value),
 				filter((status: boolean) => !status),
 				switchMap(() =>
+					this.formArrayEntry.valueChanges.pipe(
+						takeUntilDestroyed(this.#destroyRef),
+						map((list: TradeJournal[] | null) =>
+							(list || []).every(
+								(item: TradeJournal) =>
+									item.status === TradeJournalStatus.EXECUTED && item.externalId !== null && item.trailingIndentType !== 0
+							)
+						),
+						filter((status: boolean) => status)
+					)
+				),
+				switchMap(() =>
 					this.formArrayOut.valueChanges.pipe(
 						takeUntilDestroyed(this.#destroyRef),
-						debounceTime(0),
 						map((list: TradeJournal[] | null) =>
 							(list || []).filter(
 								(item: TradeJournal) =>
 									item.status === TradeJournalStatus.UNLOADING && item.externalId !== null && item.trailingIndentType !== 0
 							)
 						),
-						filter((list: TradeJournal[]) => list.length > 0)
+						filter((list: TradeJournal[]) => list.length > 0),
+						distinctUntilChanged((a, b) => this._distinctJournal(a, b)),
+						debounceTime(1000)
 					)
-				),
-				finalize(() => console.log('finalize this.controlIsNew.valueChanges'))
+				)
 			)
 			.subscribe((list: TradeJournal[]) => {
 				console.log('addStopOrders', list);
@@ -565,6 +574,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	}
 
 	writeValue(obj: any): void {
+		if (obj && obj.remove && obj.remove.length === 0) {
+			this.formArrayRemove.clear();
+		}
+
 		this.formGroup.patchValue(obj);
 	}
 
@@ -671,37 +684,26 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			})
 			.pipe(takeUntilDestroyed(this.#destroyRef))
 			.subscribe((value: RequestFormValue | null) => {
-				let calcValue: Partial<TradeJournal & { orderTypePrev: TradeOrderType | null; change: boolean }> = {
-					...item,
-					change: false,
-					orderTypePrev: {
-						id: item.orderType,
-						type: item.orderTypeText,
-					},
-				};
-
 				if (value) {
-					calcValue = {
-						...calcValue,
-						...value,
+					const calcValue: Partial<TradeJournal & TradeJournalSystem> = {
+						...item,
+						externalId: null,
+						id: 0,
+						price: value.price,
+						quantity: value.quantity,
+						lots: value.lots,
 						orderType: value.orderType.id,
 						orderTypeText: value.orderType.type,
-						change: item.status === TradeJournalStatus.AWAITS,
+						status: null,
+						change: false,
 						total: getNumberPrecision(value.price * value.lots * item.lot, 2),
 					};
 
-					if (item.status === TradeJournalStatus.AWAITS && item.orderType) {
-						this.#store.changeOrder({
-							...calcValue,
-							quantity: calcValue.lots || 0,
-							instrumentId: instrument.id,
-							accountId: account.accountId,
-							sourceId: source.id,
-						} as TradeJournal & { orderTypePrev: TradeOrderType | null });
+					if (item.status === TradeJournalStatus.AWAITS && calcValue.orderType) {
+						this.formArrayRemove.push(new FormControl(item));
 					}
+					control.setControl(index, new FormControl(calcValue));
 				}
-
-				control.setControl(index, new FormControl(calcValue));
 			});
 	}
 
@@ -832,7 +834,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			direction: { value: item.direction, disabled: true },
 			expirationType: { value: item.expirationType, disabled: false },
 			expireDate: { value: item.expireDate, disabled: false },
-			orderType: { value: item.orderType, disabled: false },
+			orderType: { value: { id: item.orderType, type: item.orderTypeText }, disabled: false },
 			price: { value: item.price, disabled: false },
 			lot: { value: item.lot, disabled: false },
 			stopPrice: { value: item.stopPrice, disabled: false },
@@ -842,6 +844,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			trailingSpreadType: { value: item.trailingSpreadType, disabled: false },
 			quantity: { value: item.quantity, disabled: false },
 		};
+	}
+
+	private _distinctJournal(previous: TradeJournal[], current: TradeJournal[]): boolean {
+		if (previous.length !== current.length) {
+			return false;
+		}
+
+		const sortPrevious = previous.sort((a: TradeJournal, b: TradeJournal) => a.id - b.id);
+		const sortCurrent = previous.sort((a: TradeJournal, b: TradeJournal) => a.id - b.id);
+
+		return sortPrevious.every((item: TradeJournal, index: number) => item.id === sortCurrent[index].id);
 	}
 
 	private _distinctOrders(a: TradeOrders, b: TradeOrders): boolean {
@@ -1201,5 +1214,26 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				position.idea.instrument.minPriceIncrement
 			),
 		};
+	}
+
+	private _updateFormArray(formArray: FormArray, journal: TradeJournal[]): void {
+		const findControlDefault = formArray.controls.filter((control) => control.value.externalId === null);
+		const removeIds: number[] = this.formArrayRemove.controls.map((control) => control.value.id);
+
+		formArray.clear({ emitEvent: false });
+
+		journal.forEach((item: TradeJournal) => {
+			if (removeIds.findIndex((id) => id === item.id) === -1) {
+				formArray.push(new FormControl(item), { emitEvent: false });
+			}
+		});
+
+		if (removeIds.length > 0) {
+			findControlDefault.forEach((control: AbstractControl<TradeJournal>) => {
+				formArray.push(control, { emitEvent: false });
+			});
+		}
+
+		formArray.patchValue([], { emitEvent: true });
 	}
 }

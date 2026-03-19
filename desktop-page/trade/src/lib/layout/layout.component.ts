@@ -32,7 +32,7 @@ import { DataAccess } from 'types/response';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
-import { TradeJournalStatus } from 'types/trade';
+import { TradeJournal, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
 
 const filtered = (list: { status: string }[]) =>
 	list.reduce(
@@ -100,6 +100,10 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	readonly formGroup: FormGroup = new FormGroup({
 		trade: new FormControl(null),
 	});
+
+	get controlTrade(): FormControl {
+		return this.formGroup.get('trade') as FormControl;
+	}
 
 	readonly sourceValueChanges$: Observable<SourceValue> = this.formGroup.valueChanges.pipe(
 		startWith(this.formGroup.value),
@@ -349,10 +353,12 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
 		this.loading = true;
 
-		const { idea, position, entry, out, stop, filter } = this.formGroup.getRawValue().trade;
+		const { idea, position, entry, out, stop, remove, filter } = this.formGroup.getRawValue().trade;
 
 		const entries = entry.filter((item: { status: string }) => item.status === TradeJournalStatus.EXECUTED);
 		const outs = out.filter((item: { status: string }) => item.status === TradeJournalStatus.EXECUTED);
+
+		this.controlTrade.patchValue({ remove: [] });
 
 		const positionUpdate = {
 			actions: {
@@ -399,12 +405,32 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 			},
 		};
 
-		this.#idea.editIdea({
-			id: position.idea.id!,
-			body: positionUpdate,
+		// this.#idea.editIdea({
+		// 	id: position.idea.id!,
+		// 	body: positionUpdate,
+		// });
+		//
+
+		// const value = this.controlTrade.value;
+		//
+
+		const removed = remove.map((item: TradeJournal & TradeJournalSystem) => {
+			const { change, isEdit, remove, ...journal } = item;
+
+			return journal;
 		});
 
-		this.#store.setJournalItems([...entry, ...out, ...stop]);
+		const update = [...entry, ...out, ...stop].map((item: TradeJournal & TradeJournalSystem) => {
+			const { change, isEdit, remove, ...journal } = item;
+
+			if (journal.status === null) {
+				journal.status = TradeJournalStatus.UNLOADING;
+			}
+
+			return journal;
+		});
+
+		this.#store.onSubmitJournal({ removed, update });
 
 		// const entryUnloadingOrders: TradeJournal[] = entry.filter(
 		// 	(item: TradeJournal) => item.status === ControlValueStatus.UNLOADING

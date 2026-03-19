@@ -24,9 +24,15 @@ export interface TradeCoreJournal {
 export interface TradeJournal extends TradeCoreJournal {
 	accountId: string;
 	sourceId: number;
-	id: number | null;
+	id: number;
 	orderType: number;
 	orderTypeText: string;
+}
+
+export interface TradeJournalSystem {
+	isEdit: boolean;
+	change: boolean;
+	remove: boolean;
 }
 
 export enum TradeJournalStatus {

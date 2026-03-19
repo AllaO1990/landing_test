@@ -1,8 +1,9 @@
 @if (closeButton$ | async; as close) {
+  <!--  [disabled]="close.quantity === 0"-->
   <button
     (click)="onClosePosition($event, close)"
     [loading]="loading"
-    [disabled]="close.quantity === 0"
+    [disabled]="true"
     class="add-from-idea"
     appearance="outline"
     tuiAppearanceMode="checked"

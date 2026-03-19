@@ -121,11 +121,14 @@ export class ClosePositionComponent implements OnDestroy {
 							return of(orders);
 						}
 
+						/**
+						 * Проверить id для journal, есть шанс, что нужно грузить еще журнал
+						 * */
 						return forkJoin([
 							orders.map((item: TradeOrder) =>
 								this.#store.removeOrder({
 									accountId: account.accountId,
-									id: item.orderId,
+									orderId: item.orderId,
 									sourceId: source.id,
 									instrumentId: instrument.id,
 								})
@@ -144,11 +147,14 @@ export class ClosePositionComponent implements OnDestroy {
 							return of(orders);
 						}
 
+						/**
+						 * Проверить id для journal, есть шанс, что нужно грузить еще журнал
+						 * */
 						return forkJoin([
 							orders.map((item: TradeStopOrder) =>
 								this.#store.removeStopOrder({
 									accountId: account.accountId,
-									id: item.stopOrderId,
+									orderId: item.stopOrderId,
 									sourceId: source.id,
 									instrumentId: instrument.id,
 								})

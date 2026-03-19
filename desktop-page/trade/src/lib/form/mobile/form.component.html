@@ -255,12 +255,14 @@
         tuiHintAppearance="dark"
         style="color: var(--tui-text-positive)"
         icon="@tui.circle-check"></tui-icon>
-    } @else {
+    } @else if (item.status === 'UNLOADING') {
       <tui-icon
-        tuiHint="Заявка не выставлена"
+        tuiHint="Заявка ожидает выставления"
         tuiHintAppearance="dark"
         style="color: var(--tui-text-secondary)"
         icon="@tui.timer"></tui-icon>
+    } @else {
+      &mdash;
     }
   </div>
   <div class="item__value row__item row__item--actions row__item--center">

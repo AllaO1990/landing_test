@@ -196,10 +196,8 @@ export class TradeStore extends ComponentStore<TradeState> {
 		stream$.pipe(
 			switchMap((params: Params) => this._api.getJournal(params)),
 			tap((response) => {
-				const journal = response.data !== null ? response.data.sort((a, b) => a.price - b.price) : null;
-				this.updateJournal(journal);
-			}),
-			tap((data) => console.log(data))
+				this.updateJournal(this._sortJournal(response.data));
+			})
 		)
 	);
 
@@ -282,24 +280,20 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
+	removeOrders = this.effect((stream$: Observable<TradeJournal[]>) =>
+		stream$.pipe(switchMap((journal: TradeJournal[]) => this._removeAllOrders(journal)))
+	);
+
 	removeOrder = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
-			switchMap((params: Params) => {
-				return this._api.removeOrder(params).pipe(
-					switchMap((response: Response<any>) => {
-						if (response.success || response.message.indexOf('30027')) {
-							return this._api.removeJournalItem(params['id']).pipe(
-								tap((response: Response<any>) => {
-									if (response.success) {
-										this.loadOrders(params);
-										this.loadOperations(params);
-										this.loadJournal(params);
-									}
-								})
-							);
+			switchMap((journal: Params) => {
+				return this._removeOrder(journal).pipe(
+					tap((response: Response<any>) => {
+						if (response.success) {
+							this.loadOrders(journal);
+							this.loadOperations(journal);
+							this.loadJournal(journal);
 						}
-
-						return of(response);
 					})
 				);
 			})
@@ -362,22 +356,14 @@ export class TradeStore extends ComponentStore<TradeState> {
 
 	removeStopOrder = this.effect((stream$: Observable<Params>) =>
 		stream$.pipe(
-			switchMap((params: Params) => {
-				return this._api.removeStopOrder(params).pipe(
-					switchMap((response: Response<any>) => {
-						if (response.success || response.message.indexOf('30027')) {
-							return this._api.removeJournalItem(params['id']).pipe(
-								tap((response: Response<any>) => {
-									if (response.success) {
-										this.loadOrders(params);
-										this.loadOperations(params);
-										this.loadJournal(params);
-									}
-								})
-							);
+			switchMap((journal: Params) => {
+				return this._removeStopOrder(journal).pipe(
+					tap((response: Response<any>) => {
+						if (response.success) {
+							this.loadOrders(journal);
+							this.loadOperations(journal);
+							this.loadJournal(journal);
 						}
-
-						return of(response);
 					})
 				);
 			})
@@ -390,7 +376,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 				console.log(params);
 
 				return this._api.removeStopOrder(params).pipe(
-					switchMap((removed: Response<any>) => {
+					switchMap(() => {
 						return this._api.addStopOrder(params).pipe(
 							tap((response: Response<any>) => {
 								if (response.success) {
@@ -408,10 +394,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	setJournalItems = this.effect((stream$: Observable<TradeJournal[]>) =>
 		stream$.pipe(
 			switchMap((journal: TradeJournal[]) => {
-				return this._api.setJournalItems(journal).pipe(
-					tap((response: Response<TradeJournal>) => console.log(response)),
-					tap(() => this.loadJournal(journal[0]))
-				);
+				return this._api.setJournalItems(journal).pipe(tap(() => this.loadJournal(journal[0])));
 			})
 		)
 	);
@@ -433,10 +416,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	setJournalItem = this.effect((stream$: Observable<TradeJournal>) =>
 		stream$.pipe(
 			switchMap((journal: TradeJournal) => {
-				return this._api.setJournalItem(journal).pipe(
-					tap((response: Response<TradeJournal>) => console.log(response)),
-					tap(() => this.loadJournal(journal))
-				);
+				return this._api.setJournalItem(journal).pipe(tap(() => this.loadJournal(journal)));
 			})
 		)
 	);
@@ -457,6 +437,40 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
+	/**
+	 * ✓
+	 * */
+	onSubmitJournal = this.effect((stream$: Observable<{ removed: TradeJournal[]; update: TradeJournal[] }>) =>
+		stream$.pipe(
+			switchMap(({ removed, update }: { removed: TradeJournal[]; update: TradeJournal[] }) => {
+				if (removed.length !== 0) {
+					return this._removeAllOrders(removed).pipe(switchMap(() => of(update)));
+				}
+
+				return of(update);
+			}),
+			switchMap((journal: TradeJournal[]) => {
+				return this._api.setJournalItems(journal).pipe(
+					tap(() => {
+						this.loadOrders(journal[0]);
+						this.loadOperations(journal[0]);
+						this.loadJournal(journal[0]);
+					})
+				);
+			})
+		)
+	);
+
+	private _sortJournal(journal: TradeJournal[] | null): TradeJournal[] | null {
+		if (journal === null) {
+			return null;
+		}
+
+		const direction = journal[0].direction;
+
+		return journal.sort((a, b) => (a.price - b.price) * -1 * +direction);
+	}
+
 	private _sortOrders(orders: null | TradeOrders): null | TradeOrders {
 		if (orders === null) {
 			return null;
@@ -475,6 +489,40 @@ export class TradeStore extends ComponentStore<TradeState> {
 		return operations.sort((a: TradeOperation, b: TradeOperation) =>
 			sortNumber(new Date(a.date).valueOf(), new Date(b.date).valueOf())
 		);
+	}
+
+	private _removeOrder(journal: Params): Observable<any> {
+		return this._api.removeOrder(journal).pipe(
+			switchMap((response: Response<any>) => {
+				if (response.success || response.message.indexOf('30027')) {
+					return this._api.removeJournalItem(journal['id'] as number);
+				}
+
+				return of(response);
+			})
+		);
+	}
+
+	private _removeStopOrder(journal: Params): Observable<any> {
+		return this._api.removeStopOrder(journal).pipe(
+			switchMap((response: Response<any>) => {
+				if (response.success || response.message.indexOf('30027')) {
+					return this._api.removeJournalItem(journal['id'] as number);
+				}
+
+				return of(response);
+			})
+		);
+	}
+
+	private _removeAllOrders(journal: TradeJournal[]): Observable<Response<any>[]> {
+		const order = journal.filter((item: TradeJournal) => this.isOrder(item.orderTypeText));
+		const orderStop = journal.filter((item: TradeJournal) => this.isStopOrder(item.orderTypeText));
+
+		return forkJoin([
+			...order.map((item: TradeJournal) => this._removeOrder(item)),
+			...orderStop.map((item: TradeJournal) => this._removeStopOrder(item)),
+		]);
 	}
 
 	isOrder(type: string): boolean {
