@@ -44,7 +44,7 @@ export interface RequestFormValue {
 	quantity: number;
 	lot: number;
 	lots: number;
-	stopPrice: number;
+	stopPrice: number | null;
 	total: number;
 }
 

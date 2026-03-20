@@ -263,6 +263,12 @@
         tuiHintAppearance="dark"
         style="color: var(--tui-text-secondary)"
         icon="@tui.timer"></tui-icon>
+    } @else if (item.status === 'BROKEN') {
+      <tui-icon
+        tuiHint="Заявка у брокера не обнаружена"
+        tuiHintAppearance="dark"
+        style="color: var(--tui-text-negative)"
+        icon="@tui.refresh-cw-off"></tui-icon>
     } @else {
       &mdash;
     }
