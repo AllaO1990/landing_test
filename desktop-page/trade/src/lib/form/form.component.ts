@@ -1,94 +1,100 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  forwardRef,
-  inject,
-  Injector,
-  OnDestroy,
-  signal,
-  WritableSignal,
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	forwardRef,
+	inject,
+	Injector,
+	OnDestroy,
+	signal,
+	WritableSignal,
 } from '@angular/core';
-import {HeaderComponent, UiList, UiListItem} from '@ui/components/list';
-import {TuiButtonLoading, TuiCheckbox, TuiChevron} from '@taiga-ui/kit';
+import { HeaderComponent, UiList, UiListItem } from '@ui/components/list';
+import { TuiButtonLoading, TuiCheckbox, TuiChevron } from '@taiga-ui/kit';
 import {
-  AbstractControl,
-  ControlValueAccessor,
-  FormArray,
-  FormControl,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
+	AbstractControl,
+	ControlValueAccessor,
+	FormArray,
+	FormControl,
+	FormGroup,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule,
 } from '@angular/forms';
-import {TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar} from '@taiga-ui/core';
-import {TuiExpand} from '@taiga-ui/experimental';
-import {AsyncPipe, DatePipe, NgTemplateOutlet} from '@angular/common';
-import {FilterComponent} from '../filter/filter.component';
-import {IdeaFacade} from 'stores/facades/idea.facade';
+import { TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiHint, TuiIcon, TuiScrollbar } from '@taiga-ui/core';
+import { TuiExpand } from '@taiga-ui/experimental';
+import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
+import { FilterComponent } from '../filter/filter.component';
+import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  finalize,
-  map,
-  Observable,
-  pairwise,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-  timer,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	finalize,
+	map,
+	Observable,
+	pairwise,
+	shareReplay,
+	startWith,
+	switchMap,
+	tap,
+	timer,
 } from 'rxjs';
 import {
-  StockPosition,
-  StockPositionActionEntry,
-  StockPositionActionTarget,
-  StockPositionIdeaEntry,
-  StockPositionStop,
-  StockPositionTarget,
+	StockPosition,
+	StockPositionActionEntry,
+	StockPositionActionTarget,
+	StockPositionIdeaEntry,
+	StockPositionStop,
+	StockPositionTarget,
 } from 'types/position';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {ApiTradeService} from '@data-access-trade/api.service';
-import {TradeStore} from '@data-access-trade/store.trade';
-import {DirectionTypePipe} from '@data-access-trade/direction-type.pipe';
-import {OrderTypePipe} from '@data-access-trade/order-type.pipe';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ApiTradeService } from '@data-access-trade/api.service';
+import { TradeStore } from '@data-access-trade/store.trade';
+import { DirectionTypePipe } from '@data-access-trade/direction-type.pipe';
+import { OrderTypePipe } from '@data-access-trade/order-type.pipe';
 import {
-  TradeAccount,
-  TradeLimit,
-  TradeOperation,
-  TradeOperations,
-  TradeOrder,
-  TradeOrders,
-  TradePortfolio,
-  TradeSource,
-  TradeStopOrder,
-  TradeStopOrders,
-  TradeToken,
+	TradeAccount,
+	TradeLimit,
+	TradeOperation,
+	TradeOperations,
+	TradeOrder,
+	TradeOrders,
+	TradePortfolio,
+	TradeSource,
+	TradeStopOrder,
+	TradeStopOrders,
+	TradeToken,
 } from '@data-access-trade/types';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {RequestFormValue} from '../request/request.component';
-import {TradeFormService} from './form.service';
-import {TuiItem, TuiPopover} from '@taiga-ui/cdk';
-import {ControlValue} from './form.types';
-import {DetailsComponent} from '../details/details.component';
-import {Params} from '@angular/router';
-import {TuiBreakpointMediaKey} from '@taiga-ui/core/services/breakpoint.service';
-import {DataAccess, Response} from 'types/response';
-import {TradeFormDialogService} from './form.dialog.service';
-import {DIALOG, DialogService} from '@ui/components/dialog';
-import {TIMER_INTERVAL} from 'tokens/desktop/timer-interval';
-import {POLYMORPHEUS_CONTEXT} from '@taiga-ui/polymorpheus';
-import {calculateEntries, calculateStop, calculateTargets} from 'utils/idea-calculate';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { RequestFormValue } from '../request/request.component';
+import { TradeFormService } from './form.service';
+import { TuiItem, TuiPopover } from '@taiga-ui/cdk';
+import { ControlValue } from './form.types';
+import { DetailsComponent } from '../details/details.component';
+import { Params } from '@angular/router';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { DataAccess, Response } from 'types/response';
+import { TradeFormDialogService } from './form.dialog.service';
+import { DIALOG, DialogService } from '@ui/components/dialog';
+import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
+import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import {
-  TRADE_ORDER_TYPE_LIMIT,
-  TRADE_STOP_ORDER_TYPE_STOP_LOSS,
-  TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
+	calculateEntries,
+	calculateStop,
+	calculateTargets,
+	transformEntries,
+	transformTargets,
+} from 'utils/idea-calculate';
+import {
+	TRADE_ORDER_TYPE_LIMIT,
+	TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+	TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
 } from '@data-access-trade/order.constants';
-import {StockInstrument} from 'types/stock';
-import {TradeJournal, TradeJournalStatus, TradeJournalSystem} from 'types/trade';
-import {StockPositionType} from 'types/stock-position-type';
+import { StockInstrument } from 'types/stock';
+import { TradeJournal, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
+import { StockPositionType } from 'types/stock-position-type';
 
 interface DefaultIdea {
 	entry: StockPositionIdeaEntry[];
@@ -1237,22 +1243,38 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	}
 
 	private _getStartIdeaWithLimit(position: StockPosition, limit: number | null): DefaultIdea {
-		const entries = calculateEntries(
-			position.idea.entries,
-			position.idea.instrument.lot,
-			position.idea.minPriceIncrement,
-			limit
-		);
+		if (position.idea.author === 'bot') {
+			const entries = calculateEntries(
+				position.idea.entries,
+				position.idea.instrument.lot,
+				position.idea.minPriceIncrement,
+				limit
+			);
+
+			return {
+				entry: entries,
+				out: calculateTargets(
+					position.idea.positionType as 'long' | 'short',
+					position.idea.targets,
+					entries,
+					position.idea.instrument.lot,
+					position.idea.minPriceIncrement
+				),
+				stop: calculateStop(
+					position.idea.positionType as 'long' | 'short',
+					position.idea.stop ? [position.idea.stop] : [],
+					entries,
+					position.idea.instrument.lot,
+					position.idea.instrument.minPriceIncrement
+				),
+			};
+		}
+
+		const entries = transformEntries(position.idea.entries, position.idea.instrument.lot);
 
 		return {
-			entry: entries,
-			out: calculateTargets(
-				position.idea.positionType as 'long' | 'short',
-				position.idea.targets,
-				entries,
-				position.idea.instrument.lot,
-				position.idea.minPriceIncrement
-			),
+			entry: transformEntries(position.idea.entries, position.idea.instrument.lot),
+			out: transformTargets(position.idea.targets, position.idea.instrument.lot),
 			stop: calculateStop(
 				position.idea.positionType as 'long' | 'short',
 				position.idea.stop ? [position.idea.stop] : [],

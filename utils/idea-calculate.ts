@@ -144,3 +144,24 @@ export const calculateStop = (
 		},
 	];
 };
+
+export const transformEntries = (list: StockPositionIdeaEntry[], lot: number) => {
+	return list.map((item: StockPositionIdeaEntry) => ({
+		...item,
+		lots: item.quantity / lot,
+		totalPrice: getNumberPrecision(item.price * item.quantity, 2, 'floor'),
+	}));
+};
+
+export const transformTargets = (list: StockPositionTarget[], lot: number): StockPositionTarget[] => {
+	return list.map((item) => {
+		return {
+			...item,
+			lots: item.amount / lot,
+			totalPrice: getNumberPrecision(item.price * item.amount, 2),
+			depositShare: null,
+			brokerId: null,
+		};
+	});
+};
+
