@@ -6,6 +6,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TradeStore } from '@data-access-trade/store.trade';
 import {
 	BehaviorSubject,
+	debounceTime,
 	distinctUntilChanged,
 	filter,
 	map,
@@ -97,6 +98,18 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 	get controlTrade(): FormControl {
 		return this.formGroup.get('trade') as FormControl;
 	}
+
+	readonly isDisabled$: Observable<boolean> = this.controlTrade.valueChanges.pipe(
+		startWith(this.controlTrade.value),
+		map((value: { entry: TradeJournal[] | null; out: TradeJournal[] | null; stop: TradeJournal[] | null } | null) => {
+			if (!value) {
+				return true;
+			}
+
+			return [...(value.entry || []), ...(value.out || [])].findIndex((item) => item.status === null) === -1;
+		}),
+		debounceTime(300)
+	);
 
 	readonly sourceValueChanges$: Observable<SourceValue> = this.formGroup.valueChanges.pipe(
 		startWith(this.formGroup.value),

@@ -19,6 +19,7 @@
     <!--      [loading]="loading"-->
     <button
       [loading]="isLoading$ | async"
+      [disabled]="isDisabled$ | async"
       type="submit"
       (click)="onSubmit($event)"
       appearance="primary"

@@ -616,6 +616,84 @@ export class TradeFormService {
 		];
 	}
 
+	updateIdeaFromJournal(position: StockPosition, journal: TradeJournal[]) {
+		const entries = this.getEntryFromJournal(position, journal);
+		const outs = this.getOutFromJournal(position, journal);
+
+		return {
+			actions: {
+				entries: [
+					...position.actions.entries.map((item: any) => ({
+						amount: item.amount,
+						brokerId: item.brokerId,
+						date: item.date,
+						price: item.price,
+					})),
+					...entries.map((item: TradeJournal) => ({
+						amount: item.quantity,
+						date: item.expireDate,
+						brokerId: 1,
+						price: item.price,
+					})),
+				].sort((a: { date: string }, b: { date: string }) =>
+					sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+				),
+				outs: [
+					...position.actions.outs.map((item: any) => ({
+						amount: item.amount,
+						brokerId: item.brokerId,
+						date: item.date,
+						price: item.price,
+					})),
+					...outs.map((item: TradeJournal) => ({
+						amount: item.quantity,
+						date: item.expireDate,
+						brokerId: 1,
+						price: item.price,
+					})),
+				].sort((a: { date: string }, b: { date: string }) =>
+					sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
+				),
+			},
+			dividends: position.dividends.map((item: any) => ({
+				amount: item.amount,
+				brokerId: item.brokerId,
+				date: item.date,
+				size: item.size,
+			})),
+			comissions: [
+				...position.comissions.map((item: any) => ({
+					brokerId: item.brokerId,
+					comment: item.comment,
+					date: item.date,
+					size: item.size,
+				})),
+				...journal
+					.filter((item: TradeJournal) => item.commission !== 0 || item.commission !== null)
+					.map((item: TradeJournal) => ({
+						brokerId: 1,
+						date: item.expireDate,
+						size: item.commission,
+					})),
+			],
+			idea: {
+				goals: position.idea.targets.map((item: any) => ({
+					amount: item.amount,
+					goal: item.price,
+				})),
+				instrumentId: position.idea.instrument.id,
+				parentId: position.idea.parentId,
+				portfolioId: position.idea.portfolioId,
+				positionType: position.idea.positionType,
+				strategyId: position.idea.strategy!.id,
+				amount: position.idea.entries.reduce((acc, item) => (acc += item.quantity), 0),
+				entry: position.idea.entries[0] ? position.idea.entries[0].price : null,
+				stop: position.idea.stop ? position.idea.stop.price : null,
+				watch: true,
+			},
+		};
+	}
+
 	updateIdea(position: StockPosition, entries: TradeOperations, outs: TradeOperations, commissions: TradeOperations) {
 		return {
 			actions: {
