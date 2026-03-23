@@ -14,6 +14,7 @@ import {
   TradeOrders,
   TradeOrderType,
   TradeOrderTypeDescription,
+  TradePortfolio,
   TradePosition,
   TradeSource,
   TradeStopOrder,
@@ -1040,6 +1041,53 @@ export class TradeFormService {
 		const list = [TRADE_STOP_ORDER_TYPE_STOP_LOSS, TRADE_STOP_ORDER_TYPE_STOP_LIMIT];
 
 		return list.find((item: TradeOrderType) => item.type === name) || null;
+	}
+
+	getEntryPositionFromJournal(
+		accountId: string,
+		source: TradeSource,
+		position: StockPosition,
+		journal: TradeJournal[],
+		portfolio: TradePortfolio
+	): TradeJournal[] {
+		const portfolioPosition = portfolio.positions[0];
+
+		if (!position) {
+			return [];
+		}
+
+		const journalExecuted = journal.filter((item: TradeJournal) => item.status === TradeJournalStatus.EXECUTED);
+		const quantityExecuted = journalExecuted.reduce((acc: number, item: TradeJournal) => acc + item.quantity, 0);
+
+		if (quantityExecuted === Math.abs(portfolioPosition.quantity)) {
+			return [];
+		}
+
+		const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
+		const precision = priceIncrement === 8 ? priceIncrement : 0;
+		const totalExecuted = journalExecuted.reduce((acc: number, item: TradeJournal) => acc + item.total, 0);
+		const quantityRemainder = Math.abs(portfolioPosition.quantity) - quantityExecuted;
+		const totalRemainder = getNumberPrecision(
+			Math.abs(portfolioPosition.quantity) * portfolioPosition.averagePositionPrice.value - totalExecuted,
+			2
+		);
+		const priceRemainder = getNumberPrecision(totalRemainder / quantityRemainder, priceIncrement);
+
+		return [
+			{
+				...this.getDefaultControlValue(position),
+				accountId,
+				sourceId: source.id,
+				id: 0,
+				total: totalRemainder,
+				quantity: quantityRemainder,
+				lots: getNumberPrecision(quantityRemainder / position.idea.instrument.lot, precision),
+				price: priceRemainder,
+				status: TradeJournalStatus.EXECUTED,
+				orderType: TRADE_ORDER_TYPE_LIMIT.id,
+				orderTypeText: TRADE_ORDER_TYPE_LIMIT.type,
+			},
+		];
 	}
 
 	getEntryFromJournal(position: StockPosition, journal: TradeJournal[]): TradeJournal[] {

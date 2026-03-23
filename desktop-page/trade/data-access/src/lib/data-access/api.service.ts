@@ -1,24 +1,24 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { APP_CONFIG } from 'tokens/desktop/config';
-import { catchError, Observable, of } from 'rxjs';
-import { Response } from 'types/response';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {APP_CONFIG} from 'tokens/desktop/config';
+import {catchError, Observable, of} from 'rxjs';
+import {Response} from 'types/response';
 import {
-	TradeAccounts,
-	TradeLimit,
-	TradeLimitList,
-	TradeOperations,
-	TradeOrder,
-	TradeOrderParams,
-	TradeOrders,
-	TradeOrderTypes,
-	TradePortfolio,
-	TradeSources,
-	TradeToken,
-	TradeTokenSource,
+  TradeAccounts,
+  TradeLimit,
+  TradeLimitList,
+  TradeOperations,
+  TradeOrder,
+  TradeOrderParams,
+  TradeOrders,
+  TradeOrderTypes,
+  TradePortfolio,
+  TradeSources,
+  TradeToken,
+  TradeTokenSource,
 } from './types';
-import { Params } from '@angular/router';
-import { TradeJournal } from 'types/trade';
+import {Params} from '@angular/router';
+import {TradeJournal} from 'types/trade';
 
 @Injectable()
 export class ApiTradeService {
@@ -131,7 +131,7 @@ export class ApiTradeService {
 				expireDate: body['expireDate'],
 				instrumentId: body['instrumentId'],
 				price: body['price'],
-				quantity: body['quantity'],
+				quantity: body['lots'],
 				sourceId: body['sourceId'],
 				priceType: 0,
 				stopOrderType: body['orderType'],
