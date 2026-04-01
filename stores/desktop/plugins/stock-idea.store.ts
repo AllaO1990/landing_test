@@ -17,6 +17,7 @@ import { QueryParams } from 'utils/query-params';
 import { filter, take } from 'rxjs/operators';
 import { EventSelected } from 'types/events';
 import { Params } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 	readonly ideas$: Observable<Positions | null> = this.select((state: StockIdeaState) => state.ideas);
@@ -25,6 +26,8 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 	readonly lastPrice$: Observable<null | WithLastPrice> = this.select((state: StockIdeaState) => state.lastPrice);
 	readonly instrument$: Observable<StockInstrument | null> = this.select((state: StockIdeaState) => state.instrument);
 	readonly isLoading$: Observable<boolean> = this.select((state: StockIdeaState) => state.isLoading);
+
+	cacheParam: Params = {};
 
 	constructor(private readonly _api: DesktopService, private readonly _queryParams: QueryParams) {
 		super({
@@ -110,6 +113,13 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 				return null;
 			}
 
+			const find =
+				[...((state.ideas && state.ideas.items) || []), ...((state.positions && state.positions.items) || [])].find(
+					(idea: Position) => idea.id === id
+				) || null;
+
+			// console.log(find, state.ideas, state.positions);
+
 			return (
 				[...((state.ideas && state.ideas.items) || []), ...((state.positions && state.positions.items) || [])].find(
 					(idea: Position) => idea.id === id
@@ -119,13 +129,11 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 	}
 
 	readonly loadIdeas = this.effect((stream$: Observable<Params>) => {
-		let cacheParam = {};
-
 		return stream$.pipe(
 			switchMap((params: Params) => {
-				cacheParam = params !== null ? params : cacheParam;
+				this.cacheParam = params !== null ? params : this.cacheParam;
 
-				return this._api.getIdeaList(cacheParam).pipe(
+				return this._api.getIdeaList(this.cacheParam).pipe(
 					map((response: ResponsePositions) => ({
 						...response,
 						items: response.items && response.items.map((item: ResponsePosition) => new Position(item)),
@@ -167,7 +175,24 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 
 				return this._api
 					.getIdea(value)
-					.pipe(catchError((err) => of(null).pipe(tap(() => this._queryParams.update(null, '')))));
+					.pipe
+					// catchError((err: HttpErrorResponse) => {
+					//   console.error(err);
+					//   // if (err.status)
+					//
+					//   return of({
+					//     data: null,
+					//     message: err.message,
+					//     success: true,
+					//   });
+					// })
+					()
+					.pipe(
+						catchError((err) => {
+							console.error(err);
+							return of(null).pipe(tap(() => this._queryParams.update(null, '')));
+						})
+					);
 			}),
 			tap((result: Response<StockPosition | null> | null) => {
 				result && this.updateIdea(result.data);
@@ -226,7 +251,7 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 							filter((position: Position | null): position is Position => position !== null),
 							take(1),
 							tap((position: Position) => {
-								console.log(position);
+								// console.log(position);
 
 								this._queryParams.update({
 									type: body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,
@@ -248,8 +273,9 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 			tap(() => this.updateIsLoading(true)),
 			switchMap((data: { id: StockId; body: any }) =>
 				this._api.editIdea(data.id, data.body).pipe(
-					catchError((err: Error) => {
+					catchError((err: HttpErrorResponse) => {
 						console.error(err);
+
 						this.updateIsLoading(false);
 
 						return of({
@@ -275,12 +301,21 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 						}
 					}),
 
+					tap((response: Response<{ id: number }>) => {
+						if (response.data.id) {
+							this._queryParams.update({
+								type: data.body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,
+								id: response.data.id,
+							});
+						}
+					}),
+
 					switchMap((response: Response<{ id: number }>) =>
 						this.selectFromAll(response.data.id).pipe(
 							filter((position: Position | null): position is Position => position !== null),
 							take(1),
 							tap((position: Position) => {
-								// console.log(position);
+								console.log(position);
 
 								const { trade } = this._queryParams.value();
 

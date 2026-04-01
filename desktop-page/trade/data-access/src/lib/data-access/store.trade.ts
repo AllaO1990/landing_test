@@ -310,6 +310,21 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
+	removeBrokerOrder = this.effect((stream$: Observable<Params>) =>
+		stream$.pipe(
+			switchMap((params: Params) =>
+				this._api.removeOrder(params).pipe(
+					tap((response: Response<TradeOrder>) => {
+						if (response.success) {
+							this.loadOrders(params);
+							this.loadOperations(params);
+						}
+					})
+				)
+			)
+		)
+	);
+
 	changeOrder = this.effect((stream$: Observable<TradeJournal & { orderTypePrev: TradeOrderType | null }>) =>
 		stream$.pipe(
 			switchMap((params: TradeJournal & { orderTypePrev: TradeOrderType | null }) =>
@@ -377,6 +392,21 @@ export class TradeStore extends ComponentStore<TradeState> {
 					})
 				);
 			})
+		)
+	);
+
+	removeBrokerStopOrder = this.effect((stream$: Observable<Params>) =>
+		stream$.pipe(
+			switchMap((params: Params) =>
+				this._api.removeStopOrder(params).pipe(
+					tap((response: Response<TradeStopOrders>) => {
+						if (response.success) {
+							this.loadOrders(params);
+							this.loadOperations(params);
+						}
+					})
+				)
+			)
 		)
 	);
 

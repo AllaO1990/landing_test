@@ -1,41 +1,34 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { TuiDay, TuiPopover, tuiPure, TuiStringHandler, TuiTime } from '@taiga-ui/cdk';
-import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
+import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
+import {TuiDay, TuiPopover, tuiPure, TuiStringHandler, TuiTime} from '@taiga-ui/cdk';
+import {POLYMORPHEUS_CONTEXT} from '@taiga-ui/polymorpheus';
+import {TuiAppearance, TuiButton, TuiDataList, TuiDataListComponent, TuiScrollbar, TuiTextfield,} from '@taiga-ui/core';
+import {AsyncPipe} from '@angular/common';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TuiTextfieldControllerModule} from '@taiga-ui/legacy';
+import {combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith} from 'rxjs';
 import {
-	TuiAppearance,
-	TuiButton,
-	TuiDataList,
-	TuiDataListComponent,
-	TuiScrollbar,
-	TuiTextfield,
-} from '@taiga-ui/core';
-import { AsyncPipe } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TuiTextfieldControllerModule } from '@taiga-ui/legacy';
-import { combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith } from 'rxjs';
-import {
-	TuiChevron,
-	TuiDataListDropdownManager,
-	TuiDataListWrapper,
-	TuiInputDateTime,
-	TuiInputNumber,
-	TuiSelect,
+  TuiChevron,
+  TuiDataListDropdownManager,
+  TuiDataListWrapper,
+  TuiInputDateTime,
+  TuiInputNumber,
+  TuiSelect,
 } from '@taiga-ui/kit';
-import { TradeStore } from '@data-access-trade/store.trade';
+import {TradeStore} from '@data-access-trade/store.trade';
 import {
-	TradeOrderType,
-	TradeOrderTypeDescription,
-	TradeOrderTypesDescription,
-	TradeSource,
-	TradeSources,
+  TradeOrderType,
+  TradeOrderTypeDescription,
+  TradeOrderTypesDescription,
+  TradeSource,
+  TradeSources,
 } from '@data-access-trade/types';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { TRADE_EXPIRATION_TYPES } from './request.constants';
-import { TuiCard } from '@taiga-ui/layout';
-import { endOfWeek } from 'date-fns/endOfWeek';
-import { endOfMonth } from 'date-fns/endOfMonth';
-import { TradeOrderTypeText, TradeStopOrderTypeText } from '@data-access-trade/order.types';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {TRADE_EXPIRATION_TYPES} from './request.constants';
+import {TuiCard} from '@taiga-ui/layout';
+import {endOfWeek} from 'date-fns/endOfWeek';
+import {endOfMonth} from 'date-fns/endOfMonth';
+import {TradeOrderTypeText, TradeStopOrderTypeText} from '@data-access-trade/order.types';
 
 export interface RequestFormValue {
 	direction: boolean;
@@ -242,7 +235,7 @@ export class RequestTradeComponent implements AfterViewInit {
 
 			this._updateControl(this.controlDirection, direction);
 			this._updateControl(this.controlLots, { value: lots, disabled: quantity.disabled });
-			this._updateControl(this.controlStopPrice, stopPriceCalc.value ? stopPriceCalc : lastPrice);
+			this._updateControl(this.controlStopPrice, stopPriceCalc);
 			this._updateControl(this.controlPrice, price);
 			this._updateControl(this.controlOrderType, orderType);
 			this._updateControl(this.controlLot, lot, { onlySelf: false });
@@ -280,7 +273,7 @@ export class RequestTradeComponent implements AfterViewInit {
 				}
 
 				if (value && this.#store.isStopOrder(value.type)) {
-					this.controlStopPrice.patchValue(this.price || this.lastPrice);
+					this.controlStopPrice.patchValue(this.controlStopPrice.value || this.price || this.lastPrice);
 					this.controlExpirationType.enable();
 					this.controlStopPrice.enable();
 					this.controlSpread.enable();

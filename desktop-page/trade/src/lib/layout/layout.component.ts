@@ -26,6 +26,7 @@ import { StockPosition } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import { TradeJournal, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
 import { TuiButtonLoading } from '@taiga-ui/kit';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 const filtered = (list: { status: string }[]) =>
 	list.reduce(
@@ -358,12 +359,24 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 		//
 		// this.loading = true;
 
-		const { idea, position, entry, out, stop, remove, filter } = this.formGroup.getRawValue().trade;
+		this.controlTrade.valueChanges
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				startWith(this.controlTrade.getRawValue()),
+				distinctUntilChanged((a, b) => {
+					return a.position.idea.id === b.position.idea.id;
+				}),
+				filter((value: { position: StockPosition }) => value.position.idea.author !== 'bot')
+				// take(1)
+			)
+			.subscribe((value) => {
+				this._onSubmit(value.position.idea.id as number);
+			});
+
+		const { idea, position, entry, out } = this.formGroup.getRawValue().trade;
 
 		const entries = entry.filter((item: { status: string }) => item.status === TradeJournalStatus.EXECUTED);
 		const outs = out.filter((item: { status: string }) => item.status === TradeJournalStatus.EXECUTED);
-
-		this.controlTrade.patchValue({ remove: [] });
 
 		const positionUpdate = {
 			actions: {
@@ -410,34 +423,14 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 			},
 		};
 
-		// this.#idea.editIdea({
-		// 	id: position.idea.id!,
-		// 	body: positionUpdate,
-		// });
-		//
+		if (position.idea.author === 'bot') {
+			this.#idea.editIdea({
+				id: position.idea.id!,
+				body: positionUpdate,
+			});
+		}
 
 		// const value = this.controlTrade.value;
-		//
-
-		const removed = remove.map((item: TradeJournal & TradeJournalSystem) => {
-			const { change, isEdit, remove, ...journal } = item;
-
-			return journal;
-		});
-
-		const update = [...entry, ...out, ...stop].map((item: TradeJournal & TradeJournalSystem) => {
-			const { change, isEdit, remove, ...journal } = item;
-
-			if (journal.status === null) {
-				journal.status = TradeJournalStatus.UNLOADING;
-			}
-
-			return journal;
-		});
-
-		console.log(removed, update);
-
-		this.#store.onSubmitJournal({ removed, update });
 
 		// const entryUnloadingOrders: TradeJournal[] = entry.filter(
 		// 	(item: TradeJournal) => item.status === ControlValueStatus.UNLOADING
@@ -469,6 +462,30 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 		// if (common.length > 0) {
 		// 	this.#store.addOrders(common);
 		// }
+	}
+
+	private _onSubmit(ideaId: number): void {
+		const { entry, out, stop, remove } = this.formGroup.getRawValue().trade;
+
+		this.controlTrade.patchValue({ remove: [] });
+
+		const removed = remove.map((item: TradeJournal & TradeJournalSystem) => {
+			const { change, isEdit, remove, ...journal } = item;
+
+			return { ...journal, ideaId };
+		});
+
+		const update = [...entry, ...out, ...stop].map((item: TradeJournal & TradeJournalSystem) => {
+			const { change, isEdit, remove, ...journal } = item;
+
+			if (journal.status === null) {
+				journal.status = TradeJournalStatus.UNLOADING;
+			}
+
+			return { ...journal, ideaId };
+		});
+
+		this.#store.onSubmitJournal({ removed, update });
 	}
 
 	private _getOrder(controlValue: ControlValue, accountId: string, instrumentId: string, sourceId: number): any {

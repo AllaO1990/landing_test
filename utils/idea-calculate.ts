@@ -21,6 +21,13 @@ export const calculateEntries = (
 	const precisionAmount = getPriceIncrement(minPriceIncrement) === 8 ? 8 : 0;
 	const lots = getNumberPrecision(limit / (list[0].price * lot), precisionAmount, 'floor');
 
+	if (lots < 1 && precisionAmount === 0) {
+		return list.map((item: StockPositionIdeaEntry) => ({
+			...item,
+			lots: item.quantity / lot,
+		}));
+	}
+
 	return [
 		{
 			...list[0],
@@ -164,4 +171,3 @@ export const transformTargets = (list: StockPositionTarget[], lot: number): Stoc
 		};
 	});
 };
-

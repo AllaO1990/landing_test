@@ -2,6 +2,7 @@ import { FacadeStore } from './facade';
 import { SelectStore } from './select.store';
 import { DesktopService } from '@desktop-data/desktop-data';
 import {
+	catchError,
 	combineLatest,
 	debounceTime,
 	distinctUntilChanged,
@@ -27,6 +28,7 @@ import { IntervalStore } from 'stores/plugins/interval.store';
 import { QueryParams } from 'utils/query-params';
 import { Response } from 'types/response';
 import { StockPosition } from 'types/position';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -287,6 +289,18 @@ export class MainStore extends ComponentStore<any> {
 					event.type === EventSelected.TRANSACTION
 				) {
 					return this.api.getIdea(event.id).pipe(
+						catchError((error: HttpErrorResponse) => {
+							if (error.status === 302 && error.error.data) {
+								this._queryParams.update({
+									type: EventSelected.IDEA,
+									id: error.error.data,
+								});
+
+								return of();
+							}
+
+							return of(error.error);
+						}),
 						map((response: Response<StockPosition | null>) => response.data),
 						tap((position: StockPosition | null) => {
 							this.idea.updateIdea(position);

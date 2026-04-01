@@ -95,6 +95,7 @@ import {
 import { StockInstrument } from 'types/stock';
 import { TradeJournal, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
 import { StockPositionType } from 'types/stock-position-type';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 interface DefaultIdea {
 	entry: StockPositionIdeaEntry[];
@@ -388,26 +389,38 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						this.portfolio$.pipe(
 							filter((portfolio: TradePortfolio | null): portfolio is TradePortfolio => portfolio !== null)
 						),
+						this.journal$,
 					]).pipe(
-						debounceTime(1000),
-						switchMap(
-							([orders, stopOrders, operations, portfolio]: [TradeOrders, TradeStopOrders, TradeOperations, TradePortfolio]) =>
-								this.journal$.pipe(
-									map((journal: TradeJournal[] | null) => {
-										if (journal === null) {
-											return this._initControlsForIdea(position, orders, stopOrders, operations, portfolio, idea);
-										}
+						debounceTime(500),
+						map(
+							([orders, stopOrders, operations, portfolio, journal]: [
+								TradeOrders,
+								TradeStopOrders,
+								TradeOperations,
+								TradePortfolio,
+								TradeJournal[] | null
+							]) => {
+								let common: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] } = {
+									entry: [],
+									out: [],
+									stop: [],
+								};
 
-										this.controlIsNew.setValue(false);
-										return this._initControlsForJournal(position, journal, orders, stopOrders, operations);
-									}),
-									map(({ entry, out, stop }: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] }) => ({
-										entry: [...this._getEntryPositionFromJournal(position, entry, portfolio), ...entry],
-										out,
-										stop,
-										position,
-									}))
-								)
+								if (journal === null) {
+									common = this._initControlsForIdea(position, orders, stopOrders, operations, portfolio, idea);
+								} else {
+									common = this._initControlsForJournal(position, journal, orders, stopOrders, operations);
+									this.controlIsNew.setValue(false);
+								}
+
+								const entryPosition = this._getEntryPositionFromJournal(position, common.entry, portfolio);
+
+								return {
+									...common,
+									entry: [...entryPosition, ...common.entry],
+									position,
+								};
+							}
 						)
 					)
 				),
@@ -470,7 +483,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						filter((status: boolean) => status)
 					)
 				),
-				tap((data) => console.log(data)),
 				switchMap(() =>
 					this.formArrayOut.valueChanges.pipe(
 						takeUntilDestroyed(this.#destroyRef),
@@ -596,7 +608,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 	writeValue(obj: any): void {
 		if (obj && obj.remove && obj.remove.length === 0) {
-			this.formArrayRemove.clear();
+			this.formArrayRemove.clear({ emitEvent: false });
+
+			this.formArrayEntry.clear({ emitEvent: false });
+
+			this.formArrayOut.clear({ emitEvent: false });
 		}
 
 		this.formGroup.patchValue(obj);
@@ -615,14 +631,32 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	}
 
 	onRemove(event: Event, item: any): void {
+		event.preventDefault();
+
 		item['removed'] = true;
 
+		const {
+			account: { accountId },
+			source,
+			instrument,
+		} = this.controlFilter.value;
+
 		if (this.#store.isOrder(item.orderTypeText)) {
-			this.onRemoveOrder(event, item);
+			this.#store.removeBrokerOrder({
+				accountId,
+				instrumentId: instrument.id,
+				orderId: item.orderId,
+				sourceId: source.id,
+			});
 		}
 
 		if (this.#store.isStopOrder(item.orderTypeText)) {
-			this.onRemoveStopOrder(event, item);
+			this.#store.removeBrokerStopOrder({
+				accountId,
+				instrumentId: instrument.id,
+				orderId: item.stopOrderId,
+				sourceId: source.id,
+			});
 		}
 	}
 
@@ -647,7 +681,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		} = this.controlPosition.value;
 		const directionValue = direction ? positionType === StockPositionType.LONG : positionType !== StockPositionType.LONG;
 
-		const minPriceIncrement = getNumberPrecision(instrument.minPriceIncrement * 3, 2);
+		const minPriceIncrement = getNumberPrecision(
+			instrument.minPriceIncrement * 3,
+			getPriceIncrement(instrument.minPriceIncrement)
+		);
 		let max = null;
 
 		if (type === 'out' && this.formArrayEntry.value && this.formArrayEntry.value.length > 0) {
@@ -680,7 +717,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						removed: false,
 						lot: instrument.lot,
 						lots: Math.floor(value.quantity / instrument.lot),
-						total: getNumberPrecision(value.price * value.quantity, 2),
+						total: value.total,
 					};
 					control.setControl(control.controls.length, new FormControl(calcValue));
 				}
@@ -693,7 +730,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		item['change'] = true;
 
 		const { account, source, instrument, lastPrice } = this.controlFilter.value;
-		const minPriceIncrement = getNumberPrecision(instrument.minPriceIncrement * 3, 2);
+		const minPriceIncrement = getNumberPrecision(
+			instrument.minPriceIncrement * 3,
+			getPriceIncrement(instrument.minPriceIncrement)
+		);
 
 		this.#dialog
 			.openTradeRequest(this.#injector, {
@@ -726,7 +766,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 					}
 					control.setControl(index, new FormControl(calcValue));
 				} else {
-					item['change'] = false;
+					control.at(index).patchValue({
+						...item,
+						change: false,
+					});
 				}
 			});
 	}
@@ -1087,7 +1130,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			const findStopOrder =
 				stopOrders.find(
 					(order: TradeStopOrder) =>
-						order.lotsRequested === item.quantity &&
+						order.lotsRequested === item.lots &&
+						order.price.value === item.price &&
 						order.stopPrice.value === item.stopPrice &&
 						+order.direction === +item.direction
 				) || null;
@@ -1104,10 +1148,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 			if (findStopOrder) {
 				item.orderId = findStopOrder.stopOrderId;
-				return item;
-			}
-
-			if (operationList.length === 0) {
 				return item;
 			}
 
@@ -1149,6 +1189,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				}
 
 				if (findStopOrder) {
+					console.log(findStopOrder);
 					return item;
 				}
 
@@ -1277,22 +1318,41 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	}
 
 	private _updateFormArray(formArray: FormArray, journal: TradeJournal[]): void {
-		const findControlDefault = formArray.controls.filter((control) => control.value.externalId === null);
 		const removeIds: number[] = this.formArrayRemove.controls.map((control) => control.value.id);
+		const addedIds: number[] = [];
 
-		formArray.clear({ emitEvent: false });
-
-		journal.forEach((item: TradeJournal) => {
-			if (removeIds.findIndex((id) => id === item.id) === -1) {
+		if (formArray.controls.length === 0) {
+			journal.forEach((item: TradeJournal) => {
 				formArray.push(new FormControl(item), { emitEvent: false });
+			});
+
+			formArray.patchValue([], { emitEvent: true });
+
+			return;
+		}
+
+		formArray.controls.forEach((control: AbstractControl) => {
+			const id: number = control.value.id;
+
+			if (id === 0) {
+				return;
+			}
+
+			const find: TradeJournal | null = journal.find((item: TradeJournal) => item.id === id) || null;
+
+			if (find !== null) {
+				addedIds.push(find.id);
+				control.patchValue(find, { emitEvent: false });
 			}
 		});
 
-		if (removeIds.length > 0) {
-			findControlDefault.forEach((control: AbstractControl<TradeJournal>) => {
-				formArray.push(control, { emitEvent: false });
-			});
-		}
+		const concatIds = [...removeIds, ...addedIds];
+
+		journal.forEach((item: TradeJournal) => {
+			if (concatIds.findIndex((id) => id === item.id) === -1) {
+				formArray.push(new FormControl(item), { emitEvent: false });
+			}
+		});
 
 		formArray.patchValue([], { emitEvent: true });
 	}

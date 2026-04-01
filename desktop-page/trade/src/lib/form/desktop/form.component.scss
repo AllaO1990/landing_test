@@ -98,7 +98,7 @@
 }
 
 .orders .row__item {
-  flex: 0 0 calc(100% / 7);
+  flex: 0 0 calc(100% / 8);
 }
 
 lib-list {
@@ -161,4 +161,8 @@ label {
   gap: 0.5rem;
 
   user-select: none;
+}
+
+.entry, .out, .stop, .operations, .orders {
+  margin-right: var(--padding-3);
 }

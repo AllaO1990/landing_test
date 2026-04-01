@@ -1,42 +1,42 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
-  StockPosition,
-  StockPositionAction,
-  StockPositionActionEntry,
-  StockPositionActionTarget,
-  StockPositionIdeaEntry,
-  StockPositionTarget,
+	StockPosition,
+	StockPositionAction,
+	StockPositionActionEntry,
+	StockPositionActionTarget,
+	StockPositionIdeaEntry,
+	StockPositionTarget,
 } from 'types/position';
 import {
-  TradeOperation,
-  TradeOperations,
-  TradeOrder,
-  TradeOrders,
-  TradeOrderType,
-  TradeOrderTypeDescription,
-  TradePortfolio,
-  TradePosition,
-  TradeSource,
-  TradeStopOrder,
-  TradeStopOrders,
+	TradeOperation,
+	TradeOperations,
+	TradeOrder,
+	TradeOrders,
+	TradeOrderType,
+	TradeOrderTypeDescription,
+	TradePortfolio,
+	TradePosition,
+	TradeSource,
+	TradeStopOrder,
+	TradeStopOrders,
 } from '@data-access-trade/types';
-import {sortNumber} from 'utils/sort-number';
-import {ActualTradeOperation, ActualTradeOperations, ControlValue} from './form.types';
-import {getNumberPrecision} from 'utils/get-number-precision';
+import { sortNumber } from 'utils/sort-number';
+import { ActualTradeOperation, ActualTradeOperations, ControlValue } from './form.types';
+import { getNumberPrecision } from 'utils/get-number-precision';
 import {
-  TRADE_ORDER_TYPE_BESTPRICE,
-  TRADE_ORDER_TYPE_LIMIT,
-  TRADE_ORDER_TYPE_MARKET,
-  TRADE_STOP_ORDER_TYPE_STOP_LIMIT,
-  TRADE_STOP_ORDER_TYPE_STOP_LOSS,
-  TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
+	TRADE_ORDER_TYPE_BESTPRICE,
+	TRADE_ORDER_TYPE_LIMIT,
+	TRADE_ORDER_TYPE_MARKET,
+	TRADE_STOP_ORDER_TYPE_STOP_LIMIT,
+	TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+	TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
 } from '@data-access-trade/order.constants';
-import {TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL} from '../request/request.constants';
-import {TradeStopOrderTypeText} from '@data-access-trade/order.types';
-import {WithLastPrice} from 'types/stock';
-import {getPriceIncrement} from 'utils/get-price-increment';
-import {TradeCoreJournal, TradeJournal, TradeJournalStatus} from 'types/trade';
-import {StockPositionType} from 'types/stock-position-type';
+import { TRADE_STOP_ORDER_EXPIRATION_TYPE_GOOD_TILL_CANCEL } from '../request/request.constants';
+import { TradeStopOrderTypeText } from '@data-access-trade/order.types';
+import { WithLastPrice } from 'types/stock';
+import { getPriceIncrement } from 'utils/get-price-increment';
+import { TradeCoreJournal, TradeJournal, TradeJournalStatus } from 'types/trade';
+import { StockPositionType } from 'types/stock-position-type';
 
 @Injectable()
 export class TradeFormService {
@@ -1052,7 +1052,7 @@ export class TradeFormService {
 	): TradeJournal[] {
 		const portfolioPosition = portfolio.positions[0];
 
-		if (!position) {
+		if (!portfolioPosition || portfolioPosition.quantity === 0) {
 			return [];
 		}
 

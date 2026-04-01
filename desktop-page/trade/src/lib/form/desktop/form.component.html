@@ -228,7 +228,7 @@
     {{ item.orderTypeText | tradeOrderType | async }}
   </div>
   <div class="item__value item__value--number row__item">
-    {{ (item.price || item.stopPrice) | tuiFormatNumber | async }}
+    {{ item.price | tuiFormatNumber | async }}
   </div>
   <div class="item__value item__value--number row__item">
     <span>{{ item.quantity | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
@@ -320,6 +320,7 @@
     <div class="header__item row__item">Лоты</div>
     <div class="header__item row__item">Комиссия</div>
     <div class="header__item row__item row__item--total">Стоимость</div>
+    <div class="header__item row__item"></div>
   </lib-list-header>
 </ng-template>
 

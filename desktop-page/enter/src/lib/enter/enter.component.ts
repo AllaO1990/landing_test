@@ -1,73 +1,73 @@
-import {TuiButtonLoading, TuiTabs} from '@taiga-ui/kit';
-import {AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
-import {AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector} from '@angular/core';
-import {TUI_WINDOW_SIZE, TuiPopover} from '@taiga-ui/cdk';
+import { TuiButtonLoading, TuiTabs } from '@taiga-ui/kit';
+import { AsyncPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, Injector } from '@angular/core';
+import { TUI_WINDOW_SIZE, TuiPopover } from '@taiga-ui/cdk';
 import {
-  TuiAlertService,
-  TuiBreakpointService,
-  TuiButton,
-  TuiHintDirective,
-  TuiIcon,
-  TuiNotification,
-  TuiScrollbar,
+	TuiAlertService,
+	TuiBreakpointService,
+	TuiButton,
+	TuiHintDirective,
+	TuiIcon,
+	TuiNotification,
+	TuiScrollbar,
 } from '@taiga-ui/core';
-import {POLYMORPHEUS_CONTEXT} from '@taiga-ui/polymorpheus';
+import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  merge,
-  Observable,
-  of,
-  pairwise,
-  shareReplay,
-  startWith,
-  Subject,
-  switchMap,
-  timer,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	merge,
+	Observable,
+	of,
+	pairwise,
+	shareReplay,
+	startWith,
+	Subject,
+	switchMap,
+	timer,
 } from 'rxjs';
-import {EnterActionComponent} from './action/action.component';
-import {EnterSidebarComponent} from './sidebar/sidebar.component';
-import {map} from 'rxjs/operators';
-import {TuiBreakpointMediaKey} from '@taiga-ui/core/services/breakpoint.service';
-import {MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST} from './enter.constants';
-import {EventSelected} from 'types/events';
-import {LoaderComponent} from '@ui/components/loader';
-import {ChartCandlestickComponent} from 'ui-common/lib/chart';
-import {StockInstrument} from 'types/stock';
-import {QueryParams} from 'utils/query-params';
-import {QUERY_PARAMS} from 'tokens/desktop';
-import {SearchDialogDirective} from 'ui-common/lib/dialog-search';
-import {StockPosition} from 'types/position';
-import {IdeaFacade} from 'stores/facades/idea.facade';
+import { EnterActionComponent } from './action/action.component';
+import { EnterSidebarComponent } from './sidebar/sidebar.component';
+import { map } from 'rxjs/operators';
+import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
+import { MOBILE_LIST, TABLET_LANDSCAPE_LIST, TABLET_PORTRAIT_LIST } from './enter.constants';
+import { EventSelected } from 'types/events';
+import { LoaderComponent } from '@ui/components/loader';
+import { ChartCandlestickComponent } from 'ui-common/lib/chart';
+import { StockInstrument } from 'types/stock';
+import { QueryParams } from 'utils/query-params';
+import { QUERY_PARAMS } from 'tokens/desktop';
+import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
+import { StockPosition } from 'types/position';
+import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
+	AbstractControl,
+	FormControl,
+	FormGroup,
+	ReactiveFormsModule,
+	ValidationErrors,
+	ValidatorFn,
 } from '@angular/forms';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {EnterIdeaSubscribeDirective} from './enter.directive';
-import {triggerHeightAnimations} from '@ui/animations/height.animations';
-import {DIALOG, DialogService} from '@ui/components/dialog';
-import {Params} from '@angular/router';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {EnterIdeaComponent} from './idea/idea.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EnterIdeaSubscribeDirective } from './enter.directive';
+import { triggerHeightAnimations } from '@ui/animations/height.animations';
+import { DIALOG, DialogService } from '@ui/components/dialog';
+import { Params } from '@angular/router';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { EnterIdeaComponent } from './idea/idea.component';
 import {
-  calculateEntries,
-  calculateStop,
-  calculateTargets,
-  transformEntries,
-  transformTargets,
+	calculateEntries,
+	calculateStop,
+	calculateTargets,
+	transformEntries,
+	transformTargets,
 } from 'utils/idea-calculate';
-import {LimitStore} from '@feat-trade-limit';
-import {TradeLimit} from '@data-access-trade/types';
-import {FinishService} from './finish/finish.service';
-import {DialogApproveService} from 'ui-common/lib/dialog-approve';
-import {StockPositionType} from 'types/stock-position-type';
+import { LimitStore } from '@feat-trade-limit';
+import { TradeLimit } from '@data-access-trade/types';
+import { FinishService } from './finish/finish.service';
+import { DialogApproveService } from 'ui-common/lib/dialog-approve';
+import { StockPositionType } from 'types/stock-position-type';
 
 type ScreenOrientation = 'landscape' | 'portrait';
 
@@ -324,8 +324,7 @@ export class VtEnterComponent implements AfterViewInit {
 							limit,
 						}))
 					);
-				}),
-				debounceTime(0)
+				})
 			)
 			.subscribe(
 				({
@@ -360,27 +359,27 @@ export class VtEnterComponent implements AfterViewInit {
 					}
 
 					if (result) {
-						const entries =
-							result.idea.author === 'bot'
-								? calculateEntries(
-										result.idea.entries,
-										result.idea.instrument.lot,
-										result.idea.instrument.minPriceIncrement,
-										limit
-								  )
-								: transformEntries(result.idea.entries, result.idea.instrument.lot);
+						const isBot = result.idea.author === 'bot';
 
-						const targets =
-							result.idea.author === 'bot'
-								? calculateTargets(
-										result.idea.positionType as 'long' | 'short',
-										result.idea.targets,
-										entries,
-										result.idea.instrument.lot,
-										result.idea.instrument.minPriceIncrement,
-										0
-								  )
-								: transformTargets(result.idea.targets, result.idea.instrument.lot);
+						const entries = isBot
+							? calculateEntries(
+									result.idea.entries,
+									result.idea.instrument.lot,
+									result.idea.instrument.minPriceIncrement,
+									limit
+							  )
+							: transformEntries(result.idea.entries, result.idea.instrument.lot);
+
+						const targets = isBot
+							? calculateTargets(
+									result.idea.positionType as 'long' | 'short',
+									result.idea.targets,
+									entries,
+									result.idea.instrument.lot,
+									result.idea.instrument.minPriceIncrement,
+									0
+							  )
+							: transformTargets(result.idea.targets, result.idea.instrument.lot);
 
 						const stop = calculateStop(
 							result.idea.positionType as 'long' | 'short',
