@@ -1047,7 +1047,8 @@ export class TradeFormService {
 		accountId: string,
 		source: TradeSource,
 		position: StockPosition,
-		journal: TradeJournal[],
+		entry: TradeJournal[],
+		out: TradeJournal[],
 		portfolio: TradePortfolio
 	): TradeJournal[] {
 		const portfolioPosition = portfolio.positions[0];
@@ -1056,17 +1057,20 @@ export class TradeFormService {
 			return [];
 		}
 
-		const journalExecuted = journal.filter((item: TradeJournal) => item.status === TradeJournalStatus.EXECUTED);
-		const quantityExecuted = journalExecuted.reduce((acc: number, item: TradeJournal) => acc + item.quantity, 0);
+		const entryExecuted = entry.filter((item: TradeJournal) => item.status === TradeJournalStatus.EXECUTED);
+		const outExecuted = out.filter((item: TradeJournal) => item.status === TradeJournalStatus.EXECUTED);
+		const quantityEntryExecuted = entryExecuted.reduce((acc: number, item: TradeJournal) => acc + item.quantity, 0);
+		const quantityOutExecuted = outExecuted.reduce((acc: number, item: TradeJournal) => acc + item.quantity, 0);
+		const quantity = quantityEntryExecuted - quantityOutExecuted;
 
-		if (quantityExecuted === Math.abs(portfolioPosition.quantity)) {
+		if (quantity === Math.abs(portfolioPosition.quantity)) {
 			return [];
 		}
 
 		const priceIncrement = getPriceIncrement(position.idea.instrument.minPriceIncrement);
 		const precision = priceIncrement === 8 ? priceIncrement : 0;
-		const totalExecuted = journalExecuted.reduce((acc: number, item: TradeJournal) => acc + item.total, 0);
-		const quantityRemainder = Math.abs(portfolioPosition.quantity) - quantityExecuted;
+		const totalExecuted = entryExecuted.reduce((acc: number, item: TradeJournal) => acc + item.total, 0);
+		const quantityRemainder = Math.abs(portfolioPosition.quantity) - quantity;
 		const totalRemainder = getNumberPrecision(
 			Math.abs(portfolioPosition.quantity) * portfolioPosition.averagePositionPrice.value - totalExecuted,
 			2

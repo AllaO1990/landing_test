@@ -1,23 +1,23 @@
-import { ComponentStore } from '@ngrx/component-store';
-import { catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
-import { DataAccess, Response } from 'types/response';
+import {ComponentStore} from '@ngrx/component-store';
+import {catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer} from 'rxjs';
+import {DataAccess, Response} from 'types/response';
 import {
-	TradeDirections,
-	TradeOperation,
-	TradeOperations,
-	TradeOrder,
-	TradeOrderParams,
-	TradeOrders,
-	TradeOrderType,
-	TradeOrderTypesDescription,
-	TradePortfolio,
-	TradeStopOrders,
+  TradeDirections,
+  TradeOperation,
+  TradeOperations,
+  TradeOrder,
+  TradeOrderParams,
+  TradeOrders,
+  TradeOrderType,
+  TradeOrderTypesDescription,
+  TradePortfolio,
+  TradeStopOrders,
 } from './types';
-import { Params } from '@angular/router';
-import { sortNumber } from 'utils/sort-number';
-import { TRADE_ORDERS } from './order.constants';
-import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
-import { TradeJournal, TradeJournalStatus } from 'types/trade';
+import {Params} from '@angular/router';
+import {sortNumber} from 'utils/sort-number';
+import {TRADE_ORDERS} from './order.constants';
+import {TradeOrderTypeText, TradeStopOrderTypeText} from './order.types';
+import {TradeJournal, TradeJournalStatus} from 'types/trade';
 
 interface Api {
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
@@ -269,6 +269,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 								.setJournalItems(
 									journal.map((item) => ({
 										...item,
+										ideaDate: item.ideaDate ? item.ideaDate : new Date().toISOString(),
 										status: TradeJournalStatus.AWAITS,
 									}))
 								)
@@ -434,7 +435,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	setJournalItems = this.effect((stream$: Observable<TradeJournal[]>) =>
 		stream$.pipe(
 			switchMap((journal: TradeJournal[]) => {
-				return this._api.setJournalItems(journal).pipe(tap(() => this.loadJournal(journal[0])));
+				return this._api.setJournalItems(this._updateJournal(journal)).pipe(tap(() => this.loadJournal(journal[0])));
 			})
 		)
 	);
@@ -442,7 +443,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	setJournalList = this.effect((stream$: Observable<TradeJournal[]>) =>
 		stream$.pipe(
 			switchMap((journal: TradeJournal[]) => {
-				return forkJoin(journal.map((item: TradeJournal) => this._api.setJournalItem(item))).pipe(
+				return forkJoin(this._updateJournal(journal).map((item: TradeJournal) => this._api.setJournalItem(item))).pipe(
 					tap((response: Response<any>[]) => {
 						if (response.every((item) => item.success)) {
 							this.loadJournal(journal[0]);
@@ -456,7 +457,12 @@ export class TradeStore extends ComponentStore<TradeState> {
 	setJournalItem = this.effect((stream$: Observable<TradeJournal>) =>
 		stream$.pipe(
 			switchMap((journal: TradeJournal) => {
-				return this._api.setJournalItem(journal).pipe(tap(() => this.loadJournal(journal)));
+				return this._api
+					.setJournalItem({
+						...journal,
+						ideaDate: journal.ideaDate ? journal.ideaDate : new Date().toISOString(),
+					})
+					.pipe(tap(() => this.loadJournal(journal)));
 			})
 		)
 	);
@@ -490,7 +496,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 				return of(update);
 			}),
 			switchMap((journal: TradeJournal[]) => {
-				return this._api.setJournalItems(journal).pipe(
+				return this._api.setJournalItems(this._updateJournal(journal)).pipe(
 					tap(() => {
 						this.loadOrders(journal[0]);
 						this.loadOperations(journal[0]);
@@ -553,6 +559,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 			...order.map((item: TradeJournal) => this._removeOrder(item)),
 			...orderStop.map((item: TradeJournal) => this._removeStopOrder(item)),
 		]);
+	}
+
+	private _updateJournal(journal: TradeJournal[]): TradeJournal[] {
+		return journal.map((item) => ({ ...item, ideaDate: item.ideaDate ? item.ideaDate : new Date().toISOString() }));
 	}
 
 	isOrder(type: string): boolean {
