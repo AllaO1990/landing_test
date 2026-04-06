@@ -309,7 +309,6 @@ export class VtEnterComponent implements AfterViewInit {
 				takeUntilDestroyed(this._destroyRef),
 				startWith(null),
 				pairwise(),
-				debounceTime(0),
 				switchMap((position: [StockPosition | null, StockPosition | null]) => {
 					const current = position[1];
 
@@ -324,7 +323,8 @@ export class VtEnterComponent implements AfterViewInit {
 							limit,
 						}))
 					);
-				})
+				}),
+				debounceTime(100)
 			)
 			.subscribe(
 				({
@@ -334,8 +334,7 @@ export class VtEnterComponent implements AfterViewInit {
 					position: [StockPosition | null, StockPosition | null];
 					limit: number | null;
 				}) => {
-					// console.log(last, result);
-					this.form.patchValue({});
+					// this.form.patchValue({});
 
 					if (last !== null && result !== null) {
 						if (

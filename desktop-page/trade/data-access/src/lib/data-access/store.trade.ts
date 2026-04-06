@@ -1,23 +1,23 @@
-import {ComponentStore} from '@ngrx/component-store';
-import {catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer} from 'rxjs';
-import {DataAccess, Response} from 'types/response';
+import { ComponentStore } from '@ngrx/component-store';
+import { catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
+import { DataAccess, Response } from 'types/response';
 import {
-  TradeDirections,
-  TradeOperation,
-  TradeOperations,
-  TradeOrder,
-  TradeOrderParams,
-  TradeOrders,
-  TradeOrderType,
-  TradeOrderTypesDescription,
-  TradePortfolio,
-  TradeStopOrders,
+	TradeDirections,
+	TradeOperation,
+	TradeOperations,
+	TradeOrder,
+	TradeOrderParams,
+	TradeOrders,
+	TradeOrderType,
+	TradeOrderTypesDescription,
+	TradePortfolio,
+	TradeStopOrders,
 } from './types';
-import {Params} from '@angular/router';
-import {sortNumber} from 'utils/sort-number';
-import {TRADE_ORDERS} from './order.constants';
-import {TradeOrderTypeText, TradeStopOrderTypeText} from './order.types';
-import {TradeJournal, TradeJournalStatus} from 'types/trade';
+import { Params } from '@angular/router';
+import { sortNumber } from 'utils/sort-number';
+import { TRADE_ORDERS } from './order.constants';
+import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
+import { TradeJournal, TradeJournalStatus } from 'types/trade';
 
 interface Api {
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
@@ -411,6 +411,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 		)
 	);
 
+	justRemoveBrokerStopOrder = this.effect((stream$: Observable<Params[]>) =>
+		stream$.pipe(switchMap((params: Params[]) => forkJoin([...params.map((item) => this._api.removeStopOrder(item))])))
+	);
+
 	changeStopOrder = this.effect((stream$: Observable<TradeJournal>) =>
 		stream$.pipe(
 			switchMap((params: TradeJournal) => {
@@ -479,6 +483,18 @@ export class TradeStore extends ComponentStore<TradeState> {
 						}
 					})
 				);
+			})
+		)
+	);
+
+	justRemoveJournal = this.effect((stream$: Observable<TradeJournal[]>) =>
+		stream$.pipe(
+			switchMap((item: TradeJournal[]) => {
+				return forkJoin([
+					...item
+						.filter((item: TradeJournal) => item.id !== null || item.id !== 0)
+						.map((item: TradeJournal) => this._api.removeJournalItem(item.id as number)),
+				]);
 			})
 		)
 	);

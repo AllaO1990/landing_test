@@ -280,8 +280,8 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 				} else {
 					const { list: entries, status } = this._getEntries(result.entries);
 
-					this._updateFormArray('targets', result.targets);
-					this._updateFormArray('stop', result.stop);
+					this._updateFormArray('targets', result.targets, status);
+					this._updateFormArray('stop', result.stop, status);
 					this._updateFormArray('entries', entries, status);
 				}
 
@@ -297,11 +297,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		});
 
 		combineLatest([
-			this.entriesList$.pipe(
-				filter(
-					(list: StockPositionIdeaEntry[] | null): list is StockPositionIdeaEntry[] => list !== null && list.length === 1
-				)
-			),
+			this.entriesList$,
 			this.minPriceIncrement$,
 			this._ideaFacade.atr$.pipe(
 				filter(
@@ -317,7 +313,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			this.lot$,
 			this.isEdit$.asObservable(),
 		])
-			.pipe(takeUntilDestroyed(this._destroyRef), debounceTime(100))
+			.pipe(takeUntilDestroyed(this._destroyRef), debounceTime(1000))
 			.subscribe((result) => {
 				if (result[5]) {
 					const entries: StockPositionIdeaEntry[] = result[0];
@@ -334,10 +330,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					const targets = calculateTargets(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
 
 					if (targets.length !== 0) {
-						this.formArrayTargets.clear();
+						this.formArrayTargets.clear({ emitEvent: false });
 						targets.forEach((target, index) => {
-							this.formArrayTargets.setControl(index, new FormControl(target));
+							this.formArrayTargets.setControl(index, new FormControl(target), { emitEvent: false });
 						});
+						this.formArrayTargets.patchValue([]);
 					}
 
 					const stop = calculateStop(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
@@ -349,8 +346,8 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 						});
 					}
 
-					const priceEntry = entries[0].price;
-					const quantityEntry = entries[0].quantity;
+					// const priceEntry = entries[0].price;
+					// const quantityEntry = entries[0].quantity;
 
 					// if (this.formArrayTargets.value.length === 0 || this.formArrayTargets.pristine) {
 					// 	const atrList: number[] = [1, 2, 4];
@@ -856,13 +853,13 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	private _updateFormArray<T>(formArrayName: 'entries' | 'targets' | 'stop', data: T[], onlySelf = false): void {
 		const formArray: FormArray = this.controlFormArray.get(formArrayName) as FormArray;
 		if (formArray) {
-			formArray.clear();
+			formArray.clear({ emitEvent: false });
 
-			data.forEach((_: T, index: number) => {
-				formArray.setControl(index, new FormControl(), { emitEvent: false });
+			data.forEach((item: T, index: number) => {
+				formArray.setControl(index, new FormControl(item), { emitEvent: false });
 			});
 
-			formArray.patchValue(data, { onlySelf });
+			formArray.patchValue([], { onlySelf, emitEvent: true });
 		}
 	}
 

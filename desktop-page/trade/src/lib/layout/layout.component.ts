@@ -475,7 +475,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 			return { ...journal, ideaId };
 		});
 
-		const update = [...entry, ...out, ...stop].map((item: TradeJournal & TradeJournalSystem) => {
+		const update = [...entry, ...out].map((item: TradeJournal & TradeJournalSystem) => {
 			const { change, isEdit, remove, ...journal } = item;
 
 			if (journal.status === null) {

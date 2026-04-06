@@ -89,6 +89,7 @@ import {
 } from 'utils/idea-calculate';
 import {
 	TRADE_ORDER_TYPE_LIMIT,
+	TRADE_ORDER_TYPE_MARKET,
 	TRADE_STOP_ORDER_TYPE_STOP_LOSS,
 	TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
 } from '@data-access-trade/order.constants';
@@ -535,7 +536,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			.subscribe((list: TradeJournal[]) => {
 				console.log('formArrayStop', list);
 
-				this.#store.addOrders(list);
+				// this.#store.addOrders(list);
 			});
 
 		this.controlIsNew.valueChanges
@@ -579,57 +580,67 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						),
 						distinctUntilChanged(),
 						filter((quantityStop: number) => quantity - quantityStop !== 0),
-						map(() => quantity)
+						switchMap(() =>
+							this.stopOrders$.pipe(
+								map((stopOrders: TradeStopOrder[] | null) => (stopOrders !== null ? stopOrders : [])),
+								map((stopOrders: TradeStopOrder[]) => {
+									const {
+										account: { accountId },
+										source,
+									} = this.controlFilter.value;
+
+									return stopOrders
+										.filter((item: TradeStopOrder) => this.#service.isMayBeOrderStop(item.orderTypeText))
+										.map((item: TradeStopOrder) => ({ accountId, sourceId: source.id, orderId: item.stopOrderId }));
+								}),
+								map((stopOrders: Params[]) => ({
+									stopOrders,
+									quantity,
+								}))
+							)
+						)
 					)
 				)
 			)
-			.subscribe((quantity: number) => {
+			.subscribe(({ stopOrders, quantity }: { stopOrders: Params[]; quantity: number }) => {
 				console.log('formArrayStop Change', quantity);
 
-				const removed: TradeJournal[] = (this.formArrayStop.value || []).reduce(
-					(acc: TradeJournal[], item: TradeJournal & TradeJournalSystem) => {
-						const { change, isEdit, remove, ...journal } = item;
+				// if (stopOrders.length > 0) {
+				// 	this.#store.justRemoveBrokerStopOrder(stopOrders);
+				// }
+				//
+				// const removed: TradeJournal[] = (this.formArrayStop.value || []).filter(
+				// 	(item: TradeJournal) => item.status !== TradeJournalStatus.EXECUTED
+				// );
+				//
+				// if (removed.length > 0) {
+				// 	this.#store.justRemoveJournal(removed);
+				// }
 
-						if (journal.status === null) {
-							journal.status = TradeJournalStatus.UNLOADING;
-						}
-
-						if (journal.status !== TradeJournalStatus.EXECUTED) {
-							acc.push(journal);
-						}
-
-						return acc;
-					},
-					[]
-				);
-
-				const {
-					account: { accountId },
-					source,
-				} = this.controlFilter.value;
-				const { stop } = this.controlIdea.value;
-				const update = this.#service.getUnloadingControlValue(
-					accountId,
-					source,
-					this.controlPosition.value,
-					stop,
-					TRADE_STOP_ORDER_TYPE_STOP_LOSS,
-					'reverse'
-				);
-
-				this.formArrayStop.clear();
-
-				this.#store.onSubmitJournal({
-					removed,
-					update: [
-						{
-							...update[0],
-							quantity,
-							lots: quantity / update[0].lot,
-							status: TradeJournalStatus.UNLOADING,
-						},
-					],
-				});
+				// const {
+				// 	account: { accountId },
+				// 	source,
+				// } = this.controlFilter.value;
+				// const { stop } = this.controlIdea.value;
+				// const update = this.#service.getUnloadingControlValue(
+				// 	accountId,
+				// 	source,
+				// 	this.controlPosition.value,
+				// 	stop,
+				// 	TRADE_STOP_ORDER_TYPE_STOP_LOSS,
+				// 	'reverse'
+				// );
+				//
+				// this.formArrayStop.clear();
+				//
+				// this.#store.setJournalItems([
+				// 	{
+				// 		...update[0],
+				// 		quantity,
+				// 		lots: quantity / update[0].lot,
+				// 		status: TradeJournalStatus.UNLOADING,
+				// 	},
+				// ]);
 			});
 
 		const token$: Observable<TradeToken | null> = this.controlFilter.valueChanges.pipe(
@@ -1112,15 +1123,24 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		const {
 			account: { accountId },
 			source,
+			lastPrice,
 		} = this.controlFilter.value;
 
-		const entriesUnloadingControlValue = this.#service.getUnloadingControlValue(
-			accountId,
-			source,
-			position,
-			idea.entry,
-			TRADE_ORDER_TYPE_LIMIT
-		);
+		const entriesUnloadingControlValue = this.#service
+			.getUnloadingControlValue(accountId, source, position, idea.entry, TRADE_ORDER_TYPE_LIMIT)
+			.map((item: TradeJournal) => {
+				if (item.direction && item.price >= lastPrice.last * 0.995) {
+					item.orderType = TRADE_ORDER_TYPE_MARKET.id;
+					item.orderTypeText = TRADE_ORDER_TYPE_MARKET.type;
+				}
+
+				if (!item.direction && item.price <= lastPrice.last * 1.005) {
+					item.orderType = TRADE_ORDER_TYPE_MARKET.id;
+					item.orderTypeText = TRADE_ORDER_TYPE_MARKET.type;
+				}
+
+				return item;
+			});
 
 		const entriesActualOperations = actualOperations.filter((item) => item.type === operationTypeEntry);
 
@@ -1255,9 +1275,9 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				stopOrders.find(
 					(order: TradeStopOrder) =>
 						order.lotsRequested === item.lots &&
+						+order.direction === +item.direction &&
 						order.price.value === item.price &&
-						order.stopPrice.value === item.stopPrice &&
-						+order.direction === +item.direction
+						order.stopPrice.value === item.stopPrice
 				) || null;
 
 			if (item.status === TradeJournalStatus.UNLOADING && findStopOrder) {
