@@ -18,6 +18,7 @@ import { sortNumber } from 'utils/sort-number';
 import { TRADE_ORDERS } from './order.constants';
 import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
 import { TradeJournal, TradeJournalStatus } from 'types/trade';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface Api {
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
@@ -247,6 +248,13 @@ export class TradeStore extends ComponentStore<TradeState> {
 							this.loadOrders(journal);
 							this.loadOperations(journal);
 						}
+					}),
+					catchError((err: HttpErrorResponse) => {
+						return of({
+							data: null,
+							message: err.error.message,
+							success: false,
+						});
 					})
 				)
 			)
@@ -578,7 +586,15 @@ export class TradeStore extends ComponentStore<TradeState> {
 	}
 
 	private _updateJournal(journal: TradeJournal[]): TradeJournal[] {
-		return journal.map((item) => ({ ...item, ideaDate: item.ideaDate ? item.ideaDate : new Date().toISOString() }));
+		return journal.map((item) => {
+			let date = item.ideaDate;
+
+			if (!date) {
+				date = item.expireDate ? item.expireDate : new Date().toISOString();
+			}
+
+			return { ...item, ideaDate: date };
+		});
 	}
 
 	isOrder(type: string): boolean {

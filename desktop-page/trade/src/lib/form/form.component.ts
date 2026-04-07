@@ -349,6 +349,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	ngAfterViewInit(): void {
 		this.filter$
 			.pipe(
+				tap(() => {
+					this.formArrayEntry.clear();
+					this.formArrayOut.clear();
+					this.formArrayStop.clear();
+				}),
 				switchMap((params: Params) =>
 					timer(0, this.#timerInterval).pipe(
 						takeUntilDestroyed(this.#destroyRef),
@@ -403,6 +408,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 								};
 
 								if (journal === null) {
+									this.formArrayEntry.clear();
+									this.formArrayOut.clear();
+									this.formArrayStop.clear();
+
 									common = this._initControlsForIdea(position, orders, stopOrders, operations, portfolio, idea);
 								} else {
 									common = this._initControlsForJournal(position, journal, orders, stopOrders, operations);
@@ -450,7 +459,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				)
 			)
 			.subscribe((list: TradeJournal[]) => {
-				console.log('formArrayEntry', list);
+				console.log('formArrayEntry addOrders', list);
 
 				this.#store.addOrders(list);
 			});
@@ -492,7 +501,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				)
 			)
 			.subscribe((list: TradeJournal[]) => {
-				console.log('formArrayOut', list);
+				console.log('formArrayOut addOrders', list);
 
 				this.#store.addOrders(list);
 			});
@@ -1334,7 +1343,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				}
 
 				if (findStopOrder) {
-					console.log(findStopOrder);
 					return item;
 				}
 
@@ -1477,6 +1485,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	}
 
 	private _updateFormArray(formArray: FormArray, journal: TradeJournal[]): void {
+		if (journal.length === 0) {
+			formArray.clear();
+			return;
+		}
+
 		const removeIds: number[] = this.formArrayRemove.controls.map((control) => control.value.id);
 		const addedIds: number[] = [];
 
@@ -1501,7 +1514,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 			if (find !== null) {
 				addedIds.push(find.id);
-				control.patchValue(find, { emitEvent: false });
+				control.reset(find, { emitEvent: true });
 			}
 		});
 
