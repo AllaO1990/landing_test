@@ -181,3 +181,8 @@ export interface TradeOrderParams {
 	quantity: number;
 	sourceId: number;
 }
+
+export interface ResponseTradeStopOrder {
+	orderRequestId: string;
+	stopOrderId: string;
+}

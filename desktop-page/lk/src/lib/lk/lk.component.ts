@@ -256,7 +256,7 @@ export class LkComponent implements OnInit {
 				this.#dataAccessIdeaStore.loadIdeas(paramsIdea);
 			}
 			if (paramsDeal) {
-				this.#dataAccessIdeaStore.loadDeals(paramsPortfolio ? { ...paramsDeal, ...paramsPortfolio } : paramsDeal);
+				this.#dataAccessIdeaStore.loadDeals(paramsDeal);
 			}
 			if (paramsPortfolio) {
 				this.#dataAccessPortfolioStore.loadBalance(paramsPortfolio);

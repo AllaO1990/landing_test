@@ -1,34 +1,34 @@
-import { FacadeStore } from './facade';
-import { SelectStore } from './select.store';
-import { DesktopService } from '@desktop-data/desktop-data';
+import {FacadeStore} from './facade';
+import {SelectStore} from './select.store';
+import {DesktopService} from '@desktop-data/desktop-data';
 import {
-	catchError,
-	combineLatest,
-	debounceTime,
-	distinctUntilChanged,
-	Observable,
-	of,
-	shareReplay,
-	Subject,
-	switchMap,
-	takeUntil,
-	tap,
-	timer,
+  catchError,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+  timer,
 } from 'rxjs';
-import { inject, Injectable } from '@angular/core';
-import { StockEvent } from 'types/stock-event';
-import { filter, map } from 'rxjs/operators';
-import { EventSelected } from 'types/events';
-import { ComponentStore } from '@ngrx/component-store';
-import { StockId, StockInstrument, StockPrice, StockTransaction, WithLastPrice } from 'types/stock';
-import { DateRange } from 'types/date-range';
-import { Timeframe } from 'types/timeframe';
-import { GLOBAL_DATE_RANGE, QUERY_PARAMS } from 'tokens/desktop';
-import { IntervalStore } from 'stores/plugins/interval.store';
-import { QueryParams } from 'utils/query-params';
-import { Response } from 'types/response';
-import { StockPosition } from 'types/position';
-import { HttpErrorResponse } from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {StockEvent} from 'types/stock-event';
+import {filter, map} from 'rxjs/operators';
+import {EventSelected} from 'types/events';
+import {ComponentStore} from '@ngrx/component-store';
+import {StockId, StockInstrument, StockPrice, StockTransaction, WithLastPrice} from 'types/stock';
+import {DateRange} from 'types/date-range';
+import {Timeframe} from 'types/timeframe';
+import {GLOBAL_DATE_RANGE, QUERY_PARAMS} from 'tokens/desktop';
+import {IntervalStore} from 'stores/plugins/interval.store';
+import {QueryParams} from 'utils/query-params';
+import {Response} from 'types/response';
+import {StockPosition} from 'types/position';
+import {HttpErrorResponse} from '@angular/common/http';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -263,6 +263,7 @@ export class MainStore extends ComponentStore<any> {
 	onChangeQueryParams = this.effect((source$: Observable<null | StockEvent>) =>
 		source$.pipe(
 			filter((event: StockEvent | null): event is StockEvent => event !== null),
+			filter((event: StockEvent) => event.id !== null),
 			distinctUntilChanged((a, b) => a.id === b.id),
 			// distinctUntilChanged((a, b) => a.id === b.id && a.dialog !== b.dialog && a.trade === b.trade),
 			// tap((data) => console.log(data)),

@@ -1,24 +1,26 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { APP_CONFIG } from 'tokens/desktop/config';
-import { catchError, Observable, of } from 'rxjs';
-import { Response } from 'types/response';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {APP_CONFIG} from 'tokens/desktop/config';
+import {catchError, Observable, of} from 'rxjs';
+import {Response} from 'types/response';
 import {
-	TradeAccounts,
-	TradeLimit,
-	TradeLimitList,
-	TradeOperations,
-	TradeOrder,
-	TradeOrderParams,
-	TradeOrders,
-	TradeOrderTypes,
-	TradePortfolio,
-	TradeSources,
-	TradeToken,
-	TradeTokenSource,
+  ResponseTradeStopOrder,
+  TradeAccounts,
+  TradeLimit,
+  TradeLimitList,
+  TradeOperations,
+  TradeOrder,
+  TradeOrderParams,
+  TradeOrders,
+  TradeOrderTypes,
+  TradePortfolio,
+  TradeSources,
+  TradeToken,
+  TradeTokenSource,
 } from './types';
-import { Params } from '@angular/router';
-import { TradeJournal } from 'types/trade';
+import {Params} from '@angular/router';
+import {TradeJournal} from 'types/trade';
+import {TradeOrderBook} from 'types/orders';
 
 @Injectable()
 export class ApiTradeService {
@@ -121,9 +123,9 @@ export class ApiTradeService {
 		});
 	}
 
-	addStopOrder(body: TradeJournal): Observable<Response<any>> {
+	addStopOrder(body: TradeJournal): Observable<Response<ResponseTradeStopOrder | null>> {
 		return this.#http
-			.post<Response<TradeOrders>>(`${this.host}/v1/trades/stop-orders`, {
+			.post<Response<ResponseTradeStopOrder | null>>(`${this.host}/v1/trades/stop-orders`, {
 				accountId: body['accountId'],
 				direction: body['direction'],
 				exchangeOrderType: 0,
@@ -222,6 +224,20 @@ export class ApiTradeService {
 				return other;
 			})
 		);
+	}
+
+	getJournalOpenPositions(params: Params): Observable<Response<any>> {
+		return this.#http.get<Response<TradeOrderBook>>(`${this.host}/v1/trades/journal/open-positions`, {
+			params: {
+				accountId: params['accountId'],
+				sourceId: params['sourceId'],
+				instrumentId: params['instrumentId'],
+			},
+		});
+	}
+
+	getOrderBook(params: Params): Observable<Response<TradeOrderBook>> {
+		return this.#http.get<Response<TradeOrderBook>>(`${this.host}/v1/trades/orderbook`, { params });
 	}
 }
 

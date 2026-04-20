@@ -15,6 +15,16 @@
     flex: 1 1;
   }
 
+  &__view {
+    display: flex;
+    flex-flow: column nowrap;
+
+    &--center {
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
   &__details {
     display: flex;
     align-items: center;

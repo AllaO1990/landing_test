@@ -38,6 +38,7 @@ export interface TradeJournalSystem {
 export enum TradeJournalStatus {
 	UNLOADING = 'UNLOADING', // не отправлена брокеру
 	AWAITS = 'AWAITS', // ожидает исполнения на брокере
-	BROKEN = 'BROKEN',
+	PROCESSING = 'PROCESSING', // есть в журнале, нет на брокере, высталвлена менее 60 сек назад
+	BROKEN = 'BROKEN', // есть в журнале нет на брокере
 	EXECUTED = 'EXECUTED', // исполнена брокером \ пользователем
 }

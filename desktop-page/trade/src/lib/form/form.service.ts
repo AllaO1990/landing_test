@@ -72,10 +72,35 @@ export class TradeFormService {
 		};
 	}
 
-	getActualOperations(position: StockPosition, operations: TradeOperations): ActualTradeOperations {
-		const createAt = position.idea.createdAt && new Date(position.idea.createdAt).valueOf();
-		const actualOperations = createAt
-			? operations.filter((item: TradeOperation) => new Date(item.date).valueOf() > createAt)
+	getActualOperations(
+		position: StockPosition,
+		operations: TradeOperations,
+		journal: TradeJournal[]
+	): ActualTradeOperations {
+		let dateValueOf = null;
+
+		const journalIdeaDate = Math.min(
+			...journal.map((item: TradeJournal): number => {
+				if (!item.ideaDate) {
+					return 0;
+				}
+				return new Date(item.ideaDate).valueOf();
+			})
+		);
+
+		if (journalIdeaDate) {
+			dateValueOf = journalIdeaDate;
+		}
+
+		if (position.idea.createdAt && dateValueOf === null) {
+			const createAt = new Date(position.idea.createdAt).valueOf();
+			if (!Number.isNaN(createAt)) {
+				dateValueOf = createAt;
+			}
+		}
+
+		const actualOperations = dateValueOf
+			? operations.filter((item: TradeOperation) => new Date(item.date).valueOf() > dateValueOf)
 			: operations;
 
 		return actualOperations.map((item: TradeOperation) => ({
@@ -163,7 +188,8 @@ export class TradeFormService {
 		if (portfolio) {
 			const defaultItem = this.getDefaultControlValue(position, positionType);
 			const precision = getPriceIncrement(position.idea.instrument.minPriceIncrement) === 8 ? 8 : 0;
-			const lots = this._getLot(portfolio.quantity / defaultItem.lot, precision);
+			const quantity = Math.abs(portfolio.quantity);
+			const lots = this._getLot(quantity / defaultItem.lot, precision);
 			const findOperation =
 				operationsDirection.find((operation: ActualTradeOperation) => {
 					return operation.lots === lots;
@@ -174,15 +200,14 @@ export class TradeFormService {
 					...defaultItem,
 					accountId,
 					sourceId: source.id,
-					externalId: '0',
 					id: 0,
 					orderType: TRADE_ORDER_TYPE_LIMIT.id,
 					orderTypeText: TRADE_ORDER_TYPE_LIMIT.type,
 					price: portfolio.averagePositionPrice.value,
-					quantity: portfolio.quantity,
+					quantity: quantity,
 					commission: findOperation && findOperation.comission ? Math.abs(findOperation.comission.value) : 0,
 					lots,
-					total: getNumberPrecision(portfolio.averagePositionPrice.value * portfolio.quantity, 2),
+					total: getNumberPrecision(portfolio.averagePositionPrice.value * quantity, 2),
 					status: TradeJournalStatus.EXECUTED,
 				},
 			];
@@ -624,15 +649,9 @@ export class TradeFormService {
 		return {
 			actions: {
 				entries: [
-					...position.actions.entries.map((item: any) => ({
-						amount: item.amount,
-						brokerId: item.brokerId,
-						date: item.date,
-						price: item.price,
-					})),
 					...entries.map((item: TradeJournal) => ({
 						amount: item.quantity,
-						date: item.expireDate,
+						date: item.expireDate as string,
 						brokerId: 1,
 						price: item.price,
 					})),
@@ -640,15 +659,9 @@ export class TradeFormService {
 					sortNumber(new Date(b.date).valueOf(), new Date(a.date).valueOf())
 				),
 				outs: [
-					...position.actions.outs.map((item: any) => ({
-						amount: item.amount,
-						brokerId: item.brokerId,
-						date: item.date,
-						price: item.price,
-					})),
 					...outs.map((item: TradeJournal) => ({
 						amount: item.quantity,
-						date: item.expireDate,
+						date: item.expireDate as string,
 						brokerId: 1,
 						price: item.price,
 					})),
@@ -663,14 +676,8 @@ export class TradeFormService {
 				size: item.size,
 			})),
 			comissions: [
-				...position.comissions.map((item: any) => ({
-					brokerId: item.brokerId,
-					comment: item.comment,
-					date: item.date,
-					size: item.size,
-				})),
 				...journal
-					.filter((item: TradeJournal) => item.commission !== 0 || item.commission !== null)
+					.filter((item: TradeJournal) => item.commission !== 0 && item.commission !== null)
 					.map((item: TradeJournal) => ({
 						brokerId: 1,
 						date: item.expireDate,
@@ -1020,27 +1027,6 @@ export class TradeFormService {
 		return (
 			[TRADE_STOP_ORDER_TYPE_STOP_LOSS, TRADE_STOP_ORDER_TYPE_STOP_LIMIT].findIndex((item) => item.type === type) !== -1
 		);
-	}
-
-	private _getOrderById(id: number): TradeOrderType {
-		return (
-			[TRADE_ORDER_TYPE_LIMIT, TRADE_ORDER_TYPE_MARKET, TRADE_ORDER_TYPE_BESTPRICE].find((item) => item.id === id) ||
-			TRADE_ORDER_TYPE_LIMIT
-		);
-	}
-
-	private _getStopOrderById(id: number): TradeOrderType {
-		return (
-			[TRADE_STOP_ORDER_TYPE_TAKE_PROFIT, TRADE_STOP_ORDER_TYPE_STOP_LOSS, TRADE_STOP_ORDER_TYPE_STOP_LIMIT].find(
-				(item) => item.id === id
-			) || TRADE_STOP_ORDER_TYPE_TAKE_PROFIT
-		);
-	}
-
-	private _getStopOrderByName(name: string): TradeOrderType | null {
-		const list = [TRADE_STOP_ORDER_TYPE_STOP_LOSS, TRADE_STOP_ORDER_TYPE_STOP_LIMIT];
-
-		return list.find((item: TradeOrderType) => item.type === name) || null;
 	}
 
 	getEntryPositionFromJournal(

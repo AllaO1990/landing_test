@@ -1,24 +1,25 @@
-import { ComponentStore } from '@ngrx/component-store';
-import { catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
-import { DataAccess, Response } from 'types/response';
+import {ComponentStore} from '@ngrx/component-store';
+import {catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer} from 'rxjs';
+import {DataAccess, Response} from 'types/response';
 import {
-	TradeDirections,
-	TradeOperation,
-	TradeOperations,
-	TradeOrder,
-	TradeOrderParams,
-	TradeOrders,
-	TradeOrderType,
-	TradeOrderTypesDescription,
-	TradePortfolio,
-	TradeStopOrders,
+  ResponseTradeStopOrder,
+  TradeDirections,
+  TradeOperation,
+  TradeOperations,
+  TradeOrder,
+  TradeOrderParams,
+  TradeOrders,
+  TradeOrderType,
+  TradeOrderTypesDescription,
+  TradePortfolio,
+  TradeStopOrders,
 } from './types';
-import { Params } from '@angular/router';
-import { sortNumber } from 'utils/sort-number';
-import { TRADE_ORDERS } from './order.constants';
-import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
-import { TradeJournal, TradeJournalStatus } from 'types/trade';
-import { HttpErrorResponse } from '@angular/common/http';
+import {Params} from '@angular/router';
+import {sortNumber} from 'utils/sort-number';
+import {TRADE_ORDERS} from './order.constants';
+import {TradeOrderTypeText, TradeStopOrderTypeText} from './order.types';
+import {TradeJournal, TradeJournalStatus} from 'types/trade';
+import {HttpErrorResponse} from '@angular/common/http';
 
 interface Api {
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
@@ -26,7 +27,7 @@ interface Api {
 	getOrders(params: Params): Observable<Response<TradeOrders>>;
 	getStopOrders(params: Params): Observable<Response<TradeOrders | null>>;
 	addOrder(body: TradeOrderParams): Observable<Response<TradeOrder>>;
-	addStopOrder(body: TradeJournal): Observable<Response<any>>;
+	addStopOrder(body: TradeJournal): Observable<Response<ResponseTradeStopOrder | null>>;
 	removeOrder(body: Params): Observable<Response<any>>;
 	removeStopOrder(body: Params): Observable<Response<any>>;
 	getJournal(params: Params): Observable<Response<TradeJournal[] | null>>;
@@ -42,7 +43,7 @@ export interface TradeState {
 	portfolio: DataAccess<TradePortfolio>;
 	operations: TradeOperations | null;
 	directionTypes: TradeDirections | null;
-	journal: TradeJournal[] | null;
+	journal: TradeJournal[] | null | undefined;
 	isLoading: boolean;
 }
 
@@ -68,7 +69,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 	readonly stopOrders$: Observable<TradeStopOrders | null> = this.select((state: TradeState) => state.stopOrders);
 	readonly portfolio$: Observable<DataAccess<TradePortfolio>> = this.select((state: TradeState) => state.portfolio);
 	readonly operations$: Observable<TradeOperations | null> = this.select((state: TradeState) => state.operations);
-	readonly journal$: Observable<TradeJournal[] | null> = this.select((state: TradeState) => state.journal);
+	readonly journal$: Observable<TradeJournal[] | null | undefined> = this.select((state: TradeState) => state.journal);
 	readonly isLoading$: Observable<boolean> = this.select((state: TradeState) => state.isLoading);
 
 	constructor(private _api: Api) {
@@ -76,7 +77,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 			orderType: null,
 			orders: null,
 			stopOrders: null,
-			journal: null,
+			journal: undefined,
 			portfolio: {
 				data: null,
 				isLoading: false,
@@ -268,31 +269,58 @@ export class TradeStore extends ComponentStore<TradeState> {
 				const orderStop = journal.filter((item: TradeJournal) => this.isStopOrder(item.orderTypeText));
 
 				return forkJoin([
-					...order.map((item: TradeJournal) => this._api.addOrder(item)),
-					...orderStop.map((item: TradeJournal) => this._api.addStopOrder(item)),
-				]).pipe(
-					switchMap((responses: Response<any>[]) => {
-						if (responses.every((item) => item.success)) {
-							return this._api
-								.setJournalItems(
-									journal.map((item) => ({
+					...order.map((item: TradeJournal) =>
+						this._api.addOrder(item).pipe(
+							map((response: Response<any>) => {
+								if (response.success) {
+									return {
 										...item,
-										ideaDate: item.ideaDate ? item.ideaDate : new Date().toISOString(),
+										ideaDate: this._getDateForJournal(item),
 										status: TradeJournalStatus.AWAITS,
-									}))
-								)
-								.pipe(
-									tap((response: Response<TradeOrder>) => {
-										if (response.success) {
-											this.loadOrders(journal[0]);
-											this.loadOperations(journal[0]);
-											this.loadJournal(journal[0]);
-										}
-									})
-								);
+									};
+								}
+								return {
+									...item,
+									status: TradeJournalStatus.BROKEN,
+								};
+							})
+						)
+					),
+					...orderStop.map((item: TradeJournal) =>
+						this._api.addStopOrder(item).pipe(
+							map((response: Response<ResponseTradeStopOrder | null>) => {
+								console.log(response, item);
+								if (response.success && response.data) {
+									return {
+										...item,
+										externalId: response.data.stopOrderId || item.externalId,
+										ideaDate: this._getDateForJournal(item),
+										status: TradeJournalStatus.AWAITS,
+									};
+								}
+								return {
+									...item,
+									status: TradeJournalStatus.BROKEN,
+								};
+							})
+						)
+					),
+				]).pipe(
+					switchMap((list: TradeJournal[]) => {
+						if (list.length > 0) {
+							return timer(3000).pipe(
+								switchMap(() => this._api.setJournalItems(list)),
+								tap((response: Response<TradeOrder>) => {
+									if (response.success) {
+										this.loadOrders(journal[0]);
+										this.loadOperations(journal[0]);
+										this.loadJournal(journal[0]);
+									}
+								})
+							);
 						}
 
-						return of(responses);
+						return of(list);
 					})
 				);
 			})
@@ -472,7 +500,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 				return this._api
 					.setJournalItem({
 						...journal,
-						ideaDate: journal.ideaDate ? journal.ideaDate : new Date().toISOString(),
+						ideaDate: this._getDateForJournal(journal),
 					})
 					.pipe(tap(() => this.loadJournal(journal)));
 			})
@@ -484,12 +512,16 @@ export class TradeStore extends ComponentStore<TradeState> {
 			filter((item: TradeJournal) => item.id !== null),
 			switchMap((item: TradeJournal) => {
 				return this._api.removeJournalItem(item.id as number).pipe(
-					tap((response: Response<any>) => {
-						if (response.success) {
-							this.loadJournal(item);
-							this.loadOrders(item);
-						}
-					})
+					switchMap((response: Response<any>) =>
+						timer(500).pipe(
+							tap(() => {
+								if (response.success) {
+									this.loadJournal(item);
+									this.loadOrders(item);
+								}
+							})
+						)
+					)
 				);
 			})
 		)
@@ -586,15 +618,19 @@ export class TradeStore extends ComponentStore<TradeState> {
 	}
 
 	private _updateJournal(journal: TradeJournal[]): TradeJournal[] {
-		return journal.map((item) => {
-			let date = item.ideaDate;
+		return journal.map((item) => ({ ...item, ideaDate: this._getDateForJournal(item) }));
+	}
 
-			if (!date) {
-				date = item.expireDate ? item.expireDate : new Date().toISOString();
-			}
+	private _getDateForJournal(journal: TradeJournal): string | null {
+		if (journal.ideaDate) {
+			return journal.ideaDate;
+		}
 
-			return { ...item, ideaDate: date };
-		});
+		const date = new Date();
+
+		// date.setHours(date.getHours() - 3);
+		// date.setMinutes(date.getMinutes() - 1);
+		return date.toISOString();
 	}
 
 	isOrder(type: string): boolean {

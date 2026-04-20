@@ -256,7 +256,6 @@ export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 								this._queryParams.update({
 									type: body.actions.entries.length === 0 ? EventSelected.IDEA : EventSelected.POSITION,
 									id: response.data.id,
-									dialog: 'visible',
 								});
 							}),
 							tap(() => this.updateIsLoading(false))
