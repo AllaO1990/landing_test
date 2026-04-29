@@ -189,15 +189,17 @@ export class LayoutComponent implements OnDestroy {
 			return { ...journal, ideaId };
 		});
 
-		const update = [...entry, ...out].map((item: TradeJournal & TradeJournalSystem) => {
-			const { change, isEdit, remove, ...journal } = item;
+		const update = [...entry, ...out, ...stop]
+			.filter((item: TradeJournal & { removed: boolean | undefined }) => !item['removed'])
+			.map((item: TradeJournal & TradeJournalSystem) => {
+				const { change, isEdit, remove, ...journal } = item;
 
-			if (journal.status === null) {
-				journal.status = TradeJournalStatus.UNLOADING;
-			}
+				if (journal.status === null) {
+					journal.status = TradeJournalStatus.UNLOADING;
+				}
 
-			return { ...journal, ideaId };
-		});
+				return { ...journal, ideaId };
+			});
 
 		this.#store.onSubmitJournal({ removed, update });
 	}

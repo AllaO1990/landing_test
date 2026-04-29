@@ -42,3 +42,9 @@ export enum TradeJournalStatus {
 	BROKEN = 'BROKEN', // есть в журнале нет на брокере
 	EXECUTED = 'EXECUTED', // исполнена брокером \ пользователем
 }
+
+export interface TradeJournalOpenPosition {
+	ideaId: number;
+	netQuantity: number;
+	pendingCount: number;
+}

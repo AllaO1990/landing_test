@@ -1,25 +1,26 @@
-import {ComponentStore} from '@ngrx/component-store';
-import {catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer} from 'rxjs';
-import {DataAccess, Response} from 'types/response';
+import { ComponentStore } from '@ngrx/component-store';
+import { catchError, filter, forkJoin, map, Observable, of, switchMap, tap, timer } from 'rxjs';
+import { DataAccess, Response } from 'types/response';
 import {
-  ResponseTradeStopOrder,
-  TradeDirections,
-  TradeOperation,
-  TradeOperations,
-  TradeOrder,
-  TradeOrderParams,
-  TradeOrders,
-  TradeOrderType,
-  TradeOrderTypesDescription,
-  TradePortfolio,
-  TradeStopOrders,
+	ResponseTradeStopOrder,
+	TradeDirections,
+	TradeOperation,
+	TradeOperations,
+	TradeOrder,
+	TradeOrderParams,
+	TradeOrders,
+	TradeOrderType,
+	TradeOrderTypesDescription,
+	TradePortfolio,
+	TradeStopOrders,
 } from './types';
-import {Params} from '@angular/router';
-import {sortNumber} from 'utils/sort-number';
-import {TRADE_ORDERS} from './order.constants';
-import {TradeOrderTypeText, TradeStopOrderTypeText} from './order.types';
-import {TradeJournal, TradeJournalStatus} from 'types/trade';
-import {HttpErrorResponse} from '@angular/common/http';
+import { Params } from '@angular/router';
+import { sortNumber } from 'utils/sort-number';
+import { TRADE_ORDERS } from './order.constants';
+import { TradeOrderTypeText, TradeStopOrderTypeText } from './order.types';
+import { TradeJournal, TradeJournalStatus } from 'types/trade';
+import { HttpErrorResponse } from '@angular/common/http';
+import { signal, WritableSignal } from '@angular/core';
 
 interface Api {
 	getOperations(params: Params): Observable<Response<TradeOperations>>;
@@ -58,6 +59,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 		TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS,
 		TradeStopOrderTypeText.STOP_ORDER_TYPE_TAKE_PROFIT,
 	];
+
+	readonly reload: WritableSignal<void> = signal(undefined, {
+		equal: () => false,
+	});
 
 	readonly directionTypes$: Observable<TradeDirections | null> = this.select(
 		(state: TradeState) => state.directionTypes
@@ -246,11 +251,14 @@ export class TradeStore extends ComponentStore<TradeState> {
 						if (response.success) {
 							this.setJournalItem({ ...journal, externalId: response.data.orderId as string } as TradeJournal);
 
-							this.loadOrders(journal);
-							this.loadOperations(journal);
+							this.reload.set();
+
+							// this.loadOrders(journal);
+							// this.loadOperations(journal);
 						}
 					}),
 					catchError((err: HttpErrorResponse) => {
+						console.log(err, err.error.message.indexOf('30057'));
 						return of({
 							data: null,
 							message: err.error.message,
@@ -275,6 +283,7 @@ export class TradeStore extends ComponentStore<TradeState> {
 								if (response.success) {
 									return {
 										...item,
+										orderId: response.data.orderId,
 										ideaDate: this._getDateForJournal(item),
 										status: TradeJournalStatus.AWAITS,
 									};
@@ -283,17 +292,52 @@ export class TradeStore extends ComponentStore<TradeState> {
 									...item,
 									status: TradeJournalStatus.BROKEN,
 								};
-							})
+							}),
+							catchError((err: HttpErrorResponse) => {
+								console.log(err, err.error.message.indexOf('30057'));
+								// if (err.error.message.indexOf('30057')) {
+								// 	return this._api.removeJournalItem(item.id).pipe(
+								// 		switchMap((responseRemove: Response<any>) => {
+								// 			if (responseRemove.success) {
+								// 				return this._api.setJournalItem({ ...item, id: 0, externalId: null }).pipe(
+								// 					switchMap((responseSet: Response<any>) =>
+								// 						this._api.addOrder(responseSet.data).pipe(
+								// 							map((response: Response<any>) => {
+								// 								if (response.success) {
+								// 									return {
+								// 										...item,
+								// 										orderId: response.data.orderId,
+								// 										ideaDate: this._getDateForJournal(item),
+								// 										status: TradeJournalStatus.AWAITS,
+								// 									};
+								// 								}
+								// 								return {
+								// 									...item,
+								// 									status: TradeJournalStatus.BROKEN,
+								// 								};
+								// 							})
+								// 						)
+								// 					)
+								// 				);
+								// 			}
+								//
+								// 			return of(null);
+								// 		})
+								// 	);
+								// }
+
+								return of(null);
+							}),
+							filter((item: TradeJournal | null) => item !== null)
 						)
 					),
 					...orderStop.map((item: TradeJournal) =>
 						this._api.addStopOrder(item).pipe(
 							map((response: Response<ResponseTradeStopOrder | null>) => {
-								console.log(response, item);
 								if (response.success && response.data) {
 									return {
 										...item,
-										externalId: response.data.stopOrderId || item.externalId,
+										orderId: response.data.stopOrderId,
 										ideaDate: this._getDateForJournal(item),
 										status: TradeJournalStatus.AWAITS,
 									};
@@ -308,13 +352,15 @@ export class TradeStore extends ComponentStore<TradeState> {
 				]).pipe(
 					switchMap((list: TradeJournal[]) => {
 						if (list.length > 0) {
-							return timer(3000).pipe(
+							return timer(1000).pipe(
 								switchMap(() => this._api.setJournalItems(list)),
 								tap((response: Response<TradeOrder>) => {
 									if (response.success) {
-										this.loadOrders(journal[0]);
-										this.loadOperations(journal[0]);
-										this.loadJournal(journal[0]);
+										this.reload.set();
+
+										// this.loadOrders(journal[0]);
+										// this.loadOperations(journal[0]);
+										// this.loadJournal(journal[0]);
 									}
 								})
 							);
@@ -337,9 +383,11 @@ export class TradeStore extends ComponentStore<TradeState> {
 				return this._removeOrder(journal).pipe(
 					tap((response: Response<any>) => {
 						if (response.success) {
-							this.loadOrders(journal);
-							this.loadOperations(journal);
-							this.loadJournal(journal);
+							this.reload.set();
+
+							// this.loadOrders(journal);
+							// this.loadOperations(journal);
+							// this.loadJournal(journal);
 						}
 					})
 				);
@@ -353,8 +401,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 				this._api.removeOrder(params).pipe(
 					tap((response: Response<TradeOrder>) => {
 						if (response.success) {
-							this.loadOrders(params);
-							this.loadOperations(params);
+							this.reload.set();
+
+							// this.loadOrders(params);
+							// this.loadOperations(params);
 						}
 					})
 				)
@@ -371,8 +421,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 							switchMap((response: Response<any>) => timer(3000).pipe(map(() => response))),
 							tap((response: Response<any>) => {
 								if (response.success) {
-									this.loadOperations(params);
-									this.loadOrders(params);
+									this.reload.set();
+
+									// this.loadOrders(params);
+									// this.loadOperations(params);
 								}
 							})
 						)
@@ -407,8 +459,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 				this._api.addStopOrder(params).pipe(
 					tap((response: Response<any>) => {
 						if (response.success) {
-							this.loadOrders(params);
-							this.loadOperations(params);
+							this.reload.set();
+
+							// this.loadOrders(params);
+							// this.loadOperations(params);
 						}
 					})
 				)
@@ -420,13 +474,19 @@ export class TradeStore extends ComponentStore<TradeState> {
 		stream$.pipe(
 			switchMap((journal: Params) => {
 				return this._removeStopOrder(journal).pipe(
-					tap((response: Response<any>) => {
-						if (response.success) {
-							this.loadOrders(journal);
-							this.loadOperations(journal);
-							this.loadJournal(journal);
-						}
-					})
+					switchMap((response: Response<any>) =>
+						timer(500).pipe(
+							tap(() => {
+								if (response.success) {
+									this.reload.set();
+
+									// this.loadOrders(journal);
+									// this.loadOperations(journal);
+									// this.loadJournal(journal);
+								}
+							})
+						)
+					)
 				);
 			})
 		)
@@ -438,8 +498,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 				this._api.removeStopOrder(params).pipe(
 					tap((response: Response<TradeStopOrders>) => {
 						if (response.success) {
-							this.loadOrders(params);
-							this.loadOperations(params);
+							this.reload.set();
+
+							// this.loadOrders(params);
+							// this.loadOperations(params);
 						}
 					})
 				)
@@ -454,15 +516,15 @@ export class TradeStore extends ComponentStore<TradeState> {
 	changeStopOrder = this.effect((stream$: Observable<TradeJournal>) =>
 		stream$.pipe(
 			switchMap((params: TradeJournal) => {
-				console.log(params);
-
 				return this._api.removeStopOrder(params).pipe(
 					switchMap(() => {
 						return this._api.addStopOrder(params).pipe(
 							tap((response: Response<any>) => {
 								if (response.success) {
-									this.loadOperations(params);
-									this.loadOrders(params);
+									this.reload.set();
+
+									// this.loadOperations(params);
+									// this.loadOrders(params);
 								}
 							})
 						);
@@ -475,7 +537,12 @@ export class TradeStore extends ComponentStore<TradeState> {
 	setJournalItems = this.effect((stream$: Observable<TradeJournal[]>) =>
 		stream$.pipe(
 			switchMap((journal: TradeJournal[]) => {
-				return this._api.setJournalItems(this._updateJournal(journal)).pipe(tap(() => this.loadJournal(journal[0])));
+				return this._api.setJournalItems(this._updateJournal(journal)).pipe(
+					tap(() =>
+						// this.loadJournal(journal[0])
+						this.reload.set()
+					)
+				);
 			})
 		)
 	);
@@ -516,8 +583,10 @@ export class TradeStore extends ComponentStore<TradeState> {
 						timer(500).pipe(
 							tap(() => {
 								if (response.success) {
-									this.loadJournal(item);
-									this.loadOrders(item);
+									this.reload.set();
+
+									// this.loadJournal(item);
+									// this.loadOrders(item);
 								}
 							})
 						)
@@ -554,9 +623,11 @@ export class TradeStore extends ComponentStore<TradeState> {
 			switchMap((journal: TradeJournal[]) => {
 				return this._api.setJournalItems(this._updateJournal(journal)).pipe(
 					tap(() => {
-						this.loadOrders(journal[0]);
-						this.loadOperations(journal[0]);
-						this.loadJournal(journal[0]);
+						this.reload.set();
+
+						// this.loadOrders(journal[0]);
+						// this.loadOperations(journal[0]);
+						// this.loadJournal(journal[0]);
 					})
 				);
 			})
@@ -628,8 +699,9 @@ export class TradeStore extends ComponentStore<TradeState> {
 
 		const date = new Date();
 
-		// date.setHours(date.getHours() - 3);
-		// date.setMinutes(date.getMinutes() - 1);
+		date.setUTCHours(date.getHours() - 3);
+		date.setMinutes(date.getMinutes() - 1);
+
 		return date.toISOString();
 	}
 

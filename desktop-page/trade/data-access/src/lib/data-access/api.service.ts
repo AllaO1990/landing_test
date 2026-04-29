@@ -1,26 +1,26 @@
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {inject, Injectable} from '@angular/core';
-import {APP_CONFIG} from 'tokens/desktop/config';
-import {catchError, Observable, of} from 'rxjs';
-import {Response} from 'types/response';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { APP_CONFIG } from 'tokens/desktop/config';
+import { catchError, Observable, of } from 'rxjs';
+import { Response } from 'types/response';
 import {
-  ResponseTradeStopOrder,
-  TradeAccounts,
-  TradeLimit,
-  TradeLimitList,
-  TradeOperations,
-  TradeOrder,
-  TradeOrderParams,
-  TradeOrders,
-  TradeOrderTypes,
-  TradePortfolio,
-  TradeSources,
-  TradeToken,
-  TradeTokenSource,
+	ResponseTradeStopOrder,
+	TradeAccounts,
+	TradeLimit,
+	TradeLimitList,
+	TradeOperations,
+	TradeOrder,
+	TradeOrderParams,
+	TradeOrders,
+	TradeOrderTypes,
+	TradePortfolio,
+	TradeSources,
+	TradeToken,
+	TradeTokenSource,
 } from './types';
-import {Params} from '@angular/router';
-import {TradeJournal} from 'types/trade';
-import {TradeOrderBook} from 'types/orders';
+import { Params } from '@angular/router';
+import { TradeJournal, TradeJournalOpenPosition } from 'types/trade';
+import { TradeOrderBook } from 'types/orders';
 
 @Injectable()
 export class ApiTradeService {
@@ -70,6 +70,9 @@ export class ApiTradeService {
 				accountId: params['accountId'],
 				instrumentId: params['instrumentId'],
 				sourceId: params['sourceId'],
+				status: params['status'],
+				from: params['from'],
+				to: params['to'],
 			},
 		});
 	}
@@ -93,7 +96,13 @@ export class ApiTradeService {
 	}
 
 	getOperations(params: Params): Observable<Response<TradeOperations>> {
-		return this.#http.get<Response<TradeOperations>>(`${this.host}/v1/trades/operations`, { params });
+		return this.#http.get<Response<TradeOperations>>(`${this.host}/v1/trades/operations`, {
+			params: {
+				sourceId: params['sourceId'],
+				accountId: params['accountId'],
+				instrumentId: params['instrumentId'],
+			},
+		});
 	}
 
 	getOrderTypes(): Observable<Response<TradeOrderTypes>> {
@@ -133,6 +142,7 @@ export class ApiTradeService {
 				expireDate: body['expireDate'],
 				instrumentId: body['instrumentId'],
 				price: body['price'],
+				orderId: body['externalId'],
 				quantity: body['lots'],
 				sourceId: body['sourceId'],
 				priceType: 0,
@@ -160,6 +170,7 @@ export class ApiTradeService {
 	}
 
 	removeOrder(body: Params): Observable<Response<any>> {
+		console.log(body);
 		return this.#http
 			.delete<Response<any>>(`${this.host}/v1/trades/orders`, {
 				body: {
@@ -216,18 +227,11 @@ export class ApiTradeService {
 	}
 
 	setJournalItems(items: TradeJournal[]): Observable<Response<any>> {
-		return this.#http.post<Response<any>>(
-			`${this.host}/v1/trades/journal-items`,
-			items.map((item: TradeJournal) => {
-				const { orderId, ...other } = item;
-
-				return other;
-			})
-		);
+		return this.#http.post<Response<TradeJournal[]>>(`${this.host}/v1/trades/journal-items`, items);
 	}
 
-	getJournalOpenPositions(params: Params): Observable<Response<any>> {
-		return this.#http.get<Response<TradeOrderBook>>(`${this.host}/v1/trades/journal/open-positions`, {
+	getJournalOpenPositions(params: Params): Observable<Response<TradeJournalOpenPosition[]>> {
+		return this.#http.get<Response<TradeJournalOpenPosition[]>>(`${this.host}/v1/trades/journal/open-positions`, {
 			params: {
 				accountId: params['accountId'],
 				sourceId: params['sourceId'],

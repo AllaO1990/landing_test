@@ -34,6 +34,7 @@ import {
 	finalize,
 	map,
 	Observable,
+	of,
 	pairwise,
 	shareReplay,
 	startWith,
@@ -42,8 +43,15 @@ import {
 	tap,
 	timer,
 } from 'rxjs';
-import { StockPosition, StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from 'types/position';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import {
+	StockPosition,
+	StockPositionActionEntry,
+	StockPositionActionTarget,
+	StockPositionIdeaEntry,
+	StockPositionStop,
+	StockPositionTarget,
+} from 'types/position';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ApiTradeService } from '@data-access-trade/api.service';
 import { TradeStore } from '@data-access-trade/store.trade';
 import { DirectionTypePipe } from '@data-access-trade/direction-type.pipe';
@@ -88,7 +96,7 @@ import {
 	TRADE_STOP_ORDER_TYPE_TAKE_PROFIT,
 } from '@data-access-trade/order.constants';
 import { StockInstrument } from 'types/stock';
-import { TradeJournal, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
+import { TradeJournal, TradeJournalOpenPosition, TradeJournalStatus, TradeJournalSystem } from 'types/trade';
 import { StockPositionType } from 'types/stock-position-type';
 import { getPriceIncrement } from 'utils/get-price-increment';
 import { QueryParams } from 'utils/query-params';
@@ -158,6 +166,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	readonly #queryParams: QueryParams = inject(QUERY_PARAMS);
 	readonly #timerInterval: number = inject(TIMER_INTERVAL);
 	readonly #context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT);
+
+	readonly #reload = toObservable(this.#store.reload);
 
 	readonly isMobile$: Observable<boolean> = this.#breakpoint$.pipe(
 		map((media: TuiBreakpointMediaKey | null): boolean => media === 'mobile'),
@@ -238,13 +248,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 	filter$: Observable<Params> = this.controlFilter.valueChanges.pipe(
 		takeUntilDestroyed(this.#destroyRef),
+		filter((value) => value !== null),
 		map((value: { source: TradeSource; account: TradeAccount; instrument: StockInstrument }) => ({
 			sourceId: value.source && value.source.id,
 			accountId: value.account && value.account.accountId,
 			instrumentId: value.instrument && value.instrument.id,
 		})),
 		filter((value) => value.accountId !== null && value.instrumentId !== null && value.sourceId !== null),
-		distinctUntilChanged(this._distinct),
+		distinctUntilChanged((a, b) => this._distinct(a, b)),
 		shareReplay({ refCount: true, bufferSize: 1 })
 	);
 
@@ -317,36 +328,43 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
-	readonly positionIdeaId$: Observable<number> = this.idea$.pipe(
-		map((position: StockPosition) => position.idea.id),
-		filter((id: number | null) => id !== null),
-		shareReplay({ bufferSize: 1, refCount: true })
-	);
-
 	readonly journalIdeaId$: Observable<number | null> = this.journal$.pipe(
 		map((journal: TradeJournal[] | null) => journal && journal[0].ideaId),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
 	readonly #statusCurrentTrade$: Observable<boolean | null> = combineLatest([
-		this.positionIdeaId$,
-		this.journalIdeaId$,
+		this.idea$.pipe(
+			map((position: StockPosition) => position.idea.id),
+			filter((id: number | null) => id !== null)
+		),
+		this.filter$.pipe(
+			debounceTime(300),
+			switchMap((filter: Params) =>
+				this.#api.getJournalOpenPositions(filter).pipe(
+					map((response: Response<TradeJournalOpenPosition[]>) => response.data && response.data[0]),
+					distinctUntilChanged((a, b) => a.ideaId === b.ideaId)
+				)
+			)
+		),
 	]).pipe(
-		map(([positionIdeaId, journalIdeaId]: [number, number | null]) => {
-			if (journalIdeaId === null) {
+		map(([positionIdeaId, openPosition]: [number, TradeJournalOpenPosition | null]) => {
+			if (openPosition === null) {
 				return true;
 			}
 
-			return positionIdeaId === journalIdeaId;
-		})
+			return positionIdeaId === openPosition.ideaId;
+		}),
+		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
 	readonly isCurrentTrade = toSignal(this.#statusCurrentTrade$, { initialValue: null });
 
 	readonly positionAndDefaultIdea$: Observable<DefaultIdea & { position: StockPosition }> = this.idea$.pipe(
-		distinctUntilChanged((a, b) => a.idea.id === b.idea.id),
 		switchMap((position: StockPosition) =>
-			this.#api.getLimitForCurrency(position.idea.instrument.currencyId).pipe(
+			of(position.idea.instrument.currencyId).pipe(
+				distinctUntilChanged(),
+				switchMap((currency: number) => this.#api.getLimitForCurrency(currency)),
 				map((response: Response<TradeLimit>) => ({
 					limit: response.data,
 					position,
@@ -383,17 +401,32 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	};
 
 	ngAfterViewInit(): void {
-		this.filter$
-			.pipe(
+		combineLatest([
+			this.filter$.pipe(
 				tap(() => {
 					this.formArrayEntry.clear();
 					this.formArrayOut.clear();
 					this.formArrayStop.clear();
-				}),
-				switchMap((params: Params) =>
+				})
+			),
+			this.idea$.pipe(
+				filter((position: StockPosition) => position !== null),
+				distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
+			),
+			this.#reload,
+		])
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				debounceTime(500),
+				switchMap(([params, position]: [Params, StockPosition, void]) =>
 					timer(0, this.#timerInterval).pipe(
 						takeUntilDestroyed(this.#destroyRef),
-						map(() => params)
+						map(() => ({
+							...params,
+							status: 1,
+							from: position.idea.createdAt,
+							to: new Date().toISOString(),
+						}))
 					)
 				)
 			)
@@ -423,7 +456,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						),
 						this.stopOrders$.pipe(
 							filter((orders: TradeStopOrders | null): orders is TradeStopOrders => orders !== null),
-							distinctUntilChanged((a: TradeStopOrders, b: TradeStopOrders) => this._distinctStopOrders(a, b))
+							map((orders: TradeStopOrders) => orders.filter((order: TradeStopOrder) => order.status <= 2))
 						),
 						this.operations$.pipe(
 							filter((operations: TradeOperations | null): operations is TradeOperations => operations !== null),
@@ -434,7 +467,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						),
 						this.journal$,
 					]).pipe(
-						debounceTime(500),
+						debounceTime(1000),
 						map(
 							([orders, stopOrders, operations, portfolio, journal]: [
 								TradeOrders,
@@ -443,11 +476,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 								TradePortfolio,
 								TradeJournal[] | null
 							]) => {
-								let common: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] } = {
-									entry: [],
-									out: [],
-									stop: [],
-								};
+								let common: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] } | null = null;
 
 								if (journal === null) {
 									this.formArrayEntry.clear();
@@ -457,7 +486,24 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 									common = this._initControlsForIdea(position, orders, stopOrders, operations, portfolio, idea);
 								} else {
 									common = this._initControlsForJournal(position, journal, orders, stopOrders, operations);
+
+									const isEqualPosition = this._equalPosition(position, common);
+
+									if (isEqualPosition) {
+										return null;
+									}
+
 									this.controlIsNew.setValue(false);
+								}
+
+								if (common === null) {
+									return null;
+								}
+
+								const isSetJournal = this._initControlsFromOperation(position, common, operations);
+
+								if (isSetJournal) {
+									return null;
 								}
 
 								return {
@@ -468,7 +514,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						)
 					)
 				),
-				// filter(() => this.controlGroupJournal.pristine),
+				filter(
+					(value: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[]; position: StockPosition } | null) =>
+						value !== null
+				),
 				finalize(() => console.log('finalize subscribe'))
 			)
 			.subscribe((res: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[]; position: StockPosition }) => {
@@ -857,7 +906,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			this.#store.removeBrokerOrder({
 				accountId,
 				instrumentId: instrument.id,
-				orderId: item.orderId,
+				orderId: item.externalId,
 				sourceId: source.id,
 			});
 		}
@@ -866,7 +915,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			this.#store.removeBrokerStopOrder({
 				accountId,
 				instrumentId: instrument.id,
-				orderId: item.stopOrderId,
+				orderId: item.externalId,
 				sourceId: source.id,
 			});
 		}
@@ -992,6 +1041,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		event.preventDefault();
 
 		control.markAsDirty();
+
 		item['removed'] = true;
 
 		if (item.status === TradeJournalStatus.AWAITS) {
@@ -1304,8 +1354,18 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		orders: TradeOrders,
 		stopOrders: TradeStopOrders,
 		operations: TradeOperations
-	) {
-		const journalUpdate = this._updateTradeJournalOrder(position, journal, orders, stopOrders, operations);
+	): { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] } | null {
+		const journalUpdate: TradeJournal[] | null = this._updateTradeJournalOrder(
+			position,
+			journal,
+			orders,
+			stopOrders,
+			operations
+		);
+
+		if (journalUpdate === null) {
+			return null;
+		}
 
 		let entry: TradeJournal[] = this.#service.getEntryFromJournal(position, journalUpdate);
 		let out: TradeJournal[] = this.#service.getOutFromJournal(position, journalUpdate);
@@ -1363,13 +1423,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		orders: TradeOrders,
 		stopOrders: TradeStopOrders,
 		operations: TradeOperations
-	): TradeJournal[] {
+	): TradeJournal[] | null {
 		const listForUpdate: TradeJournal[] = [];
 		const copyOrders: TradeOrders = orders.slice();
 		const copyStopOrders: TradeStopOrders = stopOrders.slice();
 		const operationList = this.#service.getActualOperations(
 			position,
-			operations.filter((item: TradeOperation) => item.state === 1),
+			operations.filter((item: TradeOperation) => item.state === 1 && (item.type === 15 || item.type === 22)),
 			journal
 		);
 
@@ -1377,12 +1437,13 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			.filter((item) => item.ideaId === position.idea.id)
 			.map((item: TradeJournal) => {
 				const findIndexOrder: number = copyOrders.findIndex(
-					(order: TradeOrder) => order.orderRequestId === item.externalId
+					(order: TradeOrder) => order.orderRequestId === item.externalId || order.orderId === item.orderId
 				);
 
 				if (item.status === TradeJournalStatus.UNLOADING && findIndexOrder !== -1) {
 					listForUpdate.push({
 						...item,
+						orderId: copyOrders[findIndexOrder].orderId,
 						price: copyOrders[findIndexOrder].averagePositionPrice.value,
 						ideaDate: item.ideaDate ? item.ideaDate : copyOrders[findIndexOrder].orderDate || new Date().toISOString(),
 						status: TradeJournalStatus.AWAITS,
@@ -1393,16 +1454,15 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 					return item;
 				}
 
-				if (findIndexOrder === -1 && copyOrders.length > 0) {
+				if (findIndexOrder !== -1 && copyOrders[findIndexOrder]) {
 					item.orderId = copyOrders[findIndexOrder].orderId;
-
 					copyOrders.splice(findIndexOrder, 1);
 
 					return item;
 				}
 
 				let findIndexStopOrder: number = copyStopOrders.findIndex(
-					(order: TradeStopOrder) => order.stopOrderId === item.externalId
+					(order: TradeStopOrder) => order.stopOrderId === item.externalId || order.stopOrderId === item.orderId
 				);
 
 				if (findIndexStopOrder === -1 && copyStopOrders.length > 0) {
@@ -1418,10 +1478,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				if (item.status === TradeJournalStatus.UNLOADING && findIndexStopOrder !== -1) {
 					listForUpdate.push({
 						...item,
+						orderId: copyStopOrders[findIndexStopOrder].stopOrderId,
 						price: copyStopOrders[findIndexStopOrder].price.value,
-						ideaDate: item.ideaDate
-							? item.ideaDate
-							: copyStopOrders[findIndexStopOrder].createDate || new Date().toISOString(),
 						stopPrice: copyStopOrders[findIndexStopOrder].stopPrice.value,
 						status: TradeJournalStatus.AWAITS,
 					});
@@ -1433,7 +1491,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 				if (findIndexStopOrder !== -1) {
 					item.orderId = copyStopOrders[findIndexStopOrder].stopOrderId;
-
 					copyStopOrders.splice(findIndexStopOrder, 1);
 
 					return item;
@@ -1473,11 +1530,11 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						return item;
 					}
 
-					if (findIndexOrder) {
+					if (findIndexOrder !== -1) {
 						return item;
 					}
 
-					if (findIndexStopOrder) {
+					if (findIndexStopOrder !== -1) {
 						return item;
 					}
 
@@ -1491,56 +1548,27 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			});
 
 		if (copyOrders.length !== 0) {
-			const defaultItem = this.#service.getDefaultControlValue(position);
 			const {
 				account: { accountId },
 				source,
 			} = this.controlFilter.value;
 
-			copyOrders.forEach((item: TradeOrder) => {
-				listForUpdate.push({
-					...defaultItem,
-					accountId,
-					sourceId: source.id,
-					externalId: item.orderRequestId,
-					orderId: item.orderId,
-					id: 0,
-					price: item.initialSecurityPrice.value,
-					quantity: item.lotsRequested * defaultItem.lot,
-					lots: item.lotsRequested,
-					orderType: item.orderType,
-					orderTypeText: item.orderTypeText,
-					commission: item.initialCommission ? item.initialCommission.value : 0,
-					total: getNumberPrecision(item.initialSecurityPrice.value * item.lotsRequested * defaultItem.lot, 2),
-					status: TradeJournalStatus.AWAITS,
-				});
+			this.#service.getOrdersControlValue(accountId, source, position, copyOrders).forEach((item: TradeJournal) => {
+				listForUpdate.push(item);
 			});
 		}
 
 		if (copyStopOrders.length !== 0) {
-			const defaultItem = this.#service.getDefaultControlValue(position);
 			const {
 				account: { accountId },
 				source,
 			} = this.controlFilter.value;
 
-			copyStopOrders.forEach((item: TradeStopOrder) => {
-				listForUpdate.push({
-					...defaultItem,
-					accountId,
-					sourceId: source.id,
-					externalId: item.stopOrderId,
-					orderId: item.stopOrderId,
-					id: 0,
-					price: item.price.value,
-					quantity: item.lotsRequested * defaultItem.lot,
-					lots: item.lotsRequested,
-					orderType: item.orderType,
-					orderTypeText: item.orderTypeText,
-					total: getNumberPrecision(item.price.value * item.lotsRequested * defaultItem.lot, 2),
-					status: TradeJournalStatus.AWAITS,
+			this.#service
+				.getStopOrdersControlValue(accountId, source, position, copyStopOrders)
+				.forEach((item: TradeJournal) => {
+					listForUpdate.push(item);
 				});
-			});
 		}
 
 		if (listForUpdate.length > 0) {
@@ -1556,9 +1584,69 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 					body: this.#service.updateIdeaFromJournal(position, listExecuted),
 				});
 			}
+
+			return null;
 		}
 
 		return list;
+	}
+
+	private _initControlsFromOperation(
+		position: StockPosition,
+		journal: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] },
+		operations: TradeOperations
+	): boolean {
+		const copyOperations = operations.filter(
+			(item: TradeOperation) => item.state === 1 && (item.type === 15 || item.type === 22)
+		);
+
+		if (copyOperations.length === 0) {
+			return false;
+		}
+
+		[...journal.entry, ...journal.out, ...journal.stop].forEach((item: TradeJournal) => {
+			if (item.status === TradeJournalStatus.EXECUTED) {
+				const operationType = this.#service.getOperationType(item.direction);
+
+				const findIndex = copyOperations.findIndex((operation: TradeOperation) => {
+					return operation.quantity === item.quantity && operation.type === operationType;
+				});
+
+				if (findIndex !== -1) {
+					copyOperations.splice(findIndex, 1);
+				}
+			}
+		});
+
+		if (copyOperations.length > 0) {
+			const defaultItem = this.#service.getDefaultControlValue(position);
+			const {
+				account: { accountId },
+				source,
+			} = this.controlFilter.value;
+
+			this.#store.setJournalItems(
+				copyOperations.map((item: TradeOperation) => ({
+					...defaultItem,
+					accountId,
+					sourceId: source.id,
+					id: 0,
+					price: item.price.value,
+					commission: Math.abs(item.comission.value),
+					total: getNumberPrecision(item.price.value * item.quantity, 2),
+					lots: item.quantity / defaultItem.lot,
+					quantity: item.quantity,
+					direction: this.#service.getDirectionFromOperation(item.type),
+					orderType: TRADE_ORDER_TYPE_LIMIT.id,
+					orderTypeText: TRADE_ORDER_TYPE_LIMIT.type,
+					status: TradeJournalStatus.EXECUTED,
+				}))
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private _getQuantityForJournal(journal: TradeJournal[] | null): number {
@@ -1704,5 +1792,54 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 		formArray.patchValue([], { emitEvent: true });
 		formArray.markAsPristine();
+	}
+
+	private _equalPosition(
+		position: StockPosition,
+		journal: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] } | null
+	): boolean {
+		if (!position) {
+			return false;
+		}
+
+		if (!journal) {
+			return false;
+		}
+
+		const isEntry = journal.entry
+			.filter((entry: TradeJournal) => entry.status === TradeJournalStatus.EXECUTED)
+			.every((entry: TradeJournal) => {
+				return (
+					position.actions.entries.findIndex((item: StockPositionActionEntry) => {
+						return entry.quantity === item.amount && entry.price === item.price;
+					}) !== -1
+				);
+			});
+
+		const isOut = journal.out
+			.filter((out: TradeJournal) => out.status === TradeJournalStatus.EXECUTED)
+			.every((out: TradeJournal) => {
+				return (
+					position.actions.outs.findIndex((item: StockPositionActionTarget) => {
+						return out.quantity === item.amount && out.price === out.price;
+					}) !== -1
+				);
+			});
+
+		const isEdit = !isEntry || !isOut;
+
+		if (isEdit) {
+			this.#idea.editIdea({
+				id: position.idea.id as number,
+				body: this.#service.updateIdeaFromJournal(
+					position,
+					[...journal.entry, ...journal.out, ...journal.stop].filter(
+						(item: TradeJournal) => item.status === TradeJournalStatus.EXECUTED
+					)
+				),
+			});
+		}
+
+		return isEdit;
 	}
 }

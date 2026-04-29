@@ -20,6 +20,12 @@
     </button>
   </div>
 
+  @if (isCurrentTrade() === null) {
+    <div class="trade__container">
+      <ui-loader></ui-loader>
+    </div>
+  }
+
   @if (isCurrentTrade() !== null && !isCurrentTrade()) {
     <div class="trade__container trade__view trade__view--center">
       @if (journalIdeaId$ | async; as journalIdeaId) {

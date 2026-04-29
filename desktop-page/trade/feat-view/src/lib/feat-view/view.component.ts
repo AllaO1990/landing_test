@@ -33,6 +33,9 @@ interface FormValue {
 	sourceId: number;
 	positionType: string | null;
 	instrument: StockInstrument;
+	status: number;
+	from: string;
+	to: string;
 }
 
 @Component({
@@ -141,6 +144,9 @@ export class ViewComponent implements AfterViewInit {
 						instrument: idea.idea.instrument,
 						positionType: idea.idea.positionType,
 						sourceId: filterTrade.source.id,
+						status: 1,
+						from: idea.idea.createdAt || new Date().toISOString(),
+						to: new Date().toISOString(),
 					}))
 				)
 				.subscribe((value: FormValue) => this._load(value));
@@ -167,6 +173,9 @@ export class ViewComponent implements AfterViewInit {
 					instrument: idea.idea.instrument,
 					positionType: idea.idea.positionType,
 					sourceId: sources[0].id,
+					status: 1,
+					from: idea.idea.createdAt || new Date().toISOString(),
+					to: new Date().toISOString(),
 				}))
 			)
 			.subscribe((value: FormValue) => this._load(value));
@@ -234,6 +243,9 @@ export class ViewComponent implements AfterViewInit {
 			accountId: value.accountId,
 			instrumentId: value.instrument.id,
 			sourceId: value.sourceId,
+			status: value.status,
+			from: value.from,
+			to: value.to,
 		});
 	}
 
