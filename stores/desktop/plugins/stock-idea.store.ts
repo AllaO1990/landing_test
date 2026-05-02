@@ -1,23 +1,23 @@
-import {DesktopService} from '@desktop-data/desktop-data';
-import {ComponentStore} from '@ngrx/component-store';
-import {catchError, map, Observable, of, switchMap, tap} from 'rxjs';
-import {StockIdeaState} from 'types/stock-idea-state';
-import {StockId, StockInstrument, StockPrice, WithLastPrice} from 'types/stock';
+import { DesktopService } from '@desktop-data/desktop-data';
+import { ComponentStore } from '@ngrx/component-store';
+import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
+import { StockIdeaState } from 'types/stock-idea-state';
+import { StockId, StockInstrument, StockPrice, WithLastPrice } from 'types/stock';
 import {
-  Position,
-  Positions,
-  ResponsePosition,
-  ResponsePositions,
-  StockPosition,
-  StockPositionIdeaEntry,
-  StockPositionTarget,
+	Position,
+	Positions,
+	ResponsePosition,
+	ResponsePositions,
+	StockPosition,
+	StockPositionIdeaEntry,
+	StockPositionTarget,
 } from 'types/position';
-import {Response} from 'types/response';
-import {QueryParams} from 'utils/query-params';
-import {filter, take} from 'rxjs/operators';
-import {EventSelected} from 'types/events';
-import {Params} from '@angular/router';
-import {HttpErrorResponse} from '@angular/common/http';
+import { Response } from 'types/response';
+import { QueryParams } from 'utils/query-params';
+import { filter, take } from 'rxjs/operators';
+import { EventSelected } from 'types/events';
+import { Params } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export class StockIdeaStore extends ComponentStore<StockIdeaState> {
 	readonly ideas$: Observable<Positions | null> = this.select((state: StockIdeaState) => state.ideas);

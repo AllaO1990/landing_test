@@ -1,1 +1,50 @@
-<p>subscription works!</p>
+<div class="header">
+  Условия подписки
+</div>
+<div class="subscription">
+  <div class="subscription__price">
+    <div class="subscription__card card">
+      <div class="card__title">Месяц</div>
+      <div class="card__highlight"><b>Бесплатно</b>
+        <tui-chip appearance="custom">первый месяц</tui-chip>
+      </div>
+      <div class="card__content">далее 999 ₽</div>
+    </div>
+    <div class="subscription__card card">
+      <div class="card__title">Год</div>
+      <div class="card__highlight"><b>9 990 ₽</b></div>
+      <div class="card__content">вы экономите 1 998 ₽</div>
+    </div>
+  </div>
+  <div class="subscription__description description">
+    <div class="description__title">Подписка предоставляет доступ к сервису Grintrade с полным циклом биржевой торговли,
+      от идеи до результата:
+    </div>
+    <div class="description__content">
+      <ul class="description__list list">
+        @for (item of list; track item.title) {
+          <li class="list__item item">
+            <div class="item__icon">
+              <tui-icon icon='@tui.check'/>
+            </div>
+            <div class="item__text">
+              <div class="item__title">{{ item.title }}</div>
+              <div class="item__subtitle">{{ item.subtitle }}</div>
+              <div class="item__content">{{ item.text }}</div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="action">
+  <button
+    size="m"
+    tuiButton
+    [disabled]="true">
+    <tui-icon icon="@tui.square-arrow-up-right"/>
+    Подключиться
+  </button>
+</div>
+

@@ -1,10 +1,10 @@
-import { HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
-import { inject } from '@angular/core';
+import {HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
+import {inject} from '@angular/core';
 
-import { catchError, throwError } from 'rxjs';
-import { AuthService } from '@core/auth';
-import { TuiAlertService } from '@taiga-ui/core';
-import { Router } from '@angular/router';
+import {catchError, throwError} from 'rxjs';
+import {AuthService} from '@core/auth';
+import {TuiAlertService} from '@taiga-ui/core';
+import {Router} from '@angular/router';
 
 export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
 	const _alerts: TuiAlertService = inject(TuiAlertService);
@@ -15,7 +15,7 @@ export const responseInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>
 
 	return next(req).pipe(
 		catchError((error: HttpErrorResponse) => {
-			if (error.status === 401) {
+			if (error.status === 401 && _router.url !== '/') {
 				_authService.logout();
 				_router.navigate(['/login']);
 				// window.location.href = '/login';

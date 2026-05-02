@@ -6,6 +6,8 @@ import { EfficiencyComponent } from '../efficiency/efficiency.component';
 import { StepsComponent } from '../steps/steps.component';
 import { IdeaComponent } from '../idea/idea.component';
 import { InvestComponent } from '../invest/invest.component';
+import { SubscriptionComponent } from '../subscription/subscription.component';
+import { BannerComponent } from '../banner/banner.component';
 
 @Component({
 	selector: 'landing-layout',
@@ -17,6 +19,8 @@ import { InvestComponent } from '../invest/invest.component';
 		StepsComponent,
 		IdeaComponent,
 		InvestComponent,
+		SubscriptionComponent,
+		BannerComponent,
 	],
 	standalone: true,
 	templateUrl: './layout.component.html',

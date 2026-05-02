@@ -1,8 +1,8 @@
-import {inject, Injector} from '@angular/core';
-import {RedirectFunction, Routes} from '@angular/router';
-import {authGuardCanActivate, lkGuardCanActivate} from './core/routing/guards';
-import {LOCAL_STORAGE} from 'tokens/desktop/local-storage';
-import {paymentGuardCanActivate} from './core/routing/guards/payment.guard';
+import { inject, Injector } from '@angular/core';
+import { RedirectFunction, Routes } from '@angular/router';
+import { authGuardCanActivate, lkGuardCanActivate } from './core/routing/guards';
+import { LOCAL_STORAGE } from 'tokens/desktop/local-storage';
+import { paymentGuardCanActivate } from './core/routing/guards/payment.guard';
 
 const redirectFn: RedirectFunction = () => inject(Injector).get(LOCAL_STORAGE).getItem('mode') || 'light';
 
@@ -124,15 +124,15 @@ export const routes: Routes = [
 			},
 		],
 	},
-	// {
-	// 	path: '',
-	// 	loadComponent: () => import('landing').then((m) => m.LayoutComponent),
-	// },
 	{
 		path: '',
-		redirectTo: 'login',
-		pathMatch: 'full',
+		loadComponent: () => import('landing').then((m) => m.LayoutComponent),
 	},
+	// {
+	// 	path: '',
+	// 	redirectTo: 'login',
+	// 	pathMatch: 'full',
+	// },
 	{
 		path: '**',
 		loadChildren: () => import('page-404').then((m) => m.Page404Module),

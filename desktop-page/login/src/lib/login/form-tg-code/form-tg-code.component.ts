@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, output, OutputEmitterRef } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TuiButton, TuiTextfield, TuiTextfieldComponent, TuiTextfieldDirective } from '@taiga-ui/core';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
 
 interface FormValue {
 	email: string;
@@ -13,7 +14,7 @@ interface FormValue {
 	styleUrls: ['../form.scss', 'form-tg-code.component.scss'],
 	standalone: true,
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [ReactiveFormsModule, TuiButton, TuiTextfieldComponent, TuiTextfieldDirective, TuiTextfield],
+	imports: [ReactiveFormsModule, TuiButton, TuiTextfieldComponent, TuiTextfieldDirective, TuiTextfield, TuiAutoFocus],
 })
 export class FormTelegramCodeComponent {
 	@Input() set email(value: string) {
