@@ -6,7 +6,7 @@ ENV NODE_OPTIONS=--max_old_space_size=1024
 RUN npm install
 COPY . .
 RUN npm run build
-RUN echo '{"host": "https://api-dev.grintrade.com/api"}' > /usr/src/app/dist/apps/desktop/assets/settings.json
+RUN echo '{"host": "https://api-dev.grintrade.com/api", "version": '$(date +%s)'}' > /usr/src/app/dist/apps/desktop/assets/settings.json
 
 #STAGE 2
 FROM nginx:alpine
