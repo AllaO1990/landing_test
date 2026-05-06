@@ -198,6 +198,10 @@ export class LayoutComponent implements OnDestroy {
 					journal.status = TradeJournalStatus.UNLOADING;
 				}
 
+				if (journal.status === TradeJournalStatus.BROKEN) {
+					journal.status = TradeJournalStatus.AWAITS;
+				}
+
 				return { ...journal, ideaId };
 			});
 

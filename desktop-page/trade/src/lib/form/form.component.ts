@@ -465,7 +465,17 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						this.portfolio$.pipe(
 							filter((portfolio: TradePortfolio | null): portfolio is TradePortfolio => portfolio !== null)
 						),
-						this.journal$,
+						this.journal$.pipe(
+							map((journal: TradeJournal[] | null) => {
+								if (journal) {
+									const list = journal.filter((item) => item.ideaId === position.idea.id);
+
+									return list.length > 0 ? list : null;
+								}
+
+								return null;
+							})
+						),
 					]).pipe(
 						debounceTime(1000),
 						map(
@@ -497,12 +507,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 								}
 
 								if (common === null) {
-									return null;
-								}
-
-								const isSetJournal = this._initControlsFromOperation(position, common, operations);
-
-								if (isSetJournal) {
 									return null;
 								}
 
@@ -936,7 +940,12 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 	onOpen(event: Event, control: FormArray, direction: boolean, type: 'out' | 'entry' | 'stop' = 'entry') {
 		event.preventDefault();
 
-		const { instrument, lastPrice } = this.controlFilter.value;
+		const {
+			instrument,
+			lastPrice,
+			account: { accountId },
+			source,
+		} = this.controlFilter.value;
 		const {
 			idea: { positionType },
 		} = this.controlPosition.value;
@@ -970,17 +979,26 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			.pipe(takeUntilDestroyed(this.#destroyRef))
 			.subscribe((value: RequestFormValue | null) => {
 				if (value) {
-					const calcValue: Partial<ControlValue> = {
+					console.log(value);
+
+					const calcValue: Partial<TradeJournal & TradeJournalSystem> = {
 						...value,
-						status: TradeJournalStatus.UNLOADING,
+						status: null,
 						commission: 0,
 						change: false,
-						removed: false,
+						remove: false,
+						accountId,
+						sourceId: source.id,
+						instrumentId: instrument.id,
 						lot: instrument.lot,
 						lots: Math.floor(value.quantity / instrument.lot),
 						total: value.total,
+						orderType: value.orderType.id,
+						orderTypeText: value.orderType.type,
 					};
 					control.setControl(control.controls.length, new FormControl(calcValue));
+
+					console.log(control);
 				}
 			});
 	}
@@ -1016,6 +1034,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 						price: value.price,
 						quantity: value.quantity,
 						lots: value.lots,
+						trailingSpread: value.trailingSpread,
 						orderType: value.orderType.id,
 						orderTypeText: value.orderType.type,
 						stopPrice: value.stopPrice,
@@ -1272,22 +1291,22 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 		const entriesActualOperations = actualOperations.filter((item) => item.type === operationTypeEntry);
 
-		const entriesExecutedControlValue =
-			accumFn(position.actions.entries, 'amount') === (portfolio.positions[0] && portfolio.positions[0].quantity)
-				? this.#service.getExecutedControlValue(
-						accountId,
-						source,
-						position,
-						position.actions.entries,
-						entriesActualOperations
-				  )
-				: this.#service.getPositionControlValue(
-						accountId,
-						source,
-						position,
-						portfolio.positions[0],
-						entriesActualOperations
-				  );
+		const entriesExecutedControlValue = this.#service.getExecutedControlValue(
+			accountId,
+			source,
+			position,
+			position.actions.entries,
+			entriesActualOperations
+		);
+		// accumFn(position.actions.entries, 'amount') === (portfolio.positions[0] && portfolio.positions[0].quantity)
+		// 	?
+		// 	: this.#service.getPositionControlValue(
+		// 			accountId,
+		// 			source,
+		// 			position,
+		// 			portfolio.positions[0],
+		// 			entriesActualOperations
+		// 	  );
 
 		const entriesAwaitsControlValue = this.#service.getAwaitsControlValue(
 			accountId,
@@ -1427,7 +1446,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		const listForUpdate: TradeJournal[] = [];
 		const copyOrders: TradeOrders = orders.slice();
 		const copyStopOrders: TradeStopOrders = stopOrders.slice();
-		const operationList = this.#service.getActualOperations(
+		const copyOperations = this.#service.getActualOperations(
 			position,
 			operations.filter((item: TradeOperation) => item.state === 1 && (item.type === 15 || item.type === 22)),
 			journal
@@ -1499,35 +1518,42 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				const operationType = this.#service.getOperationType(item.direction);
 
 				if (item.status === TradeJournalStatus.EXECUTED) {
-					const findIndex: number = operationList.findIndex(
-						(operation: TradeOperation) =>
-							operation.quantity === item.quantity && operation.type === operationType && operation.state === 1
+					const findIndex: number = copyOperations.findIndex(
+						(operation: TradeOperation) => operation.quantity === item.quantity && operation.type === operationType
 					);
 
 					if (findIndex !== -1) {
-						operationList.splice(findIndex, 1);
+						const commission = Math.abs(copyOperations[findIndex].comission.value);
+
+						copyOperations.splice(findIndex, 1);
+
+						return { ...item, commission };
 					}
 
 					return item;
 				}
 
 				if (item.status === TradeJournalStatus.AWAITS) {
-					const findOperation: TradeOperation | null =
-						operationList.find(
-							(operation: TradeOperation) =>
-								operation.quantity === item.quantity && operation.type === operationType && operation.state === 1
-						) || null;
+					const findIndex: number = copyOperations.findIndex(
+						(operation: TradeOperation) => operation.quantity === item.quantity && operation.type === operationType
+					);
 
-					if (findOperation) {
-						listForUpdate.push({
+					if (findIndex !== -1) {
+						const operation = copyOperations[findIndex];
+
+						const journal = {
 							...item,
-							price: findOperation.price.value,
-							total: getNumberPrecision(findOperation.price.value * item.quantity, 2),
-							expireDate: findOperation.date,
-							commission: Math.abs(findOperation.comission.value),
+							price: operation.price.value,
+							total: getNumberPrecision(operation.price.value * item.quantity, 2),
+							expireDate: operation.date,
+							commission: Math.abs(operation.comission.value),
 							status: TradeJournalStatus.EXECUTED,
-						});
-						return item;
+						};
+
+						listForUpdate.push(journal);
+						copyOperations.splice(findIndex, 1);
+
+						return journal;
 					}
 
 					if (findIndexOrder !== -1) {
@@ -1571,6 +1597,19 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				});
 		}
 
+		if (copyOperations.length !== 0) {
+			const {
+				account: { accountId },
+				source,
+			} = this.controlFilter.value;
+
+			this.#service
+				.getOperationsControlValue(accountId, source, position, copyOperations)
+				.forEach((item: TradeJournal) => {
+					listForUpdate.push(item);
+				});
+		}
+
 		if (listForUpdate.length > 0) {
 			this.#store.setJournalItems(listForUpdate);
 
@@ -1591,63 +1630,67 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		return list;
 	}
 
-	private _initControlsFromOperation(
-		position: StockPosition,
-		journal: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] },
-		operations: TradeOperations
-	): boolean {
-		const copyOperations = operations.filter(
-			(item: TradeOperation) => item.state === 1 && (item.type === 15 || item.type === 22)
-		);
-
-		if (copyOperations.length === 0) {
-			return false;
-		}
-
-		[...journal.entry, ...journal.out, ...journal.stop].forEach((item: TradeJournal) => {
-			if (item.status === TradeJournalStatus.EXECUTED) {
-				const operationType = this.#service.getOperationType(item.direction);
-
-				const findIndex = copyOperations.findIndex((operation: TradeOperation) => {
-					return operation.quantity === item.quantity && operation.type === operationType;
-				});
-
-				if (findIndex !== -1) {
-					copyOperations.splice(findIndex, 1);
-				}
-			}
-		});
-
-		if (copyOperations.length > 0) {
-			const defaultItem = this.#service.getDefaultControlValue(position);
-			const {
-				account: { accountId },
-				source,
-			} = this.controlFilter.value;
-
-			this.#store.setJournalItems(
-				copyOperations.map((item: TradeOperation) => ({
-					...defaultItem,
-					accountId,
-					sourceId: source.id,
-					id: 0,
-					price: item.price.value,
-					commission: Math.abs(item.comission.value),
-					total: getNumberPrecision(item.price.value * item.quantity, 2),
-					lots: item.quantity / defaultItem.lot,
-					quantity: item.quantity,
-					direction: this.#service.getDirectionFromOperation(item.type),
-					orderType: TRADE_ORDER_TYPE_LIMIT.id,
-					orderTypeText: TRADE_ORDER_TYPE_LIMIT.type,
-					status: TradeJournalStatus.EXECUTED,
-				}))
-			);
-
-			return true;
-		}
-
-		return false;
-	}
+	// private _initControlsFromOperation(
+	// 	position: StockPosition,
+	// 	journal: { entry: TradeJournal[]; out: TradeJournal[]; stop: TradeJournal[] },
+	// 	operations: TradeOperations
+	// ): boolean {
+	// 	const date = new Date(position.idea.createdAt as string).valueOf();
+	// 	const copyOperations = operations.filter(
+	// 		(item: TradeOperation) =>
+	// 			item.state === 1 && (item.type === 15 || item.type === 22) && new Date(item.date).valueOf() > date
+	// 	);
+	//
+	// 	console.log(copyOperations);
+	//
+	// 	if (copyOperations.length === 0) {
+	// 		return false;
+	// 	}
+	//
+	// 	[...journal.entry, ...journal.out, ...journal.stop].forEach((item: TradeJournal) => {
+	// 		if (item.status === TradeJournalStatus.EXECUTED) {
+	// 			const operationType = this.#service.getOperationType(item.direction);
+	//
+	// 			const findIndex = copyOperations.findIndex((operation: TradeOperation) => {
+	// 				return operation.quantity === item.quantity && operation.type === operationType;
+	// 			});
+	//
+	// 			if (findIndex !== -1) {
+	// 				copyOperations.splice(findIndex, 1);
+	// 			}
+	// 		}
+	// 	});
+	//
+	// 	if (copyOperations.length > 0) {
+	// 		const defaultItem = this.#service.getDefaultControlValue(position);
+	// 		const {
+	// 			account: { accountId },
+	// 			source,
+	// 		} = this.controlFilter.value;
+	//
+	// 		this.#store.setJournalItems(
+	// 			copyOperations.map((item: TradeOperation) => ({
+	// 				...defaultItem,
+	// 				accountId,
+	// 				sourceId: source.id,
+	// 				id: 0,
+	// 				price: item.price.value,
+	// 				commission: Math.abs(item.comission.value),
+	// 				total: getNumberPrecision(item.price.value * item.quantity, 2),
+	// 				lots: item.quantity / defaultItem.lot,
+	// 				quantity: item.quantity,
+	// 				direction: this.#service.getDirectionFromOperation(item.type),
+	// 				orderType: TRADE_ORDER_TYPE_LIMIT.id,
+	// 				orderTypeText: TRADE_ORDER_TYPE_LIMIT.type,
+	// 				status: TradeJournalStatus.EXECUTED,
+	// 			}))
+	// 		);
+	//
+	// 		return true;
+	// 	}
+	//
+	// 	return false;
+	// }
 
 	private _getQuantityForJournal(journal: TradeJournal[] | null): number {
 		if (journal === null) {

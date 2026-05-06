@@ -712,8 +712,17 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			.subscribe((result: StockPositionTarget[] | null) => {
 				this.isTargetOpen = false;
 
+				console.log(result);
+
 				if (result) {
-					this.formArrayTargets.patchValue(result);
+					this.formArrayTargets.clear({ emitEvent: false });
+
+					result.forEach((item: StockPositionTarget) => {
+						this.formArrayTargets.push(new FormControl(item), { emitEvent: false });
+					});
+
+					this.formArrayTargets.patchValue([]);
+					console.log(this.formArrayTargets.value);
 				}
 			});
 	}

@@ -39,6 +39,7 @@ export interface RequestFormValue {
 	lots: number;
 	stopPrice: number | null;
 	total: number;
+	trailingSpread: number;
 }
 
 @Component({
@@ -108,12 +109,16 @@ export class RequestTradeComponent implements AfterViewInit {
 		expirationType: new FormControl({ value: null, disabled: true }, Validators.required),
 		expireDate: new FormControl({ value: this.dates[0].date, disabled: true }),
 		stopPrice: new FormControl({ value: null, disabled: true }, Validators.required),
-		trailingData: new FormGroup({
-			indent: new FormControl(1),
-			indentType: new FormControl(1),
-			spread: new FormControl({ value: null, disabled: true }, Validators.required),
-			spreadType: new FormControl(1),
-		}),
+		trailingIndent: new FormControl(1),
+		trailingIndentType: new FormControl(1),
+		trailingSpread: new FormControl({ value: null, disabled: true }, Validators.required),
+		trailingSpreadType: new FormControl(1),
+		// trailingData: new FormGroup({
+		// 	indent: new FormControl(1),
+		// 	indentType: new FormControl(1),
+		// 	spread: new FormControl({ value: null, disabled: true }, Validators.required),
+		// 	spreadType: new FormControl(1),
+		// }),
 		price: new FormControl(null, Validators.required),
 		quantity: new FormControl({ value: null, disabled: true }, Validators.required),
 		lots: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
@@ -157,16 +162,16 @@ export class RequestTradeComponent implements AfterViewInit {
 		return this.formGroup.get('total') as FormControl;
 	}
 
-	get groupTrailingData(): FormGroup {
-		return this.formGroup.get('trailingData') as FormGroup;
-	}
+	// get groupTrailingData(): FormGroup {
+	// 	return this.formGroup.get('trailingData') as FormGroup;
+	// }
 
 	get controlStopPrice(): FormControl {
 		return this.formGroup.get('stopPrice') as FormControl;
 	}
 
 	get controlSpread(): FormControl {
-		return this.groupTrailingData.get('spread') as FormControl;
+		return this.formGroup.get('trailingSpread') as FormControl;
 	}
 
 	types$: Observable<TradeOrderTypesDescription | null> = this.#store.orderTypes$;
@@ -203,10 +208,15 @@ export class RequestTradeComponent implements AfterViewInit {
 			const {
 				expireDate: [day, time],
 				expirationType,
+				trailingData,
 				...value
 			} = this.formGroup.getRawValue();
 			this.#context.completeWith({
 				...value,
+				// trailingIndent: trailingData.indent,
+				// trailingIndentType: trailingData.indentType,
+				// trailingSpread: trailingData.spread,
+				// trailingSpreadType: trailingData.spreadType,
 				expirationType: expirationType.id,
 				expireDate: this._getDate(day, time).toISOString(),
 			});
@@ -226,7 +236,7 @@ export class RequestTradeComponent implements AfterViewInit {
 					lastPrice,
 					stopPrice,
 					expireDate,
-					trailingData,
+					trailingSpread,
 				},
 			} = this.#context;
 			const lots = Math.floor(quantity.value / lot.value);
@@ -239,14 +249,10 @@ export class RequestTradeComponent implements AfterViewInit {
 			this._updateControl(this.controlPrice, price);
 			this._updateControl(this.controlOrderType, orderType);
 			this._updateControl(this.controlLot, lot, { onlySelf: false });
-			this._updateControl(this.controlSpread, minPriceIncrement);
+			this._updateControl(this.controlSpread, trailingSpread || minPriceIncrement);
 
 			if (date !== null) {
 				this._updateControl(this.controlExpireDate, { value: date, disabled: expireDate.disabled });
-			}
-
-			if (trailingData && trailingData.value && trailingData.value.spread) {
-				this.groupTrailingData.patchValue(trailingData.value);
 			}
 		}
 

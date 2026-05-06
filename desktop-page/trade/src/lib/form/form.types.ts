@@ -11,7 +11,7 @@ export interface ControlValue {
 	stopPrice: number | null;
 	total: number;
 	commission: number;
-	status: TradeJournalStatus;
+	status: TradeJournalStatus | null;
 	id: string | null;
 	lot: number;
 	lots: number;
