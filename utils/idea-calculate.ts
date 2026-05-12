@@ -9,27 +9,22 @@ export const calculateEntries = (
 	minPriceIncrement: number,
 	limit: number | null = null
 ): StockPositionIdeaEntry[] => {
-	console.log(
-		'calculateEntries',
-		getPriceIncrement(100),
-		100,
-		getPriceIncrement(lot),
-		lot,
-		getPriceIncrement(minPriceIncrement),
-		minPriceIncrement,
-		limit
-	);
-
 	const total = list.reduce((acc: number, item: StockPositionIdeaEntry) => (acc += item.totalPrice), 0);
+	const precisionAmount = getPriceIncrement(lot);
 
 	if (limit === null || total <= limit || limit < list[0].price) {
-		return list.map((item: StockPositionIdeaEntry) => ({
-			...item,
-			lots: item.quantity / lot,
-		}));
+		return list.map((item: StockPositionIdeaEntry) => {
+			const quantity = getNumberPrecision(item.quantity, precisionAmount, 'floor');
+
+			return {
+				...item,
+				quantity,
+				totalPrice: getNumberPrecision(quantity * item.price, 2, 'floor'),
+				lots: quantity / lot,
+			};
+		});
 	}
 
-	const precisionAmount = getPriceIncrement(lot) === 8 ? 8 : 0;
 	const lots = getNumberPrecision(limit / (list[0].price * lot), precisionAmount, 'floor');
 
 	if (lots < 1 && precisionAmount === 0) {
@@ -43,7 +38,7 @@ export const calculateEntries = (
 		{
 			...list[0],
 			lots,
-			quantity: lots * lot,
+			quantity: getNumberPrecision(lots * lot, precisionAmount, 'floor'),
 			totalPrice: getNumberPrecision(list[0].price * lot * lots, 2, 'floor'),
 		},
 	];
@@ -74,15 +69,15 @@ export const calculateTargets = (
 		{ total: 0, quantity: 0 }
 	);
 	const totalEntryLots = totalEntry.quantity / lot;
-	const precision = getPriceIncrement(minPriceIncrement);
-	const precisionAmount = precision === 8 ? 8 : 0;
-	const averagePrice = getNumberPrecision(totalEntry.total / totalEntry.quantity, precision);
+	const precisionPrice = getPriceIncrement(minPriceIncrement);
+	const precisionQuantity = getPriceIncrement(lot);
+	const averagePrice = getNumberPrecision(totalEntry.total / totalEntry.quantity, precisionPrice);
 	const targetsPrice: number[] =
 		targets.length > 0
 			? targets.map((item: StockPositionTarget): number => item.price)
 			: atrList.map((multiply: number): number => averagePrice + multiply * atr * multiplier);
 
-	let calcLots = 0;
+	let calcQuantity = 0;
 	let rateIndex = 0;
 
 	if (totalEntryLots < 4) {
@@ -90,33 +85,37 @@ export const calculateTargets = (
 	}
 
 	return rate[rateIndex].reduce((acc: StockPositionTarget[], part: number, index: number, array) => {
-		let lots = totalEntryLots - calcLots;
+		let quantity = getNumberPrecision(totalEntry.quantity - calcQuantity, precisionQuantity, 'floor');
 
 		if (index !== array.length - 1) {
-			lots = getNumberPrecision(totalEntryLots * part, precisionAmount, 'ceil');
+			quantity = getNumberPrecision(totalEntry.quantity * part, precisionQuantity, 'floor');
 		}
 
-		if (totalEntryLots - calcLots - lots === 0 && index !== array.length - 1) {
-			lots = 1;
+		if (totalEntry.quantity - calcQuantity - quantity === 0 && index !== array.length - 1) {
+			console.error('calculateTargets, last var: lots = 1;');
 		}
+
+		// if (totalEntryLots - calcLots - lots === 0 && index !== array.length - 1) {
+		// 	lots = 1;
+		// }
 
 		const currentPrice = targetsPrice[index];
-		const quantity = getNumberPrecision(lots * lot, precision);
+		const lots = getNumberPrecision(quantity / lot, precisionQuantity, 'floor');
 
 		acc.push({
 			price: currentPrice,
 			amount: quantity,
 			lots: lots,
-			profit: getNumberPrecision((currentPrice - averagePrice) * quantity * multiplier, precision),
+			profit: getNumberPrecision((currentPrice - averagePrice) * quantity * multiplier, precisionPrice),
 			profitPercent: getNumberPrecision(100 * ((currentPrice - averagePrice) / averagePrice) * multiplier, 2),
 			depositShare: null,
-			totalPrice: getNumberPrecision(currentPrice * quantity, precision),
+			totalPrice: getNumberPrecision(currentPrice * quantity, precisionPrice),
 			reached: false,
 			stopDate: null,
 			brokerId: null,
 		});
 
-		calcLots += lots;
+		calcQuantity += getNumberPrecision(quantity, precisionQuantity, 'floor');
 
 		return acc;
 	}, []);
@@ -135,7 +134,8 @@ export const calculateStop = (
 	}
 
 	const multiplier = direction === StockPositionDirection.LONG ? -1 : 1;
-	const precision = getPriceIncrement(minPriceIncrement);
+	const precisionPrice = getPriceIncrement(minPriceIncrement);
+	const precisionQuantity = getPriceIncrement(lot);
 	const totalEntry = entries.reduce(
 		(acc, item: StockPositionIdeaEntry) => {
 			acc.total += item.totalPrice;
@@ -145,16 +145,16 @@ export const calculateStop = (
 		},
 		{ total: 0, quantity: 0 }
 	);
-	const averagePrice = getNumberPrecision(totalEntry.total / totalEntry.quantity, precision);
+	const averagePrice = getNumberPrecision(totalEntry.total / totalEntry.quantity, precisionPrice);
 	const price = stop.length !== 0 ? stop[0].price : averagePrice + atr * multiplier;
 
 	return [
 		{
 			price,
-			lots: totalEntry.quantity / lot,
+			lots: getNumberPrecision(totalEntry.quantity / lot, precisionQuantity),
 			amount: totalEntry.quantity,
 			totalPrice: getNumberPrecision(price * totalEntry.quantity, 2),
-			loss: getNumberPrecision((price - averagePrice) * totalEntry.quantity * multiplier * -1, precision),
+			loss: getNumberPrecision((price - averagePrice) * totalEntry.quantity * multiplier * -1, precisionPrice),
 			lossPercent: getNumberPrecision(100 * ((price - averagePrice) / averagePrice) * multiplier * -1, 2),
 			depositShare: null,
 			stopCandleDate: null,
