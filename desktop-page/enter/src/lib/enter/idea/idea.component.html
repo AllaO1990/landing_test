@@ -1,4 +1,4 @@
-<form [formGroup]="controlFormArray">
+<form [formGroup]="controlFormArray" [class.binance]="priceIncrement === 8">
   @if (entriesList$ | async; as list) {
     <div class="entry table" formArrayName="entries">
       <ui-lib-list
@@ -27,7 +27,10 @@
               }}
             </div>
             <div class="item__value row__item row__right row__quantity">
-              <span>{{ item.quantity | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+              <span>{{ item.quantity | tuiFormatNumber | async }}</span>
+              @if (priceIncrement !== 8) {
+                &nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+              }
             </div>
             <div class="item__value row__item row__right row__total">
               {{ item.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
@@ -104,7 +107,10 @@
               }}
             </div>
             <div class="item__value row__right row__item row__fix-half">
-              <span>{{ item.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+              <span>{{ item.amount | tuiFormatNumber | async }}</span>
+              @if (priceIncrement !== 8) {
+                &nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+              }
             </div>
             <div class="item__value row__right row__item row__profit">
               @if (item.totalPrice !== null) {
@@ -200,7 +206,10 @@
             </div>
             <div class="item__value row__item row__right row__fix-half">
               @if (item.amount !== null) {
-                <span>{{ item.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+                <span>{{ item.amount | tuiFormatNumber | async }}</span>
+                @if (priceIncrement !== 8) {
+                  &nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+                }
               } @else {
                 <ng-container [ngTemplateOutlet]="none"></ng-container>
               }
@@ -274,7 +283,12 @@
   <lib-list-header class="header row">
     <div class="header__item row__item row__first">Вход</div>
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__quantity">Кол-во/лоты</div>
+    <div class="header__item row__item row__quantity">
+      <ng-container
+        [ngTemplateOutlet]="titleQuantity"
+        [ngTemplateOutletContext]="{ $implicit: priceIncrement}">
+      </ng-container>
+    </div>
     <div class="header__item row__item row__total">Стоимость</div>
   </lib-list-header>
 </ng-template>
@@ -283,13 +297,16 @@
   @if (totalEntry$ | async; as total) {
     <lib-list-header class="total row">
       <div class="total__item row__item row__first">Всего</div>
-      <div class="total__item row__right row__item">
+      <div class="total__item row__right row__item row__price">
         {{
           total.price | tuiFormatNumber: {precision: priceIncrement, decimalMode: 'always'} | getCryptoNumber | async
         }}
       </div>
       <div class="total__item row__right row__item">
-        <span>{{ total.quantity | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ total.lots | tuiFormatNumber | async }}
+        <span>{{ total.quantity | tuiFormatNumber | async }}</span>
+        @if (priceIncrement !== 8) {
+          &nbsp;/&nbsp;{{ total.lots | tuiFormatNumber | async }}
+        }
       </div>
       <div class="total__item row__right row__item">
         {{ total.totalPrice | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
@@ -302,7 +319,12 @@
   <lib-list-header class="header row">
     <div class="header__item row__item row__first">Цели</div>
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__amount">Кол-во/лоты</div>
+    <div class="header__item row__item row__amount">
+      <ng-container
+        [ngTemplateOutlet]="titleQuantity"
+        [ngTemplateOutletContext]="{ $implicit: priceIncrement}">
+      </ng-container>
+    </div>
     <div class="header__item row__item row__total">Стоимость</div>
     <div class="header__item row__item row__profit">Прибыль</div>
     <div class="header__item row__item row__profit">Прибыль %</div>
@@ -313,7 +335,7 @@
   @if (totalTarget$ | async; as total) {
     <lib-list-header class="total row">
       <div class="total__item row__item row__first">Всего</div>
-      <div class="total__item row__right row__item">
+      <div class="total__item row__right row__item row__price">
         {{
           total.price | tuiFormatNumber: {
             precision: priceIncrement,
@@ -322,7 +344,10 @@
         }}
       </div>
       <div class="total__item row__right row__item">
-        <span>{{ total.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ total.lots | tuiFormatNumber | async }}
+        <span>{{ total.amount | tuiFormatNumber | async }}</span>
+        @if (priceIncrement !== 8) {
+          &nbsp;/&nbsp;{{ total.lots | tuiFormatNumber | async }}
+        }
       </div>
       <div class="total__item row__right row__item">
         @if (total.totalPrice !== null) {
@@ -353,7 +378,12 @@
   <lib-list-header class="header row">
     <div class="header__item row__item row__first">Стоп</div>
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__amount">Кол-во/лоты</div>
+    <div class="header__item row__item row__amount">
+      <ng-container
+        [ngTemplateOutlet]="titleQuantity"
+        [ngTemplateOutletContext]="{ $implicit: priceIncrement}">
+      </ng-container>
+    </div>
     <div class="header__item row__item row__profit">Стоимость</div>
     <div class="header__item row__item row__profit">Прибыль</div>
     <div class="header__item row__item row__profit">Прибыль %</div>
@@ -377,5 +407,12 @@
     <div class="long">▲</div>
   } @else {
     <div class="short">▼</div>
+  }
+</ng-template>
+
+<ng-template #titleQuantity let-priceIncrement>
+  Кол-во
+  @if (priceIncrement !== 8) {
+    / лоты
   }
 </ng-template>

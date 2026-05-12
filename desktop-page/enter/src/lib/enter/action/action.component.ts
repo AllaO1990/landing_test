@@ -131,6 +131,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 	);
 
 	readonly lastPrice$: Observable<number> = this._ideaFacade.idea$.pipe(
+		filter((position: StockPosition | null) => position !== null),
 		map((data: StockPosition) => data.idea.lastPrice),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);

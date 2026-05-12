@@ -80,7 +80,7 @@ form {
 
     overflow: hidden;
 
-    min-width: 75px;
+    min-width: 80px;
     max-width: 150px;
 
     flex: 0 0 calc((100% - 40px - var(--padding-4)) / 6 - var(--padding-4));
@@ -89,6 +89,10 @@ form {
       font-weight: 300;
       color: var(--tui-text-secondary);
     }
+  }
+
+  .binance &__price {
+    font-size: 10px;
   }
 
   &__first {

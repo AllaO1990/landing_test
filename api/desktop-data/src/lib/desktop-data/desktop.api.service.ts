@@ -334,7 +334,17 @@ export class DesktopApiService extends DesktopService {
 	}
 
 	getIdea(id: StockId): Observable<Response<StockPosition | null>> {
-		return this._http.get<Response<StockPosition | null>>(`${this.host}/v1/ideas/${id}`);
+		return this._http.get<Response<StockPosition | null>>(`${this.host}/v1/ideas/${id}`).pipe(
+			map((response: Response<StockPosition | null>) => {
+				return (
+					response || {
+						data: null,
+						message: 'Server error',
+						success: false,
+					}
+				);
+			})
+		);
 	}
 
 	deleteIdea(id: StockId): Observable<number | null> {

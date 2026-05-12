@@ -1,34 +1,34 @@
-import {FacadeStore} from './facade';
-import {SelectStore} from './select.store';
-import {DesktopService} from '@desktop-data/desktop-data';
+import { FacadeStore } from './facade';
+import { SelectStore } from './select.store';
+import { DesktopService } from '@desktop-data/desktop-data';
 import {
-  catchError,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  Observable,
-  of,
-  shareReplay,
-  Subject,
-  switchMap,
-  takeUntil,
-  tap,
-  timer,
+	catchError,
+	combineLatest,
+	debounceTime,
+	distinctUntilChanged,
+	Observable,
+	of,
+	shareReplay,
+	Subject,
+	switchMap,
+	takeUntil,
+	tap,
+	timer,
 } from 'rxjs';
-import {inject, Injectable} from '@angular/core';
-import {StockEvent} from 'types/stock-event';
-import {filter, map} from 'rxjs/operators';
-import {EventSelected} from 'types/events';
-import {ComponentStore} from '@ngrx/component-store';
-import {StockId, StockInstrument, StockPrice, StockTransaction, WithLastPrice} from 'types/stock';
-import {DateRange} from 'types/date-range';
-import {Timeframe} from 'types/timeframe';
-import {GLOBAL_DATE_RANGE, QUERY_PARAMS} from 'tokens/desktop';
-import {IntervalStore} from 'stores/plugins/interval.store';
-import {QueryParams} from 'utils/query-params';
-import {Response} from 'types/response';
-import {StockPosition} from 'types/position';
-import {HttpErrorResponse} from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { StockEvent } from 'types/stock-event';
+import { filter, map } from 'rxjs/operators';
+import { EventSelected } from 'types/events';
+import { ComponentStore } from '@ngrx/component-store';
+import { StockId, StockInstrument, StockPrice, StockTransaction, WithLastPrice } from 'types/stock';
+import { DateRange } from 'types/date-range';
+import { Timeframe } from 'types/timeframe';
+import { GLOBAL_DATE_RANGE, QUERY_PARAMS } from 'tokens/desktop';
+import { IntervalStore } from 'stores/plugins/interval.store';
+import { QueryParams } from 'utils/query-params';
+import { Response } from 'types/response';
+import { StockPosition } from 'types/position';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const TIMER_INTERVAL = 60 * 1000;
 
@@ -78,9 +78,15 @@ export class MainStore extends ComponentStore<any> {
 
 		const interval$: Observable<Timeframe> = this.interval.interval$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-		const instrumentTrust$: Observable<StockInstrument> = this.idea.instrument$.pipe(
-			filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
-			distinctUntilChanged((a, b) => a.id === b.id),
+		const instrumentTrust$: Observable<StockInstrument | null> = this.idea.instrument$.pipe(
+			// filter((instrument: StockInstrument | null): instrument is StockInstrument => instrument !== null),
+			switchMap((instrument: StockInstrument | null) => {
+				if (instrument) {
+					return of(instrument).pipe(distinctUntilChanged((a: StockInstrument, b: StockInstrument) => a.id === b.id));
+				}
+
+				return of(null);
+			}),
 			shareReplay({ refCount: true, bufferSize: 1 })
 		);
 
@@ -113,19 +119,14 @@ export class MainStore extends ComponentStore<any> {
 		// this.onChangeWatch(eventWithoutDialog$);
 		// this.onChangeTransaction(eventWithoutDialog$);
 
-		this.candles.loadCandles(
-			timerWithIndex(
-				instrumentTrust$.pipe(
-					distinctUntilChanged((a: StockInstrument, b: StockInstrument) => a.id === b.id),
-					debounceTime(0)
-				),
-				TIMER_INTERVAL
-			)
-		);
+		this.candles.loadCandles(timerWithIndex(instrumentTrust$.pipe(debounceTime(0)), TIMER_INTERVAL));
 
 		this.ema.load(
 			combineLatest([
-				instrumentTrust$.pipe(map((instrument: StockInstrument) => instrument.id)),
+				instrumentTrust$.pipe(
+					filter((instrument: StockInstrument | null) => instrument !== null),
+					map((instrument: StockInstrument) => instrument.id)
+				),
 				this.ema.selected$.pipe(
 					filter((selected: null | any): selected is any => selected !== null),
 					distinctUntilChanged((a: string[], b: string[]) => a.toString() === b.toString())
@@ -144,7 +145,10 @@ export class MainStore extends ComponentStore<any> {
 		);
 		this.sma.load(
 			combineLatest([
-				instrumentTrust$.pipe(map((instrument: StockInstrument) => instrument.id)),
+				instrumentTrust$.pipe(
+					filter((instrument: StockInstrument | null) => instrument !== null),
+					map((instrument: StockInstrument) => instrument.id)
+				),
 				this.sma.selected$.pipe(
 					filter((selected: null | any): selected is any => selected !== null),
 					distinctUntilChanged((a: string[], b: string[]) => a.toString() === b.toString())
@@ -163,7 +167,10 @@ export class MainStore extends ComponentStore<any> {
 		);
 		this.consolidationZones.load(
 			combineLatest([
-				instrumentTrust$.pipe(map((instrument: StockInstrument) => instrument.id)),
+				instrumentTrust$.pipe(
+					filter((instrument: StockInstrument | null) => instrument !== null),
+					map((instrument: StockInstrument) => instrument.id)
+				),
 				this.consolidationZones.selected$.pipe(
 					filter((selected: number[] | null): selected is number[] => selected !== null)
 				),
@@ -302,10 +309,10 @@ export class MainStore extends ComponentStore<any> {
 
 							return of(error.error);
 						}),
-						map((response: Response<StockPosition | null>) => response.data),
+						map((response: Response<StockPosition | null>) => response && response.data),
 						tap((position: StockPosition | null) => {
 							this.idea.updateIdea(position);
-							position && this.idea.updateInstrument(position.idea.instrument);
+							this.idea.updateInstrument(position && position.idea.instrument);
 
 							this._updateSelected({
 								instrument: position && position.idea.instrument.id,

@@ -54,6 +54,7 @@ import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { StockPositionDirection } from 'types/stock';
 import { AddStopService } from './add-stop/add-stop.service';
 import { calculateStop, calculateTargets } from 'utils/idea-calculate';
+import { getNumberPrecision } from 'utils/get-number-precision';
 
 @Component({
 	selector: 'lib-enter-idea',
@@ -113,6 +114,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	#addEntryService: AddEntryService = inject(AddEntryService);
 	#addTargetService: AddTargetService = inject(AddTargetService);
 	#addStopService: AddStopService = inject(AddStopService);
+
+	readonly #dialogTitle: { [key: string]: string } = {
+		targets: 'Цель',
+		stop: 'Стоп',
+	};
 
 	readonly isEdit$: Subject<boolean> = new BehaviorSubject(false);
 	readonly _controlValue: Subject<any | null> = new ReplaySubject(1);
@@ -256,6 +262,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		)
 	);
 	lastPrice$: Observable<number> = this._ideaFacade.idea$.pipe(
+		filter((position: StockPosition | null) => position !== null),
 		map((value: StockPosition) => value.idea.lastPrice),
 		shareReplay({ bufferSize: 1, refCount: false })
 	);
@@ -596,7 +603,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 				.openDialog(this._injector, {
 					appearance: 'dialog-confirm',
 					data: {
-						context: `<p class="tui-text_body-l">Удалить цель №${index + 1}?</p>`,
+						context: `<p class="tui-text_body-l">Удалить ${this.#dialogTitle[formName]} №${index + 1}?</p>`,
 					},
 				})
 				.subscribe((result: boolean) => {
@@ -712,8 +719,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			.subscribe((result: StockPositionTarget[] | null) => {
 				this.isTargetOpen = false;
 
-				console.log(result);
-
 				if (result) {
 					this.formArrayTargets.clear({ emitEvent: false });
 
@@ -722,7 +727,6 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					});
 
 					this.formArrayTargets.patchValue([]);
-					console.log(this.formArrayTargets.value);
 				}
 			});
 	}
@@ -772,33 +776,34 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			.subscribe((result: any | null) => {
 				this.isStopOpen = false;
 
-				if (result) {
-					this.formArrayStop.patchValue(result);
-					// 	const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
-					// 	const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
-					// 	let loss = null;
-					// 	let lossPercent = null;
-					// 	let amount = 0;
-					//
-					// 	if (entries) {
-					// 		amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
-					//
-					// 		lossPercent = getNumberPrecision(((result.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
-					// 		loss = getNumberPrecision((result.price - entries.price) * amount, this.priceIncrement);
-					// 	}
-					//
-					// 	const value: StockPositionStop = {
-					// 		depositShare: null,
-					// 		lossPercent: lossPercent,
-					// 		totalPrice: result.price * amount,
-					// 		loss: loss,
-					// 		lots: result.lots,
-					// 		price: result.price,
-					// 		stopCandleDate: result.stopCandleDate,
-					// 		amount: amount,
-					// 		amountPercent: 100,
-					// 	};
-					// 	this._updateDataFromDialog(this.formArrayStop, value, control);
+				if (result && result.length > 0) {
+					const resultItem = result[0];
+					const entries: StockPositionIdeaEntry = this.formArrayEntries.value[0];
+					const targets: StockPositionTarget[] = this.formArrayTargets.value || [];
+					let loss = null;
+					let lossPercent = null;
+					let amount = 0;
+
+					if (entries) {
+						amount = entries.quantity - targets.reduce((acc, item) => (acc += item.stopDate ? item.amount : 0), 0);
+
+						lossPercent = getNumberPrecision(((resultItem.price - entries.price) / entries.price) * 100 * this.multiplier, 2);
+						loss = getNumberPrecision((resultItem.price - entries.price) * amount, this.priceIncrement);
+					}
+
+					const value: StockPositionStop = {
+						depositShare: null,
+						lossPercent: lossPercent,
+						totalPrice: resultItem.price * amount,
+						loss: loss,
+						lots: resultItem.lots,
+						price: resultItem.price,
+						stopCandleDate: resultItem.stopCandleDate,
+						amount: amount,
+						amountPercent: 100,
+					};
+
+					this._updateDataFromDialog(this.formArrayStop, value, control);
 				}
 			});
 

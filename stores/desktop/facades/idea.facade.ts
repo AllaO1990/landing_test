@@ -17,13 +17,17 @@ export class IdeaFacade {
 	readonly instrument$: Observable<StockInstrument | null> = this._store.idea.instrument$;
 	readonly isLoading$: Observable<boolean> = this._store.idea.isLoading$;
 	readonly lastPrice$: Observable<null | WithLastPrice> = this._store.idea.lastPrice$;
-	readonly idea$: Observable<StockPosition> = this._store.idea.idea$.pipe(
+	readonly idea$: Observable<StockPosition | null> = this._store.idea.idea$.pipe(
 		switchMap((idea: StockPosition | null) => {
 			if (idea === null) {
 				return this._store.idea.instrument$.pipe(
-					filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
-					switchMap((instrument: StockInstrument) =>
-						this._store.getPriceOfInstruments([instrument.id]).pipe(
+					// filter((instrument: null | StockInstrument): instrument is StockInstrument => instrument !== null),
+					switchMap((instrument: StockInstrument | null) => {
+						if (instrument === null) {
+							return of(null);
+						}
+
+						return this._store.getPriceOfInstruments([instrument.id]).pipe(
 							map((price: StockPrice<WithLastPrice>) => {
 								let lastPrice = 0;
 
@@ -33,14 +37,14 @@ export class IdeaFacade {
 
 								return this._getIdea(instrument, lastPrice);
 							})
-						)
-					)
+						);
+					})
 				);
 			}
 			return of(idea);
 		}),
-		switchMap((position: StockPosition) => {
-			if (position.idea.portfolioId === null) {
+		switchMap((position: StockPosition | null) => {
+			if (position && position.idea.portfolioId === null) {
 				return this._store.account.portfolios$.pipe(
 					filter((list: null | AccountPortfolio[]): list is AccountPortfolio[] => list !== null),
 					map((list: AccountPortfolio[]) => {
@@ -55,7 +59,7 @@ export class IdeaFacade {
 
 			return of(position);
 		}),
-		tap((idea: StockPosition) => this._store.idea.updateInstrument(idea.idea.instrument)),
+		tap((position: StockPosition | null) => this._store.idea.updateInstrument(position && position.idea.instrument)),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 

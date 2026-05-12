@@ -1,7 +1,7 @@
-import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from '../types/position';
-import { getNumberPrecision } from './get-number-precision';
-import { getPriceIncrement } from './get-price-increment';
-import { StockPositionDirection } from '../types/stock';
+import {StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from '../types/position';
+import {getNumberPrecision} from './get-number-precision';
+import {getPriceIncrement} from './get-price-increment';
+import {StockPositionDirection} from '../types/stock';
 
 export const calculateEntries = (
 	list: StockPositionIdeaEntry[],
@@ -9,6 +9,17 @@ export const calculateEntries = (
 	minPriceIncrement: number,
 	limit: number | null = null
 ): StockPositionIdeaEntry[] => {
+	console.log(
+		'calculateEntries',
+		getPriceIncrement(100),
+		100,
+		getPriceIncrement(lot),
+		lot,
+		getPriceIncrement(minPriceIncrement),
+		minPriceIncrement,
+		limit
+	);
+
 	const total = list.reduce((acc: number, item: StockPositionIdeaEntry) => (acc += item.totalPrice), 0);
 
 	if (limit === null || total <= limit || limit < list[0].price) {
@@ -18,7 +29,7 @@ export const calculateEntries = (
 		}));
 	}
 
-	const precisionAmount = getPriceIncrement(minPriceIncrement) === 8 ? 8 : 0;
+	const precisionAmount = getPriceIncrement(lot) === 8 ? 8 : 0;
 	const lots = getNumberPrecision(limit / (list[0].price * lot), precisionAmount, 'floor');
 
 	if (lots < 1 && precisionAmount === 0) {
@@ -90,7 +101,7 @@ export const calculateTargets = (
 		}
 
 		const currentPrice = targetsPrice[index];
-		const quantity = lots * lot;
+		const quantity = getNumberPrecision(lots * lot, precision);
 
 		acc.push({
 			price: currentPrice,

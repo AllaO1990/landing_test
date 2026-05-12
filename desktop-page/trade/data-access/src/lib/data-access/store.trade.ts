@@ -334,17 +334,15 @@ export class TradeStore extends ComponentStore<TradeState> {
 					...orderStop.map((item: TradeJournal) =>
 						this._api.addStopOrder(item).pipe(
 							map((response: Response<ResponseTradeStopOrder | null>) => {
-								if (response.success && response.data) {
-									return {
-										...item,
-										orderId: response.data.stopOrderId,
-										ideaDate: this._getDateForJournal(item),
-										status: TradeJournalStatus.AWAITS,
-									};
+								if (!response.success || !response.data) {
+									console.warn(`StopOrder не выставлен. Количество: ${item.quantity}, цена: ${item.price}`);
 								}
+
 								return {
 									...item,
-									status: TradeJournalStatus.BROKEN,
+									orderId: response.data && response.data.stopOrderId,
+									ideaDate: this._getDateForJournal(item),
+									status: TradeJournalStatus.AWAITS,
 								};
 							})
 						)
@@ -357,10 +355,6 @@ export class TradeStore extends ComponentStore<TradeState> {
 								tap((response: Response<TradeOrder>) => {
 									if (response.success) {
 										this.reload.set();
-
-										// this.loadOrders(journal[0]);
-										// this.loadOperations(journal[0]);
-										// this.loadJournal(journal[0]);
 									}
 								})
 							);

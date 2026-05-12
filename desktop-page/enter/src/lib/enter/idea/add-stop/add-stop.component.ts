@@ -87,16 +87,19 @@ export class AddStopComponent extends DialogCoreComponent implements AfterViewIn
 
 		if (this.context.data) {
 			const stop = this.context.data.stop;
-			const value = stop[this.context.data.index];
 
-			this.formArrayStop.patchValue(stop);
+			if (stop && stop[this.context.data.index]) {
+				const value = stop[this.context.data.index];
 
-			this.controlAdd.patchValue({
-				price: value.price,
-				quantity: value.amount,
-				total: value.totalPrice,
-				lots: value.lots,
-			});
+				this.formArrayStop.patchValue(stop);
+
+				this.controlAdd.patchValue({
+					price: value.price,
+					quantity: value.amount,
+					total: value.totalPrice,
+					lots: value.lots,
+				});
+			}
 		}
 	}
 

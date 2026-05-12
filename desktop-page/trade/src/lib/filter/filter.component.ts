@@ -82,7 +82,9 @@ export class FilterComponent implements ControlValueAccessor, AfterViewInit {
 	#onTouched = () => {};
 
 	readonly size = 's';
-	readonly idea$: Observable<StockPosition> = this.#idea.idea$;
+	readonly idea$: Observable<StockPosition> = this.#idea.idea$.pipe(
+		filter((position: StockPosition | null) => position !== null)
+	);
 	readonly accounts$: Observable<TradeBrokerAccounts> = this.#storeBroker.accounts$.pipe(
 		tap((data: TradeBrokerAccounts) => data.data && this.controlAccount.setValue(data.data[0]))
 	);

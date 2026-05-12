@@ -614,7 +614,7 @@ export class TradeFormService {
 				...journal
 					.filter((item: TradeJournal) => item.commission !== 0 && item.commission !== null)
 					.map((item: TradeJournal) => ({
-						brokerId: 1,
+						brokerId: item.sourceId,
 						date: item.expireDate || (item.ideaDate as string),
 						size: item.commission,
 					})),

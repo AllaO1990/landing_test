@@ -277,7 +277,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 	readonly itemHeight = 28;
 
-	readonly idea$: Observable<StockPosition> = this.#idea.idea$;
+	readonly idea$: Observable<StockPosition | null> = this.#idea.idea$.pipe(debounceTime(300));
 	readonly orders$: Observable<TradeOrders | null> = this.#store.orders$.pipe(
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
@@ -328,39 +328,40 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
-	readonly journalIdeaId$: Observable<number | null> = this.journal$.pipe(
-		map((journal: TradeJournal[] | null) => journal && journal[0].ideaId),
-		shareReplay({ bufferSize: 1, refCount: true })
-	);
+	readonly #statusCurrentTrade$: Observable<boolean | null> = this.idea$.pipe(
+		takeUntilDestroyed(this.#destroyRef),
+		map((position: StockPosition | null) => position && position.idea.id),
+		filter((id: number | null) => id !== null),
+		distinctUntilChanged(),
+		switchMap((positionIdeaId: number) =>
+			this.filter$.pipe(
+				debounceTime(300),
+				switchMap((filter: Params) =>
+					this.#api.getJournalOpenPositions(filter).pipe(
+						map((response: Response<TradeJournalOpenPosition[]>) => response.data && response.data[0]),
+						map((openPosition: TradeJournalOpenPosition | null) => {
+							if (openPosition === null || openPosition.netQuantity === 0) {
+								return true;
+							}
 
-	readonly #statusCurrentTrade$: Observable<boolean | null> = combineLatest([
-		this.idea$.pipe(
-			map((position: StockPosition) => position.idea.id),
-			filter((id: number | null) => id !== null)
-		),
-		this.filter$.pipe(
-			debounceTime(300),
-			switchMap((filter: Params) =>
-				this.#api.getJournalOpenPositions(filter).pipe(
-					map((response: Response<TradeJournalOpenPosition[]>) => response.data && response.data[0]),
-					distinctUntilChanged((a, b) => a.ideaId === b.ideaId)
+							return positionIdeaId === openPosition.ideaId;
+						})
+					)
 				)
 			)
 		),
-	]).pipe(
-		map(([positionIdeaId, openPosition]: [number, TradeJournalOpenPosition | null]) => {
-			if (openPosition === null) {
-				return true;
-			}
+		shareReplay({ bufferSize: 1, refCount: true })
+	);
 
-			return positionIdeaId === openPosition.ideaId;
-		}),
+	readonly journalIdeaId$: Observable<number | null> = this.journal$.pipe(
+		map((journal: TradeJournal[] | null) => journal && journal[0].ideaId),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
 	readonly isCurrentTrade = toSignal(this.#statusCurrentTrade$, { initialValue: null });
 
 	readonly positionAndDefaultIdea$: Observable<DefaultIdea & { position: StockPosition }> = this.idea$.pipe(
+		filter((position: StockPosition | null) => position !== null),
 		switchMap((position: StockPosition) =>
 			of(position.idea.instrument.currencyId).pipe(
 				distinctUntilChanged(),
@@ -410,7 +411,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				})
 			),
 			this.idea$.pipe(
-				filter((position: StockPosition) => position !== null),
+				filter((position: StockPosition | null) => position !== null),
 				distinctUntilChanged((a, b) => a.idea.id === b.idea.id)
 			),
 			this.#reload,
@@ -436,6 +437,33 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				this.#store.loadOperations(params);
 			});
 
+		this.controlIsNew.valueChanges
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				startWith(this.controlIsNew.value),
+				filter((status: boolean) => !status),
+				switchMap(() => this.#statusCurrentTrade$.pipe(takeWhile((status: boolean | null) => status === true))),
+				switchMap(() =>
+					this.formArrayEntry.valueChanges.pipe(
+						takeUntilDestroyed(this.#destroyRef),
+						map((list: TradeJournal[] | null) =>
+							(list || []).filter(
+								(item: TradeJournal) =>
+									item.status === TradeJournalStatus.UNLOADING && item.externalId !== null && item.trailingIndentType !== 0
+							)
+						),
+						filter((list: TradeJournal[]) => list.length > 0),
+						distinctUntilChanged((a, b) => this._distinctJournal(a, b)),
+						debounceTime(1000)
+					)
+				)
+			)
+			.subscribe((list: TradeJournal[]) => {
+				console.log('formArrayEntry addOrders', list);
+
+				this.#store.addOrders(list);
+			});
+
 		this.positionAndDefaultIdea$
 			.pipe(
 				tap(({ position, ...idea }: DefaultIdea & { position: StockPosition }) => {
@@ -444,7 +472,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				}),
 				switchMap((data: DefaultIdea & { position: StockPosition }) =>
 					this.#statusCurrentTrade$.pipe(
-						takeWhile((status: boolean | null) => status === true),
+						filter((status: boolean | null) => status === true),
 						map(() => data)
 					)
 				),
@@ -477,6 +505,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 							})
 						),
 					]).pipe(
+						takeUntilDestroyed(this.#destroyRef),
 						debounceTime(1000),
 						map(
 							([orders, stopOrders, operations, portfolio, journal]: [
@@ -533,33 +562,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 				this.#store.updateIsLoading(false);
 				// this.formGroupArray.markAsPristine();
-			});
-
-		this.controlIsNew.valueChanges
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				startWith(this.controlIsNew.value),
-				filter((status: boolean) => !status),
-				switchMap(() => this.#statusCurrentTrade$.pipe(takeWhile((status: boolean | null) => status === true))),
-				switchMap(() =>
-					this.formArrayEntry.valueChanges.pipe(
-						takeUntilDestroyed(this.#destroyRef),
-						map((list: TradeJournal[] | null) =>
-							(list || []).filter(
-								(item: TradeJournal) =>
-									item.status === TradeJournalStatus.UNLOADING && item.externalId !== null && item.trailingIndentType !== 0
-							)
-						),
-						filter((list: TradeJournal[]) => list.length > 0),
-						distinctUntilChanged((a, b) => this._distinctJournal(a, b)),
-						debounceTime(1000)
-					)
-				)
-			)
-			.subscribe((list: TradeJournal[]) => {
-				console.log('formArrayEntry addOrders', list);
-
-				this.#store.addOrders(list);
 			});
 
 		this.controlIsNew.valueChanges
@@ -628,6 +630,21 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 					)
 				),
 				switchMap(() =>
+					this.formArrayOut.valueChanges.pipe(
+						takeUntilDestroyed(this.#destroyRef),
+						map((list: TradeJournal[] | null) => {
+							if (list === null) {
+								return false;
+							}
+
+							return list.every(
+								(item: TradeJournal) => item.status !== null && item.externalId !== null && item.trailingIndentType !== 0
+							);
+						}),
+						filter((status: boolean) => status)
+					)
+				),
+				switchMap(() =>
 					this.formArrayStop.valueChanges.pipe(
 						takeUntilDestroyed(this.#destroyRef),
 						map((list: TradeJournal[] | null) =>
@@ -645,7 +662,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			.subscribe((list: TradeJournal[]) => {
 				console.log('formArrayStop', list);
 
-				// this.#store.addOrders(list);
+				this.#store.addOrders(list);
 			});
 
 		this.controlIsNew.valueChanges
@@ -979,8 +996,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			.pipe(takeUntilDestroyed(this.#destroyRef))
 			.subscribe((value: RequestFormValue | null) => {
 				if (value) {
-					console.log(value);
-
 					const calcValue: Partial<TradeJournal & TradeJournalSystem> = {
 						...value,
 						status: null,
@@ -1525,9 +1540,16 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 					if (findIndex !== -1) {
 						const commission = Math.abs(copyOperations[findIndex].comission.value);
 
+						if (item.commission === 0 && commission !== 0) {
+							listForUpdate.push({
+								...item,
+								commission: commission,
+							});
+						}
+
 						copyOperations.splice(findIndex, 1);
 
-						return { ...item, commission };
+						return item;
 					}
 
 					return item;
