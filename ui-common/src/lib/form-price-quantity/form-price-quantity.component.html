@@ -1,0 +1,81 @@
+<form class="form" [formGroup]="form">
+  <div class="form__control form__control--price">
+    <span>Цена</span>
+    <tui-textfield
+      [tuiTextfieldSize]="size">
+      <input
+        [quantum]="minPriceIncrement()"
+        [tuiNumberFormat]="{precision: precision()}"
+        formControlName="price"
+        placeholder="Цена"
+        [tuiAutoFocus]="autoFocus()"
+        (focusout)="onTouched()"
+        tuiInputNumber
+        [min]="minPrice()"
+        [max]="maxPrice()"
+      />
+      @if (numberFromIncrement() !== null) {
+        <span>
+        Шаг цены: {{ numberFromIncrement() }}
+      </span>
+      }
+    </tui-textfield>
+  </div>
+
+  <div class="form__control form__control--total">
+    <span>Стоимость</span>
+    <tui-textfield
+      [tuiTextfieldSize]="size">
+      <input
+        [tuiNumberFormat]="{precision: 2, decimalMode: 'always'}"
+        formControlName="total"
+        placeholder="Стоимость"
+        tuiInputNumber
+      />
+      @if (limit(); as limit) {
+        <span>
+         Лимит: {{ limit | tuiFormatNumber: {precision: 2, decimalMode: 'always'} | async }}
+        </span>
+        <div>
+          <tui-icon
+            icon="@tui.circle-question-mark"
+            tuiHintAppearance="dark"
+            tuiTooltip="Рекомендуемый лимит на сделку"
+          ></tui-icon>
+        </div>
+      }
+    </tui-textfield>
+  </div>
+
+  <div class="form__control form__control--lots">
+    <span>Лоты</span>
+    <tui-textfield
+      [tuiTextfieldSize]="size">
+      <input
+        placeholder="Лоты"
+        tuiInputNumber
+        [tuiNumberFormat]="{precision: precisionAmount()}"
+        [min]="0"
+        [max]="maxLots()"
+        formControlName="lots"
+      />
+      @if (lot(); as lot) {
+        <span>1 лот: {{ lot }} шт.</span>
+      }
+    </tui-textfield>
+  </div>
+
+  <div class="form__control form__control--quantity">
+    <span>Количество</span>
+    <tui-textfield
+      [tuiTextfieldSize]="size">
+      <input
+        placeholder="Количество"
+        tuiInputNumber
+        [min]="0"
+        [max]="maxQuantity()"
+        formControlName="quantity"
+      />
+    </tui-textfield>
+  </div>
+</form>

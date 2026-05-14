@@ -1,0 +1,25 @@
+.form {
+  display: grid;
+  gap: var(--padding-4);
+  grid-template-areas: "total" "price" "quantity" "lots";
+}
+.form__control--price {
+  grid-area: price;
+}
+.form__control--total {
+  grid-area: total;
+}
+.form__control--lots {
+  grid-area: lots;
+}
+.form__control--quantity {
+  grid-area: quantity;
+}
+
+tui-textfield span {
+  font-size: smaller;
+  line-height: 32px;
+  padding-right: var(--padding-2);
+}
+
+/*# sourceMappingURL=form-price-lots.component.css.map */

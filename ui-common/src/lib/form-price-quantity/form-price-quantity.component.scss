@@ -1,0 +1,42 @@
+.form {
+  display: grid;
+  gap: var(--padding-4);
+
+  grid-template-areas:
+  "total"
+  "price"
+  "quantity"
+  "lots";
+
+  &__control {
+    &--price {
+      grid-area: price;
+    }
+
+    &--total {
+      grid-area: total;
+    }
+
+    &--lots {
+      grid-area: lots;
+    }
+
+    &--quantity {
+      grid-area: quantity;
+    }
+  }
+}
+
+tui-textfield span {
+  font-size: smaller;
+  line-height: 32px;
+  padding-right: var(--padding-2);
+}
+
+@media screen and (min-width: 768px) {
+  .form {
+    grid-template-areas:
+      "price total"
+      "lots quantity";
+  }
+}
