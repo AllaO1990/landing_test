@@ -5,8 +5,8 @@
   grid-template-areas:
   "total"
   "price"
-  "quantity"
-  "lots";
+  "lots"
+  "quantity";
 
   &__control {
     &--price {
@@ -37,6 +37,6 @@ tui-textfield span {
   .form {
     grid-template-areas:
       "price total"
-      "lots quantity";
+      "quantity lots";
   }
 }

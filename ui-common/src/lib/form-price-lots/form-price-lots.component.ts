@@ -33,7 +33,7 @@ import { getPriceIncrement } from 'utils/get-price-increment';
 export interface FormValue {
 	total: number | null;
 	price: number | null;
-	quantity: number | null;
+	amount: number | null;
 	lots: number | null;
 }
 
@@ -139,7 +139,11 @@ export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewIn
 		return minPriceIncrement !== null ? getPriceIncrement(minPriceIncrement) : null;
 	});
 
-	readonly precisionAmount = computed(() => (this.precision() === 8 ? 8 : 0));
+	readonly precisionAmount = computed(() => {
+		const lot = this.options().lot;
+
+		return lot !== null ? getPriceIncrement(lot) : 0;
+	});
 
 	readonly maxQuantity = computed(() => this.options().maxQuantity);
 

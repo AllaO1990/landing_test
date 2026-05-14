@@ -15,6 +15,7 @@ import { map } from 'rxjs/operators';
 import { ListMobileComponent } from './list-mobile/list-mobile.component';
 import { TuiBreakpointMediaKey } from '@taiga-ui/core/services/breakpoint.service';
 import { ListFullComponent } from './list/list-full.component';
+import { FormPriceQuantityComponent } from 'ui-common/lib/form-price-quantity';
 
 interface ControlValue {
 	total: number | null;
@@ -63,6 +64,7 @@ const DEFAULT_OPTIONS: ControlOptions = {
 		TuiNotification,
 		ListMobileComponent,
 		ListFullComponent,
+		FormPriceQuantityComponent,
 	],
 	templateUrl: './add-target.component.html',
 	styleUrls: ['../add.scss', './add-target.component.scss'],
@@ -116,6 +118,8 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
+	type: string | null = null;
+
 	@tuiPure
 	get options(): null | ControlOptions {
 		if (!this.context.data) {
@@ -160,6 +164,8 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 			});
 
 		if (this.context.data) {
+			this.type = this.context.data.type || null;
+
 			this._initTargets(this.context.data.targets);
 
 			this._initIndex(this.context.data.index);

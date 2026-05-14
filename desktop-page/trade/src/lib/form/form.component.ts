@@ -83,9 +83,9 @@ import { DIALOG, DialogService } from '@ui/components/dialog';
 import { TIMER_INTERVAL } from 'tokens/desktop/timer-interval';
 import { POLYMORPHEUS_CONTEXT } from '@taiga-ui/polymorpheus';
 import {
-	calculateEntries,
-	calculateStop,
-	calculateTargets,
+	calculateEntriesForStock,
+	calculateStopForStock,
+	calculateTargetsForStock,
 	transformEntries,
 	transformTargets,
 } from 'utils/idea-calculate';
@@ -107,9 +107,6 @@ interface DefaultIdea {
 	out: StockPositionTarget[];
 	stop: StockPositionStop[];
 }
-
-const accumFn = <T, K extends keyof T>(list: T[], key: K): number =>
-	list.reduce((acc: number, item: T): number => (acc += item[key] as number), 0);
 
 @Component({
 	selector: 'trade-form',
@@ -203,6 +200,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			out: new FormArray([]),
 			stop: new FormArray([]),
 			remove: new FormArray([]),
+			position: new FormArray([]),
 		}),
 	});
 
@@ -240,6 +238,10 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 	get formArrayStop(): FormArray {
 		return this.controlGroupJournal.get('stop') as FormArray;
+	}
+
+	get formArrayPosition(): FormArray {
+		return this.controlGroupJournal.get('position') as FormArray;
 	}
 
 	get controlFilter(): FormControl {
@@ -437,33 +439,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				this.#store.loadOperations(params);
 			});
 
-		this.controlIsNew.valueChanges
-			.pipe(
-				takeUntilDestroyed(this.#destroyRef),
-				startWith(this.controlIsNew.value),
-				filter((status: boolean) => !status),
-				switchMap(() => this.#statusCurrentTrade$.pipe(takeWhile((status: boolean | null) => status === true))),
-				switchMap(() =>
-					this.formArrayEntry.valueChanges.pipe(
-						takeUntilDestroyed(this.#destroyRef),
-						map((list: TradeJournal[] | null) =>
-							(list || []).filter(
-								(item: TradeJournal) =>
-									item.status === TradeJournalStatus.UNLOADING && item.externalId !== null && item.trailingIndentType !== 0
-							)
-						),
-						filter((list: TradeJournal[]) => list.length > 0),
-						distinctUntilChanged((a, b) => this._distinctJournal(a, b)),
-						debounceTime(1000)
-					)
-				)
-			)
-			.subscribe((list: TradeJournal[]) => {
-				console.log('formArrayEntry addOrders', list);
-
-				this.#store.addOrders(list);
-			});
-
 		this.positionAndDefaultIdea$
 			.pipe(
 				tap(({ position, ...idea }: DefaultIdea & { position: StockPosition }) => {
@@ -561,7 +536,33 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 				this._updateFormArray(this.formArrayStop, this._sortJournal(res.stop, direction));
 
 				this.#store.updateIsLoading(false);
-				// this.formGroupArray.markAsPristine();
+			});
+
+		this.controlIsNew.valueChanges
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				startWith(this.controlIsNew.value),
+				filter((status: boolean) => !status),
+				switchMap(() => this.#statusCurrentTrade$.pipe(takeWhile((status: boolean | null) => status === true))),
+				switchMap(() =>
+					this.formArrayEntry.valueChanges.pipe(
+						takeUntilDestroyed(this.#destroyRef),
+						map((list: TradeJournal[] | null) =>
+							(list || []).filter(
+								(item: TradeJournal) =>
+									item.status === TradeJournalStatus.UNLOADING && item.externalId !== null && item.trailingIndentType !== 0
+							)
+						),
+						filter((list: TradeJournal[]) => list.length > 0),
+						distinctUntilChanged((a, b) => this._distinctJournal(a, b)),
+						debounceTime(1000)
+					)
+				)
+			)
+			.subscribe((list: TradeJournal[]) => {
+				console.log('formArrayEntry addOrders', list);
+
+				this.#store.addOrders(list);
 			});
 
 		this.controlIsNew.valueChanges
@@ -621,7 +622,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 								return false;
 							}
 
-							return list.some(
+							return list.every(
 								(item: TradeJournal) =>
 									item.status === TradeJournalStatus.EXECUTED && item.externalId !== null && item.trailingIndentType !== 0
 							);
@@ -725,7 +726,8 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 									quantity,
 								}))
 							)
-						)
+						),
+						distinctUntilChanged()
 					)
 				)
 			)
@@ -876,6 +878,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 	writeValue(obj: any): void {
 		if (obj && obj.remove && obj.remove.length === 0) {
+			this.formArrayPosition.clear({ emitEvent: false });
 			this.formArrayRemove.clear({ emitEvent: true });
 			// this.formArrayEntry.clear({ emitEvent: true });
 			// this.formArrayOut.clear({ emitEvent: true });
@@ -1313,15 +1316,6 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 			position.actions.entries,
 			entriesActualOperations
 		);
-		// accumFn(position.actions.entries, 'amount') === (portfolio.positions[0] && portfolio.positions[0].quantity)
-		// 	?
-		// 	: this.#service.getPositionControlValue(
-		// 			accountId,
-		// 			source,
-		// 			position,
-		// 			portfolio.positions[0],
-		// 			entriesActualOperations
-		// 	  );
 
 		const entriesAwaitsControlValue = this.#service.getAwaitsControlValue(
 			accountId,
@@ -1370,10 +1364,25 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		const entry = [...entriesUnloadingControlValue, ...entriesExecutedControlValue, ...entriesAwaitsControlValue];
 		const out = [...targetsUnloadingControlValue, ...targetsExecutedControlValue, ...targetsAwaitsControlValue];
 
-		/**
-     Можно получить TradeJournal из позиции портфела, если до выставления заявок уже были активы
-     const re = this.#service.getEntryPositionFromJournal(accountId, source, position, entry, out, portfolio);
-    */
+		if (portfolio.positions[0] && portfolio.positions[0].quantity) {
+			const journalPosition = this.#service.getPositionControlValue(
+				accountId,
+				source,
+				position,
+				portfolio.positions[0],
+				entriesActualOperations
+			);
+
+			if (journalPosition.length > 0) {
+				this.formArrayPosition.clear({ emitEvent: false });
+
+				journalPosition.forEach((item: TradeJournal) => {
+					this.formArrayPosition.push(new FormControl(item), { emitEvent: false });
+				});
+
+				this.formArrayPosition.patchValue([]);
+			}
+		}
 
 		return {
 			entry,
@@ -1730,7 +1739,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 	private _getStartIdeaWithLimit(position: StockPosition, limit: number | null): DefaultIdea {
 		if (position.idea.author === 'bot') {
-			const entries = calculateEntries(
+			const entries = calculateEntriesForStock(
 				position.idea.entries,
 				position.idea.instrument.lot,
 				position.idea.minPriceIncrement,
@@ -1739,14 +1748,14 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 
 			return {
 				entry: entries,
-				out: calculateTargets(
+				out: calculateTargetsForStock(
 					position.idea.positionType as 'long' | 'short',
 					position.idea.targets,
 					entries,
 					position.idea.instrument.lot,
 					position.idea.minPriceIncrement
 				),
-				stop: calculateStop(
+				stop: calculateStopForStock(
 					position.idea.positionType as 'long' | 'short',
 					position.idea.stop ? [position.idea.stop] : [],
 					entries,
@@ -1761,7 +1770,7 @@ export class TradeFormComponent implements ControlValueAccessor, AfterViewInit, 
 		return {
 			entry: transformEntries(position.idea.entries, position.idea.instrument.lot),
 			out: transformTargets(position.idea.targets, position.idea.instrument.lot),
-			stop: calculateStop(
+			stop: calculateStopForStock(
 				position.idea.positionType as 'long' | 'short',
 				position.idea.stop ? [position.idea.stop] : [],
 				entries,

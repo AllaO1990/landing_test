@@ -39,7 +39,7 @@ import { StockInstrument } from 'types/stock';
 import { QueryParams } from 'utils/query-params';
 import { QUERY_PARAMS } from 'tokens/desktop';
 import { SearchDialogDirective } from 'ui-common/lib/dialog-search';
-import { StockPosition } from 'types/position';
+import { StockPosition, StockPositionIdeaEntry, StockPositionTarget } from 'types/position';
 import { IdeaFacade } from 'stores/facades/idea.facade';
 import {
 	AbstractControl,
@@ -57,9 +57,11 @@ import { Params } from '@angular/router';
 import { getNumberPrecision } from 'utils/get-number-precision';
 import { EnterIdeaComponent } from './idea/idea.component';
 import {
-	calculateEntries,
-	calculateStop,
-	calculateTargets,
+	calculateEntriesForCrypto,
+	calculateEntriesForStock,
+	calculateStopForStock,
+	calculateTargetsForCrypto,
+	calculateTargetsForStock,
 	transformEntries,
 	transformTargets,
 } from 'utils/idea-calculate';
@@ -255,8 +257,6 @@ export class VtEnterComponent implements AfterViewInit {
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
-	readonly limit$: Observable<any> = of(3000);
-
 	readonly isShowSearch$: Observable<boolean> = this.data$.pipe(
 		map((data: StockPosition) => data.idea.id === null),
 		distinctUntilChanged(),
@@ -360,27 +360,52 @@ export class VtEnterComponent implements AfterViewInit {
 					if (result) {
 						const isBot = result.idea.author === 'bot';
 
-						const entries = isBot
-							? calculateEntries(
-									result.idea.entries,
-									result.idea.instrument.lot,
-									result.idea.instrument.minPriceIncrement,
-									limit
-							  )
-							: transformEntries(result.idea.entries, result.idea.instrument.lot);
+						let entries: StockPositionIdeaEntry[] = [];
+						let targets: StockPositionTarget[] = [];
 
-						const targets = isBot
-							? calculateTargets(
-									result.idea.positionType as 'long' | 'short',
-									result.idea.targets,
-									entries,
-									result.idea.instrument.lot,
-									result.idea.instrument.minPriceIncrement,
-									0
-							  )
-							: transformTargets(result.idea.targets, result.idea.instrument.lot);
+						if (isBot && result.idea.instrument.type === 'crypto') {
+							entries = calculateEntriesForCrypto(
+								result.idea.entries,
+								result.idea.instrument.lot,
+								result.idea.instrument.minPriceIncrement,
+								limit
+							);
 
-						const stop = calculateStop(
+							targets = calculateTargetsForCrypto(
+								result.idea.positionType as 'long' | 'short',
+								result.idea.targets,
+								entries,
+								result.idea.instrument.lot,
+								result.idea.instrument.minPriceIncrement,
+								0
+							);
+						}
+
+						if (isBot && result.idea.instrument.type === 'shares') {
+							entries = calculateEntriesForStock(
+								result.idea.entries,
+								result.idea.instrument.lot,
+								result.idea.instrument.minPriceIncrement,
+								limit
+							);
+
+							targets = calculateTargetsForStock(
+								result.idea.positionType as 'long' | 'short',
+								result.idea.targets,
+								entries,
+								result.idea.instrument.lot,
+								result.idea.instrument.minPriceIncrement,
+								0
+							);
+						}
+
+						if (!isBot) {
+							entries = transformEntries(result.idea.entries, result.idea.instrument.lot);
+
+							targets = transformTargets(result.idea.targets, result.idea.instrument.lot);
+						}
+
+						const stop = calculateStopForStock(
 							result.idea.positionType as 'long' | 'short',
 							result.idea.stop ? [result.idea.stop] : [],
 							entries,

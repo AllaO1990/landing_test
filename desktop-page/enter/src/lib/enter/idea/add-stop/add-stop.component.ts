@@ -9,6 +9,7 @@ import { tuiPure } from '@taiga-ui/cdk';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StockPositionStop } from 'types/position';
 import { debounceTime } from 'rxjs';
+import { FormPriceQuantityComponent } from 'ui-common/lib/form-price-quantity';
 
 interface ControlValue {
 	total: number | null;
@@ -40,13 +41,23 @@ const DEFAULT_OPTIONS: ControlOptions = {
 @Component({
 	selector: 'lib-form-price-lots-stop',
 	standalone: true,
-	imports: [CommonModule, ReactiveFormsModule, TuiButton, TuiAppearance, FormPriceLotsComponent, TuiCard],
+	imports: [
+		CommonModule,
+		ReactiveFormsModule,
+		TuiButton,
+		TuiAppearance,
+		FormPriceLotsComponent,
+		TuiCard,
+		FormPriceQuantityComponent,
+	],
 	templateUrl: './add-stop.component.html',
 	styleUrls: ['../add.scss', './add-stop.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddStopComponent extends DialogCoreComponent implements AfterViewInit {
-	#destroyRef: DestroyRef = inject(DestroyRef);
+	readonly #destroyRef: DestroyRef = inject(DestroyRef);
+
+	type: string | null = null;
 
 	@tuiPure
 	get options(): null | ControlOptions {
@@ -86,6 +97,8 @@ export class AddStopComponent extends DialogCoreComponent implements AfterViewIn
 			});
 
 		if (this.context.data) {
+			this.type = this.context.data.type || null;
+
 			const stop = this.context.data.stop;
 
 			if (stop && stop[this.context.data.index]) {
@@ -95,7 +108,7 @@ export class AddStopComponent extends DialogCoreComponent implements AfterViewIn
 
 				this.controlAdd.patchValue({
 					price: value.price,
-					quantity: value.amount,
+					amount: value.amount,
 					total: value.totalPrice,
 					lots: value.lots,
 				});

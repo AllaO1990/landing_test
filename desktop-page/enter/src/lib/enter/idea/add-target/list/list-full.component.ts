@@ -30,11 +30,14 @@ type Action = { event: Event; type: string; data: { index: number } };
 		UiListItem,
 		HeaderComponent,
 		NgTemplateOutlet,
+
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListFullComponent {
 	readonly itemHeight = 28;
+
+	readonly type: InputSignal<string> = input<string>('crypto');
 
 	readonly list: InputSignal<StockPositionTarget[]> = input<StockPositionTarget[]>([]);
 

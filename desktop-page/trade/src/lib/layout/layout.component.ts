@@ -87,7 +87,9 @@ export class LayoutComponent implements OnDestroy {
 				}
 
 				return (
-					[...(value.journal.entry || []), ...(value.journal.out || [])].findIndex((item) => item.status === null) === -1
+					[...(value.journal.entry || []), ...(value.journal.out || []), ...(value.journal.stop || [])].findIndex(
+						(item) => item.status === null
+					) === -1
 				);
 			}
 		),
@@ -177,7 +179,7 @@ export class LayoutComponent implements OnDestroy {
 
 	private _onSubmit(ideaId: number): void {
 		const {
-			journal: { entry, out, stop, remove },
+			journal: { entry, out, stop, remove, position },
 		} = this.formGroup.getRawValue().trade;
 		const value = this.formGroup.getRawValue().trade;
 
@@ -189,7 +191,7 @@ export class LayoutComponent implements OnDestroy {
 			return { ...journal, ideaId };
 		});
 
-		const update = [...entry, ...out, ...stop]
+		const update = [...position, ...entry, ...out, ...stop]
 			.filter((item: TradeJournal & { removed: boolean | undefined }) => !item['removed'])
 			.map((item: TradeJournal & TradeJournalSystem) => {
 				const { change, isEdit, remove, ...journal } = item;

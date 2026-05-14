@@ -20,9 +20,11 @@
       <div>
         <span>{{ item.amount | tuiFormatNumber | async }}</span> шт.
       </div>
-      <div>
-        {{ item.lots | tuiFormatNumber | async }} лот
-      </div>
+      @if (type() !== 'crypto') {
+        <div>
+          {{ item.lots | tuiFormatNumber | async }} лот
+        </div>
+      }
     </div>
     <div class="item__value row__right row__item row__profit">
       @if (item.totalPrice !== null) {
@@ -47,7 +49,7 @@
         }
       </div>
     </div>
-    
+
     <div class="row__space"></div>
 
     <div class="item__value row__actions">
@@ -74,7 +76,10 @@
 <ng-template #targetHeader>
   <lib-list-header class="header row">
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__amount">Кол-во<br>лоты</div>
+    <div class="header__item row__item row__amount">Кол-во
+      @if (type() !== 'crypto') {
+        <br>лоты
+      }</div>
     <div class="header__item row__item row__total">Стоимость</div>
     <div class="header__item row__item row__profit">Прибыль<br>Прибыль %</div>
   </lib-list-header>

@@ -47,6 +47,21 @@
     </tui-textfield>
   </div>
 
+  <div class="form__control form__control--quantity">
+    <span>Количество</span>
+    <tui-textfield
+      [tuiTextfieldSize]="size">
+      <input
+        placeholder="Количество"
+        tuiInputNumber
+        [tuiNumberFormat]="{precision: precisionAmount()}"
+        [min]="0"
+        [max]="maxQuantity()"
+        formControlName="quantity"
+      />
+    </tui-textfield>
+  </div>
+
   <div class="form__control form__control--lots">
     <span>Лоты</span>
     <tui-textfield
@@ -65,17 +80,5 @@
     </tui-textfield>
   </div>
 
-  <div class="form__control form__control--quantity">
-    <span>Количество</span>
-    <tui-textfield
-      [tuiTextfieldSize]="size">
-      <input
-        placeholder="Количество"
-        tuiInputNumber
-        [min]="0"
-        [max]="maxQuantity()"
-        formControlName="quantity"
-      />
-    </tui-textfield>
-  </div>
+
 </form>

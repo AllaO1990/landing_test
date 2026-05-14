@@ -21,7 +21,10 @@
         }}
       </div>
       <div class="item__value row__right row__item row__fix-half">
-        <span>{{ item.amount | tuiFormatNumber | async }}</span>&nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+        <span>{{ item.amount | tuiFormatNumber | async }}</span>
+        @if (type() !== 'crypto') {
+          &nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
+        }
       </div>
       <div class="item__value row__right row__item row__profit">
         @if (item.totalPrice !== null) {
@@ -72,7 +75,11 @@
   <lib-list-header class="header row">
     <div class="header__item row__item row__first">Цели</div>
     <div class="header__item row__item row__price">Цена</div>
-    <div class="header__item row__item row__amount">Кол-во/лоты</div>
+    <div class="header__item row__item row__amount">Кол-во
+      @if (type() !== 'crypto') {
+        / лоты
+      }
+    </div>
     <div class="header__item row__item row__total">Стоимость</div>
     <div class="header__item row__item row__profit">Прибыль</div>
     <div class="header__item row__item row__profit">Прибыль %</div>

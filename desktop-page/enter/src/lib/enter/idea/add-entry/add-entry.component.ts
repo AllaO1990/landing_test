@@ -1,14 +1,15 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {TuiAppearance, TuiButton, TuiDataList, TuiTextfield} from '@taiga-ui/core';
-import {TuiAutoFocus, tuiPure} from '@taiga-ui/cdk';
-import {TuiChevron, TuiSelect} from '@taiga-ui/kit';
-import {STOCK_POSITION_TYPE_LIST} from 'constants/stock-position-type';
-import {TuiCardLarge} from '@taiga-ui/layout';
-import {DialogCoreComponent} from '@ui/components/dialog';
-import {FormPriceLotsComponent} from 'ui-common/lib/form-price-lots';
-import {StockPositionDirection} from 'types/stock';
-import {StockPositionIdeaEntry} from 'types/position';
+import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TuiAppearance, TuiButton, TuiDataList, TuiTextfield } from '@taiga-ui/core';
+import { TuiAutoFocus, tuiPure } from '@taiga-ui/cdk';
+import { TuiChevron, TuiSelect } from '@taiga-ui/kit';
+import { STOCK_POSITION_TYPE_LIST } from 'constants/stock-position-type';
+import { TuiCardLarge } from '@taiga-ui/layout';
+import { DialogCoreComponent } from '@ui/components/dialog';
+import { FormPriceLotsComponent } from 'ui-common/lib/form-price-lots';
+import { StockPositionDirection } from 'types/stock';
+import { StockPositionIdeaEntry } from 'types/position';
+import { FormPriceQuantityComponent } from 'ui-common/lib/form-price-quantity';
 
 type Item = { id: string; name: string };
 
@@ -16,6 +17,7 @@ interface ContextData {
 	positionType?: StockPositionDirection | null;
 	index?: number | null;
 	entries?: StockPositionIdeaEntry[];
+	type?: string;
 }
 
 export interface ControlOptions {
@@ -52,6 +54,7 @@ const DEFAULT_OPTIONS: ControlOptions = {
 		TuiCardLarge,
 		FormPriceLotsComponent,
 		TuiDataList,
+		FormPriceQuantityComponent,
 	],
 	templateUrl: './add-entry.component.html',
 	styleUrls: ['../add.scss', './add-entry.component.scss'],
@@ -59,7 +62,6 @@ const DEFAULT_OPTIONS: ControlOptions = {
 })
 export class AddEntryComponent extends DialogCoreComponent implements AfterViewInit {
 	readonly positionType: Item[] = STOCK_POSITION_TYPE_LIST;
-
 	readonly stringifyPositionType = (list: Item[]) => (id: string) =>
 		list.find((item: Item) => item.id === id)?.name ?? '';
 
@@ -67,6 +69,8 @@ export class AddEntryComponent extends DialogCoreComponent implements AfterViewI
 		add: new FormControl(null, Validators.required),
 		positionType: new FormControl(null, Validators.required),
 	});
+
+	type: string | null = null;
 
 	@tuiPure
 	get options(): null | ControlOptions {
@@ -94,7 +98,9 @@ export class AddEntryComponent extends DialogCoreComponent implements AfterViewI
 	}
 
 	private _initForm(data: ContextData): void {
-		const { positionType, index, entries } = data;
+		const { positionType, index, entries, type } = data;
+
+		this.type = type || null;
 
 		let value = {};
 

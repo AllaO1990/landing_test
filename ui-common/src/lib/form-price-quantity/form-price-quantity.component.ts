@@ -1,38 +1,39 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	Component,
-	computed,
-	DestroyRef,
-	forwardRef,
-	inject,
-	input,
-	InputSignal,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  forwardRef,
+  inject,
+  input,
+  InputSignal,
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {
-	ControlValueAccessor,
-	FormControl,
-	FormGroup,
-	NG_VALIDATORS,
-	NG_VALUE_ACCESSOR,
-	ReactiveFormsModule,
-	ValidationErrors,
-	Validators,
+  ControlValueAccessor,
+  FormControl,
+  FormGroup,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
 } from '@angular/forms';
-import { TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
-import { TuiAutoFocus } from '@taiga-ui/cdk';
-import { TuiInputNumber, TuiTooltip } from '@taiga-ui/kit';
-import { combineLatest, startWith } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { getNumberPrecision } from 'utils/get-number-precision';
-import { map } from 'rxjs/operators';
-import { getNumberFromE } from 'utils/get-number-from-e';
-import { getPriceIncrement } from 'utils/get-price-increment';
+import {TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield} from '@taiga-ui/core';
+import {TuiAutoFocus} from '@taiga-ui/cdk';
+import {TuiInputNumber, TuiTooltip} from '@taiga-ui/kit';
+import {combineLatest, startWith} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {map} from 'rxjs/operators';
+import {getNumberFromE} from 'utils/get-number-from-e';
+import {getPriceIncrement} from 'utils/get-price-increment';
 
 export interface FormValue {
 	total: number | null;
 	price: number | null;
+	amount: number | null;
 	quantity: number | null;
 	lots: number | null;
 }
@@ -58,9 +59,9 @@ const FORM_OPTIONS: FormOptions = {
 };
 
 @Component({
-	selector: 'ui-form-price-lots',
-	templateUrl: './form-price-lots.component.html',
-	styleUrls: ['./form-price-lots.component.scss'],
+	selector: 'ui-form-price-quantity',
+	templateUrl: './form-price-quantity.component.html',
+	styleUrls: ['./form-price-quantity.component.scss'],
 	standalone: true,
 	imports: [
 		AsyncPipe,
@@ -76,18 +77,18 @@ const FORM_OPTIONS: FormOptions = {
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
-			useExisting: forwardRef(() => FormPriceLotsComponent),
+			useExisting: forwardRef(() => FormPriceQuantityComponent),
 			multi: true,
 		},
 		{
 			provide: NG_VALIDATORS,
-			useExisting: forwardRef(() => FormPriceLotsComponent),
+			useExisting: forwardRef(() => FormPriceQuantityComponent),
 			multi: true,
 		},
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewInit {
+export class FormPriceQuantityComponent implements ControlValueAccessor, AfterViewInit {
 	readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
 	readonly size = 's';
@@ -95,8 +96,8 @@ export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewIn
 	readonly form: FormGroup = new FormGroup({
 		total: new FormControl<number | null>({ value: null, disabled: true }),
 		price: new FormControl<number | null>({ value: null, disabled: false }, Validators.required),
-		quantity: new FormControl<number | null>({ value: null, disabled: true }),
-		lots: new FormControl<number | null>({ value: null, disabled: false }, Validators.required),
+		lots: new FormControl<number | null>({ value: null, disabled: true }),
+		quantity: new FormControl<number | null>({ value: null, disabled: false }, Validators.required),
 	});
 
 	get controlPrice(): FormControl {
@@ -162,7 +163,9 @@ export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewIn
 	onTouched = () => {};
 
 	writeValue(obj: FormValue): void {
-		this.form.patchValue(obj);
+		console.log(obj);
+
+		this.form.patchValue(obj && { ...obj, quantity: obj['amount'] || obj['quantity'] });
 	}
 
 	registerOnChange(fn: (v: unknown) => unknown): void {
@@ -177,7 +180,7 @@ export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewIn
 		const action = isDisabled ? 'disable' : 'enable';
 
 		this.controlPrice[action]();
-		this.controlLots[action]();
+		this.controlQuantity[action]();
 	}
 
 	validate(): ValidationErrors | null {
@@ -189,19 +192,19 @@ export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewIn
 			this.onChange(this.form.getRawValue());
 		});
 
-		this.controlLots.valueChanges
+		this.controlQuantity.valueChanges
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
-				startWith(this.controlLots.value),
-				map((value: number | null) => this._getQuantity(value))
+				startWith(this.controlQuantity.value),
+				map((value: number | null) => this._getLots(value))
 			)
 			.subscribe((value: number | null) => {
-				this.controlQuantity.setValue(value, { emitEvent: false });
+				this.controlLots.setValue(value, { emitEvent: false });
 			});
 
 		combineLatest([
 			this.controlPrice.valueChanges.pipe(startWith(this.controlPrice.value)),
-			this.controlLots.valueChanges.pipe(startWith(this.controlLots.value)),
+			this.controlQuantity.valueChanges.pipe(startWith(this.controlQuantity.value)),
 		])
 			.pipe(
 				takeUntilDestroyed(this.#destroyRef),
@@ -212,11 +215,11 @@ export class FormPriceLotsComponent implements ControlValueAccessor, AfterViewIn
 			});
 	}
 
-	private _getQuantity(lots: number | null): number | null {
-		return lots !== null ? getNumberPrecision(lots * (this.lot() || 1), this.precision() || 0) : null;
+	private _getLots(quantity: number | null): number | null {
+		return quantity !== null ? getNumberPrecision(quantity / (this.lot() || 1), this.precision() || 0) : null;
 	}
 
-	private _getTotal(price: number | null, lots: number | null): number | null {
-		return price !== null && lots !== null ? getNumberPrecision(price * lots * (this.lot() || 1), 2) : null;
+	private _getTotal(price: number | null, quantity: number | null): number | null {
+		return price !== null && quantity !== null ? getNumberPrecision(price * quantity, 2) : null;
 	}
 }

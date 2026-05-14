@@ -23,6 +23,7 @@
           </lib-list-mobile>
         } @else {
           <lib-list-full
+            [type]="type"
             [list]="list"
             [index]="controlIndex.value"
             [option]="{ precision: precision }"
@@ -36,12 +37,22 @@
   </div>
 
   <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
-    <ui-form-price-lots
-      class="form__add"
-      [autoFocus]="false"
-      [options]="options"
-      formControlName="add"
-    ></ui-form-price-lots>
+    @if (type === 'crypto') {
+      <ui-form-price-quantity
+        class="form__add"
+        [autoFocus]="false"
+        [options]="options"
+        formControlName="add">
+      </ui-form-price-quantity>
+    } @else {
+      <ui-form-price-lots
+        class="form__add"
+        [autoFocus]="false"
+        [options]="options"
+        formControlName="add"
+      ></ui-form-price-lots>
+    }
+
     <div class="form__actions">
       @if (controlIndex.value === null) {
         <button

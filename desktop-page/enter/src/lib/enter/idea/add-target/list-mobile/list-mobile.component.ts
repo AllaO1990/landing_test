@@ -35,6 +35,8 @@ type Action = { event: Event; type: string; data: { index: number } };
 export class ListMobileComponent {
 	readonly itemHeight = 60;
 
+	readonly type: InputSignal<string> = input<string>('crypto');
+
 	readonly list: InputSignal<StockPositionTarget[]> = input<StockPositionTarget[]>([]);
 
 	readonly index: InputSignal<number | null> = input<number | null>(null);

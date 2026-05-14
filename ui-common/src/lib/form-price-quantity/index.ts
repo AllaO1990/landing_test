@@ -1,1 +1,1 @@
-export * from './form-price-lots.component';
+export * from './form-price-quantity.component';

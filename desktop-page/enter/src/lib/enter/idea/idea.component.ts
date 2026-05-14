@@ -53,7 +53,7 @@ import { AddTargetService } from './add-target/add-target.service';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { StockPositionDirection } from 'types/stock';
 import { AddStopService } from './add-stop/add-stop.service';
-import { calculateStop, calculateTargets } from 'utils/idea-calculate';
+import { calculateStopForStock, calculateTargetsForStock } from 'utils/idea-calculate';
 import { getNumberPrecision } from 'utils/get-number-precision';
 
 @Component({
@@ -127,11 +127,13 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 
 	readonly itemHeight = 28;
 	minPriceIncrement = 1e-8;
+	precisionAmount = 0;
 	priceIncrement = getPriceIncrement(this.minPriceIncrement);
 	multiplier = 1;
 	inPositionQuantityValue = 0;
 	isDisabled = false;
 	value: any = null;
+	instrumentType = '';
 
 	isTargetOpen = false;
 	isEntryOpen = false;
@@ -193,6 +195,8 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	);
 	readonly lot$: Observable<number> = this._formGroupValueChanges$.asObservable().pipe(
 		map((value: { lot: number }) => value.lot),
+		filter((lot: number) => !!lot),
+		tap((lot: number) => (this.precisionAmount = getPriceIncrement(lot))),
 		distinctUntilChanged(),
 		shareReplay({ refCount: true, bufferSize: 1 })
 	);
@@ -268,8 +272,18 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	);
 
 	ngAfterViewInit(): void {
+		this._ideaFacade.idea$
+			.pipe(
+				takeUntilDestroyed(this._destroyRef),
+				filter((position: StockPosition | null) => position !== null),
+				debounceTime(300)
+			)
+			.subscribe((position: StockPosition) => {
+				this.instrumentType = position.idea.instrument.type;
+			});
+
 		const source$: Observable<any> = this._createStream<any>(this.formGroup).pipe(
-			debounceTime(0),
+			debounceTime(100),
 			map(() => this.formGroup.getRawValue()),
 			shareReplay({ bufferSize: 1, refCount: true })
 		);
@@ -334,7 +348,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 						return;
 					}
 
-					const targets = calculateTargets(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
+					const targets = calculateTargetsForStock(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
 
 					if (targets.length !== 0) {
 						this.formArrayTargets.clear({ emitEvent: false });
@@ -344,7 +358,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 						this.formArrayTargets.patchValue([]);
 					}
 
-					const stop = calculateStop(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
+					const stop = calculateStopForStock(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
 
 					if (stop.length !== 0) {
 						this.formArrayStop.clear();
@@ -644,6 +658,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					limit: this.formGroup.value.limit,
 					lot: this.formGroup.value.lot,
 					minPriceIncrement: this.minPriceIncrement,
+					type: this.instrumentType,
 				},
 			})
 			.pipe()
@@ -713,6 +728,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					targets: this.formArrayTargets.value,
 					positionType: this.formGroup.value.sidebar.positionType,
 					limit: null,
+					type: this.instrumentType,
 				},
 			})
 			.pipe()
@@ -770,6 +786,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 					minDay,
 					lot: this.formGroup.value.lot,
 					minPriceIncrement: this.minPriceIncrement,
+					type: this.instrumentType,
 				},
 			})
 			.pipe()

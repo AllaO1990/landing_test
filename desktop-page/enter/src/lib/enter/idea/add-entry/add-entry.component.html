@@ -34,11 +34,19 @@
     </div>
 
     <div tuiAppearance="floating" tuiCardLarge="compact" class="form__card">
-      <ui-form-price-lots
-        [autoFocus]="false"
-        [options]="options"
-        formControlName="add"
-      ></ui-form-price-lots>
+      @if (type === 'crypto') {
+        <ui-form-price-quantity
+          [autoFocus]="false"
+          [options]="options"
+          formControlName="add">
+        </ui-form-price-quantity>
+      } @else {
+        <ui-form-price-lots
+          [autoFocus]="false"
+          [options]="options"
+          formControlName="add"
+        ></ui-form-price-lots>
+      }
     </div>
 
   </div>
