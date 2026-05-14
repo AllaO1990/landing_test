@@ -1,34 +1,34 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  forwardRef,
-  inject,
-  input,
-  InputSignal,
+	AfterViewInit,
+	ChangeDetectionStrategy,
+	Component,
+	computed,
+	DestroyRef,
+	forwardRef,
+	inject,
+	input,
+	InputSignal,
 } from '@angular/core';
-import {AsyncPipe} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
-  ControlValueAccessor,
-  FormControl,
-  FormGroup,
-  NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
+	ControlValueAccessor,
+	FormControl,
+	FormGroup,
+	NG_VALIDATORS,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule,
+	ValidationErrors,
+	Validators,
 } from '@angular/forms';
-import {TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield} from '@taiga-ui/core';
-import {TuiAutoFocus} from '@taiga-ui/cdk';
-import {TuiInputNumber, TuiTooltip} from '@taiga-ui/kit';
-import {combineLatest, startWith} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {getNumberPrecision} from 'utils/get-number-precision';
-import {map} from 'rxjs/operators';
-import {getNumberFromE} from 'utils/get-number-from-e';
-import {getPriceIncrement} from 'utils/get-price-increment';
+import { TuiFormatNumberPipe, TuiIcon, TuiNumberFormat, TuiTextfield } from '@taiga-ui/core';
+import { TuiAutoFocus } from '@taiga-ui/cdk';
+import { TuiInputNumber, TuiTooltip } from '@taiga-ui/kit';
+import { combineLatest, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { getNumberPrecision } from 'utils/get-number-precision';
+import { map } from 'rxjs/operators';
+import { getNumberFromE } from 'utils/get-number-from-e';
+import { getPriceIncrement } from 'utils/get-price-increment';
 
 export interface FormValue {
 	total: number | null;
@@ -163,8 +163,6 @@ export class FormPriceQuantityComponent implements ControlValueAccessor, AfterVi
 	onTouched = () => {};
 
 	writeValue(obj: FormValue): void {
-		console.log(obj);
-
 		this.form.patchValue(obj && { ...obj, quantity: obj['amount'] || obj['quantity'] });
 	}
 

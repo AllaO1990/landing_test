@@ -5,7 +5,17 @@ import {TuiAppearance, TuiButton, TuiDataList, TuiDataListComponent, TuiScrollba
 import {AsyncPipe} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {TuiTextfieldControllerModule} from '@taiga-ui/legacy';
-import {combineLatest, debounceTime, distinctUntilChanged, filter, map, Observable, of, startWith} from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import {
   TuiChevron,
   TuiDataListDropdownManager,
@@ -113,12 +123,6 @@ export class RequestTradeComponent implements AfterViewInit {
 		trailingIndentType: new FormControl(1),
 		trailingSpread: new FormControl({ value: null, disabled: true }, Validators.required),
 		trailingSpreadType: new FormControl(1),
-		// trailingData: new FormGroup({
-		// 	indent: new FormControl(1),
-		// 	indentType: new FormControl(1),
-		// 	spread: new FormControl({ value: null, disabled: true }, Validators.required),
-		// 	spreadType: new FormControl(1),
-		// }),
 		price: new FormControl(null, Validators.required),
 		quantity: new FormControl({ value: null, disabled: true }, Validators.required),
 		lots: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
@@ -161,10 +165,6 @@ export class RequestTradeComponent implements AfterViewInit {
 	get controlTotal(): FormControl {
 		return this.formGroup.get('total') as FormControl;
 	}
-
-	// get groupTrailingData(): FormGroup {
-	// 	return this.formGroup.get('trailingData') as FormGroup;
-	// }
 
 	get controlStopPrice(): FormControl {
 		return this.formGroup.get('stopPrice') as FormControl;
@@ -263,6 +263,22 @@ export class RequestTradeComponent implements AfterViewInit {
 		});
 
 		this.controlOrderType.valueChanges
+			.pipe(
+				takeUntilDestroyed(this.#destroyRef),
+				startWith(this.controlOrderType.value),
+				filter(
+					(value: TradeOrderType | null) => value !== null && value.type === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS
+				),
+				switchMap(() =>
+					this.controlStopPrice.valueChanges.pipe(
+						takeUntilDestroyed(this.#destroyRef),
+						startWith(this.controlStopPrice.value)
+					)
+				)
+			)
+			.subscribe((value: number | null) => this.controlPrice.patchValue(value));
+
+		this.controlOrderType.valueChanges
 			.pipe(takeUntilDestroyed(this.#destroyRef), startWith(this.controlOrderType.value), distinctUntilChanged())
 			.subscribe((value: TradeOrderType | null) => {
 				if (
@@ -272,7 +288,12 @@ export class RequestTradeComponent implements AfterViewInit {
 					value.type === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS
 				) {
 					this.controlPrice.disable();
-					this.controlPrice.patchValue(this.lastPrice);
+
+					if (value && value.type === TradeStopOrderTypeText.STOP_ORDER_TYPE_STOP_LOSS) {
+						this.controlPrice.patchValue(this.controlStopPrice.value);
+					} else {
+						this.controlPrice.patchValue(this.lastPrice);
+					}
 				} else {
 					this.controlPrice.enable();
 					this.controlPrice.patchValue(this.price || this.lastPrice);
