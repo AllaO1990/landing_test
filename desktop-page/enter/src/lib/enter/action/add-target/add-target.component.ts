@@ -78,7 +78,7 @@ export class AddTargetComponent extends AddForm implements OnInit {
 
 	ngOnInit(): void {
 		if (this.context.data) {
-			const { amount, price, date, brokerId, minPriceIncrement, isNew } = this.context.data;
+			const { amount, price, date, brokerId, minPriceIncrement, isNew, lot } = this.context.data;
 
 			isNew && this.#isShowCommission.next(true);
 
@@ -90,7 +90,8 @@ export class AddTargetComponent extends AddForm implements OnInit {
 			});
 
 			this.minPriceIncrement = minPriceIncrement;
-			this.precision = this.getPrecision(minPriceIncrement);
+			this.precisionPrice = this.getPrecision(minPriceIncrement);
+			this.precisionAmount = this.getPrecision(lot);
 		}
 
 		const controlDate = this.form.get('date') as FormControl;

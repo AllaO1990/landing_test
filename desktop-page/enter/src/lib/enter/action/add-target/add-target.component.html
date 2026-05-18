@@ -20,15 +20,17 @@
         placeholder="Цена"
         tuiAutoFocus
         tuiInputNumber
-        [tuiNumberFormat]="{precision: precision}"
+        [tuiNumberFormat]="{precision: precisionPrice}"
         autocomplete="off"
         name="price"
         formControlName="price"
       />
 
-      <span class="form__increment" *ngIf="minPriceIncrement !== null">
+      @if (minPriceIncrement !== null) {
+        <span class="form__increment">
         Шаг цены: {{ getNumberFromE(minPriceIncrement) }}
       </span>
+      }
     </tui-textfield>
 
     <tui-textfield
@@ -69,7 +71,7 @@
       [tuiTextfieldSize]="size"
       formControlName="brokerId">
       Брокер
-      <input autocomplete="off" tuiTextfieldLegacy />
+      <input autocomplete="off" tuiTextfieldLegacy/>
       <ng-template tuiDataList>
         <tui-data-list>
           <button

@@ -91,7 +91,7 @@ export class AddDividendComponent extends AddForm implements OnInit {
 
 	ngOnInit(): void {
 		if (this.context.data) {
-			const { date, size, amount, brokerId, minPriceIncrement, entry, dividend } = this.context.data;
+			const { date, size, amount, brokerId, minPriceIncrement, entry, dividend, lot } = this.context.data;
 			let broker = brokerId;
 			let quantity = amount;
 
@@ -116,7 +116,8 @@ export class AddDividendComponent extends AddForm implements OnInit {
 			});
 
 			this.minPriceIncrement = minPriceIncrement;
-			this.precision = this.getPrecision(minPriceIncrement);
+			this.precisionPrice = this.getPrecision(minPriceIncrement);
+			this.precisionAmount = this.getPrecision(lot);
 		}
 
 		const controlDate = this.form.get('date') as FormControl;
@@ -143,8 +144,8 @@ export class AddDividendComponent extends AddForm implements OnInit {
 				date: this.getISOString(date[0], date[1]),
 				size,
 				amount,
-				profit: getNumberPrecision(size * amount, this.precision),
-				profitPct: getNumberPrecision(((size * amount) / entry) * 100, this.precision),
+				profit: getNumberPrecision(size * amount, 2),
+				profitPct: getNumberPrecision(((size * amount) / entry) * 100, 2),
 				depositShare: null,
 				brokerId: brokerId || null,
 			});

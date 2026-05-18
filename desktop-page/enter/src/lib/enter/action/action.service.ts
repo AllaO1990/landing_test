@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
-	StockPositionActionEntry,
-	StockPositionActionTarget,
-	StockPositionCommission,
-	StockPositionDividend,
-	StockPositionTarget,
+  StockPositionActionEntry,
+  StockPositionActionTarget,
+  StockPositionCommission,
+  StockPositionDividend,
+  StockPositionTarget,
 } from 'types/position';
-import { getNumberPrecision } from 'utils/get-number-precision';
+import {getNumberPrecision} from 'utils/get-number-precision';
+import {getPriceIncrement} from 'utils/get-price-increment';
 
 @Injectable()
 export class ActionService {
@@ -63,21 +64,24 @@ export class ActionService {
 		id: null,
 	};
 
-	getTotalEntry(list: StockPositionActionEntry[] | null, priceIncrement = 8): StockPositionActionEntry {
+	getTotalEntry(list: StockPositionActionEntry[] | null, priceIncrement = 1, lot = 1): StockPositionActionEntry {
 		if (list === null) {
 			return this._defaultTotalEntry;
 		}
 
+		const precisionPrice = getPriceIncrement(priceIncrement);
+		const precisionAmount = getPriceIncrement(lot);
+
 		return list.reduce((acc: StockPositionActionEntry, item: StockPositionActionEntry, index: number) => {
 			const value: StockPositionActionEntry = {
 				...acc,
-				amount: acc.amount + item.amount,
+				amount: getNumberPrecision(acc.amount + item.amount, precisionAmount),
 				totalPrice: getNumberPrecision(acc.totalPrice + item.price * item.amount, 2),
 				depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
 			};
 
 			if (list.length - 1 === index) {
-				value.price = getNumberPrecision(value.totalPrice / value.amount, priceIncrement);
+				value.price = getNumberPrecision(value.totalPrice / value.amount, precisionPrice);
 
 				return value;
 			}
@@ -90,7 +94,8 @@ export class ActionService {
 		list: StockPositionActionTarget[] | null,
 		total: StockPositionActionEntry,
 		multiplier: number,
-		priceIncrement = 8
+		priceIncrement = 1,
+		lot = 1
 	): StockPositionActionTarget {
 		if (list === null) {
 			return this._defaultTotalOut;
@@ -100,12 +105,15 @@ export class ActionService {
 			return this._defaultTotalOut;
 		}
 
+		const precisionPrice = getPriceIncrement(priceIncrement);
+		const precisionAmount = getPriceIncrement(lot);
+
 		return list.reduce(
 			(acc: StockPositionActionTarget, item: StockPositionActionTarget, index: number): StockPositionActionTarget => {
 				const value: StockPositionActionTarget = {
 					...acc,
-					price: acc.price + item.price * item.amount,
-					amount: acc.amount + item.amount,
+					price: getNumberPrecision(acc.price + item.price * item.amount, precisionPrice),
+					amount: getNumberPrecision(acc.amount + item.amount, precisionAmount),
 					profit: (acc.profit || 0) + (item.profit || 0),
 					depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
 				};
@@ -114,7 +122,7 @@ export class ActionService {
 					value.totalPrice = value.price;
 					value.profit = getNumberPrecision(value.profit || 0, 2);
 					value.profitPercent = getNumberPrecision((value.profit / (total.price * value.amount)) * 100, 2);
-					value.price = getNumberPrecision(value.price / value.amount, priceIncrement);
+					value.price = getNumberPrecision(value.price / value.amount, precisionPrice);
 				}
 
 				return value;
@@ -128,20 +136,24 @@ export class ActionService {
 		target: StockPositionActionTarget,
 		lastPrice: number,
 		multiplier: number,
-		priceIncrement = 8
+		priceIncrement = 1,
+		lot = 1
 	): StockPositionTarget {
 		if (entry.price === 0 || lastPrice === 0) {
 			return this._defaultTotalRemainder;
 		}
 
-		const amount = entry.amount - target.amount;
-		const profit = getNumberPrecision((lastPrice * amount - entry.price * amount) * multiplier, priceIncrement);
+		const precisionPrice = getPriceIncrement(priceIncrement);
+		const precisionAmount = getPriceIncrement(lot);
+
+		const amount = getNumberPrecision(entry.amount - target.amount, precisionAmount);
+		const profit = getNumberPrecision((lastPrice * amount - entry.price * amount) * multiplier, precisionPrice);
 
 		return {
 			price: lastPrice,
 			amount: amount,
 			lots: 0,
-			totalPrice: getNumberPrecision(lastPrice * amount, priceIncrement),
+			totalPrice: getNumberPrecision(lastPrice * amount, precisionPrice),
 			profit: profit,
 			profitPercent: profit && getNumberPrecision((profit / (entry.price * amount)) * 100, 2),
 			depositShare: null,
@@ -154,24 +166,28 @@ export class ActionService {
 	getTotalDividend(
 		entry: StockPositionActionEntry,
 		list: StockPositionDividend[],
-		priceIncrement = 8
+		priceIncrement = 1,
+		lot = 1
 	): StockPositionDividend {
 		if (list.length === 0) {
 			return this._defaultTotalDividend;
 		}
 
+		const precisionPrice = getPriceIncrement(priceIncrement);
+		const precisionAmount = getPriceIncrement(lot);
+
 		return list.reduce((acc: StockPositionDividend, item: StockPositionDividend, index: number) => {
 			const value: StockPositionDividend = {
 				...acc,
 				size: acc.size + item.size * item.amount,
-				amount: acc.amount + item.amount,
+				amount: getNumberPrecision(acc.amount + item.amount, precisionAmount),
 				depositShare: item.depositShare !== null ? (acc.depositShare || 0) + item.depositShare : acc.depositShare,
 			};
 
 			if (list.length - 1 === index) {
 				value.profit = value.size;
 				value.profitPct = getNumberPrecision((value.profit / entry.totalPrice) * 100, 2);
-				value.size = getNumberPrecision(value.size / value.amount, priceIncrement);
+				value.size = getNumberPrecision(value.size / value.amount, precisionPrice);
 			}
 
 			return value;
@@ -206,22 +222,26 @@ export class ActionService {
 		commission: StockPositionCommission,
 		lastPrice: number,
 		multiplier: number,
-		priceIncrement = 8
+		priceIncrement = 1,
+		lot = 1
 	): StockPositionActionTarget {
 		if ((entry.price === 0 && dividend.size === 0) || lastPrice === 0) {
 			return this._defaultTotalOut;
 		}
 
-		const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice, priceIncrement);
+		const precisionPrice = getPriceIncrement(priceIncrement);
+		const precisionAmount = getPriceIncrement(lot);
+
+		const totalPrice = getNumberPrecision(target.totalPrice + remainder.totalPrice, precisionPrice);
 		const profit = getNumberPrecision(
 			(totalPrice - entry.totalPrice) * multiplier + (dividend.profit || 0),
-			priceIncrement
+			precisionPrice
 		);
 
 		return {
 			// price: target.price || lastPrice,
 			price: getNumberPrecision(totalPrice / entry.amount, 2),
-			amount: entry.amount,
+			amount: getNumberPrecision(entry.amount, precisionAmount),
 			totalPrice: totalPrice,
 			profit: profit,
 			profitPercent: getNumberPrecision((profit / entry.totalPrice) * 100, 2),

@@ -10,61 +10,58 @@ import { getTuiDayTime } from 'utils/get-tui-day-time';
 
 @Directive()
 export abstract class AddForm implements AfterViewInit {
-  readonly #destroyRef: DestroyRef = inject(DestroyRef);
-  readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, { optional: true });
-  readonly size = 's';
-  minPriceIncrement = 1e-8;
-  precision = this.getPrecision(this.minPriceIncrement);
+	readonly #destroyRef: DestroyRef = inject(DestroyRef);
+	readonly context: TuiPopover<any, any> = inject(POLYMORPHEUS_CONTEXT, { optional: true });
+	readonly size = 's';
+	minPriceIncrement = 1e-8;
+	precisionAmount = 1;
+	precisionPrice = 2;
 
-  get precisionAmount() {
-    return this.precision === 8 ? 4 : 0;
-  }
+	abstract form: FormGroup;
 
-  abstract form: FormGroup;
+	ngAfterViewInit(): void {
+		this.form.enable({ emitEvent: false });
+	}
 
-  ngAfterViewInit(): void {
-    this.form.enable({ emitEvent: false });
-  }
+	onCancel(event: Event): void {
+		event.preventDefault();
 
-  onCancel(event: Event): void {
-    event.preventDefault();
+		if (this.context) {
+			this.context.completeWith(null);
+		}
+	}
 
-    if (this.context) {
-      this.context.completeWith(null);
-    }
-  }
+	getISOString(date: TuiDay | null, time: TuiTime | null): string | null {
+		if (date === null || time === null) {
+			return null;
+		}
 
-  getISOString(date: TuiDay | null, time: TuiTime | null): string | null {
-    if (date === null || time === null) {
-      return null;
-    }
+		return new Date(date.toLocalNativeDate().valueOf() + time.valueOf()).toISOString();
+	}
 
-    return new Date(date.toLocalNativeDate().valueOf() + time.valueOf()).toISOString();
-  }
+	getTuiDates(date: string | null): [TuiDay, TuiTime] | [null, null] {
+		return getTuiDayTime(date);
+	}
 
-  getTuiDates(date: string | null): [TuiDay, TuiTime] | [null, null] {
-    return getTuiDayTime(date);
-  }
+	updateControlDate(
+		control: FormControl
+	): UnaryFunction<Observable<[TuiDay | null, TuiTime | null]>, Observable<[TuiDay | null, TuiTime | null]>> {
+		return pipe(
+			takeUntilDestroyed(this.#destroyRef),
+			startWith(control.value),
+			pairwise(),
+			filter(
+				([first, last]: [[TuiDay | null, TuiTime | null], [TuiDay | null, TuiTime | null]]) =>
+					first[0] === null && last[0] !== null
+			),
+			map((result: [[TuiDay | null, TuiTime | null], [TuiDay | null, TuiTime | null]]) => result[1]),
+			tap((result: [TuiDay | null, time: TuiTime | null]) =>
+				control.patchValue([result[0], TuiTime.fromLocalNativeDate(new Date())])
+			)
+		);
+	}
 
-  updateControlDate(
-    control: FormControl
-  ): UnaryFunction<Observable<[TuiDay | null, TuiTime | null]>, Observable<[TuiDay | null, TuiTime | null]>> {
-    return pipe(
-      takeUntilDestroyed(this.#destroyRef),
-      startWith(control.value),
-      pairwise(),
-      filter(
-        ([first, last]: [[TuiDay | null, TuiTime | null], [TuiDay | null, TuiTime | null]]) =>
-          first[0] === null && last[0] !== null
-      ),
-      map((result: [[TuiDay | null, TuiTime | null], [TuiDay | null, TuiTime | null]]) => result[1]),
-      tap((result: [TuiDay | null, time: TuiTime | null]) =>
-        control.patchValue([result[0], TuiTime.fromLocalNativeDate(new Date())])
-      )
-    );
-  }
-
-  getPrecision(minPriceIncrement: number): number {
-    return minPriceIncrement === Number(minPriceIncrement) ? getPriceIncrement(minPriceIncrement) : this.precision;
-  }
+	getPrecision(increment: number): number {
+		return increment === Number(increment) ? getPriceIncrement(increment) : increment;
+	}
 }

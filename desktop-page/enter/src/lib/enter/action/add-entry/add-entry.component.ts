@@ -1,30 +1,30 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { AddForm } from '../add';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {AsyncPipe, CommonModule} from '@angular/common';
+import {AddForm} from '../add';
 import {
-	AbstractControl,
-	FormControl,
-	FormGroup,
-	ReactiveFormsModule,
-	ValidationErrors,
-	ValidatorFn,
-	Validators,
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
 } from '@angular/forms';
-import { TuiButton, TuiDataList, TuiNumberFormat, TuiTextfield, TuiTextfieldOptionsDirective } from '@taiga-ui/core';
+import {TuiButton, TuiDataList, TuiNumberFormat, TuiTextfield, TuiTextfieldOptionsDirective} from '@taiga-ui/core';
 import {
-	TuiInputDateModule,
-	TuiInputDateTimeModule,
-	TuiInputNumberModule,
-	TuiSelectModule,
-	TuiTextfieldControllerModule,
+  TuiInputDateModule,
+  TuiInputDateTimeModule,
+  TuiInputNumberModule,
+  TuiSelectModule,
+  TuiTextfieldControllerModule,
 } from '@taiga-ui/legacy';
-import { TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler } from '@taiga-ui/cdk';
-import { AccountFacade } from 'stores/facades/account.facade';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { AccountBroker } from 'types/account';
-import { TuiDataListWrapper, TuiInputNumber } from '@taiga-ui/kit';
-import { getNumberFromE } from 'utils/get-number-from-e';
-import { getNumberPrecision } from 'utils/get-number-precision';
+import {TuiAutoFocus, TuiContext, TuiDay, tuiPure, TuiStringHandler} from '@taiga-ui/cdk';
+import {AccountFacade} from 'stores/facades/account.facade';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {AccountBroker} from 'types/account';
+import {TuiDataListWrapper, TuiInputNumber} from '@taiga-ui/kit';
+import {getNumberFromE} from 'utils/get-number-from-e';
+import {getNumberPrecision} from 'utils/get-number-precision';
 
 const completeDateTimeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
 	control.value.every(Boolean) ? null : { incompleteDateTime: true };
@@ -73,7 +73,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
 
 	ngOnInit(): void {
 		if (this.context.data) {
-			const { date, price, amount, brokerId, minPriceIncrement, isNew } = this.context.data;
+			const { date, price, amount, brokerId, minPriceIncrement, isNew, lot } = this.context.data;
 
 			isNew && this.#isShowCommission.next(true);
 
@@ -85,7 +85,8 @@ export class AddEntryComponent extends AddForm implements OnInit {
 			});
 
 			this.minPriceIncrement = minPriceIncrement;
-			this.precision = this.getPrecision(minPriceIncrement);
+			this.precisionPrice = this.getPrecision(minPriceIncrement);
+			this.precisionAmount = this.getPrecision(lot);
 		}
 
 		const controlDate = this.form.get('date') as FormControl;
@@ -105,7 +106,7 @@ export class AddEntryComponent extends AddForm implements OnInit {
 				price,
 				amount,
 				commission,
-				totalPrice: getNumberPrecision(price * amount, this.precision),
+				totalPrice: getNumberPrecision(price * amount, 2),
 				depositShare: null,
 				brokerId: brokerId || null,
 			});

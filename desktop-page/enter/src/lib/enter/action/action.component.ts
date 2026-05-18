@@ -139,6 +139,8 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 	readonly size = 's';
 	readonly itemHeight = 28;
 	minPriceIncrement = 1e-8;
+	lot = 1;
+	precisionAmount = getPriceIncrement(this.lot);
 	priceIncrement = 8;
 	value: any = null;
 	isDisabled = false;
@@ -165,7 +167,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 	private readonly _formGroupValueChanges$: Subject<any> = new ReplaySubject(1);
 	readonly formGroupValueChanges$: Observable<any> = this._formGroupValueChanges$
 		.asObservable()
-		.pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+		.pipe(debounceTime(100), shareReplay({ refCount: true, bufferSize: 1 }));
 
 	readonly controlFormArray: FormGroup = new FormGroup({
 		entries: new FormArray<FormControl<StockPositionActionEntry>>([]),
@@ -204,7 +206,12 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 	).pipe(startWith(this.formArrayCommissions.value), shareReplay({ bufferSize: 1, refCount: true }));
 	position$: Observable<any> = this.formGroupValueChanges$.pipe(
 		filter((value: any | null): value is any => value !== null),
-		map((value) => value.lastPrice || 0),
+		map((value) => {
+			this.lot = value.lot || 1;
+			this.precisionAmount = getPriceIncrement(this.lot);
+
+			return value.lastPrice || 0;
+		}),
 		shareReplay({
 			bufferSize: 1,
 			refCount: true,
@@ -236,11 +243,21 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 		distinctUntilChanged(),
 		shareReplay({ bufferSize: 1, refCount: false })
 	);
-	priceIncrement$: Observable<number> = this.minPriceIncrement$.pipe(map((value: number) => getPriceIncrement(value)));
-	totalEntry$: Observable<StockPositionActionEntry> = combineLatest([this.entriesList$, this.priceIncrement$]).pipe(
+	lot$: Observable<number> = this.formGroupValueChanges$.pipe(
+		map((data: { lot: number }) => data.lot),
+		filter((value: number | null): value is number => value !== null),
+		distinctUntilChanged(),
+		shareReplay({ bufferSize: 1, refCount: false })
+	);
+
+	totalEntry$: Observable<StockPositionActionEntry> = combineLatest([
+		this.entriesList$,
+		this.minPriceIncrement$,
+		this.lot$,
+	]).pipe(
 		debounceTime(100),
-		map(([list, priceIncrement]: [StockPositionActionEntry[] | null, number]) =>
-			this._service.getTotalEntry(list, priceIncrement)
+		map(([list, priceIncrement, lot]: [StockPositionActionEntry[] | null, number, number]) =>
+			this._service.getTotalEntry(list, priceIncrement, lot)
 		),
 		shareReplay({ bufferSize: 1, refCount: false })
 	);
@@ -248,27 +265,30 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 		this.totalEntry$,
 		this.targetsList$,
 		this.multiplier$,
-		this.priceIncrement$,
+		this.minPriceIncrement$,
+		this.lot$,
 	]).pipe(
 		debounceTime(100),
 		map(
-			([total, target, multiplier, priceIncrement]: [
+			([total, target, multiplier, priceIncrement, lot]: [
 				StockPositionActionEntry,
 				StockPositionActionTarget[],
 				number,
+				number,
 				number
-			]) => this._service.getTotalOut(target, total, multiplier, priceIncrement)
+			]) => this._service.getTotalOut(target, total, multiplier, priceIncrement, lot)
 		),
 		shareReplay({ bufferSize: 1, refCount: false })
 	);
 	totalDividend$: Observable<StockPositionDividend> = combineLatest([
 		this.totalEntry$,
 		this.dividendsList$,
-		this.priceIncrement$,
+		this.minPriceIncrement$,
+		this.lot$,
 	]).pipe(
 		debounceTime(100),
-		map(([entry, dividend, priceIncrement]: [StockPositionActionEntry, StockPositionDividend[], number]) =>
-			this._service.getTotalDividend(entry, dividend, priceIncrement)
+		map(([entry, dividend, priceIncrement, lot]: [StockPositionActionEntry, StockPositionDividend[], number, number]) =>
+			this._service.getTotalDividend(entry, dividend, priceIncrement, lot)
 		)
 	);
 	totalCommission$: Observable<StockPositionCommission> = combineLatest([this.totalEntry$, this.commissionList$]).pipe(
@@ -282,17 +302,19 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 		this.totalOut$,
 		this.position$,
 		this.multiplier$,
-		this.priceIncrement$,
+		this.minPriceIncrement$,
+		this.lot$,
 	]).pipe(
 		debounceTime(100),
 		map(
-			([totalEntry, totalOut, lastPrice, multiplier, priceIncrement]: [
+			([totalEntry, totalOut, lastPrice, multiplier, priceIncrement, lot]: [
 				StockPositionActionEntry,
 				StockPositionActionTarget,
 				number,
 				number,
+				number,
 				number
-			]) => this._service.getTotalRemainder(totalEntry, totalOut, lastPrice, multiplier, priceIncrement)
+			]) => this._service.getTotalRemainder(totalEntry, totalOut, lastPrice, multiplier, priceIncrement, lot)
 		)
 	);
 	totalResult$: Observable<StockPositionActionTarget> = combineLatest([
@@ -303,16 +325,28 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 		this.totalCommission$,
 		this.lastPrice$,
 		this.multiplier$,
-		this.priceIncrement$,
+		this.minPriceIncrement$,
+		this.lot$,
 	]).pipe(
 		debounceTime(100),
 		map(
-			([totalEntry, totalOut, totalRemainder, totalDividend, totalCommission, lastPrice, multiplier, priceIncrement]: [
+			([
+				totalEntry,
+				totalOut,
+				totalRemainder,
+				totalDividend,
+				totalCommission,
+				lastPrice,
+				multiplier,
+				priceIncrement,
+				lot,
+			]: [
 				StockPositionActionEntry,
 				StockPositionActionTarget,
 				StockPositionTarget,
 				StockPositionDividend,
 				StockPositionCommission,
+				number,
 				number,
 				number,
 				number
@@ -325,7 +359,8 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 					totalCommission,
 					lastPrice,
 					multiplier,
-					priceIncrement
+					priceIncrement,
+					lot
 				)
 		)
 	);
@@ -445,6 +480,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 			price: (data && data.price) || entry.price,
 			amount: (data && data.amount) || entry.quantity,
 			minPriceIncrement: this.minPriceIncrement,
+			lot: this.lot,
 			isNew: index === null,
 		}).subscribe((res: any | null) => {
 			if (res) {
@@ -488,6 +524,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 			brokerId: (data && data['brokerId']) || brokerId,
 			minPriceIncrement: this.minPriceIncrement,
 			isNew: control === null,
+			lot: this.lot,
 		}).subscribe((result: any | null) => {
 			if (result) {
 				this._updateDataFromDialog(this.formArrayTargets, result, control);
@@ -513,6 +550,7 @@ export class EnterActionComponent implements ControlValueAccessor, AfterViewInit
 			entry: this.formArrayEntries.value,
 			dividend: this.formArrayDividends.value,
 			minPriceIncrement: this.minPriceIncrement,
+			lot: this.lot,
 		}).subscribe((result: object | null) => {
 			if (result) {
 				this._updateDataFromDialog(this.formArrayDividends, result, controlIndex);
