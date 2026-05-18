@@ -81,27 +81,27 @@ export class TradeFormService {
 		operations: TradeOperations,
 		journal: TradeJournal[]
 	): ActualTradeOperations {
-		let dateValueOf: number | null = null;
-
-		const journalIdeaDate = Math.min(
-			...journal.map((item: TradeJournal): number => {
-				if (!item.ideaDate) {
-					return 0;
-				}
-				return new Date(item.ideaDate).valueOf();
-			})
+		const dateValueOf = Math.min(
+			...journal
+				.filter((item: TradeJournal) => item.ideaDate !== null)
+				.map((item: TradeJournal): number => {
+					if (!item.ideaDate) {
+						return 0;
+					}
+					return new Date(item.ideaDate).valueOf();
+				})
 		);
 
-		if (journalIdeaDate) {
-			dateValueOf = journalIdeaDate;
+		if (dateValueOf === Infinity) {
+			return [];
 		}
 
-		if (position.idea.createdAt && dateValueOf === null) {
-			const createAt = new Date(position.idea.createdAt).valueOf();
-			if (!Number.isNaN(createAt)) {
-				dateValueOf = createAt;
-			}
-		}
+		// if (position.idea.createdAt && dateValueOf === null) {
+		// 	const createAt = new Date(position.idea.createdAt).valueOf();
+		// 	if (!Number.isNaN(createAt)) {
+		// 		dateValueOf = createAt;
+		// 	}
+		// }
 
 		const actualOperations = dateValueOf
 			? operations.filter((item: TradeOperation) => new Date(item.date).valueOf() > dateValueOf)

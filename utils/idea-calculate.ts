@@ -1,7 +1,7 @@
-import { StockPositionIdeaEntry, StockPositionStop, StockPositionTarget } from '../types/position';
-import { getNumberPrecision } from './get-number-precision';
-import { getPriceIncrement } from './get-price-increment';
-import { StockPositionDirection } from '../types/stock';
+import {StockPositionIdeaEntry, StockPositionStop, StockPositionTarget} from '../types/position';
+import {getNumberPrecision} from './get-number-precision';
+import {getPriceIncrement} from './get-price-increment';
+import {StockPositionDirection} from '../types/stock';
 
 export const calculateEntriesForStock = (
 	list: StockPositionIdeaEntry[],
@@ -96,7 +96,7 @@ export const calculateTargetsForStock = (
 		}
 
 		const currentPrice = targetsPrice[index];
-		const quantity = lots * lot;
+		const quantity = getNumberPrecision(lots * lot, precisionQuantity);
 
 		acc.push({
 			price: currentPrice,
@@ -142,7 +142,7 @@ export const calculateStopForStock = (
 		{ total: 0, quantity: 0 }
 	);
 	const averagePrice = getNumberPrecision(totalEntry.total / totalEntry.quantity, precisionPrice);
-	const price = stop.length !== 0 ? stop[0].price : averagePrice + atr * multiplier;
+	const price = stop.length !== 0 ? stop[0].price : getNumberPrecision(averagePrice + atr * multiplier, precisionPrice);
 
 	return [
 		{
@@ -150,7 +150,7 @@ export const calculateStopForStock = (
 			lots: getNumberPrecision(totalEntry.quantity / lot, precisionQuantity),
 			amount: totalEntry.quantity,
 			totalPrice: getNumberPrecision(price * totalEntry.quantity, 2),
-			loss: getNumberPrecision((price - averagePrice) * totalEntry.quantity * multiplier * -1, precisionPrice),
+			loss: getNumberPrecision((price - averagePrice) * totalEntry.quantity * multiplier * -1, 2),
 			lossPercent: getNumberPrecision(100 * ((price - averagePrice) / averagePrice) * multiplier * -1, 2),
 			depositShare: null,
 			stopCandleDate: null,
@@ -224,9 +224,9 @@ export const calculateTargetsForCrypto = (
 		},
 		{ total: 0, quantity: 0 }
 	);
-	const totalEntryLots = totalEntry.quantity / lot;
 	const precisionPrice = getPriceIncrement(minPriceIncrement);
 	const precisionQuantity = getPriceIncrement(lot);
+	const totalEntryLots = totalEntry.quantity / lot;
 	const averagePrice = getNumberPrecision(totalEntry.total / totalEntry.quantity, precisionPrice);
 	const targetsPrice: number[] =
 		targets.length > 0
@@ -242,7 +242,7 @@ export const calculateTargetsForCrypto = (
 	}
 
 	return rate[rateIndex].reduce((acc: StockPositionTarget[], part: number, index: number, array) => {
-		let lots = totalEntryLots - calcLots;
+		let lots = getNumberPrecision(totalEntryLots - calcLots, precisionQuantity);
 
 		if (index !== array.length - 1) {
 			lots = getNumberPrecision(totalEntryLots * part, precisionQuantity, 'ceil');
@@ -252,8 +252,8 @@ export const calculateTargetsForCrypto = (
 			lots = 1;
 		}
 
-		const currentPrice = targetsPrice[index];
-		const quantity = lots * lot;
+		const currentPrice = getNumberPrecision(targetsPrice[index], precisionPrice);
+		const quantity = getNumberPrecision(lots * lot, precisionQuantity);
 
 		acc.push({
 			price: currentPrice,
@@ -318,18 +318,22 @@ export const calculateStopForCrypto = (
 };
 
 export const transformEntries = (list: StockPositionIdeaEntry[], lot: number) => {
+	const precisionQuantity = getPriceIncrement(lot);
+
 	return list.map((item: StockPositionIdeaEntry) => ({
 		...item,
-		lots: item.quantity / lot,
+		lots: getNumberPrecision(item.quantity / lot, precisionQuantity),
 		totalPrice: getNumberPrecision(item.price * item.quantity, 2, 'floor'),
 	}));
 };
 
 export const transformTargets = (list: StockPositionTarget[], lot: number): StockPositionTarget[] => {
+	const precisionQuantity = getPriceIncrement(lot);
+
 	return list.map((item) => {
 		return {
 			...item,
-			lots: item.amount / lot,
+			lots: getNumberPrecision(item.amount / lot, precisionQuantity),
 			totalPrice: getNumberPrecision(item.price * item.amount, 2),
 			depositShare: null,
 			brokerId: null,

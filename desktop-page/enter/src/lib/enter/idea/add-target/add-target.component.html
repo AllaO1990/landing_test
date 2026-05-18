@@ -6,8 +6,18 @@
     <tui-notification class="notification" appearance="negative">
       <div tuiSubtitle>
         Количество в целях не соответствует количеству входа<br>
-        Кол-во в целях: {{ totalTargetQuantity$ | async }}<br>
-        Кол-во входа: {{ totalEntryQuantity() }}
+        Кол-во в целях: {{
+          ((totalTargetQuantity$ | async) || 0) | tuiFormatNumber: {
+            precision: precisionQuantity,
+            decimalMode: 'always'
+          } | async
+        }}<br>
+        Кол-во входа: {{
+          totalEntryQuantity()| tuiFormatNumber: {
+            precision: precisionQuantity,
+            decimalMode: 'always'
+          } | async
+        }}
       </div>
     </tui-notification>
   }
@@ -18,7 +28,7 @@
           <lib-list-mobile
             [list]="list"
             [index]="controlIndex.value"
-            [option]="{ precision: precision }"
+            [option]="{ precision: precision, precisionQuantity: precisionQuantity }"
             (action)="onAction($event)">
           </lib-list-mobile>
         } @else {
@@ -26,7 +36,7 @@
             [type]="type"
             [list]="list"
             [index]="controlIndex.value"
-            [option]="{ precision: precision }"
+            [option]="{ precision: precision, precisionQuantity: precisionQuantity }"
             (action)="onAction($event)">
           </lib-list-full>
         }

@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TuiAppearance, TuiBreakpointService, TuiButton, TuiNotification } from '@taiga-ui/core';
+import { TuiAppearance, TuiBreakpointService, TuiButton, TuiFormatNumberPipe, TuiNotification } from '@taiga-ui/core';
 import { tuiPure } from '@taiga-ui/cdk';
 import { DialogCoreComponent } from '@ui/components/dialog';
 import { FormPriceLotsComponent } from 'ui-common/lib/form-price-lots';
@@ -65,6 +65,7 @@ const DEFAULT_OPTIONS: ControlOptions = {
 		ListMobileComponent,
 		ListFullComponent,
 		FormPriceQuantityComponent,
+		TuiFormatNumberPipe,
 	],
 	templateUrl: './add-target.component.html',
 	styleUrls: ['../add.scss', './add-target.component.scss'],
@@ -109,6 +110,7 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 		map((value: StockPositionTarget[]) =>
 			value.reduce((acc: number, item: StockPositionTarget) => (acc += item.amount), 0)
 		),
+		map((value: number) => getNumberPrecision(value, this.precisionQuantity)),
 		distinctUntilChanged(),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
@@ -131,7 +133,10 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 
 	@tuiPure
 	totalEntryQuantity(): number {
-		return this.context.data.entries.reduce((acc: number, item: StockPositionIdeaEntry) => (acc += item.quantity), 0);
+		return getNumberPrecision(
+			this.context.data.entries.reduce((acc: number, item: StockPositionIdeaEntry) => (acc += item.quantity), 0),
+			this.precisionQuantity
+		);
 	}
 
 	@tuiPure
@@ -142,6 +147,11 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 	@tuiPure
 	get precision(): number {
 		return getPriceIncrement(this.context.data.minPriceIncrement);
+	}
+
+	@tuiPure
+	get precisionQuantity(): number {
+		return getPriceIncrement(this.context.data.lot);
 	}
 
 	@tuiPure
@@ -164,6 +174,8 @@ export class AddTargetComponent extends DialogCoreComponent implements AfterView
 			});
 
 		if (this.context.data) {
+			console.log(this.context.data);
+
 			this.type = this.context.data.type || null;
 
 			this._initTargets(this.context.data.targets);

@@ -53,7 +53,7 @@ import { AddTargetService } from './add-target/add-target.service';
 import { DialogApproveService } from 'ui-common/lib/dialog-approve';
 import { StockPositionDirection } from 'types/stock';
 import { AddStopService } from './add-stop/add-stop.service';
-import { calculateStopForStock, calculateTargetsForStock } from 'utils/idea-calculate';
+import { calculateStopForStock, calculateTargetsForCrypto, calculateTargetsForStock } from 'utils/idea-calculate';
 import { getNumberPrecision } from 'utils/get-number-precision';
 
 @Component({
@@ -200,6 +200,11 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 		distinctUntilChanged(),
 		shareReplay({ refCount: true, bufferSize: 1 })
 	);
+	readonly instrumentType$: Observable<string | null> = this._formGroupValueChanges$.asObservable().pipe(
+		map((data: { instrumentType: string | null }) => data.instrumentType),
+		distinctUntilChanged(),
+		shareReplay({ refCount: true, bufferSize: 1 })
+	);
 	multiplier$: Observable<number> = this.formGroupValueChanges$.pipe(
 		map((data: { sidebar: { positionType: string } }) => data.sidebar && data.sidebar.positionType),
 		distinctUntilChanged(),
@@ -332,23 +337,31 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 			),
 			this.direction$,
 			this.lot$,
+			this.instrumentType$,
 			this.isEdit$.asObservable(),
 		])
 			.pipe(takeUntilDestroyed(this._destroyRef), debounceTime(1000))
 			.subscribe((result) => {
-				if (result[5]) {
+				if (result[6]) {
 					const entries: StockPositionIdeaEntry[] = result[0];
 					const minPriceIncrement = result[1];
 					const priceIncrement = getPriceIncrement(minPriceIncrement);
 					const indicator: IndicatorAtr = result[2].data;
 					const positionType = result[3];
 					const lot = result[4];
+					const instrumentType = result[5];
 
 					if (indicator === null) {
 						return;
 					}
 
-					const targets = calculateTargetsForStock(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
+					let targets: StockPositionTarget[] = [];
+
+					if (instrumentType === 'crypto') {
+						targets = calculateTargetsForCrypto(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
+					} else {
+						targets = calculateTargetsForStock(positionType, [], entries, lot, minPriceIncrement, indicator.atr);
+					}
 
 					if (targets.length !== 0) {
 						this.formArrayTargets.clear({ emitEvent: false });
@@ -897,7 +910,7 @@ export class EnterIdeaComponent implements ControlValueAccessor, AfterViewInit {
 	private _createStream<T>(control: AbstractControl): Observable<T> {
 		const stream$: Observable<T> = defer(() => {
 			if (control && control.valueChanges) {
-				return control.valueChanges;
+				return control.valueChanges.pipe(debounceTime(100));
 			}
 
 			return this._ngZone.onStable.asObservable().pipe(

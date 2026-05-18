@@ -227,6 +227,7 @@ export class VtEnterComponent implements AfterViewInit {
 		limit: new FormControl(null),
 		minPriceIncrement: new FormControl(null),
 		lastPrice: new FormControl(null),
+		instrumentType: new FormControl(null),
 	});
 
 	get controlActions(): FormControl {
@@ -243,6 +244,10 @@ export class VtEnterComponent implements AfterViewInit {
 
 	get controlWatch(): FormControl {
 		return this.form.get('watch') as FormControl;
+	}
+
+	get controlInstrumentType(): FormControl {
+		return this.form.get('instrumentType') as FormControl;
 	}
 
 	readonly maxAmount$: Observable<string> = this.controlIdea.statusChanges.pipe(
@@ -359,11 +364,12 @@ export class VtEnterComponent implements AfterViewInit {
 
 					if (result) {
 						const isBot = result.idea.author === 'bot';
+						const isCopy = result.idea.id === null;
 
 						let entries: StockPositionIdeaEntry[] = [];
 						let targets: StockPositionTarget[] = [];
 
-						if (isBot && result.idea.instrument.type === 'crypto') {
+						if ((isBot || isCopy) && result.idea.instrument.type === 'crypto') {
 							entries = calculateEntriesForCrypto(
 								result.idea.entries,
 								result.idea.instrument.lot,
@@ -381,7 +387,7 @@ export class VtEnterComponent implements AfterViewInit {
 							);
 						}
 
-						if (isBot && result.idea.instrument.type === 'shares') {
+						if ((isBot || isCopy) && result.idea.instrument.type === 'shares') {
 							entries = calculateEntriesForStock(
 								result.idea.entries,
 								result.idea.instrument.lot,
@@ -399,7 +405,7 @@ export class VtEnterComponent implements AfterViewInit {
 							);
 						}
 
-						if (!isBot) {
+						if (!(isBot || isCopy)) {
 							entries = transformEntries(result.idea.entries, result.idea.instrument.lot);
 
 							targets = transformTargets(result.idea.targets, result.idea.instrument.lot);
@@ -449,6 +455,7 @@ export class VtEnterComponent implements AfterViewInit {
 							lot: result.idea.instrument.lot,
 							lastPrice: result.idea.lastPrice,
 							minPriceIncrement: result.idea.instrument.minPriceIncrement,
+							instrumentType: result.idea.instrument.type,
 						});
 
 						this.controlIdea[action]();

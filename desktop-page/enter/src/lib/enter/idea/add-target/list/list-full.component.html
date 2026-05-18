@@ -21,7 +21,12 @@
         }}
       </div>
       <div class="item__value row__right row__item row__fix-half">
-        <span>{{ item.amount | tuiFormatNumber | async }}</span>
+        <span>{{
+            item.amount | tuiFormatNumber: {
+              precision: precisionQuantity(),
+              decimalMode: 'always'
+            } | async
+          }}</span>
         @if (type() !== 'crypto') {
           &nbsp;/&nbsp;{{ item.lots | tuiFormatNumber | async }}
         }

@@ -14,6 +14,7 @@ import { GetCryptoNumberPipe } from '@ui/pipes/get-crypto-number.pipe';
 import { TuiButton, TuiFormatNumberPipe } from '@taiga-ui/core';
 
 type Action = { event: Event; type: string; data: { index: number } };
+type Option = { precision: number; precisionQuantity: number };
 
 @Component({
 	selector: 'lib-list-mobile',
@@ -41,9 +42,11 @@ export class ListMobileComponent {
 
 	readonly index: InputSignal<number | null> = input<number | null>(null);
 
-	readonly option: InputSignal<{ precision: number }> = input<{ precision: number }>({ precision: Infinity });
+	readonly option: InputSignal<Option> = input<Option>({ precision: Infinity, precisionQuantity: Infinity });
 
 	readonly precision = computed(() => this.option().precision);
+
+	readonly precisionQuantity = computed(() => this.option().precisionQuantity);
 
 	readonly action: OutputEmitterRef<Action> = output();
 
