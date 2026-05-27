@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GrinTrade — Биржевые идеи, которые зарабатывают</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #E6EDF6;
+      min-height: 100vh;
+      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ========== НАВИГАЦИЯ (sticky) ========== */
+    .nav {
+      background: #E6EDF6;
+      border-bottom: 0.5px solid rgba(0,0,0,0.08);
+      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      width: 100%;
+      padding: 0 3%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; color: #111; font-size: 16px; font-weight: 500; text-decoration: none; }
+    .logo-icon { width: 28px; height: 28px; background: #2563b8; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .logo-icon i { font-size: 16px; color: #fff; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-link { font-size: 15px; color: rgba(0,0,0,0.55); text-decoration: none; transition: color .15s; }
+    .nav-link:hover { color: #111; }
+    .nav-btns { display: flex; gap: 8px; }
+    .btn-outline { padding: 7px 18px; border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px; font-size: 15px; color: #333; background: transparent; cursor: pointer; }
+    .btn-outline:hover { border-color: rgba(0,0,0,0.4); color: #111; }
+    .btn-solid { padding: 7px 18px; border: none; border-radius: 8px; font-size: 15px; color: #fff; background: #2563b8; cursor: pointer; font-weight: 500; }
+    .btn-solid:hover { background: #1d4f9a; }
+
+    /* ========== ОБЩИЙ СТИЛЬ ДЛЯ ВСЕХ КАРТИНОК ========== */
+    .soft-image {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      width: auto;
+      max-height: 100%;
+      border-radius: 28px;
+      box-shadow: 0 25px 40px -15px rgba(0,0,0,0.6);
+      mask: radial-gradient(circle at 50% 50%, black 65%, transparent 98%);
+      -webkit-mask: radial-gradient(circle at 50% 50%, black 65%, transparent 98%);
+    }
+
+    /* ========== HERO ========== */
+    .hero-section {
+      background: #0d1f3c;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .hero {
+      max-width: 1280px;
+      width: 100%;
+      padding: 3rem 1.5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .hero-h1 {
+      font-size: 40px;
+      font-weight: 500;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    .hero-h1 .accent {
+      color: #D6F252;
+    }
+    .hero-h1 .white {
+      color: #fff;
+    }
+    .hero-sub { font-size: 17px; color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 1.5rem; max-width: 400px; }
+    .hero-metric { font-size: 17px; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem; }
+    .hero-metric strong { color: #fff; font-size: 19px; }
+    .hero-note { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 2rem; }
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 18px;
+      background: #2563b8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-cta:hover { background: #1d4f9a; }
+    .hero-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ========== БЛОК "ПОЧЕМУ GRINTRADE" ========== */
+    .pillars-section {
+      background: #E6EDF6;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+    .pillars-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 0 1.5%;
+    }
+    .section-label-dark {
+      font-size: 15px;
+      color: #2c3e50;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .card:hover {
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      font-size: 22px;
+    }
+    .icon-teal { background: #E1F5EE; color: #0F6E56; }
+    .icon-blue { background: #E6F1FB; color: #185FA5; }
+    .icon-purple { background: #EEEDFE; color: #534AB7; }
+    .card-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: #111;
+      margin: 0 0 1rem;
+    }
+    .tag {
+      font-size: 15px;
+      color: #2c3e50;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.5;
+      margin-bottom: 0.5rem;
+    }
+    .tag i { font-size: 16px; flex-shrink: 0; margin-top: 2px; color: #1D9E75; }
+    .more-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 15px;
+      color: #2563b8;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      margin-top: auto;
+    }
+    .more-btn i { font-size: 14px; transition: transform .2s; }
+    .more-btn.open i { transform: rotate(180deg); }
+    .detail {
+      display: none;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 0.5px solid rgba(0,0,0,0.08);
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.6;
+    }
+    .detail.open { display: block; }
+
+    /* ========== СЕКЦИЯ "КАК ЭТО РАБОТАЕТ" ========== */
+    .how-it-works-section {
+      background: #0d1f3c;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+    .how-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 0 1.5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+      gap: 1rem;
+    }
+    .left-block {
+      padding: 2rem 1rem 2rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .section-label-light {
+      font-size: 15px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .title-light {
+      font-size: 30px;
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+    }
+    .subtitle-light {
+      font-size: 18px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+    .steps-grid-small {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 1.25rem;
+    }
+    .step-card-small {
+      background: rgba(255,255,255,0.06);
+      border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .step-num {
+      font-size: 14px;
+      font-weight: 600;
+      color: #4A9FE0;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .step-title-small {
+      font-size: 17px;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    .step-body-small {
+      font-size: 15px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.5;
+    }
+    .own-idea {
+      background: rgba(255,255,255,0.06);
+      border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .own-idea i {
+      font-size: 20px;
+      color: #a78bfa;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .own-idea-text {
+      font-size: 16px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+    .own-idea-text strong { color: #fff; }
+    .right-block {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 1rem 0 1rem 0.5rem;
+    }
+    .right-block .soft-image {
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 28px;
+      box-shadow: 0 25px 40px -15px rgba(0,0,0,0.6);
+      mask: radial-gradient(circle at 50% 50%, black 65%, transparent 98%);
+      -webkit-mask: radial-gradient(circle at 50% 50%, black 65%, transparent 98%);
+    }
+
+    /* ========== БЛОК МЕТРИК ========== */
+    .metrics-section {
+      background: #E6EDF6;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+    .metrics-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 0 1.5%;
+    }
+    .metrics-label {
+      font-size: 15px;
+      color: #2c3e50;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .metric-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .metric-card:hover {
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .metric-val {
+      font-size: 44px;
+      font-weight: 600;
+      color: #1a4c7a;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+    .metric-desc {
+      font-size: 16px;
+      color: #2c3e50;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .metric-link {
+      font-size: 15px;
+      color: #2563b8;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: auto;
+    }
+    .metric-link:hover { text-decoration: underline; }
+
+    /* ========== НОВЫЙ СЛАЙД "ДЛЯ ТЕХ, КТО ЦЕНИТ СВОЁ ВРЕМЯ" ========== */
+    .time-section {
+      background: #0d1f3c;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .time-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 3rem 1.5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+    .time-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .time-title {
+      font-size: 34px;
+      font-weight: 500;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .time-desc {
+      font-size: 17px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      max-width: 500px;
+    }
+    .support-block {
+      background: rgba(255,255,255,0.06);
+      border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+    .support-block i {
+      font-size: 20px;
+      color: #a78bfa;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .support-block p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+    .support-block strong {
+      color: #fff;
+    }
+    .time-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ========== БЛОК "3 ПРОСТЫХ ШАГА" ========== */
+    .steps-section {
+      background: #E6EDF6;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+    .steps-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 0 1.5%;
+    }
+    .steps-label {
+      font-size: 15px;
+      color: #2c3e50;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .step-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.8rem;
+      transition: box-shadow 0.2s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .step-card:hover {
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .step-number {
+      display: inline-block;
+      width: 44px;
+      height: 44px;
+      background: #D6F252;
+      color: #111;
+      border-radius: 44px;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 44px;
+      margin-bottom: 1.2rem;
+    }
+    .step-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 0.75rem;
+    }
+    .step-desc {
+      font-size: 16px;
+      color: #2c3e50;
+      line-height: 1.5;
+    }
+
+    /* ========== СЛАЙД ПОДПИСКИ ========== */
+    .subscription-slide {
+      background: #0d1f3c;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0 1.5rem 0;
+    }
+    .subscription-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 0 1.5%;
+    }
+    .subscription-title {
+      font-size: 32px;
+      font-weight: 500;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .subscription-subhead {
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+    .subscription-container {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .plans-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .plan-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 1.2rem;
+      transition: transform 0.2s;
+    }
+    .plan-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.12);
+    }
+    .plan-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    .plan-price {
+      font-size: 28px;
+      font-weight: 700;
+      color: #D6F252;
+      margin-bottom: 0.2rem;
+    }
+    .plan-price span {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+    }
+    .plan-save {
+      font-size: 13px;
+      color: #6EE7B7;
+      margin: 0.2rem 0 0.8rem 0;
+    }
+    .plan-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 18px;
+      background: #2563b8;
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .plan-btn:hover {
+      background: #1d4f9a;
+    }
+    .features-column {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .feature-item h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-item h3 i {
+      font-size: 20px;
+      color: #fff;
+    }
+    .feature-item p {
+      font-size: 14px;
+      color: #fff;
+      line-height: 1.4;
+      margin-bottom: 0.2rem;
+    }
+    .feature-item p + p {
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0;
+    }
+    .global-btn {
+      margin-top: 0.5rem;
+    }
+    .btn-cta-sub {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 24px;
+      background: #2563b8;
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .btn-cta-sub:hover {
+      background: #1d4f9a;
+    }
+
+    /* ========== ФУТЕР ========== */
+    .footer {
+      background: #E6EDF6;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 0 0 0;
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    .footer-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 0 1.5%;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.5fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    .footer-logo .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: #2563b8;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .footer-logo .logo-icon i {
+      font-size: 20px;
+      color: #fff;
+    }
+    .footer-logo span {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0d1f3c;
+    }
+    .footer-tagline {
+      font-size: 14px;
+      color: #2c3e50;
+      line-height: 1.5;
+      max-width: 260px;
+    }
+    .footer-col h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0d1f3c;
+      margin-bottom: 1rem;
+    }
+    .footer-col a {
+      display: block;
+      font-size: 14px;
+      color: #2c3e50;
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover {
+      color: #2563b8;
+    }
+    .footer-bottom {
+      width: 100%;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      padding: 1.5rem 0;
+      display: flex;
+      justify-content: center;
+    }
+    .footer-bottom-inner {
+      max-width: 1280px;
+      width: 100%;
+      padding: 0 1.5%;
+      text-align: center;
+      font-size: 13px;
+      color: #2c3e50;
+    }
+
+    /* ========== АДАПТИВНОСТЬ ========== */
+    @media (max-width: 900px) {
+      .hero, .time-inner {
+        grid-template-columns: 1fr;
+      }
+      .subscription-container {
+        flex-direction: column;
+      }
+      .plans-column {
+        flex-direction: row;
+        width: 100%;
+      }
+      .features-column {
+        width: 100%;
+      }
+      .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: center;
+      }
+      .footer-tagline {
+        margin: 0 auto;
+      }
+      .footer-col a {
+        display: inline-block;
+        margin: 0 0.5rem 0.5rem 0;
+      }
+      .how-inner {
+        grid-template-columns: 1fr;
+      }
+      .steps-grid, .metrics-grid, .grid-cards {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .steps-grid-small {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .title-light {
+        font-size: 28px;
+      }
+      .pillars-inner, .metrics-inner, .how-inner, .hero, .time-inner, .steps-inner, .subscription-inner, .footer-inner {
+        padding-left: 4%;
+        padding-right: 4%;
+      }
+      .nav-inner {
+        padding: 0 4%;
+      }
+      .nav-links {
+        display: none;
+      }
+      .subscription-title {
+        font-size: 28px;
+      }
+      .hero-h1 {
+        font-size: 32px;
+      }
+    }
+    @media (max-width: 600px) {
+      .plans-column {
+        flex-direction: column;
+      }
+      .hero-h1 {
+        font-size: 28px;
+      }
+      .time-title {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- НАВИГАЦИЯ -->
+  <div class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#">
+          <img src="images/log.png" style="width: 47px; height: 32px; border-radius: 6px;">
+        Grintrade
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="#">Преимущества</a>
+        <a class="nav-link" href="#">Как это работает</a>
+        <a class="nav-link" href="#">Инструкции</a>
+        <a class="nav-link" href="#">О компании</a>
+      </div>
+      <div class="nav-btns">
+        <button class="btn-outline">Войти</button>
+        <button class="btn-solid">Зарегистрироваться</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero-section">
+    <div class="hero">
+      <div class="hero-left">
+        <h1 class="hero-h1">
+          <span class="accent">Биржевые идеи</span><br>
+          <span class="white">которые зарабатывают</span>
+        </h1>
+        <p class="hero-sub">Проводим математический анализ 24/7 — вы получаете готовые торговые идеи и зарабатываете, не отвлекаясь от любимых дел.</p>
+        <p class="hero-metric"><strong>36%</strong> чистая* годовая доходность GrinTrade</p>
+        <p class="hero-note">* после вычета комиссий брокера</p>
+        <button class="btn-cta"><i class="ti ti-player-play"></i> Попробовать бесплатно</button>
+      </div>
+      <div class="hero-right">
+        <img class="soft-image" src="images/landing_1.png" alt="Ноутбук GrinTrade" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ПОЧЕМУ GRINTRADE -->
+  <div class="pillars-section">
+    <div class="pillars-inner">
+      <p class="section-label-dark">Почему GrinTrade</p>
+      <div class="grid-cards">
+        <div class="card">
+          <div class="icon-wrap icon-teal"><i class="ti ti-chart-bar"></i></div>
+          <p class="card-title">Эффективно</p>
+          <div class="tag"><i class="ti ti-check"></i>Технический и фундаментальный анализ</div>
+          <div class="tag"><i class="ti ti-check"></i>Рыночные тренды в реальном времени</div>
+          <button class="more-btn" onclick="toggle(this)">Подробнее <i class="ti ti-chevron-down"></i></button>
+          <div class="detail">Торговые идеи формируются алгоритмами, которые одновременно анализируют тысячи данных — от технических индикаторов до рыночных трендов.</div>
+        </div>
+        <div class="card">
+          <div class="icon-wrap icon-blue"><i class="ti ti-shield-check"></i></div>
+          <p class="card-title">Безопасно</p>
+          <div class="tag"><i class="ti ti-check"></i>Бэктестинг перед каждым запуском</div>
+          <div class="tag"><i class="ti ti-check"></i>Шифрование данных — Яндекс KMS</div>
+          <button class="more-btn" onclick="toggle(this)">Подробнее <i class="ti ti-chevron-down"></i></button>
+          <div class="detail">Каждая стратегия проходит тестирование на исторических данных, прежде чем попасть к пользователям. Данные защищены шифрованием через Яндекс KMS.</div>
+        </div>
+        <div class="card">
+          <div class="icon-wrap icon-purple"><i class="ti ti-bolt"></i></div>
+          <p class="card-title">Просто</p>
+          <div class="tag"><i class="ti ti-check"></i>Интеграция с Telegram и брокером</div>
+          <div class="tag"><i class="ti ti-check"></i>Сделка в 2 клика</div>
+          <button class="more-btn" onclick="toggle(this)">Подробнее <i class="ti ti-chevron-down"></i></button>
+          <div class="detail">Вы получаете готовую идею с точками входа и выхода. Сделку можно совершить прямо из Telegram — за два клика, без лишних действий.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- КАК ЭТО РАБОТАЕТ -->
+  <div class="how-it-works-section">
+    <div class="how-inner">
+      <div class="left-block">
+        <p class="section-label-light">Как это работает</p>
+        <h2 class="title-light">Используйте готовые идеи<br>или проверяйте свои</h2>
+        <p class="subtitle-light">Алгоритмы обучены на более чем 70 стратегиях. Торгуем акциями, криптовалютой, валютой и металлами.</p>
+        <div class="steps-grid-small">
+          <div class="step-card-small">
+            <p class="step-num">01</p>
+            <p class="step-title-small">Сбор данных</p>
+            <p class="step-body-small">Алгоритмы непрерывно собирают рыночные данные в реальном времени.</p>
+          </div>
+          <div class="step-card-small">
+            <p class="step-num">02</p>
+            <p class="step-title-small">Анализ и прогноз</p>
+            <p class="step-body-small">Математические модели выявляют закономерности и формируют прогнозы движения цен.</p>
+          </div>
+          <div class="step-card-small">
+            <p class="step-num">03</p>
+            <p class="step-title-small">Готовая идея</p>
+            <p class="step-body-small">Чёткие параметры: когда войти, когда выйти и как управлять риском.</p>
+          </div>
+        </div>
+        <div class="own-idea">
+          <i class="ti ti-bulb"></i>
+          <p class="own-idea-text"><strong>Есть своя идея?</strong> GRIN проверит её и пришлёт сигнал в Telegram в нужный момент.</p>
+        </div>
+      </div>
+      <div class="right-block">
+        <img class="soft-image" src="images/landing_2.png" alt="Из 50 миллионов вариантов выбираем лучшую идею" />
+      </div>
+    </div>
+  </div>
+
+  <!-- МЕТРИКИ -->
+  <div class="metrics-section">
+    <div class="metrics-inner">
+      <p class="metrics-label">Эффективность, подтверждённая цифрами</p>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-val">36,8%</div>
+          <div class="metric-desc">Средняя годовая доходность за вычетом комиссий брокера</div>
+          <a class="metric-link" href="#">↓ Скачать отчёт</a>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">15 000+</div>
+          <div class="metric-desc">Проанализированных активов</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">24/7</div>
+          <div class="metric-desc">Непрерывный мониторинг рынка</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- НОВЫЙ СЛАЙД: ДЛЯ ТЕХ, КТО ЦЕНИТ СВОЁ ВРЕМЯ -->
+  <div class="time-section">
+    <div class="time-inner">
+      <div class="time-left">
+        <h2 class="time-title">Для тех, кто ценит своё время</h2>
+        <p class="time-desc">Хватит просиживать часы за графиками, читать противоречивые новости и следовать советам чужих каналов. GrinTrade торгует в реальном времени — вы просто следуете за сделками в удобном для вас темпе.</p>
+        <div class="support-block">
+          <i class="ti ti-headset"></i>
+          <p><strong>Наша команда поддержки</strong> всегда на связи и поможет разобраться с любым вопросом.</p>
+        </div>
+      </div>
+      <div class="time-right">
+        <img class="soft-image" src="images/landing_3.png" alt="Ценим время" />
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 ПРОСТЫХ ШАГА -->
+  <div class="steps-section">
+    <div class="steps-inner">
+      <p class="steps-label">3 простых шага, чтобы начать</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-title">Откройте брокерский счёт</div>
+          <div class="step-desc">Подойдут российские и зарубежные брокеры — работаем с любыми.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-title">Установите Telegram</div>
+          <div class="step-desc">Все сигналы и идеи приходят туда — инвестиции всегда в кармане.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-title">Зарегистрируйтесь</div>
+          <div class="step-desc">Только почта — и вы получаете доступ ко всем стратегиям и инструментам.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- СЛАЙД ПОДПИСКИ -->
+  <div class="subscription-slide">
+    <div class="subscription-inner">
+      <h2 class="subscription-title">Условия подписки</h2>
+      <div class="subscription-subhead">Подписка предоставляет доступ к сервису Grintrade с полным циклом биржевой торговли, от идеи до результата:</div>
+      <div class="subscription-container">
+        <div class="plans-column">
+          <div class="plan-card">
+            <div class="plan-name">Месяц</div>
+            <div class="plan-price">Бесплатно <span>затем 999 ₽</span></div>
+            <button class="plan-btn">Выбрать</button>
+          </div>
+          <div class="plan-card">
+            <div class="plan-name">Год</div>
+            <div class="plan-price">9 990 ₽</div>
+            <div class="plan-save">✓ экономия 1 998 ₽</div>
+            <button class="plan-btn">Выбрать</button>
+          </div>
+        </div>
+        <div class="features-column">
+          <div class="feature-item">
+            <h3><i class="ti ti-bulb"></i> Идеи</h3>
+            <p>Получай идеи с высокой вероятностью успеха каждый день или проверяй свои.</p>
+            <p>Доверься ИИ и продвинутым математическим моделям, либо создавай свои идеи, проверяй их и отслеживай исполнение.</p>
+          </div>
+          <div class="feature-item">
+            <h3><i class="ti ti-click"></i> Сделки</h3>
+            <p>2 клика, и вы в сделке.</p>
+            <p>Торгуйте просто и безопасно через интеграцию с брокером T-Инвестиции.</p>
+          </div>
+          <div class="feature-item">
+            <h3><i class="ti ti-brand-telegram"></i> Уведомления</h3>
+            <p>Занимайся любимыми делами, всю рутину берем на себя.</p>
+            <p>В онлайн режиме отслеживаются все сделки, и при наступлении события присылаются уведомления в Телеграмме.</p>
+          </div>
+          <div class="feature-item">
+            <h3><i class="ti ti-chart-pie"></i> Портфель</h3>
+            <p>Твоя история под контролем.</p>
+            <p>Совершай сделки через сервис, и все сделки будут формироваться автоматически, или веди подробный учет самостоятельно. Анализируй статистику в удобных форматах на сайте или в Excel.</p>
+          </div>
+          <div class="global-btn">
+            <button class="btn-cta-sub"><i class="ti ti-player-play"></i> Попробовать бесплатно</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ФУТЕР -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <img src="images/log.png" alt=GrinTrade" style="width: 47px; height: 32px; border-radius: 6px;">
+          <span>Grintrade</span>
+        </div>
+        <p class="footer-tagline">Передовая платформа для генерации биржевых идей на основе математических алгоритмов и ИИ</p>
+      </div>
+      <div class="footer-col">
+        <h4>Продукт</h4>
+        <a href="#">Функции</a>
+        <a href="#">Тарифы</a>
+        <a href="#">Инструкции</a>
+      </div>
+      <div class="footer-col">
+        <h4>О компании</h4>
+        <a href="#">О нас</a>
+        <a href="#">Блог</a>
+        <a href="#">Контакты</a>
+      </div>
+      <div class="footer-col">
+        <h4>Правовая информация</h4>
+        <a href="#">Пользовательское соглашение</a>
+        <a href="#">Политика обработки персональных данных</a>
+        <a href="#">Согласие на обработку персональных данных</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-bottom-inner">
+        <p>© 2026 Grintrade. Все права защищены.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggle(btn) {
+      const detail = btn.nextElementSibling;
+      const isOpen = detail && detail.classList ? detail.classList.contains('open') : false;
+      if (detail && detail.classList) {
+        detail.classList.toggle('open', !isOpen);
+        btn.classList.toggle('open', !isOpen);
+        btn.childNodes[0].textContent = isOpen ? 'Подробнее ' : 'Свернуть ';
+      }
+    }
+  </script>
+</body>
+</html>
